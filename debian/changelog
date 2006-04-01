@@ -1,0 +1,102 @@
+cherokee (0.5.0-1) unstable; urgency=low
+
+  * New upstream release
+  * Fixed bashism in debian/rules, aplied patch by Daniel Dehennin
+    (Closes: #355258)
+
+ -- Gunnar Wolf <gwolf@debian.org>  Fri, 31 Mar 2006 19:11:42 -0600
+
+cherokee (0.4.29-3) unstable; urgency=low
+
+  * Added libpam0g-dev as a build-dependency
+
+ -- Gunnar Wolf <gwolf@debian.org>  Fri,  2 Dec 2005 16:42:07 -0600
+
+cherokee (0.4.29-2) unstable; urgency=low
+
+  * Fixed bashism in init script (Closes: #340623)
+
+ -- Gunnar Wolf <gwolf@debian.org>  Tue, 29 Nov 2005 18:57:08 -0600
+
+cherokee (0.4.29-1) unstable; urgency=low
+
+  * New upstream release
+
+ -- Gunnar Wolf <gwolf@debian.org>  Fri, 11 Nov 2005 13:26:35 -0600
+
+cherokee (0.4.28-2) unstable; urgency=low
+
+  * Upgraded dependency from gnutls11/libgnutls11-dev to
+    gnutls12/libgnutls-dev (Closes: #335753)
+
+ -- Gunnar Wolf <gwolf@debian.org>  Thu,  3 Nov 2005 10:15:30 -0600
+
+cherokee (0.4.28-1) unstable; urgency=low
+
+  * New upstream release
+
+ -- Gunnar Wolf <gwolf@debian.org>  Fri, 28 Oct 2005 19:41:36 -0500
+
+cherokee (0.4.27-1) unstable; urgency=low
+
+  * New upstream release
+
+ -- Gunnar Wolf <gwolf@debian.org>  Tue, 18 Oct 2005 12:49:48 -0500
+
+cherokee (0.4.26-1) unstable; urgency=low
+
+  * Fixed: Now configuration makes Cherokee run under user www-data
+    (thanks to Jens Korner for pointing it out - no bug report number)
+  * Bumped up standards-version to 3.6.2
+  * New upstream release
+  * Added Debian logo to the welcome page
+
+ -- Gunnar Wolf <gwolf@debian.org>  Tue, 11 Oct 2005 14:22:54 -0500
+
+cherokee (0.4.25-1) unstable; urgency=low
+
+  * New upstream release
+
+ -- Gunnar Wolf <gwolf@debian.org>  Tue,  9 Aug 2005 10:51:42 -0500
+
+cherokee (0.4.23-2) unstable; urgency=low
+
+  * Now also provides the httpd-cgi virtual package (Closes: #186395)
+
+ -- Gunnar Wolf <gwolf@debian.org>  Mon, 13 Jun 2005 09:54:22 -0500
+
+cherokee (0.4.23-1) unstable; urgency=low
+
+  * New upstream release
+
+ -- Gunnar Wolf <gwolf@debian.org>  Wed, 25 May 2005 09:48:27 -0500
+
+cherokee (0.4.22final-2) unstable; urgency=low
+
+  * Added build-dependency on autotools-dev (Closes: #309775)
+
+ -- Gunnar Wolf <gwolf@debian.org>  Thu, 19 May 2005 12:27:25 -0500
+
+cherokee (0.4.22final-1) unstable; urgency=low
+
+  * New upstream release
+
+ -- Gunnar Wolf <gwolf@debian.org>  Tue, 17 May 2005 11:46:20 -0500
+
+cherokee (0.4.22b02-1) unstable; urgency=low
+
+  * New upstream version
+  * Fixes wrong symlink created to build directory in conffiles (Closes:
+    #308852)
+  * Fixes wrong startup upon install/upgrade behavior
+  * Added debian/watch
+  * Some adequations in the default (built) conffiles to comply with the
+    Debian way
+
+ -- Alvaro Lopez Ortega <alvaro@gnu.org>  Wed, 13 May 2005 09:00:00 +0100
+
+cherokee (0.4.21b01-1) unstable; urgency=low
+
+  * Initial debian package. (Closes: #199110)
+
+ -- Alvaro Lopez Ortega <alvaro@gnu.org>  Wed, 04 May 2005 16:49:40 +0100
