@@ -24,7 +24,7 @@ case "$1" in
 	rm -rf /var/log/cherokee*
 	;;
     upgrade)
-	/etc/init.d/cherokee restart
+	invoke-rc.d cherokee restart
 	;;
     remove|failed-upgrade|abort-install|abort-upgrade|disappear)
 	;;

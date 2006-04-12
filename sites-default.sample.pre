@@ -6,7 +6,7 @@
 ## DirectoryIndex: Name of the file or files to use as a pre-written HTML
 ## directory index.  Separate multiple entries with commas.
 ##
-DirectoryIndex index.php, index.html, index.htm, index.shtml
+DirectoryIndex index.php, index.html, index.htm, index.shtml, cherokee.index.html
 
 ##
 ## DocumentRoot: The directory out of which you will serve your
@@ -55,7 +55,7 @@ Log combined {
 ## In the event of a problem or error.
 ##
 # ErrorHandler error_redir {
-#    404 http://www.alobbs.com/error.php?op=404
+#    404 http://www.example.com/error.php?op=404
 # }
 
 ##

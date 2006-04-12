@@ -8,7 +8,7 @@ Standards-Version: 3.6.2.0
 
 Package: cherokee
 Architecture: any
-Depends: ${cherokee:Depends}, logrotate, libcherokee-base0 (= ${Source-Version}), libcherokee-server0 (= ${Source-Version})
+Depends: ${cherokee:Depends}, logrotate, mime-support, libcherokee-base0 (= ${Source-Version}), libcherokee-server0 (= ${Source-Version})
 Provides: httpd, httpd-cgi
 Description: extremely fast and flexible web server
  Cherokee is an extremely flexible and fast web server. It's

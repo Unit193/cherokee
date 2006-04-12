@@ -1,3 +1,13 @@
+cherokee (0.5.1-1) unstable; urgency=low
+
+  * Documented the needed steps to set up SSL (Closes: #355233)
+  * New upstream release
+  * Added dependency on mime-support
+  * Fixed: No longer defaults to running as root
+  * Some minor documentation fixes
+
+ -- Gunnar Wolf <gwolf@debian.org>  Wed, 12 Apr 2006 11:21:00 -0500
+
 cherokee (0.5.0-1) unstable; urgency=low
 
   * New upstream release
