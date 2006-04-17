@@ -1,3 +1,11 @@
+cherokee (0.5.2-1) unstable; urgency=low
+
+  * New upstream release
+  * Added postinst/postrm scripts for the generated library packages, as
+    they were not calling ldconfig (see policy 8.1.1)
+
+ -- Gunnar Wolf <gwolf@debian.org>  Mon, 17 Apr 2006 11:48:11 -0500
+
 cherokee (0.5.1-1) unstable; urgency=low
 
   * Documented the needed steps to set up SSL (Closes: #355233)

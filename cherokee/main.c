@@ -98,7 +98,7 @@ common_server_initialization (cherokee_server_t *srv)
 		cherokee_server_daemonize (srv);
 
 	cherokee_server_write_pidfile (srv);
-		
+
 	ret = cherokee_server_init (srv);
 	if (ret != ret_ok) return ret_error;
 
