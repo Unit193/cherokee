@@ -46,8 +46,8 @@ UserDir public_html {
 ## w3c      - LogFile
 ##
 Log combined {
-    AccessLog /var/log/cherokee.access
-    ErrorLog  /var/log/cherokee.error
+    AccessLog /var/log/cherokee/default.access
+    ErrorLog  /var/log/cherokee/default.error
 }
 
 ##

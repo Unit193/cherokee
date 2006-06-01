@@ -225,8 +225,9 @@ install-arch:
 # cherokee - Main binary package
 
 	# Whatever we still have in $(BUILD_DIR) will become the main Cherokee
-	# package
+	# package - Just create the directory for the log files
 	mv $(BUILD_DIR)/* $(SERVER_DIR)
+	install -d $(SERVER_DIR)/var/log/cherokee
 
 # Must not depend on anything. This is to be called by
 # binary-arch/binary-indep

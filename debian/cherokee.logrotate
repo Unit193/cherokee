@@ -1,8 +1,9 @@
-/var/log/cherokee*log {
+/var/log/cherokee/*.error /var/log/cherokee/*.access /var/log/cherokee.access /var/log/cherokee.error {
   rotate 7
-  daily
+  weekly
   compress
   copytruncate
   missingok
   notifempty
+  copytruncate
 }

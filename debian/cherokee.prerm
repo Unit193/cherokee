@@ -19,10 +19,6 @@ set -e
 
 case "$1" in
     remove|upgrade|deconfigure)
-        #       Stop the daemon
-	invoke-rc.d cherokee stop
-	# Remove /usr/doc link if it exists
-	[ -L /usr/doc/cherokee ] && rm -f /usr/doc/cherokee
         ;;
     failed-upgrade)
         ;;

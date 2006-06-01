@@ -17,6 +17,7 @@ set -e
 # for details, see http://www.debian.org/doc/debian-policy/ or
 # the debian-policy package
 
+#. /lib/lsb/init-functions
 
 case "$1" in
     purge)
@@ -24,7 +25,8 @@ case "$1" in
 	rm -rf /var/log/cherokee*
 	;;
     upgrade)
-	invoke-rc.d cherokee restart
+	invoke-rc.d cherokee stop
+	invoke-rc.d cherokee start
 	;;
     remove|failed-upgrade|abort-install|abort-upgrade|disappear)
 	;;

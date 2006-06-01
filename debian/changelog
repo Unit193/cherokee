@@ -1,3 +1,16 @@
+cherokee (0.5.3-1) unstable; urgency=low
+
+  * New upstream release
+  * Fixed: When upgrading from some older versions of Cherokee, the
+    daemon failed to restart. (Closes: #363515)
+  * Bumped up standards-version to 3.7.2
+  * Fixed the wrong logrotate configuration, and defaulting now to
+    storing log files in the /var/log/cherokee directory (instead of
+    plainly in /var/log) to avoid making too much mess there (Closes:
+    #358763)
+
+ -- Gunnar Wolf <gwolf@debian.org>  Thu,  1 Jun 2006 12:31:23 -0500
+
 cherokee (0.5.2-1) unstable; urgency=low
 
   * New upstream release
