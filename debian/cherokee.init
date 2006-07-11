@@ -1,14 +1,16 @@
 #! /bin/sh
 #
-# skeleton	example file to build /etc/init.d/ scripts.
-#		This file should be used to construct scripts for /etc/init.d.
-#
-#		Written by Miquel van Smoorenburg <miquels@cistron.nl>.
-#		Modified for Debian 
-#		by Ian Murdock <imurdock@gnu.ai.mit.edu>.
-#
-# Version:	@(#)skeleton  1.9  26-Feb-2001  miquels@cistron.nl
-#
+# start/stop Cherokee web server
+
+### BEGIN INIT INFO
+# Provides:          cherokee
+# Required-Start:    $network
+# Required-Stop:     $network
+# Should-Start:      $named
+# Should-Stop:       $named
+# Default-Start:     S 2 3 4 5
+# Default-Stop:      0 1 6
+### END INIT INFO
 
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 DAEMON=/usr/sbin/cherokee
@@ -40,21 +42,27 @@ case "$1" in
 	# will be removed in the future - Late 0.4 / early 0.5 versions didn't
 	# always behave properly regarding the PIDFILE, so we better 
 	# double-check here to avoid trouble.
+	# Why the redirection and the || true? Redirection, to avoid cluttering
+	# up our output. || true because we have had reports of this script 
+	# bombing because of a failed kill to a process that no longer exists 
+	# (remember we run with set -e).
 	for PID in $(pidofproc cherokee)
 	  do
-	  kill $PID
+	  kill $PID 2>/dev/null || true
 	  done
 	;;
 
-  restart)
+  restart|reload|force-reload)
 	$0 stop
 	sleep 1
 	$0 start
 	;;
 
-  reload|force-reload)
-	start-stop-daemon --stop --signal HUP --pidfile $PIDFILE --name $NAME
-	;;
+# Upstream asks us not to signal HUP for simple reloads, as it's broken due to
+# several leaks. Will be fixed for the 0.6 series.
+#   reload|force-reload)
+# 	start-stop-daemon --stop --signal HUP --pidfile $PIDFILE --name $NAME
+# 	;;
 
   *)
 	N=/etc/init.d/$NAME

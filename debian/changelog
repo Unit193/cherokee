@@ -1,3 +1,14 @@
+cherokee (0.5.4-1) unstable; urgency=low
+
+  * New upstream release
+  * Fixed debian/watch to track the 0.5 branch
+  * Fixed: Restarting cherokee via the initscript killed it (Closes:
+    #376534)
+  * Per upstream request, make the reload and force-reload options
+    behave just as a restart, due to errors in the processing of SIGHUP
+
+ -- Gunnar Wolf <gwolf@debian.org>  Tue, 11 Jul 2006 13:41:31 -0500
+
 cherokee (0.5.3-1) unstable; urgency=low
 
   * New upstream release
