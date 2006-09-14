@@ -1,3 +1,9 @@
+cherokee (0.5.5-1) unstable; urgency=low
+
+  * New upstream release
+
+ -- Gunnar Wolf <gwolf@debian.org>  Thu, 14 Sep 2006 13:24:39 -0500
+
 cherokee (0.5.4-1) unstable; urgency=low
 
   * New upstream release

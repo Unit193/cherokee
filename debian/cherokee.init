@@ -10,6 +10,8 @@
 # Should-Stop:       $named
 # Default-Start:     S 2 3 4 5
 # Default-Stop:      0 1 6
+# Short-Description: Start the Cherokee Web server
+# Description:       Start the Cherokee Web server
 ### END INIT INFO
 
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
@@ -38,6 +40,7 @@ case "$1" in
   stop)
 	echo -n "Stopping web server: $NAME "
 	start-stop-daemon --stop --oknodo --pidfile $PIDFILE --exec $DAEMON
+	rm -f $PIDFILE
 	# Try harder to guess if Cherokee might still be alive (this extra step
 	# will be removed in the future - Late 0.4 / early 0.5 versions didn't
 	# always behave properly regarding the PIDFILE, so we better 
@@ -64,9 +67,37 @@ case "$1" in
 # 	start-stop-daemon --stop --signal HUP --pidfile $PIDFILE --name $NAME
 # 	;;
 
+  status)
+	# Strictly, LSB mandates us to return indicating the different statuses,
+	# but that's not exactly Debian compatible - For further information:
+	# http://www.freestandards.org/spec/refspecs/LSB_1.3.0/gLSB/gLSB/iniscrptact.html
+	# http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=208010
+	# ...So we just inform to the invoker and return success.
+	echo -n "$NAME web server status: "
+	if [ -e $PIDFILE ] ; then
+	    PROCNAME=$(ps -p $(cat $PIDFILE) -o comm=)
+	    if $PROCNAME; then
+		if [ "$PROCNAME" = "$NAME" ]; then
+		    echo "Running"
+		else
+		    echo "PID file points to process '$PROCNAME', not '$NAME'"
+		fi
+	    else
+		echo "Not running, but PID file present"
+	    fi
+	else
+	    PID=$(ps -C $NAME -o pid= | sed "s/ //g")
+	    if $PID; then
+		echo "Running (PID $PID), but PIDFILE not present"
+	    else
+		echo "Not running"
+	    fi
+	fi
+	;;
+
   *)
 	N=/etc/init.d/$NAME
-	echo "Usage: $N {start|stop|restart|reload|force-reload}" >&2
+	echo "Usage: $N {start|stop|restart|reload|force-reload|status}" >&2
 	exit 1
 	;;
 esac
