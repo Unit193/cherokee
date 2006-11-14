@@ -22,7 +22,7 @@ NAME=cherokee
 
 test -x $DAEMON || exit 0
 
-PIDFILE=`grep -i '^PidFile' /etc/cherokee/cherokee.conf | sed -e 's/pidfile[\t ]\+//i'`
+PIDFILE=$(grep -i '^PidFile' /etc/cherokee/cherokee.conf | sed -e 's/pidfile[\t ]\+//i')
 if [ "x$PIDFILE" = "x" ];
 then
         PIDFILE=/var/run/cherokee.pid
@@ -51,6 +51,7 @@ case "$1" in
 	# (remember we run with set -e).
 	for PID in $(pidofproc cherokee)
 	  do
+	  echo Cherokee still running without registering PID $PID - Terminating
 	  kill $PID 2>/dev/null || true
 	  done
 	;;
@@ -76,21 +77,20 @@ case "$1" in
 	echo -n "$NAME web server status: "
 	if [ -e $PIDFILE ] ; then
 	    PROCNAME=$(ps -p $(cat $PIDFILE) -o comm=)
-	    if $PROCNAME; then
-		if [ "$PROCNAME" = "$NAME" ]; then
-		    echo "Running"
-		else
-		    echo "PID file points to process '$PROCNAME', not '$NAME'"
-		fi
+	    if [ "x$PROCNAME" = "x" ]; then
+		echo -n "Not running, but PID file present"
 	    else
-		echo "Not running, but PID file present"
+		if [ "$PROCNAME" = "$NAME" ]; then
+		    echo -n "Running"
+		else
+		    echo -n "PID file points to process '$PROCNAME', not '$NAME'"
+		fi
 	    fi
 	else
-	    PID=$(ps -C $NAME -o pid= | sed "s/ //g")
-	    if $PID; then
-		echo "Running (PID $PID), but PIDFILE not present"
+	    if PID=$(pidofproc cherokee); then
+		echo -n "Running (PID $PID), but PIDFILE not present"
 	    else
-		echo "Not running"
+		echo -n "Not running"
 	    fi
 	fi
 	;;
