@@ -1,3 +1,43 @@
+cherokee (0.6.1-1) unstable; urgency=low
+
+  * New upstream release (Closes: #475831)
+  * Added quilt to build-dependencies; moved some magic taking place at
+    debian/rules to quilt
+  * Several fixes to keep lintian happy
+  * Bumped up standards-verison to 3.7.3
+  * Use upstream's config.{guess,sub} instead of ours - keeps things
+    simpler.
+  * Now generates two more packages, for the configuration-handling
+    library
+  * Built with current Gnutls packages (Closes: #335753)
+  * Explicitly requesting TLS support at configure time. How could I 
+    have missed it? :-/ (Closes: #434942)
+
+ -- Gunnar Wolf <gwolf@debian.org>  Mon, 14 Apr 2008 11:28:50 -0500
+
+cherokee (0.5.6-2) unstable; urgency=low
+
+  * Removed remaining references for the (broken) admin module (Closes:
+    #434940)
+  * Removed redundant information and fixed instructions on how to
+    create the TLS/SSL symlink from cherokee.conf (Closes: #434595)
+  * Moving DH_COMPAT debian from debian/rules to debian/compat,
+    following what Debhelper recommends
+  * No longer ignores the result of "make distclean" in the clean target
+  * Replaced the deprecated ${Source-Version} by the more current
+    ${binary:Version}
+  * Finally, provide shlibs files!
+  * Swapped Álvaro and myself - Now I'm listed as the maintainer, he is
+    listed as an uploader
+
+ -- Gunnar Wolf <gwolf@debian.org>  Wed, 15 Aug 2007 10:20:50 -0500
+
+cherokee (0.5.6-1) unstable; urgency=low
+
+  * New upstream release
+
+ -- Gunnar Wolf <gwolf@debian.org>  Tue, 26 Dec 2006 17:27:56 -0600
+
 cherokee (0.5.5.dfsg-2) unstable; urgency=medium
 
   * Replaced 0x50.org for cherokee-project.com, as the official

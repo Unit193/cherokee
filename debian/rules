@@ -6,11 +6,10 @@
 # Modified to make a template file for a multi-binary package with separated
 # build-arch and build-indep targets  by Bill Allombert 2001
 
-# Version of Debhelper to use
-export DH_COMPAT=4
+include /usr/share/quilt/quilt.make 
 
 # Uncomment this to turn on verbose mode.
-export DH_VERBOSE=1
+#export DH_VERBOSE=1
 
 # This has to be exported to make some magic below work.
 export DH_OPTIONS
@@ -24,6 +23,8 @@ LIB_CLIENT_DIR = $(CURDIR)/debian/libcherokee-client0
 DEV_CLIENT_DIR = $(CURDIR)/debian/libcherokee-client0-dev
 LIB_SERVER_DIR = $(CURDIR)/debian/libcherokee-server0
 DEV_SERVER_DIR = $(CURDIR)/debian/libcherokee-server0-dev
+LIB_CONFIG_DIR = $(CURDIR)/debian/libcherokee-config0
+DEV_CONFIG_DIR = $(CURDIR)/debian/libcherokee-config0-dev
 SERVER_DIR = $(CURDIR)/debian/cherokee
 CGET_DIR  = $(CURDIR)/debian/cget
 
@@ -49,13 +50,11 @@ endif
 
 config.status: configure
 	dh_testdir
-	ln -sf /usr/share/misc/config.guess .
-	ln -sf /usr/share/misc/config.sub .
-	# Add here commands to configure the package
 	./configure  --host=$(DEB_HOST_GNU_TYPE)           \
 			   --build=$(DEB_BUILD_GNU_TYPE)         \
 			   --enable-os-string="Debian GNU/Linux" \
 	 		   --enable-pthreads                     \
+			   --enable-tls=gnu			 \
 			   --prefix=/usr                         \
 			   --localstatedir=/var                  \
 			   --mandir=\$${prefix}/share/man        \
@@ -63,8 +62,8 @@ config.status: configure
 			   --sysconfdir=/etc                     \
 			   --with-wwwroot=/var/www
 
-#Architecture
-build: build-arch build-indep
+build: patch build-stamp
+build-stamp: $(QUILT_STAMPFN) build-arch build-indep
 
 build-arch: build-arch-stamp
 
@@ -76,15 +75,13 @@ build-arch-stamp: config.status
 build-indep: build-indep-stamp
 
 build-indep-stamp: config.status
-	# Add here commands to compile the indep part of the package.
 	#$(MAKE) doc
 
-clean: 
+clean: unpatch
 	dh_testdir
 	dh_testroot
-	-$(MAKE) -i distclean
+	[ ! -f Makefile ] || $(MAKE) distclean
 	rm -rf build-arch-stamp build-indep-stamp 
-	rm -rf config.guess config.sub
 	# Cruft not cleaned by the build process
 	rm -fr cherokee/mime_grammar.output cherokee/icons_grammar.output cherokee/config_protocol_grammar.output www/images
 
@@ -93,16 +90,8 @@ clean:
 install: install-indep install-arch
 
 install-indep:
-######	dh_testdir
-######	dh_testroot
-######	dh_clean -k -i
-######	dh_installdirs -i
-
-	# Add here commands to install the indep part of the package into
 	# debian/<package>-doc
 	#INSTALLDOC#
-
-######	dh_install -i
 
 install-arch: 
 	dh_testdir
@@ -114,37 +103,14 @@ install-arch:
 
 	$(MAKE) install INSTALL_PROGRAM=$(INSTALL_PROGRAM) CFLAGS="$(CFLAGS)" DESTDIR=$(BUILD_DIR)
 
-# FIX 1: Fix the PanicAction path
-	cat $(BUILD_DIR)/etc/cherokee/advanced.conf | sed 's/PanicAction \/usr\/bin/PanicAction \/usr\/share\/cherokee/' >adv.new
-	mv adv.new                                           $(BUILD_DIR)/etc/cherokee/advanced.conf
-	mv $(BUILD_DIR)/usr/bin/cherokee-panic               $(BUILD_DIR)/usr/share/cherokee/
-
-# FIX 2: Set the PidFile
-	cat $(BUILD_DIR)/etc/cherokee/cherokee.conf | sed 's/^[#\t ]*PidFile .*\$$/PidFile \/var\/run\/cherokee.pid/' >adv.new
-	mv adv.new                                           $(BUILD_DIR)/etc/cherokee/cherokee.conf
-
-# FIX 3: Explicitly set Cherokee to run under Debian's regular www-data UID/GID
-	cat $(BUILD_DIR)/etc/cherokee/cherokee.conf | sed 's/^#User nobody /User www-data/'  | sed 's/^#Group nogroup /Group www-data/' >adv.new
-	mv adv.new                                           $(BUILD_DIR)/etc/cherokee/cherokee.conf
-
-# FIX 4: Fix the index stuff
-	cat $(BUILD_DIR)/etc/cherokee/cherokee.conf | sed 's/^DirectoryIndex /DirectoryIndex cherokee.index.html, /' >adv.new
-	mv adv.new                                           $(BUILD_DIR)/etc/cherokee/cherokee.conf
-
-# FIX 5: Add a Debian look to the default page
+# FIX: Add a Debian look to the default page
 	/usr/bin/uudecode -o $(BUILD_DIR)/var/www/images/powered_by_debian.png $(CURDIR)/debian/www/powered_by_debian.png.uu
 	rm $(BUILD_DIR)/var/www/index.html
 	install -m 644 $(CURDIR)/debian/www/cherokee.index.html  $(BUILD_DIR)/var/www/cherokee.index.html
 
-# FIX 6: This stuff is not ready to be used
-	rm $(BUILD_DIR)/usr/lib/libcherokee-config*
-	rm $(BUILD_DIR)/usr/lib/cherokee/libplugin_admin*
-	rm $(BUILD_DIR)/usr/lib/cherokee/libplugin_fastcgi*
-
 # libcherokee-base0-dev - Development files
 	install -d $(DEV_BASE_DIR)/DEBIAN
 	install -d $(DEV_BASE_DIR)/usr/bin
-	install -d $(DEV_BASE_DIR)/usr/sbin
 	install -d $(DEV_BASE_DIR)/usr/lib/pkgconfig
 	install -d $(DEV_BASE_DIR)/usr/include/cherokee
 	install -d $(DEV_BASE_DIR)/usr/share/doc/libcherokee-base0-dev
@@ -163,22 +129,28 @@ install-arch:
 
 # libcherokee-client0-dev - Development files for the client libraries
 	install -d $(DEV_CLIENT_DIR)/DEBIAN
-	install -d $(DEV_CLIENT_DIR)/usr/lib/pkgconfig
-	install -d $(DEV_CLIENT_DIR)/usr/include/cherokee
 	install -d $(DEV_CLIENT_DIR)/usr/share/doc/libcherokee-client0-dev
-	install -d $(DEV_CLIENT_DIR)/usr/share/man/man1
+	install -d $(DEV_CLIENT_DIR)/usr/lib
 	install $(CURDIR)/debian/README.docs $(DEV_CLIENT_DIR)/usr/share/doc/libcherokee-client0-dev/
 
 	mv $(BUILD_DIR)/usr/lib/libcherokee-client.a         $(DEV_CLIENT_DIR)/usr/lib
 	mv $(BUILD_DIR)/usr/lib/libcherokee-client.la        $(DEV_CLIENT_DIR)/usr/lib
 	mv $(BUILD_DIR)/usr/lib/libcherokee-client.so        $(DEV_CLIENT_DIR)/usr/lib
 
+# libcherokee-config0-dev - Development files for the config libraries
+	install -d $(DEV_CONFIG_DIR)/DEBIAN
+	install -d $(DEV_CONFIG_DIR)/usr/share/doc/libcherokee-config0-dev
+	install -d $(DEV_CONFIG_DIR)/usr/lib
+	install $(CURDIR)/debian/README.docs $(DEV_CONFIG_DIR)/usr/share/doc/libcherokee-config0-dev/
+
+	mv $(BUILD_DIR)/usr/lib/libcherokee-config.a         $(DEV_CONFIG_DIR)/usr/lib
+	mv $(BUILD_DIR)/usr/lib/libcherokee-config.la        $(DEV_CONFIG_DIR)/usr/lib
+	mv $(BUILD_DIR)/usr/lib/libcherokee-config.so        $(DEV_CONFIG_DIR)/usr/lib
+
 # libcherokee-server0-dev - Development files for the server libraries
 	install -d $(DEV_SERVER_DIR)/DEBIAN
-	install -d $(DEV_SERVER_DIR)/usr/lib/pkgconfig
-	install -d $(DEV_SERVER_DIR)/usr/include/cherokee
 	install -d $(DEV_SERVER_DIR)/usr/share/doc/libcherokee-server0-dev
-	install -d $(DEV_SERVER_DIR)/usr/share/man/man1
+	install -d $(DEV_SERVER_DIR)/usr/lib
 	install $(CURDIR)/debian/README.docs $(DEV_SERVER_DIR)/usr/share/doc/libcherokee-server0-dev/
 
 	mv $(BUILD_DIR)/usr/lib/libcherokee-server.a         $(DEV_SERVER_DIR)/usr/lib
@@ -190,6 +162,7 @@ install-arch:
 	install -d $(LIB_BASE_DIR)/usr/lib/
 	install -d $(LIB_BASE_DIR)/usr/share/doc/libcherokee-base0
 	install $(CURDIR)/debian/README.docs $(LIB_BASE_DIR)/usr/share/doc/libcherokee-base0/
+	install -m644 debian/shlibs.libcherokee-base0 $(LIB_BASE_DIR)/DEBIAN/shlibs
 
 	mv $(BUILD_DIR)/usr/lib/libcherokee-base.so*         $(LIB_BASE_DIR)/usr/lib/
 
@@ -198,8 +171,26 @@ install-arch:
 	install -d $(LIB_CLIENT_DIR)/usr/lib
 	install -d $(LIB_CLIENT_DIR)/usr/share/doc/libcherokee-client0
 	install $(CURDIR)/debian/README.docs $(LIB_CLIENT_DIR)/usr/share/doc/libcherokee-client0/
+	install -m644 debian/shlibs.libcherokee-client0 $(LIB_CLIENT_DIR)/DEBIAN/shlibs
 
 	mv $(BUILD_DIR)/usr/lib/libcherokee-client.so*       $(LIB_CLIENT_DIR)/usr/lib/
+
+# libcherokee-config0 - Configuration-handling library
+	install -d $(LIB_CONFIG_DIR)/DEBIAN
+	install -d $(LIB_CONFIG_DIR)/usr/lib
+	install -d $(LIB_CONFIG_DIR)/usr/share/cherokee
+	install -d $(LIB_CONFIG_DIR)/usr/share/cherokee/admin
+	install -d $(LIB_CONFIG_DIR)/usr/share/doc/libcherokee-config0
+	install $(CURDIR)/debian/README.docs $(LIB_CONFIG_DIR)/usr/share/doc/libcherokee-config0/
+	install -m644 debian/shlibs.libcherokee-config0 $(LIB_CONFIG_DIR)/DEBIAN/shlibs
+
+	mv $(BUILD_DIR)/usr/lib/libcherokee-config.so*       $(LIB_CONFIG_DIR)/usr/lib/
+	mv $(BUILD_DIR)/usr/share/cherokee/admin/server.py   $(LIB_CONFIG_DIR)/usr/share/cherokee/admin/
+
+	# We will use the 0.5-to-0.6 migration tool in Cherokee's preinst - 
+	# Hence, cherokee will pre-depend on libcherokee-config0
+	install $(CURDIR)/contrib/05to06.py $(LIB_CONFIG_DIR)/usr/share/cherokee/
+	install	$(CURDIR)/debian/config_joiner $(LIB_CONFIG_DIR)/usr/share/cherokee/
 
 # libcherokee-server0 - Runtime library
 	install -d $(LIB_SERVER_DIR)/DEBIAN
@@ -207,10 +198,12 @@ install-arch:
 	install -d $(LIB_SERVER_DIR)/usr/share/cherokee
 	install -d $(LIB_SERVER_DIR)/usr/share/doc/libcherokee-server0
 	install $(CURDIR)/debian/README.docs $(LIB_SERVER_DIR)/usr/share/doc/libcherokee-server0/
+	install -m644 debian/shlibs.libcherokee-server0 $(LIB_SERVER_DIR)/DEBIAN/shlibs
 
 	mv $(BUILD_DIR)/usr/lib/libcherokee-server.so*       $(LIB_SERVER_DIR)/usr/lib/
 	mv $(BUILD_DIR)/usr/share/cherokee/*                 $(LIB_SERVER_DIR)/usr/share/cherokee/
 	mv $(BUILD_DIR)/usr/lib/cherokee/*                   $(LIB_SERVER_DIR)/usr/lib/cherokee/
+
 
 # cget - Downloader utility
 	install -d $(CGET_DIR)/DEBIAN
@@ -223,10 +216,23 @@ install-arch:
 	mv $(BUILD_DIR)/usr/share/man/man1/cget.1            $(CGET_DIR)/usr/share/man/man1/
 
 # cherokee - Main binary package
-
 	# Whatever we still have in $(BUILD_DIR) will become the main Cherokee
-	# package - Just create the directory for the log files
+	# package
 	mv $(BUILD_DIR)/* $(SERVER_DIR)
+
+	# References to cherokee-panic have been shuffled elsewhere
+	mv $(SERVER_DIR)/usr/bin/cherokee-panic             $(SERVER_DIR)/usr/share/cherokee
+
+	# Remove directories that have been emptied by shuffling around 
+	# files to our other generated packages
+	rmdir --ignore-fail-on-non-empty  $(SERVER_DIR)/usr/lib/cherokee \
+		$(SERVER_DIR)/usr/lib/pkgconfig \
+		$(SERVER_DIR)/usr/lib \
+		$(SERVER_DIR)/usr/include/cherokee \
+		$(SERVER_DIR)/usr/include \
+		$(SERVER_DIR)/usr/share/aclocal
+
+	# And create an empty directory for the log files
 	install -d $(SERVER_DIR)/var/log/cherokee
 
 # Must not depend on anything. This is to be called by
@@ -236,7 +242,7 @@ binary-common:
 	dh_testdir
 	dh_testroot
 	dh_installchangelogs ChangeLog
-	dh_installdocs AUTHORS
+	dh_installdocs AUTHORS debian/README_0.5_to_0.6
 #	dh_installexamples
 #	dh_installmenu
 #	dh_installdebconf

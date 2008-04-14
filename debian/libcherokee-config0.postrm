@@ -17,23 +17,12 @@ set -e
 # for details, see http://www.debian.org/doc/debian-policy/ or
 # the debian-policy package
 
-#. /lib/lsb/init-functions
 
 case "$1" in
-    purge)
-	echo "Purging logfiles .."
-	rm -rf /var/log/cherokee*
-	if [ -d /etc/cherokee/pre-0.6 ]
-	    then
-	    echo "Purging pre-0.6 configuration"
-	    rm -rf /etc/cherokee/pre-0.6
-	fi
+    remove)
+	ldconfig
 	;;
-    upgrade)
-	invoke-rc.d cherokee stop
-	invoke-rc.d cherokee start
-	;;
-    remove|failed-upgrade|abort-install|abort-upgrade|disappear)
+    purge|upgrade|failed-upgrade|abort-install|abort-upgrade|disappear)
 	;;
 
     *)

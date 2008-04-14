@@ -5,22 +5,86 @@
 
 set -e
 
+action=$1
+version=$2
+
 PATH=/bin:/sbin:/usr/bin:/usr/sbin
 
-case "$1" in
+case "$action" in
     install|abort-upgrade)
 	;;
     upgrade)
-	if ( echo "$2" | grep 0.4 && [ -f /etc/cherokee/cherokee.conf ] )
+	if (  dpkg --compare-versions "$version" lt 0.6 )
 	    then
-	    TEMPFILE=`mktemp`
-	    cat /etc/cherokee/cherokee.conf | sed 's/MimeFile \/etc\/cherokee\/mime.conf/MimeFile \/etc\/mime.types/' > $TEMPFILE
-	    cat $TEMPFILE > /etc/cherokee/cherokee.conf
-	    rm -f $TEMPFILE
+	    # Previous versions included /etc/cherokee/mime*.types -
+	    # Delete them on the spot!
+	    rm -f /etc/cherokee/mime.types /etc/cherokee/mime.compression.types
+
+	    # 0.5 configuration files must be converted - 0.6 uses a
+	    # completely different syntax. 
+	    CONFPATH=/etc/cherokee
+	    OLDCONFPATH=$CONFPATH/pre-0.6
+	    TMPCONFPATH=$(/bin/mktemp -d /tmp/cherokee_migration.XXXXXXXX)
+	    MIGRATOR=/usr/share/cherokee/05to06.py
+	    LOG=$OLDCONFPATH/0.6_migration.log
+	    README=$OLDCONFPATH/0.6_migration_README
+	    # There are some files we don't want to translate -
+	    # README, MIME types, any possible files present in the
+	    # migrtion directory, ... We will skip them in a regex way
+	    IGNORE='README\|mime.types\|mime.compression.types\|pre-0.6'
+
+	    if [ ! -f $MIGRATOR ]
+		then
+		echo Migrator script $MIGRATOR is not found.
+		echo Please file a bug report, this should never happen!
+		exit 1
+	    fi
+
+	    if [ ! -d $OLDCONFPATH ]; then mkdir -p $OLDCONFPATH; fi
+
+	    echo "Starting Cherokee 0.5 -> 0.6 migration" > $LOG
+
+	    for file in $(find $CONFPATH -type f | grep -v $IGNORE); do
+		dirname=$(dirname $file | perl -pe "s%^$CONFPATH%%")
+		filename=$(basename $file)
+
+		oldfile=$OLDCONFPATH/$dirname/$filename
+		tmpfile=$TMPCONFPATH/$dirname/$filename
+		echo "----------------------------------------" >> $LOG
+		echo "Translating $file ($oldfile => $tmpfile)" >> $LOG
+		for base in $OLDCONFPATH $TMPCONFPATH
+		do
+		    if [ ! -d $base/$dirname ] ; then mkdir $base/$dirname; fi
+		done
+		mv $file $oldfile
+		if /usr/bin/python $MIGRATOR < $oldfile > $tmpfile 2>>$LOG
+		then
+		    echo $file was successfully migrated to temporary directory >> $LOG
+		else
+		    echo "*** ERROR MIGRATING $file - Follows:" >> $LOG
+		    cat $file >> $LOG
+		fi
+	    done
+
+	    echo "----------------------------------------" >> $LOG
+	    echo "Merging migrated files into $CONFPATH/cherokee.conf" >> $LOG
+	    cat $TMPCONFPATH/cherokee.conf | /usr/share/cherokee/config_joiner $CONFPATH $TMPCONFPATH > $CONFPATH/cherokee.conf
+
+	    cat <<EOF > $README
+For further information on the migration process, please refer to
+/usr/share/doc/cherokee/README_0.5_to_0.6
+
+Automated configuration conversion is attempted really hard - But it
+cannot be guaranteed. Please file a bug on cherokee if we are missing
+any bits of your configuration.
+
+A log of the migration process will be saved in $LOG. 
+Please include it in any bug reports regarding this migration!
+EOF
 	fi
 	;;
     *)
-        echo "preinst called with unknown argument \`$1'" >&2
+        echo "preinst called with unknown argument \`$action'" >&2
         exit 1
 	;;
 esac

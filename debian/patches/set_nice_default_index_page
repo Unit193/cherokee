@@ -1,0 +1,13 @@
+Index: cherokee-0.6.0/cherokee.conf.sample.pre
+===================================================================
+--- cherokee-0.6.0.orig/cherokee.conf.sample.pre	2008-03-21 11:54:54.000000000 -0600
++++ cherokee-0.6.0/cherokee.conf.sample.pre	2008-03-21 11:55:03.000000000 -0600
+@@ -24,7 +24,7 @@
+ # Default virtual server
+ #
+ vserver!default!document_root = %wwwroot%
+-vserver!default!directory_index = index.php,index.html
++vserver!default!directory_index = cherokee.index.html,index.php,index.html
+ 
+ vserver!default!logger = combined
+ vserver!default!logger!access!type = file

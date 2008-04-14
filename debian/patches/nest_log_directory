@@ -1,0 +1,17 @@
+Index: cherokee-0.6.0/cherokee.conf.sample.pre
+===================================================================
+--- cherokee-0.6.0.orig/cherokee.conf.sample.pre	2008-03-21 15:27:20.000000000 -0600
++++ cherokee-0.6.0/cherokee.conf.sample.pre	2008-03-21 15:27:35.000000000 -0600
+@@ -26,10 +26,10 @@
+ 
+ vserver!default!logger = combined
+ vserver!default!logger!access!type = file
+-vserver!default!logger!access!filename = %localstatedir%/log/cherokee.access
++vserver!default!logger!access!filename = %localstatedir%/log/cherokee/cherokee.access
+ vserver!default!logger!access!buffsize = 16384
+ vserver!default!logger!error!type = file
+-vserver!default!logger!error!filename = %localstatedir%/log/cherokee.error
++vserver!default!logger!error!filename = %localstatedir%/log/cherokee/cherokee.error
+ 
+ vserver!default!directory!/!handler = common
+ vserver!default!directory!/!handler!iocache = 0
