@@ -223,6 +223,9 @@ install-arch:
 	# References to cherokee-panic have been shuffled elsewhere
 	mv $(SERVER_DIR)/usr/bin/cherokee-panic             $(SERVER_DIR)/usr/share/cherokee
 
+	# spawn-fcgi is handled through alternatives
+	mv $(SERVER_DIR)/usr/bin/spawn-fcgi  $(SERVER_DIR)/usr/bin/spawn-fcgi.cherokee
+
 	# Remove directories that have been emptied by shuffling around 
 	# files to our other generated packages
 	rmdir --ignore-fail-on-non-empty  $(SERVER_DIR)/usr/lib/cherokee \

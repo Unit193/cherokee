@@ -1,3 +1,10 @@
+cherokee (0.6.1-2) unstable; urgency=low
+
+  * Moved spawn-fcgi to become an alternative, as it conflicts with
+    lighttpd's (Closes: #479501)
+
+ -- Gunnar Wolf <gwolf@debian.org>  Mon, 05 May 2008 12:12:04 -0500
+
 cherokee (0.6.1-1) unstable; urgency=low
 
   * New upstream release (Closes: #475831)

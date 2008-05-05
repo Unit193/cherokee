@@ -88,10 +88,10 @@ Index: cherokee-0.6.1/cherokee_tweak.1
 +.PP
 +Cherokee itself was written by Álvaro López Ortega
 +<alvaro@alobbs.com>.
-Index: cherokee-0.6.1/spawn-fcgi.1
+Index: cherokee-0.6.1/spawn-fcgi.cherokee.1
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ cherokee-0.6.1/spawn-fcgi.1	2008-03-27 13:00:16.000000000 -0600
++++ cherokee-0.6.1/spawn-fcgi.cherokee.1	2008-03-27 13:00:16.000000000 -0600
 @@ -0,0 +1,63 @@
 +.TH spawn-fcgi 1
 +.SH NAME
@@ -236,7 +236,7 @@ Index: cherokee-0.6.1/Makefile.in
 +cherokee-admin.1  \
 +cherokee_tweak.1 \
 +cherokee-guardian.1 \
-+spawn-fcgi.1
++spawn-fcgi.cherokee.1
  
  
  # pkg-config
