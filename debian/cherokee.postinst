@@ -21,8 +21,29 @@ PATH=/bin:/sbin:/usr/bin:/usr/sbin
 
 case "$1" in
     configure)
-	update-alternatives --install /usr/bin/spawn-fcgi spawn-fcgi /usr/bin/spawn-fcgi.cherokee 15 \
-	    --slave /usr/share/man/man1/spawn-fcgi.1.gz spawn-fcgi.1.gz /usr/share/man/man1/spawn-fcgi.cherokee.1.gz
+	# Alternatives handling for spawn-fcgi and its manpage
+	update-alternatives --install /usr/bin/spawn-fcgi spawn-fcgi \
+	    /usr/bin/spawn-fcgi.cherokee 15 --slave \
+	    /usr/share/man/man1/spawn-fcgi.1.gz spawn-fcgi.1.gz \
+	    /usr/share/man/man1/spawn-fcgi.cherokee.1.gz
+
+	# If there is no index.html, link ours to /var/www
+	if [ ! -e /var/www/index.html  -a \
+	     ! -e /var/www/index.cgi   -a \
+	     ! -e /var/www/index.pl    -a \
+	     ! -e /var/www/index.php   -a \
+	     ! -e /var/www/index.xhtml -a \
+	     ! -e /var/www/index.htm ] ; then
+		ln -s /usr/share/cherokee/default-site/index.html \
+		    /var/www/index.html
+		if [ ! -e /var/www/cherokee-images ] ; then
+		    # Of course, without the images, our page will be
+		    # quite ugly. But it would be worse to clobber
+		    # something!
+		    ln -s /usr/share/cherokee/default-site/cherokee-images \
+			/var/www/cherokee-images
+		fi
+	fi
 	;;
     abort-upgrade|abort-remove|abort-deconfigure)
 	;;

@@ -1,0 +1,30 @@
+Index: cherokee-0.7.2/Makefile.am
+===================================================================
+--- cherokee-0.7.2.orig/Makefile.am	2008-06-13 23:28:33.000000000 -0500
++++ cherokee-0.7.2/Makefile.am	2008-06-13 23:28:58.000000000 -0500
+@@ -92,10 +92,6 @@
+ 	@$(mkinstalldirs) $(DESTDIR)$(localstatedir)/log
+ 	@$(mkinstalldirs) $(DESTDIR)$(cherokeeconfdir)
+ 	@$(mkinstalldirs) $(DESTDIR)$(cherokeeconfdir)/ssl
+-	@$(mkinstalldirs) $(DESTDIR)$(cherokeeconfdir)/mods-available
+-	@$(mkinstalldirs) $(DESTDIR)$(cherokeeconfdir)/mods-enabled
+-	@$(mkinstalldirs) $(DESTDIR)$(cherokeeconfdir)/sites-available
+-	@$(mkinstalldirs) $(DESTDIR)$(cherokeeconfdir)/sites-enabled
+ 	@$(mkinstalldirs) $(DESTDIR)$(cherokeeadmindir)
+ 	@if test -f $(DESTDIR)$(cherokeeconfdir)/cherokee.conf ; then \
+ 		echo "$@ will not overwrite existing $(DESTDIR)$(cherokeeconfdir)/cherokee.conf"; \
+Index: cherokee-0.7.2/Makefile.in
+===================================================================
+--- cherokee-0.7.2.orig/Makefile.in	2008-06-13 23:28:33.000000000 -0500
++++ cherokee-0.7.2/Makefile.in	2008-06-13 23:29:15.000000000 -0500
+@@ -889,10 +889,6 @@
+ 	@$(mkinstalldirs) $(DESTDIR)$(localstatedir)/log
+ 	@$(mkinstalldirs) $(DESTDIR)$(cherokeeconfdir)
+ 	@$(mkinstalldirs) $(DESTDIR)$(cherokeeconfdir)/ssl
+-	@$(mkinstalldirs) $(DESTDIR)$(cherokeeconfdir)/mods-available
+-	@$(mkinstalldirs) $(DESTDIR)$(cherokeeconfdir)/mods-enabled
+-	@$(mkinstalldirs) $(DESTDIR)$(cherokeeconfdir)/sites-available
+-	@$(mkinstalldirs) $(DESTDIR)$(cherokeeconfdir)/sites-enabled
+ 	@$(mkinstalldirs) $(DESTDIR)$(cherokeeadmindir)
+ 	@if test -f $(DESTDIR)$(cherokeeconfdir)/cherokee.conf ; then \
+ 		echo "$@ will not overwrite existing $(DESTDIR)$(cherokeeconfdir)/cherokee.conf"; \

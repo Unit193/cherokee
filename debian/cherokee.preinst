@@ -82,6 +82,46 @@ A log of the migration process will be saved in $LOG.
 Please include it in any bug reports regarding this migration!
 EOF
 	fi
+	if ( dpkg --compare-versions "$version" lt 0.7 )
+	    then
+	    # The 0.6 -> 0.7 migration is smoother than 0.5 -> 0.6 -
+	    # But still, we need to modify the configuration
+	    # file... So a similar version to the previous dance still
+	    # applies. And yes, both migrations will happen in a row
+	    # when upgrading 0.5.x -> 0.7.x
+	    #
+    	    # 0.6 deprecates the configuration spillover into
+	    # different files - We deal now only with cherokee.conf
+	    CONFPATH=/etc/cherokee
+	    OLDCONFPATH=$CONFPATH/pre-0.7
+	    MIGRATOR=/usr/share/cherokee/06to07.py
+	    LOG=$OLDCONFPATH/0.7_migration_log
+	    README=$OLDCONFPATH/0.7_migration_README
+
+	    mkdir -p $OLDCONFPATH
+	    file=$CONFPATH/cherokee.conf
+	    oldfile=$OLDCONFPATH/cherokee.conf
+	    echo "----------------------------------------" >> $LOG
+	    echo "Translating $file" >> $LOG
+	    mv $file $oldfile
+	    if /usr/bin/python $MIGRATOR < $oldfile > $file 2>>$LOG
+	    then
+		echo $file was successfully migrated >> $LOG
+	    else
+		echo "*** ERROR MIGRATING $file - Follows:" >> $LOG
+		cat $file >> $LOG
+	    fi
+
+	    cat <<EOF > $README
+Your Cherokee 0.6.x configuration file has been converted to the 0.7.x 
+format. Automatic conversion is expected to succeed - but in case your server
+no longer works as expected, your original file is still available in this 
+directory.
+
+A log of the migration process has been saved in $LOG. Please include it in any
+bug reports regarding this migration!
+EOF
+	fi
 	;;
     *)
         echo "preinst called with unknown argument \`$action'" >&2

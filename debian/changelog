@@ -1,3 +1,19 @@
+cherokee (0.7.2-1) unstable; urgency=low
+
+  * New upstream release
+  * Fixed over-zealous cleaning that led to a FTBFS if built twice
+    (Closes: #480108)
+  * Bumped up standards-version to 3.8.0
+  * Moved the default HTML document to /usr/share/cherokee/default-site,
+    sym-linking it to /var/www in case it is empty (keeping lintian
+    happy, and in compliance with FHS chapter 5)
+  * The administration handler will no longer assumes port 4000 is free
+    for starting its SCGI communication (Closes: #479346)
+  * Upstream uses a multi-level hierarchy for handling the versions :-/
+    Now debian/watch follows the 0.7 series
+
+ -- Gunnar Wolf <gwolf@debian.org>  Fri, 13 Jun 2008 11:52:24 -0500
+
 cherokee (0.6.1-2) unstable; urgency=low
 
   * Moved spawn-fcgi to become an alternative, as it conflicts with

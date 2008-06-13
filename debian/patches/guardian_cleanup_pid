@@ -1,0 +1,12 @@
+Index: cherokee-0.7.2/cherokee/main_guardian.c
+===================================================================
+--- cherokee-0.7.2.orig/cherokee/main_guardian.c	2008-06-13 18:39:32.000000000 -0500
++++ cherokee-0.7.2/cherokee/main_guardian.c	2008-06-13 18:39:50.000000000 -0500
+@@ -92,6 +92,7 @@
+ 		/* Kill child and exit */
+ 		kill (pid, SIGTERM);
+ 		process_wait (pid);
++		unlink(PID_FILE);
+ 		exit(0);
+ 
+ 	default:

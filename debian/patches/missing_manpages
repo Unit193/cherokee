@@ -1,165 +1,7 @@
-Index: cherokee-0.6.1/cherokee-admin.1
+Index: cherokee-0.7.1/cherokee-guardian.1
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ cherokee-0.6.1/cherokee-admin.1	2008-03-27 13:00:33.000000000 -0600
-@@ -0,0 +1,35 @@
-+.TH cherokee-admin 1
-+.SH NAME
-+cherokee-admin - Runs Cherokee's administrative interface
-+.SH SYNOPSIS
-+.B cherokee-admin
-+[\-d DIR] [\-p PORT] [\-C FILE] [\-a]
-+.SH DESCRIPTION
-+\fIcherokee-admin\fP runs the server for the administrative interface
-+used to configure Cherokee. The interface itself will be available via
-+your Web browser.
-+.SH OPTIONS
-+\fIcherokee-admin\fP accepts the following options:
-+.TP 8
-+.B  \-h
-+Shows brief usage information
-+.TP 8
-+.B  \-a
-+Specifies \fIcherokee-admin\fP to listen on all network addresses - By
-+default, it binds only to 127.0.0.1 (localhost), which means you can
-+only connect to it from the same system
-+.TP 8
-+.B  \-C
-+Requests a configuration file different than the default
-+/etc/cherokee/cherokee.conf to be used
-+.TP 8
-+.B  \-d
-+Uses a custom admin-interface path
-+.SH SEE ALSO
-+This program is a part of the Cherokee web server, \&\fIcherokee\fR\|(1)
-+.SH AUTHOR
-+This manual page was written by Gunnar Wolf <gwolf@debian.org>, for
-+the Debian GNU/linux system (but may be used by others).
-+.PP
-+Cherokee itself was written by Álvaro López Ortega
-+<alvaro@alobbs.com>.
-Index: cherokee-0.6.1/cherokee_tweak.1
-===================================================================
---- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ cherokee-0.6.1/cherokee_tweak.1	2008-03-27 13:00:16.000000000 -0600
-@@ -0,0 +1,45 @@
-+.TH cherokee_tweak 1
-+.SH NAME
-+cherokee_tweak - Command-line interface to the Cherokee administrative interface
-+.SH SYNOPSIS
-+.B cherokee_tweak
-+\-c command \-u url [options]
-+.SH DESCRIPTION
-+\fIcherokee_tweak\fP connects via HTTP to a running cherokee-admin,
-+and requests it to perform one of several actions.
-+.SH OPTIONS
-+\fIcherokee_tweak\fP accepts the following options:
-+.TP 8
-+.B  \-h
-+Shows brief usage information
-+.TP 8
-+.B  \-V
-+Prints version and exits
-+.TP 8
-+.B  \-u STRING
-+Specifies the user name with which to identify to the server
-+.TP 8
-+.B  \-p STRING
-+Specifies the password with which to identify to the server
-+.TP 8
-+.B  \-c STRING
-+Required option. Command to execute: logrotate, trace or info
-+.TP 8
-+.B  \-a URL
-+Required option. URL where the administrative interface can be found.
-+.TP 8
-+.B  \-l PATH
-+Log file to be rotated (Only to be used when -c is logrotate)
-+.TP 8
-+.B  \-t STRING
-+Modules to be traced (Only to be used when -c is trace)
-+.SH SEE ALSO
-+\&\fIcherokee-admin\fR\|(8)
-+.PP
-+This program is a part of the Cherokee web server, \&\fIcherokee\fR\|(1)
-+.SH AUTHOR
-+This manual page was written by Gunnar Wolf <gwolf@debian.org>, for
-+the Debian GNU/linux system (but may be used by others).
-+.PP
-+Cherokee itself was written by Álvaro López Ortega
-+<alvaro@alobbs.com>.
-Index: cherokee-0.6.1/spawn-fcgi.cherokee.1
-===================================================================
---- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ cherokee-0.6.1/spawn-fcgi.cherokee.1	2008-03-27 13:00:16.000000000 -0600
-@@ -0,0 +1,63 @@
-+.TH spawn-fcgi 1
-+.SH NAME
-+spawn-fcgi - Spawns FastCGI processes
-+.SH SYNOPSIS
-+.B spawn-fcgi
-+\-f <fcgiapp> \-a <addr> \-p port
-+.
-+.B spawn-fcgi
-+\-s <path>
-+.SH DESCRIPTION
-+\fIcherokee_tweak\fP connects via HTTP to a running cherokee-admin,
-+and requests it to perform one of several actions.
-+.SH OPTIONS
-+\fIspawn-fcgi\fP accepts the following options:
-+.TP 8
-+.B  \-h
-+General usage instructions
-+.TP 8
-+.B  \-f <fcgiapp>
-+Filename of the FastCGI application to spawn
-+.TP 8
-+.B  \-a <addr>
-+IP address to bind to (for TCP/IP-based IPC)
-+.TP 8
-+.B  \-p <port>
-+TCP port to bind to (for TCP/IP-based IPC)
-+.TP 8
-+.B  \-s <path>
-+Path to the Unix-domain socket to bind to (for Unix sockets-based IPC)
-+.TP 8
-+.B  \-C <children>
-+(PHP only) Number of children to spawn. Defaults to 5.
-+.TP 8
-+.B  \-F <children>
-+Number of children to fork. Defaults to 1.
-+.TP 8
-+.B  \-P <path>
-+Name of the PID file for spawned processes
-+.TP 8
-+.B  \-n
-+No forking should take place (for daemontools)
-+.TP 8
-+.B  \-v
-+Shows version information and exits
-+.TP 8
-+.B  \-c <dir>
-+Chroot to specified directory (can only be invoked by root)
-+.TP 8
-+.B  \-u
-+User ID to change to (can only be invoked by root)
-+.TP 8
-+.B  \-g
-+Group ID to change to (can only be invoked by root)
-+.SH SEE ALSO
-+\&\fIcherokee-admin\fR\|(8)
-+.PP
-+This program is a part of the Cherokee web server, \&\fIcherokee\fR\|(1)
-+.SH AUTHOR
-+This manual page was written by Gunnar Wolf <gwolf@debian.org>, for
-+the Debian GNU/linux system (but may be used by others).
-+.PP
-+Cherokee itself was written by Álvaro López Ortega
-+<alvaro@alobbs.com>.
-Index: cherokee-0.6.1/cherokee-guardian.1
-===================================================================
---- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ cherokee-0.6.1/cherokee-guardian.1	2008-03-27 13:00:16.000000000 -0600
++++ cherokee-0.7.1/cherokee-guardian.1	2008-06-09 20:21:15.000000000 -0500
 @@ -0,0 +1,62 @@
 +.\"                              hey, Emacs:   -*- nroff -*-
 +.\" cherokee is free software; you can redistribute it and/or modify
@@ -223,20 +65,27 @@ Index: cherokee-0.6.1/cherokee-guardian.1
 +convenient invocation method.
 +.SH AUTHOR
 +Alvaro Lopez Ortega <alvaro@alobbs.com>.
-Index: cherokee-0.6.1/Makefile.in
+Index: cherokee-0.7.1/Makefile.in
 ===================================================================
---- cherokee-0.6.1.orig/Makefile.in	2008-03-24 13:30:31.000000000 -0600
-+++ cherokee-0.6.1/Makefile.in	2008-03-27 13:00:16.000000000 -0600
-@@ -245,7 +245,11 @@
- cget.1            \
- cherokee.1        \
- cherokee-config.1 \
--cherokee_logrotate.1
-+cherokee_logrotate.1 \
-+cherokee-admin.1  \
-+cherokee_tweak.1 \
-+cherokee-guardian.1 \
-+spawn-fcgi.cherokee.1
+--- cherokee-0.7.1.orig/Makefile.in	2008-06-09 20:20:56.000000000 -0500
++++ cherokee-0.7.1/Makefile.in	2008-06-09 20:23:34.000000000 -0500
+@@ -247,7 +247,8 @@
+ cherokee-config.1    \
+ spawn-fcgi.1         \
+ cherokee_tweak.1     \
+-cherokee-admin.1
++cherokee-admin.1     \
++cherokee-guardian.1
  
  
  # pkg-config
+Index: cherokee-0.7.1/cherokee-admin.1
+===================================================================
+--- cherokee-0.7.1.orig/cherokee-admin.1	2008-06-09 20:20:56.000000000 -0500
++++ cherokee-0.7.1/cherokee-admin.1	2008-06-09 20:21:15.000000000 -0500
+@@ -1,4 +1,4 @@
+-.TH cherokee-admin 8
++.TH cherokee-admin 1
+ .SH NAME
+ cherokee-admin - Runs Cherokee's administrative interface
+ .SH SYNOPSIS

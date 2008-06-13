@@ -1,9 +1,8 @@
+keep_etc_clean
+default_webroot_in_usr_share
 fix_05to06.py
 missing_manpages
-manpage_additions
 nest_log_directory
-strip_hash_bang_when_not_needed
 move_helper_programs_to_usr_share
 set_user
-set_nice_default_index_page
-use_systemwide_mime_types
+guardian_cleanup_pid

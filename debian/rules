@@ -80,11 +80,22 @@ build-indep-stamp: config.status
 clean: unpatch
 	dh_testdir
 	dh_testroot
+	#the distclean target in the doc directory seems broken, replace the 
+	#makefile with a dummy so it's broken distclean target doesn't get run
+	rm -f doc/Makefile
+	echo distclean: > doc/Makefile
 	[ ! -f Makefile ] || $(MAKE) distclean
+	#now get rid of the dummy makefile
+	rm -f doc/Makefile
 	rm -rf build-arch-stamp build-indep-stamp 
 	# Cruft not cleaned by the build process
-	rm -fr cherokee/mime_grammar.output cherokee/icons_grammar.output cherokee/config_protocol_grammar.output www/images
-
+	rm -fr cherokee/mime_grammar.output cherokee/icons_grammar.output cherokee/config_protocol_grammar.output www/cherokee-images
+	rm -f cherokee/loader.autoconf.h
+	rm -f cherokee/loader.autoconf.inc
+	rm -f cherokee/Makefile.MingW
+	rm -f cherokee.spec
+	rm -f windows/cherokee.nsi
+	rm -f config.log
 	dh_clean
 
 install: install-indep install-arch
@@ -103,10 +114,15 @@ install-arch:
 
 	$(MAKE) install INSTALL_PROGRAM=$(INSTALL_PROGRAM) CFLAGS="$(CFLAGS)" DESTDIR=$(BUILD_DIR)
 
-# FIX: Add a Debian look to the default page
-	/usr/bin/uudecode -o $(BUILD_DIR)/var/www/images/powered_by_debian.png $(CURDIR)/debian/www/powered_by_debian.png.uu
-	rm $(BUILD_DIR)/var/www/index.html
-	install -m 644 $(CURDIR)/debian/www/cherokee.index.html  $(BUILD_DIR)/var/www/cherokee.index.html
+	# Move the generated webpage to its proper location - We will set up
+	# the symlinks, if needed, in the postinst. The package is still 
+	# generated with wwwroot=/var/www as it is mentioned in several places
+	# (i.e. configurations) useful to us.
+	install -d $(BUILD_DIR)/usr/share/cherokee/default-site
+	mv $(BUILD_DIR)/var/www/* $(BUILD_DIR)/usr/share/cherokee/default-site/
+
+	# Add the Debian logo for the default page
+	/usr/bin/uudecode -o $(BUILD_DIR)/usr/share/cherokee/default-site/cherokee-images/powered_by_debian.png $(CURDIR)/debian/powered_by_debian.png.uu
 
 # libcherokee-base0-dev - Development files
 	install -d $(DEV_BASE_DIR)/DEBIAN
@@ -187,10 +203,11 @@ install-arch:
 	mv $(BUILD_DIR)/usr/lib/libcherokee-config.so*       $(LIB_CONFIG_DIR)/usr/lib/
 	mv $(BUILD_DIR)/usr/share/cherokee/admin/server.py   $(LIB_CONFIG_DIR)/usr/share/cherokee/admin/
 
-	# We will use the 0.5-to-0.6 migration tool in Cherokee's preinst - 
-	# Hence, cherokee will pre-depend on libcherokee-config0
+	# We will use the configuration versions migration tool in Cherokee's 
+	# preinst - Hence, cherokee will pre-depend on libcherokee-config0
 	install $(CURDIR)/contrib/05to06.py $(LIB_CONFIG_DIR)/usr/share/cherokee/
 	install	$(CURDIR)/debian/config_joiner $(LIB_CONFIG_DIR)/usr/share/cherokee/
+	install $(CURDIR)/contrib/06to07.py $(LIB_CONFIG_DIR)/usr/share/cherokee/
 
 # libcherokee-server0 - Runtime library
 	install -d $(LIB_SERVER_DIR)/DEBIAN
@@ -203,7 +220,8 @@ install-arch:
 	mv $(BUILD_DIR)/usr/lib/libcherokee-server.so*       $(LIB_SERVER_DIR)/usr/lib/
 	mv $(BUILD_DIR)/usr/share/cherokee/*                 $(LIB_SERVER_DIR)/usr/share/cherokee/
 	mv $(BUILD_DIR)/usr/lib/cherokee/*                   $(LIB_SERVER_DIR)/usr/lib/cherokee/
-
+	# Just leave the webroot back in its place :-/
+	mv $(LIB_SERVER_DIR)/usr/share/cherokee/default-site $(BUILD_DIR)/usr/share/cherokee/
 
 # cget - Downloader utility
 	install -d $(CGET_DIR)/DEBIAN
@@ -225,6 +243,11 @@ install-arch:
 
 	# spawn-fcgi is handled through alternatives
 	mv $(SERVER_DIR)/usr/bin/spawn-fcgi  $(SERVER_DIR)/usr/bin/spawn-fcgi.cherokee
+	mv $(SERVER_DIR)/usr/share/man/man1/spawn-fcgi.1  $(SERVER_DIR)/usr/share/man/man1/spawn-fcgi.cherokee.1
+
+	# The binary is called cherokee-tweak, but the manpage is for 
+	# cherokee_tweak. Grmbl.
+	mv $(SERVER_DIR)/usr/share/man/man1/cherokee_tweak.1 $(SERVER_DIR)/usr/share/man/man1/cherokee-tweak.1
 
 	# Remove directories that have been emptied by shuffling around 
 	# files to our other generated packages
@@ -263,9 +286,9 @@ binary-common:
 	dh_fixperms
 #	dh_perl
 #	dh_python
-	dh_installdeb
 	dh_makeshlibs
 	dh_shlibdeps -L libcherokee-base0 -L libcherokee-server0 -L libcherokee-client0 -L libcherokee-base0-dev -L libcherokee-server0-dev -L libcherokee-client0-dev -L cget -L cherokee -l debian/libcherokee-base0/usr/lib:debian/libcherokee-base0/usr/lib/cherokee:debian/libcherokee-client0/usr/lib:debian/libcherokee-client0/usr/lib/cherokee:debian/libcherokee-server0/usr/lib:debian/libcherokee-server0/usr/lib/cherokee
+	dh_installdeb
 	dh_gencontrol
 	dh_md5sums
 	dh_builddeb

@@ -14,21 +14,17 @@
 # Description:       Start the Cherokee Web server
 ### END INIT INFO
 
-PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
-DAEMON=/usr/sbin/cherokee
+PATH=/sbin:/bin:/usr/sbin:/usr/bin
+DAEMON=/usr/sbin/cherokee-guardian
 NAME=cherokee
 
 . /lib/lsb/init-functions
 
+set -e
+
 test -x $DAEMON || exit 0
 
-PIDFILE=$(grep -i '^PidFile' /etc/cherokee/cherokee.conf | sed -e 's/pidfile[\t ]\+//i')
-if [ "x$PIDFILE" = "x" ];
-then
-        PIDFILE=/var/run/cherokee.pid
-fi
-
-set -e
+PIDFILE=/var/run/cherokee-guardian.pid
 
 
 case "$1" in
@@ -41,32 +37,31 @@ case "$1" in
 	echo -n "Stopping web server: $NAME "
 	start-stop-daemon --stop --oknodo --pidfile $PIDFILE --exec $DAEMON
 	rm -f $PIDFILE
-	# Try harder to guess if Cherokee might still be alive (this extra step
-	# will be removed in the future - Late 0.4 / early 0.5 versions didn't
-	# always behave properly regarding the PIDFILE, so we better 
-	# double-check here to avoid trouble.
-	# Why the redirection and the || true? Redirection, to avoid cluttering
-	# up our output. || true because we have had reports of this script 
-	# bombing because of a failed kill to a process that no longer exists 
-	# (remember we run with set -e).
-	for PID in $(pidofproc cherokee)
-	  do
-	  echo Cherokee still running without registering PID $PID - Terminating
-	  kill $PID 2>/dev/null || true
-	  done
 	;;
 
-  restart|reload|force-reload)
+  restart)
 	$0 stop
 	sleep 1
 	$0 start
 	;;
 
-# Upstream asks us not to signal HUP for simple reloads, as it's broken due to
-# several leaks. Will be fixed for the 0.6 series.
-#   reload|force-reload)
-# 	start-stop-daemon --stop --signal HUP --pidfile $PIDFILE --name $NAME
-# 	;;
+  reload|force-reload)
+	echo -n "Reloading web server: $NAME"
+	if [ -f $PIDFILE ]
+	    then
+	    PID=$(cat $PIDFILE)
+	    if ps p $PID | grep $NAME >&/dev/null
+	    then
+		kill -HUP $PID
+	    else
+		echo "PID present, but $NAME not found at PID $PID - Cannot reload"
+		exit 1
+	    fi
+	else
+	    echo "No PID file present for $NAME - Cannot reload"
+	    exit 1
+	fi
+	;;
 
   status)
 	# Strictly, LSB mandates us to return indicating the different statuses,

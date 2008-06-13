@@ -28,6 +28,11 @@ case "$1" in
 	    echo "Purging pre-0.6 configuration"
 	    rm -rf /etc/cherokee/pre-0.6
 	fi
+	if [ -d /etc/cherokee/pre-0.7 ]
+	    then
+	    echo "Purging pre-0.7 configuration"
+	    rm -rf /etc/cherokee/pre-0.7
+	fi
 	;;
     upgrade)
 	invoke-rc.d cherokee stop

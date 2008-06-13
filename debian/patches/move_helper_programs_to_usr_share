@@ -1,7 +1,7 @@
-Index: cherokee-0.6.0/cherokee.conf.sample.pre
+Index: cherokee-0.7.1/cherokee.conf.sample.pre
 ===================================================================
---- cherokee-0.6.0.orig/cherokee.conf.sample.pre	2008-03-21 16:30:48.000000000 -0600
-+++ cherokee-0.6.0/cherokee.conf.sample.pre	2008-03-21 16:30:53.000000000 -0600
+--- cherokee-0.7.1.orig/cherokee.conf.sample.pre	2008-06-09 19:44:44.000000000 -0500
++++ cherokee-0.7.1/cherokee.conf.sample.pre	2008-06-09 19:46:12.000000000 -0500
 @@ -15,7 +15,7 @@
  server!keepalive_max_requests = 500
  server!server_tokens = full
@@ -9,51 +9,25 @@ Index: cherokee-0.6.0/cherokee.conf.sample.pre
 -server!panic_action = %prefix%/bin/cherokee-panic
 +server!panic_action = %prefix%/share/cherokee/cherokee-panic
  server!pid_file = %localstatedir%/run/cherokee.pid
- server!mime_files = %sysconfdir%/cherokee/mime.types
  
-Index: cherokee-0.6.0/cherokee/Makefile.am
+ # Default virtual server
+Index: cherokee-0.7.1/performance.conf.sample.pre
 ===================================================================
---- cherokee-0.6.0.orig/cherokee/Makefile.am	2008-03-21 16:30:21.000000000 -0600
-+++ cherokee-0.6.0/cherokee/Makefile.am	2008-03-21 16:30:53.000000000 -0600
-@@ -14,7 +14,7 @@
- -DCHEROKEE_SRV_PATH=\""$(prefix)/sbin/cherokee"\" \
- -DCHEROKEE_ICONSDIR=\""$(prefix)/share/cherokee/icons"\" \
- -DCHEROKEE_THEMEDIR=\""$(prefix)/share/cherokee/themes"\" \
---DCHEROKEE_PANIC_PATH=\""$(prefix)/bin/cherokee-panic"\" 
-+-DCHEROKEE_PANIC_PATH=\""$(prefix)/share/cherokee/cherokee-panic"\" 
- 
- #
- # Scripts
-Index: cherokee-0.6.0/performance.conf.sample.pre
-===================================================================
---- cherokee-0.6.0.orig/performance.conf.sample.pre	2008-03-21 16:30:21.000000000 -0600
-+++ cherokee-0.6.0/performance.conf.sample.pre	2008-03-21 16:30:53.000000000 -0600
-@@ -14,7 +14,7 @@
+--- cherokee-0.7.1.orig/performance.conf.sample.pre	2008-06-09 19:44:44.000000000 -0500
++++ cherokee-0.7.1/performance.conf.sample.pre	2008-06-09 19:46:12.000000000 -0500
+@@ -13,7 +13,7 @@
+ server!keepalive = 1
  server!keepalive_max_requests = 1000
- server!pid_file = /var/run/cherokee.pid
  server!server_tokens = full
 -server!panic_action = %prefix%/bin/cherokee-panic
 +server!panic_action = %prefix%/share/cherokee/cherokee-panic
+ server!pid_file = %localstatedir%/run/cherokee.pid
  
  # Default virtual server
- #
-Index: cherokee-0.6.0/cherokee/Makefile.in
+Index: cherokee-0.7.1/admin/configured.py.pre
 ===================================================================
---- cherokee-0.6.0.orig/cherokee/Makefile.in	2008-03-21 16:30:21.000000000 -0600
-+++ cherokee-0.6.0/cherokee/Makefile.in	2008-03-21 16:30:53.000000000 -0600
-@@ -804,7 +804,7 @@
- -DCHEROKEE_SRV_PATH=\""$(prefix)/sbin/cherokee"\" \
- -DCHEROKEE_ICONSDIR=\""$(prefix)/share/cherokee/icons"\" \
- -DCHEROKEE_THEMEDIR=\""$(prefix)/share/cherokee/themes"\" \
---DCHEROKEE_PANIC_PATH=\""$(prefix)/bin/cherokee-panic"\" 
-+-DCHEROKEE_PANIC_PATH=\""$(prefix)/share/cherokee/cherokee-panic"\" 
- 
- 
- #
-Index: cherokee-0.6.0/admin/configured.py.pre
-===================================================================
---- cherokee-0.6.0.orig/admin/configured.py.pre	2008-03-21 16:31:05.000000000 -0600
-+++ cherokee-0.6.0/admin/configured.py.pre	2008-03-21 16:31:15.000000000 -0600
+--- cherokee-0.7.1.orig/admin/configured.py.pre	2008-06-09 19:44:44.000000000 -0500
++++ cherokee-0.7.1/admin/configured.py.pre	2008-06-09 19:46:12.000000000 -0500
 @@ -12,7 +12,7 @@
  CHEROKEE_ADMINDIR   = join (PREFIX, "share/cherokee/admin")
  CHEROKEE_ICONSDIR   = join (PREFIX, "share/cherokee/icons")
