@@ -50,7 +50,7 @@ case "$1" in
 	if [ -f $PIDFILE ]
 	    then
 	    PID=$(cat $PIDFILE)
-	    if ps p $PID | grep $NAME >&/dev/null
+	    if ps p $PID | grep $NAME >/dev/null 2>&1
 	    then
 		kill -HUP $PID
 	    else

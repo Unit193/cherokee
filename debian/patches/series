@@ -1,3 +1,4 @@
+fix_bashisms
 keep_etc_clean
 default_webroot_in_usr_share
 fix_05to06.py

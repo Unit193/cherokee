@@ -1,0 +1,15 @@
+Index: cherokee-0.7.2/cherokee/cherokee-panic
+===================================================================
+--- cherokee-0.7.2.orig/cherokee/cherokee-panic	2008-07-12 12:42:11.000000000 -0500
++++ cherokee-0.7.2/cherokee/cherokee-panic	2008-07-12 12:54:24.000000000 -0500
+@@ -64,8 +64,8 @@
+ 	fi
+ 
+ 	# Check the debugger
+-	gdb=`type gdb 2>/dev/null | grep -v "not found" | cut -f3 -d " "`
+-	dbx=`type dbx 2>/dev/null | grep -v "not found" | cut -f3 -d " "`
++	gdb=`which gdb`
++	dbx=`which dbx`
+ 
+ 	if [ x$gdb != x ]; then
+ 	     debugger=$gdb
