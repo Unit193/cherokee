@@ -16,15 +16,20 @@ set -e
 # for details, see http://www.debian.org/doc/debian-policy/ or
 # the debian-policy package
 
+action=$1
+version=$2
 
-case "$1" in
+case "$action" in
     remove|upgrade|deconfigure)
         ;;
     failed-upgrade)
-	if [ "$2" = "0.5.3-1" ]
-	    then
-            # 0.5.3-1 fails after trying to stop a non-running Cherokee -
-	    # Just ignore it and go on.
+	if ( dpkg --compare-versions "$version" lt 0.7 )
+	then
+	    # There is a bug when stopping cherokee on previous
+	    # versions, which make the prerm script fail. The server
+	    # is correctly stopped, but the initscript returns failure
+	    # - Just in case, Take care of killing it, by force if
+	    # needed.
 	    exit 0
 	fi
 	exit 1

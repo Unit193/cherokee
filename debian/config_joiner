@@ -16,9 +16,9 @@ sub join_files {
 	if ($line =~ /^include\s*=\s*(.*)/) {
 	    my $dir = $1;
 	    if ($pre_path and $new_path) {
-		warn "Substituting $pre_path for $new_path: ";
+		print STDERR " * Substituting $pre_path for $new_path: ";
 		$dir =~ s!$pre_path!$new_path!;
-		warn $dir;
+		print STDERR "$dir\n";
 	    }
 	    # It would be cleaner to include instead File::Find - But
 	    # we want to depend on as little as possible

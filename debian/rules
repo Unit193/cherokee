@@ -285,6 +285,7 @@ binary-common:
 	dh_compress
 	dh_fixperms
 #	dh_perl
+	dh_pysupport /usr/share/cherokee/admin
 #	dh_python
 	dh_makeshlibs
 	dh_shlibdeps -L libcherokee-base0 -L libcherokee-server0 -L libcherokee-client0 -L libcherokee-base0-dev -L libcherokee-server0-dev -L libcherokee-client0-dev -L cget -L cherokee -l debian/libcherokee-base0/usr/lib:debian/libcherokee-base0/usr/lib/cherokee:debian/libcherokee-client0/usr/lib:debian/libcherokee-client0/usr/lib/cherokee:debian/libcherokee-server0/usr/lib:debian/libcherokee-server0/usr/lib/cherokee

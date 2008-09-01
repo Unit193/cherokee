@@ -44,7 +44,7 @@ case "$action" in
 
 	    echo "Starting Cherokee 0.5 -> 0.6 migration" > $LOG
 
-	    for file in $(find $CONFPATH -type f | grep -v $IGNORE); do
+	    for file in $(find -L $CONFPATH -type f | grep -v $IGNORE); do
 		dirname=$(dirname $file | perl -pe "s%^$CONFPATH%%")
 		filename=$(basename $file)
 
@@ -56,7 +56,17 @@ case "$action" in
 		do
 		    if [ ! -d $base/$dirname ] ; then mkdir $base/$dirname; fi
 		done
-		mv $file $oldfile
+
+		if [ -L $file ]
+		then
+		    # Bah for symlinks :-P
+		    cp -L $file $oldfile
+		    rm $file
+		else
+		    # regular file
+		    mv $file $oldfile		    
+		fi
+
 		if /usr/bin/python $MIGRATOR < $oldfile > $tmpfile 2>>$LOG
 		then
 		    echo $file was successfully migrated to temporary directory >> $LOG
@@ -68,7 +78,7 @@ case "$action" in
 
 	    echo "----------------------------------------" >> $LOG
 	    echo "Merging migrated files into $CONFPATH/cherokee.conf" >> $LOG
-	    cat $TMPCONFPATH/cherokee.conf | /usr/share/cherokee/config_joiner $CONFPATH $TMPCONFPATH > $CONFPATH/cherokee.conf
+	    cat $TMPCONFPATH/cherokee.conf | /usr/share/cherokee/config_joiner $CONFPATH $TMPCONFPATH > $CONFPATH/cherokee.conf 2>>$LOG
 
 	    cat <<EOF > $README
 For further information on the migration process, please refer to
@@ -104,7 +114,7 @@ EOF
 	    echo "----------------------------------------" >> $LOG
 	    echo "Translating $file" >> $LOG
 	    mv $file $oldfile
-	    if /usr/bin/python $MIGRATOR < $oldfile > $file 2>>$LOG
+	    if /usr/bin/python $MIGRATOR $oldfile $file 2>>$LOG
 	    then
 		echo $file was successfully migrated >> $LOG
 	    else

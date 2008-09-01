@@ -1,0 +1,13 @@
+Index: cherokee-0.7.2/contrib/06to07.py
+===================================================================
+--- cherokee-0.7.2.orig/contrib/06to07.py	2008-05-22 14:27:03.000000000 -0500
++++ cherokee-0.7.2/contrib/06to07.py	2008-09-01 11:41:41.000000000 -0500
+@@ -9,7 +9,7 @@
+ 
+ import sys
+ 
+-sys.path.append('../admin/')
++sys.path.append('/usr/share/cherokee/admin/')
+ from config import *
+ 
+ def reparent_child (orig, target):

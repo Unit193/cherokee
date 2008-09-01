@@ -1,3 +1,14 @@
+cherokee (0.7.2-4) unstable; urgency=high
+
+  * Fixes 0.6->0.7 migration breakage due to wrong path (Closes: #497420)
+  * Fixed spurious lintian warning due to multiline-command linebreaked
+    at the wrong point
+  * Included a call to dh_pysupport on /usr/share/cherokee/admin, to
+    prevent unmanaged .pyc files from staying after package removal. Of
+    course, added build-dependency on python-support. (Closes: #497427)
+
+ -- Gunnar Wolf <gwolf@debian.org>  Mon, 01 Sep 2008 12:14:21 -0500
+
 cherokee (0.7.2-3) unstable; urgency=low
 
   * Fixed bashism in init script and cherokee-panic. Added quilt patch -
