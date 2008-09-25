@@ -1,10 +1,6 @@
-fix_bashisms
-keep_etc_clean
 default_webroot_in_usr_share
-fix_05to06.py
-missing_manpages
 nest_log_directory
 move_helper_programs_to_usr_share
 set_user
-guardian_cleanup_pid
 include_paths_in_migrators
+fix_man_section

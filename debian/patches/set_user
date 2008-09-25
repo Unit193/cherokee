@@ -1,9 +1,9 @@
-Index: cherokee-0.7.1/cherokee.conf.sample.pre
+Index: cherokee-0.8.1/cherokee.conf.sample.pre
 ===================================================================
---- cherokee-0.7.1.orig/cherokee.conf.sample.pre	2008-06-09 18:46:44.000000000 -0500
-+++ cherokee-0.7.1/cherokee.conf.sample.pre	2008-06-09 19:05:32.000000000 -0500
+--- cherokee-0.8.1.orig/cherokee.conf.sample.pre	2008-09-24 19:18:46.000000000 -0500
++++ cherokee-0.8.1/cherokee.conf.sample.pre	2008-09-24 19:19:51.000000000 -0500
 @@ -17,6 +17,8 @@
- server!encoder!gzip!allow = html,html,txt,css,js
+ server!encoder!gzip!allow = html,htm,txt,css,js
  server!panic_action = %prefix%/share/cherokee/cherokee-panic
  server!pid_file = %localstatedir%/run/cherokee.pid
 +server!user = www-data

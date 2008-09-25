@@ -1,7 +1,7 @@
-Index: cherokee-0.7.1/www/Makefile.am
+Index: cherokee-0.8.1/www/Makefile.am
 ===================================================================
---- cherokee-0.7.1.orig/www/Makefile.am	2008-06-11 14:06:51.000000000 -0500
-+++ cherokee-0.7.1/www/Makefile.am	2008-06-11 14:06:56.000000000 -0500
+--- cherokee-0.8.1.orig/www/Makefile.am	2008-08-18 13:56:43.000000000 -0500
++++ cherokee-0.8.1/www/Makefile.am	2008-09-24 19:08:30.000000000 -0500
 @@ -2,7 +2,7 @@
  
  cherokeewwwdir = "@WWW_ROOT@"
@@ -11,11 +11,11 @@ Index: cherokee-0.7.1/www/Makefile.am
  cherokeewwwimages_DATA = \
  default-bg.png \
  cherokee-logo.png \
-Index: cherokee-0.7.1/www/Makefile.in
+Index: cherokee-0.8.1/www/Makefile.in
 ===================================================================
---- cherokee-0.7.1.orig/www/Makefile.in	2008-06-11 14:06:51.000000000 -0500
-+++ cherokee-0.7.1/www/Makefile.in	2008-06-11 14:06:56.000000000 -0500
-@@ -197,7 +197,7 @@
+--- cherokee-0.8.1.orig/www/Makefile.in	2008-08-19 05:58:23.000000000 -0500
++++ cherokee-0.8.1/www/Makefile.in	2008-09-24 19:08:30.000000000 -0500
+@@ -199,7 +199,7 @@
  top_builddir = @top_builddir@
  top_srcdir = @top_srcdir@
  cherokeewwwdir = "@WWW_ROOT@"
@@ -24,10 +24,10 @@ Index: cherokee-0.7.1/www/Makefile.in
  cherokeewwwimages_DATA = \
  default-bg.png \
  cherokee-logo.png \
-Index: cherokee-0.7.1/www/index.html
+Index: cherokee-0.8.1/www/index.html
 ===================================================================
---- cherokee-0.7.1.orig/www/index.html	2008-06-11 14:06:51.000000000 -0500
-+++ cherokee-0.7.1/www/index.html	2008-06-11 14:10:15.000000000 -0500
+--- cherokee-0.8.1.orig/www/index.html	2008-08-18 13:56:43.000000000 -0500
++++ cherokee-0.8.1/www/index.html	2008-09-24 19:08:30.000000000 -0500
 @@ -2,15 +2,14 @@
  <html>
  <head>

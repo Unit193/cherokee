@@ -195,19 +195,19 @@ install-arch:
 	install -d $(LIB_CONFIG_DIR)/DEBIAN
 	install -d $(LIB_CONFIG_DIR)/usr/lib
 	install -d $(LIB_CONFIG_DIR)/usr/share/cherokee
-	install -d $(LIB_CONFIG_DIR)/usr/share/cherokee/admin
 	install -d $(LIB_CONFIG_DIR)/usr/share/doc/libcherokee-config0
 	install $(CURDIR)/debian/README.docs $(LIB_CONFIG_DIR)/usr/share/doc/libcherokee-config0/
 	install -m644 debian/shlibs.libcherokee-config0 $(LIB_CONFIG_DIR)/DEBIAN/shlibs
 
 	mv $(BUILD_DIR)/usr/lib/libcherokee-config.so*       $(LIB_CONFIG_DIR)/usr/lib/
-	mv $(BUILD_DIR)/usr/share/cherokee/admin/server.py   $(LIB_CONFIG_DIR)/usr/share/cherokee/admin/
+	mv $(BUILD_DIR)/usr/share/cherokee/admin             $(LIB_CONFIG_DIR)/usr/share/cherokee/
 
 	# We will use the configuration versions migration tool in Cherokee's 
 	# preinst - Hence, cherokee will pre-depend on libcherokee-config0
 	install $(CURDIR)/contrib/05to06.py $(LIB_CONFIG_DIR)/usr/share/cherokee/
 	install	$(CURDIR)/debian/config_joiner $(LIB_CONFIG_DIR)/usr/share/cherokee/
 	install $(CURDIR)/contrib/06to07.py $(LIB_CONFIG_DIR)/usr/share/cherokee/
+	install $(CURDIR)/contrib/07to08.py $(LIB_CONFIG_DIR)/usr/share/cherokee/
 
 # libcherokee-server0 - Runtime library
 	install -d $(LIB_SERVER_DIR)/DEBIAN
@@ -244,10 +244,6 @@ install-arch:
 	# spawn-fcgi is handled through alternatives
 	mv $(SERVER_DIR)/usr/bin/spawn-fcgi  $(SERVER_DIR)/usr/bin/spawn-fcgi.cherokee
 	mv $(SERVER_DIR)/usr/share/man/man1/spawn-fcgi.1  $(SERVER_DIR)/usr/share/man/man1/spawn-fcgi.cherokee.1
-
-	# The binary is called cherokee-tweak, but the manpage is for 
-	# cherokee_tweak. Grmbl.
-	mv $(SERVER_DIR)/usr/share/man/man1/cherokee_tweak.1 $(SERVER_DIR)/usr/share/man/man1/cherokee-tweak.1
 
 	# Remove directories that have been emptied by shuffling around 
 	# files to our other generated packages

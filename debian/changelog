@@ -1,3 +1,11 @@
+cherokee (0.8.1-1) unstable; urgency=low
+  
+  * New upstream release
+    * Moved all of /usr/share/cherokee/admin into the libcherokee-config0
+    package (it had no business sitting in libcherokee-server0!)
+
+ -- Gunnar Wolf <gwolf@debian.org>  Wed, 24 Sep 2008 19:34:03 -0500
+
 cherokee (0.7.2-4) unstable; urgency=high
 
   * Fixes 0.6->0.7 migration breakage due to wrong path (Closes: #497420)
