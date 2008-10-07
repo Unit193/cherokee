@@ -1,7 +1,7 @@
-Index: cherokee-0.8.1/cherokee-admin.1
+Index: cherokee-0.9.0/cherokee-admin.1
 ===================================================================
---- cherokee-0.8.1.orig/cherokee-admin.1	2008-09-24 19:29:51.000000000 -0500
-+++ cherokee-0.8.1/cherokee-admin.1	2008-09-24 19:29:54.000000000 -0500
+--- cherokee-0.9.0.orig/cherokee-admin.1	2008-09-22 07:16:01.000000000 -0500
++++ cherokee-0.9.0/cherokee-admin.1	2008-09-26 12:41:18.000000000 -0500
 @@ -1,4 +1,4 @@
 -.TH cherokee-admin 8 "July 28, 2008"
 +.TH cherokee-admin 1 "July 28, 2008"

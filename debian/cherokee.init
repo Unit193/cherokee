@@ -15,7 +15,7 @@
 ### END INIT INFO
 
 PATH=/sbin:/bin:/usr/sbin:/usr/bin
-DAEMON=/usr/sbin/cherokee-guardian
+DAEMON=/usr/sbin/cherokee
 NAME=cherokee
 
 . /lib/lsb/init-functions
@@ -24,7 +24,7 @@ set -e
 
 test -x $DAEMON || exit 0
 
-PIDFILE=/var/run/cherokee-guardian.pid
+PIDFILE=/var/run/cherokee.pid
 
 
 case "$1" in

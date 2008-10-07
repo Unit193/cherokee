@@ -1,8 +1,8 @@
-Index: cherokee-0.8.1/cherokee.conf.sample.pre
+Index: cherokee-0.9.0/cherokee.conf.sample.pre
 ===================================================================
---- cherokee-0.8.1.orig/cherokee.conf.sample.pre	2008-08-18 13:56:55.000000000 -0500
-+++ cherokee-0.8.1/cherokee.conf.sample.pre	2008-09-24 19:14:13.000000000 -0500
-@@ -26,10 +26,10 @@
+--- cherokee-0.9.0.orig/cherokee.conf.sample.pre	2008-09-22 11:58:34.000000000 -0500
++++ cherokee-0.9.0/cherokee.conf.sample.pre	2008-09-26 12:41:41.000000000 -0500
+@@ -25,10 +25,10 @@
  
  vserver!1!logger = combined
  vserver!1!logger!access!type = file

@@ -1,7 +1,16 @@
+cherokee (0.9.3-1) unstable; urgency=low
+
+  * New upstream release
+  * Updated debian/watch to follow the 0.9 branch
+  * Change ownership of the log files to the user running cherokee (as
+    otherwise it just won't start)
+
+ -- Gunnar Wolf <gwolf@debian.org>  Mon, 06 Oct 2008 19:41:59 -0500
+
 cherokee (0.8.1-1) unstable; urgency=low
   
   * New upstream release
-    * Moved all of /usr/share/cherokee/admin into the libcherokee-config0
+  * Moved all of /usr/share/cherokee/admin into the libcherokee-config0
     package (it had no business sitting in libcherokee-server0!)
 
  -- Gunnar Wolf <gwolf@debian.org>  Wed, 24 Sep 2008 19:34:03 -0500

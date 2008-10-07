@@ -10,12 +10,52 @@ version=$2
 
 PATH=/bin:/sbin:/usr/bin:/usr/sbin
 
+migrate_conf_versions() {
+    OLD_VERSION=$1
+    NEW_VERSION=$2
+    MIGRATOR=/usr/share/cherokee/$3
+    CONFPATH=/etc/cherokee
+    OLDCONFPATH=${CONFPATH}/pre-${NEW_VERSION}
+    LOG=${OLDCONFPATH}/${NEW_VERSION}_migration_log
+    README=${OLDCONFPATH}/${NEW_VERSION}_migration_README
+
+    mkdir -p $OLDCONFPATH
+    file=$CONFPATH/cherokee.conf
+    oldfile=$OLDCONFPATH/cherokee.conf
+    echo "----------------------------------------" >> $LOG
+    echo "Translating $file" >> $LOG
+    mv $file $oldfile
+    if /usr/bin/python $MIGRATOR $oldfile $file 2>>$LOG
+    then
+	echo $file was successfully migrated >> $LOG
+    else
+	echo "*** ERROR MIGRATING $file - Follows:" >> $LOG
+	cat $file >> $LOG
+    fi
+
+    cat <<EOF > $README
+Your Cherokee ${OLD_VERSION} configuration file has been converted to
+the ${NEW_VERSION} format. Automatic conversion is expected to succeed
+- but in case your server no longer works as expected, your original
+file is still available in this directory.
+
+A log of the migration process has been saved in $LOG. Please include
+it in any bug reports regarding this migration!
+EOF
+}
+
 case "$action" in
     install|abort-upgrade)
 	;;
     upgrade)
 	if (  dpkg --compare-versions "$version" lt 0.6 )
 	    then
+	    ### The 0.5->0.6 migrator uses different semantics to those 
+	    ### provided by all subsequent migrators, and -as it merges 
+	    ### several distinct files into a single output- is quite more 
+	    ### complicated... So there will still some duplication between
+	    ### the snippet here and the code in migrate_conf_versions().
+
 	    # Previous versions included /etc/cherokee/mime*.types -
 	    # Delete them on the spot!
 	    rm -f /etc/cherokee/mime.types /etc/cherokee/mime.compression.types
@@ -92,82 +132,20 @@ A log of the migration process will be saved in $LOG.
 Please include it in any bug reports regarding this migration!
 EOF
 	fi
+
 	if ( dpkg --compare-versions "$version" lt 0.7 )
 	    then
-	    # The 0.6 -> 0.7 migration is smoother than 0.5 -> 0.6 -
-	    # But still, we need to modify the configuration
-	    # file... So a similar version to the previous dance still
-	    # applies. And yes, both migrations will happen in a row
-	    # when upgrading 0.5.x -> 0.7.x
-	    #
-    	    # 0.6 deprecates the configuration spillover into
-	    # different files - We deal now only with cherokee.conf
-	    CONFPATH=/etc/cherokee
-	    OLDCONFPATH=$CONFPATH/pre-0.7
-	    MIGRATOR=/usr/share/cherokee/06to07.py
-	    LOG=$OLDCONFPATH/0.7_migration_log
-	    README=$OLDCONFPATH/0.7_migration_README
-
-	    mkdir -p $OLDCONFPATH
-	    file=$CONFPATH/cherokee.conf
-	    oldfile=$OLDCONFPATH/cherokee.conf
-	    echo "----------------------------------------" >> $LOG
-	    echo "Translating $file" >> $LOG
-	    mv $file $oldfile
-	    if /usr/bin/python $MIGRATOR $oldfile $file 2>>$LOG
-	    then
-		echo $file was successfully migrated >> $LOG
-	    else
-		echo "*** ERROR MIGRATING $file - Follows:" >> $LOG
-		cat $file >> $LOG
-	    fi
-
-	    cat <<EOF > $README
-Your Cherokee 0.6.x configuration file has been converted to the 0.7.x 
-format. Automatic conversion is expected to succeed - but in case your server
-no longer works as expected, your original file is still available in this 
-directory.
-
-A log of the migration process has been saved in $LOG. Please include it in any
-bug reports regarding this migration!
-EOF
+	    migrate_conf_versions 0.6 0.7 06to07.py
 	fi
+
 	if ( dpkg --compare-versions "$version" lt 0.8 )
         then
-            # The 0.7 -> 0.8 migration is smooth, similar to the 0.6
-            # -> 0.7 one. We still, however, need to dance around the
-            # configuration file auto-mangling. Of course, when
-            # upgrading from any previous version of Cherokee, we will
-            # go through all of the needed chain.
-            CONFPATH=/etc/cherokee
-            OLDCONFPATH=$CONFPATH/pre-0.8
-            MIGRATOR=/usr/share/cherokee/07to08.py
-            LOG=$OLDCONFPATH/0.8_migration_log
-            README=$OLDCONFPATH/0.8_migration_README
-	    
-            mkdir -p $OLDCONFPATH
-            file=$CONFPATH/cherokee.conf
-            oldfile=$OLDCONFPATH/cherokee.conf
-            echo "----------------------------------------" >> $LOG
-            echo "Translating $file" >> $LOG
-            mv $file $oldfile
-            if /usr/bin/python $MIGRATOR $oldfile $file 2>>$LOG
-            then
-		echo $file was successfully migrated >> $LOG
-            else
-		echo "*** ERROR MIGRATING $file - Follows:" >> $LOG
-		cat $file >> $LOG
-            fi
+	    migrate_conf_versions 0.7 0.8 07to08.py
+	fi
 
-            cat <<EOF > $README
-Your Cherokee 0.7.x configuration file has been converted to the 0.8.x 
-format. Automatic conversion is expected to succeed - but in case your server
-no longer works as expected, your original file is still available in this 
-directory.
-
-A log of the migration process has been saved in $LOG. Please include it in any
-bug reports regarding this migration!
-EOF
+	if ( dpkg --compare-versions "$version" lt 0.8 )
+        then
+	    migrate_conf_versions 0.8 0.9 08to09.py
 	fi
 	;;
     *)

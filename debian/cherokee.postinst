@@ -6,6 +6,7 @@
 set -e
 
 PATH=/bin:/sbin:/usr/bin:/usr/sbin
+CONF=/etc/cherokee/cherokee.conf
 
 # summary of how this script can be called:
 #        * <postinst> `configure' <most-recently-configured-version>
@@ -44,6 +45,26 @@ case "$1" in
 			/var/www/cherokee-images
 		fi
 	fi
+
+	# Log directory and files should be owned by the user the
+	# server runs as. Try to guess it, or fall back to www-data
+	if LINE=`grep 'server!user' $CONF`; then
+	    RUNAS_USER=`echo $LINE | cut -f 2 -d =`
+	else
+	    RUNAS_USER=www-data
+	fi
+	for LOGFILE in `grep vserver.*logger.*filename $CONF`; do
+	    if [ -f $LOGFILE ]; then
+		chown $RUNAS_USER $LOGFILE
+	    fi
+	    LOGDIR=`dirname $LOGFILE`
+	    # Make sure we don't affect the global log directory -
+	    # It's not our default, but some administrators might
+	    # prefer it that way. Don't change what's not ours.
+	    if [ $LOGDIR = /var/log/cherokee ]; then 
+		chown $RUNAS_USER $LOGDIR
+	    fi
+	done
 	;;
     abort-upgrade|abort-remove|abort-deconfigure)
 	;;
