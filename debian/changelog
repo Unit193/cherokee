@@ -1,3 +1,11 @@
+cherokee (0.9.4-1) unstable; urgency=low
+
+  * New upstream release
+  * Now _properly_ fixed debian/watch to follow whatever new versions come
+    out!
+
+ -- Gunnar Wolf <gwolf@debian.org>  Mon, 13 Oct 2008 10:43:54 -0500
+  
 cherokee (0.9.3-1) unstable; urgency=low
 
   * New upstream release

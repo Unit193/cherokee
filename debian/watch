@@ -3,4 +3,4 @@
 # to check for upstream updates and more.
 # Site		Directory		Pattern			Version	Script
 version=2
-http://www.cherokee-project.com/download/0.7/(\d.+)/cherokee.(\d.+).tar\.gz	debian	uupdate
+http://www.cherokee-project.com/download/(\d[\d\.]+)/(\d[\d\.]+)/cherokee.(\d[\d\.]+).tar\.gz	debian	uupdate
