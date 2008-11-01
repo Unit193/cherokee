@@ -1,4 +1,39 @@
+2006-04-17  Alvaro Lopez Ortega  <alvaro@alobbs.com>
+
+	* 0.5.2 released
+
+	* SUNWcherokee.spec: Updated
+
+	* cherokee/thread.c (process_active_connections): There was an
+	unhandler error case here. It was the source of some stability
+	problems detected in 0.5.1.  This problem was reported by Cesar
+	Fernandez and Rodolfo Pilas (thanks guys!)
+
+2006-04-15  Alvaro Lopez Ortega  <alvaro@alobbs.com>
+
+	* cherokee/read_config_grammar.y, cherokee/server-protected.h,
+	cherokee/module_read_config.c, cherokee/server.c: It was failing
+	to load more than one MimeFile.
+
+	* cherokee/handler_dirlist.c (cherokee_handler_dirlist_add_headers):
+	Added charset entry into Content-Type header.
+
+2006-04-12  Alvaro Lopez Ortega  <alvaro@alobbs.com>
+
+	* cherokee/main.c (common_server_initialization): PID file must to
+	written before the server changes its user identity.
+
+	* cherokee.1, cherokee_logrotate.1, doc/develop/Intro.txt, README,
+	sites-default.sample.pre, windows/cherokee.nsi.in: URL poiting to
+	alobbs.com has been fixed to point to 0x50.org.  Patch by Gunnar
+	Wolf <gwolf@gwolf.org>
+
 2006-04-10  Alvaro Lopez Ortega  <alvaro@alobbs.com>
+
+	* cherokee/table.c (del_item): It is no longer an inline'd
+	function.  There are some broken versions of gcc (or binutils, I
+	don't know) that don't handle it correctly.  Patch by David Kimpe
+	<DNAku@frugalware.org>
 
 	* 0.5.1 released
 
