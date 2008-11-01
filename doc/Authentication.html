@@ -107,6 +107,21 @@ Cherokee distributes a number of validators: <a href="Htpasswd_validator.html" t
 <tr><td>htdigest</td><td bgcolor="#00EE00" align="center">yes</td><td bgcolor="#00ee00" align="center">yes</td></tr>
 <tr><td>PAM</td><td bgcolor="#00EE00" align="center">yes</td><td bgcolor="#ee0000" align="center">no</td></tr>
 </table>
+<p><br />
+</p>
+<a name="User_restriction"></a><h2>User restriction</h2>
+<p>One of the common features for all the validator is the user basedrestrictions.  Basically, it is possible to specify a list of users
+who are allowed to authenticate with the validator.
+</p>
+<a name="Example"></a><h3>Example</h3>
+<p>The only users allowed to access to the directory <i>/secret</i> are <i>alo</i> and <i>root</i>, it doesn't matter is the systems has a hundred users.
+</p>
+<pre>Directory /secret {
+    Auth Basic, Digest {
+        Method pam
+        User alo, root
+    }
+}</pre>
 
      <div id="footer"><a href="http://www.0x50.org">Cherokee</a> Web Server</div>
  </body>
