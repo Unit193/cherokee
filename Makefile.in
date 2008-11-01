@@ -44,7 +44,7 @@ DIST_COMMON = README $(am__configure_deps) $(srcdir)/Makefile.am \
 	$(srcdir)/cherokee.pc.in $(srcdir)/cherokee.spec.in \
 	$(srcdir)/config.h.in $(top_srcdir)/configure AUTHORS COPYING \
 	ChangeLog INSTALL NEWS TODO compile config.guess config.sub \
-	depcomp install-sh ltmain.sh missing mkinstalldirs ylwrap
+	depcomp install-sh ltmain.sh missing ylwrap
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/etr_socket_nsl.m4 \
@@ -55,7 +55,7 @@ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 am__CONFIG_DISTCLEAN_FILES = config.status config.cache config.log \
  configure.lineno configure.status.lineno
-mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
+mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = config.h
 CONFIG_CLEAN_FILES = cherokee-config cherokee.spec cherokee.pc
 PROGRAMS = $(noinst_PROGRAMS)
@@ -366,6 +366,7 @@ debian_testing_chroot.sh
 
 EXTRA_DIST = \
 TODO                  \
+http-cherokee.xml     \
 cherokee.spec         \
 cherokee.spec.in      \
 SUNWcherokee.spec     \
