@@ -1,3 +1,26 @@
+2006-04-10  Alvaro Lopez Ortega  <alvaro@alobbs.com>
+
+	* 0.5.1 released
+
+2006-04-04  Alvaro Lopez Ortega  <alvaro@alobbs.com>
+
+	* cherokee/handler_error.c (build_hardcoded_response_page): Fixed
+	Cross Site Scripting bug discovered by Ruben Garrote Garcia.
+
+2006-04-01  Alvaro Lopez Ortega  <alvaro@alobbs.com>
+
+	* cherokee/util.c (cherokee_gethostbyname): Fixes segfault.
+
+	* cherokee/connection.c (get_host): Little clean up.
+
+	* cherokee/handler_error.c (build_hardcoded_response_page): It was
+	missing a break. Patch by Philip Pemberton <philpem@dsl.pipex.com>
+
+2006-03-31  Alvaro Lopez Ortega  <alvaro@alobbs.com>
+
+	* cherokee.spec.in: Fixed extra space. Reported by
+	rui.lapa@ruilapa.net
+
 2006-03-29  Alvaro Lopez Ortega  <alvaro@alobbs.com>
 
 	* cherokee/handler_cgi_base.c (cherokee_handler_cgi_base_build_envp):
