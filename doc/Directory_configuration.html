@@ -1,0 +1,180 @@
+<html>
+ <header>
+     <title>Cherokee Web Server: Directory configuration</title>
+	<style>	
+	body {
+		
+		width: 760px; 
+		margin: auto;
+		font-family: 'Trebuchet MS', 'Lucida Grande', Verdana, Arial, Sans-Serif;
+		font-size: small;
+		padding: 10px;
+	}
+	
+	#header {
+		border-bottom: 2px solid #b00;
+	}
+
+	#toc {
+		border: 
+		color: #650;
+		background-color: #f0e9b0;
+		border: 1px solid #a99d3a;
+		font-size: small;
+		-moz-border-radius: 4px;
+		float: right;
+		margin: 4px;
+	}
+
+	#toc a {
+		color: #650;
+	}
+
+	#toctitle {
+		color: #fff;
+		background-color: #650;
+	}
+	
+	h1 {
+		border-bottom: 1px solid #b00;
+		float: right;
+		border-bottom: 0px;
+	}
+
+	h2 {
+		border-bottom: 1px solid #b00;
+	}
+
+	pre {
+		background-color: #000;
+		color: #ddd;
+		padding: 5px;
+	}
+
+	#footer {
+		border-top: 1px dotted #ddd;
+		color: #666;
+		font-size: 90%;
+		padding: 10px;
+		padding-bottom: 40px;
+	}
+
+/* Merge template style */
+
+.messagebox {
+   border: 1px solid #aaaaaa;
+   background-color: #f9f9f9;
+   width: 80%;
+   margin: 0 auto 1em auto;
+   padding: .2em;
+   text-align: justify;
+}
+.messagebox.merge {
+   border: 1px solid #cf9fff;
+   background-color: #f5edf5;
+   text-align: center;
+}
+.messagebox.cleanup {
+   border: 1px solid #9f9fff;
+   background-color: #efefff;
+   text-align: center;
+}
+.messagebox.standard-talk {
+   border: 1px solid #c0c090;
+   background-color: #f8eaba;
+}
+
+	</style>
+ </header>
+ <body>
+     <h1>Directory configuration</h1>
+	<div id="header"><img src="cherokee.png" /></div>
+	   <p>The entry <b>Directory</b> encloses a group of directives which will apply only to the named directory and sub-directories of that directory. It allows to define completely diferent behaviors depending on the directories.
+</p><p>This kind of entries accept all the options described in the <a href="Behavior_configuration.html" title="Behavior configuration"> Behavior configuration</a> chapter: <a href="Behavior_configuration#Handler.html" title="Behavior configuration">Handler</a>, <a href="Behavior_configuration#DocumentRoot.html" title="Behavior configuration">DocumentRoot</a>, <a href="Behavior_configuration#Auth.html" title="Behavior configuration">Auth</a>, <a href="Behavior_configuration#Allow_From.html" title="Behavior configuration">Allow From</a> and <a href="Behavior_configuration#OnlySecure.html" title="Behavior configuration">OnlySecure</a>.
+</p><p>A directory entry accepts as many of these configuration entries as you want.
+</p><p><br />
+</p>
+<table id='toc' class='toc'><tr><td><div id='toctitle'><h2>Contents</h2></div>
+<ul>
+<li class='toclevel-1'><a href="#Paths"><span class="tocnumber">1</span> <span class="toctext">Paths</span></a></li>
+<li class='toclevel-1'><a href="#Examples"><span class="tocnumber">2</span> <span class="toctext">Examples</span></a>
+<ul>
+<li class='toclevel-2'><a href="#General_DocumentRoot"><span class="tocnumber">2.1</span> <span class="toctext">General DocumentRoot</span></a></li>
+<li class='toclevel-2'><a href="#Customized_DocumentRoot"><span class="tocnumber">2.2</span> <span class="toctext">Customized DocumentRoot</span></a></li>
+<li class='toclevel-2'><a href="#Configuration_inheritance"><span class="tocnumber">2.3</span> <span class="toctext">Configuration inheritance</span></a></li>
+<li class='toclevel-2'><a href="#Configuration_inheritance_.28II.29"><span class="tocnumber">2.4</span> <span class="toctext">Configuration inheritance (II)</span></a></li>
+</ul>
+</li>
+</ul>
+</td></tr></table>
+<p><script type="text/javascript"> if (window.showTocToggle) { var tocShowText = "show"; var tocHideText = "hide"; showTocToggle(); } </script>
+</p>
+<a name="Paths"></a><h3> Paths </h3>
+<p>Paths of the directory entries are relative to the <a href="Behavior_configuration#DocumentRoot.html" title="Behavior configuration">DocumentRoot</a> of the Virtual Host which contains it.  If a new DocumentRoot if defined inside the directory entry, it will become its internal location.
+</p><p><br />
+</p>
+<a name="Examples"></a><h3> Examples </h3>
+<a name="General_DocumentRoot"></a><h4> General DocumentRoot </h4>
+<p>Lets imagine the virtual server DocumentRoot configuration entry is set to <i>/var/www</i>.
+</p>
+<pre>Directory /tarballs {
+    Handler file
+}</pre>
+<p>The request <i>/tarballs/cherokee-1.0.0.tar.gz</i> refers to <i>/var/www//tarballs/cherokee-1.0.0.tar.gz</i>
+</p><p><br />
+</p>
+<a name="Customized_DocumentRoot"></a><h4> Customized DocumentRoot </h4>
+<p>As in the previous examples, lets imagine the general DocumentRoot points to <i>/var/www</i>.
+</p>
+<pre>Directory /tarballs {
+    Handler file
+    DocumentRoot /mnt/extra/source_tars/
+}</pre>
+<p>The request <i>/tarballs/cherokee-1.0.0.tar.gz</i> refers to <i>/mnt/extra/source_tars/cherokee-1.0.0.tar.gz</i>
+</p><p><br />
+It is very common to use this feature to redefine the path of the <i>/icons</i> and <i>/cgi-bin</i> web directories.  A usual configuration is:
+</p>
+<pre>Directory /icons {
+    Handler file
+    DocumentRoot /usr/share/cherokee/icons
+}</pre>
+<pre>Directory /cgi-bin {
+    Handler cgi
+    DocumentRoot /usr/lib/cgi-bin
+}</pre>
+<p>In this way, it is possible to have some paths accessible from the web, outside the main web directory.
+</p>
+<a name="Configuration_inheritance"></a><h4> Configuration inheritance </h4>
+<p>Lets imagine the DocumentRoot of the current virtual host is set to <i>/var/www/</i> directory.
+</p>
+<pre>Directory /download {
+     Allow From 127.0.0.1, 192.168.0.0/16
+}
+
+Directory /download/films {
+     DocumentRoot /var/films/
+     Handler file
+}</pre>
+<p>The request <i>/download/films/pulpfiction.avi</i> would be processed in this way:
+</p>
+<ul><li> Check if the clients is inside the allowed network or the web server host. If not, deny the access.
+</li><li> Locate the file.  The DocumentRoot has been redefined, so instead of refers to <i>/var/www/download/films/pulpfiction.avi</i> it refers to <i>/var/films/pulpfiction.avi</i>
+</li><li> Send the file (it uses the <a href="File_sending.html" title="File sending">file</a> handler)
+</li></ul>
+<p><br />
+</p>
+<a name="Configuration_inheritance_.28II.29"></a><h4> Configuration inheritance (II) </h4>
+<p>This examples shows that the Directory inheritance mechanism doesn't overwrite settings.
+</p>
+<pre>Directory /secrets {
+     Allow From 10.0.0.0/8, 127.0.0.1, 192.168.0.0/16
+}
+
+Directory /secrets/important {
+     Allow From 127.0.0.1
+}</pre>
+<p>The request <i>/secrets/important/file.tar.gz</i> will only success if it is made from localhost. No matters is the connection comes from one of the network ranges described on the <i>/secrets</i> directory.
+</p>
+     <div id="footer"><a href="http://www.0x50.org">Cherokee</a> Web Server</div>
+ </body>
+</html>

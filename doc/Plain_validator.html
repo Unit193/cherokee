@@ -1,0 +1,133 @@
+<html>
+ <header>
+     <title>Cherokee Web Server: Plain validator</title>
+	<style>	
+	body {
+		
+		width: 760px; 
+		margin: auto;
+		font-family: 'Trebuchet MS', 'Lucida Grande', Verdana, Arial, Sans-Serif;
+		font-size: small;
+		padding: 10px;
+	}
+	
+	#header {
+		border-bottom: 2px solid #b00;
+	}
+
+	#toc {
+		border: 
+		color: #650;
+		background-color: #f0e9b0;
+		border: 1px solid #a99d3a;
+		font-size: small;
+		-moz-border-radius: 4px;
+		float: right;
+		margin: 4px;
+	}
+
+	#toc a {
+		color: #650;
+	}
+
+	#toctitle {
+		color: #fff;
+		background-color: #650;
+	}
+	
+	h1 {
+		border-bottom: 1px solid #b00;
+		float: right;
+		border-bottom: 0px;
+	}
+
+	h2 {
+		border-bottom: 1px solid #b00;
+	}
+
+	pre {
+		background-color: #000;
+		color: #ddd;
+		padding: 5px;
+	}
+
+	#footer {
+		border-top: 1px dotted #ddd;
+		color: #666;
+		font-size: 90%;
+		padding: 10px;
+		padding-bottom: 40px;
+	}
+
+/* Merge template style */
+
+.messagebox {
+   border: 1px solid #aaaaaa;
+   background-color: #f9f9f9;
+   width: 80%;
+   margin: 0 auto 1em auto;
+   padding: .2em;
+   text-align: justify;
+}
+.messagebox.merge {
+   border: 1px solid #cf9fff;
+   background-color: #f5edf5;
+   text-align: center;
+}
+.messagebox.cleanup {
+   border: 1px solid #9f9fff;
+   background-color: #efefff;
+   text-align: center;
+}
+.messagebox.standard-talk {
+   border: 1px solid #c0c090;
+   background-color: #f8eaba;
+}
+
+	</style>
+ </header>
+ <body>
+     <h1>Plain validator</h1>
+	<div id="header"><img src="cherokee.png" /></div>
+	   <p>The <b>plain</b> validator uses plain text files as to check user and password pairs.
+</p><p>The format of the text file is the username followed by colon sign, and then the password.
+For example:
+</p><p><br />
+</p>
+<a name="Parameters"></a><h2>Parameters</h2>
+<p>It needs one parameter to work:
+</p>
+<ul><li> <b>PasswdFile</b>: This parameter specifies the path to the login/password pairs file.
+</li></ul>
+<p><br />
+</p>
+<a name="Compatibility"></a><h2>Compatibility</h2>
+<p>This validator is compatible with both, HTTP Basic and HTTP Digest. 
+</p><p><br />
+</p>
+<a name="Examples"></a><h2>Examples</h2>
+<pre>alo:8!45mKaZ*9
+mark:god</pre>
+<p>This is an plain text password file example.
+</p>
+<pre>Directory /secret {
+    Auth Basic, Digest {
+        Method pain {
+           PasswdFile /var/webpasswords
+        }
+    }
+}</pre>
+<p>The directory <i>secret</i> requieres a valid login/password pair from the <i>/var/passwordsweb</i>. They can authenticate with Basic or the Digest methos. You can place the password file outside the web tree, in this way, remote users won't be able to fetch the list.
+</p>
+<pre>Extension iso, cue, bin {
+    Auth Digest {
+        Method pain {
+           PasswdFile /var/webpasswords
+        }
+    }
+}</pre>
+<p>The example is quite similar.  In this case, the users who want to download an ISO image (iso, bin and cue extensions) have to authenticate with Digest againt the same file.
+</p>
+     <div id="footer"><a href="http://www.0x50.org">Cherokee</a> Web Server</div>
+ </body>
+</html>

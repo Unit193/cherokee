@@ -1,0 +1,218 @@
+<html>
+ <header>
+     <title>Cherokee Web Server: Validators</title>
+	<style>	
+	body {
+		
+		width: 760px; 
+		margin: auto;
+		font-family: 'Trebuchet MS', 'Lucida Grande', Verdana, Arial, Sans-Serif;
+		font-size: small;
+		padding: 10px;
+	}
+	
+	#header {
+		border-bottom: 2px solid #b00;
+	}
+
+	#toc {
+		border: 
+		color: #650;
+		background-color: #f0e9b0;
+		border: 1px solid #a99d3a;
+		font-size: small;
+		-moz-border-radius: 4px;
+		float: right;
+		margin: 4px;
+	}
+
+	#toc a {
+		color: #650;
+	}
+
+	#toctitle {
+		color: #fff;
+		background-color: #650;
+	}
+	
+	h1 {
+		border-bottom: 1px solid #b00;
+		float: right;
+		border-bottom: 0px;
+	}
+
+	h2 {
+		border-bottom: 1px solid #b00;
+	}
+
+	pre {
+		background-color: #000;
+		color: #ddd;
+		padding: 5px;
+	}
+
+	#footer {
+		border-top: 1px dotted #ddd;
+		color: #666;
+		font-size: 90%;
+		padding: 10px;
+		padding-bottom: 40px;
+	}
+
+/* Merge template style */
+
+.messagebox {
+   border: 1px solid #aaaaaa;
+   background-color: #f9f9f9;
+   width: 80%;
+   margin: 0 auto 1em auto;
+   padding: .2em;
+   text-align: justify;
+}
+.messagebox.merge {
+   border: 1px solid #cf9fff;
+   background-color: #f5edf5;
+   text-align: center;
+}
+.messagebox.cleanup {
+   border: 1px solid #9f9fff;
+   background-color: #efefff;
+   text-align: center;
+}
+.messagebox.standard-talk {
+   border: 1px solid #c0c090;
+   background-color: #f8eaba;
+}
+
+	</style>
+ </header>
+ <body>
+     <h1>Validators</h1>
+	<div id="header"><img src="cherokee.png" /></div>
+	   <table id='toc' class='toc'><tr><td><div id='toctitle'><h2>Contents</h2></div>
+<ul>
+<li class='toclevel-1'><a href="#Introduction"><span class="tocnumber">1</span> <span class="toctext">Introduction</span></a></li>
+<li class='toclevel-1'><a href="#PAM_validator"><span class="tocnumber">2</span> <span class="toctext">PAM validator</span></a>
+<ul>
+<li class='toclevel-2'><a href="#Examples"><span class="tocnumber">2.1</span> <span class="toctext">Examples</span></a></li>
+</ul>
+</li>
+<li class='toclevel-1'><a href="#Plain_Validator"><span class="tocnumber">3</span> <span class="toctext">Plain Validator</span></a>
+<ul>
+<li class='toclevel-2'><a href="#Examples_2"><span class="tocnumber">3.1</span> <span class="toctext">Examples</span></a></li>
+</ul>
+</li>
+<li class='toclevel-1'><a href="#Htpasswd_Validator"><span class="tocnumber">4</span> <span class="toctext">Htpasswd Validator</span></a>
+<ul>
+<li class='toclevel-2'><a href="#Examples_3"><span class="tocnumber">4.1</span> <span class="toctext">Examples</span></a></li>
+</ul>
+</li>
+<li class='toclevel-1'><a href="#Htdigest_Validator"><span class="tocnumber">5</span> <span class="toctext">Htdigest Validator</span></a>
+<ul>
+<li class='toclevel-2'><a href="#Examples_4"><span class="tocnumber">5.1</span> <span class="toctext">Examples</span></a></li>
+</ul>
+</li>
+</ul>
+</td></tr></table>
+<p><script type="text/javascript"> if (window.showTocToggle) { var tocShowText = "show"; var tocHideText = "hide"; showTocToggle(); } </script>
+</p>
+<a name="Introduction"></a><h3>Introduction</h3>
+<p>Validators are a type of Cherokee modules.  It provides a mechanism to restict the access of some resources: directories and extensions.
+</p><p>The scope of a validator is local to a <a href="Directory_configuration.html" title="Directory configuration">directory</a> or <a href="Extension_configuration.html" title="Extension configuration">extension definition</a>, inside of an <a href="Behavior_configuration#Auth.html" title="Behavior configuration">Auth clause</a>.
+</p><p>Cherokee distributes a number of validators: htpasswd, htdigest, pam, and plain text. Some of these validators are only suitable for some authentication methods:
+</p>
+<table cellpadding="3" align="center">
+<tr><td></td><td><b>HTTP Basic</b></td><td><b>HTTP Digest</b></td></tr>
+<tr><td>Plain</td><td bgcolor="#00EE00" align="center">yes</td><td bgcolor="#00ee00" align="center">yes</td></tr>
+<tr><td>htpasswd</td><td bgcolor="#00EE00" align="center">yes</td><td bgcolor="#ee0000" align="center">no</td></tr>
+<tr><td>htdigest</td><td bgcolor="#00EE00" align="center">yes</td><td bgcolor="#00ee00" align="center">yes</td></tr>
+<tr><td>PAM</td><td bgcolor="#00EE00" align="center">yes</td><td bgcolor="#ee0000" align="center">no</td></tr>
+</table>
+<p><br />
+</p>
+<ul><li> The Basic authentication sends the login and password pair clear over the network, so it is not the safer method to use. It is very easy to implement, so most of the programs supports it.
+</li><li> The Digest authentication is much more safer, but it is also more complex. If the clients of the server are going to be modern browsers they will not have any problem to use this authentication method: <a href="http://en.wikipedia.org/wiki/Digest_access_authentication|" class='external text' title="http://en.wikipedia.org/wiki/Digest access authentication|" rel="nofollow">More information</a>
+</li></ul>
+<p><br />
+</p>
+<a name="PAM_validator"></a><h3>PAM validator</h3>
+<p>The <b>PAM</b> validator uses PAM (<i>Pluggable Authentication Modules</i>) to validate the user and passwords pairs in a protected directory.
+</p><p>This validator only works if the server runs as <b>root</b>.
+</p>
+<a name="Examples"></a><h4>Examples</h4>
+<pre>Directory /protected {
+   Auth Basic {
+      Method pam
+   }
+}</pre>
+<p>Requires a valid user and password system pair to access the <i>protected</i> directory.
+</p><p><br />
+</p>
+<pre>Extension iso {
+   Auth Basic {
+      Method pam
+   }
+   User alo, mark
+}</pre>
+<p>System users <i>alo</i> and <i>mark</i> are the only ones allowed to download ISO images.
+</p><p><br />
+</p>
+<a name="Plain_Validator"></a><h3>Plain Validator</h3>
+<p>The <b>plain</b> validator tries to match user and password pair in a text plain file.
+</p><p>The format of the text file is the username followed by colon sign, and then the password.
+For example:
+</p>
+<pre>alo:8!45mKaZ*9
+mark:god</pre>
+<p><br />
+It needs one parameter to work:
+</p>
+<ul><li> <b>PasswdFile</b>: This parameter specifies the path to the login/password pairs file.
+</li></ul>
+<a name="Examples_2"></a><h4> Examples </h4>
+<pre>Directory /secret {
+    Auth Basic, Digest {
+        Method pain {
+           PasswdFile /var/passwordsweb
+        }
+    }
+}</pre>
+<p>The directory <i>secret</i> requieres a valid login/password pair from the <i>/var/passwordsweb</i>.  You can place the password file outside the web tree, in this way, remote users won't be able to fetch the list.
+</p><p><br />
+</p>
+<a name="Htpasswd_Validator"></a><h3>Htpasswd Validator</h3>
+<p>It uses htpasswd files. These password files are very common on Apache web severs. It stores one line per entry with the user name and a hash of the password. Cherokee works with the following hash algorithms: MD5, MD5-crypt, Apache MD5, SHA1 and crypt.
+</p><p><br />
+It needs one parameter to work:
+</p>
+<ul><li> <b>PasswdFile</b>: This parameter specifies the path to the login/password pairs file.
+</li></ul>
+<a name="Examples_3"></a><h4> Examples </h4>
+<pre>Directory /secret {
+    Auth Basic {
+        Method htpasswd {
+           PasswdFile /var/passwordsweb
+        }
+    }
+}</pre>
+<p><br />
+</p>
+<a name="Htdigest_Validator"></a><h3>Htdigest Validator</h3>
+<p>It uses htdigest files as input.
+</p><p><br />
+It needs one parameter to work:
+</p>
+<ul><li> <b>PasswdFile</b>: This parameter specifies the path to the login/password pairs file.
+</li></ul>
+<a name="Examples_4"></a><h4> Examples </h4>
+<pre>Directory /secret {
+    Auth Basic, Digest {
+        Method htdigest {
+           PasswdFile /var/passwordsweb
+        }
+    }
+}</pre>
+
+     <div id="footer"><a href="http://www.0x50.org">Cherokee</a> Web Server</div>
+ </body>
+</html>

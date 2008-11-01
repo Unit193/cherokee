@@ -1,0 +1,113 @@
+<html>
+ <header>
+     <title>Cherokee Web Server: Authentication</title>
+	<style>	
+	body {
+		
+		width: 760px; 
+		margin: auto;
+		font-family: 'Trebuchet MS', 'Lucida Grande', Verdana, Arial, Sans-Serif;
+		font-size: small;
+		padding: 10px;
+	}
+	
+	#header {
+		border-bottom: 2px solid #b00;
+	}
+
+	#toc {
+		border: 
+		color: #650;
+		background-color: #f0e9b0;
+		border: 1px solid #a99d3a;
+		font-size: small;
+		-moz-border-radius: 4px;
+		float: right;
+		margin: 4px;
+	}
+
+	#toc a {
+		color: #650;
+	}
+
+	#toctitle {
+		color: #fff;
+		background-color: #650;
+	}
+	
+	h1 {
+		border-bottom: 1px solid #b00;
+		float: right;
+		border-bottom: 0px;
+	}
+
+	h2 {
+		border-bottom: 1px solid #b00;
+	}
+
+	pre {
+		background-color: #000;
+		color: #ddd;
+		padding: 5px;
+	}
+
+	#footer {
+		border-top: 1px dotted #ddd;
+		color: #666;
+		font-size: 90%;
+		padding: 10px;
+		padding-bottom: 40px;
+	}
+
+/* Merge template style */
+
+.messagebox {
+   border: 1px solid #aaaaaa;
+   background-color: #f9f9f9;
+   width: 80%;
+   margin: 0 auto 1em auto;
+   padding: .2em;
+   text-align: justify;
+}
+.messagebox.merge {
+   border: 1px solid #cf9fff;
+   background-color: #f5edf5;
+   text-align: center;
+}
+.messagebox.cleanup {
+   border: 1px solid #9f9fff;
+   background-color: #efefff;
+   text-align: center;
+}
+.messagebox.standard-talk {
+   border: 1px solid #c0c090;
+   background-color: #f8eaba;
+}
+
+	</style>
+ </header>
+ <body>
+     <h1>Authentication</h1>
+	<div id="header"><img src="cherokee.png" /></div>
+	   <p>The authentication provides a mechanism to restrict the access of some resources as directories, extensions or predefined requests.  The authentication modules receive the name of <b>Validators</b>, and each one of them implements a different authentication mechanism. The scope of a validator is local to a <a href="Directory_configuration.html" title="Directory configuration">directory</a>,  <a href="Extension_configuration.html" title="Extension configuration">extension definition</a> or <a href="Request_configuration.html" title="Request configuration">request entry</a>, inside of an <a href="Behavior_configuration#Auth.html" title="Behavior configuration">Auth clause</a>.
+</p><p><br />
+There are two kinds of authentications:
+</p>
+<ul><li> <b>Basic authentication</b>: This method sends the user and password pair clear over the network, so it isn't a very safe method. It could represent a security problem is the connection isn't encrypted (HTTPS connection are completely safe though). This method is very easy to implement, so most of the programs supports it.
+</li></ul>
+<ul><li> <b>Digest authentication</b>: It is by far much more secure, but it is also more complex. If the clients of the server are modern browsers they won't have any problem to use this authentication method: <a href="http://en.wikipedia.org/wiki/Digest_access_authentication|" class='external text' title="http://en.wikipedia.org/wiki/Digest access authentication|" rel="nofollow">More information</a>
+</li></ul>
+<p><br />
+Cherokee distributes a number of validators: <a href="Htpasswd_validator.html" title="Htpasswd validator">htpasswd</a>, <a href="Htdigest_validator.html" title="Htdigest validator">htdigest</a>, <a href="PAM_validator.html" title="PAM validator">PAM</a>, and a <a href="Plain_validator.html" title="Plain validator">Plain text file validator</a>. Some of these validators are only suitable for certain authentication methods:
+</p>
+<table cellpadding="3" align="center">
+<tr><td></td><td><b>HTTP Basic</b></td><td><b>HTTP Digest</b></td></tr>
+<tr><td>Plain</td><td bgcolor="#00EE00" align="center">yes</td><td bgcolor="#00ee00" align="center">yes</td></tr>
+<tr><td>htpasswd</td><td bgcolor="#00EE00" align="center">yes</td><td bgcolor="#ee0000" align="center">no</td></tr>
+<tr><td>htdigest</td><td bgcolor="#00EE00" align="center">yes</td><td bgcolor="#00ee00" align="center">yes</td></tr>
+<tr><td>PAM</td><td bgcolor="#00EE00" align="center">yes</td><td bgcolor="#ee0000" align="center">no</td></tr>
+</table>
+
+     <div id="footer"><a href="http://www.0x50.org">Cherokee</a> Web Server</div>
+ </body>
+</html>

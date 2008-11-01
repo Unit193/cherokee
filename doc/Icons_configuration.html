@@ -1,0 +1,123 @@
+<html>
+ <header>
+     <title>Cherokee Web Server: Icons configuration</title>
+	<style>	
+	body {
+		
+		width: 760px; 
+		margin: auto;
+		font-family: 'Trebuchet MS', 'Lucida Grande', Verdana, Arial, Sans-Serif;
+		font-size: small;
+		padding: 10px;
+	}
+	
+	#header {
+		border-bottom: 2px solid #b00;
+	}
+
+	#toc {
+		border: 
+		color: #650;
+		background-color: #f0e9b0;
+		border: 1px solid #a99d3a;
+		font-size: small;
+		-moz-border-radius: 4px;
+		float: right;
+		margin: 4px;
+	}
+
+	#toc a {
+		color: #650;
+	}
+
+	#toctitle {
+		color: #fff;
+		background-color: #650;
+	}
+	
+	h1 {
+		border-bottom: 1px solid #b00;
+		float: right;
+		border-bottom: 0px;
+	}
+
+	h2 {
+		border-bottom: 1px solid #b00;
+	}
+
+	pre {
+		background-color: #000;
+		color: #ddd;
+		padding: 5px;
+	}
+
+	#footer {
+		border-top: 1px dotted #ddd;
+		color: #666;
+		font-size: 90%;
+		padding: 10px;
+		padding-bottom: 40px;
+	}
+
+/* Merge template style */
+
+.messagebox {
+   border: 1px solid #aaaaaa;
+   background-color: #f9f9f9;
+   width: 80%;
+   margin: 0 auto 1em auto;
+   padding: .2em;
+   text-align: justify;
+}
+.messagebox.merge {
+   border: 1px solid #cf9fff;
+   background-color: #f5edf5;
+   text-align: center;
+}
+.messagebox.cleanup {
+   border: 1px solid #9f9fff;
+   background-color: #efefff;
+   text-align: center;
+}
+.messagebox.standard-talk {
+   border: 1px solid #c0c090;
+   background-color: #f8eaba;
+}
+
+	</style>
+ </header>
+ <body>
+     <h1>Icons configuration</h1>
+	<div id="header"><img src="cherokee.png" /></div>
+	   <p>The icons configuration file associates a icon image with one or more file extensions.
+This information will be used mainly by the <a href="Directory_listing.html" title="Directory listing">dirlist</a> handler.
+</p><p><br />
+There are five sections on this file:
+</p>
+<ul><li> <b>File</b>:  This section lets you specify an icon for certains filenames such as "<i>core</i>" or "<i>README</i>". It accepts wild-card strings (using * and&nbsp;?)
+</li><li> <b>Suffix</b>: In the same way, it allows to associate icons with extensions
+</li><li> <b>Directory</b>: In this case, it specifies the icon to be used with Directories.
+</li><li> <b>ParentDirectory</b>: This entry is used to assign a Icon to the "<i>go to the parent directory</i>" action.
+</li><li> <b>Default</b>:  This is the icon that will be shown if any of the previous ones matched.
+</li></ul>
+<p><br />
+</p>
+<a name="Examples"></a><h3> Examples </h3>
+<pre>file {
+    readme.png   *README*
+}
+
+suffix {
+    text.png     txt, text
+    image.png    jpg, jpeg, png, gif
+}
+
+Directory folder.png
+
+ParentDirectory back.png
+
+Default unknown.png</pre>
+
+     <div id="footer"><a href="http://www.0x50.org">Cherokee</a> Web Server</div>
+ </body>
+</html>

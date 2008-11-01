@@ -1,0 +1,119 @@
+<html>
+ <header>
+     <title>Cherokee Web Server: Request configuration</title>
+	<style>	
+	body {
+		
+		width: 760px; 
+		margin: auto;
+		font-family: 'Trebuchet MS', 'Lucida Grande', Verdana, Arial, Sans-Serif;
+		font-size: small;
+		padding: 10px;
+	}
+	
+	#header {
+		border-bottom: 2px solid #b00;
+	}
+
+	#toc {
+		border: 
+		color: #650;
+		background-color: #f0e9b0;
+		border: 1px solid #a99d3a;
+		font-size: small;
+		-moz-border-radius: 4px;
+		float: right;
+		margin: 4px;
+	}
+
+	#toc a {
+		color: #650;
+	}
+
+	#toctitle {
+		color: #fff;
+		background-color: #650;
+	}
+	
+	h1 {
+		border-bottom: 1px solid #b00;
+		float: right;
+		border-bottom: 0px;
+	}
+
+	h2 {
+		border-bottom: 1px solid #b00;
+	}
+
+	pre {
+		background-color: #000;
+		color: #ddd;
+		padding: 5px;
+	}
+
+	#footer {
+		border-top: 1px dotted #ddd;
+		color: #666;
+		font-size: 90%;
+		padding: 10px;
+		padding-bottom: 40px;
+	}
+
+/* Merge template style */
+
+.messagebox {
+   border: 1px solid #aaaaaa;
+   background-color: #f9f9f9;
+   width: 80%;
+   margin: 0 auto 1em auto;
+   padding: .2em;
+   text-align: justify;
+}
+.messagebox.merge {
+   border: 1px solid #cf9fff;
+   background-color: #f5edf5;
+   text-align: center;
+}
+.messagebox.cleanup {
+   border: 1px solid #9f9fff;
+   background-color: #efefff;
+   text-align: center;
+}
+.messagebox.standard-talk {
+   border: 1px solid #c0c090;
+   background-color: #f8eaba;
+}
+
+	</style>
+ </header>
+ <body>
+     <h1>Request configuration</h1>
+	<div id="header"><img src="cherokee.png" /></div>
+	   <p>The <b>Request</b> entry provides a powerful way to apply custom options to requests. It is a complement for the <a href="Directory_configuration.html" title="Directory configuration">Directory</a> and <a href="Extension_configuration.html" title="Extension configuration">Extension</a> entries.  Basically, there are two differences between them:
+</p>
+<ul><li> It uses regular expressions to define the requests in which the configuration will be applied.
+</li><li> These entries are able to use the connection parameters (both, pathinfo and query string). In this way, it is possible to set rules based on parameter values.
+</li></ul>
+<p><br />
+</p>
+<a name="Examples"></a><h3> Examples </h3>
+<a name="CGI_with_parameter"></a><h4> CGI with parameter </h4>
+<pre>Request &quot;^/cgi-bin/example.pl\?op=modify.*&quot; {
+    Allow From 127.0.0.1
+}</pre>
+<p>It will only allow to call the example.pl with the <i>modify</i> value in its first parameter <i>op</i> if the connections comes from localhost.
+</p><p><br />
+</p>
+<a name="Joining_pyshical_directories_in_a_virtual_one"></a><h4> Joining pyshical directories in a virtual one  </h4>
+<pre>Directory /downloads {
+    Handler file
+}
+
+Request &quot;/downloads/.*\.iso&quot; {
+    DocumentRoot /mnt/bigdisk/isos/
+}</pre>
+<p>It is a nice trick. Let's imagine the virtual server document root is <i>/var/www</i>.  The request of <i>http://example.com/downloads/file.zip</i> will access to <i>/var/www/downloads/file.zip</i>, but the request of <i>http://example.com/downloads/debian.iso</i> will access <i>/mnt/bigdisk/isos/debian.iso</i>.
+</p>
+     <div id="footer"><a href="http://www.0x50.org">Cherokee</a> Web Server</div>
+ </body>
+</html>

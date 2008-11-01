@@ -1,0 +1,141 @@
+<html>
+ <header>
+     <title>Cherokee Web Server: PHP execution</title>
+	<style>	
+	body {
+		
+		width: 760px; 
+		margin: auto;
+		font-family: 'Trebuchet MS', 'Lucida Grande', Verdana, Arial, Sans-Serif;
+		font-size: small;
+		padding: 10px;
+	}
+	
+	#header {
+		border-bottom: 2px solid #b00;
+	}
+
+	#toc {
+		border: 
+		color: #650;
+		background-color: #f0e9b0;
+		border: 1px solid #a99d3a;
+		font-size: small;
+		-moz-border-radius: 4px;
+		float: right;
+		margin: 4px;
+	}
+
+	#toc a {
+		color: #650;
+	}
+
+	#toctitle {
+		color: #fff;
+		background-color: #650;
+	}
+	
+	h1 {
+		border-bottom: 1px solid #b00;
+		float: right;
+		border-bottom: 0px;
+	}
+
+	h2 {
+		border-bottom: 1px solid #b00;
+	}
+
+	pre {
+		background-color: #000;
+		color: #ddd;
+		padding: 5px;
+	}
+
+	#footer {
+		border-top: 1px dotted #ddd;
+		color: #666;
+		font-size: 90%;
+		padding: 10px;
+		padding-bottom: 40px;
+	}
+
+/* Merge template style */
+
+.messagebox {
+   border: 1px solid #aaaaaa;
+   background-color: #f9f9f9;
+   width: 80%;
+   margin: 0 auto 1em auto;
+   padding: .2em;
+   text-align: justify;
+}
+.messagebox.merge {
+   border: 1px solid #cf9fff;
+   background-color: #f5edf5;
+   text-align: center;
+}
+.messagebox.cleanup {
+   border: 1px solid #9f9fff;
+   background-color: #efefff;
+   text-align: center;
+}
+.messagebox.standard-talk {
+   border: 1px solid #c0c090;
+   background-color: #f8eaba;
+}
+
+	</style>
+ </header>
+ <body>
+     <h1>PHP execution</h1>
+	<div id="header"><img src="cherokee.png" /></div>
+	   <p>The <b>phpcgi</b> handler executes <a href="http://www.php.net" class='external text' title="http://www.php.net" rel="nofollow">PHP</a> scripts using the CGI interface.
+As long as this module doesn't use any native library but the PHP CGI, it will work with PHP3, PHP4 and PHP5.
+</p><p><br />
+</p>
+<a name="Parameters"></a><h2>Parameters</h2>
+<p>It inheritates the <a href="CGI_executing.html" title="CGI executing">CGI executing</a> module parameters and adds a new one:
+</p>
+<ul><li> <b>Interpreter</b> <i>path</i>: It lets you define a path to the PHP interpreter
+</li><li> <b>ChangeUser</b> [<i>on</i> | <i>off</i>]: It interprets each php as it owner user
+</li></ul>
+<a name="Examples"></a><h2>Examples</h2>
+<p>The most common example of this module use is:
+</p>
+<pre>Extension php, php4 {
+   Handler phpcgi
+}
+</pre>
+<p>If you want to use a different PHP interpreter for both PHP4 and PHP5, you just have to use two different extension and asociate a interpreter which each one:
+</p>
+<pre>Extension php4 {
+   Handler phpcgi {
+      Interpreter /usr/bin/php4-cgi
+   }
+}
+
+Extension php5, php {
+   Handler phpcgi {
+      Interpreter /usr/bin/php5-cgi
+   }
+}
+</pre>
+<p>You can interpret each php file as the user that owns the file instead of the user defined in cherokee.conf.  This option provides additional security to run php files.
+</p>
+<pre>Extension php, php4 {
+   Handler phpcgi {
+      ChangeUser on
+   }
+}
+</pre>
+<pre>Extension php, php4 {
+   Handler phpcgi {
+      ChangeUser on
+      Interpreter /usr/bin/php4-cgi
+   }
+}
+</pre>
+
+     <div id="footer"><a href="http://www.0x50.org">Cherokee</a> Web Server</div>
+ </body>
+</html>

@@ -1,0 +1,148 @@
+<html>
+ <header>
+     <title>Cherokee Web Server: Configuration</title>
+	<style>	
+	body {
+		
+		width: 760px; 
+		margin: auto;
+		font-family: 'Trebuchet MS', 'Lucida Grande', Verdana, Arial, Sans-Serif;
+		font-size: small;
+		padding: 10px;
+	}
+	
+	#header {
+		border-bottom: 2px solid #b00;
+	}
+
+	#toc {
+		border: 
+		color: #650;
+		background-color: #f0e9b0;
+		border: 1px solid #a99d3a;
+		font-size: small;
+		-moz-border-radius: 4px;
+		float: right;
+		margin: 4px;
+	}
+
+	#toc a {
+		color: #650;
+	}
+
+	#toctitle {
+		color: #fff;
+		background-color: #650;
+	}
+	
+	h1 {
+		border-bottom: 1px solid #b00;
+		float: right;
+		border-bottom: 0px;
+	}
+
+	h2 {
+		border-bottom: 1px solid #b00;
+	}
+
+	pre {
+		background-color: #000;
+		color: #ddd;
+		padding: 5px;
+	}
+
+	#footer {
+		border-top: 1px dotted #ddd;
+		color: #666;
+		font-size: 90%;
+		padding: 10px;
+		padding-bottom: 40px;
+	}
+
+/* Merge template style */
+
+.messagebox {
+   border: 1px solid #aaaaaa;
+   background-color: #f9f9f9;
+   width: 80%;
+   margin: 0 auto 1em auto;
+   padding: .2em;
+   text-align: justify;
+}
+.messagebox.merge {
+   border: 1px solid #cf9fff;
+   background-color: #f5edf5;
+   text-align: center;
+}
+.messagebox.cleanup {
+   border: 1px solid #9f9fff;
+   background-color: #efefff;
+   text-align: center;
+}
+.messagebox.standard-talk {
+   border: 1px solid #c0c090;
+   background-color: #f8eaba;
+}
+
+	</style>
+ </header>
+ <body>
+     <h1>Configuration</h1>
+	<div id="header"><img src="cherokee.png" /></div>
+	   <p>The configuration files of Cherokee are usually placed on /etc/cherokee, but it might change depending on the distribution or installation parameters.  By default there are a few configuration files, each one with a a main target, but that is only the default configuration. Cherokee supports inclusion of configuration files, so you are free to write down a never ending configuration file with tens of virtual hosts inside it, or to split it up in separate files.
+</p>
+<div class="floatright"><span><img src="images/Server-conf-small.png" /></span></div>
+<p>There are three different configuration file
+</p>
+<ul><li> The main one is <b>cherokee.conf</b>. It is usually located in /etc/cherokee.  This file deals with the server configuration.
+</li><li> There is separate configuration file for the mime types: <b>mime.conf</b>
+</li><li> Finally, there is another one for the icons configurations: <b>icons.conf</b>.  This file let you associate the file extensions with the icons that will be shown on directory listing.
+</li></ul>
+<p><br />
+The most interesting file is cherokee.conf.  It file support to include files and directories, so the default configuration in splitted in a few files to make the configuration easier:
+</p>
+<ul><li> <b>/etc/cherokee/cherokee.conf</b>: Basic server configuration
+</li><li> <b>/etc/cherokee/advanced.conf</b>: Advanced topics. Don't touch it unless you know what you are doing.
+</li></ul>
+<p><br />
+The virtual servers configuration is contained in two directories:
+</p>
+<ul><li> <b>/etc/cherokee/sites-available</b>: The idea is to add a file per virtual server to contain its configuration, but it is just a suggestion. You reorganize it as you want, you might want to add more than one virtual server per file, and it is also ok.  The key points about this directory are:
+<ul><li> It will read all the files inside it, so be carefull to keep it clean.
+</li><li> It only holds the available hosts configurations. It doesn't mean these hosts are actived.
+</li></ul>
+</li><li> <b>/etc/cherokee/sites-enabled</b>: To active a site from the sites-available directory you should create a link from sites-avaible to sites-enabled.  In this way, if you want to desactivate a virtual host for maintainment reason, you will only need to remove a link.
+</li></ul>
+<p><br />
+There is also a container for extended functionalities:
+</p>
+<ul><li> <b>/etc/cherokee/mods-available</b>: It works in the same way as sites-avaible, but containing funcionalities.
+</li><li> <b>/etc/cherokee/mods-enabled</b>: It contains a link for each active module.
+</li></ul>
+<p><br />
+</p>
+<a name="How_to_add_a_new_virtual_host"></a><h2>How to add a new virtual host</h2>
+<p>Let imagine you want to add a virtual server called example.com.
+</p>
+<ul><li> The first task is to create of it. <b>/etc/cherokee/sites-available/example.com</b> seems to be a good name, but you could choose another one, there isn't problem at all.
+</li><li> Then add the desired configuration into it. For example:
+</li></ul>
+<pre>Server example.com, www.example.com {
+    DocumentRoot /var/www/example.com
+   
+    Directory / {
+        Handler file
+    }    
+
+    Extension php, php4 {
+        Handler phpcgi
+    }
+}</pre>
+<ul><li> And finally, if you want to make at virtual server active, link it from the sites-enabled directory:
+</li></ul>
+<pre>cd /etc/cherokee/sites-enabled
+ln -s /etc/cherokee/sites-available/example.com .</pre>
+
+     <div id="footer"><a href="http://www.0x50.org">Cherokee</a> Web Server</div>
+ </body>
+</html>

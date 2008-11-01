@@ -1,0 +1,220 @@
+<html>
+ <header>
+     <title>Cherokee Web Server: Jaws and Cherokee with FastCGI</title>
+	<style>	
+	body {
+		
+		width: 760px; 
+		margin: auto;
+		font-family: 'Trebuchet MS', 'Lucida Grande', Verdana, Arial, Sans-Serif;
+		font-size: small;
+		padding: 10px;
+	}
+	
+	#header {
+		border-bottom: 2px solid #b00;
+	}
+
+	#toc {
+		border: 
+		color: #650;
+		background-color: #f0e9b0;
+		border: 1px solid #a99d3a;
+		font-size: small;
+		-moz-border-radius: 4px;
+		float: right;
+		margin: 4px;
+	}
+
+	#toc a {
+		color: #650;
+	}
+
+	#toctitle {
+		color: #fff;
+		background-color: #650;
+	}
+	
+	h1 {
+		border-bottom: 1px solid #b00;
+		float: right;
+		border-bottom: 0px;
+	}
+
+	h2 {
+		border-bottom: 1px solid #b00;
+	}
+
+	pre {
+		background-color: #000;
+		color: #ddd;
+		padding: 5px;
+	}
+
+	#footer {
+		border-top: 1px dotted #ddd;
+		color: #666;
+		font-size: 90%;
+		padding: 10px;
+		padding-bottom: 40px;
+	}
+
+/* Merge template style */
+
+.messagebox {
+   border: 1px solid #aaaaaa;
+   background-color: #f9f9f9;
+   width: 80%;
+   margin: 0 auto 1em auto;
+   padding: .2em;
+   text-align: justify;
+}
+.messagebox.merge {
+   border: 1px solid #cf9fff;
+   background-color: #f5edf5;
+   text-align: center;
+}
+.messagebox.cleanup {
+   border: 1px solid #9f9fff;
+   background-color: #efefff;
+   text-align: center;
+}
+.messagebox.standard-talk {
+   border: 1px solid #c0c090;
+   background-color: #f8eaba;
+}
+
+	</style>
+ </header>
+ <body>
+     <h1>Jaws and Cherokee with FastCGI</h1>
+	<div id="header"><img src="cherokee.png" /></div>
+	   <table id='toc' class='toc'><tr><td><div id='toctitle'><h2>Contents</h2></div>
+<ul>
+<li class='toclevel-1'><a href="#About_Jaws_packages"><span class="tocnumber">1</span> <span class="toctext">About Jaws packages</span></a></li>
+<li class='toclevel-1'><a href="#Downloading"><span class="tocnumber">2</span> <span class="toctext">Downloading</span></a></li>
+<li class='toclevel-1'><a href="#Unpacking"><span class="tocnumber">3</span> <span class="toctext">Unpacking</span></a></li>
+<li class='toclevel-1'><a href="#Creating_your_public_web_directory"><span class="tocnumber">4</span> <span class="toctext">Creating your public web directory</span></a></li>
+<li class='toclevel-1'><a href="#Copying_Jaws_to_your_public_directory"><span class="tocnumber">5</span> <span class="toctext">Copying Jaws to your public directory</span></a></li>
+<li class='toclevel-1'><a href="#Setting_permissions"><span class="tocnumber">6</span> <span class="toctext">Setting permissions</span></a></li>
+<li class='toclevel-1'><a href="#Configuring_Cherokee_with_fcgi"><span class="tocnumber">7</span> <span class="toctext">Configuring Cherokee with fcgi</span></a></li>
+<li class='toclevel-1'><a href="#Restart_Cherokee"><span class="tocnumber">8</span> <span class="toctext">Restart Cherokee</span></a></li>
+<li class='toclevel-1'><a href="#Installing_Jaws"><span class="tocnumber">9</span> <span class="toctext">Installing Jaws</span></a></li>
+<li class='toclevel-1'><a href="#Done.21"><span class="tocnumber">10</span> <span class="toctext">Done!</span></a></li>
+</ul>
+</td></tr></table>
+<p><script type="text/javascript"> if (window.showTocToggle) { var tocShowText = "show"; var tocHideText = "hide"; showTocToggle(); } </script>
+</p>
+<a name="About_Jaws_packages"></a><h2>About Jaws packages</h2>
+<p>First you need to <a href="http://www.jaws-project.com/?page/download" class='external text' title="http://www.jaws-project.com/?page/download" rel="nofollow">download</a> the latest version of Jaws, there are 3 types of jaws packages:
+</p>
+<ul><li> The core: Only has the core and basic stuff to start hacking your own gadgets, it only includes core gadgets!
+</li><li> The blog system: Includes the core and some gadgets so you can start creating your own blog, it only includes one theme.
+</li><li> The complete: Includes everything, all gadgets and all themes.
+</li></ul>
+<p>In this tutorial we will use the complete tarball.
+</p>
+<a name="Downloading"></a><h2>Downloading</h2>
+<p>Go to any directory and download the .tar.gz with the help of your browser or wget, we will do it via wget:
+</p>
+<pre>
+$ cd
+$ mkdir downloads
+$ cd downloads
+$ #We now download the 0.6.1-complete tarball with wget
+$ wget http://forge.novell.com/modules/xfcontent/private.php/jaws/jaws-0.6.1/jaws-complete-0.6.1.tar.gz
+</pre>
+<a name="Unpacking"></a><h2>Unpacking</h2>
+<p>Now, we unpack the tarball
+</p>
+<pre>
+$ tar zxf jaws-complete-0.6.1.tar.gz
+</pre>
+<a name="Creating_your_public_web_directory"></a><h2>Creating your public web directory</h2>
+<p>Now, we need to have a public web directory we will use $HOME/public_html (~/public_html).
+</p>
+<pre>
+$ mkdir ~/public_html
+</pre>
+<a name="Copying_Jaws_to_your_public_directory"></a><h2>Copying Jaws to your public directory</h2>
+<p>Now, we need to move the Jaws files (PHP files) to our public web directory (public_html).
+</p>
+<pre>
+$ mv jaws/html/* ~/public_html/
+</pre>
+<a name="Setting_permissions"></a><h2>Setting permissions</h2>
+<p>Now, we need to know who is going to run Cherokee, we have two options:
+</p>
+<pre>* Checkout with ps ($ps aux) who's running Cherokee, if user nobody runs Cherokee all pages will be served by nobody user.
+* Checkout your Cherokee config to see if other user should run Cherokee.
+</pre>
+<pre>
+$ cd ~/public_html
+$ #In most cases user and group will be the same
+$ chown user.group data/ -R
+$ chown user.group config/ -R
+$ chmod 775 data/ -R
+$ chmod 775 config/ -R
+</pre>
+<a name="Configuring_Cherokee_with_fcgi"></a><h2>Configuring Cherokee with fcgi</h2>
+<p>Here you have two options:
+</p>
+<pre>* Open your Cherokee configuration file (/etc/cherokee/cherokee.conf)
+* Open your site configuration file (/etc/cherokee/sites-enabled/yoursite)
+</pre>
+<p>Now add the following data:
+</p>
+<pre>
+Port 80
+DocumentRoot /home/user/public_html
+DirectoryIndex index.php
+
+Directory / {
+    Handler file
+}
+
+Extension php {
+  Handler fcgi {
+    Server localhost:8000 {
+       Env PHP_FCGI_MAX_REQUESTS &quot;2000&quot;
+       Env PHP_FCGI_CHILDREN     &quot;3&quot;
+       Interpreter &quot;/usr/lib/cgi-bin/php -b 8000&quot;
+    }
+  }
+}
+</pre>
+<p>For example, if your user is: foobar you should add:
+</p>
+<pre>
+Port 80
+DocumentRoot /home/foobar/public_html
+DirectoryIndex index.php
+
+Directory / {
+    Handler file
+}
+
+Extension php {
+  Handler fcgi {
+    Server localhost:8000 {
+       Env PHP_FCGI_MAX_REQUESTS &quot;2000&quot;
+       Env PHP_FCGI_CHILDREN     &quot;3&quot;
+       Interpreter &quot;/usr/lib/cgi-bin/php -b 8000&quot;
+    }
+  }
+}</pre>
+<a name="Restart_Cherokee"></a><h2>Restart Cherokee</h2>
+<p>If Cherokee was running you need to restart it if not just start it.
+</p>
+<a name="Installing_Jaws"></a><h2>Installing Jaws</h2>
+<p>Now point your browser to:
+</p>
+<pre>
+http://localhost/install.php
+</pre>
+<a name="Done.21"></a><h2>Done!</h2>
+<p>Done, you are part of Cherokee-Jaws family, now go with your friends and promote both projects!
+</p>
+     <div id="footer"><a href="http://www.0x50.org">Cherokee</a> Web Server</div>
+ </body>
+</html>

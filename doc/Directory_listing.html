@@ -1,0 +1,152 @@
+<html>
+ <header>
+     <title>Cherokee Web Server: Directory listing</title>
+	<style>	
+	body {
+		
+		width: 760px; 
+		margin: auto;
+		font-family: 'Trebuchet MS', 'Lucida Grande', Verdana, Arial, Sans-Serif;
+		font-size: small;
+		padding: 10px;
+	}
+	
+	#header {
+		border-bottom: 2px solid #b00;
+	}
+
+	#toc {
+		border: 
+		color: #650;
+		background-color: #f0e9b0;
+		border: 1px solid #a99d3a;
+		font-size: small;
+		-moz-border-radius: 4px;
+		float: right;
+		margin: 4px;
+	}
+
+	#toc a {
+		color: #650;
+	}
+
+	#toctitle {
+		color: #fff;
+		background-color: #650;
+	}
+	
+	h1 {
+		border-bottom: 1px solid #b00;
+		float: right;
+		border-bottom: 0px;
+	}
+
+	h2 {
+		border-bottom: 1px solid #b00;
+	}
+
+	pre {
+		background-color: #000;
+		color: #ddd;
+		padding: 5px;
+	}
+
+	#footer {
+		border-top: 1px dotted #ddd;
+		color: #666;
+		font-size: 90%;
+		padding: 10px;
+		padding-bottom: 40px;
+	}
+
+/* Merge template style */
+
+.messagebox {
+   border: 1px solid #aaaaaa;
+   background-color: #f9f9f9;
+   width: 80%;
+   margin: 0 auto 1em auto;
+   padding: .2em;
+   text-align: justify;
+}
+.messagebox.merge {
+   border: 1px solid #cf9fff;
+   background-color: #f5edf5;
+   text-align: center;
+}
+.messagebox.cleanup {
+   border: 1px solid #9f9fff;
+   background-color: #efefff;
+   text-align: center;
+}
+.messagebox.standard-talk {
+   border: 1px solid #c0c090;
+   background-color: #f8eaba;
+}
+
+	</style>
+ </header>
+ <body>
+     <h1>Directory listing</h1>
+	<div id="header"><img src="cherokee.png" /></div>
+	   <p>The <b>dirlist</b> handler build the file list of a certain directory contents.
+</p>
+<a name="Parameters"></a><h2>Parameters</h2>
+<ul><li> Extra information
+<ul><li> <b>HeaderFile</b> <i>list of files</i>: This option allows you to insert a file on the top on the page. It is usuallu useful to insert copyright notices or disclaimers.  It accepts a list of possible files, the first one present will be used.
+</li></ul>
+</li></ul>
+<p><br />
+</p>
+<ul><li> Branding options
+<ul><li> <b>bgcolor</b>  "<i>color</i>": This option lets you specify the background color of the page
+</li><li> <b>text</b> "<i>color</i>": It sets the text color
+</li><li> <b>link</b> "<i>color</i>": Links color
+</li><li> <b>vlink</b> "<i>color</i>": Visited links color
+</li><li> <b>alink</b> "<i>color</i>": Active link color
+</li></ul>
+</li></ul>
+<p><i>color</i> means a color encoded in RGB web format. For example: <i>ff0000</i> for pure red.
+</p><p><br />
+</p>
+<ul><li> Showing / Hiding options
+<ul><li> <b>show</b> <i>property list</i>: It will active the columns generation of the given properties
+<ul><li> <b>date</b>: Modification date 
+</li><li> <b>size</b>: File size
+</li><li> <b>owner</b>: File's owner name
+</li><li> <b>group</b>: File's owner group
+</li></ul>
+</li></ul>
+</li></ul>
+<p>The <i>property list</i> is a comma separated list.  Take a look at the examples for clarification.
+</p>
+<a name="Examples"></a><h2>Examples</h2>
+<p>This basic example sets a directory up called <i>onlysee</i> which contents can be only browsed but isn't possible to download it:
+</p>
+<pre>Directory /onlysee {
+    Handler dirlist
+}
+</pre>
+<p>It isn't possible to download files because the directory is managed by the <b>dirlist</b> handler, and the only purpose of this handler is to list contents.  If you want to allow users to download the content of the directory (which is the most common intention) you should use the <a href="Common_behavior.html" title="Common behavior">Common behavior</a> handler instead.
+</p><p><br />
+The next example sets a <i>tmp</i> directory with a blue background. The generated file list will include the size and modification date of the files:
+</p>
+<pre>Directory /tmp {
+   Handler common {
+       # Look parameters:
+       # bgcolor, text, link, vlink, alink, background
+       bgcolor &quot;AACCEE&quot;
+
+       # Show extra information
+       # Possible parameters: date, size, owner
+       show size, date
+                           
+       # Include file if present as page header
+       HeaderFile README, README.txt
+   }
+}</pre>
+<p>In order to avoid possible configuration file parsing problems, put the HTML color codes between quotes.
+</p>
+     <div id="footer"><a href="http://www.0x50.org">Cherokee</a> Web Server</div>
+ </body>
+</html>

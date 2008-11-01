@@ -1,0 +1,144 @@
+<html>
+ <header>
+     <title>Cherokee Web Server: FastCGI</title>
+	<style>	
+	body {
+		
+		width: 760px; 
+		margin: auto;
+		font-family: 'Trebuchet MS', 'Lucida Grande', Verdana, Arial, Sans-Serif;
+		font-size: small;
+		padding: 10px;
+	}
+	
+	#header {
+		border-bottom: 2px solid #b00;
+	}
+
+	#toc {
+		border: 
+		color: #650;
+		background-color: #f0e9b0;
+		border: 1px solid #a99d3a;
+		font-size: small;
+		-moz-border-radius: 4px;
+		float: right;
+		margin: 4px;
+	}
+
+	#toc a {
+		color: #650;
+	}
+
+	#toctitle {
+		color: #fff;
+		background-color: #650;
+	}
+	
+	h1 {
+		border-bottom: 1px solid #b00;
+		float: right;
+		border-bottom: 0px;
+	}
+
+	h2 {
+		border-bottom: 1px solid #b00;
+	}
+
+	pre {
+		background-color: #000;
+		color: #ddd;
+		padding: 5px;
+	}
+
+	#footer {
+		border-top: 1px dotted #ddd;
+		color: #666;
+		font-size: 90%;
+		padding: 10px;
+		padding-bottom: 40px;
+	}
+
+/* Merge template style */
+
+.messagebox {
+   border: 1px solid #aaaaaa;
+   background-color: #f9f9f9;
+   width: 80%;
+   margin: 0 auto 1em auto;
+   padding: .2em;
+   text-align: justify;
+}
+.messagebox.merge {
+   border: 1px solid #cf9fff;
+   background-color: #f5edf5;
+   text-align: center;
+}
+.messagebox.cleanup {
+   border: 1px solid #9f9fff;
+   background-color: #efefff;
+   text-align: center;
+}
+.messagebox.standard-talk {
+   border: 1px solid #c0c090;
+   background-color: #f8eaba;
+}
+
+	</style>
+ </header>
+ <body>
+     <h1>FastCGI</h1>
+	<div id="header"><img src="cherokee.png" /></div>
+	   <p>The <b>fcgi</b> handler queries to [<a href="http://www.fastcgi.com" class='external text' title="http://www.fastcgi.com" rel="nofollow">FastCGI</a>] servers, such as PHP, in order to execute scripts.  It is basically the same thing as CGI but much faster.
+</p>
+<a name="Parameters"></a><h2>Parameters</h2>
+<p>This module accepts one parameter, and at the same time, supports all the CGI handler parameters:
+</p>
+<ul><li> <b>Server</b> <i>path or hostname:port</i>: It defines a server entry
+</li></ul>
+<p>Each <b>Server</b> parameter accepts these sub-parameters:
+</p>
+<ul><li> <b>Interpreter</b> "<i>path</i>": Defines the command line of the interpreter for this server. This sub-parameter only available for FastCGI servers which are running in the same computer with the webserver. The webserver will try to run the command line if it fails to connect to the specified address in <b>Server</b> parameter. If you run the FastCGI servers manually, this sub-parameter is not needed.
+</li><li> <b>Env</b> <i>variable_name</i> <i>"value"</i>: Set an environment variable for the FastCGI servers.
+</li></ul>
+<p>If multiple <b>Server</b> entries defined, the requests will be round-robinly served by each of <b>Server</b> entry.
+</p>
+<a name="Examples"></a><h2>Examples</h2>
+<p>This example shows a typical usage of FastCGI. It connects to a FastCGI server located in localhost in port 8002. If no server is running, the webserver will run the FastCGI server by issuing command defined in <b>Interpreter</b> sub-parameter.
+</p>
+<pre>Extension php {
+   Handler fcgi {
+      Server localhost:8002 {
+         Env PHP_FCGI_MAX_REQUESTS &quot;-1&quot;
+         Env PHP_FCGI_CHILDREN     &quot;5&quot;
+         Interpreter  &quot;/usr/bin/php5-fastcgi -b 8002&quot;
+      }
+   } 
+}
+</pre>
+<p>This example shows a typical usage of multiple FastCGI servers. It connects to a FastCGI servers located in several locations. If no server is running in the local computer, the webserver will run the FastCGI server by issuing command defined in <b>Interpreter</b> sub-parameter. Note that for remote FastCGI servers, you are responsible to run the FastCGI servers there manually.
+</p>
+<pre>Extension php {
+   Handler fcgi {
+      Server localhost:8002 {
+         Env PHP_FCGI_MAX_REQUESTS &quot;-1&quot;
+         Env PHP_FCGI_CHILDREN     &quot;5&quot;
+         Interpreter  &quot;/usr/bin/php5-fastcgi -b 8002&quot;
+      }
+      Server 192.168.0.13:8002 {
+         Env PHP_FCGI_MAX_REQUESTS &quot;-1&quot;
+         Env PHP_FCGI_CHILDREN     &quot;5&quot;
+      }
+      Server 192.168.0.10:8002 {
+         Env PHP_FCGI_MAX_REQUESTS &quot;-1&quot;
+         Env PHP_FCGI_CHILDREN     &quot;5&quot;
+      }
+   } 
+}
+</pre>
+<a name="Note"></a><h2>Note</h2>
+<p>The PHP_FCGI_CHILDREN environment variable is mandatory for PHP FastCGI servers. It define how much children should serve the requests coming from the webserver. If you define PHP_FCGI_MAX_REQUESTS, the value should be negative so that PHP would take the request as much as possible. If you left it unset, PHP will take the default value (500) and your 500th request will be rejected and FCGI handler will spew Error 500 (Internal server error) for it.
+</p>
+     <div id="footer"><a href="http://www.0x50.org">Cherokee</a> Web Server</div>
+ </body>
+</html>

@@ -1,0 +1,111 @@
+<html>
+ <header>
+     <title>Cherokee Web Server: W3C logger</title>
+	<style>	
+	body {
+		
+		width: 760px; 
+		margin: auto;
+		font-family: 'Trebuchet MS', 'Lucida Grande', Verdana, Arial, Sans-Serif;
+		font-size: small;
+		padding: 10px;
+	}
+	
+	#header {
+		border-bottom: 2px solid #b00;
+	}
+
+	#toc {
+		border: 
+		color: #650;
+		background-color: #f0e9b0;
+		border: 1px solid #a99d3a;
+		font-size: small;
+		-moz-border-radius: 4px;
+		float: right;
+		margin: 4px;
+	}
+
+	#toc a {
+		color: #650;
+	}
+
+	#toctitle {
+		color: #fff;
+		background-color: #650;
+	}
+	
+	h1 {
+		border-bottom: 1px solid #b00;
+		float: right;
+		border-bottom: 0px;
+	}
+
+	h2 {
+		border-bottom: 1px solid #b00;
+	}
+
+	pre {
+		background-color: #000;
+		color: #ddd;
+		padding: 5px;
+	}
+
+	#footer {
+		border-top: 1px dotted #ddd;
+		color: #666;
+		font-size: 90%;
+		padding: 10px;
+		padding-bottom: 40px;
+	}
+
+/* Merge template style */
+
+.messagebox {
+   border: 1px solid #aaaaaa;
+   background-color: #f9f9f9;
+   width: 80%;
+   margin: 0 auto 1em auto;
+   padding: .2em;
+   text-align: justify;
+}
+.messagebox.merge {
+   border: 1px solid #cf9fff;
+   background-color: #f5edf5;
+   text-align: center;
+}
+.messagebox.cleanup {
+   border: 1px solid #9f9fff;
+   background-color: #efefff;
+   text-align: center;
+}
+.messagebox.standard-talk {
+   border: 1px solid #c0c090;
+   background-color: #f8eaba;
+}
+
+	</style>
+ </header>
+ <body>
+     <h1>W3C logger</h1>
+	<div id="header"><img src="cherokee.png" /></div>
+	   <p>The <b>w3c</b> logger implements the <a href="http://www.w3.org/TR/WD-logfile.html" class='external text' title="http://www.w3.org/TR/WD-logfile.html" rel="nofollow">W3C log format</a>
+</p><p><br />
+</p>
+<a name="Parameters"></a><h3>Parameters</h3>
+<p>This logger accepts one parameter:
+</p>
+<ul><li> <b>LogFile</b> <i>path</i>: It specifies the path of the log file
+</li></ul>
+<p>If it is not set, the information will be sent to syslog.
+</p><p><br />
+</p>
+<a name="Examples"></a><h3>Examples</h3>
+<pre>Log w3c {
+   LogFile /var/log/cherokee.w3c.log
+}</pre>
+<p>Send the log information to <i>/var/log/cherokee.w3c.log</i> in the W3C log format.
+</p>
+     <div id="footer"><a href="http://www.0x50.org">Cherokee</a> Web Server</div>
+ </body>
+</html>
