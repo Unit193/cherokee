@@ -1,5 +1,7 @@
 from Page import *
 from Table import *
+from CherokeeManagement import *
+
 from time import asctime
 
 INET_WARNING = """
@@ -17,6 +19,10 @@ Date:  %(date)s
 Message
 -------
 %(body)s
+
+Server Information
+------------------
+%(server)s
 
 Configuration
 -------------
@@ -59,7 +65,7 @@ class PageFeedback (PageMenu, FormHelper):
         txt += """<p>Message:</p>
                   <p><textarea name="body" id="body" rows="20" style="width:100%%;"></textarea></p>
                """
-        form = Form ("/%s" % (self._id))
+        form = Form ("/%s" % (self._id),auto=False)
         return form.Render(txt)
 
     def _send_report (self, text):
@@ -72,7 +78,10 @@ class PageFeedback (PageMenu, FormHelper):
         conn = httplib.HTTPConnection("www.cherokee-project.org")
         conn.request("POST", CHEROKEE_FEEDBACK_URL, params, headers)
         response = conn.getresponse()
-        data = response.read()
+        try:
+            data = response.read()
+        except:
+            data = 'Error reading response from the serrver'
         conn.close()
         return data
         
@@ -82,13 +91,16 @@ class PageFeedback (PageMenu, FormHelper):
             configuration = str(self._cfg)
         else:
             configuration = 'Not included'
+
+        
         
         params = {
-            'name':  post.pop('name',  ''),
-            'email': post.pop('email', ''),
-            'body':  post.pop('body',  ''),
-            'date':  asctime(),
-            'conf':  configuration
+            'name':   post.pop('name',  ''),
+            'email':  post.pop('email', ''),
+            'body':   post.pop('body',  ''),
+            'date':   asctime(),
+            'conf':   configuration,
+            'server': cherokee_get_server_info()
         }
 
         txt = REPORT_TEMPLATE % params

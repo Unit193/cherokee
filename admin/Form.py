@@ -12,6 +12,20 @@ FORM_TEMPLATE = """
 </form>
 """
 
+AUTO_SUBMIT_JS = """
+<script type="text/javascript">
+$(document).ready(function(event) {
+  $("#auto").change(function(event) {
+    $("#auto input").each(function() {
+      this.form.submit()
+    });
+  });
+});
+</script>
+"""
+
+AUTOFORM_TEMPLATE = FORM_TEMPLATE.replace('<form','<form id="auto"') + AUTO_SUBMIT_JS
+
 SUBMIT_BUTTON = """
 <input type="submit" %(submit_props)s />
 """
@@ -52,11 +66,12 @@ class WebComponent:
         return self._op_handler(ruri, post)
 
 class Form:
-    def __init__ (self, action, method='post', add_submit=True):
+    def __init__ (self, action, method='post', add_submit=True, auto=True):
         self._action       = action
         self._method       = method
         self._add_submit   = add_submit
-        
+        self._auto         = auto
+
     def Render (self, content='', submit_props='' ):
         keys = {'submit':       '',
                 'submit_props': submit_props,
@@ -67,9 +82,16 @@ class Form:
         if self._add_submit:
             keys['submit'] = SUBMIT_BUTTON
 
-        render = FORM_TEMPLATE
+        if self._auto:
+            render = AUTOFORM_TEMPLATE
+        else:
+            render = FORM_TEMPLATE
+
         while '%(' in render:
-            render = render % keys
+            for replacement in re.findall (r'\%\((\w+)\)s', render):
+                macro = '%('+replacement+')s'
+                render = render.replace (macro, keys[replacement])
+
         return render
 
 
@@ -138,6 +160,7 @@ class FormHelper (WebComponent):
 
           jQuery("#tab_%s").Accordion(settings).change(
             function (event, newHeader, oldHeader) { 
+              if (! newHeader) return;
               document.cookie = "open_tab=" + newHeader.attr("num");
           });
         </script>
@@ -262,7 +285,7 @@ class FormHelper (WebComponent):
         
         return render
 
-    def InstanceCheckbox (self, cfg_key, default=None):
+    def InstanceCheckbox (self, cfg_key, default=None, quiet=False):
         try:
             tmp = self._cfg[cfg_key].value.lower()
             if tmp in ["on", "1", "true"]: 
@@ -273,16 +296,17 @@ class FormHelper (WebComponent):
             value = None
 
         if value == '1':
-            entry = Entry (cfg_key, 'checkbox', checked=value)
+            entry = Entry (cfg_key, 'checkbox', quiet=quiet, checked=value)
         elif value == '0':
-            entry = Entry (cfg_key, 'checkbox')
+            entry = Entry (cfg_key, 'checkbox', quiet=quiet)
         else:
             if default == True:
-                entry = Entry (cfg_key, 'checkbox', checked='1')
+                entry = Entry (cfg_key, 'checkbox', quiet=quiet, checked='1')
             elif default == False:
-                entry = Entry (cfg_key, 'checkbox')
+                entry = Entry (cfg_key, 'checkbox', quiet=quiet)
             else:
-                entry = Entry (cfg_key, 'checkbox')
+                entry = Entry (cfg_key, 'checkbox', quiet=quiet)
+                
         return entry
 
     def AddTableCheckbox (self, table, title, cfg_key, default=None):
@@ -379,7 +403,21 @@ class FormHelper (WebComponent):
                 if not value:
                     del (self._cfg[confkey])
                 else:
-                    self._cfg[confkey] = value
+                    self._cfg[confkey] = value        
+
+    def ApplyChangesDirectly (self, post):
+        for confkey in post:
+            if not '!' in confkey:
+                continue
+
+            if confkey in self.errors:
+                continue
+
+            value = post[confkey][0]
+            if not value:
+                del (self._cfg[confkey])
+            else:
+                self._cfg[confkey] = value        
         
     def ApplyChangesPrefix (self, prefix, checkboxes, post, validation=None):
         checkboxes_pre = ["%s!%s"%(prefix, x) for x in checkboxes]

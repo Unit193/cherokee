@@ -45,7 +45,7 @@
 #define DEFAULT_DOCUMENTROOT CHEROKEE_DATADIR "/admin"
 #define DEFAULT_CONFIG_FILE  CHEROKEE_CONFDIR "/cherokee.conf"
 #define DEFAULT_BIND         "127.0.0.1"
-#define RULE_PRE             "vserver!default!rule!"
+#define RULE_PRE             "vserver!1!rule!"
  
 static int   port          = DEFAULT_PORT;
 static char *document_root = DEFAULT_DOCUMENTROOT;
@@ -94,13 +94,15 @@ config_server (cherokee_server_t *srv)
 		return ret;
 
 	cherokee_buffer_add_va  (&buf, "server!port = %d\n", port);
+	cherokee_buffer_add_str (&buf, "server!thread_number = 1\n");
 	cherokee_buffer_add_str (&buf, "server!ipv6 = 0\n");
 	cherokee_buffer_add_str (&buf, "server!max_connection_reuse = 0\n");
 
 	if (bind_to)
 		cherokee_buffer_add_va (&buf, "server!listen = %s\n", bind_to);
 
-	cherokee_buffer_add_va  (&buf, "vserver!default!document_root = %s\n", document_root);
+	cherokee_buffer_add_str (&buf, "vserver!1!nick = default\n");
+	cherokee_buffer_add_va  (&buf, "vserver!1!document_root = %s\n", document_root);
 
 	cherokee_buffer_add_va  (&buf, 
 				 RULE_PRE "1!match = default\n"
@@ -122,10 +124,11 @@ config_server (cherokee_server_t *srv)
 				 RULE_PRE "3!handler = file\n"
 				 RULE_PRE "3!handler!iocache = 0\n");
 
-	cherokee_buffer_add_str (&buf, 
+	cherokee_buffer_add_va  (&buf, 
 				 RULE_PRE "4!match = request\n"
 				 RULE_PRE "4!match!request = ^/favicon.ico$\n"
-				 RULE_PRE "4!handler = file\n");
+				 RULE_PRE "4!document_root = %s/static/images\n"
+				 RULE_PRE "4!handler = file\n", document_root);
 
 	cherokee_buffer_add_va  (&buf, 
 				 RULE_PRE "5!match = directory\n"
@@ -208,6 +211,9 @@ main (int argc, char **argv)
 
 #ifdef SIGPIPE
         signal (SIGPIPE, SIG_IGN);
+#endif
+#ifdef SIGCHLD
+        signal (SIGCHLD, SIG_IGN);
 #endif
 
 	cherokee_init();

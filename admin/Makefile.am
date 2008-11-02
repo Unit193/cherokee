@@ -5,7 +5,7 @@ SUBDIRS = static
 SUFFIXES = .py.pre .py
 
 .py.pre.py:
-	sed -e "s|%sysconfdir%|${sysconfdir}|g; s|%datadir%|${datadir}|g; s|%prefix%|${prefix}|g; s|%localstatedir%|${localstatedir}|g; s|%wwwroot%|${WWW_ROOT}|g; s|%version%|${PACKAGE_VERSION}|g; s|%phpcgi%|${PHPCGI}|g" $< > $@
+	sed -e "s|%sysconfdir%|${sysconfdir}|g; s|%datadir%|${datadir}|g; s|%prefix%|${prefix}|g; s|%localstatedir%|${localstatedir}|g; s|%libdir%|${libdir}|g; s|%wwwroot%|${WWW_ROOT}|g; s|%version%|${PACKAGE_VERSION}|g; s|%phpcgi%|${PHPCGI}|g" $< > $@
 
 PY_PRE = \
 configured.py.pre
@@ -50,6 +50,7 @@ ModuleFcgi.py \
 ModuleScgi.py \
 ModuleBalancer.py \
 ModuleMirror.py \
+ModuleErrorNn.py \
 ModuleErrorRedir.py \
 ModuleAuth.py \
 ModuleAdmin.py \
@@ -64,10 +65,12 @@ ModuleDefault.py \
 ModuleRequest.py \
 ModuleDirectory.py \
 ModuleExtensions.py \
+ModuleGeoip.py \
 config.py \
 pyscgi.py \
 validations.py \
-CherokeeManagement.py
+CherokeeManagement.py \
+flags.py
 
 adminhelpdir = "$(datadir)/cherokee/admin"
 adminhelp_DATA = \

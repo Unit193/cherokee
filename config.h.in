@@ -1,5 +1,8 @@
 /* config.h.in.  Generated from configure.in by autoheader.  */
 
+/* configure arguments */
+#undef CHEROKEE_CONFIG_ARGS
+
 /* Define to 1 if the `closedir' function returns void instead of `int'. */
 #undef CLOSEDIR_VOID
 
@@ -59,8 +62,14 @@
 /* Define to 1 if you have the `flockfile' function. */
 #undef HAVE_FLOCKFILE
 
+/* Define to 1 if you have the `fork' function. */
+#undef HAVE_FORK
+
 /* Define to 1 if you have the `funlockfile' function. */
 #undef HAVE_FUNLOCKFILE
+
+/* Define to 1 if you have the <GeoIP.h> header file. */
+#undef HAVE_GEOIP_H
 
 /* Define if getaddrinfo exists and works well enough for APR */
 #undef HAVE_GETADDRINFO
@@ -161,6 +170,9 @@
 /* Have kqueue */
 #undef HAVE_KQUEUE
 
+/* Define to 1 if you have the `advapi32' library (-ladvapi32). */
+#undef HAVE_LIBADVAPI32
+
 /* Define to 1 if you have the `crypto' library (-lcrypto). */
 #undef HAVE_LIBCRYPTO
 
@@ -188,16 +200,13 @@
 /* Define to 1 if you have the `ws2_32' library (-lws2_32). */
 #undef HAVE_LIBWS2_32
 
-/* Define to 1 if you have the `wsock32' library (-lwsock32). */
-#undef HAVE_LIBWSOCK32
-
 /* Define to 1 if you have the `localtime' function. */
 #undef HAVE_LOCALTIME
 
 /* Define to 1 if you have the `localtime_r' function. */
 #undef HAVE_LOCALTIME_R
 
-/* Whether the host supports long long's */
+/* Whether the host supports long long' */
 #undef HAVE_LONGLONG
 
 /* Define to 1 if you have the <machine/endian.h> header file. */
@@ -433,6 +442,9 @@
 /* TCP_CORK was found and will be used */
 #undef HAVE_TCP_CORK
 
+/* TCP_NOPUSH was found and will be used */
+#undef HAVE_TCP_NOPUSH
+
 /* Have TLS support */
 #undef HAVE_TLS
 
@@ -450,6 +462,12 @@
 /* va_list works copying an array */
 #undef HAVE_VA_LIST_AS_ARRAY
 
+/* Define to 1 if you have the `vfork' function. */
+#undef HAVE_VFORK
+
+/* Define to 1 if you have the <vfork.h> header file. */
+#undef HAVE_VFORK_H
+
 /* Define to 1 if you have the `vprintf' function. */
 #undef HAVE_VPRINTF
 
@@ -465,8 +483,17 @@
 /* Define to 1 if you have the <winsock.h> header file. */
 #undef HAVE_WINSOCK_H
 
+/* Define to 1 if `fork' works. */
+#undef HAVE_WORKING_FORK
+
+/* Define to 1 if `vfork' works. */
+#undef HAVE_WORKING_VFORK
+
 /* Whether the hpux sendfile() API is available */
 #undef HPUX_SENDFILE_API
+
+/* It is SGI Irix */
+#undef IRIX
 
 /* Define if you have ldap_start_tls_s */
 #undef LDAP_HAVE_START_TLS_S
@@ -561,13 +588,9 @@
 /* Whether to include sendfile() support */
 #undef WITH_SENDFILE
 
-/* Define WORDS_BIGENDIAN to 1 if your processor stores words with the most
-   significant byte first (like Motorola and SPARC, unlike Intel and VAX). */
-#if defined __BIG_ENDIAN__
-# define WORDS_BIGENDIAN 1
-#elif ! defined __LITTLE_ENDIAN__
-# undef WORDS_BIGENDIAN
-#endif
+/* Define to 1 if your processor stores words with the most significant byte
+   first (like Motorola and SPARC, unlike Intel and VAX). */
+#undef WORDS_BIGENDIAN
 
 /* Number of bits in a file offset, on hosts where this is settable. */
 #undef _FILE_OFFSET_BITS
@@ -628,6 +651,9 @@
 
 /* Define to `int' if <sys/types.h> doesn't define. */
 #undef uid_t
+
+/* Define as `fork' if `vfork' does not work. */
+#undef vfork
 
 /* Define to `unsigned short' if <sys/types.h> does not define. */
 #undef wchar_t

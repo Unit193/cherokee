@@ -185,8 +185,8 @@ cherokee_downloader_get_reply_code (cherokee_downloader_t *downloader, cherokee_
 static ret_t 
 connect_to (cherokee_downloader_t *downloader, cherokee_buffer_t *host, cuint_t port, int protocol)
 {
-	ret_t               ret;
-	cherokee_socket_t  *sock = &downloader->socket;
+	ret_t              ret;
+	cherokee_socket_t *sock = &downloader->socket;
 
 	TRACE(ENTRIES, "host=%s port=%d proto=%d\n", host->buf, port, protocol);
 
@@ -214,7 +214,9 @@ connect_to (cherokee_downloader_t *downloader, cherokee_buffer_t *host, cuint_t 
 	 */
 	ret = cherokee_socket_connect (sock);
 	TRACE(ENTRIES, "socket=%p ret=%d\n", sock, ret);
-	if (unlikely(ret != ret_ok)) return ret;
+
+	if (unlikely(ret != ret_ok)) 
+		return ret;
 
 	/* Is this connection TLS?
 	 */
@@ -274,7 +276,7 @@ downloader_send_buffer (cherokee_downloader_t *downloader, cherokee_buffer_t *bu
 	case ret_ok:
 		/* Drop the header that has been sent
 		 */
-		cherokee_buffer_drop_endding (buf, written);
+		cherokee_buffer_drop_ending (buf, written);
 		if (cherokee_buffer_is_empty (buf)) {
 			return ret_ok;
 		}
@@ -352,7 +354,7 @@ downloader_header_read (cherokee_downloader_t *downloader, cherokee_buffer_t *tm
 			downloader->info.body_recv += body_chunk;
 			cherokee_buffer_add (&downloader->body, downloader->reply_header.buf + len, body_chunk);
 
-			cherokee_buffer_drop_endding (&downloader->reply_header, body_chunk);
+			cherokee_buffer_drop_ending (&downloader->reply_header, body_chunk);
 		}
 
 		/* Try to read the "Content-Length" response header

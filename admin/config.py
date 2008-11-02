@@ -1,3 +1,4 @@
+import copy
 import types
 
 class ConfigNode (object):
@@ -6,6 +7,7 @@ class ConfigNode (object):
         self._child = {}
 
     # Value
+    #
     def _get_value (self):
         return self._val
     def _set_value (self, val):
@@ -181,6 +183,19 @@ class Config:
     def __getitem__ (self, path):
         return self.root[path]
 
+    def clone (self, path_old, path_new):
+        parent, parent_path, child_name = self._get_parent_node (path_old)
+        if self.root[path_new]:
+            return True
+        copied = copy.deepcopy (self[path_old])
+        self.set_sub_node (path_new, copied)
+    
+    def rename (self, path_old, path_new):
+        error = self.clone (path_old, path_new)
+        if not error:
+            del(self[path_old])
+        return error
+
     def set_sub_node (self, path, config_node):
         assert (isinstance(config_node, ConfigNode))
 
@@ -218,7 +233,24 @@ class Config:
 
     # Serialization
     def serialize (self):
-        return self.root.serialize()
+        def sorter(x,y):
+            order = ['server', 'vserver', 'icons', 'mime']
+            a = x.split('!')[0]
+            b = y.split('!')[0]
+            try:
+                ai = order.index(a)
+                bi = order.index(b)
+            except:
+                return cmp(x,y)
+            if ai > bi:
+                return  1
+            elif ai < bi:
+                return -1
+            return cmp(x,y)
+
+        tmp = self.root.serialize().split('\n')
+        tmp.sort(sorter)
+        return '\n'.join(tmp)
 
     def save (self):
         # Try to make a copy

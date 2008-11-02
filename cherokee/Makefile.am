@@ -15,11 +15,14 @@ bin_SCRIPTS = cherokee-panic
 #
 cherokeedepsdir = "$(datadir)/cherokee/deps"
 cherokeedeps_DATA = \
-nn.deps \
 common.deps \
 combined.deps \
 error_redir.deps \
-phpcgi.deps
+phpcgi.deps \
+scgi.deps \
+fcgi.deps \
+fastcgi.deps \
+cgi.deps
 
 cherokeedatadir = "$(datadir)/cherokee"
 cherokeedata_DATA = mime_types.txt
@@ -56,9 +59,17 @@ getopt/getopt.c  \
 getopt/getopt1.c \
 getopt/gettext.h
 
-
+#
+# Check whether external libraries can be used
+#
 if !HAVE_GETOPT_LONG
 internal_getopt_src=$(getopt_src)
+endif
+
+if USE_INTERNAL_PCRE
+internal_pcre_src=$(pcre_src)
+else
+external_pcre_lib=-lpcre
 endif
 
 #
@@ -152,6 +163,27 @@ if STATIC_RULE_HEADER
 static_rule_header_src = $(rule_header)
 else
 dynamic_rule_header_lib = libplugin_header.la
+endif
+
+
+#
+# Rule geoip
+#
+if HAVE_GEOIP
+rule_geoip = \
+rule_geoip.c \
+rule_geoip.h
+
+libplugin_geoip_la_LDFLAGS = $(module_ldflags)  
+libplugin_geoip_la_SOURCES = $(rule_geoip)
+libplugin_geoip_la_LIBADD  = -lGeoIP
+
+if STATIC_RULE_HEADER
+static_rule_geoip_src = $(rule_geoip)
+static_rule_geoip_lib = -lGeoIP
+else
+dynamic_rule_geoip_lib = libplugin_geoip.la
+endif
 endif
 
 
@@ -273,6 +305,7 @@ handler_cgi.h
 
 libplugin_cgi_la_LDFLAGS = $(module_ldflags)  
 libplugin_cgi_la_SOURCES = $(handler_cgi)
+libplugin_cgi_la_LIBADD  = $(dynamic_handler_file_lib)
 
 if STATIC_HANDLER_CGI
 static_handler_cgi_src = $(handler_cgi)
@@ -295,6 +328,7 @@ handler_scgi.c
 
 libplugin_scgi_la_LDFLAGS = $(module_ldflags)  
 libplugin_scgi_la_SOURCES = $(handler_scgi)
+libplugin_scgi_la_LIBADD  = $(dynamic_handler_file_lib)
 
 if STATIC_HANDLER_SCGI
 static_handler_scgi_src = $(handler_scgi)
@@ -318,6 +352,7 @@ handler_fcgi.c
 
 libplugin_fcgi_la_LDFLAGS = $(module_ldflags)  
 libplugin_fcgi_la_SOURCES = $(handler_fcgi)
+libplugin_fcgi_la_LIBADD  = $(dynamic_handler_file_lib)
 
 if STATIC_HANDLER_FCGI
 static_handler_fcgi_src = $(handler_fcgi)
@@ -345,6 +380,7 @@ handler_fastcgi.h
 
 libplugin_fastcgi_la_LDFLAGS = $(module_ldflags)  
 libplugin_fastcgi_la_SOURCES = $(handler_fastcgi)
+libplugin_fastcgi_la_LIBADD  = $(dynamic_handler_file_lib)
 
 if STATIC_HANDLER_FASTCGI
 static_handler_fastcgi_src = $(handler_fastcgi)
@@ -366,6 +402,7 @@ endif
 
 libplugin_phpcgi_la_LDFLAGS = $(module_ldflags) $(phpcgi_ldflags_win32)
 libplugin_phpcgi_la_SOURCES = $(handler_phpcgi)
+libplugin_phpcgi_la_LIBADD  = $(dynamic_handler_file_lib)
 
 if STATIC_HANDLER_PHPCGI
 static_handler_phpcgi_src = $(handler_phpcgi)
@@ -413,6 +450,25 @@ endif
 
 
 #
+# Handler error_nn
+#
+handler_error_nn = \
+levenshtein_distance.c \
+levenshtein_distance.h \
+handler_error_nn.c \
+handler_error_nn.h
+
+libplugin_error_nn_la_LDFLAGS = $(module_ldflags)
+libplugin_error_nn_la_SOURCES = $(handler_error_nn)
+
+if STATIC_HANDLER_ERROR_NN
+static_handler_error_nn_src = $(handler_error_nn)
+else
+dynamic_handler_error_nn_lib = libplugin_error_nn.la
+endif
+
+
+#
 # Handler common
 #
 handler_common = \
@@ -434,25 +490,21 @@ endif
 
 
 #
-# Handler nn
+# Handler proxy
 #
-handler_nn = \
-levenshtein_distance.c \
-levenshtein_distance.h \
-handler_nn.c \
-handler_nn.h
+handler_proxy = \
+handler_proxy.c \
+handler_proxy.h
 
-if PLATFORM_WIN32
-nn_ldflags_win32 = -lplugin_common -lplugin_redir
-endif
+libplugin_proxy_la_LDFLAGS = $(module_ldflags)  
+libplugin_proxy_la_SOURCES = $(handler_proxy)
+libplugin_proxy_la_LIBADD  = libcherokee-client.la
 
-libplugin_nn_la_LDFLAGS = $(module_ldflags) $(nn_ldflags_win32)
-libplugin_nn_la_SOURCES = $(handler_nn)
-
-if STATIC_HANDLER_NN
-static_handler_nn_src = $(handler_nn)
+if STATIC_HANDLER_PROXY
+static_handler_proxy_src = $(handler_proxy)
+static_handler_proxy_lib = libcherokee-client.la
 else
-dynamic_handler_nn_lib = libplugin_nn.la
+dynamic_handler_proxy_lib = libplugin_proxy.la
 endif
 
 
@@ -512,6 +564,23 @@ if STATIC_ENCODER_GZIP
 static_encoder_gzip_src = $(encoder_gzip)
 else
 dynamic_encoder_gzip_lib = libplugin_gzip.la
+endif
+
+
+#
+# Encoder Deflate
+#
+encoder_deflate = \
+encoder_deflate.h \
+encoder_deflate.c
+
+libplugin_deflate_la_LDFLAGS = $(module_ldflags)
+libplugin_deflate_la_SOURCES = $(encoder_deflate)
+
+if STATIC_ENCODER_DEFLATE
+static_encoder_deflate_src = $(encoder_deflate)
+else
+dynamic_encoder_deflate_lib = libplugin_deflate.la
 endif
 
 
@@ -708,13 +777,6 @@ endif
 
 
 
-if USE_INTERNAL_PCRE
-internal_pcre_src=$(pcre_src)
-else
-external_pcre_lib=-lpcre
-endif
-
-
 lib_LTLIBRARIES = \
 libcherokee-base.la \
 libcherokee-client.la \
@@ -750,8 +812,10 @@ $(PTHREAD_LIBS) \
 $(PTHREAD_CFLAGS) \
 $(static_validator_pam_lib) \
 $(static_validator_ldap_lib)  \
+$(static_rule_geoip_lib)  \
 $(static_validator_htpasswd_lib) \
 $(static_validator_mysql_lib) \
+$(static_handler_proxy_lib) \
 libcherokee-base.la
 
 libcherokee_config_la_LDFLAGS = $(common_ldflags) $(library_soname)
@@ -875,7 +939,11 @@ post.c \
 config_node.h \
 config_node.c \
 config_reader.h \
-config_reader.c 
+config_reader.c \
+bogotime.h \
+bogotime.c \
+cache.h \
+cache.c
 
 libcherokee_client_la_SOURCES = \
 url.h \
@@ -889,21 +957,18 @@ downloader_async.h \
 downloader_async.c
 
 
-if STATIC_HANDLER_FCGI
+if STATIC_HANDLER_FCGI 
    common_cgi = handler_cgi_base.h \
 	     	 handler_cgi_base.c
 endif
-
 if STATIC_HANDLER_FASTCGI
    common_cgi = handler_cgi_base.h \
 	     	 handler_cgi_base.c
 endif
-
 if STATIC_HANDLER_CGI
    common_cgi = handler_cgi_base.h \
 	     	 handler_cgi_base.c
 endif
-
 if STATIC_HANDLER_SCGI
    common_cgi = handler_cgi_base.h \
 	     	 handler_cgi_base.c
@@ -915,6 +980,7 @@ $(static_rule_directory_src) \
 $(static_rule_extensions_src) \
 $(static_rule_request_src) \
 $(static_rule_header_src) \
+$(static_rule_geoip_src) \
 $(static_rule_not_src) \
 $(static_rule_and_src) \
 $(static_rule_or_src) \
@@ -927,10 +993,11 @@ $(static_handler_fcgi_src) \
 $(static_handler_fastcgi_src) \
 $(static_handler_redir_src) \
 $(static_handler_error_redir_src) \
+$(static_handler_error_nn_src) \
 $(static_handler_cgi_src) \
 $(static_handler_phpcgi_src) \
 $(static_handler_common_src) \
-$(static_handler_nn_src) \
+$(static_handler_proxy_src) \
 $(static_handler_mirror_src) \
 $(static_handler_server_info_src) \
 \
@@ -939,6 +1006,7 @@ $(static_logger_ncsa_src) \
 $(static_logger_combined_src) \
 \
 $(static_encoder_gzip_src) \
+$(static_encoder_deflate_src) \
 \
 $(static_validator_pam_src) \
 $(static_validator_ldap_src) \
@@ -999,7 +1067,9 @@ balancer.c \
 source.h \
 source.c \
 source_interpreter.h \
-source_interpreter.c
+source_interpreter.c \
+info.h \
+info.c
 
 libcherokee_config_la_SOURCES = \
 $(config_common) \
@@ -1030,6 +1100,7 @@ header.h \
 resolv_cache.h \
 post.h \
 trace.h \
+avl.h \
 \
 config_node.h \
 config_entry.h \
@@ -1063,24 +1134,27 @@ $(dynamic_rule_directory_lib) \
 $(dynamic_rule_extensions_lib) \
 $(dynamic_rule_request_lib) \
 $(dynamic_rule_header_lib) \
+$(dynamic_rule_geoip_lib) \
 $(dynamic_rule_not_lib) \
 $(dynamic_rule_and_lib) \
 $(dynamic_rule_or_lib) \
+$(dynamic_handler_file_lib) \
 $(dynamic_handler_cgi_lib) \
 $(dynamic_handler_phpcgi_lib) \
 $(dynamic_handler_server_info_lib) \
-$(dynamic_handler_file_lib) \
 $(dynamic_handler_admin_lib) \
 $(dynamic_handler_dirlist_lib) \
 $(dynamic_handler_scgi_lib) \
 $(dynamic_handler_fcgi_lib) \
 $(dynamic_handler_fastcgi_lib) \
 $(dynamic_handler_redir_lib) \
+$(dynamic_handler_proxy_lib) \
 $(dynamic_handler_mirror_lib) \
 $(dynamic_handler_error_redir_lib) \
+$(dynamic_handler_error_nn_lib) \
 $(dynamic_handler_common_lib) \
-$(dynamic_handler_nn_lib) \
 $(dynamic_encoder_gzip_lib) \
+$(dynamic_encoder_deflate_lib) \
 $(dynamic_logger_ncsa_lib) \
 $(dynamic_logger_combined_lib) \
 $(dynamic_logger_w3c_lib) \
@@ -1183,3 +1257,6 @@ $(cherokeedata_DATA) \
 $(WINDOWS_PORT_FILES) \
 loader.autoconf.h \
 loader.autoconf.inc
+
+distclean-local:
+	$(RM) -f loader.autoconf.h loader.autoconf.inc

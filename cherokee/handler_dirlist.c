@@ -331,7 +331,7 @@ generate_file_entry (cherokee_handler_dirlist_t *dhdl, DIR *dir, cherokee_buffer
 		 */
 		re = cherokee_lstat (path->buf, &n->stat);
 		if (re < 0) {
-			cherokee_buffer_drop_endding (path, n->name_len);
+			cherokee_buffer_drop_ending (path, n->name_len);
 
 			free (n);
 			return ret_error;
@@ -339,7 +339,7 @@ generate_file_entry (cherokee_handler_dirlist_t *dhdl, DIR *dir, cherokee_buffer
 
 		/* Clean up and exit
 		 */
-		cherokee_buffer_drop_endding (path, n->name_len);
+		cherokee_buffer_drop_ending (path, n->name_len);
 
 		*ret_entry = n;
 		return ret_ok;
@@ -356,6 +356,8 @@ cherokee_handler_dirlist_new  (cherokee_handler_t **hdl, void *cnt, cherokee_mod
 	char  *value;
 	CHEROKEE_NEW_STRUCT (n, handler_dirlist);
 	
+	TRACE_CONN(cnt);
+
 	/* Init the base class object
 	 */
 	cherokee_handler_init_base (HANDLER(n), cnt, HANDLER_PROPS(props), PLUGIN_INFO_HANDLER_PTR(dirlist));
@@ -453,27 +455,11 @@ check_request_finish_with_slash (cherokee_handler_dirlist_t *dhdl)
 	cherokee_connection_t *conn = HANDLER_CONN(dhdl);
 
 	if ((cherokee_buffer_is_empty (&conn->request)) ||
-	    (!cherokee_buffer_is_endding (&conn->request, '/'))) {
-
-		cherokee_buffer_clean (&conn->redirect);
-		cherokee_buffer_ensure_size (&conn->redirect, 
-					     conn->web_directory.len + conn->request.len + conn->userdir.len + 4);
-
-		if (! cherokee_buffer_is_empty (&conn->userdir)) {
-			cherokee_buffer_add_str (&conn->redirect, "/~");
-			cherokee_buffer_add_buffer (&conn->redirect, &conn->userdir);
-		}
-
-		/* Build the redirection
-		 */
-		if ((conn->uses_document_root) &&
-		    (! cherokee_buffer_is_empty (&conn->web_directory))) 
-		{
-			cherokee_buffer_add_buffer (&conn->redirect, &conn->web_directory);
-		}
-
-		cherokee_buffer_add_buffer (&conn->redirect, &conn->request);
-		cherokee_buffer_add_str (&conn->redirect, "/");
+	    (!cherokee_buffer_is_ending (&conn->request, '/'))) 
+	{
+		cherokee_buffer_add_str (&conn->request, "/");
+		cherokee_connection_set_redirect (conn, &conn->request);
+		cherokee_buffer_drop_ending (&conn->request, 1);
 		
 		conn->error_code = http_moved_permanently;
 		return ret_error;		
@@ -612,7 +598,7 @@ build_file_list (cherokee_handler_dirlist_t *dhdl)
 	/* Clean
 	 */
 	closedir(dir);
-	cherokee_buffer_drop_endding (&conn->local_directory, conn->request.len); /* 2 */
+	cherokee_buffer_drop_ending (&conn->local_directory, conn->request.len); /* 2 */
 
 	/* Sort the file list
 	 */
@@ -678,7 +664,7 @@ read_notice_file (cherokee_handler_dirlist_t *dhdl)
 			cherokee_buffer_add (&conn->local_directory, filename, filename_len);
 			
 			ret = cherokee_buffer_read_file (&dhdl->header, conn->local_directory.buf);
-			cherokee_buffer_drop_endding (&conn->local_directory, conn->request.len + filename_len); /* undo */
+			cherokee_buffer_drop_ending (&conn->local_directory, conn->request.len + filename_len); /* undo */
 		} else {
 			ret = cherokee_buffer_read_file (&dhdl->header, filename);
 		}
@@ -782,9 +768,10 @@ static ret_t
 render_file (cherokee_handler_dirlist_t *dhdl, cherokee_buffer_t *buffer, file_entry_t *file)
 {
 	ret_t                             ret;
-	cherokee_boolean_t                is_dir;
-	cherokee_boolean_t                is_link;
 	cherokee_buffer_t                *vtmp[2];
+	cuint_t                           name_len;
+	cherokee_boolean_t                is_dir;
+	cherokee_boolean_t                is_link  = false;
 	char                             *alt      = NULL;
 	cherokee_buffer_t                *icon     = NULL;
 	char                             *name     = (char *) &file->info.d_name;
@@ -799,7 +786,9 @@ render_file (cherokee_handler_dirlist_t *dhdl, cherokee_buffer_t *buffer, file_e
 	VTMP_INIT_SUBST (thread, vtmp, &props->entry);
 
 	is_dir  = S_ISDIR(file->stat.st_mode);
+#ifdef S_ISLNK
 	is_link = S_ISLNK(file->stat.st_mode);
+#endif
 
 	/* Check whether it is a symlink that we should skip
 	 */
@@ -809,6 +798,7 @@ render_file (cherokee_handler_dirlist_t *dhdl, cherokee_buffer_t *buffer, file_e
 	/* Add the icon
 	 */
 	alt = (is_dir) ? "[DIR]" : "[   ]";
+	name_len = strlen(name);
 
 	if (props->show_icons) {
 		if (is_dir) {
@@ -816,7 +806,7 @@ render_file (cherokee_handler_dirlist_t *dhdl, cherokee_buffer_t *buffer, file_e
 		} else {
 			cherokee_buffer_t name_buf;
 
-			cherokee_buffer_fake (&name_buf, name, strlen(name));
+			cherokee_buffer_fake (&name_buf, name, name_len);
 			ret = cherokee_icons_get_icon (icons, &name_buf, &icon);
 			if (ret != ret_ok)
 				return ret;
@@ -837,7 +827,15 @@ render_file (cherokee_handler_dirlist_t *dhdl, cherokee_buffer_t *buffer, file_e
 	/* File
 	 */
 	VTMP_SUBSTITUTE_TOKEN ("%file_name%", name);
-	VTMP_SUBSTITUTE_TOKEN ("%file_link%", name);
+
+	if (! is_dir) {
+		VTMP_SUBSTITUTE_TOKEN ("%file_link%", name);
+	} else {
+		cherokee_buffer_clean (tmp);
+		cherokee_buffer_add (tmp, name, name_len);
+		cherokee_buffer_add_str (tmp, "/");
+		VTMP_SUBSTITUTE_TOKEN ("%file_link%", tmp->buf);		
+	}
 
 	/* Date
 	 */
@@ -855,13 +853,15 @@ render_file (cherokee_handler_dirlist_t *dhdl, cherokee_buffer_t *buffer, file_e
 		if (is_dir) {
 			VTMP_SUBSTITUTE_TOKEN ("%size_unit%", NULL);
 			VTMP_SUBSTITUTE_TOKEN ("%size%", "-");
+		} else if (is_link) {
+			VTMP_SUBSTITUTE_TOKEN ("%size_unit%", NULL);
+			VTMP_SUBSTITUTE_TOKEN ("%size%", "link");
 		} else {
 			char *unit;
 
 			cherokee_buffer_clean (tmp);
 			cherokee_buffer_ensure_size (tmp, 8);
-
-			cherokee_strfsize (file->stat.st_size, tmp->buf);
+			cherokee_buffer_add_fsize (tmp, file->stat.st_size);
 
 			unit = tmp->buf;
 			while ((*unit >= '0')  && (*unit <= '9')) unit++;

@@ -61,7 +61,7 @@
 #include "encoder_table.h"
 #include "post.h"
 #include "header-protected.h"
-
+#include "regex.h"
 
 typedef enum {
 	phase_nothing,
@@ -80,10 +80,11 @@ typedef enum {
 } cherokee_connection_phase_t;
 
 
-#define conn_op_nothing       0
-#define conn_op_log_at_end   (1 << 0)
-#define conn_op_root_index   (1 << 1)
-#define conn_op_tcp_cork     (1 << 2)
+#define conn_op_nothing        0
+#define conn_op_log_at_end    (1 << 0)
+#define conn_op_root_index    (1 << 1)
+#define conn_op_tcp_cork      (1 << 2)
+#define conn_op_document_root (1 << 3)
 
 typedef cuint_t cherokee_connection_options_t;
 
@@ -100,6 +101,7 @@ struct cherokee_connection {
 	/* ID
 	 */
 	culong_t                      id;
+	cherokee_buffer_t             self_trace;
 	
 	/* Socket stuff
 	 */
@@ -119,7 +121,6 @@ struct cherokee_connection {
 	/* State
 	 */
 	cherokee_connection_phase_t   phase;
-	cherokee_connection_phase_t   phase_return;
 	cherokee_http_t               error_code;
 	
 	/* Headers
@@ -141,7 +142,6 @@ struct cherokee_connection {
 	cherokee_buffer_t             userdir;             /* 'alo' in http://www.alobbs.com/~alo/thing */
 	cherokee_buffer_t             query_string;	
 	cherokee_avl_t               *arguments;
-	cherokee_boolean_t            uses_document_root;
 
 	cherokee_buffer_t             host;
 	cherokee_buffer_t             effective_directory;
@@ -173,6 +173,7 @@ struct cherokee_connection {
 	/* Polling
 	 */
 	int                           polling_fd;
+	cherokee_socket_status_t      polling_mode;
 	cherokee_boolean_t            polling_multiple;
 
 	off_t                         range_start;
@@ -182,8 +183,8 @@ struct cherokee_connection {
 	off_t                         mmaped_len;
 	cherokee_iocache_entry_t     *io_entry_ref;
 
-	int                          *regex_match_ovector;
-	int                          *regex_match_ovecsize;
+	int                           regex_ovector[OVECTOR_LEN];
+	int                           regex_ovecsize;
 };
 
 #define CONN_SRV(c)    (SRV(CONN(c)->server))
@@ -192,13 +193,14 @@ struct cherokee_connection {
 #define CONN_VSRV(c)   (VSERVER(CONN(c)->vserver))
 #define CONN_THREAD(c) (THREAD(CONN(c)->thread))
 
+#define TRACE_CONN(c)  TRACE("conn", "%s", cherokee_connection_print(c));
 
 /* Basic functions
  */
 ret_t cherokee_connection_new                    (cherokee_connection_t **conn);
 ret_t cherokee_connection_free                   (cherokee_connection_t  *conn);
 ret_t cherokee_connection_clean                  (cherokee_connection_t  *conn);
-ret_t cherokee_connection_mrproper               (cherokee_connection_t  *conn);
+ret_t cherokee_connection_clean_close            (cherokee_connection_t  *conn);
 
 /* Close
  */
@@ -221,6 +223,7 @@ ret_t cherokee_connection_check_authentication   (cherokee_connection_t *conn, c
 ret_t cherokee_connection_check_ip_validation    (cherokee_connection_t *conn, cherokee_config_entry_t *config_entry);
 ret_t cherokee_connection_check_only_secure      (cherokee_connection_t *conn, cherokee_config_entry_t *config_entry);
 ret_t cherokee_connection_check_http_method      (cherokee_connection_t *conn, cherokee_config_entry_t *config_entry);
+void  cherokee_connection_set_keepalive          (cherokee_connection_t *conn);
 
 /* Iteration
  */
@@ -236,13 +239,18 @@ ret_t cherokee_connection_parse_header           (cherokee_connection_t *conn, c
 int   cherokee_connection_is_userdir             (cherokee_connection_t *conn);
 ret_t cherokee_connection_build_local_directory  (cherokee_connection_t *conn, cherokee_virtual_server_t *vsrv, cherokee_config_entry_t *entry);
 ret_t cherokee_connection_build_local_directory_userdir (cherokee_connection_t *conn, cherokee_virtual_server_t *vsrv, cherokee_config_entry_t *entry);
+ret_t cherokee_connection_clean_error_headers    (cherokee_connection_t *conn);
+ret_t cherokee_connection_set_redirect           (cherokee_connection_t *conn, cherokee_buffer_t *address);
+
 ret_t cherokee_connection_clean_for_respin       (cherokee_connection_t *conn);
+int   cherokee_connection_use_webdir             (cherokee_connection_t *conn);
 
 /* Log
  */
 ret_t cherokee_connection_log_or_delay           (cherokee_connection_t *conn);
 ret_t cherokee_connection_log_delayed            (cherokee_connection_t *conn);
 ret_t cherokee_connection_update_vhost_traffic   (cherokee_connection_t *conn);
+char *cherokee_connection_print                  (cherokee_connection_t *conn);
 
 /* Transfers
  */

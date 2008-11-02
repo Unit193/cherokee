@@ -1,5 +1,17 @@
-import os, sys, time, random
+import os, sys, time, random, fcntl
+
 from conf import *
+
+term = os.getenv("TERM")
+if 'color' in term:
+    MESSAGE_SUCCESS = '\033[0;48;36m Success \033[0m' # Blue
+    MESSAGE_FAILED  = '\033[0;48;31m  Failed \033[0m' # Red
+    MESSAGE_SKIPPED = '\033[0;48;33m Skipped \033[0m' # Yellow
+else:
+    MESSAGE_SUCCESS = 'Success'
+    MESSAGE_FAILED  = ' Failed'
+    MESSAGE_SKIPPED = 'Skipped'
+
 
 def count_down (msg, nsecs, nl=True):
     for s in range(nsecs):
@@ -144,3 +156,71 @@ def get_free_port():
     global __free_port
     __free_port += 1
     return __free_port
+
+
+#
+# Plug-in checking
+#
+
+_server_info = None
+
+def cherokee_get_server_info ():
+    global _server_info
+
+    if _server_info == None:
+        try:
+            f = os.popen ("%s -i" % (CHEROKEE_SRV_PATH))
+            _server_info = f.read()
+            f.close()
+        except:
+            pass
+
+    return _server_info
+
+
+_built_in_list      = []
+_built_in_list_done = False
+
+
+def cherokee_build_info_has (filter, module):
+    # Let's see whether it's built-in
+    global _built_in_list
+    global _built_in_list_done
+
+    if not _built_in_list_done:
+        _built_in_list_done = True
+
+        try:
+            f = os.popen ("%s -i" % (CHEROKEE_SRV_PATH))
+            cont = f.read()
+            f.close()
+        except:
+            pass
+
+        try:
+            filter_string = " %s: " % (filter)
+            for l in cont.split("\n"):
+                if l.startswith(filter_string):
+                    line = l.replace (filter_string, "")
+                    break
+            _built_in_list = line.split(" ")
+        except:
+            pass
+
+    return module in _built_in_list
+
+def cherokee_has_plugin (module):
+    # Check for the dynamic plug-in
+    try:
+        mods = filter(lambda x: module in x, os.listdir(CHEROKEE_PLUGINDIR))
+        if len(mods) >= 1:
+            return True
+    except:
+        pass
+
+    return cherokee_build_info_has ("Built-in", module)
+
+def print_sec (content):
+    fcntl.flock (sys.stdout, fcntl.LOCK_EX)
+    print content
+    fcntl.flock (sys.stdout, fcntl.LOCK_UN)

@@ -1,4 +1,5 @@
 import validations
+from urllib import quote
 
 from Page import *
 from Table import *
@@ -47,7 +48,7 @@ class PageMime (PageMenu, FormHelper):
         content  = self._render_mime_list()
         content += self._render_add_mime()
 
-        form = Form ('/%s' % (self._id))
+        form = Form ('/%s' % (self._id), auto=False)
         return form.Render (content, DEFAULT_SUBMIT_VALUE)
 
     def _render_mime_list (self):
@@ -62,7 +63,7 @@ class PageMime (PageMenu, FormHelper):
                 cfg_key = 'mime!%s'%(mime)
                 e1 = self.InstanceEntry('%s!extensions'%(cfg_key), 'text', size=20)
                 e2 = self.InstanceEntry('%s!max-age'%(cfg_key), 'text', size=6, maxlength=6)
-                js = "post_del_key('/icons/update', '%s');" % (cfg_key)
+                js = "post_del_key('/ajax/update', '%s');" % (quote(cfg_key))
                 link_del = self.InstanceImage ("bin.png", "Delete", border="0", onClick=js)
                 table += (mime, e1, e2, link_del)
             txt += '<div id="mimetable">%s</div>'%(str(table))

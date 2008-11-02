@@ -109,7 +109,7 @@ match_and_substitute (cherokee_handler_redir_t *n)
 	/* Try to match it
 	 */
 	list_for_each (i, &HDL_REDIR_PROPS(n)->regex_list) {
-		cint_t           rc;
+		cint_t           rc = 0;
 		char            *subject; 
 		cint_t           subject_len;
 		cint_t           ovector[OVECTOR_LEN];
@@ -129,17 +129,29 @@ match_and_substitute (cherokee_handler_redir_t *n)
 
 		subject_len = strlen (subject);
 
-		/* It might be matched previosly in the request parsing..
+		/* Case 1: No conn substitution, No local regex
 		 */
-		if (list->re == NULL) {
-			memcpy (ovector, 
-				conn->regex_match_ovector,
-				OVECTOR_LEN * sizeof(int));
+		if ((list->re == NULL) &&
+		    (conn->regex_ovecsize == 0))
+		{
+			TRACE (ENTRIES, "Using conn->ovector, size=%d\n", 
+			       conn->regex_ovecsize);
+		} 
 
-			rc = *conn->regex_match_ovecsize;
+		/* Case 2: Cached conn substitution
+		 */
+		else if (list->re == NULL) {
+			memcpy (ovector,
+				conn->regex_ovector,
+				OVECTOR_LEN * sizeof(cint_t));
+			
+			rc = conn->regex_ovecsize;
 			TRACE (ENTRIES, "Using conn->ovector, size=%d\n", rc);
+		} 
 
-		} else {
+		/* Case 3: Use the rule-subentry regex
+		 */
+		else {
 			rc = pcre_exec (list->re, NULL, subject, subject_len, 0, 0, ovector, OVECTOR_LEN);
 			if (rc == 0) {
 				PRINT_ERROR_S("Too many groups in the regex\n");
@@ -176,7 +188,7 @@ match_and_substitute (cherokee_handler_redir_t *n)
 			if (len > 0) {
 				cherokee_buffer_clean (&conn->query_string);
 				cherokee_buffer_add (&conn->query_string, args, len);
-				cherokee_buffer_drop_endding (&conn->request, len+1);
+				cherokee_buffer_drop_ending (&conn->request, len+1);
 			}
 
 			TRACE (ENTRIES, "Hidden redirect to: request=\"%s\" query_string=\"%s\"\n", 
@@ -201,7 +213,7 @@ match_and_substitute (cherokee_handler_redir_t *n)
 
 out:
 	if (! cherokee_buffer_is_empty (&conn->query_string))
-		cherokee_buffer_drop_endding (&conn->request, conn->query_string.len + 1);
+		cherokee_buffer_drop_ending (&conn->request, conn->query_string.len + 1);
 
 	return ret;
 }
@@ -318,7 +330,7 @@ ret_t
 cherokee_handler_redir_init (cherokee_handler_redir_t *n)
 {
 	int                    request_end;
-	char                  *request_endding;
+	char                  *request_ending;
 	cherokee_connection_t *conn = HANDLER_CONN(n);
     
 	/* Maybe ::new -> match_and_substitute() has already set
@@ -339,11 +351,11 @@ cherokee_handler_redir_init (cherokee_handler_redir_t *n)
 	/* Try with URL directive
 	 */
 	request_end = (conn->request.len - conn->web_directory.len);
-	request_endding = conn->request.buf + conn->web_directory.len;
+	request_ending = conn->request.buf + conn->web_directory.len;
 	
 	cherokee_buffer_ensure_size (&conn->redirect, request_end + HDL_REDIR_PROPS(n)->url.len +1);
 	cherokee_buffer_add_buffer (&conn->redirect, &HDL_REDIR_PROPS(n)->url);
-	cherokee_buffer_add (&conn->redirect, request_endding, request_end);
+	cherokee_buffer_add (&conn->redirect, request_ending, request_end);
 
 	conn->error_code = http_moved_permanently;
 	return ret_ok;

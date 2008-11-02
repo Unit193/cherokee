@@ -22,11 +22,14 @@ class PageIcon (PageMenu, FormHelper):
     def _op_handler (self, uri, post):
         if uri.startswith('/update'):
             return self._op_apply_changes (post)
+
         elif uri.startswith('/add_file'):
             return self._op_add_file (post)
+
         elif uri.startswith('/add_suffix'):
             return self._op_add_suffix (post)
-        raise 'Unknown method'
+
+        raise Exception ('Unknown method')
 
     def _op_add_file (self, post):
         match = post.get_val('file_new_match')
@@ -126,7 +129,7 @@ class PageIcon (PageMenu, FormHelper):
             tmp += self.Indent(table)
 
         # New suffix
-        fo1 = Form ("/%s/add_suffix" % (self._id), add_submit=False)
+        fo1 = Form ("/%s/add_suffix" % (self._id), add_submit=False, auto=False)
         op1, im1 = self._get_options_icons ('suffix_new_file', 
                                             self._filter_icons_in_suffixes)
         en2 = self.InstanceEntry('suffix_new_exts', 'text')
@@ -175,7 +178,7 @@ class PageIcon (PageMenu, FormHelper):
             tmp += self.Indent(table)
 
         # New file
-        fo1 = Form ("/%s/add_file" % (self._id), add_submit=False)
+        fo1 = Form ("/%s/add_file" % (self._id), add_submit=False, auto=False)
         op1, im1 = self._get_options_icons ('file_new_file')
         en1 = self.InstanceEntry('file_new_match', 'text')
         ta1 = Table (4,1)

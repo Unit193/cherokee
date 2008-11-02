@@ -4,14 +4,15 @@ from Page import *
 from Form import *
 from Table import *
 from consts import *
+from CherokeeManagement import *
 
 DATA_VALIDATION = [
 ]
 
 COMMENT = """
-<p>In this section you can configure the server encoders, which
-basically means that you can define where you want it to compress the
-information being sent with GZip.</p>
+<p>In this section you can configure the server encoders. This
+basically means that you can define what information is to be
+sent compressed or not, and the compression method to use.</p>
 """
 
 DATA_VALIDATION = [
@@ -35,7 +36,7 @@ class MatchingList (FormHelper):
         FormHelper.__init__ (self, 'matching_list', cfg)
         self._prefix = pre
         self.errors  = errors
-        
+
     def _op_render (self):
         txt   = ''
         table = TableProps()
@@ -52,6 +53,9 @@ class PageEncoders (PageMenu, FormHelper):
         PageMenu.__init__ (self, 'encoder', cfg)
         FormHelper.__init__ (self, 'encoder', cfg)
 
+        # Check which encoders are available
+        self.encoders = modules_available (ENCODERS)
+
     def _op_render (self):
         content = self._render_encoder_list()
 
@@ -67,7 +71,7 @@ class PageEncoders (PageMenu, FormHelper):
             self._op_apply_add_encoder (post)
         else:
             raise 'Unknown method'
-        return self._op_render()        
+        return self._op_render()
 
     def _render_encoder_list (self):
         txt     = ''
@@ -76,35 +80,35 @@ class PageEncoders (PageMenu, FormHelper):
 
         txt += "<h1>Information encoding</h1>"
         txt += self.Dialog(COMMENT)
-        
+
         # Current encoders
         if cfg and cfg.has_child():
             txt += "<h2>Encoders</h2>"
-            
+
             encs_txt = []
             for encoder in cfg:
-                txt2    = ''
+                title   = "<h3>%s</h3>" % (encoder)
                 cfg_key = '%s!%s'%(cfg_key, encoder)
 
                 mlist = MatchingList (self._cfg, cfg_key, self.errors)
-                txt2 += "<h3>%s</h3>" % (encoder)
-                txt2 += mlist._op_render()
+                txt2 = mlist._op_render()
                 js = "post_del_key('/%s/update', '%s');" % (self._id, cfg_key)
                 link_del = self.InstanceImage ("bin.png", "Delete", border="0", onClick=js)
                 txt2 += link_del
-                encs_txt.append(txt2)
+                encoder_render = title + self.Indent(txt2)
+                encs_txt.append(encoder_render)
 
-            txt += self.Indent("<hr />".join(encs_txt))
+            txt += "<hr />".join(encs_txt)
 
         # Add new encoder
         if not cfg:
-            encoders_left = ENCODERS
+            encoders_left = self.encoders
         else:
             encoders_left = []
-            for i in range(len(ENCODERS)):
-                encoder, desc = ENCODERS[i]
+            for i in range(len(self.encoders)):
+                encoder, desc = self.encoders[i]
                 if not encoder in cfg:
-                    encoders_left.append (ENCODERS[i])
+                    encoders_left.append (self.encoders[i])
 
         if encoders_left:
             txt += "<h2>Add encoder</h2>"
@@ -118,13 +122,13 @@ class PageEncoders (PageMenu, FormHelper):
             table += (ops, bu1)
             txt += self.Indent(str(table))
 
-        form = Form ("/%s" % (self._id))
+        form = Form ("/%s" % (self._id), add_submit=False)
         return form.Render(txt,DEFAULT_SUBMIT_VALUE)
-	
+
     def _op_apply_changes (self, post):
         self.ApplyChanges ([], post, DATA_VALIDATION)
         return "/%s" % (self._id)
-    
+
     def _op_apply_add_encoder (self, post):
         encoder = post.get_val('new_encoder')
         if not encoder:

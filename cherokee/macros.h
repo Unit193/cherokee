@@ -125,9 +125,6 @@
 # error FD_NUM_MIN_SYSTEM too low or FD_NUM_SPARE FDS too high
 #endif
 
-#define IOCACHE_MAX_FILE_SIZE            50000
-#define IOCACHE_DEFAULT_CLEAN_ELAPSE     2
-
 #define EXIT_CANT_CREATE_SERVER_SOCKET4 10
 #define EXIT_SERVER_CLEAN               30
 #define EXIT_SERVER_READ_CONFIG         31
@@ -166,7 +163,7 @@
 
 
 #define SHOULDNT_HAPPEN \
-	do { fprintf (stderr, "file %s:%d (%s): this shouldn't happen\n",  \
+	do { fprintf (stderr, "file %s:%d (%s): this should not happen\n",  \
 		      __FILE__, __LINE__, __cherokee_func__);               \
 	} while (0)
 
@@ -282,11 +279,11 @@
 #ifdef __GNUC__
 # define PRINT_MSG(fmt,arg...)       fprintf(stderr, fmt, ##arg)
 # define PRINT_ERROR(fmt,arg...)     fprintf(stderr, "%s:%d: "fmt, __FILE__, __LINE__, ##arg)
-# define PRINT_ERRNO(err,fmt,arg...) cherokee_print_errno(err, fmt"\n", ##arg)
+# define PRINT_ERRNO(err,fmt,arg...) cherokee_print_errno(err, "%s:%d: "fmt"\n", __FILE__, __LINE__, ##arg)
 #else
 # define PRINT_MSG(fmt,...)          fprintf(stderr, fmt, __VA_ARGS__)
 # define PRINT_ERROR(fmt,...)        fprintf(stderr, "%s:%d: "fmt, __FILE__, __LINE__, __VA_ARGS__)
-# define PRINT_ERRNO(err,fmt,...)    cherokee_print_errno(err, fmt"\n", __VA_ARGS__)
+# define PRINT_ERRNO(err,fmt,...)    cherokee_print_errno(err, "%s:%d: "fmt"\n", __FILE__, __LINE__, __VA_ARGS__)
 #endif
 
 #ifdef DEBUG
@@ -393,5 +390,8 @@
 #else
 # define SLASH '/'
 #endif
+
+
+#define CHEROKEE_CRASH do { *((int *)(0)) = 1; } while(0)
 
 #endif /* CHEROKEE_MACROS_H */

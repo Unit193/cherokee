@@ -53,22 +53,12 @@ am__vpath_adj = case $$p in \
     *) f=$$p;; \
   esac;
 am__strip_dir = `echo $$p | sed -e 's|^.*/||'`;
-am__installdirs = "$(DESTDIR)$(docdir)" "$(DESTDIR)$(docbalancersdir)" \
-	"$(DESTDIR)$(docencodersdir)" "$(DESTDIR)$(dochandlersdir)" \
-	"$(DESTDIR)$(docloggersdir)" "$(DESTDIR)$(docmediacssdir)" \
-	"$(DESTDIR)$(docmediaimagesdir)" \
-	"$(DESTDIR)$(docvalidatorsdir)"
+am__installdirs = "$(DESTDIR)$(docdir)" "$(DESTDIR)$(docmediacssdir)" \
+	"$(DESTDIR)$(docmediaimagesdir)"
 docDATA_INSTALL = $(INSTALL_DATA)
-docbalancersDATA_INSTALL = $(INSTALL_DATA)
-docencodersDATA_INSTALL = $(INSTALL_DATA)
-dochandlersDATA_INSTALL = $(INSTALL_DATA)
-docloggersDATA_INSTALL = $(INSTALL_DATA)
 docmediacssDATA_INSTALL = $(INSTALL_DATA)
 docmediaimagesDATA_INSTALL = $(INSTALL_DATA)
-docvalidatorsDATA_INSTALL = $(INSTALL_DATA)
-DATA = $(doc_DATA) $(docbalancers_DATA) $(docencoders_DATA) \
-	$(dochandlers_DATA) $(docloggers_DATA) $(docmediacss_DATA) \
-	$(docmediaimages_DATA) $(docvalidators_DATA)
+DATA = $(doc_DATA) $(docmediacss_DATA) $(docmediaimages_DATA)
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
 AMTAR = @AMTAR@
@@ -96,6 +86,7 @@ CYGPATH_W = @CYGPATH_W@
 DEFS = @DEFS@
 DEPDIR = @DEPDIR@
 DLLTOOL = @DLLTOOL@
+DSYMUTIL = @DSYMUTIL@
 ECHO = @ECHO@
 ECHO_C = @ECHO_C@
 ECHO_N = @ECHO_N@
@@ -131,6 +122,7 @@ MYSQL_CFLAGS = @MYSQL_CFLAGS@
 MYSQL_CONFIG = @MYSQL_CONFIG@
 MYSQL_LDFLAGS = @MYSQL_LDFLAGS@
 MYSQL_VERSION = @MYSQL_VERSION@
+NMEDIT = @NMEDIT@
 OBJDUMP = @OBJDUMP@
 OBJEXT = @OBJEXT@
 PACKAGE = @PACKAGE@
@@ -149,6 +141,7 @@ PKG_CONFIG = @PKG_CONFIG@
 PTHREAD_CFLAGS = @PTHREAD_CFLAGS@
 PTHREAD_LIBS = @PTHREAD_LIBS@
 RANLIB = @RANLIB@
+SED = @SED@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
 STRIP = @STRIP@
@@ -178,7 +171,7 @@ builddir = @builddir@
 cherokeepath = @cherokeepath@
 datadir = @datadir@
 datarootdir = @datarootdir@
-docdir = $(datadir)/doc/cherokee/
+docdir = $(datadir)/doc/cherokee
 dvidir = @dvidir@
 exec_prefix = @exec_prefix@
 host = @host@
@@ -206,108 +199,135 @@ sharedstatedir = @sharedstatedir@
 srcdir = @srcdir@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
-top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
+ASCIIDOC = python $(top_srcdir)/doc/build/asciidoc.py --unsafe --conf-file=$(top_srcdir)/doc/build/doc.conf
+SUFFIXES = .txt .html
 doc_DATA = \
 index.html \
-authentication.html \
-general.html \
-loggers.html \
-vserver.html \
-debug.html \
-entry.html \
-compiling_and_installing_unix.html \
-compiling_and_installing_windows.html \
-cross_compile_cherokee.html \
-internal_configuration.html \
-advanced.html \
-admin.html \
-download.html \
-How_to_generate_SSL_keys.html \
-icons.html
+basics.html \
+basics_why_cherokee.html \
+basics_requirements.html \
+basics_download.html \
+basics_installation.html \
+basics_installation_unix.html \
+basics_installation_windows.html \
+basics_installation_svn.html \
+basics_upgrade.html \
+basics_running_cherokee.html \
+bundle.html \
+bundle_cherokee.html \
+bundle_cherokee-admin.html \
+bundle_cherokee-config.html \
+bundle_cherokee-guardian.html \
+bundle_cherokee-tweak.html \
+bundle_spawn-fcgi.html \
+bundle_cget.html \
+config.html \
+config_quickstart.html \
+config_general.html \
+config_virtual_servers.html \
+config_virtual_servers_rule.html \
+config_encoding.html \
+config_icons.html \
+config_mime_types.html \
+config_advanced.html \
+cookbook.html \
+cookbook_managing_logs.html \
+cookbook_optimizations.html \
+cookbook_cross_compilation.html \
+cookbook_django.html \
+cookbook_php.html \
+cookbook_ror.html \
+cookbook_authentication.html \
+cookbook_ssl.html \
+modules.html \
+modules_balancers.html \
+modules_balancers_round_robin.html \
+modules_encoders.html \
+modules_encoders_gzip.html \
+modules_encoders_deflate.html \
+modules_handlers.html \
+modules_handlers_file.html \
+modules_handlers_dirlist.html \
+modules_handlers_common.html \
+modules_handlers_redir.html \
+modules_handlers_cgi.html \
+modules_handlers_fcgi.html \
+modules_handlers_scgi.html \
+modules_handlers_server_info.html \
+modules_handlers_mirror.html \
+modules_handlers_admin.html \
+modules_loggers.html \
+modules_loggers_combined.html \
+modules_loggers_ncsa.html \
+modules_loggers_w3c.html \
+modules_validators.html \
+modules_validators_htdigest.html \
+modules_validators_htpasswd.html \
+modules_validators_ldap.html \
+modules_validators_mysql.html \
+modules_validators_pam.html \
+modules_validators_plain.html \
+other.html \
+other_goodies.html \
+dev.html \
+dev_debug.html \
+dev_cherokee.conf.html
 
-dochandlersdir = $(docdir)handlers/
-dochandlers_DATA = \
-handlers/file.html \
-handlers/dirlist.html \
-handlers/common.html \
-handlers/redir.html \
-handlers/cgi.html \
-handlers/fastcgi.html \
-handlers/scgi.html
-
-docloggersdir = $(docdir)loggers/
-docloggers_DATA = \
-loggers/combined.html \
-loggers/ncsa.html \
-loggers/w3c.html
-
-docencodersdir = $(docdir)encoders/
-docencoders_DATA = \
-encoders/gzip.html
-
-docbalancersdir = $(docdir)balancers/
-docbalancers_DATA = \
-balancers/round_robin.html
-
-docvalidatorsdir = $(docdir)validators/
-docvalidators_DATA = \
-validators/htdigest.html \
-validators/htpasswd.html \
-validators/ldap.html \
-validators/mysql.html \
-validators/pam.html \
-validators/plain.html
-
-docmediacssdir = $(docdir)media/css/
+docmediacssdir = $(docdir)/media/css/
 docmediacss_DATA = \
-media/css/documentation.css
+media/css/cherokee_doc.css
 
-docmediaimagesdir = $(docdir)media/images/
+docmediaimagesdir = $(docdir)/media/images/
 docmediaimages_DATA = \
-media/images/admin_handler_fastcgi2.png \
-media/images/admin_index.png \
-media/images/admin_handler_fastcgi1.png \
-media/images/admin_vserver.png \
-media/images/admin_vserver_errors.png \
-media/images/admin_icons3.png \
-media/images/admin_handler_file.png \
-media/images/admin_behaviour.png \
-media/images/admin_launch.png \
-media/images/admin_vserver_loggers.png \
-media/images/admin_handler_cgi.png \
-media/images/admin_icons2.png \
-media/images/admin_general.png \
-media/images/admin_icons1.png \
-media/images/admin_encoding.png \
-media/images/admin_validators_plain.png \
-media/images/admin_validators_pam.png \
 media/images/admin_advanced.png \
-media/images/admin_handler_dirlist.png \
+media/images/admin_behaviour.png \
+media/images/admin_dirlist_cherokee.png \
+media/images/admin_encoding_gzip.png \
+media/images/admin_encoding.png \
+media/images/admin_general.png \
+media/images/admin_handler_admin.png \
+media/images/admin_handler_cgi.png \
 media/images/admin_handler_dirlist_ex.png \
+media/images/admin_handler_dirlist.png \
+media/images/admin_handler_fastcgi1.png \
+media/images/admin_handler_fastcgi2.png \
+media/images/admin_handler_file.png \
+media/images/admin_handler_onlylisting_ex.png \
 media/images/admin_handler_onlylisting.png \
-media/images/admin_handler_onlylisting_ex.png
-
-GENERATED_FILES = \
-$(doc_DATA) \
-$(dochandlers_DATA) \
-$(docloggers_DATA) \
-$(docvalidators_DATA) \
-$(docbalancers_DATA) \
-$(docencoders_DATA)
+media/images/admin_icons1.png \
+media/images/admin_icons2.png \
+media/images/admin_icons3.png \
+media/images/admin_index.png \
+media/images/admin_launch.png \
+media/images/admin_mime.png \
+media/images/admin_noconfig.png \
+media/images/admin_notrunning.png \
+media/images/admin_rule_regex.png \
+media/images/admin_validators_pam.png \
+media/images/admin_validators_plain.png \
+media/images/admin_vserver_errors.png \
+media/images/admin_vserver_loggers.png \
+media/images/admin_vserver.png \
+media/images/admin_vserver_vserver.png \
+media/images/cookbook_django_common.png \
+media/images/cookbook_django_scgi.png \
+media/images/cookbook_ror_common.png \
+media/images/cookbook_ror_fcgi.png \
+media/images/cookbook_mysql_rule.png \
+media/images/cookbook_mysql_validator.png \
+media/images/tracelor.png
 
 EXTRA_DIST = \
-$(GENERATED_FILES) \
+$(doc_DATA) \
 $(docmediacss_DATA) \
 $(docmediaimages_DATA)
-
-CLEANFILES = \
-$(GENERATED_FILES) 
 
 all: all-am
 
 .SUFFIXES:
+.SUFFIXES: .txt .html
 $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
@@ -360,74 +380,6 @@ uninstall-docDATA:
 	  echo " rm -f '$(DESTDIR)$(docdir)/$$f'"; \
 	  rm -f "$(DESTDIR)$(docdir)/$$f"; \
 	done
-install-docbalancersDATA: $(docbalancers_DATA)
-	@$(NORMAL_INSTALL)
-	test -z "$(docbalancersdir)" || $(MKDIR_P) "$(DESTDIR)$(docbalancersdir)"
-	@list='$(docbalancers_DATA)'; for p in $$list; do \
-	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
-	  f=$(am__strip_dir) \
-	  echo " $(docbalancersDATA_INSTALL) '$$d$$p' '$(DESTDIR)$(docbalancersdir)/$$f'"; \
-	  $(docbalancersDATA_INSTALL) "$$d$$p" "$(DESTDIR)$(docbalancersdir)/$$f"; \
-	done
-
-uninstall-docbalancersDATA:
-	@$(NORMAL_UNINSTALL)
-	@list='$(docbalancers_DATA)'; for p in $$list; do \
-	  f=$(am__strip_dir) \
-	  echo " rm -f '$(DESTDIR)$(docbalancersdir)/$$f'"; \
-	  rm -f "$(DESTDIR)$(docbalancersdir)/$$f"; \
-	done
-install-docencodersDATA: $(docencoders_DATA)
-	@$(NORMAL_INSTALL)
-	test -z "$(docencodersdir)" || $(MKDIR_P) "$(DESTDIR)$(docencodersdir)"
-	@list='$(docencoders_DATA)'; for p in $$list; do \
-	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
-	  f=$(am__strip_dir) \
-	  echo " $(docencodersDATA_INSTALL) '$$d$$p' '$(DESTDIR)$(docencodersdir)/$$f'"; \
-	  $(docencodersDATA_INSTALL) "$$d$$p" "$(DESTDIR)$(docencodersdir)/$$f"; \
-	done
-
-uninstall-docencodersDATA:
-	@$(NORMAL_UNINSTALL)
-	@list='$(docencoders_DATA)'; for p in $$list; do \
-	  f=$(am__strip_dir) \
-	  echo " rm -f '$(DESTDIR)$(docencodersdir)/$$f'"; \
-	  rm -f "$(DESTDIR)$(docencodersdir)/$$f"; \
-	done
-install-dochandlersDATA: $(dochandlers_DATA)
-	@$(NORMAL_INSTALL)
-	test -z "$(dochandlersdir)" || $(MKDIR_P) "$(DESTDIR)$(dochandlersdir)"
-	@list='$(dochandlers_DATA)'; for p in $$list; do \
-	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
-	  f=$(am__strip_dir) \
-	  echo " $(dochandlersDATA_INSTALL) '$$d$$p' '$(DESTDIR)$(dochandlersdir)/$$f'"; \
-	  $(dochandlersDATA_INSTALL) "$$d$$p" "$(DESTDIR)$(dochandlersdir)/$$f"; \
-	done
-
-uninstall-dochandlersDATA:
-	@$(NORMAL_UNINSTALL)
-	@list='$(dochandlers_DATA)'; for p in $$list; do \
-	  f=$(am__strip_dir) \
-	  echo " rm -f '$(DESTDIR)$(dochandlersdir)/$$f'"; \
-	  rm -f "$(DESTDIR)$(dochandlersdir)/$$f"; \
-	done
-install-docloggersDATA: $(docloggers_DATA)
-	@$(NORMAL_INSTALL)
-	test -z "$(docloggersdir)" || $(MKDIR_P) "$(DESTDIR)$(docloggersdir)"
-	@list='$(docloggers_DATA)'; for p in $$list; do \
-	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
-	  f=$(am__strip_dir) \
-	  echo " $(docloggersDATA_INSTALL) '$$d$$p' '$(DESTDIR)$(docloggersdir)/$$f'"; \
-	  $(docloggersDATA_INSTALL) "$$d$$p" "$(DESTDIR)$(docloggersdir)/$$f"; \
-	done
-
-uninstall-docloggersDATA:
-	@$(NORMAL_UNINSTALL)
-	@list='$(docloggers_DATA)'; for p in $$list; do \
-	  f=$(am__strip_dir) \
-	  echo " rm -f '$(DESTDIR)$(docloggersdir)/$$f'"; \
-	  rm -f "$(DESTDIR)$(docloggersdir)/$$f"; \
-	done
 install-docmediacssDATA: $(docmediacss_DATA)
 	@$(NORMAL_INSTALL)
 	test -z "$(docmediacssdir)" || $(MKDIR_P) "$(DESTDIR)$(docmediacssdir)"
@@ -461,23 +413,6 @@ uninstall-docmediaimagesDATA:
 	  f=$(am__strip_dir) \
 	  echo " rm -f '$(DESTDIR)$(docmediaimagesdir)/$$f'"; \
 	  rm -f "$(DESTDIR)$(docmediaimagesdir)/$$f"; \
-	done
-install-docvalidatorsDATA: $(docvalidators_DATA)
-	@$(NORMAL_INSTALL)
-	test -z "$(docvalidatorsdir)" || $(MKDIR_P) "$(DESTDIR)$(docvalidatorsdir)"
-	@list='$(docvalidators_DATA)'; for p in $$list; do \
-	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
-	  f=$(am__strip_dir) \
-	  echo " $(docvalidatorsDATA_INSTALL) '$$d$$p' '$(DESTDIR)$(docvalidatorsdir)/$$f'"; \
-	  $(docvalidatorsDATA_INSTALL) "$$d$$p" "$(DESTDIR)$(docvalidatorsdir)/$$f"; \
-	done
-
-uninstall-docvalidatorsDATA:
-	@$(NORMAL_UNINSTALL)
-	@list='$(docvalidators_DATA)'; for p in $$list; do \
-	  f=$(am__strip_dir) \
-	  echo " rm -f '$(DESTDIR)$(docvalidatorsdir)/$$f'"; \
-	  rm -f "$(DESTDIR)$(docvalidatorsdir)/$$f"; \
 	done
 tags: TAGS
 TAGS:
@@ -516,7 +451,7 @@ check-am: all-am
 check: check-am
 all-am: Makefile $(DATA)
 installdirs:
-	for dir in "$(DESTDIR)$(docdir)" "$(DESTDIR)$(docbalancersdir)" "$(DESTDIR)$(docencodersdir)" "$(DESTDIR)$(dochandlersdir)" "$(DESTDIR)$(docloggersdir)" "$(DESTDIR)$(docmediacssdir)" "$(DESTDIR)$(docmediaimagesdir)" "$(DESTDIR)$(docvalidatorsdir)"; do \
+	for dir in "$(DESTDIR)$(docdir)" "$(DESTDIR)$(docmediacssdir)" "$(DESTDIR)$(docmediaimagesdir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
 	done
 install: install-am
@@ -536,7 +471,6 @@ install-strip:
 mostlyclean-generic:
 
 clean-generic:
-	-test -z "$(CLEANFILES)" || rm -f $(CLEANFILES)
 
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
@@ -562,10 +496,8 @@ info: info-am
 
 info-am:
 
-install-data-am: install-docDATA install-docbalancersDATA \
-	install-docencodersDATA install-dochandlersDATA \
-	install-docloggersDATA install-docmediacssDATA \
-	install-docmediaimagesDATA install-docvalidatorsDATA
+install-data-am: install-docDATA install-docmediacssDATA \
+	install-docmediaimagesDATA
 
 install-dvi: install-dvi-am
 
@@ -599,10 +531,8 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-docDATA uninstall-docbalancersDATA \
-	uninstall-docencodersDATA uninstall-dochandlersDATA \
-	uninstall-docloggersDATA uninstall-docmediacssDATA \
-	uninstall-docmediaimagesDATA uninstall-docvalidatorsDATA
+uninstall-am: uninstall-docDATA uninstall-docmediacssDATA \
+	uninstall-docmediaimagesDATA
 
 .MAKE: install-am install-strip
 
@@ -610,25 +540,19 @@ uninstall-am: uninstall-docDATA uninstall-docbalancersDATA \
 	distclean distclean-generic distclean-libtool distdir dvi \
 	dvi-am html html-am info info-am install install-am \
 	install-data install-data-am install-docDATA \
-	install-docbalancersDATA install-docencodersDATA \
-	install-dochandlersDATA install-docloggersDATA \
-	install-docmediacssDATA install-docmediaimagesDATA \
-	install-docvalidatorsDATA install-dvi install-dvi-am \
-	install-exec install-exec-am install-html install-html-am \
-	install-info install-info-am install-man install-pdf \
-	install-pdf-am install-ps install-ps-am install-strip \
-	installcheck installcheck-am installdirs maintainer-clean \
-	maintainer-clean-generic mostlyclean mostlyclean-generic \
-	mostlyclean-libtool pdf pdf-am ps ps-am uninstall uninstall-am \
-	uninstall-docDATA uninstall-docbalancersDATA \
-	uninstall-docencodersDATA uninstall-dochandlersDATA \
-	uninstall-docloggersDATA uninstall-docmediacssDATA \
-	uninstall-docmediaimagesDATA uninstall-docvalidatorsDATA
+	install-docmediacssDATA install-docmediaimagesDATA install-dvi \
+	install-dvi-am install-exec install-exec-am install-html \
+	install-html-am install-info install-info-am install-man \
+	install-pdf install-pdf-am install-ps install-ps-am \
+	install-strip installcheck installcheck-am installdirs \
+	maintainer-clean maintainer-clean-generic mostlyclean \
+	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
+	uninstall uninstall-am uninstall-docDATA \
+	uninstall-docmediacssDATA uninstall-docmediaimagesDATA
 
 
-.NOTPARALLEL: $(GENERATED_FILES)
-$(GENERATED_FILES):
-	python $(top_srcdir)/doc/build_docs.py -v
+.txt.html:
+	$(ASCIIDOC) -o $@ $(top_srcdir)/doc/$< 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

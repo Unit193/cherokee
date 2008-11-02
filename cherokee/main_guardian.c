@@ -26,20 +26,56 @@
 #include <signal.h>
 #include <unistd.h>
 #include <sys/wait.h>
+#include <sys/stat.h>
 #include <errno.h>
 #include "server.h"
 
-#ifdef HAVE_GETOPT_H
+#ifdef HAVE_GETOPT_LONG
 # include <getopt.h>
+#else 
+# include "getopt/getopt.h"
 #endif
 
-#define ERROR_DELAY       3000 * 1000
-#define RESTARTING_DELAY   500 * 1000
+#define DELAY_ERROR       3000 * 1000
+#define DELAY_RESTARTING   500 * 1000
 #define PID_FILE          CHEROKEE_VAR_RUN "/cherokee-guardian.pid"
 
-static cherokee_boolean_t exit_guardian = false;
-static pid_t              pid;
+pid_t              pid;
+cherokee_boolean_t graceful_restart; 
 
+static void
+pid_file_save (const char *pid_file, int pid)
+{
+	FILE *file;
+	char  tmp[10];
+
+	file = fopen (pid_file, "w+");
+	if (file == NULL) {
+		PRINT_MSG ("Cannot write PID file '%s'\n", pid_file);
+		return;
+	}
+
+	snprintf (tmp, sizeof(tmp), "%d\n", pid);
+	fwrite (tmp, 1, strlen(tmp), file);
+	fclose (file);
+}
+
+static void
+pid_file_clean (const char *pid_file)
+{
+	struct stat info;
+
+	if (lstat (pid_file, &info) != 0) 
+		return;
+	if (! S_ISREG(info.st_mode))
+		return;
+	if (info.st_uid != getuid())
+		return;
+	if (info.st_size > (int) sizeof("65535\r\n"))
+		return;
+
+	unlink (pid_file);
+}
 
 static ret_t
 process_wait (pid_t pid)
@@ -47,9 +83,18 @@ process_wait (pid_t pid)
 	pid_t re;
 	int   exitcode = 0;
 
-	re = waitpid (pid, &exitcode, 0);
-	if (re == -1) 
-		return ret_error;
+	while (true) {
+		re = waitpid (pid, &exitcode, 0);
+		if (re > 0)
+			break;
+		else if (errno == EINTR) 
+			if (graceful_restart)
+				break;
+			else
+				continue;
+		else 
+			return ret_error;
+	}
 
 	if (WIFEXITED(exitcode)) {
 		int re = WEXITSTATUS(exitcode);
@@ -67,7 +112,6 @@ process_wait (pid_t pid)
 	return ret_ok;
 }
 
-
 static void 
 guardian_signals_handler (int sig, siginfo_t *si, void *context) 
 {
@@ -78,22 +122,29 @@ guardian_signals_handler (int sig, siginfo_t *si, void *context)
 
 	switch (sig) {
 	case SIGUSR1:
-		/* Restart Cherokee */
+		/* Restart: the tough way */
 		kill (pid, SIGINT);
 		process_wait (pid);
 		break;
 
-	case SIGCHLD:
-		/* Child exited */
-		wait (&exitcode);
+	case SIGHUP:
+		/* Graceful restart */
+		graceful_restart = true;
+		kill (pid, SIGHUP);
 		break;
 
 	case SIGTERM:
 		/* Kill child and exit */
 		kill (pid, SIGTERM);
 		process_wait (pid);
+		pid_file_clean (PID_FILE);
 		exit(0);
 
+	case SIGCHLD:
+		/* Child exited */
+		wait (&exitcode);
+		break;
+		
 	default:
 		/* Forward the signal */
 		kill (pid, sig);
@@ -120,24 +171,24 @@ set_guardian_signals (void)
 	act.sa_flags = SA_SIGINFO;
 
 	sigaction (SIGHUP,  &act, NULL);
-	sigaction (SIGSEGV, &act, NULL);
 	sigaction (SIGTERM, &act, NULL);
 	sigaction (SIGUSR1, &act, NULL);
+	sigaction (SIGCHLD, &act, NULL);
 }
 
-static pid_t
-process_launch (const char *path, int argc, char *argv[])
+static ret_t
+may_daemonize (int argc, char *argv[])
 {
 	int   i;
 	pid_t pid;
 	int   daemonize = 0;
 
-	UNUSED(path);
-
-	/* Look for the '-b' parameter
+	/* Look for the '-d' parameter
 	 */
 	for (i=0; i<argc; i++) {
-		if (strcmp(argv[i], "-b") == 0) {
+		if ((strcmp(argv[i], "-d") == 0) ||
+		    (strcmp(argv[i], "--detach") == 0))
+		{
 			daemonize = 1;
 			argv[i]   = "";
 		}
@@ -151,57 +202,76 @@ process_launch (const char *path, int argc, char *argv[])
 		setsid();
 	}
 
+	return ret_ok;
+}
+
+static pid_t
+process_launch (const char *path, char *argv[])
+{
+	pid_t pid;
+
 	/* Execute the server
 	 */
 	pid = fork();
 	if (pid == 0) {
-		argv[0] = CHEROKEE_SRV_PATH;
-		execvp (CHEROKEE_SRV_PATH, argv);
+		argv[0] = (char *) path;
+		execvp (path, argv);
 		exit (1);
 	}
 	
 	return pid;
 }
 
-
-static void
-save_pid_file (int pid)
+static cherokee_boolean_t
+is_single_execution (int argc, char *argv[])
 {
-	FILE *file;
-	char  tmp[10];
+	int i;
 
-	UNUSED(pid);
-
-	file = fopen (PID_FILE, "w+");
-	if (file == NULL) {
-		PRINT_MSG ("Cannot write PID file '%s'\n", PID_FILE);
+	for (i=0; i<argc; i++) {
+		if (!strcmp (argv[i], "-t") || !strcmp (argv[i], "--test")    ||
+		    !strcmp (argv[i], "-h") || !strcmp (argv[i], "--help")    ||
+		    !strcmp (argv[i], "-V") || !strcmp (argv[i], "--version") ||
+		    !strcmp (argv[i], "-i") || !strcmp (argv[i], "--print-server-info"))
+			return true;
 	}
 
-	snprintf (tmp, sizeof(tmp), "%d\n", getpid());
-	fwrite (tmp, 1, strlen(tmp), file);
-	fclose (file);
+	return false;
 }
-
 
 int
 main (int argc, char *argv[])
 {
-	ret_t ret;
+	ret_t              ret;
+	cherokee_boolean_t single_time;
 
-	set_guardian_signals();	   
+	set_guardian_signals();
+	single_time = is_single_execution (argc, argv);
 
-	while (! exit_guardian) {
-		pid = process_launch (CHEROKEE_SRV_PATH, argc, argv);
+	/* Turn into a daemon
+	 */
+	if (! single_time) {
+		may_daemonize (argc, argv);
+		pid_file_save (PID_FILE, getpid());
+	}
+
+	while (true) {
+		graceful_restart = false;
+
+		pid = process_launch (CHEROKEE_SRV_PATH, argv);
 		if (pid < 0) {
 			PRINT_MSG ("Couldn't launch '%s'\n", CHEROKEE_SRV_PATH);
 			exit (1);
 		}
-		
-		save_pid_file(pid);
 
 		ret = process_wait (pid);
-		usleep ((ret == ret_ok) ? RESTARTING_DELAY : ERROR_DELAY);
-	} 
+		if (single_time)
+			break;
 
+		usleep ((ret == ret_ok) ? 
+			DELAY_RESTARTING : 
+			DELAY_ERROR);
+	}
+
+	pid_file_clean (PID_FILE);
 	return 0;
 }

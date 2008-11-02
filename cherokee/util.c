@@ -33,6 +33,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <errno.h>
+#include <fcntl.h>
 
 #ifdef HAVE_SYS_TIME_H
 # include <sys/time.h>
@@ -44,12 +45,15 @@
 # include <sys/socket.h>
 #endif
 
-#ifdef HAVE_SYS_FILIO_H
-# include <sys/filio.h>     /* defines FIONBIO and FIONREAD */
+#ifdef HAVE_NETINET_IN_H
+# include <netinet/in.h>
+#endif
+#ifdef HAVE_NETINET_TCP_H
+# include <netinet/tcp.h>
 #endif
 
-#ifdef HAVE_SYS_TIME_H
-# include <sys/time.h>
+#ifdef HAVE_SYS_FILIO_H
+# include <sys/filio.h>     /* defines FIONBIO and FIONREAD */
 #endif
 
 #ifdef HAVE_SYS_IOCTL_H
@@ -69,6 +73,7 @@
 #ifdef HAVE_SYSLOG_H
 # include <syslog.h>
 #endif
+
 
 #if defined(HAVE_GNUTLS)
 # include <gcrypt.h>
@@ -116,49 +121,6 @@ cherokee_strerror_r (int err, char *buf, size_t bufsize)
 
 	return p;
 #endif
-}
-
-
-/* This function is licenced under:
- * The Apache Software License, Version 1.1
- *
- * Original name: apr_strfsize()
- *
- * Copyright (c) 2000-2003 The Apache Software Foundation.  
- * All rights reserved.
- */
-char *
-cherokee_strfsize (unsigned long long size, char *buf)
-{
-	const char ord[] = "KMGTPE";
-	const char *o = ord;
-	int remain;
-
-	if (((long long) size) < 0) {
-		return strcpy(buf, "  - ");
-	}
-	if (size < 973) {
-		sprintf(buf, "%3d ", (int) size);
-		return buf;
-	}
-	do {
-		remain = (int)(size & 1023);
-		size >>= 10;
-		if (size >= 973) {
-			++o;
-			continue;
-		}
-		if (size < 9 || (size == 9 && remain < 973)) {
-			if ((remain = ((remain * 5) + 256) / 512) >= 10)
-				++size, remain = 0;
-			sprintf(buf, "%d.%d%c", (int) size, remain, *o);
-			return buf;
-		}
-		if (remain >= 512)
-			++size;
-		sprintf(buf, "%3d%c", (int) size, *o);
-		return buf;
-	} while (1);
 }
 
 
@@ -658,6 +620,8 @@ reswitch:
 			break;
 		case 'p':
 			len += 2;                /* Pointer: "0x" + hex value */
+			if (sizeof(void *) > sizeof(int))
+				lflag = true;
 		case 'x':
 			ll = lflag ? va_arg(ap, clong_t) : va_arg(ap, int);
 		        if (unlikely (ll < 0)) {
@@ -722,7 +686,7 @@ cherokee_gethostbyname (const char *hostname, void *_addr)
 	char   tmp[GETHOSTBYNAME_R_BUF_LEN];
         
 
-# ifdef SOLARIS
+# if defined(SOLARIS) || defined(IRIX)
 	/* Solaris 10:
 	 * struct hostent *gethostbyname_r
 	 *        (const char *, struct hostent *, char *, int, int *h_errnop);
@@ -833,18 +797,67 @@ cherokee_tls_init (void)
 }
 
 
-ret_t 
-cherokee_fd_set_nonblocking (int fd)
+ret_t
+cherokee_fd_set_nodelay (int fd, cherokee_boolean_t enable)
 {
-	int tmp = 1;
+	int re;
+	int flags;
+
+	/* TCP_NODELAY: Disable the Nagle algorithm. This means that
+         * segments are always sent as soon as possible, even if there
+         * is only a small amount of data.  When not set, data is
+         * buffered until there is a sufficient amount to send out,
+         * thereby avoiding the frequent sending of small packets,
+         * which results in poor utilization of the network.
+	 */
+#ifdef _WIN32
+	re = ioctlsocket (fd, FIONBIO, (u_long) &enable);
+#else
+ 	flags = fcntl (fd, F_GETFL, 0);
+	if (unlikely (flags == -1)) {
+		PRINT_ERRNO (errno, "ERROR: fcntl/F_GETFL fd %d: ${errno}\n", fd);
+		return ret_error;
+	}
+
+	if (enable)
+		BIT_SET (flags, O_NDELAY);
+	else 
+		BIT_UNSET (flags, O_NDELAY);
+	
+	re = fcntl (fd, F_SETFL, flags);
+#endif	
+	if (unlikely (re < 0)) {
+		PRINT_ERRNO (errno, "ERROR: Setting O_NDELAY to fd %d: ${errno}\n", fd);
+		return ret_error;
+	}
+
+	return ret_ok;
+}
+
+ret_t 
+cherokee_fd_set_nonblocking (int fd, cherokee_boolean_t enable)
+{
+	int re;
+	int flags = 0;
 
 #ifdef _WIN32
-	tmp = ioctlsocket (fd, FIONBIO, (u_long *)&tmp);
+	re = ioctlsocket (fd, FIONBIO, (u_long *) &enable);
 #else	
-	tmp = ioctl (fd, FIONBIO, &tmp);
+	flags = fcntl (fd, F_GETFL, 0);
+	if (flags < 0) {
+		PRINT_ERRNO (errno, "ERROR: fcntl/F_GETFL fd %d: ${errno}\n", fd);
+		return ret_error;
+	}
+
+	if (enable)
+		BIT_SET (flags, O_NONBLOCK);
+	else
+		BIT_UNSET (flags, O_NONBLOCK);
+
+	re = fcntl (fd, F_SETFL, flags);
 #endif
-	if (tmp < 0) {
-		PRINT_ERROR ("ERROR: Setting 'FIONBIO' in socked fd=%d\n", fd);
+	if (re < 0) {
+		PRINT_ERRNO (errno, "ERROR: Setting O_NONBLOCK to fd %d: ${errno}\n", fd);
 		return ret_error;
 	}
 
@@ -852,26 +865,21 @@ cherokee_fd_set_nonblocking (int fd)
 }
 
 
-/* Return 1 if big-endian (Motorola and Sparc), not little-endian
- * (Intel and Vax).  We do this work at run-time, rather than at
- * configuration time so cross-compilation and general embedded system
- * support is simpler.
- */
-
-int
-cherokee_isbigendian (void)
+ret_t 
+cherokee_fd_set_closexec (int fd)
 {
-	/* From Harbison & Steele.  
-	 */
-	union {                                 
-		long l;
-		char c[sizeof(long)];
-	} u;
+#ifndef _WIN32
+	int re;
 
-	u.l = 1;
-	return (u.c[sizeof(long) - 1] == 1);
+	re = fcntl (fd, F_SETFD, FD_CLOEXEC);
+	if (re < 0) {
+		PRINT_ERRNO (errno, "ERROR: Setting FD_CLOEXEC to fd %d: ${errno}\n", fd);
+		return ret_error;
+	}
+#endif
+
+	return ret_ok;
 }
-
 
 
 ret_t
@@ -1104,10 +1112,25 @@ cherokee_getpwnam (const char *name, struct passwd *pwbuf, char *buf, size_t buf
 
 #elif HAVE_GETPWNAM_R_5
 	int            re;
-	struct passwd *tmp;
+	struct passwd *tmp = NULL;
 
+	/* MacOS X:
+	 * int getpwnam_r (const char     *login, 
+	 *                 struct passwd  *pwd, 
+	 *                 char           *buffer, 
+	 *                 size_t          bufsize,
+	 *                 struct passwd **result);
+	 *
+	 * Linux: 
+	 * int getpwnam_r (const char     *name, 
+	 * 	           struct passwd  *pwbuf, 
+	 *                 char           *buf,
+         *                 size_t          buflen,
+	 *                 struct passwd **pwbufp);
+	 */
 	re = getpwnam_r (name, pwbuf, buf, buflen, &tmp);
-	if (re != 0) return ret_error;
+	if ((re != 0) || (tmp == NULL)) 
+		return ret_error;
 
 	return ret_ok;
 
@@ -1216,11 +1239,11 @@ cherokee_getgrnam (const char *name, struct group *grbuf, char *buf, size_t bufl
 
 
 ret_t 
-cherokee_close_fd (cint_t fd)
+cherokee_fd_close (int fd)
 {
 	int re;
 	
-	if (fd < 0) {
+	if (unlikely (fd < 0)) {
 		return ret_error;
 	}
 	
@@ -1274,13 +1297,14 @@ cherokee_print_errno (int error, char *format, ...)
 	errstr = cherokee_strerror_r (error, err_tmp, sizeof(err_tmp));
 	if (errstr == NULL)
 		errstr = "unknwon error (?)";
+
 	cherokee_buffer_ensure_size (&buffer, 128);
 	va_start (ap, format);
 	cherokee_buffer_add_va_list (&buffer, format, ap);
 	va_end (ap);
 
 	cherokee_buffer_replace_string (&buffer, "${errno}", 8, errstr, strlen(errstr));
-	PRINT_ERROR_S (buffer.buf);
+	PRINT_MSG_S (buffer.buf);
 
 	cherokee_buffer_mrproper (&buffer);
 }
@@ -1299,5 +1323,70 @@ cherokee_mkstemp (cherokee_buffer_t *buffer, int *fd)
 	if (re < 0) return ret_error;
 
 	*fd = re;
+	return ret_ok;
+}
+
+
+void
+cherokee_print_wrapped (cherokee_buffer_t *buffer)
+{
+	char *p;
+
+	p = buffer->buf + TERMINAL_WIDTH;
+	for (; p < buffer->buf + buffer->len; p+=75) {
+		while (*p != ' ') p--;
+		*p = '\n';
+	}
+
+	printf ("%s\n", buffer->buf);
+	fflush (stdout);
+}
+
+
+ret_t
+cherokee_fix_dirpath (cherokee_buffer_t *buf)
+{
+	while (cherokee_buffer_is_ending(buf, '/')) {
+		cherokee_buffer_drop_ending (buf, 1);
+	}
+
+	return ret_ok;
+}
+
+
+ret_t
+cherokee_mkdir_p (cherokee_buffer_t *path)
+{
+	int   re;
+        char *p;
+
+	if (cherokee_buffer_is_empty (path))
+		return ret_ok;
+
+	p = path->buf;
+	while (true) {
+		p = strchr (p+1, '/');
+		if (p == NULL)
+			break;
+
+		*p = '\0';
+		re = mkdir (path->buf, 0700);
+		if ((re != 0) && (errno != EEXIST)) {
+			PRINT_ERRNO (errno, "Could not mkdir '%s': ${errno}\n", path->buf);
+			return ret_error;
+		}
+		*p = '/';
+		
+		p++;
+		if (p > path->buf + path->len)
+			return ret_ok;
+	}
+
+	re = mkdir (path->buf, 0700);
+	if ((re != 0) && (errno != EEXIST)) {
+		PRINT_ERRNO (errno, "Could not mkdir '%s': ${errno}\n", path->buf);
+		return ret_error;
+	}
+	
 	return ret_ok;
 }

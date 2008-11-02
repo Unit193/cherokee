@@ -28,6 +28,7 @@ num       = 1
 thds      = 1
 pause     = 0
 tpause    = 0.0
+srv_thds  = None
 ssl       = False
 clean     = True
 kill      = True
@@ -55,8 +56,9 @@ os.makedirs (tmp)
 map (lambda x: os.chmod (x, 0777), [www, tmp])
 
 # Make the files list
-files = []
-param = []
+files   = []
+param   = []
+skipped = []
 if len(sys.argv) > 1:
     argv = sys.argv[1:]
     files = filter (lambda x: x[0] != '-', argv)
@@ -87,6 +89,7 @@ for p in param:
     elif p[:2] == '-t': thds      = int(p[2:])
     elif p[:2] == '-p': port      = int(p[2:])
     elif p[:2] == '-r': delay     = int(p[2:])
+    elif p[:2] == '-T': srv_thds  = int(p[2:])    
     elif p[:2] == '-j': tpause    = float(p[2:])
     elif p[:2] == '-d': pause     = p[2:]
     elif p[:2] == '-m': method    = p[2:]
@@ -107,6 +110,11 @@ if type(pause) == types.StringType:
     else:
         pause = sys.maxint
 
+# Check threads and pauses
+if thds > 1 and pause > 1:
+    print "ERROR: -d and -t are incompatible with each other."
+    sys.exit(1)
+
 # Check the interpreters
 print "Interpreters"
 print_key('PHP',    look_for_php())
@@ -125,19 +133,23 @@ CONF_BASE = """
 # Cherokee QA tests
 #
 server!port = %d 
+server!port_tls = %s
 server!keepalive = 1 
 server!listen = 127.0.0.1
 server!panic_action = %s
 server!encoder!gzip!allow = txt
+server!encoder!deflate!allow = txt
 server!pid_file = %s
 server!module_dir = %s
 server!module_deps = %s
+server!fdlimit = 8192
 
-vserver!default!document_root = %s
-vserver!default!directory_index = test_index.html,test_index.php,/super_test_index.php
-vserver!default!rule!1!match = default
-vserver!default!rule!1!handler = common
-""" % (PORT, panic, pid, CHEROKEE_MODS, CHEROKEE_DEPS, www)
+vserver!1!nick = default
+vserver!1!document_root = %s
+vserver!1!directory_index = test_index.html,test_index.php,/super_test_index.php
+vserver!1!rule!1!match = default
+vserver!1!rule!1!handler = common
+""" % (PORT, PORT_TLS, panic, pid, CHEROKEE_MODS, CHEROKEE_DEPS, www)
 
 PHP_FCGI = """\
 10000!match = extensions
@@ -163,26 +175,30 @@ else:
     php_ext = PHP_CGI
 
 for php in php_ext.split("\n"):
-    CONF_BASE += "vserver!default!rule!%s\n" % (php)
+    CONF_BASE += "vserver!1!rule!%s\n" % (php)
 
 if method:
     CONF_BASE += "server!poll_method = %s" % (method)
 
 if ssl:
     CONF_BASE += """
-vserver!default!ssl_certificate_file = %s
-vserver!default!ssl_certificate_key_file = %s
-vserver!default!ssl_cal_list_file = %s
+vserver!1!ssl_certificate_file = %s
+vserver!1!ssl_certificate_key_file = %s
+vserver!1!ssl_ca_list_file = %s
 """ % (SSL_CERT_FILE, SSL_CERT_KEY_FILE, SSL_CA_FILE)
 
 if log:
     CONF_BASE += """
-vserver!default!logger = %s
-vserver!default!logger!access!type = file
-vserver!default!logger!access!filename = %s
-vserver!default!logger!error!type = stderr
+vserver!1!logger = %s
+vserver!1!logger!access!type = file
+vserver!1!logger!access!filename = %s
+vserver!1!logger!error!type = stderr
 """ % (LOGGER_TYPE, LOGGER_ACCESS, LOGGER_ERROR)
 
+if srv_thds:
+    CONF_BASE += """
+server!thread_number = %d
+""" % (srv_thds)
 
 # Import modules 
 mods = []
@@ -203,7 +219,8 @@ for m in mods:
 
 # Prepare www files
 for obj in objs:
-    obj.Prepare(www)
+    if obj.Precondition():
+        obj.Prepare(www)
 
 # Generate configuration
 mod_conf = ""
@@ -233,16 +250,26 @@ if port is None:
             else:
                 os.execl (VALGRIND_PATH, "valgrind", "--leak-check=full", "--num-callers=40", "-v", "--leak-resolution=high", server, "-C", cfg_file)
         elif strace:
-            os.execl (STRACE_PATH, "strace", server, "-C", cfg_file)            
+            if sys.platform.startswith('darwin') or \
+               sys.platform.startswith('sunos'):
+                os.execl (DTRUSS_PATH, "dtruss", server, "-C", cfg_file)
+            else:
+                os.execl (STRACE_PATH, "strace", server, "-C", cfg_file)            
         else:
             name = server[server.rfind('/') + 1:]
-            os.execl (server, name, "-C", cfg_file)
+
+            env = os.environ
+            if not env.has_key('CHEROKEE_PANIC_OUTPUT'):
+                env['CHEROKEE_PANIC_OUTPUT'] = 'stdout'
+
+            os.execle (server, name, "-C", cfg_file, env)
     else:
         print "Server"
         print_key ('PID', str(pid));
-        print_key ('Path', CHEROKEE_PATH)
-        print_key ('Mods', CHEROKEE_MODS)
-        print_key ('Deps', CHEROKEE_DEPS)
+        print_key ('Path',  CHEROKEE_PATH)
+        print_key ('Mods',  CHEROKEE_MODS)
+        print_key ('Deps',  CHEROKEE_DEPS)
+        print_key ('Panic', CHEROKEE_PANIC)
         print
 
         if memproc:
@@ -267,6 +294,8 @@ def clean_up():
     if its_clean: return
     its_clean = True
 
+    print
+
     # Clean up
     if clean:
         os.unlink (cfg_file)
@@ -275,6 +304,10 @@ def clean_up():
         print_key ("Testdir", www)
         print_key ("Config",  cfg_file)
         print
+
+    # Skipped tests
+    if not quiet:
+        print "Skipped tests: %d" % (len(skipped))
 
     # Kill the server
     if kill and pid > 0:
@@ -288,7 +321,13 @@ def clean_up():
         print "Sending SIGKILL.."
         os.kill (pid, signal.SIGKILL)
 
-def mainloop_iterator(objs):
+def do_pause():
+    global pause
+    print "Press <Enter> to continue.."
+    sys.stdin.readline()
+    pause = pause - 1
+
+def mainloop_iterator(objs, main_thread=True):
     global port
     global pause
     global its_clean
@@ -309,10 +348,8 @@ def mainloop_iterator(objs):
         for obj in objs:
             go_ahead = obj.Precondition()
 
-            if go_ahead and pause > 0:
-                print "Press <Enter> to continue.."
-                sys.stdin.readline()
-                pause = pause - 1
+            if go_ahead and pause > 0 and main_thread:
+                do_pause()
 
             if not quiet:
                 if ssl: print "SSL:",
@@ -321,7 +358,9 @@ def mainloop_iterator(objs):
 
             if not go_ahead:
                 if not quiet:
-                    print "Skipped"
+                    print MESSAGE_SKIPPED
+                    if not obj in skipped:
+                        skipped.append(obj)
                 continue
     
             if port is None:
@@ -334,36 +373,38 @@ def mainloop_iterator(objs):
             except Exception, e:
                 if not its_clean:
                     print e
+                    print_sec(obj)
                     clean_up()
                 sys.exit(1)
 
             if ret is not 0:
                 if not its_clean:
-                    print "Failed"
-                    print obj
+                    print MESSAGE_FAILED
+                    print_sec (obj)
                     clean_up()
                 sys.exit(1)
             elif not quiet:
-                print "Success"
+                print MESSAGE_SUCCESS
                 obj.Clean()
 
-            if tpause > 0.0:
+            if main_thread and tpause > 0.0:
                 if not quiet:
                     print "Sleeping %2.2f seconds..\r" % (tpause),
                     sys.stdout.flush()
                 time.sleep (tpause)
 
+
 if ssl:
-    port = 443
+    port = PORT_TLS
+
+# If we want to pause once do it before launching the threads
+if pause == 1:
+    do_pause()
 
 # Maybe launch some threads
 for n in range(thds-1):
-    objs_copy = map (lambda x: copy.copy(x), objs)
-
-    t = (n * 1.0 / (thds-1))
-    time.sleep(t)
-
-    thread.start_new_thread (mainloop_iterator, (objs_copy,))
+    time.sleep (random.randint(0,50) / 100.0)
+    thread.start_new_thread (mainloop_iterator, (copy.deepcopy(objs), False))
 
 # Execute the tests
 mainloop_iterator(objs)

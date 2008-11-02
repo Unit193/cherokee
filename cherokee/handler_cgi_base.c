@@ -31,13 +31,15 @@
 #include "connection-protected.h"
 #include "server-protected.h"
 #include "header-protected.h"
-
+#include "handler_file.h"
 
 #define ENTRIES "cgibase"
+#define LAST_CHUNK "0" CRLF CRLF
 
 #define set_env(cgi,key,val,len) \
 	set_env_pair (cgi, key, sizeof(key)-1, val, len)
 
+static cherokee_handler_file_props_t handler_file_props;
 
 ret_t 
 cherokee_handler_cgi_base_init (cherokee_handler_cgi_base_t              *cgi, 
@@ -69,8 +71,11 @@ cherokee_handler_cgi_base_init (cherokee_handler_cgi_base_t              *cgi,
 	cgi->init_phase          = hcgi_phase_build_headers;
 	cgi->content_length      = 0;
 	cgi->content_length_set  = false;
+	cgi->chunked             = false;
 	cgi->got_eof             = false;
+	cgi->file_handler        = NULL;
 
+	cherokee_buffer_init (&cgi->xsendfile);
 	cherokee_buffer_init (&cgi->executable);
 	cherokee_buffer_init (&cgi->param);
 	cherokee_buffer_init (&cgi->param_extra);
@@ -173,6 +178,8 @@ cherokee_handler_cgi_base_configure (cherokee_config_node_t *conf, cherokee_serv
 	props->is_error_handler = false;
 	props->change_user      = false;
 	props->check_file       = true;
+	props->allow_chunked    = true;
+	props->allow_xsendfile  = false;
 	props->pass_req_headers = false;
 
 	/* Parse the configuration tree
@@ -205,6 +212,12 @@ cherokee_handler_cgi_base_configure (cherokee_config_node_t *conf, cherokee_serv
 		} else if (equal_buf_str (&subconf->key, "check_file")) {
 			props->check_file = !! atoi(subconf->val.buf);
 
+		} else if (equal_buf_str (&subconf->key, "allow_chunked")) {
+			props->allow_chunked = !! atoi(subconf->val.buf);
+
+		} else if (equal_buf_str (&subconf->key, "xsendfile")) {
+			props->allow_xsendfile = !! atoi(subconf->val.buf);
+
 		} else if (equal_buf_str (&subconf->key, "pass_req_headers")) {
 			props->pass_req_headers = !! atoi(subconf->val.buf);
 		}
@@ -217,8 +230,12 @@ cherokee_handler_cgi_base_configure (cherokee_config_node_t *conf, cherokee_serv
 ret_t 
 cherokee_handler_cgi_base_free (cherokee_handler_cgi_base_t *cgi)
 {
+	if (cgi->file_handler)
+		cherokee_handler_free (cgi->file_handler);
+
 	cherokee_buffer_mrproper (&cgi->data);
 	cherokee_buffer_mrproper (&cgi->executable);
+	cherokee_buffer_mrproper (&cgi->xsendfile);
 
 	cherokee_buffer_mrproper (&cgi->param);
 	cherokee_buffer_mrproper (&cgi->param_extra);
@@ -615,15 +632,7 @@ cherokee_handler_cgi_base_extract_path (cherokee_handler_cgi_base_t *cgi, cherok
 	req_len      = conn->request.len;
 	local_len    = conn->local_directory.len;
 
-	/* It is going to concatenate two paths like: local_directory
-	 * = "/usr/share/cgi-bin/", and request = "/thing.cgi", so
-	 * there would be two slashes in the middle of the request.
-	 */
-	if (req_len > 0) {
-		cherokee_buffer_add (&conn->local_directory, 
-				     conn->request.buf + 1, 
-				     conn->request.len - 1); 
-	}	
+	cherokee_buffer_add_buffer (&conn->local_directory, &conn->request);
 
 	/* Build the pathinfo string
 	 */
@@ -652,7 +661,7 @@ cherokee_handler_cgi_base_extract_path (cherokee_handler_cgi_base_t *cgi, cherok
 					cherokee_buffer_add (&conn->pathinfo, p, end - p);
 	
 					pathinfo_len = end - p;
-					cherokee_buffer_drop_endding (&conn->local_directory, pathinfo_len);
+					cherokee_buffer_drop_ending (&conn->local_directory, pathinfo_len);
 				} 
 
 /* 				if (p <= begin) { */
@@ -698,7 +707,68 @@ cherokee_handler_cgi_base_extract_path (cherokee_handler_cgi_base_t *cgi, cherok
 bye:
 	/* Clean up the mess
 	 */
-	cherokee_buffer_drop_endding (&conn->local_directory, (req_len - pathinfo_len) - 1);
+	cherokee_buffer_drop_ending (&conn->local_directory, (req_len - pathinfo_len) - 1);
+	return ret;
+}
+
+static ret_t
+xsendfile_add_headers (cherokee_handler_cgi_base_t *cgi, cherokee_buffer_t *buffer)
+{
+	ret_t                     ret;
+	struct stat               l_stat;
+	cherokee_iocache_entry_t *cached = NULL;
+	cherokee_server_t        *srv    = HANDLER_SRV(cgi);
+	cherokee_connection_t    *conn   = HANDLER_CONN(cgi);
+
+	/* Get the file information
+	 */
+	if (srv->iocache) {
+		ret = cherokee_iocache_autoget (srv->iocache, 
+						&cgi->xsendfile,
+						iocache_stat,
+						&cached);
+		TRACE (ENTRIES, "iocache: %s, ret=%d\n", 
+		       cgi->xsendfile.buf, ret);
+	} else {
+		ret = ret_no_sys;
+	}
+
+	switch (ret) {
+	case ret_ok:
+	case ret_ok_and_sent:
+		break;
+	case ret_deny:
+		conn->error_code = http_access_denied;
+		ret = ret_error;
+		goto out;
+	case ret_no_sys:
+		/* Stat() it if the cache was full
+		 */
+		ret = cherokee_stat (cgi->xsendfile.buf, &l_stat);
+		if (ret != ret_ok) {
+			ret = ret_error;
+			goto out;
+		}
+		break;
+	default:
+		conn->error_code = http_not_found;
+		ret = ret_error;
+		goto out;
+	}
+
+	/* Add Content-Length
+	 */
+	cherokee_buffer_add_str (buffer, "Content-Length: ");
+	if (cached) {
+		cherokee_buffer_add_ullong10 (buffer, (cullong_t) cached->state.st_size);
+	} else {
+		cherokee_buffer_add_ullong10 (buffer, (cullong_t) l_stat.st_size);
+	}
+	cherokee_buffer_add_str (buffer, CRLF);
+	ret = ret_ok;
+
+out:
+	cherokee_iocache_entry_unref (&cached);
 	return ret;
 }
 
@@ -710,8 +780,7 @@ parse_header (cherokee_handler_cgi_base_t *cgi, cherokee_buffer_t *buffer)
 	char                  *end1;
 	char                  *end2;
 	char                  *begin;
-	cherokee_connection_t *conn = HANDLER_CONN(cgi);
-
+	cherokee_connection_t *conn    = HANDLER_CONN(cgi);
 	
 	if (cherokee_buffer_is_empty (buffer) || buffer->len <= 5)
 		return ret_ok;
@@ -721,13 +790,16 @@ parse_header (cherokee_handler_cgi_base_t *cgi, cherokee_buffer_t *buffer)
 	 */
 	if ((buffer->len > 4) &&
 	    (strncmp (CRLF_CRLF, buffer->buf + buffer->len - 4, 4) == 0)) {
-		cherokee_buffer_drop_endding (buffer, 2);
+		cherokee_buffer_drop_ending (buffer, 2);
 	}
 	
+	TRACE (ENTRIES, "CGI header: '%s'\n", buffer->buf);
+
 	/* Process the header line by line
 	 */
 	begin = buffer->buf;
-	while (begin != NULL) {
+	while ((begin != NULL) && *begin)
+	{
 		end1 = strchr (begin, CHR_CR);
 		end2 = strchr (begin, CHR_LF);
 
@@ -735,7 +807,7 @@ parse_header (cherokee_handler_cgi_base_t *cgi, cherokee_buffer_t *buffer)
 		if (end == NULL) break;
 
 		end2 = end;
-		while (((*end2 == CHR_CR) || (*end2 == CHR_LF)) && (*end2 != '\0'))
+		while ((*end2 == CHR_CR) || (*end2 == CHR_LF))
 			end2++;
 
 		if (strncasecmp ("Status: ", begin, 8) == 0) {
@@ -759,12 +831,12 @@ parse_header (cherokee_handler_cgi_base_t *cgi, cherokee_buffer_t *buffer)
 		}
 
 		else if (strncasecmp ("Content-Length: ", begin, 16) == 0) {
-			cherokee_buffer_t tmp = CHEROKEE_BUF_INIT;
+			char saved = *end;
 
-			cherokee_buffer_add (&tmp, begin+16, end - (begin+16));
-			cgi->content_length = strtoll (tmp.buf, (char **)NULL, 10);
+			*end = '\0';
+			cgi->content_length = strtoll (begin+16, (char **)NULL, 10);
 			cgi->content_length_set = true;
-			cherokee_buffer_mrproper (&tmp);
+			*end = saved;
 
 			cherokee_buffer_remove_chunk (buffer, begin - buffer->buf, end2 - begin);
 			end2 = begin;
@@ -774,6 +846,17 @@ parse_header (cherokee_handler_cgi_base_t *cgi, cherokee_buffer_t *buffer)
 			cherokee_buffer_add (&conn->redirect, begin+10, end - (begin+10));
 			cherokee_buffer_remove_chunk (buffer, begin - buffer->buf, end2 - begin);
 			end2 = begin;
+		} 
+
+		else if ((HANDLER_CGI_BASE_PROPS(cgi)->allow_xsendfile) &&
+			 ((strncasecmp ("X-Sendfile: ", begin, 12) == 0) ||
+			  (strncasecmp ("X-Accel-Redirect: ", begin, 18) == 0))) 
+		{
+			cherokee_buffer_add (&cgi->xsendfile, begin+12, end - (begin+12));
+			cherokee_buffer_remove_chunk (buffer, begin - buffer->buf, end2 - begin);
+			end2 = begin;
+
+			TRACE (ENTRIES, "Found X-Sendfile header: '%s'\n", cgi->xsendfile.buf);
 		}
 
 		begin = end2;
@@ -783,7 +866,6 @@ parse_header (cherokee_handler_cgi_base_t *cgi, cherokee_buffer_t *buffer)
 }
 
 
-
 ret_t 
 cherokee_handler_cgi_base_add_headers (cherokee_handler_cgi_base_t *cgi, cherokee_buffer_t *outbuf)
 {
@@ -791,7 +873,8 @@ cherokee_handler_cgi_base_add_headers (cherokee_handler_cgi_base_t *cgi, cheroke
 	int                    len;
 	char                  *content;
 	int                    end_len;
-	cherokee_buffer_t     *inbuf = &cgi->data; 
+	cherokee_buffer_t     *inbuf    = &cgi->data; 
+	cherokee_connection_t *conn     = HANDLER_CONN(cgi);
 
 	/* Read some information
 	 */
@@ -842,13 +925,59 @@ cherokee_handler_cgi_base_add_headers (cherokee_handler_cgi_base_t *cgi, cheroke
 	ret = parse_header (cgi, outbuf);	
 	if (unlikely (ret != ret_ok))
 		return ret;
-	
+
+	/* Handle X-Sendfile
+	 */
+	if (! cherokee_buffer_is_empty (&cgi->xsendfile)) 
+	{
+		/* Add Content-Length header
+		 */
+		ret = xsendfile_add_headers (cgi, outbuf);
+		if (ret != ret_ok) {
+			TRACE(ENTRIES, "Couldn't access X-Sendfile: %s\n", cgi->xsendfile.buf);
+			return ret_error;
+		}
+
+		/* Instance the 'file' sub-handler
+		 */
+		handler_file_props.use_cache = true;
+		ret = cherokee_handler_file_new ((cherokee_handler_t **) &cgi->file_handler, 
+						 conn, MODULE_PROPS(&handler_file_props));
+		if (ret != ret_ok)
+			return ret_error;
+
+		ret = cherokee_handler_file_custom_init (cgi->file_handler, &cgi->xsendfile);
+		if (ret != ret_ok)
+			return ret_error;
+
+		return ret_ok;
+	}
+
 	/* Content-Length response header
 	 */
 	if (cgi->content_length_set) {
 		cherokee_buffer_add_str      (outbuf, "Content-Length: ");
 		cherokee_buffer_add_ullong10 (outbuf, (cullong_t) cgi->content_length);
 		cherokee_buffer_add_str      (outbuf, CRLF);		
+	}
+
+	/* At this point, cgi->content_length has already got a value
+	 * if the response contained a Content-Length header
+	 */
+	cgi->chunked = ((! cgi->content_length_set) &&
+			(cgi->content_length > 0) &&
+			(HANDLER_CGI_BASE_PROPS(cgi)->allow_chunked) &&
+			(conn->header.version == http_version_11));
+	
+	TRACE (ENTRIES, "Chunked: !len_set=%d, len=%d, allowed=%d, version=%d => %d\n",
+	       (! cgi->content_length_set),
+	       cgi->content_length,
+	       (HANDLER_CGI_BASE_PROPS(cgi)->allow_chunked),
+	       (conn->header.version == http_version_11),
+	       cgi->chunked);
+
+	if (cgi->chunked) {
+		cherokee_buffer_add_str (outbuf, "Transfer-Encoding: chunked" CRLF);
 	}
 
 	return ret_ok;
@@ -861,16 +990,28 @@ cherokee_handler_cgi_base_step (cherokee_handler_cgi_base_t *cgi, cherokee_buffe
 	ret_t              ret;
 	cherokee_buffer_t *inbuf = &cgi->data; 
 
+	/* Is it replying a "X-Sendfile" request?
+	 */
+	if (cgi->file_handler) {
+		return cherokee_handler_file_step (cgi->file_handler, outbuf);
+	}
+
 	/* If there is some data waiting to be sent in the CGI buffer, move it
 	 * to the connection buffer and continue..
 	 */
 	if (! cherokee_buffer_is_empty (&cgi->data)) {
 		TRACE (ENTRIES, "sending stored data: %d bytes\n", cgi->data.len);
 
-		cherokee_buffer_add_buffer (outbuf, &cgi->data);
+		if (cgi->chunked)
+			cherokee_buffer_add_buffer_chunked (outbuf, &cgi->data);
+		else
+			cherokee_buffer_add_buffer (outbuf, &cgi->data);
 		cherokee_buffer_clean (&cgi->data);
 
 		if (cgi->got_eof) {
+			if (cgi->chunked) {
+				cherokee_buffer_add_str (outbuf, LAST_CHUNK);
+			}
 			return ret_eof_have_data;
 		}
 
@@ -882,8 +1023,18 @@ cherokee_handler_cgi_base_step (cherokee_handler_cgi_base_t *cgi, cherokee_buffe
 	ret = cgi->read_from_cgi (cgi, inbuf);
 
 	if (inbuf->len > 0) {
-		cherokee_buffer_add_buffer (outbuf, inbuf);
+		if (cgi->chunked) 
+			cherokee_buffer_add_buffer_chunked (outbuf, inbuf);
+		else 
+			cherokee_buffer_add_buffer (outbuf, inbuf);			
 		cherokee_buffer_clean (inbuf);
+	}
+
+	if ((cgi->chunked) && 
+	    (ret == ret_eof))
+	{
+		cherokee_buffer_add_str (outbuf, LAST_CHUNK);
+		return ret_eof_have_data;
 	}
 
 	return ret;
@@ -891,7 +1042,10 @@ cherokee_handler_cgi_base_step (cherokee_handler_cgi_base_t *cgi, cherokee_buffe
 
 
 ret_t
-cherokee_handler_cgi_base_split_pathinfo (cherokee_handler_cgi_base_t *cgi, cherokee_buffer_t *buf, int init_pos, int allow_dirs) 
+cherokee_handler_cgi_base_split_pathinfo (cherokee_handler_cgi_base_t *cgi, 
+					  cherokee_buffer_t           *buf, 
+					  int                          init_pos, 
+					  int                          allow_dirs) 
 {
 	ret_t                  ret;
 	char                  *pathinfo;
@@ -908,7 +1062,7 @@ cherokee_handler_cgi_base_split_pathinfo (cherokee_handler_cgi_base_t *cgi, cher
 	 */
 	if (pathinfo_len > 0) {
 		cherokee_buffer_add (&conn->pathinfo, pathinfo, pathinfo_len);
-		cherokee_buffer_drop_endding (buf, pathinfo_len);
+		cherokee_buffer_drop_ending (buf, pathinfo_len);
 	}
 
 	TRACE (ENTRIES, "Pathinfo '%s'\n", conn->pathinfo.buf);

@@ -44,7 +44,9 @@
 #include <cherokee/header.h>
 #include <cherokee/resolv_cache.h>
 #include <cherokee/post.h>
+#include <cherokee/avl.h>
 #include <cherokee/trace.h>
+#include <cherokee/cache.h>
 
 /* Server library
  */

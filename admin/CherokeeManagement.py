@@ -16,9 +16,10 @@ DEFAULT_PID_LOCATIONS = [
 
 CHEROKEE_MIN_DEFAULT_CONFIG = """# Default configuration
 server!pid_file = %s
-vserver!default!document_root = /tmp
-vserver!default!directory!/!handler = common
-vserver!default!directory!/!priority = 1
+vserver!001!nick = default
+vserver!001!document_root = /tmp
+vserver!001!directory!/!handler = common
+vserver!001!directory!/!priority = 1
 """ % (DEFAULT_PID_LOCATIONS[0])
 
 
@@ -42,7 +43,6 @@ def cherokee_management_reset ():
     global cherokee_management
     cherokee_management = None
 
-
 # Cherokee Management class
 #
 
@@ -54,9 +54,14 @@ class CherokeeManagement:
     # Public
     #
 
-    def save (self, restart=True):
+    def save (self, restart=None):
         self._cfg.save()
-        if restart:
+
+        if not restart:
+            return
+        if restart.lower() == 'graceful':
+            self._restart (graceful=True)
+        else:
             self._restart()
 
     def is_alive (self):
@@ -144,11 +149,14 @@ class CherokeeManagement:
             pid_file = os.path.join (CHEROKEE_VAR_RUN, "cherokee-guardian.pid")
         return self.__read_pid_file (pid_file)
 
-    def _restart (self):
+    def _restart (self, graceful=False):
         if not self._pid:
             return
         try:
-            os.kill (self._pid, signal.SIGUSR1)
+            if graceful:
+                os.kill (self._pid, signal.SIGHUP)
+            else:
+                os.kill (self._pid, signal.SIGUSR1)
         except:
             pass
 
@@ -180,7 +188,8 @@ class CherokeeManagement:
 
 def is_PID_alive (pid):
     if sys.platform.startswith('linux') or \
-       sys.platform.startswith('sunos'):
+       sys.platform.startswith('sunos') or \
+       sys.platform.startswith('irix'):
         return os.path.exists('/proc/%s'%(pid))
 
     elif sys.platform == 'darwin' or \
@@ -196,3 +205,69 @@ def is_PID_alive (pid):
         None
 
     raise 'TODO'
+
+
+#
+# Plug-in checking
+#
+
+_server_info = None
+
+def cherokee_get_server_info ():
+    global _server_info
+
+    if _server_info == None:
+        try:
+            f = os.popen ("%s -i" % (CHEROKEE_SRV_PATH))
+            _server_info = f.read()
+            f.close()
+        except:
+            pass
+
+    return _server_info
+
+
+_built_in_list      = []
+_built_in_list_done = False
+
+
+def cherokee_build_info_has (filter, module):
+    # Let's see whether it's built-in
+    global _built_in_list
+    global _built_in_list_done
+
+    if not _built_in_list_done:
+        _built_in_list_done = True
+
+        try:
+            f = os.popen ("%s -i" % (CHEROKEE_SRV_PATH))
+            cont = f.read()
+            f.close()
+        except:
+            pass
+
+        try:
+            filter_string = " %s: " % (filter)
+            for l in cont.split("\n"):
+                if l.startswith(filter_string):
+                    line = l.replace (filter_string, "")
+                    break
+            _built_in_list = line.split(" ")
+        except:
+            pass
+
+    return module in _built_in_list
+
+def cherokee_has_plugin (module):
+    # Check for the dynamic plug-in
+    try:
+        mods = filter(lambda x: module in x, os.listdir(CHEROKEE_PLUGINDIR))
+        if len(mods) >= 1:
+            return True
+    except:
+        pass
+
+    return cherokee_build_info_has ("Built-in", module)
+
+def cherokee_has_polling_method (module):
+    return cherokee_build_info_has ("Polling methods", module)

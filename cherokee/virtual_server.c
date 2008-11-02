@@ -51,6 +51,7 @@ cherokee_virtual_server_new (cherokee_virtual_server_t **vserver, void *server)
 	n->error_handler   = NULL;
 	n->logger          = NULL;
 	n->logger_props    = NULL;
+	n->priority        = 0;
 
 	/* Virtual entries
 	 */
@@ -211,6 +212,8 @@ cherokee_virtual_server_has_tls (cherokee_virtual_server_t *vserver)
 		return ret_ok;
 	if (! cherokee_buffer_is_empty (&vserver->ca_cert))
 		return ret_ok;
+#else
+	UNUSED (vserver);
 #endif
 	return ret_not_found;
 }
@@ -314,7 +317,8 @@ cherokee_virtual_server_init_tls (cherokee_virtual_server_t *vsrv)
 		return ret_error;
 	}
 # endif
-
+#else
+	UNUSED (vsrv);
 #endif /* HAVE_TLS */
 
 	return ret_ok;
@@ -336,16 +340,6 @@ cherokee_virtual_server_add_tx (cherokee_virtual_server_t *vserver, size_t tx)
 	CHEROKEE_MUTEX_LOCK(&vserver->data.tx_mutex);
 	vserver->data.tx += tx;
 	CHEROKEE_MUTEX_UNLOCK(&vserver->data.tx_mutex);
-}
-
-
-ret_t 
-cherokee_virtual_server_set_documentroot (cherokee_virtual_server_t *vserver, const char *documentroot)
-{
-	cherokee_buffer_clean (&vserver->root);
-	cherokee_buffer_add (&vserver->root, documentroot, strlen(documentroot));
-
-	return ret_ok;
 }
 
 
@@ -401,8 +395,10 @@ init_entry_property (cherokee_config_node_t *conf, void *data)
 		else
 			cherokee_buffer_clean (entry->document_root);
 
-		TRACE(ENTRIES, "DocumentRoot: %s\n", tmp->buf);
 		cherokee_buffer_add_buffer (entry->document_root, tmp);
+		cherokee_fix_dirpath (entry->document_root);
+
+		TRACE(ENTRIES, "DocumentRoot: %s\n", entry->document_root->buf);
 
 	} else if (equal_buf_str (&conf->key, "handler")) {
 		tmp = &conf->val;
@@ -752,11 +748,13 @@ configure_virtual_server_property (cherokee_config_node_t *conf, void *data)
 		if (ret != ret_ok)
 			return ret;
 		
-		ret = cherokee_virtual_server_set_documentroot (vserver, (const char *)tmp->buf);
-		if (ret != ret_ok) {
-			PRINT_MSG ("ERROR: Virtual server: Error setting DocumentRoot: '%s'\n", tmp->buf);
-			return ret_error;
-		}
+		cherokee_buffer_clean (&vserver->root);
+		cherokee_buffer_add_buffer (&vserver->root, tmp);
+		cherokee_fix_dirpath (&vserver->root);
+
+	} else if (equal_buf_str (&conf->key, "nick")) {
+		cherokee_buffer_clean (&vserver->name);
+		cherokee_buffer_add_buffer (&vserver->name, &conf->val);
 
 	} else if (equal_buf_str (&conf->key, "user_dir")) {
 		ret = configure_user_dir (conf, vserver);
@@ -808,15 +806,15 @@ configure_virtual_server_property (cherokee_config_node_t *conf, void *data)
 
 
 ret_t 
-cherokee_virtual_server_configure (cherokee_virtual_server_t *vserver, cherokee_buffer_t *name, cherokee_config_node_t *config)
+cherokee_virtual_server_configure (cherokee_virtual_server_t *vserver, 
+				   cuint_t                    prio, 
+				   cherokee_config_node_t    *config)
 {
 	ret_t ret;
 
-	/* Set vserver name
+	/* Set the priority
 	 */
-	if (cherokee_buffer_is_empty (&vserver->name)) {
-		cherokee_buffer_add_buffer (&vserver->name, name);
-	}
+	vserver->priority = prio;
 
 	/* Parse properties
 	 */
@@ -826,8 +824,13 @@ cherokee_virtual_server_configure (cherokee_virtual_server_t *vserver, cherokee_
 
 	/* Perform some sanity checks
 	 */
+	if (cherokee_buffer_is_empty (&vserver->name)) {
+		PRINT_MSG ("ERROR: Virtual host prio=%d needs a nick\n", prio);
+		return ret_error;
+	}
+
 	if (cherokee_buffer_is_empty (&vserver->root)) {
-		PRINT_MSG ("ERROR: Virtual host '%s' needs a document_root\n", name->buf);
+		PRINT_MSG ("ERROR: Virtual host '%s' needs a document_root\n", vserver->name.buf);
 		return ret_error;
 	}
 

@@ -6,12 +6,12 @@ USER="cherokeeqa"
 PASS="invalid"
 
 CONF = """
-vserver!default!rule!620!match = directory
-vserver!default!rule!620!match!directory = /privpam2
-vserver!default!rule!620!match!final = 0
-vserver!default!rule!620!auth = pam
-vserver!default!rule!620!auth!methods = basic
-vserver!default!rule!620!auth!realm = Test PAM
+vserver!1!rule!620!match = directory
+vserver!1!rule!620!match!directory = /privpam2
+vserver!1!rule!620!match!final = 0
+vserver!1!rule!620!auth = pam
+vserver!1!rule!620!auth!methods = basic
+vserver!1!rule!620!auth!realm = Test PAM
 """
 
 class Test (TestBase):
@@ -39,12 +39,11 @@ class Test (TestBase):
         if os.getuid() != 0:
             return False
 
-        try: 
-            # Check that pam module was compiled
-            pams = filter(lambda x: "pam" in x, os.listdir(CHEROKEE_MODS))
-            if len(pams) < 1:
-                return False
+        # Check that pam module was compiled
+        if not cherokee_has_plugin("pam"):
+            return False
 
+        try: 
             # Read the /etc/passwd file
             f = open ("/etc/passwd", "r")
             pwuser = filter(lambda x: x.find(USER) == 0, f.readlines())

@@ -10,8 +10,8 @@ from consts import *
 
 DEFAULT_RULE_WARNING = 'The default match ought not to be changed.'
 
-NOTE_DOCUMENT_ROOT = 'Allow to specify an alternative document root path.'
-NOTE_HANDLER       = 'How the connection will be handler.'
+NOTE_DOCUMENT_ROOT = 'Allows to specify an alternative document root path.'
+NOTE_HANDLER       = 'How the connection will be handled.'
 NOTE_HTTPS_ONLY    = 'Enable to allow access to the resource only by https.'
 NOTE_ALLOW_FROM    = 'List of IPs and subnets allowed to access the resource.'
 NOTE_VALIDATOR     = 'Which, if any, will be the authentication method.'
@@ -96,10 +96,12 @@ class PageEntry (PageMenu, FormHelper):
         return Page.Render(self)
 
     def _get_title (self, html=False):
+        nick = self._cfg.get_val ('vserver!%s!nick'%(self._host))
+
         if html:
-            txt = '<a href="/vserver/%s">%s</a> - ' % (self._host, self._host)
+            txt = '<a href="/vserver/%s">%s</a> - ' % (self._host, nick)
         else:
-            txt = '%s - ' % (self._host)
+            txt = '%s - ' % (nick)
 
         # Load the rule plugin
         _type = self._entry.get_val('match')
@@ -111,14 +113,14 @@ class PageEntry (PageMenu, FormHelper):
     def _render_guts (self):
         pre  = self._conf_prefix
         tabs = []
-        
+
         # Rule Properties
-        tabs += [('Rule', self._render_rule())]        
+        tabs += [('Rule', self._render_rule())]
 
         # Handler
         table = TableProps()
-        e = self.AddPropOptions_Reload (table, 'Handler', '%s!handler'%(pre), 
-                                        HANDLERS, NOTE_HANDLER)
+        e = self.AddPropOptions_Reload (table, 'Handler', '%s!handler'%(pre),
+                                        modules_available(HANDLERS), NOTE_HANDLER)
         self.AddPropEntry (table, 'Document Root', '%s!document_root'%(pre), NOTE_DOCUMENT_ROOT)
 
         if e:
@@ -131,7 +133,7 @@ class PageEntry (PageMenu, FormHelper):
 
         txt  = '<h1>%s</h1>' % (self._get_title (html=True))
         txt += self.InstanceTab (tabs)
-        form = Form (self.submit_url)
+        form = Form (self.submit_url, auto=False)
         return form.Render(txt)
 
     def _render_handler_properties (self):
@@ -167,7 +169,7 @@ class PageEntry (PageMenu, FormHelper):
         txt += "<h2>Authentication</h2>"
         table = TableProps()
         e = self.AddPropOptions_Reload (table, 'Validation Mechanism', '%s!auth'%(pre), 
-                                        VALIDATORS, NOTE_VALIDATOR)
+                                        modules_available(VALIDATORS), NOTE_VALIDATOR)
         txt += self.Indent (table)
         txt += e
         return txt

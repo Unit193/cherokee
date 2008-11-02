@@ -24,8 +24,8 @@ AC_PREREQ(2.56)
 
 dnl Version
 m4_define([cherokee_major_version], [0])
-m4_define([cherokee_minor_version], [7])
-m4_define([cherokee_micro_version], [2])
+m4_define([cherokee_minor_version], [8])
+m4_define([cherokee_micro_version], [1])
 m4_define([cherokee_version], m4_format('%s.%s.%s', cherokee_major_version, cherokee_minor_version, cherokee_micro_version))
 
 dnl Init autoconf and automake
@@ -52,6 +52,8 @@ CHEROKEE_REVISION=1
 AC_SUBST(CHEROKEE_AGE)
 AC_SUBST(CHEROKEE_CURRENT)
 AC_SUBST(CHEROKEE_REVISION)
+
+AC_DEFINE_UNQUOTED(CHEROKEE_CONFIG_ARGS, "$ac_configure_args", [configure arguments])
 
 dnl Check the SVN revision
 AC_ARG_ENABLE(beta, AC_HELP_STRING([--enable-beta], [Enable beta development]),
@@ -107,6 +109,11 @@ AC_MSG_CHECKING([host platform characteristics])
           libdl="-ldl"
           ;;
 	*-*-hpux*)
+          libdl="-ldl"
+          ;;
+     *-*-irix6*)
+          AC_DEFINE(IRIX, 1, [It is SGI Irix])
+          setenv_is_threadsafe="yes"
           libdl="-ldl"
           ;;
 	*-*-*freebsd*|*-*-*openbsd*|*-*-*netbsd*|*-*-*dragonfly*)
@@ -188,26 +195,30 @@ if test "$os_string" != "Win32"; then
 else
     LIBTOOL_EXPORT_OPTIONS=
 fi
-
 AC_SUBST(LIBTOOL_EXPORT_OPTIONS)
 
-
-
+dnl Set the Version
 AM_INIT_AUTOMAKE(cherokee, $VERSION)
 AM_MAINTAINER_MODE
 
 AM_CONFIG_HEADER(config.h)
 AC_SUBST(VERSION)
 
-AC_PATH_PROG(cherokeepath, cherokee)
+dnl Initialize Libtool
+m4_ifdef([LT_INIT],
+  [LT_INIT([dlopen C shared static win32-dll])],
+  [AC_LIBTOOL_DLOPEN
+   AC_LIBTOOL_WIN32_DLL
+   ])
 
+dnl Paths
 AC_PROG_CC
+AC_PROG_CC_STDC
 AC_PROG_INSTALL
 AC_PROG_MAKE_SET
+AC_PROG_LIBTOOL
 
-AC_LIBTOOL_DLOPEN
-AC_LIBTOOL_WIN32_DLL
-AM_PROG_LIBTOOL
+AC_PATH_PROG(cherokeepath, cherokee)
 
 AC_FUNC_CLOSEDIR_VOID
 AC_FUNC_MALLOC
@@ -264,11 +275,12 @@ AC_TRY_RUN([#include <stdio.h>
 main() { long long x = 1000000; x *= x; exit(((x/1000000) == 1000000)? 0: 1); }],
 samba_cv_have_longlong=yes,samba_cv_have_longlong=no,samba_cv_have_longlong=cross)])
 if test x"$samba_cv_have_longlong" = x"yes"; then
-    AC_DEFINE(HAVE_LONGLONG,1,[Whether the host supports long long's])
+    AC_DEFINE(HAVE_LONGLONG,1,[Whether the host supports long long'])
 fi
 
 AC_FUNC_MEMCMP
 AC_FUNC_MMAP
+AC_FUNC_FORK
 
 AC_CHECK_FUNCS(gmtime gmtime_r localtime localtime_r getrlimit getdtablesize readdir readdir_r flockfile funlockfile)
 
@@ -295,7 +307,7 @@ dnl Likely combinations:
 dnl		-lsocket [ -lnsl_s | -lnsl ]
 dnl		-linet
 AC_CHECK_LIB(ws2_32, main)
-AC_CHECK_LIB(wsock32, main)
+AC_CHECK_LIB(advapi32, main)
 
 AC_CHECK_FUNC(socket, :, [	
 	AC_CHECK_LIB(socket, main)
@@ -444,11 +456,11 @@ dnl
 dnl TCP_CORK
 dnl
 HYDRA_TCP_CORK
+HYDRA_TCP_NOPUSH
 
 dnl
 dnl Check for GNU getopt_long()
 dnl
-#AC_SEARCH_LIBS(getopt_long, [iberty gnugetopt])
 AC_CHECK_HEADERS(getopt.h)
 AC_CHECK_FUNC(getopt_long, have_getopt_long="yes")
 AM_CONDITIONAL(HAVE_GETOPT_LONG, test x"$have_getopt_long" = "xyes")
@@ -1082,23 +1094,37 @@ dnl
 AX_LIB_MYSQL(4.0.0)
 
 dnl
-dnl Python's docutils
-dnl 
-AC_MSG_CHECKING([for Python's docutils])
-if python -c "import docutils" >/dev/null 2>/dev/null; then
-  docutils_found=yes
-else
-  docutils_found=no
-fi
-AM_CONDITIONAL(PYTHON_DOCUTILS, test "x$docutils_found" = "xyes")
-AC_MSG_RESULT([$docutils_found])
+dnl GeoIP library
+dnl
+AC_ARG_WITH([geoip],
+        AC_HELP_STRING([--with-geoip=@<:@ARG@:>@],
+            [use the GeoIP library @<:@default=yes@:>@, optionally specify path to dev libs]
+        ),
+        [
+        if test "$withval" = "no"; then
+            want_geoip="no"
+        elif test "$withval" = "yes"; then
+            want_geoip="yes"
+        else
+            want_geoip="yes"
+            GEOIP_CONFIG="$withval"
+        fi
+        ],
+        [want_geoip="yes"]
+)
 
-if test "x$docutils_found" != "xyes"; then
-  echo
-  echo "*WARNING*: Python module docutils is not installed!"
-  echo "           It will not be able to generate the documentation."
-  echo
+if test "$want_geoip" = "yes"; then
+   AC_CHECK_LIB(GeoIP, GeoIP_new, have_geoip_lib=yes, have_geoip_lib=no) 
+   AC_CHECK_HEADERS(GeoIP.h, have_geoip_include=yes, have_geoip_include=no) 
 fi
+
+have_geoip="no"
+if test "$have_geoip_lib $have_geoip_include" = "yes yes"; then
+   have_geoip="yes"
+fi
+
+AM_CONDITIONAL(HAVE_GEOIP, test $have_geoip = "yes")
+
 
 dnl
 dnl WWW root directory
@@ -1167,7 +1193,7 @@ AC_ARG_ENABLE(static-module,
 	   AC_HELP_STRING([--enable-static-module=MODULE][]),
 	   [use_static_module="$use_static_module $enableval "],[])
 
-modules="error_redir server_info file admin dirlist fcgi fastcgi scgi redir common nn cgi phpcgi mirror gzip ncsa combined w3c pam ldap mysql htpasswd plain htdigest round_robin directory extensions request header not and or"
+modules="error_redir error_nn server_info file admin dirlist fcgi fastcgi scgi redir common cgi phpcgi proxy mirror gzip deflate ncsa combined w3c pam ldap mysql htpasswd plain htdigest round_robin directory extensions request header geoip not and or"
 
 # Remove modules that will not be compiles
 #
@@ -1179,6 +1205,9 @@ if test "x$have_ldap" != "xyes"; then
 fi
 if test "x$have_mysql" != "xyes"; then
 	modules=`echo $modules | sed s/mysql//`
+fi
+if test "x$have_geoip" != "xyes"; then
+	modules=`echo $modules | sed s/geoip//`
 fi
 if test "$use_crypt" != "yes"; then
 	modules=`echo $modules | sed s/htpasswd//`
@@ -1206,14 +1235,15 @@ for mod in $modules; do
 done
 
 AC_MSG_CHECKING([loader.autoconf files])
-printf "$ext_defs\n"                                 > ${srcdir}/cherokee/loader.autoconf.h
-printf "$headers \n\n $add_calls \n\n $init_calls\n" > ${srcdir}/cherokee/loader.autoconf.inc
+mkdir cherokee 2>/dev/null
+printf "$ext_defs\n"                                 > cherokee/loader.autoconf.h
+printf "$headers \n\n $add_calls \n\n $init_calls\n" > cherokee/loader.autoconf.inc
 AC_MSG_RESULT([done])
 
 dnl
 dnl Static/Dynamic modules
 dnl
-conf_h="${srcdir}/cherokee/loader.autoconf.h"
+conf_h="cherokee/loader.autoconf.h"
 AM_CONDITIONAL(STATIC_HANDLER_SERVER_INFO,    grep server_info    $conf_h >/dev/null)
 AM_CONDITIONAL(STATIC_HANDLER_FILE,           grep file           $conf_h >/dev/null)
 AM_CONDITIONAL(STATIC_HANDLER_ADMIN,          grep admin          $conf_h >/dev/null)
@@ -1222,13 +1252,15 @@ AM_CONDITIONAL(STATIC_HANDLER_FCGI,           grep fcgi           $conf_h >/dev/
 AM_CONDITIONAL(STATIC_HANDLER_FASTCGI,        grep fastcgi        $conf_h >/dev/null)
 AM_CONDITIONAL(STATIC_HANDLER_SCGI,           grep scgi           $conf_h >/dev/null)
 AM_CONDITIONAL(STATIC_HANDLER_REDIR,          grep redir          $conf_h >/dev/null)
-AM_CONDITIONAL(STATIC_HANDLER_ERROR_REDIR,    grep redir          $conf_h >/dev/null)
+AM_CONDITIONAL(STATIC_HANDLER_ERROR_REDIR,    grep error_redir    $conf_h >/dev/null)
+AM_CONDITIONAL(STATIC_HANDLER_ERROR_NN,       grep error_nn       $conf_h >/dev/null)
 AM_CONDITIONAL(STATIC_HANDLER_COMMON,         grep common         $conf_h >/dev/null)
-AM_CONDITIONAL(STATIC_HANDLER_NN,             grep nn             $conf_h >/dev/null)
 AM_CONDITIONAL(STATIC_HANDLER_CGI,            grep cgi            $conf_h >/dev/null)
 AM_CONDITIONAL(STATIC_HANDLER_PHPCGI,         grep phpcgi         $conf_h >/dev/null)
+AM_CONDITIONAL(STATIC_HANDLER_PROXY,          grep proxy          $conf_h >/dev/null)
 AM_CONDITIONAL(STATIC_HANDLER_MIRROR,         grep mirror         $conf_h >/dev/null)
 AM_CONDITIONAL(STATIC_ENCODER_GZIP,           grep gzip           $conf_h >/dev/null)
+AM_CONDITIONAL(STATIC_ENCODER_DEFLATE,        grep deflate        $conf_h >/dev/null)
 AM_CONDITIONAL(STATIC_LOGGER_NCSA,            grep ncsa           $conf_h >/dev/null)
 AM_CONDITIONAL(STATIC_LOGGER_COMBINED,        grep combined       $conf_h >/dev/null)
 AM_CONDITIONAL(STATIC_LOGGER_W3C,             grep w3c            $conf_h >/dev/null)
@@ -1243,6 +1275,7 @@ AM_CONDITIONAL(STATIC_RULE_DIRECTORY,         grep directory      $conf_h >/dev/
 AM_CONDITIONAL(STATIC_RULE_EXTENSIONS,        grep extensions     $conf_h >/dev/null)
 AM_CONDITIONAL(STATIC_RULE_REQUEST,           grep request        $conf_h >/dev/null)
 AM_CONDITIONAL(STATIC_RULE_HEADER,            grep header         $conf_h >/dev/null)
+AM_CONDITIONAL(STATIC_RULE_GEOIP,             grep geoip          $conf_h >/dev/null)
 # These must be at the end
 AM_CONDITIONAL(STATIC_RULE_NOT,               grep _not_          $conf_h >/dev/null)
 AM_CONDITIONAL(STATIC_RULE_AND,               grep _and_          $conf_h >/dev/null)
@@ -1272,6 +1305,7 @@ admin/static/Makefile
 admin/static/js/Makefile
 admin/static/css/Makefile
 admin/static/images/Makefile
+admin/static/images/flags/Makefile
 ])
 
 
@@ -1309,6 +1343,7 @@ echo "PCRE library          $have_pcre"
 echo "Compatible PAM        $have_pam"
 echo "LDAP                  $have_ldap"
 echo "MySQL                 $have_mysql"
+echo "GeoIP                 $have_geoip"
 echo "crypt support         $crypt_type"
 if test "x$is_beta" = "xyes"; then
 echo "Beta release          $svn_rev"
@@ -1323,14 +1358,12 @@ if test "x$cherokeepath" != "x" ; then
 fi
 
 cat <<THEEND
-+--------------------------------------------------------------------+
-| License:                                                           |
-| This software is subject to the GPL License, available in this     |
-| distribution in the file COPYING.  By continuing this installation |
-| process, you are bound by the terms of this license agreement.     |
-| If you do not agree with the terms of this license, you must abort |
-| the installation process at this point.                            |
-+--------------------------------------------------------------------+
++------------------------------------------------------------------+
+| License:                                                         |
+| This software is subject to the GPL License, available in this   |
+| distribution in the file COPYING. Please, remember that any copy |
+| distribution or modification of the software is subject to it.   |
++------------------------------------------------------------------+
 
 Thank you for using Cherokee.
 THEEND

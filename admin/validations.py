@@ -11,8 +11,8 @@ def is_tcp_port (value):
         tmp = int(value)
     except:
         raise ValueError, 'Port must be a number'
-    if tmp < 0 or tmp > 0xFFFF - 1:
-        raise ValueError, 'Out of the range (1 to 65534)'
+    if tmp < 0 or tmp > 0xFFFF:
+        raise ValueError, 'Out of the range (1 to 65535)'
     return value
 
 def is_path (value):
@@ -96,7 +96,7 @@ def is_local_dir_exists (value, cfg):
         path = value
 
     if not os.path.exists(path):
-        raise ValueError, 'Path does not exits'
+        raise ValueError, 'Path does not exit'
 
     if not os.path.isdir(path):
         raise ValueError, 'Path is not a directory'
@@ -113,7 +113,7 @@ def is_local_file_exists (value, cfg):
         path = value
 
     if not os.path.exists(path):
-        raise ValueError, 'Path does not exits'
+        raise ValueError, 'Path does not exit'
 
     if not os.path.isfile(path):
         raise ValueError, 'Path is not a regular file'
