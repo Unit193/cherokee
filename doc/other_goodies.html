@@ -114,6 +114,14 @@ the web age built on top of HTTP and JSON).</p></div>
 <a href="modules_handlers_dbslayer.html">DBSlayer</a> handler that provides
 the fastest implementation in existence. It also provides several
 interesting enhancements.</p></div>
+<div class="para"><p>The usage of this balancing mechanism is a blessing when you wish to
+scale connection growth against the database layer without replicating
+your databases to every web server. It is also useful when you have
+problems like local connections overwhelming a local slave, local
+slave database failures, or replication failures.</p></div>
+<div class="para"><p>This feature delivers connection pooling, database abstraction to
+enable easier migrations and administration, load balancing and
+automatic failover.</p></div>
 </div>
 <div id="footer">
 <div id="footer-text">

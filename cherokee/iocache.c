@@ -46,8 +46,11 @@
 
 #define ENTRIES "iocache"
 
-#define LASTING_MMAP  300  /* 5 mins */
-#define LASTING_STAT  300  /* 5 mins */
+#define LASTING_MMAP     (5 * 60)            /* secs */
+#define LASTING_STAT     (5 * 60)            /* secs */
+#define MIN_FILE_SIZE    1                   /* bytes */
+#define MAX_FILE_SIZE    SENDFILE_MIN_SIZE   /* bytes */
+
 
 #ifndef O_BINARY
 # define O_BINARY 0
@@ -74,12 +77,9 @@ typedef struct {
 
 static ret_t fetch_info_cb (cherokee_cache_entry_t *entry);
 
+CHEROKEE_ADD_FUNC_NEW (iocache);
+CHEROKEE_ADD_FUNC_FREE (iocache);
 
-
-/* Global I/O cache object
- */
-
-static cherokee_iocache_t *global_io = NULL;
 
 static ret_t
 clean_info_cb (cherokee_cache_entry_t *entry)
@@ -144,8 +144,11 @@ iocache_entry_new_cb (cherokee_cache_t        *cache,
 
 	/* Init its parent class
 	 */
-	cherokee_cache_entry_init (CACHE_ENTRY(n), key, 
-				   &PRIV(n)->parent_lock);
+#ifdef HAVE_PTHREAD
+	cherokee_cache_entry_init (CACHE_ENTRY(n), key, cache, &PRIV(n)->parent_lock);
+#else
+	cherokee_cache_entry_init (CACHE_ENTRY(n), key, cache, NULL);
+#endif
 
 	/* Set the virtual methods
 	 */
@@ -168,6 +171,40 @@ iocache_entry_new_cb (cherokee_cache_t        *cache,
 	return ret_ok;
 }
 
+
+ret_t
+cherokee_iocache_configure (cherokee_iocache_t     *iocache,
+			    cherokee_config_node_t *conf)
+{
+	ret_t            ret;
+	cherokee_list_t *i;
+
+	/* Configure parent class
+	 */
+	ret = cherokee_cache_configure (CACHE(iocache), conf);
+	if (ret != ret_ok)
+		return ret;
+
+	/* Configure it own properties
+	 */
+	cherokee_config_node_foreach (i, conf) {
+		cherokee_config_node_t *subconf = CONFIG_NODE(i);
+		
+		if (equal_buf_str (&subconf->key, "max_file_size")) {
+			iocache->max_file_size = atoi(subconf->val.buf);
+		} else if (equal_buf_str (&subconf->key, "min_file_size")) {
+			iocache->min_file_size = atoi(subconf->val.buf);
+
+		} else if (equal_buf_str (&subconf->key, "lasting_stat")) {
+			iocache->lasting_stat = atoi(subconf->val.buf);
+		} else if (equal_buf_str (&subconf->key, "lasting_mmap")) {
+			iocache->lasting_mmap = atoi(subconf->val.buf);
+		}
+	}
+
+	return ret_ok;
+}
+
 ret_t 
 cherokee_iocache_init (cherokee_iocache_t *iocache)
 {
@@ -185,6 +222,11 @@ cherokee_iocache_init (cherokee_iocache_t *iocache)
 	CACHE(iocache)->new_cb_param = NULL;
 	CACHE(iocache)->stats_cb     = get_stats_cb;
 
+	iocache->max_file_size = MAX_FILE_SIZE;
+	iocache->min_file_size = MIN_FILE_SIZE;
+	iocache->lasting_stat  = LASTING_STAT;
+	iocache->lasting_mmap  = LASTING_MMAP;
+
 	return ret_ok;
 }
 
@@ -192,41 +234,6 @@ ret_t
 cherokee_iocache_mrproper (cherokee_iocache_t *iocache)
 {
 	return cherokee_cache_mrproper (CACHE(iocache));
-}
-
-ret_t 
-cherokee_iocache_get_default (cherokee_iocache_t **iocache)
-{
-	ret_t ret;
-	
-	if (global_io == NULL) {
-		CHEROKEE_NEW_STRUCT (n, iocache);
-
-		ret = cherokee_iocache_init (n);
-		if (ret != ret_ok) 
-			return ret;
-
-		global_io = n;
-	}
-	
-	*iocache = global_io;
-	return ret_ok;
-}
-
-ret_t 
-cherokee_iocache_free_default (void)
-{
-	ret_t ret;
-
-	if (global_io == NULL)
-		return ret_ok;
-
-	ret = cherokee_iocache_mrproper (global_io);
-	if (ret != ret_ok)
-		return ret;
-
-	free (global_io);
-	return ret_ok;
 }
 
 
@@ -242,8 +249,9 @@ cherokee_iocache_entry_unref (cherokee_iocache_entry_t **entry)
 static ret_t
 ioentry_update_stat (cherokee_iocache_entry_t *entry)
 {
-	int   re;
-	ret_t ret;
+	int                 re;
+	ret_t               ret;
+	cherokee_iocache_t *iocache = IOCACHE(CACHE_ENTRY(entry)->cache);
 
 	if (PRIV(entry)->stat_expiration >= cherokee_bogonow_now) {
 		TRACE (ENTRIES, "Update stat: %s: updated - skipped\n", 
@@ -256,13 +264,14 @@ ioentry_update_stat (cherokee_iocache_entry_t *entry)
 	re = cherokee_stat (CACHE_ENTRY(entry)->key.buf, &entry->state);
 	if (re < 0) {
 		TRACE(ENTRIES, "Couldn't update stat: %s: errno=%d\n", 
-		      CACHE_ENTRY(entry)->key.buf, re);
+		      CACHE_ENTRY(entry)->key.buf, errno);
 
 		switch (errno) {
 		case EACCES:
 			ret = ret_deny;
 			break;
 		case ENOENT:
+		case ENOTDIR:
 			ret = ret_not_found;
 			break;
 		default:
@@ -279,7 +288,7 @@ ioentry_update_stat (cherokee_iocache_entry_t *entry)
 	TRACE (ENTRIES, "Updated stat: %s\n", CACHE_ENTRY(entry)->key.buf);
 
 out:
-	PRIV(entry)->stat_expiration = cherokee_bogonow_now + LASTING_STAT;
+	PRIV(entry)->stat_expiration = cherokee_bogonow_now + iocache->lasting_stat;
 	PRIV(entry)->stat_status     = ret;
 
 	BIT_UNSET (PUBL(entry)->info, iocache_stat);
@@ -293,6 +302,7 @@ ioentry_update_mmap (cherokee_iocache_entry_t *entry,
 	ret_t              ret;
 	int                fd_local = -1;
 	cherokee_buffer_t *filename = &CACHE_ENTRY(entry)->key;
+	cherokee_iocache_t *iocache = IOCACHE(CACHE_ENTRY(entry)->cache);
 
 	/* Short path
 	 */
@@ -367,7 +377,7 @@ ioentry_update_mmap (cherokee_iocache_entry_t *entry,
 	TRACE(ENTRIES, "Updated mmap: %s\n", filename->buf);
 
 	PUBL(entry)->mmaped_len      = entry->state.st_size;
-	PRIV(entry)->mmap_expiration = cherokee_bogonow_now + LASTING_MMAP;
+	PRIV(entry)->mmap_expiration = cherokee_bogonow_now + iocache->lasting_mmap;
 
 	if ((fd == NULL) && (fd_local != -1))
 		close (fd_local);
@@ -410,7 +420,8 @@ cherokee_iocache_entry_update_fd (cherokee_iocache_entry_t  *entry,
 				  cherokee_iocache_info_t    info,
 				  int                       *fd)
 {
-	ret_t ret;
+	ret_t               ret;
+	cherokee_iocache_t *iocache = IOCACHE(CACHE_ENTRY(entry)->cache);
 
 	/* Cannot update the entry when someone uses it.
 	 * At this point the object has 2 references: 
@@ -445,8 +456,8 @@ cherokee_iocache_entry_update_fd (cherokee_iocache_entry_t  *entry,
 
 		/* Check the size before mapping it
 		 */
-		if ((entry->state.st_size < IOCACHE_MIN_FILE_SIZE) ||
-		    (entry->state.st_size > IOCACHE_MAX_FILE_SIZE))
+		if ((entry->state.st_size < iocache->min_file_size) ||
+		    (entry->state.st_size > iocache->max_file_size))
 		{
 			ret = ret_no_sys;
 			goto out;

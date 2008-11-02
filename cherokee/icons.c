@@ -158,7 +158,13 @@ cherokee_icons_add_file (cherokee_icons_t *icons, cherokee_buffer_t *icon, chero
 	if (unlikely (ret != ret_ok))
 		return ret;
 
-	return cherokee_avl_add (&icons->files, file, tmp);
+	ret = cherokee_avl_add (&icons->files, file, tmp);
+	if (unlikely (ret != ret_ok)) {
+		cherokee_buffer_free (tmp);
+		return ret;
+	}
+
+	return ret_ok;
 }
 
 
@@ -172,7 +178,12 @@ cherokee_icons_add_suffix (cherokee_icons_t *icons, cherokee_buffer_t *icon, che
 	if (unlikely (ret != ret_ok))
 		return ret;
 
-	cherokee_avl_add (&icons->suffixes, suffix, tmp);
+	ret = cherokee_avl_add (&icons->suffixes, suffix, tmp);
+	if (unlikely (ret != ret_ok)) {
+		cherokee_buffer_free (tmp);
+		return ret;
+	}
+
 	return ret_ok;
 }
 
@@ -265,6 +276,7 @@ add_file (char *file, void *data)
 static ret_t 
 add_suffix (char *file, void *data)
 {
+	ret_t              ret;
 	cherokee_buffer_t  file_buf;
 	cherokee_icons_t  *icons = ((void **)data)[0];
 	cherokee_buffer_t *key   = ((void **)data)[1];
@@ -272,7 +284,14 @@ add_suffix (char *file, void *data)
 	TRACE(ENTRIES, "Adding suffix icon '%s' -> '%s'\n", key->buf, file);
 	
 	cherokee_buffer_fake (&file_buf, file, strlen(file));
-	return cherokee_icons_add_suffix (icons, key, &file_buf);
+
+	ret = cherokee_icons_add_suffix (icons, key, &file_buf);
+	if (ret != ret_ok) {
+		PRINT_ERROR ("Couldn't assign suffix '%s' to file '%s'\n", file, key->buf);
+		return ret_error;
+	}
+
+	return ret_ok;
 }
 
 

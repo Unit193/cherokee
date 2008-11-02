@@ -28,16 +28,20 @@
 #include <cherokee/common.h>
 #include <cherokee/server.h>
 #include <cherokee/cache.h>
+#include <cherokee/config_node.h>
 
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
 
-#define IOCACHE_MAX_FILE_SIZE  80000
-#define IOCACHE_MIN_FILE_SIZE      1
-
 typedef struct {
 	cherokee_cache_t        cache;
+
+	/* Limits */
+	cuint_t                 max_file_size;
+	cuint_t                 min_file_size;
+	cuint_t                 lasting_mmap;
+	cuint_t                 lasting_stat;
 } cherokee_iocache_t;
 
 typedef enum {
@@ -63,12 +67,14 @@ typedef struct {
 
 /* I/O cache
  */
-ret_t cherokee_iocache_init            (cherokee_iocache_t  *iocache);
-ret_t cherokee_iocache_get_default     (cherokee_iocache_t **iocache);
-ret_t cherokee_iocache_mrproper        (cherokee_iocache_t  *iocache);
-ret_t cherokee_iocache_free_default    (void);
+ret_t cherokee_iocache_new             (cherokee_iocache_t **iocache);
+ret_t cherokee_iocache_free            (cherokee_iocache_t  *iocache);
 
-ret_t cherokee_iocache_get_mmaped_size (cherokee_iocache_t  *iocache, size_t *total);
+ret_t cherokee_iocache_init            (cherokee_iocache_t  *iocache);
+ret_t cherokee_iocache_mrproper        (cherokee_iocache_t  *iocache);
+
+ret_t cherokee_iocache_configure       (cherokee_iocache_t     *iocache,
+					cherokee_config_node_t *conf);
 
 /* I/O cache entry
  */
@@ -91,5 +97,8 @@ ret_t cherokee_iocache_autoget_fd    (cherokee_iocache_t        *iocache,
 				      cherokee_iocache_info_t    info,
 				      int                       *fd, 
 				      cherokee_iocache_entry_t **ret_io);
+
+/* Misc */
+ret_t cherokee_iocache_get_mmaped_size (cherokee_iocache_t  *iocache, size_t *total);
 
 #endif /* CHEROKEE_IOCACHE_H */

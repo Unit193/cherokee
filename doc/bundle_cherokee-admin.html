@@ -33,8 +33,24 @@ administration interface by running:</p></div>
 <div class="content">
 <pre><tt>cherokee-admin</tt></pre>
 </div></div>
+<div class="para"><p>You will obtain an output similar to the following one, which provides
+the information needed to be able to access the configuration
+interface.</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>Login:
+  User:              admin
+  One-time Password: 72O3GRxZfTrE2zHx
+
+Cherokee Web Server 0.10.0 (Oct 27 2008): Listening on port 9090, TLS disabled,
+IPv6 disabled, using epoll, 1024 fds system limit, max. 505 connections,
+single thread</tt></pre>
+</div></div>
 <div class="para"><p>Then redirect your web browser to 127.0.0.1:9090, which is the default
-address and port for the administration interface.</p></div>
+address and port for the administration interface. The <em>User</em> and
+<em>One-time Password</em> will be required initially. This is to prevent
+other users of the local host from being able to configure the server
+unless they have access to the password.</p></div>
 <div class="imageblock">
 <div class="content">
 <img src="media/images/admin_launch.png" alt="Cherokee admin interface" title="Cherokee admin interface"/>
@@ -53,9 +69,9 @@ interface to all network interfaces:</p></div>
 <div class="title">Warning</div>
 </td>
 <td class="content">By starting cherokee-admin listening on all interfaces,
-everyone that can access the computer can alter your cherokee
-configuration. Don't use this in a production environment! It is much
-better to use <em>ssh -L</em> in these cases.</td>
+everyone that can access the computer and has the password can alter
+your cherokee configuration. Don't use this in a production
+environment! It is much better to use <em>ssh -L</em> in these cases.</td>
 </tr></table>
 </div>
 <div class="para"><p>Instead of binding it to every interface, we encourage you to use an
@@ -175,6 +191,18 @@ path:</p></div>
 <dd>
 <p>
                Specifies an alternative port. By default, 9090.
+</p>
+</dd>
+<dt>
+-u, &#8212;unsecure
+</dt>
+<dd>
+<p>
+               Allows accessing cherokee-admin's interface without
+               requiring the user to authenticate. This disables a
+               security measure and is only meant to ease the
+               development process. The usage of this parameter is
+               strongly discouraged for regular users.
 </p>
 </dd>
 </dl></div>

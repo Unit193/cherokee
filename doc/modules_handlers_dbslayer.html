@@ -19,7 +19,7 @@
 <div class="sectionbody">
 <div class="para"><p>This handler offers a lightweight database abstraction layer that
 will provide all the benefits of connection pooling. This in turn
-offer scalable advantages for high-load websites.</p></div>
+offers scalable advantages for high-load websites.</p></div>
 <div class="para"><p>The original implementation of
 <a href="http://code.nytimes.com/projects/dbslayer/">DBSlayer</a> was a MySQL
 to JSON over HTTP bridge. This handler outperforms any other
@@ -31,7 +31,7 @@ Python, Ruby and PHP.</p></div>
 </div>
 </div>
 <div class="para"><p>It also makes use of a <a href="modules_balancers.html">balancing strategy</a>
-to manage at least one <a href="config_info_sources.html">information
+to manage <strong>at least one</strong> <a href="config_info_sources.html">information
 source</a>: the MySQL server being bridged.</p></div>
 <h4 id="_parameters">Parameters</h4>
 <div class="tableblock">
@@ -88,6 +88,18 @@ cellspacing="0" cellpadding="4">
 </div>
 <div class="para"><p>Note that for this module to be correctly compiled, the MySQL database
 development files are required.</p></div>
+<div class="para"><p>As stated above, the MySQL bridge handler is merely an abstraction
+layer. An excellent one at that, but that is all. No more, no less.
+This means you can perform regular operations on your database, but
+you cannot expect magic to happen. For instance, when you perform an
+INSERT, the Cherokee DB balancer will return a tuple indicating
+whether it succeeded or not, the number of rows affected, a rollback
+flag, etc. It will not, however, replicate the operation among each
+one of you MySQL servers. These arrangements must be made
+independently using MySQL's specific mechanisms.</p></div>
+<div class="para"><p>Further information about this hanlder can be found in the
+<a href="cookbook.html">cookbook</a>, specifically in the recipe about
+<a href="cookbook_dbslayer.html">setting up the MySQL balancing</a>.</p></div>
 </div>
 <div id="footer">
 <div id="footer-text">

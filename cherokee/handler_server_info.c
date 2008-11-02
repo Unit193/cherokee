@@ -189,7 +189,7 @@ table_add_row_int (cherokee_buffer_t *buf, char *name, int value)
 static void
 add_uptime_row (cherokee_buffer_t *buf, cherokee_server_t *srv)
 {
-	unsigned int elapse = cherokee_bogonow_now - srv->start_time;
+	unsigned int lapse = cherokee_bogonow_now - srv->start_time;
 	unsigned int days;
 	unsigned int hours;
 	unsigned int mins;
@@ -197,26 +197,26 @@ add_uptime_row (cherokee_buffer_t *buf, cherokee_server_t *srv)
 	cherokee_buffer_t *tmp;
 	cherokee_buffer_new (&tmp);
 
-	days = elapse / (60*60*24);
-	elapse %= (60*60*24);
+	days = lapse / (60*60*24);
+	lapse %= (60*60*24);
 
-	hours = elapse / (60*60);
-	elapse %= (60*60);
+	hours = lapse / (60*60);
+	lapse %= (60*60);
 
-	mins = elapse / 60;
-	elapse %= 60;
+	mins = lapse / 60;
+	lapse %= 60;
 
 	if (days > 0) {
 		cherokee_buffer_add_va (tmp, "%d Day%s, %d Hour%s, %d Minute%s, %d Seconds", 
-					days, days>1?"s":"", hours, hours>1?"s":"", mins, mins>1?"s":"", elapse);
+					days, days>1?"s":"", hours, hours>1?"s":"", mins, mins>1?"s":"", lapse);
 	} else if (hours > 0) {
 		cherokee_buffer_add_va (tmp, "%d Hour%s, %d Minute%s, %d Seconds", 
-					hours, hours>1?"s":"", mins, mins>1?"s":"", elapse);
+					hours, hours>1?"s":"", mins, mins>1?"s":"", lapse);
 	} else if (mins > 0) {
 		cherokee_buffer_add_va (tmp, "%d Minute%s, %d Seconds", 
-					mins, mins>1?"s":"", elapse);
+					mins, mins>1?"s":"", lapse);
 	} else {
-		cherokee_buffer_add_va (tmp, "%d Seconds", elapse);
+		cherokee_buffer_add_va (tmp, "%d Seconds", lapse);
 	}
 
 	table_add_row_str (buf, "Uptime", tmp->buf);
@@ -380,34 +380,63 @@ build_icons_table_content (cherokee_buffer_t *buf, cherokee_server_t *srv)
 
 
 static void
-build_cache_table_content (cherokee_buffer_t *buf)
+build_cache_table_content (cherokee_buffer_t  *buf,
+			   cherokee_iocache_t *iocache)
 {
-	ret_t               ret;
-	cherokee_iocache_t *iocache = NULL;
-	char                tmp[8];
-	float               percent;
+	char              tmp[8];
+	float             percent;
+	size_t            mmaped  = 0;
+	cherokee_buffer_t tmp_buf = CHEROKEE_BUF_INIT;
 
-	ret = cherokee_iocache_get_default (&iocache);
-	if ((ret != ret_ok) || (iocache == NULL)) {
+	if (iocache == NULL) {
 		table_add_row_str (buf, "Caching", "disabled");
 		return;
 	}
 
-	table_add_row_int (buf, "Fetches", iocache->cache.count);
+	cherokee_buffer_add_fsize (&tmp_buf, iocache->max_file_size);
+	table_add_row_buf (buf, "File Max size", &tmp_buf);
 
-	if (iocache->cache.count == 0)
+	cherokee_buffer_clean (&tmp_buf);
+	cherokee_buffer_add_fsize (&tmp_buf, iocache->min_file_size);
+	table_add_row_buf (buf, "File Min size", &tmp_buf);
+
+	cherokee_buffer_clean (&tmp_buf);
+	cherokee_buffer_add_va (&tmp_buf, "%d secs", iocache->lasting_mmap);
+	table_add_row_buf (buf, "Lasting: Mmap", &tmp_buf);
+
+	cherokee_buffer_clean (&tmp_buf);
+	cherokee_buffer_add_va (&tmp_buf, "%d secs", iocache->lasting_stat);
+	table_add_row_buf (buf, "Lasting: Stat", &tmp_buf);
+
+	cherokee_buffer_clean (&tmp_buf);
+	cherokee_buffer_add_va (&tmp_buf, "%d pages", CACHE(iocache)->max_size);
+	table_add_row_buf (buf, "Max Cache size", &tmp_buf);
+
+	table_add_row_int (buf, "Fetches",        CACHE(iocache)->count);
+
+	/* Total hits */
+	if (CACHE(iocache)->count == 0)
 		percent = 0;
 	else
-		percent = (iocache->cache.count_hit * 100.0) / iocache->cache.count;
+		percent = (CACHE(iocache)->count_hit * 100.0) / CACHE(iocache)->count;
 	snprintf (tmp, sizeof(tmp), "%.2f%%", percent);
 	table_add_row_str (buf, "Total Hits", tmp);
 
-	if (iocache->cache.count == 0)
+	/* Total misses  */
+	if (CACHE(iocache)->count == 0)
 		percent = 0;
 	else
-		percent = (iocache->cache.count_miss * 100.0) / iocache->cache.count;
+		percent = (CACHE(iocache)->count_miss * 100.0) / CACHE(iocache)->count;
 	snprintf (tmp, sizeof(tmp), "%.2f%%", percent);
 	table_add_row_str (buf, "Total Misses", tmp);
+
+	/* Total Mmaped */
+	cherokee_iocache_get_mmaped_size (iocache, &mmaped);
+	cherokee_buffer_clean (&tmp_buf);
+	cherokee_buffer_add_fsize (&tmp_buf, mmaped);
+	table_add_row_buf (buf, "Total mmaped", &tmp_buf);
+
+	cherokee_buffer_mrproper (&tmp_buf);
 }
 
 static void
@@ -509,7 +538,7 @@ server_info_build_page (cherokee_handler_server_info_t *hdl)
 		/* Caching information
 		 */
 		cherokee_buffer_clean (&table);
-		build_cache_table_content (&table);
+		build_cache_table_content (&table, srv->iocache);
 		server_info_add_table (buf, "File Caching", "iocache", &table);
 	}
 

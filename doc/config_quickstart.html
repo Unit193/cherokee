@@ -55,7 +55,7 @@ specific documentation entries.</p></div>
 </li>
 <li>
 <p>
-<a href="config_info_sources.html">Info Sources</a>:
+<a href="config_info_sources.html">Information Sources</a>:
   Define the resources that will be providing information. For
   instance, PHP.
 </p>
@@ -102,7 +102,7 @@ administration tool, so you will need system administrator rights.</p></div>
 <div class="listingblock">
 <div class="content">
 <pre><tt># cherokee-admin
-Cherokee Web Server 0.9.0 (Sep 16 2008): Listening on port 9090, TLS disabled,
+Cherokee Web Server 0.10.0 (Oct 27 2008): Listening on port 9090, TLS disabled,
 IPv6 disabled, using epoll, 1024 fds system limit, max. 505 connections,
 single thread</tt></pre>
 </div></div>
@@ -130,11 +130,15 @@ some more settings: <a href="config_general.html">General</a> and
 launch the server. The configuration changes must be submitted to the
 server, be it automatically if possible or by using the appropriate form
 submitting buttons. But no change is reflected in the configuration
-file until you <tt>Apply</tt> the changes. You can be sure of not damaging
+file until you <tt>Save</tt> the changes. You can be sure of not damaging
 anything while playing around with <tt>cherokee-admin</tt>. At least not
-until you <tt>Apply</tt> the changes. Note that, if the Cherokee server is
-running, the applied modifications will also affect the instance being
-executed.</p></div>
+until you <tt>Save</tt> the changes. Note that, if the Cherokee server is
+running, the applied modifications will only affect the instance being
+executed if either <tt>Graceful restart</tt> or <tt>Hard restart</tt> are selected.
+No restart simply modifies the configuration file, but doesn't affect
+the currently running instance. A <tt>graceful restart</tt> will preserve the
+old set up for any prior connections, while a <tt>hard restart</tt> will
+kill every connection and instantly apply the changes.</p></div>
 <div class="para"><p>This is what the <tt>General</tt> tab looks like:</p></div>
 <div class="imageblock">
 <div class="content">
@@ -242,6 +246,12 @@ Then, within the <tt>Handler</tt> selection tab specify a target: <tt>/feed</tt>
 </div>
 <div class="para"><p>And voilà! A request of the form <a href="http://example.net/rss2">http://example.net/rss2</a> would be
 redirected to <a href="http://example.net/feed">http://example.net/feed</a></p></div>
+<div class="para"><p>Any rule type can be used with the redirection handler: Directory,
+Extensions, Regular Expression, etc. In this case the fact that the
+rule type is "Regular Expression" affects only slightly. Refer to the
+appropiate section of the documentation,
+<a href="modules_handlers_redir.html">Redirection Handler</a>, for more
+details.</p></div>
 <div class="para"><p>Note that the <tt>Type</tt> of the <strong>Redirection</strong> is <tt>External</tt>. This means
 the server will instruct the requesting web client to fetch the
 redirected URL, which means the client will always know what the

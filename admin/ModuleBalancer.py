@@ -5,8 +5,8 @@ from Module import *
 from consts import *
 
 NOTE_BALANCER      = 'Allow to select how the connections will be dispatched.'
-NO_GENERAL_SOURCES = 'There are no Information Sources configured. Please proceed to configure an <a href="/source">Info Source</a>.'
-NO_SOURCE_WARNING  = 'A load balancer must be configured to use at least one data source.'
+NO_GENERAL_SOURCES = 'There are no Information Sources configured. Please proceed to configure an <a href="/source">Information Source</a>.'
+NO_SOURCE_WARNING  = 'A load balancer must be configured to use at least one information source.'
 
 class ModuleBalancerGeneric (Module, FormHelper):
     def __init__ (self, cfg, prefix, submit_url, name):
@@ -14,6 +14,21 @@ class ModuleBalancerGeneric (Module, FormHelper):
         Module.__init__ (self, name, cfg, prefix, submit_url)
 
     def _op_render (self):
+        new_balancer_node = self._cfg.get_val("tmp!new_balancer_node")
+        if new_balancer_node:
+            tmp = [int(x) for x in self._cfg.keys('%s!source'%(self._prefix))]
+            tmp.sort()
+
+            if tmp:
+                new_source = str(tmp[-1]+1)
+            else:
+                new_source = 1
+
+            self._cfg['%s!source!%s'%(self._prefix, new_source)] = new_balancer_node
+            del (self._cfg['tmp!new_balancer_node'])
+            if not self._cfg.get_val(self._prefix):
+                self._cfg[self._prefix] = BALANCERS[0][0]
+
         txt = ''
         general_sources  = self._cfg.keys('source')
         balancer_sources = self._cfg.keys('%s!source'%(self._prefix))
@@ -34,7 +49,7 @@ class ModuleBalancerGeneric (Module, FormHelper):
         if not balancer_sources:
             txt += self.Dialog(NO_SOURCE_WARNING, type_='warning')
         else:
-            txt += '<h2>Info Sources</h2>'
+            txt += '<h2>Information Sources</h2>'
             table = Table(3,1, style='width="100%"')
             table += ('Nick', 'Host', '')
             for sb in balancer_sources:
@@ -50,7 +65,7 @@ class ModuleBalancerGeneric (Module, FormHelper):
                 table += (link, host, link_del)
             txt += str(table)
 
-        txt += '<h2>Assign Info Sources</h2>'
+        txt += '<h2>Assign Information Sources</h2>'
         if not general_left:
             txt += 'It is already balancing among all the configured ' + \
                    '<a href="/source">information sources</a>.'
@@ -62,20 +77,10 @@ class ModuleBalancerGeneric (Module, FormHelper):
 
             table = TableProps()
             self.AddPropOptions_Reload (table, "Application Server",
-                                        "new_balancer_node", options, "")
+                                        "tmp!new_balancer_node", options, "")
             txt += str(table)
 
         return txt
 
     def _op_apply_changes (self, uri, post):
-        new_balancer_node = post.pop('new_balancer_node')
-        if new_balancer_node:
-            tmp = [int(x) for x in self._cfg.keys('%s!source'%(self._prefix))]
-            tmp.sort()
-
-            if tmp:
-                new_source = str(tmp[-1]+1)
-            else:
-                new_source = 1
-
-            self._cfg['%s!source!%s'%(self._prefix, new_source)] = new_balancer_node
+        return

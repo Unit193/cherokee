@@ -48,8 +48,6 @@ cherokee_handler_cgi_base_init (cherokee_handler_cgi_base_t              *cgi,
 				cherokee_handler_cgi_base_add_env_pair_t  add_env_pair,
 				cherokee_handler_cgi_base_read_from_cgi_t read_from_cgi)
 {
-	ret_t ret;
-
 	/* Init the base class object
 	 */
 	cherokee_handler_init_base (HANDLER(cgi), conn, props, info);
@@ -57,13 +55,6 @@ cherokee_handler_cgi_base_init (cherokee_handler_cgi_base_t              *cgi,
 	/* Supported features
 	 */
 	HANDLER(cgi)->support = hsupport_maybe_length;
-
-	/* Process the request_string, and build the arguments table..
-	 * We'll need it later
-	 */
-	ret = cherokee_connection_parse_args (conn);
-	if (unlikely(ret < ret_ok))
-		return ret;
 
 	/* Init to default values
 	 */
@@ -382,7 +373,11 @@ cherokee_handler_cgi_base_build_basic_env (
 		cherokee_header_copy_request_w_args (&conn->header, tmp);
 	} 
 	else {
-		cherokee_buffer_add_buffer (tmp, &conn->request);
+		if (! cherokee_buffer_is_empty (&conn->request_original))
+			cherokee_buffer_add_buffer (tmp, &conn->request_original);
+		else
+			cherokee_buffer_add_buffer (tmp, &conn->request);
+
 		if (! cherokee_buffer_is_empty (&conn->query_string)) {
 			cherokee_buffer_add_char (tmp, '?');
 			cherokee_buffer_add_buffer (tmp, &conn->query_string);

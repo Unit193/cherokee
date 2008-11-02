@@ -190,7 +190,9 @@ cherokee_mime_configure (cherokee_mime_t *mime, cherokee_config_node_t *config)
 
 
 ret_t 
-cherokee_mime_get_by_suffix (cherokee_mime_t *mime, char *suffix, cherokee_mime_entry_t **entry)
+cherokee_mime_get_by_suffix (cherokee_mime_t        *mime, 
+			     char                   *suffix,
+			     cherokee_mime_entry_t **entry)
 {
 	return cherokee_avl_get_ptr (&mime->ext_table, suffix, (void **)entry);
 }

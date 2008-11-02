@@ -89,11 +89,6 @@ cherokee_handler_file_configure (cherokee_config_node_t *conf, cherokee_server_t
 		}
 	}
 
-	/* Post checks
-	 */
-	if (srv->iocache == NULL)
-		props->use_cache = false;
-
 	return ret_ok;
 }
 
@@ -329,8 +324,8 @@ stat_local_directory (cherokee_handler_file_t   *fhdl,
 
 	/* I/O cache
 	 */
-	if (srv->iocache &&
-	    HDL_FILE_PROP(fhdl)->use_cache) 
+	if ((srv->iocache != NULL) &&
+	    (HDL_FILE_PROP(fhdl)->use_cache))
 	{
 		ret = cherokee_iocache_autoget (srv->iocache, local_file, iocache_stat, io_entry);
 		TRACE (ENTRIES, "%s, use_iocache=1 ret=%d\n", local_file->buf, ret);
@@ -437,9 +432,9 @@ cherokee_handler_file_custom_init (cherokee_handler_file_t *fhdl, cherokee_buffe
 		  (conn->encoder == NULL) &&
 		  (HDL_FILE_PROP(fhdl)->use_cache) &&
 		  (conn->socket.is_tls == non_TLS) &&
-		  (fhdl->info->st_size <= IOCACHE_MAX_FILE_SIZE) &&
-		  (http_method_with_body (conn->header.method)));
-	
+		  (http_method_with_body (conn->header.method)) &&
+		  (fhdl->info->st_size <= srv->iocache->max_file_size) &&
+		  (fhdl->info->st_size >= srv->iocache->min_file_size));
 
 	TRACE(ENTRIES, "Using iocache %d\n", use_io);
 

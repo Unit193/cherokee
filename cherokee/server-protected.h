@@ -83,15 +83,18 @@ struct cherokee_server {
 	cherokee_plugin_loader_t   loader;
 	cherokee_avl_t             encoders;
 
-	/* Tables: iocache, nonces, etc
+	/* Tables: nonces, etc
 	 */
 	cherokee_regex_table_t    *regexs;
 	cherokee_nonce_table_t    *nonces;
 
-	/* Logging
+	/* Programmed tasks
 	 */
-	int                        log_flush_elapse;
+	int                        log_flush_lapse;
 	time_t                     log_flush_next;
+
+	int                        nonces_cleanup_lapse;
+	time_t                     nonces_cleanup_next;
 
 	/* Main socket
 	 */
@@ -149,11 +152,15 @@ struct cherokee_server {
 	cherokee_buffer_t          chroot;
 	cherokee_boolean_t         chrooted;
 
+	/* I/O cache
+	 */
+	cherokee_iocache_t        *iocache;
+	cherokee_boolean_t         iocache_enabled;
+
 	/* Other objects
 	 */
 	cherokee_mime_t           *mime;
 	cherokee_icons_t          *icons;
-	cherokee_iocache_t        *iocache;
 	cherokee_avl_t             sources;
 
 	/* Time related

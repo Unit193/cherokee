@@ -192,13 +192,24 @@ cellspacing="0" cellpadding="4">
   </tr>
   <tr>
     <td align="left">
-    server!log_flush_elapse
+    server!log_flush_lapse
     </td>
     <td align="left">
     Number         
     </td>
     <td align="left">
     Time between log flushes
+    </td>
+  </tr>
+  <tr>
+    <td align="left">
+    server!nonces_cleanup_lapse
+    </td>
+    <td align="left">
+    Number         
+    </td>
+    <td align="left">
+    Time between Nonces clean ups
     </td>
   </tr>
   <tr>
@@ -389,7 +400,7 @@ cellspacing="0" cellpadding="4">
     Minor                     
     </td>
     <td align="left">
-    Cherokee/0.9
+    Cherokee/0.10
     </td>
   </tr>
   <tr>
@@ -397,7 +408,7 @@ cellspacing="0" cellpadding="4">
     Minimal                   
     </td>
     <td align="left">
-    Cherokee/0.9.0
+    Cherokee/0.10.0
     </td>
   </tr>
   <tr>
@@ -405,7 +416,7 @@ cellspacing="0" cellpadding="4">
     OS                        
     </td>
     <td align="left">
-    Cherokee/0.9.0 (UNIX)
+    Cherokee/0.10.0 (UNIX)
     </td>
   </tr>
   <tr>
@@ -413,7 +424,7 @@ cellspacing="0" cellpadding="4">
     Full                      
     </td>
     <td align="left">
-    Cherokee/0.9.0 (UNIX) Ext/0.0 Ext2/0.0
+    Cherokee/0.10.0 (UNIX) Ext/0.0 Ext2/0.0
     </td>
   </tr>
 </tbody>
@@ -1156,6 +1167,64 @@ cellspacing="0" cellpadding="4">
     </td>
     <td align="left">
     Cert file. Must be provided if TLS is enabled.
+    </td>
+  </tr>
+</tbody>
+</table>
+</div>
+<div class="tableblock">
+<table rules="rows"
+frame="hsides"
+cellspacing="0" cellpadding="4">
+<caption class="title">Table: authlist</caption>
+<col width="197" />
+<col width="108" />
+<col width="493" />
+<thead>
+  <tr>
+    <th align="left">
+    <strong>Key</strong>             
+    </th>
+    <th align="left">
+    <strong>Type</strong> 
+    </th>
+    <th align="left">
+    <strong>Description</strong>
+    </th>
+  </tr>
+</thead>
+<tbody valign="top">
+  <tr>
+    <td align="left">
+    auth                
+    </td>
+    <td align="left">
+    String   
+    </td>
+    <td align="left">
+    name of the validator module: authlist
+    </td>
+  </tr>
+  <tr>
+    <td align="left">
+    auth!list!#!password
+    </td>
+    <td align="left">
+    String   
+    </td>
+    <td align="left">
+    Password for entry number #
+    </td>
+  </tr>
+  <tr>
+    <td align="left">
+    auth!list!#!user
+    </td>
+    <td align="left">
+    String   
+    </td>
+    <td align="left">
+    User for entry number #
     </td>
   </tr>
 </tbody>
