@@ -7441,7 +7441,7 @@ AC_SUBST([am__untar])
 ]) # _AM_PROG_TAR
 
 m4_include([m4/etr_socket_nsl.m4])
+m4_include([m4/libwww.m4])
 m4_include([m4/network.m4])
-m4_include([m4/php.m4])
 m4_include([m4/sendfile_samba.m4])
 m4_include([acinclude.m4])

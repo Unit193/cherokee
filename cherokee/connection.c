@@ -412,6 +412,7 @@ build_response_header__authenticate (cherokee_connection_t *cnt, cherokee_buffer
 	 */
 	if (cnt->auth_type & http_auth_digest) {
 		cherokee_buffer_t new_nonce = CHEROKEE_BUF_INIT;
+
 		/* Realm
 		 */
 		cherokee_buffer_ensure_size (buffer, 32 + cnt->realm_ref->len + 4);
@@ -1362,10 +1363,13 @@ cherokee_connection_get_request (cherokee_connection_t *cnt)
 		cherokee_buffer_drop_endding (&cnt->incoming_header, post_len);
 	}
 	
-	/* Copy the request
+	/* Copy the request and query_string
 	 */
 	ret = cherokee_header_copy_request (&cnt->header, &cnt->request);
-	if (ret < ret_ok) goto error;
+	if (unlikely (ret < ret_ok)) goto error;
+
+	ret = cherokee_header_copy_query_string (&cnt->header, &cnt->query_string);
+	if (unlikely (ret < ret_ok)) goto error;
 
 	/* Look for starting '/' in the request
 	 */
@@ -1509,7 +1513,7 @@ cherokee_connection_get_dir_entry (cherokee_connection_t *cnt, cherokee_dirs_tab
 	 * It must be redirected to "/blog/"
 	 */
 	if ((cnt->request.len == cnt->web_directory.len) &&
-	    (cnt->request.buf[cnt->request.len-1] != '/') &&
+	    (cherokee_buffer_end_char (&cnt->request) != '/') &&
 	    (strcmp (cnt->request.buf, cnt->web_directory.buf) == 0))
 	{
 		cherokee_buffer_ensure_size (&cnt->redirect, cnt->request.len + 1);
@@ -1564,9 +1568,6 @@ cherokee_connection_get_req_entry (cherokee_connection_t *cnt, cherokee_reqs_lis
 	 */
 #ifndef CHEROKEE_EMBEDDED
 	ret = cherokee_reqs_list_get (reqs, &cnt->request, config_entry, cnt);
-#else
-	return ret_ok;
-#endif
 	switch (ret) {
 	case ret_not_found:
 		break;
@@ -1586,6 +1587,9 @@ cherokee_connection_get_req_entry (cherokee_connection_t *cnt, cherokee_reqs_lis
 	cnt->auth_type = config_entry->authentication;
 
 	return ret;
+#else
+	return ret_ok;
+#endif
 }
 
 
@@ -1806,7 +1810,7 @@ cherokee_connection_parse_args (cherokee_connection_t *cnt)
 
 	/* Parse the header
 	 */
-	ret = cherokee_header_get_arguments (&cnt->header, &cnt->query_string, cnt->arguments);
+	ret = cherokee_parse_query_string (&cnt->query_string, cnt->arguments);
 	if (unlikely(ret < ret_ok)) return ret;
 
 	return ret_ok;
