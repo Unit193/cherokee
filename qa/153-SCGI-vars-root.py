@@ -20,13 +20,15 @@ SCGIServer(TestHandler, port=%d).serve_forever()
 
 CONF = """
 vserver!scgi6!document_root = /fake
-vserver!scgi6!directory!/!handler = scgi
-vserver!scgi6!directory!/!handler!check_file = 0
-vserver!scgi6!directory!/!handler!balancer = round_robin
-vserver!scgi6!directory!/!handler!balancer!type = interpreter
-vserver!scgi6!directory!/!handler!balancer!1!host = localhost:%d
-vserver!scgi6!directory!/!handler!balancer!1!interpreter = %s %s
-vserver!scgi6!directory!/!priority = 1530
+
+vserver!scgi6!rule!1530!match = default
+vserver!scgi6!rule!1530!handler = scgi
+vserver!scgi6!rule!1530!handler = scgi
+vserver!scgi6!rule!1530!handler!check_file = 0
+vserver!scgi6!rule!1530!handler!balancer = round_robin
+vserver!scgi6!rule!1530!handler!balancer!type = interpreter
+vserver!scgi6!rule!1530!handler!balancer!1!host = localhost:%d
+vserver!scgi6!rule!1530!handler!balancer!1!interpreter = %s %s
 """
 
 EXPECTED = [
@@ -37,7 +39,7 @@ EXPECTED = [
 class Test (TestBase):
     def __init__ (self):
         TestBase.__init__ (self)
-        self.name = "SCGI VII: root: PATH_INFO and SCRIPT_NAME"
+        self.name = "SCGI VII: root: PATH_INFO & SCRIPT_NAME"
 
         self.request           = "GET %s HTTP/1.1\r\n" %(REQUEST) +\
                                  "Host: scgi6\r\n"

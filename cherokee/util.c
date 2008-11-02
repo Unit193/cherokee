@@ -493,7 +493,7 @@ cherokee_readdir (DIR *dirstream, struct dirent *entry, struct dirent **result)
 
 ret_t 
 cherokee_split_pathinfo (cherokee_buffer_t  *path, 
-			 int                 init_pos,
+			 cuint_t             init_pos,
 			 int                 allow_dirs,
 			 char              **pathinfo,
 			 int                *pathinfo_len)
@@ -572,6 +572,7 @@ cherokee_estimate_va_length (char *fmt, va_list ap)
 {
 	char               *p;
 	cuchar_t            ch;
+	cllong_t            ll;
 	cullong_t           ul;
 	cherokee_boolean_t  lflag;
 	cherokee_boolean_t  llflag;
@@ -579,14 +580,12 @@ cherokee_estimate_va_length (char *fmt, va_list ap)
 	char                padc;
 	cuint_t             len = 0;
 
-
-#define LEN_NUM(base) \
-	do {                \
-		ul /= base; \
-		len++;      \
-        } while (ul > 0);   \
+#define LEN_NUM(var,base)    \
+	do {                 \
+		var /= base; \
+		len++;       \
+        } while (var > 0);   \
 	len++
-
 
 	for (;;) {
 		width = 0;
@@ -606,12 +605,12 @@ reswitch:
 			len += strlen (p ? p : "(null)");
 			break;
 		case 'd':
-			ul = lflag ? va_arg(ap, culong_t) : va_arg(ap, int);
-			if (ul < 0) {
-				ul = -ul;
+			ll = lflag ? va_arg(ap, clong_t) : va_arg(ap, int);
+		        if (unlikely (ll < 0)) {
+				ll = -ll;
 				len++;
-			}
-			LEN_NUM(10);
+			} 
+			LEN_NUM(ll,10);
 			break;
 		case 'l':
 			if (lflag == false) 
@@ -625,7 +624,7 @@ reswitch:
 			} else {
 				ul = lflag ? va_arg(ap, long) : va_arg(ap, int);
 			}
-			LEN_NUM(10);
+			LEN_NUM(ul,10);
 			break;
 		case '0':
 			padc = '0';
@@ -645,19 +644,27 @@ reswitch:
 			len++;
 			break;
 		case 'o':
-			ul = lflag ? va_arg(ap, culong_t) : va_arg(ap, int);
-			LEN_NUM(8);
+			ll = lflag ? va_arg(ap, clong_t) : va_arg(ap, int);
+		        if (unlikely (ll < 0)) {
+				ll = -ll;
+				len++;
+			} 
+		        LEN_NUM(ll,8);
 			break;
 		case 'f':
 			ul = va_arg(ap, double); /* FIXME: Add float numbers support */
 			len += 30; 
-			LEN_NUM(10);
+			LEN_NUM(ul,10);
 			break;
 		case 'p':
 			len += 2;                /* Pointer: "0x" + hex value */
 		case 'x':
-			ul = lflag ? va_arg(ap, culong_t) : va_arg(ap, int);
-			LEN_NUM(16);
+			ll = lflag ? va_arg(ap, clong_t) : va_arg(ap, int);
+		        if (unlikely (ll < 0)) {
+				ll = -ll;
+				len++;
+			} 
+		        LEN_NUM(ll,16);
 			break;
 		case '%':
 			len++;
@@ -1265,7 +1272,8 @@ cherokee_print_errno (int error, char *format, ...)
 	cherokee_buffer_t buffer = CHEROKEE_BUF_INIT;
 
 	errstr = cherokee_strerror_r (error, err_tmp, sizeof(err_tmp));
-
+	if (errstr == NULL)
+		errstr = "unknwon error (?)";
 	cherokee_buffer_ensure_size (&buffer, 128);
 	va_start (ap, format);
 	cherokee_buffer_add_va_list (&buffer, format, ap);

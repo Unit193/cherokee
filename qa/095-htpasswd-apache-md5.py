@@ -10,11 +10,13 @@ PASSWD        = "alo"
 PASSWD_APACHE = "$apr1$VVusx/..$B6P.9/IK81S3M1QNVdfdX0"
 
 CONF = """
-vserver!default!directory!/apachemd5_1!auth = htpasswd
-vserver!default!directory!/apachemd5_1!auth!methods = basic
-vserver!default!directory!/apachemd5_1!auth!realm = %s
-vserver!default!directory!/apachemd5_1!auth!passwdfile = %s
-vserver!default!directory!/apachemd5_1!priority = 950
+vserver!default!rule!950!match = directory
+vserver!default!rule!950!match!directory = /apachemd5_1
+vserver!default!rule!950!match!final = 0
+vserver!default!rule!950!auth = htpasswd
+vserver!default!rule!950!auth!methods = basic
+vserver!default!rule!950!auth!realm = %s
+vserver!default!rule!950!auth!passwdfile = %s
 """
 
 class Test (TestBase):
@@ -34,11 +36,3 @@ class Test (TestBase):
         passf = self.WriteFile (tdir, "passwd", 0444, '%s:%s\n' %(USER, PASSWD_APACHE))
         self.WriteFile (tdir, "file", 0444, MAGIC)
         self.conf = CONF % (REALM, passf)
-
-        self.conf2             = """Directory /apachemd5_1 {
-                                     Handler file
-                                     Auth Basic {
-                                          Name "%s"
-                                          Method htpasswd { PasswdFile %s }
-                                     }
-                                }""" % (REALM, passf)

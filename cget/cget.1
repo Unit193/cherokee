@@ -12,7 +12,7 @@
 .\" along with this program; see the file COPYING.  If not, write to
 .\" the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
 .\"
-.TH Cherokee_logrotate 1 "Dicember 20, 2001"
+.TH Cget 1 "March 31, 2008"
 .\" Please update the above date whenever this man page is modified.
 .\"
 .\" Some roff macros, for reference:
@@ -26,24 +26,48 @@
 .\" .sp <n>    insert n+1 empty lines
 .\" for manpage-specific macros, see man(7)
 .SH NAME
-cherokee_logrotate \- Cherokee on-the-fly log rotation tool
+cget \- Cherokee web downloader
 .SH SYNOPSIS
-.B cherokee_logrotate
+.B cget [options] URL
 .SH DESCRIPTION
-\fBcherokee_logrotate\fP is a log rotation tool.  It sets the logging
-subsystem on "back up mode" through the administration interface, then
-it moves the log file renaming it to the next available filaname (it
-concatenates a dot and a number), and finally it restores the server
-state to the original one.
-.BR
-It allows to rotate the server logs in a safe way, at the same time
-the server keeps working.  All the connection log entries during the
-back up mode is actived will be hold on memory, and when it restores
-the default state all of them will be written on the new file.
+\fBcget\fP is a web downloading tool
 .\" .PP
 .\" It also...
+.SH OPTIONS
+No option is mandatory. By default the web is downloaded but it is not saved. 
+If that is not the desired behavior it must be specified explicitly. 
+Below is a summary of the
+.B cget
+options.
+.PP
+Startup:
+.TP
+.B -V,  --version                
+Display version of currently installed cget and exit.
+.TP
+.B -h,  --help
+Display help screen with common options.
+.TP
+.B    
+Logging and input file:
+.TP
+.B -q,  --quiet
+Run in quiet mode: no output is displayed.
+.PP
+Download:
+.TP
+.B -O, --output-document=FILE
+Writes whatever document is downloaded to FILE
+.PP	
+HTTP options:
+.TP
+.B -s, --save-headers
+This option saves HTTP headers to the file being saved (specified with -O option)
+.TP
+.B --header=STRING
+this option inserts STRING among the headers sent in the HTTP request.
 .SH EXAMPLE
-cherokee_logrotate https://root:password@localhost/admin/ /var/log/cherokee.access
+cget http://www.cherokee-project.com/
 .SH BUGS
 .SS Bug reports
 I would appreciate hearing of any problems you have with Cherokee.  I
@@ -52,12 +76,11 @@ especially if you are using it for a distribution.
 .PP
 There is a mailing list for discussion among Cherokee users and for
 announcements of new and test versions. To join, send a message to
-cherokee-admin@cherokee-project.com with the line:
+cherokee-admin@alobbs.com with the line:
 .PP
 .B subscribe cherokee
 .PP
-in the body of the message. The submission address is cherokee@cherokee-project.com.
+in the body of the message. The submission address is cherokee@alobbs.com.
 .\" .SH "SEE ALSO"
 .SH AUTHOR
-Alvaro Lopez Ortega <alvaro@alobbs.com>.
-
+Alvaro Lopez Ortega <alvaro@alobbs.com>. Manual page updated by Taher Shihadeh <taher@unixwars.com>.

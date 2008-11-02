@@ -8,6 +8,7 @@ import time
 import pyscgi
 import thread
 import signal
+import socket
 
 # Application modules
 #
@@ -29,7 +30,6 @@ from CherokeeManagement import *
 
 # Constants
 #
-SCGI_PORT             = 4000
 MODIFIED_CHECK_ELAPSE = 1
 
 # Globals
@@ -44,7 +44,7 @@ class Handler(pyscgi.SCGIHandler):
 
     def handle_request (self):
         global cfg
-
+        
         page    = None
         headers = ""
         body    = ""
@@ -61,8 +61,8 @@ class Handler(pyscgi.SCGIHandler):
             page = PageError (cfg, PageError.ICONS_DIR_MISSING)
 
         if page:
-            self.wfile.write ('Status: 200 OK\r\n\r\n' +
-                              page.HandleRequest (uri, Post()))
+            self.send ('Status: 200 OK\r\n\r\n' +
+                       page.HandleRequest (uri, Post()))
             return
 
         # Check the URL        
@@ -131,13 +131,23 @@ class Handler(pyscgi.SCGIHandler):
             headers += "Location: %s\r\n" % (body)
 
         # Send result
-        self.wfile.write('Status: %s\r\n' % (status) +
-                         headers + '\r\n' + body)
+        content = 'Status: %s\r\n' % (status) + \
+                  headers + '\r\n' + body
+
+        return self.send (content)
 
 
 # Server
 #
 def main():
+    # Read the arguments
+    try:
+        scgi_port = int(sys.argv[1])
+        cfg_file  = sys.argv[2]
+    except:
+        print "Incorrect parameters: PORT CONFIG_FILE"
+        raise SystemExit
+
     # Try to avoid zombie processes 
     signal.signal(signal.SIGCHLD, signal.SIG_IGN)
 
@@ -146,21 +156,23 @@ def main():
     os.chdir(os.path.abspath(pathname))
 
     # SCGI server
-    srv = pyscgi.ServerFactory (True, handler_class=Handler, port=SCGI_PORT)
+    srv = pyscgi.ServerFactory (True, handler_class=Handler, port=scgi_port)
     srv.socket.settimeout (MODIFIED_CHECK_ELAPSE)
 
     # Read configuration file
     global cfg
-    cfg_file = sys.argv[1]
     cfg = Config(cfg_file)
     
     print ("Server running.. PID=%d" % (os.getpid()))
-    while True:
-        # Do it
-        srv.handle_request()
+
+    # Iterate until the user exists
+    try:
+        while True:
+            srv.handle_request()
+    except KeyboardInterrupt:
+        print "\rServer exiting.."
 
     srv.server_close()
-
 
 if __name__ == '__main__':
     main()

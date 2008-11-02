@@ -97,7 +97,7 @@ h2 {
     font-weight: normal;
     font-size: 120%;
     letter-spacing: -1px;
-    margin: 0.4em 0;
+    margin-top: 20px;
 }
 
 h3 {
@@ -264,4 +264,58 @@ a.button:active span {
 .help_p {
     margin-left: 15px;
     text-align: justify;
+}
+
+.tDnD_whileDrag {
+  background-color:#ECF6FC;
+  font-weight: bold;
+}
+
+.rulestable {
+  width: 100%;
+}
+
+#mimetable {
+  width: 540px;
+  height: 400px;
+  overflow: auto;
+}
+
+.tableprop {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.tableprop tr th {
+  valign: top; 
+  width:  160px;
+}
+
+.tableprop .comment {
+  color: #999;
+  font-size: 85%;
+  margin-right: 20px;
+}
+
+.tableprop .title {
+  font-weight: bold;  
+}
+
+.tableprop_block hr {
+  background: #DCF;
+  border: none;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  height: 1px;
+  width: 100%;
+  text-align: left;
+  align: left;
+}
+
+table tr {
+  vertial-align: top;
+}
+
+table tr th {
+  font-weight: bold;
 }

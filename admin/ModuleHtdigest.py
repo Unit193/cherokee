@@ -4,8 +4,11 @@ from Table import *
 from ModuleAuth import *
 
 DATA_VALIDATION = [
-    ('vserver!.*?!(directory|extensions|request)!.*?!passwdfile', validations.is_local_file_exists)
+    ('vserver!.*?!(directory|extensions|request)!.*?!passwdfile', 
+     (validations.is_local_file_exists, 'cfg'))
 ]
+
+NOTE_PASSWD = "Full path to the Htdigest formated password file."
 
 class ModuleHtdigest (ModuleAuthBase):
     PROPERTIES = ModuleAuthBase.PROPERTIES + [
@@ -18,12 +21,13 @@ class ModuleHtdigest (ModuleAuthBase):
         ModuleAuthBase.__init__ (self, cfg, prefix, 'htdigest', submit)
 
     def _op_render (self):
-        table = Table(2)
-        self.AddTableEntry (table, "Password File", "%s!passwdfile"%(self._prefix))
-
         txt  = ModuleAuthBase._op_render (self)
-        txt += str(table)
 
+        table = TableProps()
+        self.AddPropEntry (table, "Password File", "%s!passwdfile"%(self._prefix), NOTE_PASSWD)
+
+        txt += "<h2>Htpasswd file</h2>"
+        txt += self.Indent(table)
         return txt
 
     def _op_apply_changes (self, uri, post):

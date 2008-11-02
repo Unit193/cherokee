@@ -6,8 +6,8 @@ from Table import *
 from Entry import *
 
 DATA_VALIDATION = [
-    ("new_vserver_name",  validations.is_safe_id),
-    ("new_vserver_droot", validations.is_local_dir_exists),
+    ("new_vserver_name",   validations.is_safe_id),
+    ("new_vserver_droot", (validations.is_local_dir_exists, 'cfg')),
 ]
 
 COMMENT = """
@@ -70,8 +70,8 @@ class PageVServers (PageMenu, FormHelper):
         table = Table(3,1)
         table += ('Name', 'Document Root')
         fo1 = Form ("/vserver", add_submit=False)
-        en1 = self.InstanceEntry ("new_vserver_name", "text")
-        en2 = self.InstanceEntry ("new_vserver_droot", "text")
+        en1 = self.InstanceEntry ("new_vserver_name",  "text", size=20)
+        en2 = self.InstanceEntry ("new_vserver_droot", "text", size=40)
         table += (en1, en2, SUBMIT_ADD)
 
         txt += "<h2>Add new Virtual Server</h2>"
@@ -97,8 +97,8 @@ class PageVServers (PageMenu, FormHelper):
         if name in self._cfg['vserver']:
             return '/vserver'
 
-        self._cfg['%s!document_root' % (pre)] = droot
-        self._cfg['%s!directory!/!handler' % (pre)]  = "common"
-        self._cfg['%s!directory!/!priority' % (pre)] = "1"
+        self._cfg['%s!document_root'  % (pre)] = droot
+        self._cfg['%s!rule!1!match'   % (pre)] = 'default'
+        self._cfg['%s!rule!1!handler' % (pre)] = 'common'
 
         return '/vserver/%s' % (name)

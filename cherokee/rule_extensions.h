@@ -22,41 +22,29 @@
  * USA
  */
 
-#include "common-internal.h"
-#include "reqs_list_entry.h"
+#if !defined (CHEROKEE_INSIDE_CHEROKEE_H) && !defined (CHEROKEE_COMPILATION)
+# error "Only <cherokee/cherokee.h> can be included directly, this file may disappear or change contents."
+#endif
 
-ret_t 
-cherokee_reqs_list_entry_new (cherokee_reqs_list_entry_t **entry)
-{
-	CHEROKEE_NEW_STRUCT (n, reqs_list_entry);
+#ifndef CHEROKEE_RULE_EXTS_H
+#define CHEROKEE_RULE_EXTS_H
 
-	/* Init properties
-	 */
-	memset (n->ovector, 0, sizeof(int)*OVECTOR_LEN);
-	n->ovecsize = 0;
+#include <cherokee/common.h>
+#include <cherokee/buffer.h>
+#include <cherokee/rule.h>
+#include <cherokee/avl.h>
 
-	cherokee_buffer_init (&n->request);
-	INIT_LIST_HEAD (&n->list_node);
+CHEROKEE_BEGIN_DECLS
 
-	/* Init base class
-	 */
-	cherokee_config_entry_init (CONF_ENTRY(n));
+typedef struct {
+	cherokee_rule_t   rule;
+	cherokee_avl_t    extensions;
+} cherokee_rule_extensions_t;
 
-	*entry = n;	
-	return ret_ok;
-}
+#define RULE_EXTENSIONS(x) ((cherokee_rule_extensions_t *)(x))
 
+ret_t cherokee_rule_extensions_new (cherokee_rule_extensions_t **rule);
 
-ret_t 
-cherokee_reqs_list_entry_free (cherokee_reqs_list_entry_t *entry)
-{
-	if (entry == NULL)
-		return ret_ok;
+CHEROKEE_END_DECLS
 
-	cherokee_buffer_mrproper (&entry->request);
-	cherokee_config_entry_mrproper (CONF_ENTRY(entry));
-	
-	free (entry);
-	return ret_ok;
-}
-
+#endif /* CHEROKEE_RULE_EXTS_H */

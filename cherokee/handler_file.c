@@ -42,6 +42,7 @@
 #include "module.h"
 #include "iocache.h"
 #include "util.h"
+#include "handler_dirlist.h"
 
 #define ENTRIES "handler,file"
 
@@ -65,6 +66,8 @@ cherokee_handler_file_configure (cherokee_config_node_t *conf, cherokee_server_t
 {
 	cherokee_list_t               *i;
 	cherokee_handler_file_props_t *props;
+
+	UNUSED(srv);
 
 	if (*_props == NULL) {
 		CHEROKEE_NEW_STRUCT (n, handler_file_props);
@@ -367,6 +370,7 @@ ret_t
 cherokee_handler_file_init (cherokee_handler_file_t *fhdl)
 {
 	ret_t                     ret;
+	char                     *ext;
 	cherokee_boolean_t        use_io   = false;
 	cherokee_connection_t    *conn     = HANDLER_CONN(fhdl);
 	cherokee_server_t        *srv      = HANDLER_SRV(fhdl);
@@ -396,11 +400,9 @@ cherokee_handler_file_init (cherokee_handler_file_t *fhdl)
 	/* Look for the mime type
 	 */
 	if (srv->mime != NULL) {
-		char *ext;
-
 		ext = strrchr (conn->request.buf, '.');
 		if (ext != NULL) {
-			ret = cherokee_mime_get_by_suffix (srv->mime, ext+1, &fhdl->mime);
+			cherokee_mime_get_by_suffix (srv->mime, ext+1, &fhdl->mime);
 		}
 	}
 
@@ -532,10 +534,12 @@ cherokee_handler_file_add_headers (cherokee_handler_file_t *fhdl,
 {
 	ret_t                  ret;
 	char                   bufstr[DTM_SIZE_GMTTM_STR];
+	struct tm              modified_tm;
 	size_t                 szlen          = 0;
 	off_t                  content_length = 0;
-	struct tm              modified_tm    = { 0 };
 	cherokee_connection_t *conn           = HANDLER_CONN(fhdl);
+
+	memset (&modified_tm, 0, sizeof(struct tm));
 
 	/* ETag:
 	 */
@@ -564,13 +568,13 @@ cherokee_handler_file_add_headers (cherokee_handler_file_t *fhdl,
 	 * "Content-Type:" and "Cache-Control: max-age="
 	 */
 	if (fhdl->mime != NULL) {
-		cherokee_buffer_t *mime;
 		cuint_t            maxage;
+		cherokee_buffer_t *mime   = NULL;
 		
 		cherokee_mime_entry_get_type (fhdl->mime, &mime);
-		cherokee_buffer_add_str   (buffer, "Content-Type: ");
-		cherokee_buffer_add_buffer(buffer, mime);
-		cherokee_buffer_add_str   (buffer, CRLF);
+		cherokee_buffer_add_str    (buffer, "Content-Type: ");
+		cherokee_buffer_add_buffer (buffer, mime);
+		cherokee_buffer_add_str    (buffer, CRLF);
 		
 		ret = cherokee_mime_entry_get_maxage (fhdl->mime, &maxage);             
 		if (ret == ret_ok) {

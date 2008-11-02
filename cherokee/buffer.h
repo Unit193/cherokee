@@ -39,9 +39,9 @@
 CHEROKEE_BEGIN_DECLS
 
 typedef struct {
-	char *buf;        /**< Memory chunk           */
-	int   size;       /**< Total amount of memory */
-	int   len;        /**< Length of the string   */
+	char    *buf;        /**< Memory chunk           */
+	cuint_t  size;       /**< Total amount of memory */
+	cuint_t  len;        /**< Length of the string   */
 } cherokee_buffer_t;
 
 #define BUF(x) ((cherokee_buffer_t *)(x))
@@ -88,8 +88,8 @@ ret_t cherokee_buffer_read_from_fd       (cherokee_buffer_t  *buf, int fd, size_
 ret_t cherokee_buffer_add_chunked        (cherokee_buffer_t  *buf, char *txt, size_t size);
 ret_t cherokee_buffer_add_buffer_chunked (cherokee_buffer_t  *buf, cherokee_buffer_t *buf2);
 
-ret_t cherokee_buffer_move_to_begin      (cherokee_buffer_t  *buf, int pos);
-ret_t cherokee_buffer_drop_endding       (cherokee_buffer_t  *buf, int num_chars);
+ret_t cherokee_buffer_move_to_begin      (cherokee_buffer_t  *buf, cuint_t pos);
+ret_t cherokee_buffer_drop_endding       (cherokee_buffer_t  *buf, cuint_t num_chars);
 ret_t cherokee_buffer_multiply           (cherokee_buffer_t  *buf, int num);
 ret_t cherokee_buffer_swap_chars         (cherokee_buffer_t  *buf, char a, char b);
 ret_t cherokee_buffer_remove_dups        (cherokee_buffer_t  *buf, char c);
@@ -104,8 +104,8 @@ ret_t cherokee_buffer_ensure_size        (cherokee_buffer_t  *buf, size_t size);
 
 int    cherokee_buffer_is_endding        (cherokee_buffer_t  *buf, char c);
 char   cherokee_buffer_end_char          (cherokee_buffer_t  *buf);
-size_t cherokee_buffer_cnt_spn           (cherokee_buffer_t  *buf, int offset, char *str);
-size_t cherokee_buffer_cnt_cspn          (cherokee_buffer_t  *buf, int offset, char *str);
+size_t cherokee_buffer_cnt_spn           (cherokee_buffer_t  *buf, cuint_t offset, char *str);
+size_t cherokee_buffer_cnt_cspn          (cherokee_buffer_t  *buf, cuint_t offset, char *str);
 
 crc_t cherokee_buffer_crc32              (cherokee_buffer_t  *buf);
 ret_t cherokee_buffer_encode_base64      (cherokee_buffer_t  *buf, cherokee_buffer_t *encoded);
@@ -117,6 +117,7 @@ ret_t cherokee_buffer_encode_sha1_base64 (cherokee_buffer_t  *buf, cherokee_buff
 ret_t cherokee_buffer_encode_hex         (cherokee_buffer_t  *buf, cherokee_buffer_t *encoded);
 ret_t cherokee_buffer_decode_hex         (cherokee_buffer_t  *buf);
 ret_t cherokee_buffer_unescape_uri       (cherokee_buffer_t  *buf);
+ret_t cherokee_buffer_add_escape_html    (cherokee_buffer_t  *buf, cherokee_buffer_t *src);
 ret_t cherokee_buffer_escape_html        (cherokee_buffer_t  *buf, cherokee_buffer_t *src);
 ret_t cherokee_buffer_add_comma_marks    (cherokee_buffer_t  *buf);
 

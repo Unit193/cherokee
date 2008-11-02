@@ -22,38 +22,32 @@
  * USA
  */
 
-#include "common-internal.h"
-#include "virtual_entries.h"
+#if !defined (CHEROKEE_INSIDE_CHEROKEE_H) && !defined (CHEROKEE_COMPILATION)
+# error "Only <cherokee/cherokee.h> can be included directly, this file may disappear or change contents."
+#endif
 
+#ifndef CHEROKEE_RULE_HEADER_H
+#define CHEROKEE_RULE_HEADER_H
 
-ret_t 
-cherokee_virtual_entries_init (cherokee_virtual_entries_t *ventry)
-{
-	ret_t ret;
+#include <cherokee/common.h>
+#include <cherokee/buffer.h>
+#include <cherokee/rule.h>
+#include <cherokee/header.h>
+#include <cherokee/regex.h>
 
-	ret = cherokee_exts_table_init (&ventry->exts);
-	if (unlikely(ret < ret_ok))
-		return ret;
+CHEROKEE_BEGIN_DECLS
 
-	ret = cherokee_dirs_table_init (&ventry->dirs);
-	if (unlikely(ret < ret_ok))
-		return ret;
+typedef struct {
+	cherokee_rule_t           rule;
+	cherokee_common_header_t  header;
+	cherokee_buffer_t         match;
+	void                     *pcre;
+} cherokee_rule_header_t;
 
-	ret = cherokee_reqs_list_init (&ventry->reqs);
-	if (unlikely(ret < ret_ok))
-		return ret;
+#define RULE_HEADER(x) ((cherokee_rule_header_t *)(x))
 
-	return ret_ok;
-}
+ret_t cherokee_rule_header_new (cherokee_rule_header_t **rule);
 
+CHEROKEE_END_DECLS
 
-ret_t 
-cherokee_virtual_entries_mrproper (cherokee_virtual_entries_t *ventry)
-{
-	cherokee_dirs_table_mrproper (&ventry->dirs);
-	cherokee_exts_table_mrproper (&ventry->exts);
-	cherokee_reqs_list_mrproper (&ventry->reqs);
-
-	return ret_ok;
-}
-
+#endif /* CHEROKEE_RULE_HEADER_H */

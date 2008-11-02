@@ -31,6 +31,7 @@
  */
 #include <cherokee/macros.h>
 #include <cherokee/common.h>
+#include <cherokee/init.h>
 #include <cherokee/util.h>
 #include <cherokee/version.h>
 #include <cherokee/buffer.h>
@@ -57,6 +58,8 @@
 #include <cherokee/plugin.h>
 #include <cherokee/plugin_loader.h>
 #include <cherokee/nonce.h>
+#include <cherokee/config_entry.h>
+#include <cherokee/rule.h>
 
 /* Client library
  */

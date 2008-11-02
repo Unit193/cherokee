@@ -4,12 +4,14 @@ REQUIRED  = "This is working, yeahhh"
 FORBIDDEN = "It shouldn't appear in the text"
 
 CONF = """
-vserver!default!directory!/extension1!handler = file
-vserver!default!directory!/extension1!priority = 790
+vserver!default!rule!790!match = directory
+vserver!default!rule!790!match!directory = /extension1
+vserver!default!rule!790!handler = file
 
-vserver!default!extensions!xyz!handler = phpcgi
-vserver!default!extensions!xyz!handler!interpreter = %s
-vserver!default!extensions!xyz!priority = 791
+vserver!default!rule!791!match = extensions
+vserver!default!rule!791!match!extensions = xyz
+vserver!default!rule!791!handler = phpcgi
+vserver!default!rule!791!handler!interpreter = %s
 """
 
 class Test (TestBase):

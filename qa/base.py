@@ -256,12 +256,17 @@ class TestBase:
         return fulldir
 
     def WriteFile (self, www, filename, mode=0444, content=''):
+        assert(type(mode) == int)
+
         fullpath = os.path.join (www, filename)
         f = open (fullpath, 'w')
         f.write (content)
         f.close()
         os.chmod(fullpath, mode)
         return fullpath
+
+    def SymLink (self, source, target):
+        os.symlink (source, target)
 
     def CopyFile (self, src, dst):
         open (dst, 'w').write (open (src, 'r').read())

@@ -4,13 +4,21 @@ from Page import *
 from Form import *
 from Table import *
 from Entry import *
-from VirtualServer import *
+from RuleList import *
 from Module import *
 from consts import *
 
+DEFAULT_RULE_WARNING = 'The default match ought not to be changed.'
+
+NOTE_DOCUMENT_ROOT = 'Allow to specify an alternative document root path.'
+NOTE_HANDLER       = 'How the connection will be handler.'
+NOTE_HTTPS_ONLY    = 'Enable to allow access to the resource only by https.'
+NOTE_ALLOW_FROM    = 'List of IPs and subnets allowed to access the resource.'
+NOTE_VALIDATOR     = 'Which, if any, will be the authentication method.'
+
 DATA_VALIDATION = [
-    ("vserver!.*?!(directory|extensions|request)!.*?!document_root", validations.is_local_dir_exists),
-    ("vserver!.*?!(directory|extensions|request)!.*?!allow_from",    validations.is_ip_or_netmask_list)
+    ("vserver!.*?!rule!(\d+)!document_root", (validations.is_local_dir_exists, 'cfg')),
+    ("vserver!.*?!rule!(\d+)!allow_from",     validations.is_ip_or_netmask_list)
 ]
 
 class PageEntry (PageMenu, FormHelper):
@@ -31,18 +39,18 @@ class PageEntry (PageMenu, FormHelper):
         temp = uri.split('/')
         self._is_userdir = (temp[2] == 'userdir')
 
-        if not self._is_userdir:
-            self._host        = temp[1]
-            self._prio        = temp[3]        
-            self._priorities  = VServerEntries (self._host, self._cfg)
-            self._entry       = self._priorities[self._prio]
-            url = '/vserver/%s/prio/%s' % (self._host, self._prio)
-        else:
+        if self._is_userdir:
             self._host        = temp[1]
             self._prio        = temp[4]        
-            self._priorities  = VServerEntries (self._host, self._cfg, user_dir=True)
-            self._entry       = self._priorities[self._prio]
+            self._priorities  = RuleList (self._cfg, 'vserver!%s!user_dir!rule'%(self._host))
+            self._entry       = self._priorities[int(self._prio)]
             url = '/vserver/%s/userdir/prio/%s' % (self._host, self._prio)
+        else:
+            self._host        = temp[1]
+            self._prio        = temp[3]        
+            self._priorities  = RuleList (self._cfg, 'vserver!%s!rule'%(self._host))
+            self._entry       = self._priorities[int(self._prio)]
+            url = '/vserver/%s/prio/%s' % (self._host, self._prio)
 
         # Set the submit URL
         self.set_submit_url (url)
@@ -56,9 +64,9 @@ class PageEntry (PageMenu, FormHelper):
             return "/vserver/%s" % (self._host)
 
         if not self._is_userdir:
-            self._conf_prefix = 'vserver!%s!%s!%s' % (self._host, self._entry[0], self._entry[1])
+            self._conf_prefix = 'vserver!%s!rule!%s' % (self._host, self._prio)
         else:
-            self._conf_prefix = 'vserver!%s!user_dir!%s!%s' % (self._host, self._entry[0], self._entry[1])
+            self._conf_prefix = 'vserver!%s!user_dir!rule!%s' % (self._host, self._prio)
 
         # Check what to do..
         if post.get_val('is_submit'):
@@ -93,29 +101,36 @@ class PageEntry (PageMenu, FormHelper):
         else:
             txt = '%s - ' % (self._host)
 
-        for n in range(len(ENTRY_TYPES)):
-            if ENTRY_TYPES[n][0] == self._entry[0]:
-                txt += "%s: %s" % (ENTRY_TYPES[n][1], self._entry[1])
-                return txt
+        # Load the rule plugin
+        _type = self._entry.get_val('match')
+        rule_module = module_obj_factory (_type, self._cfg, self._conf_prefix, self.submit_url)
+
+        txt += "%s: %s" % (rule_module.get_type_name(), rule_module.get_name())
+        return txt
 
     def _render_guts (self):
-        pre = self._conf_prefix
-        txt = '<h1>%s</h1>' % (self._get_title (html=True))
-        tmp = ''
+        pre  = self._conf_prefix
+        tabs = []
+        
+        # Rule Properties
+        tabs += [('Rule', self._render_rule())]        
 
-        table = Table(2)
-        e = self.AddTableOptions_Reload (table, 'Handler', '%s!handler'%(pre), HANDLERS)
-        self.AddTableEntry (table, 'Document Root', '%s!document_root'%(pre))
-       
-        tmp += str(table)
+        # Handler
+        table = TableProps()
+        e = self.AddPropOptions_Reload (table, 'Handler', '%s!handler'%(pre), 
+                                        HANDLERS, NOTE_HANDLER)
+        self.AddPropEntry (table, 'Document Root', '%s!document_root'%(pre), NOTE_DOCUMENT_ROOT)
 
-        tmp += '<h2>Handler properties</h2>'
-        tmp += e
+        if e:
+            tabs += [('Handler', str(table) + e)]
+        else:
+            tabs += [('Handler', str(table))]
 
-        tmp += '<h2>Security</h2>'
-        tmp += self._render_security ()
-        txt += self.Indent(tmp)
+        # Security
+        tabs += [('Security', self._render_security())]
 
+        txt  = '<h1>%s</h1>' % (self._get_title (html=True))
+        txt += self.InstanceTab (tabs)
         form = Form (self.submit_url)
         return form.Render(txt)
 
@@ -129,16 +144,31 @@ class PageEntry (PageMenu, FormHelper):
             return "Couldn't load the properties module"
         return props._op_render()
 
+    def _render_rule (self):
+        pre = "%s!match"%(self._conf_prefix)
+
+        if self._cfg.get_val(pre) == 'default':
+            return self.Dialog (DEFAULT_RULE_WARNING, 'important-information')
+
+        # Change the rule type
+        table = TableProps()
+        e = self.AddPropOptions_Reload (table, "Rule Type", pre, RULES, "")
+        return str(table) + e
+
     def _render_security (self):
         pre = self._conf_prefix
 
-        txt   = ""
-        table = Table(2)
-        self.AddTableCheckbox (table, 'Only https', '%s!only_secure'%(pre), False)
-        self.AddTableEntry    (table, 'Allow From',  '%s!allow_from' %(pre))
+        txt   = "<h2>Access Restrictions</h2>"
+        table = TableProps()
+        self.AddPropCheck (table, 'Only https', '%s!only_secure'%(pre), False, NOTE_HTTPS_ONLY)
+        self.AddPropEntry (table, 'Allow From',  '%s!allow_from' %(pre), NOTE_ALLOW_FROM)
+        txt += self.Indent(table)
 
-        e = self.AddTableOptions_Reload (table, 'Authentication', '%s!auth'%(pre), VALIDATORS)
-                                                     
-        txt += str(table) + e
+        txt += "<h2>Authentication</h2>"
+        table = TableProps()
+        e = self.AddPropOptions_Reload (table, 'Validation Mechanism', '%s!auth'%(pre), 
+                                        VALIDATORS, NOTE_VALIDATOR)
+        txt += self.Indent (table)
+        txt += e
         return txt
 

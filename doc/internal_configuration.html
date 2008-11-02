@@ -31,7 +31,7 @@ would like to point out again that users should never read of modify the
 configuration file by hand, so it is a format that only developers
 should know about.</p>
 <p>The following blocks will summarize the configuration keys that
-Cherokee 0.6 handles:</p>
+Cherokee 0.7 handles:</p>
 </div>
 <div class="section" id="server">
 <h1>Server</h1>
@@ -116,10 +116,6 @@ is run as root or whether to use keep-alive connections.</p>
 <tr><td>server!pid_file</td>
 <td>Path</td>
 <td>PID file</td>
-</tr>
-<tr><td>server!mime_files</td>
-<td>List</td>
-<td>Path list to mime type files</td>
 </tr>
 <tr><td>server!listen</td>
 <td>IP</td>
@@ -298,31 +294,68 @@ most common type of entry.</p>
 <p>Besides these configuration keys there are a few other more complex
 that needs further explanation:</p>
 </div>
-<div class="section" id="directories-requests-and-regular-expressions">
-<h1>Directories, Requests and Regular Expressions</h1>
-<p>These entries are located inside Virtual Servers. They basically
-specify the behavior of the web server by setting up how to handle each
-request based on the requested object and parameters.</p>
-<p>There are three kinds of entry. All three of them admit
-the same parameters, and depending on each case, the entry is followed
-by the directory name, the extension list or the regular expression:</p>
+<div class="section" id="defining-a-virtual-server-behavior">
+<h1>Defining a virtual server behavior</h1>
+<p>A virtual server behavior is basically defined by a rule list, which
+includes a number of rules against which each request will be checked.</p>
+<p>There are a number of rules types, each one checking a different
+aspect of the request. The most usual rule types are the ones that
+checks the request URI: directories, extensions, regular expressions
+and headers.</p>
+<p>All the rule types accept the same configuration sub-properties.
+However, the <tt class="docutils literal"><span class="pre">match</span></tt> property must be present in all the cases. It
+specifies which is the rule type and its properties.</p>
+<p>The general syntax is:</p>
+<p>vserver ! <tt class="docutils literal"><span class="pre">name</span></tt> ! rule ! <tt class="docutils literal"><span class="pre">prioriry</span></tt> ! match</p>
+<p>The rule types plug-ins shipped within a standard Cherokee release
+include:</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field"><th class="field-name">Directory:</th><td class="field-body"><p class="first">The directory specifies how to handle its contents.</p>
-<p>Example: the root directory of the default virtual host would be represented by</p>
-<p><tt class="docutils literal"><span class="pre">vserver!default!directory!/</span></tt></p>
+<p>Example: the entry with priority 20, setting the properties for the
+<em>icons</em> directory of the default virtual host would be represented
+by:</p>
+<pre class="literal-block">
+vserver!default!rule!20!match!type = directory
+vserver!default!rule!20!match!directory = /icons
+</pre>
 </td>
 </tr>
 <tr class="field"><th class="field-name">Extension:</th><td class="field-body"><p class="first">It specifies a list of extensions and how they should be handled.</p>
-<p>Eg: the JPG extensions is</p>
-<p><tt class="docutils literal"><span class="pre">vserver!default!extensions!jpg,jpeg</span></tt></p>
+<p>Eg: the JPG extensions is:</p>
+<pre class="literal-block">
+vserver!default!rule!30!match!type = extensions
+vserver!default!rule!30!match!extensions = jpg,jpeg
+</pre>
 </td>
 </tr>
 <tr class="field"><th class="field-name">Requests:</th><td class="field-body"><p class="first">When a request matches a regular expression entry, it uses its configuration.</p>
-<p>Eg: requests beginning with 'a' and PHP extension</p>
-<p class="last"><tt class="docutils literal"><span class="pre">vserver!default!request!^a.*\.php$</span></tt></p>
+<p>Eg: requests beginning with 'a' and PHP extension:</p>
+<pre class="literal-block">
+vserver!default!rule!40!match!type = request
+vserver!default!rule!40!match!request = ^a.*\.php$
+</pre>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Header:</th><td class="field-body"><p class="first">It tries to match a regular expression against a certain header
+entry.</p>
+<p>Eg: check whether the Referer header matches a specific host:</p>
+<pre class="literal-block">
+vserver!default!rule!50!match!type = header
+vserver!default!rule!50!match!header = Referer
+vserver!default!rule!50!match!match = .+\.example\.com
+</pre>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Default:</th><td class="field-body"><p class="first">This rules matches every request. There must be a default rule
+configured at the end of the rule list to handle the request that
+did not match any other rule.</p>
+<p>Eg: Default rule the 'default' virtual server:</p>
+<pre class="last literal-block">
+vserver!default!rule!default
+</pre>
 </td>
 </tr>
 </tbody>
@@ -400,8 +433,8 @@ properties:</p>
 <li><p class="first">The default virtual server uses the &quot;common&quot; handler as default
 choice for its root directory:</p>
 <pre class="literal-block">
-vserver!default!directory!/!handler = common
-vserver!default!directory!/!priority = 1
+vserver!default!rule!directory!/!handler = common
+vserver!default!rule!directory!/!priority = 1
 </pre>
 </li>
 <li><p class="first">The *.example.com and *.examples.org domains are restricted to be
@@ -410,20 +443,20 @@ FastCGI:</p>
 <pre class="literal-block">
 vserver!example!domains!1 = *.example.com
 vserver!example!domains!2 = *.example.org
-vserver!example!directory!/!handler = fcgi
-vserver!example!directory!/!priority = 1
-vserver!example!directory!/!allow_from = 127.0.0.1,::1
+vserver!example!rule!directory!/!handler = fcgi
+vserver!example!rule!directory!/!priority = 1
+vserver!example!rule!directory!/!allow_from = 127.0.0.1,::1
 </pre>
 </li>
 <li><p class="first">ISO images should be handled as files and are protected by a
 htdigest file using only Digest authentication:</p>
 <pre class="literal-block">
-vserver!default!extensions!iso,ISO!handler = file
-vserver!default!extensions!iso,ISO!priority = 1
-vserver!default!extensions!iso,ISO!auth = htdigest
-vserver!default!extensions!iso,ISO!auth!realm = My secret isos
-vserver!default!extensions!iso,ISO!auth!methods = digest
-vserver!default!extensions!iso,ISO!auth!passwdfile = /var/passwd/isos.htdigest
+vserver!default!rule!extensions!iso,ISO!handler = file
+vserver!default!rule!extensions!iso,ISO!priority = 1
+vserver!default!rule!extensions!iso,ISO!auth = htdigest
+vserver!default!rule!extensions!iso,ISO!auth!realm = My secret isos
+vserver!default!rule!extensions!iso,ISO!auth!methods = digest
+vserver!default!rule!extensions!iso,ISO!auth!passwdfile = /var/passwd/isos.htdigest
 </pre>
 </li>
 </ul>

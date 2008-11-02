@@ -1,10 +1,5 @@
-ENTRY_TYPES = [
-    ('directory',  'Directory'),
-    ('extensions', 'Extensions'),
-    ('request',    'Regular Expression')
-]
-
 HANDLERS = [
+    ('',            'None'),
     ('common',      'List & Send'),
     ('file',        'Static content'),
     ('dirlist',     'Only listing'),
@@ -101,4 +96,11 @@ ERROR_CODES = [
     ('503', '503 Service Unavailable'),
     ('504', '504 Gatewat Timeout'),
     ('505', '505 HTTP Version Not Supported')
+]
+
+RULES = [
+    ('directory',  'Directory'),
+    ('extensions', 'Extensions'),
+    ('request',    'Regular Expression'),
+    ('header',     'Header')
 ]

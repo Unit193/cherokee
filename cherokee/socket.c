@@ -1369,7 +1369,11 @@ cherokee_socket_bufread (cherokee_socket_t *socket, cherokee_buffer_t *buf, size
 
 
 ret_t 
-cherokee_socket_sendfile (cherokee_socket_t *socket, int fd, size_t size, off_t *offset, ssize_t *sent)
+cherokee_socket_sendfile (cherokee_socket_t *socket,
+			  int      fd, 
+			  size_t   size, 
+			  off_t   *offset, 
+			  ssize_t *sent)
 {
 	static cherokee_boolean_t no_sys = false;
 
@@ -1391,6 +1395,11 @@ cherokee_socket_sendfile (cherokee_socket_t *socket, int fd, size_t size, off_t 
 		size = MAX_SF_BLK_SIZE;
 
 #if defined(LINUX_BROKEN_SENDFILE_API)
+	UNUSED(socket);
+	UNUSED(fd);
+	UNUSED(offset);
+	UNUSED(sent);
+
 	/* Large file support is set but native Linux 2.2 or 2.4 sendfile()
 	 * does not support _FILE_OFFSET_BITS 64
 	 */
@@ -1435,6 +1444,58 @@ cherokee_socket_sendfile (cherokee_socket_t *socket, int fd, size_t size, off_t 
 
 		return ret_error;
 	}
+
+#elif DARWIN_SENDFILE_API
+	int            re;
+	struct sf_hdtr hdr;
+	struct iovec   hdtrl;
+	off_t          _sent = size;
+
+	hdr.headers    = &hdtrl;
+	hdr.hdr_cnt    = 1;
+	hdr.trailers   = NULL;
+	hdr.trl_cnt    = 0;
+	
+	hdtrl.iov_base = NULL;
+	hdtrl.iov_len  = 0;
+
+	/* MacOS X: BSD-like System Call
+	 *
+	 * int
+	 * sendfile (int fd, int s, off_t offset, off_t *len,
+	 *           struct sf_hdtr *hdtr, int flags);
+	 */	
+	do {
+		re = sendfile (fd,                        /* int             fd     */
+			       SOCKET_FD(socket),         /* int             s      */
+			       *offset,                   /* off_t           offset */
+			       &_sent,                    /* off_t          *len    */
+			       &hdr,                      /* struct sf_hdtr *hdtr   */
+			       0);                        /* int             flags  */
+	}  while (re == -1 && errno == EINTR);
+
+	if (re == -1) {
+		switch (errno) {
+		case EAGAIN:
+#if defined(EWOULDBLOCK) && (EWOULDBLOCK != EAGAIN)
+		case EWOULDBLOCK:
+#endif
+			if (*sent < 1)
+				return ret_eagain;
+
+			/* else it's ok, something has been sent.
+			 */
+			break;
+		case ENOSYS:
+			no_sys = true;
+			return ret_no_sys;
+		default:
+			return ret_error;
+		}
+	}
+
+	*sent = _sent;
+	*offset = *offset + _sent;
 
 #elif SOLARIS_SENDFILE_API
 
@@ -1553,6 +1614,11 @@ cherokee_socket_sendfile (cherokee_socket_t *socket, int fd, size_t size, off_t 
 	*offset = *offset + *sent;
 
 #else
+	UNUSED(socket);
+	UNUSED(fd);
+	UNUSED(offset);
+	UNUSED(sent);
+
 	SHOULDNT_HAPPEN;
 	return ret_error;
 #endif
@@ -1587,6 +1653,8 @@ cherokee_socket_connect (cherokee_socket_t *sock)
 {
 	int r;
 
+	TRACE (ENTRIES, "connect type=%d\n", SOCKET_AF(sock));
+
 	switch (SOCKET_AF(sock)) {
 	case AF_INET:
 		r = connect (SOCKET_FD(sock), (struct sockaddr *) &SOCKET_ADDR(sock), sizeof(struct sockaddr_in));
@@ -1605,6 +1673,8 @@ cherokee_socket_connect (cherokee_socket_t *sock)
 		SHOULDNT_HAPPEN;
 		return ret_no_sys;			
 	}
+
+	TRACE (ENTRIES, "connect type=%d ret=%d\n", SOCKET_AF(sock), r);
 
 	if (r < 0) {
 		int err = SOCK_ERRNO();
@@ -1756,9 +1826,6 @@ cherokee_socket_set_block_timeout (cherokee_socket_t *socket, cuint_t timeout)
 	if (socket->socket < 0) {
 		return ret_error;
 	}
-
-	if (timeout < 0)
-		timeout = 0;
 
 #if defined(SO_RCVTIMEO) && !defined(HAVE_BROKEN_SO_RCVTIMEO)
 	/* Set the socket to blocking

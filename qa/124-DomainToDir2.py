@@ -8,11 +8,16 @@ PATH   = "/file1/param"
 CONF = """        
 vserver!<domain>!document_root = %s
 vserver!<domain>!domain!1 = <domain>
-vserver!<domain>!directory!<dir>!handler = redir
-vserver!<domain>!directory!<dir>!handler!rewrite!1!show = 1
-vserver!<domain>!directory!<dir>!handler!rewrite!1!regex = ^(.*)$
-vserver!<domain>!directory!<dir>!handler!rewrite!1!substring = %s$1
-vserver!<domain>!directory!<dir>!priority = 10
+
+vserver!<domain>!rule!1!match = default
+vserver!<domain>!rule!1!handler = server_info
+
+vserver!<domain>!rule!10!match = directory
+vserver!<domain>!rule!10!match!directory = <dir>
+vserver!<domain>!rule!10!handler = redir
+vserver!<domain>!rule!10!handler!rewrite!1!show = 1
+vserver!<domain>!rule!10!handler!rewrite!1!regex = ^(.*)$
+vserver!<domain>!rule!10!handler!rewrite!1!substring = %s$1
 """
 
 class Test (TestBase):

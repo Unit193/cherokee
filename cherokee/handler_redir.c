@@ -132,8 +132,12 @@ match_and_substitute (cherokee_handler_redir_t *n)
 		/* It might be matched previosly in the request parsing..
 		 */
 		if (list->re == NULL) {
-			memcpy (ovector, conn->req_matched_ref->ovector, OVECTOR_LEN * sizeof(int));
-			rc = conn->req_matched_ref->ovecsize;
+			memcpy (ovector, 
+				conn->regex_match_ovector,
+				OVECTOR_LEN * sizeof(int));
+
+			rc = *conn->regex_match_ovecsize;
+			TRACE (ENTRIES, "Using conn->ovector, size=%d\n", rc);
 
 		} else {
 			rc = pcre_exec (list->re, NULL, subject, subject_len, 0, 0, ovector, OVECTOR_LEN);
@@ -304,6 +308,8 @@ cherokee_handler_redir_new (cherokee_handler_t **hdl, void *cnt, cherokee_module
 ret_t 
 cherokee_handler_redir_free (cherokee_handler_redir_t *rehdl)
 {
+	UNUSED(rehdl);
+
 	return ret_ok;
 }
 
@@ -347,6 +353,9 @@ cherokee_handler_redir_init (cherokee_handler_redir_t *n)
 ret_t 
 cherokee_handler_redir_add_headers (cherokee_handler_redir_t *rehdl, cherokee_buffer_t *buffer)
 {
+	UNUSED(rehdl);
+	UNUSED(buffer);
+
 	return ret_ok;
 }
 

@@ -5,18 +5,19 @@ PATH   = "/file1/param"
 
 CONF = """        
 vserver!<domain>!document_root = /faked
-
 vserver!<domain>!domain!1 = <domain>
-vserver!<domain>!directory!/!handler = redir
-vserver!<domain>!directory!/!handler!rewrite!1!show = 1
-vserver!<domain>!directory!/!handler!rewrite!1!regex = ^/(.*)$
-vserver!<domain>!directory!/!handler!rewrite!1!substring = http://www.<domain>/$1
-vserver!<domain>!directory!/!priority = 10
+
+vserver!<domain>!rule!10!match = default
+vserver!<domain>!rule!10!handler = redir
+vserver!<domain>!rule!10!handler!rewrite!1!show = 1
+vserver!<domain>!rule!10!handler!rewrite!1!regex = ^/(.*)$
+vserver!<domain>!rule!10!handler!rewrite!1!substring = http://www.<domain>/$1
 
 vserver!www.<domain>!document_root = %s
 vserver!www.<domain>!domain!1 = www.<domain>
-vserver!www.<domain>!directory!/!handler = file
-vserver!www.<domain>!directory!/!priority = 10
+
+vserver!www.<domain>!rule!10!match = default
+vserver!www.<domain>!rule!10!handler = file
 """
 
 class Test (TestBase):

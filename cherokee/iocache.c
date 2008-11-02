@@ -369,7 +369,7 @@ out:
 
 
 ret_t 
-cherokee_iocache_clean_up (cherokee_iocache_t *iocache, cuint_t num)
+cherokee_iocache_clean_up (cherokee_iocache_t *iocache)
 {
 	ret_t              ret;
 	float              average;
@@ -397,7 +397,7 @@ cherokee_iocache_clean_up (cherokee_iocache_t *iocache, cuint_t num)
 #ifdef TRACE_ENABLED
 	{ 
 		int n = 0;
-		list_for_each_safe (i, tmp, &iocache->to_delete) { n++; }
+		list_for_each (i, &iocache->to_delete) { n++; }
 		TRACE(ENTRIES, "Clean-up list length: %d\n", n);
 	}
 #endif

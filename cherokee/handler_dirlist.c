@@ -54,7 +54,7 @@
 
 
 struct file_entry {
-	cherokee_list_t  list_entry;
+	cherokee_list_t  list_node;
 	struct stat      stat;
 	cuint_t          name_len;
 	struct dirent    info;          /* It *must* be the last entry */
@@ -184,17 +184,20 @@ cherokee_handler_dirlist_configure (cherokee_config_node_t *conf, cherokee_serve
 	char                             *theme      = NULL;
 	cherokee_buffer_t                 theme_path = CHEROKEE_BUF_INIT;
 
+	UNUSED(srv);
+
 	if (*_props == NULL) {
 		CHEROKEE_NEW_STRUCT (n, handler_dirlist_props);
 		
 		cherokee_handler_props_init_base (HANDLER_PROPS(n), 
 			MODULE_PROPS_FREE(cherokee_handler_dirlist_props_free));
 
-		n->show_size   = true;
-		n->show_date   = true;
-		n->show_user   = false;
-		n->show_group  = false;
-		n->show_icons  = true;
+		n->show_size     = true;
+		n->show_date     = true;
+		n->show_user     = false;
+		n->show_group    = false;
+		n->show_icons    = true;
+		n->show_symlinks = true;
 
 		cherokee_buffer_init (&n->header);
 		cherokee_buffer_init (&n->footer);
@@ -217,13 +220,15 @@ cherokee_handler_dirlist_configure (cherokee_config_node_t *conf, cherokee_serve
 		/* Convert the properties
 		 */
 		if (equal_buf_str (&subconf->key, "size")) {
-			props->show_size = atoi (subconf->val.buf);
+			props->show_size  = !! atoi (subconf->val.buf);
 		} else if (equal_buf_str (&subconf->key, "date")) {
-			props->show_date = atoi (subconf->val.buf);
+			props->show_date  = !! atoi (subconf->val.buf);
 		} else if (equal_buf_str (&subconf->key, "user")) {
-			props->show_user = atoi (subconf->val.buf);
+			props->show_user  = !! atoi (subconf->val.buf);
 		} else if (equal_buf_str (&subconf->key, "group")) {
-			props->show_group = atoi (subconf->val.buf);
+			props->show_group = !! atoi (subconf->val.buf);
+		} else if (equal_buf_str (&subconf->key, "symlinks")) {
+			props->show_symlinks = !! atoi (subconf->val.buf);
 
 		} else if (equal_buf_str (&subconf->key, "theme")) {
 			theme = subconf->val.buf;
@@ -290,7 +295,7 @@ generate_file_entry (cherokee_handler_dirlist_t *dhdl, DIR *dir, cherokee_buffer
 	n = (file_entry_t *) malloc (sizeof(file_entry_t) + path->len + extra + 3);
 	if (unlikely(n == NULL)) return ret_nomem;
 
-	INIT_LIST_HEAD(&n->list_entry);
+	INIT_LIST_HEAD(&n->list_node);
 
 	for (;;) {
 		/* Read a new directory entry
@@ -324,7 +329,7 @@ generate_file_entry (cherokee_handler_dirlist_t *dhdl, DIR *dir, cherokee_buffer
 		
 		/* Path	
 		 */
-		re = cherokee_stat (path->buf, &n->stat);
+		re = cherokee_lstat (path->buf, &n->stat);
 		if (re < 0) {
 			cherokee_buffer_drop_endding (path, n->name_len);
 
@@ -716,9 +721,9 @@ cherokee_handler_dirlist_init (cherokee_handler_dirlist_t *dhdl)
 	/* Server software string
 	 */
 	if (conn->socket.is_tls == non_TLS)
-		dhdl->software_str_ref = &srv->ext_server_w_port_string;
+		dhdl->software_str_ref = &srv->server_string_w_port;
 	else
-		dhdl->software_str_ref = &srv->ext_server_w_port_tls_string;
+		dhdl->software_str_ref = &srv->server_string_w_port_tls;
 
  	return ret_ok;
 }
@@ -778,6 +783,7 @@ render_file (cherokee_handler_dirlist_t *dhdl, cherokee_buffer_t *buffer, file_e
 {
 	ret_t                             ret;
 	cherokee_boolean_t                is_dir;
+	cherokee_boolean_t                is_link;
 	cherokee_buffer_t                *vtmp[2];
 	char                             *alt      = NULL;
 	cherokee_buffer_t                *icon     = NULL;
@@ -792,9 +798,16 @@ render_file (cherokee_handler_dirlist_t *dhdl, cherokee_buffer_t *buffer, file_e
 	 */
 	VTMP_INIT_SUBST (thread, vtmp, &props->entry);
 
+	is_dir  = S_ISDIR(file->stat.st_mode);
+	is_link = S_ISLNK(file->stat.st_mode);
+
+	/* Check whether it is a symlink that we should skip
+	 */
+	if ((! props->show_symlinks) && is_link)
+		return ret_not_found;
+
 	/* Add the icon
 	 */
-	is_dir = S_ISDIR(file->stat.st_mode);
 	alt = (is_dir) ? "[DIR]" : "[   ]";
 
 	if (props->show_icons) {
@@ -1045,6 +1058,8 @@ cherokee_handler_dirlist_step (cherokee_handler_dirlist_t *dhdl, cherokee_buffer
 ret_t
 cherokee_handler_dirlist_add_headers (cherokee_handler_dirlist_t *dhdl, cherokee_buffer_t *buffer)
 {
+	UNUSED(dhdl);
+
 	cherokee_buffer_add_str (buffer, "Content-Type: text/html; charset=iso-8859-1"CRLF);
 	return ret_ok;
 }

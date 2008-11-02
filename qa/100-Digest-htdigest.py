@@ -8,11 +8,13 @@ PASSWD = "itissecret"
 DIR    = "digest_htdigest1"
 
 CONF = """
-vserver!default!directory!/%s!auth = htdigest
-vserver!default!directory!/%s!auth!methods = digest
-vserver!default!directory!/%s!auth!realm = %s
-vserver!default!directory!/%s!auth!passwdfile = %s
-vserver!default!directory!/%s!priority = 1000
+vserver!default!rule!1000!match = directory
+vserver!default!rule!1000!match!directory = %s
+vserver!default!rule!1000!match!final = 0
+vserver!default!rule!1000!auth = htdigest
+vserver!default!rule!1000!auth!methods = digest
+vserver!default!rule!1000!auth!realm = %s
+vserver!default!rule!1000!auth!passwdfile = %s
 """
 
 class Test (TestBase):
@@ -65,15 +67,4 @@ class Test (TestBase):
 
         # Set the configuration
         #
-        self.conf = CONF % (DIR, DIR, DIR, REALM, DIR, passfile, DIR)
-
-        self.conf2             = """
-           Directory /%s {
-               Handler file
-               Auth Digest {
-                  Name "%s"
-                  Method htdigest {
-                    PasswdFile %s
-                  }
-               }
-           }""" % (DIR, REALM, passfile)
+        self.conf = CONF % ('/%s'%(DIR), REALM, passfile)

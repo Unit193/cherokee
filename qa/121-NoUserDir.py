@@ -8,8 +8,9 @@ FILENAME  = "file"
 CONF = """
 vserver!<domain>!document_root = %s
 vserver!<domain>!domain!1 = <domain>
-vserver!<domain>!directory!/!handler = common
-vserver!<domain>!directory!/!priority = 10
+
+vserver!<domain>!rule!10!match = default
+vserver!<domain>!rule!10!handler = common
 """
 
 

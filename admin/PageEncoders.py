@@ -19,6 +19,9 @@ DATA_VALIDATION = [
     ("server!encoder!.*?!deny",  validations.is_safe_id_list)
 ]
 
+NOTE_MATCH_TYPE  = 'Define how the following rules are going to be evaluated.'
+NOTE_MATCH_ALLOW = 'List of extensions that will be encoded.'
+NOTE_MATCH_DENY  = 'List of extensions that will not be encoded.'
 
 class MatchingList (FormHelper):
     OPTIONS = [
@@ -35,10 +38,10 @@ class MatchingList (FormHelper):
         
     def _op_render (self):
         txt   = ''
-        table = Table(3)
-        self.AddTableOptions  (table, 'Type',  '%s!type' %(self._prefix), self.OPTIONS)
-        self.AddTableEntry    (table, 'Allow', '%s!allow'%(self._prefix))
-        self.AddTableEntry    (table, 'Deny',  '%s!deny' %(self._prefix))
+        table = TableProps()
+        self.AddPropOptions (table, 'Type',  '%s!type' %(self._prefix), self.OPTIONS, NOTE_MATCH_TYPE)
+        self.AddPropEntry   (table, 'Allow', '%s!allow'%(self._prefix), NOTE_MATCH_ALLOW)
+        self.AddPropEntry   (table, 'Deny',  '%s!deny' %(self._prefix), NOTE_MATCH_DENY)
         txt += str(table)
 
         return txt
@@ -117,7 +120,7 @@ class PageEncoders (PageMenu, FormHelper):
 
         form = Form ("/%s" % (self._id))
         return form.Render(txt,DEFAULT_SUBMIT_VALUE)
-
+	
     def _op_apply_changes (self, post):
         self.ApplyChanges ([], post, DATA_VALIDATION)
         return "/%s" % (self._id)

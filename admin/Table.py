@@ -2,7 +2,6 @@ SUBMIT_GENERIC = '<input type="submit" value="%s" />'
 SUBMIT_ADD = SUBMIT_GENERIC % ('Add')
 SUBMIT_DEL = SUBMIT_GENERIC % ('Del')
 
-
 class Table:
     def __init__ (self, cols, title_top=0, title_left=0, style=''):
         self._cols       = cols
@@ -16,7 +15,7 @@ class Table:
 
         new_row = [''] * self._cols
         for i in range(len(entry)):
-            new_row[self._title_left + i] = entry[i]
+            new_row[i] = entry[i]
 
         self._content.append (new_row)
         return self
@@ -43,4 +42,5 @@ class Table:
 
     def Set (self, x, y, txt):
         self._content[y][x] = txt
+
 
