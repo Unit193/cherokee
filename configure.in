@@ -24,7 +24,7 @@ AC_PREREQ(2.56)
 dnl Version
 m4_define([cherokee_major_version], [0])
 m4_define([cherokee_minor_version], [5])
-m4_define([cherokee_micro_version], [3])
+m4_define([cherokee_micro_version], [4])
 m4_define([cherokee_patch_version], [])
 m4_define([cherokee_version], m4_format('%s.%s.%s%s', cherokee_major_version, cherokee_minor_version, cherokee_micro_version, cherokee_patch_version))
 
@@ -625,7 +625,7 @@ AC_TRY_RUN([#include <errno.h>
               AC_DEFINE([HAVE_SENDFILE_BROKEN], [1], [broken sendfile]) ])
 
 # readdir_r()
-PHP_READDIR_R_TYPE
+LIBWWW_READDIR_R_TYPE
 
 
 dnl
@@ -743,13 +743,6 @@ else
    have_pcre="built-in"
 fi
 AM_CONDITIONAL(USE_INTERNAL_PCRE, test $have_pcre = "built-in")
-
-
-dnl
-dnl Check for FastCGI library
-dnl
-AC_CHECK_LIB(fcgi, FCGX_IsCGI, have_fcgi=yes, have_fcgi=no)
-AM_CONDITIONAL(HAVE_FCGI, test "$have_fcgi" = "yes")
 
 
 dnl

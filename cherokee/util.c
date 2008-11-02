@@ -32,6 +32,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <errno.h>
 
 #ifdef HAVE_SYS_TIME_H
 # include <sys/time.h>
@@ -398,30 +399,27 @@ static pthread_mutex_t readdir_mutex = PTHREAD_MUTEX_INITIALIZER;
 int 
 cherokee_readdir (DIR *dirstream, struct dirent *entry, struct dirent **result)
 {
-#ifdef HAVE_POSIX_READDIR_R
+#ifdef HAVE_READDIR_R_2
+        /* We cannot rely on the return value of readdir_r as it
+	 * differs between various platforms (HPUX returns 0 on
+	 * success whereas Solaris returns non-zero)
+         */
+        entry->d_name[0] = '\0';
+
+        readdir_r (dirstream, entry);
+
+	if (entry->d_name[0] != '\0') {
+                *result = entry;
+		return 0;
+	}
+        
+	*result = NULL;
+	return errno;
+
+#elif defined(HAVE_READDIR_R_3)
 	return readdir_r (dirstream, entry, result);
 
 #else
-# ifdef HAVE_OLD_READDIR_R
-        int ret = 0;
-        
-        /* We cannot rely on the return value of readdir_r
-	 * as it differs between various platforms
-         * (HPUX returns 0 on success whereas Solaris returns non-zero)
-         */
-        entry->d_name[0] = '\0';
-        readdir_r(dirp, entry);
-        
-        if (entry->d_name[0] == '\0') {
-                *result = NULL;
-                ret = errno;
-        } else {
-                *result = entry;
-        }
-
-        return ret;
-
-# else
         struct dirent *ptr;
         int            ret = 0;
 	
@@ -440,8 +438,7 @@ cherokee_readdir (DIR *dirstream, struct dirent *entry, struct dirent **result)
 	
 	CHEROKEE_MUTEX_UNLOCK (&readdir_mutex);
         return ret;
-# endif
-#endif
+#endif 
 }
 
 
@@ -455,6 +452,9 @@ cherokee_split_pathinfo (cherokee_buffer_t  *path,
 	char        *cur;
 	struct stat  st;
 	char        *last_dir = NULL;
+
+	if (init_pos > path->len)
+		return ret_not_found;
 	
 	for (cur = path->buf + init_pos; *cur; ++cur) {
 		if (*cur != '/') continue;		
@@ -973,3 +973,46 @@ cherokee_get_timezone_ref (void)
 }
 
 
+ret_t 
+cherokee_parse_query_string (cherokee_buffer_t *query_string,
+			     cherokee_table_t  *arguments)
+{
+ 	char *string;
+	char *token; 
+
+	if (cherokee_buffer_is_empty (query_string))
+		return ret_ok;
+
+	string = query_string->buf;
+
+	while ((token = (char *) strsep(&string, "&")) != NULL)
+	{
+		char *equ, *key, *val;
+
+		if (token == NULL) continue;
+
+		if ((equ = strchr(token, '=')))
+		{
+			*equ = '\0';
+
+			key = token;
+			val = equ+1;
+
+			cherokee_table_add (arguments, key, strdup(val));
+
+			*equ = '=';
+		} else {
+			cherokee_table_add (arguments, token, NULL);
+		}
+
+		/* UGLY hack, part 1:
+		 * It restore the string modified by the strtok() function
+		 */
+		token[strlen(token)] = '&';
+	}
+
+	/* UGLY hack, part 2:
+	 */
+	query_string->buf[query_string->len] = '\0';
+	return ret_ok;
+}
