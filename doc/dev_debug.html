@@ -10,7 +10,6 @@
     <meta name="Keywords" content="cherokee web server httpd http" />
     <meta name="Description" content="Cherokee is a flexible, very fast, lightweight Web server. It is implemented entirely in C, and has no dependencies beyond a standard C library. It is embeddable and extensible with plug-ins. It supports on-the-fly configuration by reading files or strings, TLS/SSL (via GNUTLS or OpenSSL), virtual hosts, authentication, cache friendly features, PHP, custom error management, and much more." />
     <link href="media/css/cherokee_doc.css" rel="stylesheet" type="text/css" media="all" />
-    <title></title>
   </head>
 <body>
 <h2 id="_a_href_index_html_index_a_8594_a_href_dev_html_development_info_a"><a href="index.html">Index</a> &#8594; <a href="dev.html">Development info</a></h2>
@@ -54,15 +53,18 @@ You can also enable a cool feature: the CHEROKEE_TRACE environment
 <div class="content">
 <pre><tt>  --enable-trace</tt></pre>
 </div></div>
-<div class="para"><p>This will let you trace the behavior with a human-readable output.
-Now, when you are going to launch the web server, just add the
+<div class="para"><p>This will let you trace the behavior with a human-readable output.</p></div>
+<div class="para"><p>Note that by enabling tracing you will be making Cherokee a lot
+slower. Keep this in mind when deploying in production environments.</p></div>
+<div class="para"><p>Now, when you are going to launch the web server, just add the
 CHEROKEE_TRACE variable, with the desired options:</p></div>
 <div class="sidebarblock">
 <div class="sidebar-content">
 <div class="para"><p>cherokee# CHEROKEE_TRACE="common" cherokee</p></div>
-<div class="para"><p>Cherokee Web Server 0.8.0 (July 21 2008): Listening on port 80, TLS disabled</p></div>
-<div class="para"><p>IPv6 enabled, using epoll, 1024 fds system limit, max. 507 connections</p></div>
-<div class="para"><p>5 threads, 206 fds per thread, standard scheduling policyhandler_common.c:0143 (                     stat_file): /var/www//images/powered_by_cherokee.png, use_iocache=0 re=0</p></div>
+<div class="para"><p>Cherokee Web Server 0.9.0 (Sep 16 2008): Listening on port 80, TLS disabled,</p></div>
+<div class="para"><p>IPv6 enabled, using epoll, 1024 fds system limit, max. 505 connections, 10</p></div>
+<div class="para"><p>threads, 50 connections per thread, standard scheduling policy</p></div>
+<div class="para"><p>handler_common.c:0143 (                     stat_file): /var/www//images/powered_by_cherokee.png, use_iocache=0 re=0</p></div>
 <div class="para"><p>handler_common.c:0190 (   cherokee_handler_common_new): request: <em>/images/powered_by_cherokee.png</em>, local: <em>/var/www//images/powered_by_cherokee.png</em>, exists 1</p></div>
 <div class="para"><p>handler_common.c:0236 (   cherokee_handler_common_new): going for handler_file</p></div>
 <div class="para"><p>handler_common.c:0143 (                     stat_file): /var/www//images/default-bg.png, use_iocache=0 re=0</p></div>
@@ -132,7 +134,6 @@ easily.</p></div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2008-08-18 22:11:56 BST
 </div>
 </div>
 </body>

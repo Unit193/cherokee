@@ -25,29 +25,33 @@ PAGE_MENU_LAYOUT = """
             %(menu)s
         </div>
         <div id="workarea"><div id="workarea-inner">
-        <div id="help-area"><a id="help" name="help" href="#help" onclick="toggle_help();">Help</a>
-     	    <div id="help-contents">%(help)s</div>
-        </div>
         %(content)s
         </div></div>
     </div>
     <div class="clearfix"></div>
 """
 
+PAGE_MENU_HELP_BLOCK = """
+<h2>Help</h2>
+%(help)s
+<br />
+"""
+
 PAGE_MENU_MENU = """
 <ul id="nav">
+<li id="status"><a href="/">Status</a></li>
 <li id="general"><a href="/general">General</a></li>
 <li id="vserver"><a href="/vserver">Virtual Servers</a></li>
-<li id="encoder"><a href="/encoder">Encoding</a></li>
+<li id="source"><a href="/source">Info Sources</a></li>
 <li id="icon"><a href="/icons">Icons</a></li>
 <li id="mime"><a href="/mime">Mime Types</a></li>
 <li id="advanced"><a href="/advanced">Advanced</a></li>
 </ul>
-
 <br />
 
-<h2>Save Changes</h2>
+%(help_block)s
 
+<h2>Save Changes</h2>
 <div style="padding-top: 2px;">
  <p>%(menu_save_desc)s</p>
 </div>
@@ -72,17 +76,22 @@ MENU_SAVE_IS_ALIVE = """
   </div>
 """
 
+DIALOG_W=725
+DIALOG_H=500
+
 class Page (WebComponent):
-    def __init__ (self, id, cfg=None):
+    def __init__ (self, id, cfg=None, helps=[]):
         WebComponent.__init__ (self, id, cfg)
 
         self.macros  = {}
+        self.helps   = helps[:]
         self.theme   = Theme('default')
 
         self.AddMacroContent ('current', id)
         self.AddMacroContent ('version', VERSION)
 
     def Render (self):
+        self._add_help_macro()
         return self.theme.BuildTemplate (self.macros, self._id)
 
     def AddMacroContent (self, key, value):
@@ -91,10 +100,44 @@ class Page (WebComponent):
     def Read (self, name):
         return self.theme.ReadFile(name)
 
+    # Help
+    #
+    def AddHelp (self, (help_file, comment)):
+        for h,c in self.helps:
+            if h == help_file:
+                return
+        self.helps.append ((help_file, comment))
+
+    def AddHelps (self, helps):
+        for h in helps:
+            self.AddHelp(h)
+
+    def _render_help (self):
+        if not self.helps:
+            return ''
+
+        txt = '<ul>'
+        for hfile,comment in self.helps:
+            if hfile.startswith("http://"):
+                txt += '<li><a href="%s" target="_help">%s</a></li>' % (hfile, comment)
+            else:
+                params=(hfile, DIALOG_H, DIALOG_W, comment)
+                txt += '<li><a href="/help/%s.html?KeepThis=true&TB_iframe=true&height=%s&width=%s" class="thickbox">%s</a></li>' % params
+        txt += '</ul>'
+        return txt
+
+    def _add_help_macro (self):
+        help_txt = self._render_help()
+        if help_txt:
+            self.AddMacroContent ('help_block', PAGE_MENU_HELP_BLOCK)
+        else:
+            self.AddMacroContent ('help_block', '')
+        self.AddMacroContent ('help', help_txt)
+
 
 class PageMenu (Page):
-    def __init__ (self, id, cfg):
-        Page.__init__ (self, id, cfg)
+    def __init__ (self, id, cfg, helps=[]):
+        Page.__init__ (self, id, cfg, helps)
 
         manager = cherokee_management_get (cfg)
         if manager.is_alive():

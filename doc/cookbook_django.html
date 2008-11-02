@@ -10,7 +10,6 @@
     <meta name="Keywords" content="cherokee web server httpd http" />
     <meta name="Description" content="Cherokee is a flexible, very fast, lightweight Web server. It is implemented entirely in C, and has no dependencies beyond a standard C library. It is embeddable and extensible with plug-ins. It supports on-the-fly configuration by reading files or strings, TLS/SSL (via GNUTLS or OpenSSL), virtual hosts, authentication, cache friendly features, PHP, custom error management, and much more." />
     <link href="media/css/cherokee_doc.css" rel="stylesheet" type="text/css" media="all" />
-    <title></title>
   </head>
 <body>
 <h2 id="_a_href_index_html_index_a_8594_a_href_cookbook_html_cookbook_a"><a href="index.html">Index</a> &#8594; <a href="cookbook.html">Cookbook</a></h2>
@@ -40,7 +39,7 @@ it to run your web application either as FastCGI or SCGI.</p></div>
 <div class="listingblock">
 <div class="content">
 <pre><tt>$ cd /var/www
-$ django-admin.py startproject example</tt></pre>
+$ django-admin startproject example</tt></pre>
 </div></div>
 <div class="para"><p>This will create the basic structure into a new directory called
 <tt>example</tt>. Now you are ready to configure Cherokee. You only need to
@@ -59,13 +58,13 @@ manage it with the SCGI handler. If you wanted to use the FastCGI
 handler instead you would only have to omit the last parameter and
 FastCGI would be used by default. The configuration of the handler is
 exactly the same for SCGI and FastCGI.</p></div>
-<div class="para"><p>Once you have created the new rule for your <tt>/var/www/example
-directory</tt>, choose the desired handler and use the following
+<div class="para"><p>Once you have created the new rule for your <tt>/var/www/example</tt>
+directory, choose the desired handler and use the following
 configuration.</p></div>
 <div class="para"><div class="title">Common CGI options</div><p>Under <tt>Common CGI options</tt> make sure to check the <tt>Error handler</tt> box and
 uncheck <tt>Check file</tt>. This is to prevent possible errors with the
 <tt>INFO_PATH</tt> generation that can happen when an application, in this
-case <em>Rails</em>, manages the whole subtree. This is mentioned in the
+case <em>Django</em>, manages the whole subtree. This is mentioned in the
 <a href="modules_handlers_cgi.html">Common CGI</a> section of the
 documentation.</p></div>
 <div class="imageblock">
@@ -74,11 +73,18 @@ documentation.</p></div>
 </div>
 </div>
 <div class="para"><div class="title">SCGI specific</div><p>Under <tt>SCGI specific</tt> make sure to add the hosts providing the
-service. Note that you will have to manually launch the <tt>spawner</tt> if
+service. This is done by adding one or more information sources.</p></div>
+<div class="imageblock">
+<div class="content">
+<img src="media/images/cookbook_django_infosources.png" alt="Info Sources" title="Info Sources"/>
+</div>
+</div>
+<div class="para"><p>Note that you will have to manually launch the <tt>spawner</tt> if
 you use a <tt>Remote host</tt> as <tt>Information source</tt> instead of a <tt>Local
 interpreter</tt>.</p></div>
-<div class="para"><p>You will simply have to add as many sources as desired, for instance
-our example uses the port 3033.</p></div>
+<div class="para"><p>You will simply have to add as many sources as needed, for instance
+our example uses one nicknamed <tt>django1</tt>, created as <strong>local
+interpreter</strong> with these parameters on port 3033.</p></div>
 <div class="tableblock">
 <table rules="rows"
 frame="hsides"
@@ -109,15 +115,9 @@ cellspacing="0" cellpadding="4">
 </div>
 <div class="para"><p>You can set up as many hosts as desired and Cherokee will balance the
 load among them.</p></div>
-<div class="imageblock">
-<div class="content">
-<img src="media/images/cookbook_django_scgi.png" alt="SCGI specifics" title="SCGI specifics"/>
-</div>
-</div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2008-08-18 22:11:44 BST
 </div>
 </div>
 </body>

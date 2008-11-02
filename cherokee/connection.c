@@ -70,7 +70,6 @@
 #include "handler_error.h"
 #include "buffer.h"
 #include "config_entry.h"
-#include "encoder_table.h"
 #include "server-protected.h"
 #include "access.h"
 #include "virtual_server.h"
@@ -78,6 +77,7 @@
 #include "header.h"
 #include "header-protected.h"
 #include "iocache.h"
+#include "dtm.h"
 
 #define ENTRIES "core,connection"
 
@@ -118,6 +118,8 @@ cherokee_connection_new  (cherokee_connection_t **conn)
 	n->polling_fd           = -1;
 	n->polling_multiple     = false;
 	n->polling_mode         = FDPOLL_MODE_NONE;
+	n->expiration           = cherokee_expiration_none;
+	n->expiration_time      = 0;
 
 	cherokee_buffer_init (&n->buffer);
 	cherokee_buffer_init (&n->header_buffer);
@@ -143,6 +145,11 @@ cherokee_connection_new  (cherokee_connection_t **conn)
 
 	memset (n->regex_ovector, OVECTOR_LEN * sizeof(int), 0);
 	n->regex_ovecsize = 0;
+
+	n->chunked_encoding     = false;
+	n->chunked_sent         = 0;
+	n->chunked_last_package = false;
+	cherokee_buffer_init (&n->chunked_len);
 
 	*conn = n;
 	return ret_ok;
@@ -184,6 +191,7 @@ cherokee_connection_free (cherokee_connection_t  *conn)
 	cherokee_buffer_mrproper (&conn->redirect);
 	cherokee_buffer_mrproper (&conn->host);
 	cherokee_buffer_mrproper (&conn->self_trace);
+	cherokee_buffer_mrproper (&conn->chunked_len);
 
 	if (conn->validator != NULL) {
 		cherokee_validator_free (conn->validator);
@@ -246,6 +254,11 @@ cherokee_connection_clean (cherokee_connection_t *conn)
 	conn->traffic_next         = 0;
 	conn->polling_multiple     = false;
 	conn->polling_mode         = FDPOLL_MODE_NONE;
+	conn->expiration           = cherokee_expiration_none;
+	conn->expiration_time      = 0;
+	conn->chunked_encoding     = false;
+	conn->chunked_sent         = 0;
+	conn->chunked_last_package = false;
 
 	memset (conn->regex_ovector, OVECTOR_LEN * sizeof(int), 0);
 	conn->regex_ovecsize = 0;
@@ -280,6 +293,7 @@ cherokee_connection_clean (cherokee_connection_t *conn)
 	cherokee_buffer_clean (&conn->host);
 	cherokee_buffer_clean (&conn->query_string);
 	cherokee_buffer_clean (&conn->self_trace);
+	cherokee_buffer_clean (&conn->chunked_len);
 	
 	if (conn->validator != NULL) {
 		cherokee_validator_free (conn->validator);
@@ -403,12 +417,17 @@ out:
 	conn->mmaped       = NULL;
 	conn->mmaped_len   = 0;
 
+	/* It does not matter whether the previous handler wanted to
+	 * use Chunked encoding.
+	 */
+	conn->chunked_encoding = false;
+
 	return ret_ok;
 }
 
 
 static void
-build_response_header__authenticate (cherokee_connection_t *conn, cherokee_buffer_t *buffer)
+build_response_header_authentication (cherokee_connection_t *conn, cherokee_buffer_t *buffer)
 {
 	/* Basic Authenticatiom
 	 * Eg: WWW-Authenticate: Basic realm=""
@@ -451,6 +470,42 @@ build_response_header__authenticate (cherokee_connection_t *conn, cherokee_buffe
 
 
 static void
+build_response_header_expiration (cherokee_connection_t *conn, cherokee_buffer_t *buffer)
+{
+	time_t    exp_time;
+	struct tm exp_tm;
+	size_t    szlen = 0;
+	char      bufstr[DTM_SIZE_GMTTM_STR + 2];
+
+	switch (conn->expiration) {
+	case cherokee_expiration_epoch:
+		cherokee_buffer_add_str (buffer, "Expires: Tue, 01 Jan 1970 00:00:01 GMT" CRLF);
+		cherokee_buffer_add_str (buffer, "Cache-Control: no-cache" CRLF);
+		break;
+	case cherokee_expiration_max:
+		cherokee_buffer_add_str (buffer, "Expires: Thu, 31 Dec 2037 23:55:55 GMT" CRLF);
+		cherokee_buffer_add_str (buffer, "Cache-Control: max-age=315360000" CRLF);
+		break;
+	case cherokee_expiration_time:
+		exp_time = (cherokee_bogonow_now + conn->expiration_time);
+		cherokee_gmtime (&exp_time, &exp_tm);
+		szlen = cherokee_dtm_gmttm2str (bufstr, sizeof(bufstr), &exp_tm);
+
+		cherokee_buffer_add_str (buffer, "Expires: ");
+		cherokee_buffer_add (buffer, bufstr, szlen);
+		cherokee_buffer_add_str (buffer, CRLF);
+
+		cherokee_buffer_add_str (buffer, "Cache-Contro: max-age=");
+		cherokee_buffer_add_long10 (buffer, conn->expiration_time);
+		cherokee_buffer_add_str (buffer, CRLF);
+		break;
+	default:
+		SHOULDNT_HAPPEN;
+	}
+}
+
+
+static void
 build_response_header (cherokee_connection_t *conn, cherokee_buffer_t *buffer)
 {	
 	/* Build the response header.
@@ -485,9 +540,14 @@ build_response_header (cherokee_connection_t *conn, cherokee_buffer_t *buffer)
 	} else if (conn->handler && (conn->keepalive > 0)) {
 		cherokee_buffer_add_str (buffer, "Connection: Keep-Alive"CRLF);
 		cherokee_buffer_add_buffer (buffer, &CONN_SRV(conn)->timeout_header);
-
 	} else {
 		cherokee_buffer_add_str (buffer, "Connection: close"CRLF);
+	}
+
+	/* Chunked transfer
+	 */
+	if (conn->chunked_encoding) {
+		cherokee_buffer_add_str (buffer, "Transfer-Encoding: chunked" CRLF);
 	}
 
 	/* Date
@@ -505,7 +565,13 @@ build_response_header (cherokee_connection_t *conn, cherokee_buffer_t *buffer)
 	/* Authentication
 	 */
 	if ((conn->realm_ref != NULL) && (conn->error_code == http_unauthorized)) {
-		build_response_header__authenticate (conn, buffer);
+		build_response_header_authentication (conn, buffer);
+	}
+
+	/* Expiration
+	 */
+	if (conn->expiration != cherokee_expiration_none) {
+		build_response_header_expiration (conn, buffer);
 	}
 
 	/* Redirected connections
@@ -562,18 +628,23 @@ cherokee_connection_build_header (cherokee_connection_t *conn)
 		}
 	}
 
-	/* It might need to deactive Keep-Alive
+	/* If the connection is using Kee-Alive, it must either know
+	 * the length or use chunked encoding. Otherwise, Keep-Alive
+	 * has to be turned off.
 	 */
 	if ((conn->keepalive != 0) &&
 	    (http_method_with_body (conn->error_code)))	
 	{
-		if (HANDLER_SUPPORTS (conn->handler, hsupport_maybe_length)) {
-			if (strcasestr (conn->header_buffer.buf, "Content-Length: ") == NULL)
+		if ((! HANDLER_SUPPORTS (conn->handler, hsupport_length)) ||
+		    ((HANDLER_SUPPORTS (conn->handler, hsupport_maybe_length)) &&
+		     (! strcasestr (conn->header_buffer.buf, "Content-Length: "))))
+		{
+			conn->chunked_encoding = ((CONN_SRV(conn)->chunked_encoding) &&
+						  (conn->header.version == http_version_11));
+
+			if (! conn->chunked_encoding)
 				conn->keepalive = 0;
 		}
-		
-		if (HANDLER_SUPPORTS (conn->handler, hsupport_length) == 0)
-			conn->keepalive = 0;
 	}
 
 	/* Add the server headers	
@@ -633,7 +704,7 @@ cherokee_connection_send_header_and_mmaped (cherokee_connection_t *conn)
 	 */
 	bufs[0].iov_base = conn->buffer.buf;
 	bufs[0].iov_len  = conn->buffer.len;
-	if (likely( conn->mmaped_len > 0 )) {
+	if (likely (conn->mmaped_len > 0)) {
 		bufs[1].iov_base = conn->mmaped;
 		bufs[1].iov_len  = conn->mmaped_len;
 		nvec = 2;
@@ -716,8 +787,13 @@ cherokee_connection_recv (cherokee_connection_t *conn, cherokee_buffer_t *buffer
 
 	case ret_eof:
 	case ret_error:
-	case ret_eagain:
 		return ret;
+
+	case ret_eagain:
+		if (cherokee_socket_pending_read (&conn->socket)) {
+			CONN_THREAD(conn)->pending_read_num += 1;
+		}
+		return ret_eagain;
 
 	default:
 		RET_UNKNOWN(ret);		
@@ -793,14 +869,67 @@ cherokee_connection_send (cherokee_connection_t *conn)
 	ret_t  ret;
 	size_t sent = 0;
 
+	/* Use writev to send the chunk-begin mark
+	 */
+	if (conn->chunked_encoding) 
+	{
+		struct iovec tmp[3];
+
+		tmp[0].iov_base = conn->chunked_len.buf;
+		tmp[0].iov_len  = conn->chunked_len.len;
+		tmp[1].iov_base = conn->buffer.buf;
+		tmp[1].iov_len  = conn->buffer.len;
+
+		if (conn->chunked_last_package) {
+			tmp[2].iov_base = CRLF "0" CRLF CRLF;
+			tmp[2].iov_len  = 7;
+		} else {
+			tmp[2].iov_base = CRLF;
+			tmp[2].iov_len  = 2;
+		}
+
+		cherokee_iovec_skip_sent (tmp, 3, 
+					  conn->chunks, &conn->chunksn,
+					  conn->chunked_sent);
+
+		ret = cherokee_socket_writev (&conn->socket, conn->chunks, conn->chunksn, &sent);
+		if (unlikely (ret != ret_ok)) {
+			switch (ret) {
+			case ret_eof:
+			case ret_eagain: 
+				return ret;
+				
+			case ret_error:
+				conn->keepalive = 0;
+				return ret_error;
+				
+			default:
+				RET_UNKNOWN(ret);
+				return ret_error;
+			}
+		}
+
+		conn->chunked_sent += sent;
+
+		/* Clean the information buffer only when everything
+		 * has been sent.
+		 */
+		ret = cherokee_iovec_was_sent (tmp, 3, conn->chunked_sent);
+		if (ret == ret_ok) {
+			cherokee_buffer_clean (&conn->chunked_len);
+			cherokee_buffer_clean (&conn->buffer);
+			ret = ret_ok;
+		} else {
+			ret = ret_eagain;
+		}
+
+		goto out;
+	}
+
 	/* Send the buffer content
 	 */
 	ret = cherokee_socket_bufwrite (&conn->socket, &conn->buffer, &sent);
 	if (unlikely(ret != ret_ok)) return ret;
-
-	/* Add to the connection traffic counter
-	 */
-	cherokee_connection_tx_add (conn, sent);
 
 	/* Drop out the sent info
 	 */
@@ -811,6 +940,11 @@ cherokee_connection_send (cherokee_connection_t *conn)
 		cherokee_buffer_move_to_begin (&conn->buffer, sent);
 		ret = ret_eagain;
 	}
+
+out:
+	/* Add to the connection traffic counter
+	 */
+	cherokee_connection_tx_add (conn, sent);
 
 	/* If this connection has a handler without Content-Length support
 	 * it has to count the bytes sent
@@ -915,27 +1049,58 @@ cherokee_connection_step (cherokee_connection_t *conn)
 
 	/* Return now if no encoding is needed.
 	 */
-	if (conn->encoder == NULL)
-		return step_ret;
-
-	/* Encode handler output.
-	 */
-	switch (step_ret) {
-	case ret_eof:
-	case ret_eof_have_data:
-		ret = cherokee_encoder_flush (conn->encoder, &conn->buffer, &conn->encoder_buffer);			
-		step_ret = (conn->encoder_buffer.len == 0) ? ret_eof : ret_eof_have_data;
-		break;
-	default:
-		ret = cherokee_encoder_encode (conn->encoder, &conn->buffer, &conn->encoder_buffer);
-		break;
+	if (conn->encoder != NULL) {
+		/* Encode handler output.
+		 */
+		switch (step_ret) {
+		case ret_eof:
+		case ret_eof_have_data:
+			ret = cherokee_encoder_flush (conn->encoder, &conn->buffer, &conn->encoder_buffer);			
+			step_ret = (conn->encoder_buffer.len == 0) ? ret_eof : ret_eof_have_data;
+			break;
+		default:
+			ret = cherokee_encoder_encode (conn->encoder, &conn->buffer, &conn->encoder_buffer);
+			break;
+		}
+		if (ret < ret_ok) 
+			return ret;
+		
+		/* Swap buffers	
+		 */
+		cherokee_buffer_swap_buffers (&conn->buffer, &conn->encoder_buffer);		
+		cherokee_buffer_clean (&conn->encoder_buffer);
 	}
-	if (ret < ret_ok) return ret;
-	
-	/* Swap buffers	
+
+	/* Chunked encoding header
 	 */
-	cherokee_buffer_swap_buffers (&conn->buffer, &conn->encoder_buffer);		
-	cherokee_buffer_clean (&conn->encoder_buffer);
+	if (conn->chunked_encoding) {
+		/* On EOF: Turn off chunked and send the trailer
+		 */
+		if (step_ret == ret_eof) {
+			conn->chunked_encoding = false;
+			cherokee_buffer_add_str (&conn->buffer, "0" CRLF CRLF);
+
+			return ret_eof_have_data;
+		}
+		
+		/* On last package: point cherokee_connection_send
+		 * about it.  It will add the trailer.
+		 */
+		if (step_ret == ret_eof_have_data)
+		{
+			conn->chunked_last_package = true;
+		}
+
+		/* Build the Chunked package header: 
+		 * len(str(hex(4294967295))+"\r\n\0") = 13
+		 */
+		cherokee_buffer_clean       (&conn->chunked_len);
+		cherokee_buffer_ensure_size (&conn->chunked_len, 13);
+		cherokee_buffer_add_ulong16 (&conn->chunked_len, conn->buffer.len);
+		cherokee_buffer_add_str     (&conn->chunked_len, CRLF);
+		
+		conn->chunked_sent = 0;
+	}
 	
 	return step_ret;
 }
@@ -988,15 +1153,16 @@ get_host (cherokee_connection_t *conn,
 
 
 static ret_t
-get_encoding (cherokee_connection_t    *conn,
-	      char                     *ptr,
-	      cherokee_encoder_table_t *encoders) 
+get_encoding (cherokee_connection_t *conn,
+	      char                  *ptr,
+	      cherokee_avl_t        *encoders,
+	      cherokee_avl_t        *encoders_accepted)
 {
+	ret_t ret;
 	char tmp;
 	char *i1, *i2;
 	char *end;
-	char *ext;
-	ret_t ret;
+	encoder_func_new_t new_func = NULL;
 
 	/* ptr = Header at the "Accept-Encoding" position 
 	 */
@@ -1004,37 +1170,33 @@ get_encoding (cherokee_connection_t    *conn,
 	if (end == NULL) {
 		return ret_error;
 	}
-
-	/* Look for the request extension
-	 */
-	ext = strrchr (conn->request.buf, '.');
-	if (ext == NULL) {
-		return ret_ok;
-	}
-
 	*end = '\0'; /* (1) */
 
 	i1 = ptr;
-
 	do {
-		while (*i1 == ' ') i1++;
+		while (*i1 == ' ') 
+			i1++;
 
 		i2 = strchr (i1, ',');
-		if (!i2) i2 = strchr (i1, ';');
-		if (!i2) i2 = end;
+		if (!i2) 
+			i2 = strchr (i1, ';');
+		if (!i2) 
+			i2 = end;
 
 		tmp = *i2;    /* (2) */
 		*i2 = '\0';
-		cherokee_encoder_table_new_encoder (encoders, i1, ext+1, &conn->encoder);
-		*i2 = tmp;    /* (2') */
-
-		if (conn->encoder != NULL) {
-			/* Init the encoder related objects
-			 */
-			ret = cherokee_encoder_init (conn->encoder, conn);
-			if (ret < ret_ok) {
+		ret = cherokee_avl_get_ptr (encoders_accepted, i1, (void **)&new_func);
+		*i2 = tmp;    /* (2') */		
+		
+		if ((ret == ret_ok) && (new_func)) {
+			ret = new_func ((void **)&conn->encoder);
+			if (unlikely (ret != ret_ok))
 				goto error;
-			}
+
+			ret = cherokee_encoder_init (conn->encoder, conn);
+			if (unlikely (ret != ret_ok))
+				goto error;
+
 			cherokee_buffer_clean (&conn->encoder_buffer);
 			break;
 		}
@@ -1439,7 +1601,7 @@ cherokee_connection_get_request (cherokee_connection_t *conn)
 	/* Short the path. It transforms the request:
 	 * /dir1/dir2/../file in /dir1/file
 	 */
-	cherokee_short_path (&conn->request);
+	cherokee_path_short (&conn->request);
 
 	/* Look for "//" 
 	 */
@@ -1718,35 +1880,52 @@ cherokee_connection_set_keepalive (cherokee_connection_t *conn)
 
 	/* Check whether server allows keep-alive
 	 */
-	if (srv->keepalive == false) {
-		conn->keepalive = 0;
-		return;
-	}
+	if (srv->keepalive == false)
+		goto denied;
 
 	/* Check the Max concurrent Keep-Alive limit on this thread
 	 */
-	if (thread->conns_max > srv->conns_keepalive_max) {
-		conn->keepalive = 0;
-		return;
-	}
+	if (thread->conns_num >= thread->conns_keepalive_max)
+		goto denied;
 
 	/* Set Keep-alive according with the 'Connection' header
+	 * HTTP 1.1 uses Keep-Alive by default: rfc2616 sec8.1.2
 	 */
 	ret = cherokee_header_get_known (&conn->header, header_connection, &ptr, &ptr_len);
 	if (ret == ret_ok) {
-		if (strncasecmp (ptr, "close", 5) == 0) {
-			conn->keepalive = 0;
+		if (conn->header.version == http_version_11) {
+			if (strncasecmp (ptr, "Close", 5) != 0)
+				goto granted;
+			else 
+				goto denied;
+
 		} else {
-			conn->keepalive = CONN_SRV(conn)->keepalive_max;
+			if (strncasecmp (ptr, "Keep-Alive", 10) == 0)
+				goto granted;
+			else
+				goto denied;
 		}
-	} else {
-		conn->keepalive = 0;
-	}
+		return;
+	} 
+
+	if (conn->header.version == http_version_11)
+		goto granted;
+
+denied:
+	TRACE (ENTRIES, "Keep-alive %s\n", "denied");
+	conn->keepalive = 0;
+	return;
+
+granted:
+	if (conn->keepalive == 0)
+		conn->keepalive = CONN_SRV(conn)->keepalive_max;
+
+	TRACE (ENTRIES, "Keep-alive %d\n", conn->keepalive);
 }
 
 
 ret_t
-cherokee_connection_parse_header (cherokee_connection_t *conn, cherokee_encoder_table_t *encoders)
+cherokee_connection_parse_range (cherokee_connection_t *conn)
 {
 	ret_t    ret;
 	char    *ptr;
@@ -1767,16 +1946,34 @@ cherokee_connection_parse_header (cherokee_connection_t *conn, cherokee_encoder_
 		}
 	}
 
-	/* Look for "Accept-Encoding:"
+	return ret_ok;
+}
+
+ret_t
+cherokee_connection_create_encoder (cherokee_connection_t *conn,
+				    cherokee_avl_t        *encoders,
+				    cherokee_avl_t        *encoders_accepted)
+{
+	ret_t    ret;
+	char    *ptr;
+	cuint_t  ptr_len;
+
+	/* No encoders are accepted
+	 */
+	if ((encoders_accepted == NULL) ||
+	    (encoders_accepted->root == NULL))
+		return ret_ok;
+
+	/* Process the "Accept-Encoding" header
 	 */
 	ret = cherokee_header_get_known (&conn->header, header_accept_encoding, &ptr, &ptr_len);
 	if (ret == ret_ok) {
-		ret = get_encoding (conn, ptr, encoders);
+		ret = get_encoding (conn, ptr, encoders, encoders_accepted);
 		if (ret < ret_ok) {
 			return ret;
 		}
 	}
-
+	
 	return ret_ok;
 }
 
@@ -1920,6 +2117,7 @@ cherokee_connection_clean_for_respin (cherokee_connection_t *conn)
 	} 
 
 	cherokee_buffer_clean (&conn->web_directory);
+	conn->chunked_encoding = false;
 
 	TRACE_CONN(conn);
 	return ret_ok;

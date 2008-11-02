@@ -10,7 +10,6 @@
     <meta name="Keywords" content="cherokee web server httpd http" />
     <meta name="Description" content="Cherokee is a flexible, very fast, lightweight Web server. It is implemented entirely in C, and has no dependencies beyond a standard C library. It is embeddable and extensible with plug-ins. It supports on-the-fly configuration by reading files or strings, TLS/SSL (via GNUTLS or OpenSSL), virtual hosts, authentication, cache friendly features, PHP, custom error management, and much more." />
     <link href="media/css/cherokee_doc.css" rel="stylesheet" type="text/css" media="all" />
-    <title></title>
   </head>
 <body>
 <h2 id="_a_href_index_html_index_a_8594_a_href_bundle_html_cherokee_bundle_a"><a href="index.html">Index</a> &#8594; <a href="bundle.html">Cherokee Bundle</a></h2>
@@ -75,7 +74,7 @@ and grab the administration interface application from a different
 path:</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>cherokee-admin -a -P 9091 -C /etc/cherokee/cherokee2.conf \
+<pre><tt>cherokee-admin -b -p 9091 -C /etc/cherokee/cherokee2.conf \
                  -d /path/to/svn/trunk/cherokee-admin/</tt></pre>
 </div></div>
 <div class="para"><p>This is the full information provided by the manpage.</p></div>
@@ -133,6 +132,15 @@ path:</p></div>
 </p>
 </dd>
 <dt>
+-x, &#8212;debug
+</dt>
+<dd>
+<p>
+               Print the backend errors to the terminal where it is executing.
+               If omited, this debug information is lost.
+</p>
+</dd>
+<dt>
 -b, &#8212;bind[=IP]
 </dt>
 <dd>
@@ -173,13 +181,12 @@ path:</p></div>
 </dd>
 </dl></div>
 </div></div>
-<div class="para"><p>Refer to the <a href="config_walkthrough.html">configuration section</a> for
+<div class="para"><p>Refer to the <a href="config_quickstart.html">configuration section</a> for
 more in-depth explanations of the usage of the interface as a
 configuration tool.</p></div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2008-08-18 22:11:36 BST
 </div>
 </div>
 </body>

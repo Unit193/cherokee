@@ -64,6 +64,16 @@ instance runs with its default values.
 .TP 8
 .B \-i, --print
 Print server technical information.
+.SH SIGNALS
+The following signals are supported by Cherokee:
+.TP 8
+\fBSIGHUP\fR,  Restarts the server gracefully
+.TP 8
+\fBSIGUSR1\fR, Restarts the server closing all the opened connections
+.TP 8
+\fBSIGUSR2\fR, Reopens the log files
+.TP 8
+\fBSIGTERM\fR, Exits
 .SH BUGS
 .SS Bug reports
 I would appreciate hearing of any problems you have with Cherokee.  I
@@ -81,11 +91,13 @@ cherokee-admin@cherokee-project.com with the line:
 .PP
 in the body of the message. The submission address is cherokee@cherokee-project.com.
 .SH "SEE ALSO"
-You will probably want to launch Cherokee via its guardian wrapper, -
-Please refer to \&\fIcherokee-guardian\fR\|(1)
+
+Cherokee can be run either with this command or
+\&\fIcherokee-worker\fR\|(1).  This last option is discouraged if you
+are not developing though.
 .
-Note that in in Debian systems, a startup/shutdown script
-/etc/init.d/cherokee is provided, and will probably be the most
+Note that, for most systems, a startup/shutdown script such as 
+/etc/init.d/cherokee is provided and will probably be the most
 convenient invocation method.
 .SH AUTHOR
-Alvaro Lopez Ortega <alvaro@alobbs.com>. Manual page maintained by Taher Shihadeh <taher@unixwars.com>
+Alvaro Lopez Ortega <alvaro@alobbs.com>.

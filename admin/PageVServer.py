@@ -39,18 +39,25 @@ NOTE_ACCESSES_ERRORS = 'Back-end used to store the log accesses and errors.'
 NOTE_WRT_FILE        = 'Full path to the file where the information will be saved.'
 NOTE_WRT_EXEC        = 'Path to the executable that will be invoked on each log entry.'
 
-NO_HANDLER   = "<i>No</i>"
-NO_VALIDATOR = "<i>No</i>"
+TXT_NO  = "<i>No</i>"
+TXT_YES = "<i>Yes</i>"
+
+HELPS = [
+    ('config_virtual_servers', "Virtual Servers"),
+    ('modules_loggers',        "Loggers"),
+    ('cookbook_ssl',           "SSL cookbook")
+]
+
 
 class PageVServer (PageMenu, FormHelper):
     def __init__ (self, cfg):
-        PageMenu.__init__ (self, 'vserver', cfg)
+        PageMenu.__init__ (self, 'vserver', cfg, HELPS)
         FormHelper.__init__ (self, 'vserver', cfg)
 
         self._priorities         = None
         self._priorities_userdir = None
         self._rule_table         = 1
-        
+
     def _op_handler (self, uri, post):
         assert (len(uri) > 1)
 
@@ -155,7 +162,7 @@ class PageVServer (PageMenu, FormHelper):
         rule_module.apply_cfg (filtered_post)
 
         # Get to the details page
-        return "%s/prio/%d" % (url_prefix, priority)
+        return "%s/rule/%d" % (url_prefix, priority)
 
     def _op_render_vserver_details (self, host):
         content = self._render_vserver_guts (host)
@@ -271,28 +278,28 @@ class PageVServer (PageMenu, FormHelper):
         self._rule_table += 1
 
         txt += '<table id="%s" class="rulestable">' % (table_name)
-        txt += '<tr NoDrag="1" NoDrop="1"><th>Target</th><th>Type</th><th>Handler</th><th>Auth</th><th>Final</th></tr>'
-            
+        txt += '<tr NoDrag="1" NoDrop="1"><th>Target</th><th>Type</th><th>Handler</th><th>Auth</th><th>Enc</th><th>Exp</th><th>Final</th></tr>'
+
         # Rule list
         for prio in priorities:
             conf = priorities[prio]
 
             _type = conf.get_val('match')
             pre   = '%s!%s' % (cfg_key, prio)
-            
-            # Try to load the rule plugin            
+
+            # Try to load the rule plugin
             rule_module = module_obj_factory (_type, self._cfg, pre, self.submit_url)
             name        = rule_module.get_name()
             name_type   = rule_module.get_type_name()
-            
+
             if _type != 'default':
-                link     = '<a href="%s/prio/%s">%s</a>' % (url_prefix, prio, name)
+                link     = '<a href="%s/rule/%s">%s</a>' % (url_prefix, prio, name)
                 js       = "post_del_key('%s', '%s');" % (self.submit_ajax_url, pre)
                 final    = self.InstanceCheckbox ('%s!match!final'%(pre), True, quiet=True)
                 link_del = self.InstanceImage ("bin.png", "Delete", border="0", onClick=js)
                 extra    = ''
             else:
-                link     = '<a href="%s/prio/%s">Default</a>' % (url_prefix, prio)
+                link     = '<a href="%s/rule/%s">Default</a>' % (url_prefix, prio)
                 extra    = ' NoDrag="1" NoDrop="1"'
                 final    = self.HiddenInput ('%s!match!final'%(pre), "1")
                 link_del = ''
@@ -300,18 +307,27 @@ class PageVServer (PageMenu, FormHelper):
             if conf.get_val('handler'):
                 handler_name = self._get_handler_name (conf['handler'].value)
             else:
-                handler_name = NO_VALIDATOR
+                handler_name = TXT_NO
 
             if conf.get_val('auth'):
                 auth_name = self._get_auth_name (conf['auth'].value)
             else:
-                auth_name = NO_VALIDATOR
+                auth_name = TXT_NO
 
-            txt += '<!-- %s --><tr prio="%s" id="%s"%s><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>\n' % (
-                prio, pre, prio, extra, link, name_type, handler_name, auth_name, final, link_del)
+            expiration = [TXT_NO, TXT_YES]['expiration' in conf.keys()]
+
+            encoders = TXT_NO
+            if 'encoder' in conf.keys():
+                for k in conf['encoder'].keys():
+                    if int(conf.get_val('encoder!%s'%(k))):
+                        encoders = TXT_YES
+
+            txt += '<!-- %s --><tr prio="%s" id="%s"%s><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>\n' % (
+                prio, pre, prio, extra, link, name_type, handler_name, auth_name, encoders, expiration, final, link_del)
 
         txt += '</table>\n'
-        txt += '''<script type="text/javascript">
+        txt += '''
+                      <script type="text/javascript">
                       $(document).ready(function() {
                         $("#%(name)s tr:even').addClass('alt')");
 
@@ -323,16 +339,25 @@ class PageVServer (PageMenu, FormHelper):
                                 var prio = (rows.length - i) * 100;
                                 post += 'update_prio=' + rows[i].id + ',' + prio + '&';
                               }
-	                      jQuery.post ('%(url)s', post, 
+                              jQuery.post ('%(url)s', post,
                                   function (data, textStatus) {
-                                      window.location.reload();  
+                                      window.location.reload();
                                   }
                               );
                           }
                         });
                       });
+
+                      $(document).ready(function(){
+                        $("table.rulestable tr:odd").addClass("odd");
+                      });
+
+                      $(document).mouseup(function(){
+                        $("table.rulestable tr:even").removeClass("odd");
+                        $("table.rulestable tr:odd").addClass("odd");
+                      });
                       </script>
-               ''' % {'name':   table_name, 
+               ''' % {'name':   table_name,
                       'url' :   self.submit_ajax_url,
                       'prefix': cfg_key}
         return txt
@@ -373,9 +398,9 @@ class PageVServer (PageMenu, FormHelper):
         self.AddPropOptions_Ajax (table, 'Format', pre, 
                                   modules_available(LOGGERS), NOTE_LOGGERS)
         txt += self.Indent(str(table))
-        
+
         # Writers
-        
+
         if format:
             writers = ''
 

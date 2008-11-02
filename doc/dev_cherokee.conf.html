@@ -10,7 +10,6 @@
     <meta name="Keywords" content="cherokee web server httpd http" />
     <meta name="Description" content="Cherokee is a flexible, very fast, lightweight Web server. It is implemented entirely in C, and has no dependencies beyond a standard C library. It is embeddable and extensible with plug-ins. It supports on-the-fly configuration by reading files or strings, TLS/SSL (via GNUTLS or OpenSSL), virtual hosts, authentication, cache friendly features, PHP, custom error management, and much more." />
     <link href="media/css/cherokee_doc.css" rel="stylesheet" type="text/css" media="all" />
-    <title></title>
   </head>
 <body>
 <h2 id="_a_href_index_html_index_a_8594_a_href_dev_html_development_info_a"><a href="index.html">Index</a> &#8594; <a href="dev.html">Development info</a></h2>
@@ -390,7 +389,7 @@ cellspacing="0" cellpadding="4">
     Minor                     
     </td>
     <td align="left">
-    Cherokee/0.8
+    Cherokee/0.9
     </td>
   </tr>
   <tr>
@@ -398,7 +397,7 @@ cellspacing="0" cellpadding="4">
     Minimal                   
     </td>
     <td align="left">
-    Cherokee/0.8.0
+    Cherokee/0.9.0
     </td>
   </tr>
   <tr>
@@ -406,7 +405,7 @@ cellspacing="0" cellpadding="4">
     OS                        
     </td>
     <td align="left">
-    Cherokee/0.8.0 (UNIX)
+    Cherokee/0.9.0 (UNIX)
     </td>
   </tr>
   <tr>
@@ -414,7 +413,7 @@ cellspacing="0" cellpadding="4">
     Full                      
     </td>
     <td align="left">
-    Cherokee/0.8.0 (UNIX) Ext/0.0 Ext2/0.0
+    Cherokee/0.9.0 (UNIX) Ext/0.0 Ext2/0.0
     </td>
   </tr>
 </tbody>
@@ -465,65 +464,6 @@ cellspacing="0" cellpadding="4">
 </tbody>
 </table>
 </div>
-<h3 id="_server_encoders">Server Encoders</h3><div style="clear:left"></div>
-<div class="para"><p>The <tt>`server!encoder</tt>` configuration branch allows to configure encode
-plug-ins. Each entry accepts a number of options:</p></div>
-<div class="tableblock">
-<table rules="rows"
-frame="hsides"
-cellspacing="0" cellpadding="4">
-<col width="135" />
-<col width="664" />
-<thead>
-  <tr>
-    <th align="left">
-    Parameter                 
-    </th>
-    <th align="left">
-    Description
-    </th>
-  </tr>
-</thead>
-<tbody valign="top">
-  <tr>
-    <td align="left">
-    type                      
-    </td>
-    <td align="left">
-    Set the matching policy: deny_allow or allow_deny
-    </td>
-  </tr>
-  <tr>
-    <td align="left">
-    allow                     
-    </td>
-    <td align="left">
-    List of extensions to encode
-    </td>
-  </tr>
-  <tr>
-    <td align="left">
-    deny                      
-    </td>
-    <td align="left">
-    List of extensions that shouldn't be encoded
-    </td>
-  </tr>
-</tbody>
-</table>
-</div>
-<div class="vlist"><dl>
-<dt>
-Example
-</dt>
-<dd>
-<div class="listingblock">
-<div class="content">
-<pre><tt>   server!encoder!gzip!allow = html,htm
-   server!encoder!gzip!deny  = jpg,png,gz</tt></pre>
-</div></div>
-</dd>
-</dl></div>
 <h3 id="_virtual_server">Virtual Server</h3><div style="clear:left"></div>
 <div class="para"><p>A virtual server contains the information related to one or more
 domains under the same configuration. In a Cherokee server there must
@@ -761,6 +701,58 @@ necessarily.
 <pre><tt>      vserver!1!rule!1!match = default
       vserver!1!rule!1!handler = common
       vserver!1!rule!1!handler!iocache = 0</tt></pre>
+</div></div>
+<div class="para"><p>The <tt>`!encoder</tt>` configuration entry allows to configure encoding
+plug-ins. Each entry applies to a specific rule.</p></div>
+</dd>
+</dl></div>
+<div class="tableblock">
+<table rules="rows"
+frame="hsides"
+cellspacing="0" cellpadding="4">
+<col width="135" />
+<col width="664" />
+<thead>
+  <tr>
+    <th align="left">
+    Parameter                 
+    </th>
+    <th align="left">
+    Description
+    </th>
+  </tr>
+</thead>
+<tbody valign="top">
+  <tr>
+    <td align="left">
+    deflate                   
+    </td>
+    <td align="left">
+    deflate encoder. 0|1 to define disabled|enabled.
+    </td>
+  </tr>
+  <tr>
+    <td align="left">
+    gzip                      
+    </td>
+    <td align="left">
+    gzip encoder. 0|1 to define disabled|enabled.
+    </td>
+  </tr>
+</tbody>
+</table>
+</div>
+<div class="vlist"><dl>
+<dt>
+Example
+</dt>
+<dd>
+<div class="listingblock">
+<div class="content">
+<pre><tt>   vserver!1!rule!100!encoder!deflate = 1
+   vserver!1!rule!100!encoder!gzip = 1
+   vserver!1!rule!100!match = extensions
+   vserver!1!rule!100!match!extensions = html</tt></pre>
 </div></div>
 <div class="para"><p>The following parameters are concatenated with any of the previous
 kinds of entry:</p></div>
@@ -1179,8 +1171,7 @@ The default virtual server uses the "common" handler as default
 <div class="listingblock">
 <div class="content">
 <pre><tt>    vserver!1!nick = default
-    vserver!1!rule!directory!/!handler = common
-    vserver!1!rule!directory!/!priority = 1</tt></pre>
+    vserver!1!rule!10!directory!/!handler = common</tt></pre>
 </div></div>
 </li>
 <li>
@@ -1194,9 +1185,21 @@ The *.example.com and *.examples.org domains are restricted to be
 <pre><tt>    vserver!5!nick = example
     vserver!5!domains!1 = *.example.com
     vserver!5!domains!2 = *.example.org
-    vserver!5!rule!directory!/!handler = fcgi
-    vserver!5!rule!directory!/!priority = 1
-    vserver!5!rule!directory!/!allow_from = 127.0.0.1,::1</tt></pre>
+    vserver!5!rule!10!directory!/!handler = fcgi
+    vserver!5!rule!10!directory!/!priority = 1
+    vserver!5!rule!10!directory!/!allow_from = 127.0.0.1,::1</tt></pre>
+</div></div>
+</li>
+<li>
+<p>
+Rules can be defined that return custom errors using the
+  <a href="modules_handlers_custom_error.html">HTTP error</a> handler: <tt>custom
+  error</tt>.
+</p>
+<div class="listingblock">
+<div class="content">
+<pre><tt>    vserver!10!rule!100!handler = custom_error
+    vserver!10!rule!100!handler!error = 400</tt></pre>
 </div></div>
 </li>
 <li>
@@ -1207,12 +1210,11 @@ ISO images should be handled as files and are protected by a
 <div class="listingblock">
 <div class="content">
 <pre><tt>    vserver!1!nick = default
-    vserver!1!rule!extensions!iso,ISO!handler = file
-    vserver!1!rule!extensions!iso,ISO!priority = 1
-    vserver!1!rule!extensions!iso,ISO!auth = htdigest
-    vserver!1!rule!extensions!iso,ISO!auth!realm = My secret isos
-    vserver!1!rule!extensions!iso,ISO!auth!methods = digest
-    vserver!1!rule!extensions!iso,ISO!auth!passwdfile = /var/passwd/isos.htdigest</tt></pre>
+    vserver!1!rule!100!extensions!iso,ISO!handler = file
+    vserver!1!rule!100!extensions!iso,ISO!auth = htdigest
+    vserver!1!rule!100!extensions!iso,ISO!auth!realm = My secret isos
+    vserver!1!rule!100!extensions!iso,ISO!auth!methods = digest
+    vserver!1!rule!100!extensions!iso,ISO!auth!passwdfile = /var/passwd/isos.htdigest</tt></pre>
 </div></div>
 </li>
 <li>
@@ -1410,6 +1412,134 @@ Apache format logs to the regular files:
 </div></div>
 </li>
 </ul></div>
+<h3 id="_information_sources">Information sources</h3><div style="clear:left"></div>
+<div class="para"><p></p></div>
+<div class="tableblock">
+<table rules="rows"
+frame="hsides"
+cellspacing="0" cellpadding="4">
+<col width="266" />
+<col width="266" />
+<col width="266" />
+<thead>
+  <tr>
+    <th align="left">
+    <strong>Key</strong>         
+    </th>
+    <th align="left">
+    <strong>Type</strong>
+    </th>
+    <th align="left">
+    <strong>Description</strong>
+    </th>
+  </tr>
+</thead>
+<tbody valign="top">
+  <tr>
+    <td align="left">
+    nick            
+    </td>
+    <td align="left">
+    String  
+    </td>
+    <td align="left">
+    Alias to identify the source
+    </td>
+  </tr>
+  <tr>
+    <td align="left">
+    env             
+    </td>
+    <td align="left">
+    String  
+    </td>
+    <td align="left">
+    Variable to be set in the environment
+    </td>
+  </tr>
+  <tr>
+    <td align="left">
+    host            
+    </td>
+    <td align="left">
+    String  
+    </td>
+    <td align="left">
+    host:port or path to unix socket
+    </td>
+  </tr>
+  <tr>
+    <td align="left">
+    interpreter     
+    </td>
+    <td align="left">
+    String  
+    </td>
+    <td align="left">
+    command to launch the service if any
+    </td>
+  </tr>
+  <tr>
+    <td align="left">
+    type            
+    </td>
+    <td align="left">
+    Type    
+    </td>
+    <td align="left">
+    <tt>host</tt> | <tt>interpreter</tt>
+    </td>
+  </tr>
+</tbody>
+</table>
+</div>
+<div class="para"><p>Examples:</p></div>
+<div class="ilist"><ul>
+<li>
+<p>
+PHP configured for FastCGI through Unix socket
+</p>
+<div class="listingblock">
+<div class="content">
+<pre><tt>source!1!env!PHP_FCGI_CHILDREN = 5
+source!1!host = /tmp/cherokee-php.sock
+source!1!interpreter = /usr/bin/php-cgi -b /tmp/cherokee-php.sock
+source!1!nick = php
+source!1!type = interpreter</tt></pre>
+</div></div>
+</li>
+<li>
+<p>
+Or via <tt>host:port</tt> as remote host:
+</p>
+<div class="listingblock">
+<div class="content">
+<pre><tt>source!1!host = localhost:1234
+source!1!interpreter = /usr/bin/php-cgi -b /tmp/cherokee-php.sock
+source!1!type = host</tt></pre>
+</div></div>
+</li>
+</ul></div>
+<h3 id="_balancers">Balancers</h3><div style="clear:left"></div>
+<div class="para"><p>The balancers must define the information sources to be used. For the
+ones defined in the examples above, using round robin from within the
+FastCGI handler, the following example would apply.</p></div>
+<div class="vlist"><dl>
+<dt>
+Example
+</dt>
+<dd>
+<div class="listingblock">
+<div class="content">
+<pre><tt>vserver!10!rule!600!handler = fcgi
+vserver!10!rule!600!handler!balancer = round_robin
+vserver!10!rule!600!handler!balancer!source!1 = 1
+vserver!10!rule!600!match = extensions
+vserver!10!rule!600!match!extensions = php
+vserver!10!rule!600!match!final = 1</tt></pre>
+</div></div>
+</dd>
+</dl></div>
 <h3 id="_inclusion_of_configuration">Inclusion of Configuration</h3><div style="clear:left"></div>
 <div class="para"><p>Sometimes it is nice to break out your configuration into several logical files
 to be more modular as well as more organized.  You can use the <tt>`include</tt>`
@@ -1437,7 +1567,6 @@ or even, it is possible to specify a directory to include all of its files
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2008-08-18 22:11:56 BST
 </div>
 </div>
 </body>

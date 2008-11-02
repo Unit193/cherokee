@@ -6,10 +6,10 @@ body {
 }
 
 .clearfix:after {
-    content: "."; 
-    display: block; 
-    height: 0; 
-    clear: both; 
+    content: ".";
+    display: block;
+    height: 0;
+    clear: both;
     visibility: hidden;
 }
 
@@ -64,9 +64,10 @@ body {
     background: transparent url(../images/menu-highlight.png) left top no-repeat;
 }
 
+#body-status #status,
 #body-general #general,
 #body-vserver #vserver,
-#body-encoder #encoder,
+#body-source #source,
 #body-icon #icon,
 #body-mime #mime,
 #body-advanced #advanced
@@ -125,7 +126,7 @@ table td label {
 }
 /** HELP **/
 #help-area {
-    
+
 }
 
 #help {
@@ -190,9 +191,9 @@ table td label {
     margin: 1em 0;
 }
 
-.dialog-information h2, 
+.dialog-information h2,
 .dialog-warning h2,
-.dialog-error h2 
+.dialog-error h2
 {
     margin: 0 0 0.3em 0;
     padding: 0;
@@ -219,13 +220,12 @@ table td label {
 
 .tab dt:hover {
     background:#efefef url(../images/collapsed.gif) no-repeat scroll 0px 4px;
-}      
-	  
-.tab dt.selected:hover {
-    background:#efefef url(../images/expanded.gif) no-repeat scroll 0px 4px; 
 }
-	       
-	       
+
+.tab dt.selected:hover {
+    background:#efefef url(../images/expanded.gif) no-repeat scroll 0px 4px;
+}
+
 a.button {
     background: transparent url('../images/button-right.png') no-repeat scroll top right;
     color: #486991;
@@ -249,12 +249,12 @@ a.button span {
 a.button:active {
     background-position: bottom right;
     color: #122c4d;
-    outline: none; 
+    outline: none;
 }
 
 a.button:active span {
     background-position: bottom left;
-    padding: 6px 0 4px 18px; 
+    padding: 6px 0 4px 18px;
 }
 
 .indented {
@@ -279,6 +279,7 @@ a.button:active span {
   width: 540px;
   height: 400px;
   overflow: auto;
+  _font-size: x-small;
 }
 
 .tableprop {
@@ -298,7 +299,7 @@ a.button:active span {
 }
 
 .tableprop .title {
-  font-weight: bold;  
+  font-weight: bold;
 }
 
 .tableprop_block hr {
@@ -317,4 +318,68 @@ table tr {
 
 table tr th {
   font-weight: bold;
+}
+
+/* Alternate row color in rule list */
+table.rulestable tr.odd td {
+  background-color:#F4F7FB;
+}
+
+/**************************/
+/* PageVServers.py styles */
+/**************************/
+#new_vserver_name,
+#vserver_clone_src {
+  width: 150px;
+}
+
+#new_vserver_droot,
+#vserver_clone_trg {
+  width: 340px;
+}
+
+/**************************/
+/* PageIcons.py styles    */
+/**************************/
+#tab_icon div input[type="text"] {
+  width: 280px;
+}
+
+#file_new_file,
+#suffix_new_file {
+  width: 180px;
+}
+
+/**************************/
+/* PageMime.py styles     */
+/**************************/
+#mimetable input[size="20"] {
+  width: 100px;
+}
+
+#mimetable input[size="6"] {
+  width: 40px;
+}
+
+#new_maxage {
+  width: 60px;
+}
+
+#new_mime {
+  width: 180px;
+}
+
+#new_extensions {
+  width: 280px;
+}
+
+/**************************/
+/* PageInfoSource.py styl */
+/**************************/
+
+#body-source #new_env_name {
+  width: 210px;
+}
+
+#body-source #new_env_value {
 }

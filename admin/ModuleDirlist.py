@@ -3,7 +3,7 @@ import validations
 
 from Form import *
 from Table import *
-from Module import *
+from ModuleHandler import *
 from configured import *
 
 DATA_VALIDATION = [
@@ -17,7 +17,11 @@ NOTE_THEME        = "Choose the listing theme."
 NOTE_ICON_DIR     = "Web directory where the icon files are located. Default: <i>/icons</i>."
 NOTE_NOTICE_FILES = "List of notice files to be inserted."
 
-class ModuleDirlist (Module, FormHelper):
+HELPS = [
+    ('modules_handlers_dirlist', "Only listing")
+]
+
+class ModuleDirlist (ModuleHandler):
     PROPERTIES = [
         'size', 'date',
         'user', 'group',
@@ -26,8 +30,7 @@ class ModuleDirlist (Module, FormHelper):
     ]
 
     def __init__ (self, cfg, prefix, submit_url):
-        Module.__init__ (self, 'dirlist', cfg, prefix, submit_url)
-        FormHelper.__init__ (self, 'dirlist', cfg)
+        ModuleHandler.__init__ (self, 'dirlist', cfg, prefix, submit_url)
 
     def _op_render (self):
         txt = '<h2>Listing</h2>'
@@ -42,7 +45,7 @@ class ModuleDirlist (Module, FormHelper):
         txt += '<h2>Theming</h2>'
         table  = TableProps()
         themes = self._get_theme_list()
-        self.AddPropOptions (table, 'Theme',        "%s!theme" % (self._prefix), themes, NOTE_THEME)
+        self.AddPropOptions_Reload (table, 'Theme', "%s!theme" % (self._prefix), themes, NOTE_THEME)
         self.AddPropEntry   (table, 'Icons dir',    "%s!icon_dir" % (self._prefix), NOTE_ICON_DIR)
         self.AddPropEntry   (table, 'Notice files', "%s!notice_files" % (self._prefix), NOTE_NOTICE_FILES)
         txt += self.Indent(table)

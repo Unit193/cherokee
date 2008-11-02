@@ -527,6 +527,48 @@ endif
 
 
 #
+# Handler DB Slayer
+#
+handler_dbslayer = \
+dwriter.c \
+dwriter.h \
+handler_dbslayer.h \
+handler_dbslayer.c
+
+libplugin_dbslayer_la_LDFLAGS = $(module_ldflags) $(MYSQL_LDFLAGS)
+libplugin_dbslayer_la_SOURCES = $(handler_dbslayer)
+libplugin_dbslayer_la_CFLAGS  = $(MYSQL_CFLAGS)
+
+if HAVE_MYSQL
+if STATIC_HANDLER_DBSLAYER
+static_handler_dbslayer_src   = $(handler_dbslayer)
+static_handler_dbslayer_lib   = $(MYSQL_LDFLAGS)
+static_handler_dbslayer_flags = $(MYSQL_CFLAGS)
+else
+dynamic_handler_dbslayer_lib = libplugin_dbslayer.la
+endif
+endif
+
+
+#
+# Handler custom_error
+#
+handler_custom_error = \
+handler_custom_error.c \
+handler_custom_error.h
+
+libplugin_custom_error_la_LDFLAGS = $(module_ldflags)  
+libplugin_custom_error_la_SOURCES = $(handler_custom_error)
+libplugin_custom_error_la_LIBADD  = libcherokee-client.la  
+
+if STATIC_HANDLER_CUSTOM_ERROR
+static_handler_custom_error_src = $(handler_custom_error)
+else
+dynamic_handler_custom_error_lib = libplugin_custom_error.la
+endif
+
+
+#
 # Handler admin
 #
 config_common = \
@@ -804,7 +846,8 @@ libcherokee-base.la
 libcherokee_server_la_LDFLAGS = $(common_ldflags) $(library_soname)
 libcherokee_server_la_CFLAGS = \
 $(static_validator_htpasswd_flags) \
-$(static_validator_mysql_flags)
+$(static_validator_mysql_flags) \
+$(static_handler_dbslayer_flags)
 
 libcherokee_server_la_LIBADD = \
 $(TLS_LIBS) \
@@ -816,6 +859,7 @@ $(static_rule_geoip_lib)  \
 $(static_validator_htpasswd_lib) \
 $(static_validator_mysql_lib) \
 $(static_handler_proxy_lib) \
+$(static_handler_dbslayer_lib) \
 libcherokee-base.la
 
 libcherokee_config_la_LDFLAGS = $(common_ldflags) $(library_soname)
@@ -911,8 +955,6 @@ mime.h \
 mime-protected.h \
 mime.c \
 mime_entry.c \
-matching_list.h \
-matching_list.c \
 iocache.h \
 iocache.c \
 md5.h \
@@ -999,7 +1041,9 @@ $(static_handler_phpcgi_src) \
 $(static_handler_common_src) \
 $(static_handler_proxy_src) \
 $(static_handler_mirror_src) \
+$(static_handler_custom_error_src) \
 $(static_handler_server_info_src) \
+$(static_handler_dbslayer_src) \
 \
 $(static_logger_w3c_src) \
 $(static_logger_ncsa_src) \
@@ -1041,8 +1085,6 @@ virtual_server.h \
 virtual_server.c \
 encoder.h \
 encoder.c \
-encoder_table.h \
-encoder_table.c \
 logger.h \
 logger.c \
 logger_writer.h \
@@ -1101,6 +1143,7 @@ resolv_cache.h \
 post.h \
 trace.h \
 avl.h \
+cache.h \
 \
 config_node.h \
 config_entry.h \
@@ -1150,9 +1193,11 @@ $(dynamic_handler_fastcgi_lib) \
 $(dynamic_handler_redir_lib) \
 $(dynamic_handler_proxy_lib) \
 $(dynamic_handler_mirror_lib) \
+$(dynamic_handler_custom_error_lib) \
 $(dynamic_handler_error_redir_lib) \
 $(dynamic_handler_error_nn_lib) \
 $(dynamic_handler_common_lib) \
+$(dynamic_handler_dbslayer_lib) \
 $(dynamic_encoder_gzip_lib) \
 $(dynamic_encoder_deflate_lib) \
 $(dynamic_logger_ncsa_lib) \
@@ -1168,16 +1213,16 @@ $(dynamic_balancer_round_robin_lib)
 
 
 #
-# Main binary: Cherokee server
+# Cherokee server worker
 #
-sbin_PROGRAMS = cherokee cherokee-admin
+sbin_PROGRAMS = cherokee-worker cherokee-admin
 
 if !PLATFORM_WIN32
-sbin_PROGRAMS += cherokee-guardian
+sbin_PROGRAMS += cherokee
 endif
 
-cherokee_SOURCES = main.c
-cherokee_LDADD   = \
+cherokee_worker_SOURCES = main_worker.c
+cherokee_worker_LDADD   = \
 $(PTHREAD_LIBS) \
 $(PTHREAD_CFLAGS) \
 libcherokee-base.la \
@@ -1185,16 +1230,16 @@ libcherokee-server.la
 cherokee_LDFLAGS = -export-dynamic
 
 #
-# Cherokee guardians
+# Cherokee
 #
-cherokee_guardian_SOURCES = main_guardian.c
+cherokee_SOURCES = main.c
 
 #
 # Cherokee admin
 #
 cherokee_admin_SOURCES = main_admin.c
-cherokee_admin_LDADD   = $(cherokee_LDADD)
-cherokee_admin_LDFLAGS = $(cherokee_LDFLAGS)
+cherokee_admin_LDADD   = $(cherokee_worker_LDADD)
+cherokee_admin_LDFLAGS = $(cherokee_worker_LDFLAGS)
 
 
 #
@@ -1252,6 +1297,7 @@ $(win32_src) \
 $(getopt_src) \
 $(bin_SCRIPTS) \
 $(validator_mysql) \
+$(handler_dbslayer) \
 $(cherokeedeps_DATA) \
 $(cherokeedata_DATA) \
 $(WINDOWS_PORT_FILES) \

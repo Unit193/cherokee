@@ -100,11 +100,14 @@
 #define DEFAULT_LOGGER_MAX_BUFSIZE    32768
 #define LOGGER_MAX_BUFSIZE            (4 * 1024 * 1024)
 
-
 #define FD_NUM_SPARE                  10	/* range:  8 - 20 */          
 #define FD_NUM_MIN_SYSTEM             20	/* range: 16 - 64 */
 #define FD_NUM_MIN_AVAILABLE           8	/* range:  8 ... 65000 */
 #define FD_NUM_MIN_PER_THREAD          8	/* range:  8 ... 65000 */
+
+#define EXIT_OK                        0
+#define EXIT_ERROR                     1
+#define EXIT_OK_ONCE                   2
 
 #if (FD_NUM_MIN_SYSTEM < 16) 
 # error FD_NUM_MIN_SYSTEM too low, < 16
@@ -124,12 +127,6 @@
 #if ((FD_NUM_MIN_SYSTEM - FD_NUM_SPARE) < FD_NUM_MIN_AVAILABLE)
 # error FD_NUM_MIN_SYSTEM too low or FD_NUM_SPARE FDS too high
 #endif
-
-#define EXIT_CANT_CREATE_SERVER_SOCKET4 10
-#define EXIT_SERVER_CLEAN               30
-#define EXIT_SERVER_READ_CONFIG         31
-#define EXIT_SERVER_INIT                32
-
 
 #define CSZLEN(str) (sizeof(str) - 1)
   
@@ -358,6 +355,13 @@
 # error Unknown size of size_t 
 #endif
 
+#ifndef O_NOFOLLOW
+# define O_NOFOLLOW 0
+#endif
+
+#ifndef O_LARGEFILE
+# define O_LARGEFILE 0
+#endif
 
 #ifdef O_NOATIME
 # define CHE_O_READ O_RDONLY | O_BINARY | O_NOATIME

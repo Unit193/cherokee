@@ -63,7 +63,7 @@ class PageFeedback (PageMenu, FormHelper):
         txt += str(table)
 
         txt += """<p>Message:</p>
-                  <p><textarea name="body" id="body" rows="20" style="width:100%%;"></textarea></p>
+                  <p><textarea name="body" id="body" rows="20" style="width:100%;"></textarea></p>
                """
         form = Form ("/%s" % (self._id),auto=False)
         return form.Render(txt)
@@ -75,7 +75,7 @@ class PageFeedback (PageMenu, FormHelper):
         headers = {"Content-type": "application/x-www-form-urlencoded",
                    "Accept":       "text/plain"}
 
-        conn = httplib.HTTPConnection("www.cherokee-project.org")
+        conn = httplib.HTTPConnection("www.cherokee-project.com")
         conn.request("POST", CHEROKEE_FEEDBACK_URL, params, headers)
         response = conn.getresponse()
         try:

@@ -37,6 +37,10 @@ typedef struct {
 	cherokee_buffer_t   interpreter;
 	char              **custom_env;
 	cuint_t             custom_env_len;
+	cherokee_boolean_t  debug;
+
+	CHEROKEE_MUTEX_T   (launching_mutex);
+	cherokee_boolean_t  launching;
 } cherokee_source_interpreter_t;
 
 #define SOURCE_INT(s)  ((cherokee_source_interpreter_t *)(s))
@@ -47,6 +51,11 @@ ret_t cherokee_source_interpreter_configure (cherokee_source_interpreter_t  *src
 
 ret_t cherokee_source_interpreter_add_env   (cherokee_source_interpreter_t *src, char *env, char *val);
 ret_t cherokee_source_interpreter_spawn     (cherokee_source_interpreter_t *src);
+
+ret_t cherokee_source_interpreter_connect_polling (cherokee_source_interpreter_t *src, 
+						   cherokee_socket_t             *socket,
+						   cherokee_connection_t         *conn,
+						   time_t                        *spawned);
 
 CHEROKEE_END_DECLS
 

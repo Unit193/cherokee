@@ -7,6 +7,10 @@ from consts import *
 from ModuleCgi import *
 from ModuleBalancer import NOTE_BALANCER
 
+HELPS = [
+    ('modules_handlers_fcgi', "FastCGI")
+]
+
 class ModuleFcgi (ModuleCgiBase):
     PROPERTIES = ModuleCgiBase.PROPERTIES + [
         'balancer'
@@ -14,6 +18,12 @@ class ModuleFcgi (ModuleCgiBase):
 
     def __init__ (self, cfg, prefix, submit):
         ModuleCgiBase.__init__ (self, cfg, prefix, 'fcgi', submit)
+
+        self.show_script_alias  = False
+        self.show_change_uid    = False
+        self.show_document_root = False
+
+        self._util__set_fixed_check_file()
 
     def _op_render (self):
         txt = ModuleCgiBase._op_render (self)

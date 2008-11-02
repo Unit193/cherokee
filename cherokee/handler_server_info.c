@@ -226,7 +226,8 @@ add_uptime_row (cherokee_buffer_t *buf, cherokee_server_t *srv)
 static void
 add_data_sent_row (cherokee_buffer_t *buf, cherokee_server_t *srv)
 {
-	size_t            rx, tx;
+	size_t            rx  = 0;
+	size_t            tx  = 0;
 	cherokee_buffer_t tmp = CHEROKEE_BUF_INIT;
 
 	cherokee_server_get_total_traffic (srv, &rx, &tx);
@@ -379,6 +380,37 @@ build_icons_table_content (cherokee_buffer_t *buf, cherokee_server_t *srv)
 
 
 static void
+build_cache_table_content (cherokee_buffer_t *buf)
+{
+	ret_t               ret;
+	cherokee_iocache_t *iocache = NULL;
+	char                tmp[8];
+	float               percent;
+
+	ret = cherokee_iocache_get_default (&iocache);
+	if ((ret != ret_ok) || (iocache == NULL)) {
+		table_add_row_str (buf, "Caching", "disabled");
+		return;
+	}
+
+	table_add_row_int (buf, "Fetches", iocache->cache.count);
+
+	if (iocache->cache.count == 0)
+		percent = 0;
+	else
+		percent = (iocache->cache.count_hit * 100.0) / iocache->cache.count;
+	snprintf (tmp, sizeof(tmp), "%.2f%%", percent);
+	table_add_row_str (buf, "Total Hits", tmp);
+
+	if (iocache->cache.count == 0)
+		percent = 0;
+	else
+		percent = (iocache->cache.count_miss * 100.0) / iocache->cache.count;
+	snprintf (tmp, sizeof(tmp), "%.2f%%", percent);
+	table_add_row_str (buf, "Total Misses", tmp);
+}
+
+static void
 build_connection_details_content (cherokee_buffer_t *buf, cherokee_list_t *infos) 
 {
 	cherokee_list_t   *i, *j;
@@ -473,6 +505,12 @@ server_info_build_page (cherokee_handler_server_info_t *hdl)
 		cherokee_buffer_clean (&table);
 		build_icons_table_content (&table, srv);
 		server_info_add_table (buf, "Icons", "icons", &table);
+
+		/* Caching information
+		 */
+		cherokee_buffer_clean (&table);
+		build_cache_table_content (&table);
+		server_info_add_table (buf, "File Caching", "iocache", &table);
 	}
 
 	/* Print all the current connections details

@@ -34,7 +34,6 @@
 #include "handler_file.h"
 
 #define ENTRIES "cgibase"
-#define LAST_CHUNK "0" CRLF CRLF
 
 #define set_env(cgi,key,val,len) \
 	set_env_pair (cgi, key, sizeof(key)-1, val, len)
@@ -71,7 +70,6 @@ cherokee_handler_cgi_base_init (cherokee_handler_cgi_base_t              *cgi,
 	cgi->init_phase          = hcgi_phase_build_headers;
 	cgi->content_length      = 0;
 	cgi->content_length_set  = false;
-	cgi->chunked             = false;
 	cgi->got_eof             = false;
 	cgi->file_handler        = NULL;
 
@@ -178,7 +176,6 @@ cherokee_handler_cgi_base_configure (cherokee_config_node_t *conf, cherokee_serv
 	props->is_error_handler = false;
 	props->change_user      = false;
 	props->check_file       = true;
-	props->allow_chunked    = true;
 	props->allow_xsendfile  = false;
 	props->pass_req_headers = false;
 
@@ -211,9 +208,6 @@ cherokee_handler_cgi_base_configure (cherokee_config_node_t *conf, cherokee_serv
 
 		} else if (equal_buf_str (&subconf->key, "check_file")) {
 			props->check_file = !! atoi(subconf->val.buf);
-
-		} else if (equal_buf_str (&subconf->key, "allow_chunked")) {
-			props->allow_chunked = !! atoi(subconf->val.buf);
 
 		} else if (equal_buf_str (&subconf->key, "xsendfile")) {
 			props->allow_xsendfile = !! atoi(subconf->val.buf);
@@ -285,7 +279,10 @@ cherokee_handler_cgi_base_build_basic_env (
 
 	/* Set the basic variables
 	 */
-	set_env (cgi, "SERVER_SOFTWARE",   "Cherokee " PACKAGE_VERSION, 9 + (sizeof(PACKAGE_VERSION) - 1));
+	set_env (cgi, "SERVER_SOFTWARE",
+		 HANDLER_SRV(cgi)->server_string.buf, 
+		 HANDLER_SRV(cgi)->server_string.len); 
+
 	set_env (cgi, "SERVER_NAME",       "Cherokee", 8);
 	set_env (cgi, "SERVER_SIGNATURE",  "<address>Cherokee web server</address>", 38);
 	set_env (cgi, "GATEWAY_INTERFACE", "CGI/1.1", 7);
@@ -529,20 +526,26 @@ cherokee_handler_cgi_base_build_envp (cherokee_handler_cgi_base_t *cgi, cherokee
 	if (unlikely (ret != ret_ok)) return ret;
 
 	/* SCRIPT_NAME:
-	 * It is the request without the pathinfo if it exists
 	 */
-	cherokee_buffer_clean (&tmp);
-
 	if (! cgi_props->check_file) {
-		/* SCGI or FastCGI */
-
+		/* SCGI or FastCGI:
+		 *
+		 * - If the SCGI is handling / it is ''
+		 * - Otherwise, it is the web_directory.
+		 */
 		if (conn->web_directory.len > 1) {
-			cherokee_buffer_add_buffer (&tmp, &conn->web_directory);
+			cgi->add_env_pair (cgi, "SCRIPT_NAME", 11, 
+					   conn->web_directory.buf, conn->web_directory.len);
+		} else {
+			cgi->add_env_pair (cgi, "SCRIPT_NAME", 11, "", 0);
 		}
-		
-		cgi->add_env_pair (cgi, "SCRIPT_NAME", 11, tmp.buf, tmp.len);
 
 	} else {
+		/* CGI:
+		 *
+		 * It is the request without the pathinfo if it exists
+		 */
+		cherokee_buffer_clean (&tmp);
 		if (cherokee_buffer_is_empty (&cgi_props->script_alias)) {
 			if (cgi->param.len > 0) {
 				name = &cgi->param;      /* phpcgi */
@@ -611,21 +614,21 @@ cherokee_handler_cgi_base_extract_path (cherokee_handler_cgi_base_t *cgi, cherok
 	}
 
 	/* No file checking: mainly for FastCGI and SCGI
+	 *
+	 * - If it's handling /, all the req. is path info
+	 * - Otherwise, it is everything after conn->web_directory
 	 */
-	if ((! props->check_file) &&
-	    (! cherokee_buffer_is_empty(&conn->web_directory))) 
+	if (! props->check_file) 
 	{
-		if (conn->request.len == 1) {
-			cherokee_buffer_add_str (&conn->pathinfo, "/");
-
-		} else if (conn->web_directory.len == 1) {
+		if (conn->web_directory.len == 1) {
 			cherokee_buffer_add_buffer (&conn->pathinfo, &conn->request);
-						    
+
 		} else {
 			cherokee_buffer_add (&conn->pathinfo,
 					     conn->request.buf + conn->web_directory.len,
 					     conn->request.len - conn->web_directory.len);
 		}
+
 		return ret_ok;
 	}
 
@@ -959,25 +962,7 @@ cherokee_handler_cgi_base_add_headers (cherokee_handler_cgi_base_t *cgi, cheroke
 		cherokee_buffer_add_str      (outbuf, "Content-Length: ");
 		cherokee_buffer_add_ullong10 (outbuf, (cullong_t) cgi->content_length);
 		cherokee_buffer_add_str      (outbuf, CRLF);		
-	}
 
-	/* At this point, cgi->content_length has already got a value
-	 * if the response contained a Content-Length header
-	 */
-	cgi->chunked = ((! cgi->content_length_set) &&
-			(cgi->content_length > 0) &&
-			(HANDLER_CGI_BASE_PROPS(cgi)->allow_chunked) &&
-			(conn->header.version == http_version_11));
-	
-	TRACE (ENTRIES, "Chunked: !len_set=%d, len=%d, allowed=%d, version=%d => %d\n",
-	       (! cgi->content_length_set),
-	       cgi->content_length,
-	       (HANDLER_CGI_BASE_PROPS(cgi)->allow_chunked),
-	       (conn->header.version == http_version_11),
-	       cgi->chunked);
-
-	if (cgi->chunked) {
-		cherokee_buffer_add_str (outbuf, "Transfer-Encoding: chunked" CRLF);
 	}
 
 	return ret_ok;
@@ -985,7 +970,8 @@ cherokee_handler_cgi_base_add_headers (cherokee_handler_cgi_base_t *cgi, cheroke
 
 
 ret_t 
-cherokee_handler_cgi_base_step (cherokee_handler_cgi_base_t *cgi, cherokee_buffer_t *outbuf)
+cherokee_handler_cgi_base_step (cherokee_handler_cgi_base_t *cgi, 
+				cherokee_buffer_t           *outbuf)
 {
 	ret_t              ret;
 	cherokee_buffer_t *inbuf = &cgi->data; 
@@ -1002,16 +988,10 @@ cherokee_handler_cgi_base_step (cherokee_handler_cgi_base_t *cgi, cherokee_buffe
 	if (! cherokee_buffer_is_empty (&cgi->data)) {
 		TRACE (ENTRIES, "sending stored data: %d bytes\n", cgi->data.len);
 
-		if (cgi->chunked)
-			cherokee_buffer_add_buffer_chunked (outbuf, &cgi->data);
-		else
-			cherokee_buffer_add_buffer (outbuf, &cgi->data);
+		cherokee_buffer_add_buffer (outbuf, &cgi->data);
 		cherokee_buffer_clean (&cgi->data);
 
 		if (cgi->got_eof) {
-			if (cgi->chunked) {
-				cherokee_buffer_add_str (outbuf, LAST_CHUNK);
-			}
 			return ret_eof_have_data;
 		}
 
@@ -1023,18 +1003,8 @@ cherokee_handler_cgi_base_step (cherokee_handler_cgi_base_t *cgi, cherokee_buffe
 	ret = cgi->read_from_cgi (cgi, inbuf);
 
 	if (inbuf->len > 0) {
-		if (cgi->chunked) 
-			cherokee_buffer_add_buffer_chunked (outbuf, inbuf);
-		else 
-			cherokee_buffer_add_buffer (outbuf, inbuf);			
+		cherokee_buffer_add_buffer (outbuf, inbuf);	
 		cherokee_buffer_clean (inbuf);
-	}
-
-	if ((cgi->chunked) && 
-	    (ret == ret_eof))
-	{
-		cherokee_buffer_add_str (outbuf, LAST_CHUNK);
-		return ret_eof_have_data;
 	}
 
 	return ret;

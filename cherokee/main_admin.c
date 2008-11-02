@@ -51,6 +51,7 @@ static int   port          = DEFAULT_PORT;
 static char *document_root = DEFAULT_DOCUMENTROOT;
 static char *config_file   = DEFAULT_CONFIG_FILE;
 static char *bind_to       = DEFAULT_BIND;
+static int   debug         = 0;
 
 static ret_t
 find_empty_port (int starting, int *port)
@@ -104,14 +105,21 @@ config_server (cherokee_server_t *srv)
 	cherokee_buffer_add_str (&buf, "vserver!1!nick = default\n");
 	cherokee_buffer_add_va  (&buf, "vserver!1!document_root = %s\n", document_root);
 
-	cherokee_buffer_add_va  (&buf, 
-				 RULE_PRE "1!match = default\n"
-				 RULE_PRE "1!handler = scgi\n"
-				 RULE_PRE "1!handler!balancer = round_robin\n"
-				 RULE_PRE "1!handler!balancer!type = interpreter\n"
-				 RULE_PRE "1!handler!balancer!local1!host = localhost:%d\n"
-				 RULE_PRE "1!handler!balancer!local1!interpreter = %s/server.py %d %s\n", 
+	cherokee_buffer_add_va  (&buf,
+				 "source!1!nick = app-logic\n"
+				 "source!1!type = interpreter\n"
+				 "source!1!host = localhost:%d\n"
+				 "source!1!interpreter = %s/server.py %d %s\n",
 				 scgi_port, document_root, scgi_port, config_file);
+
+	if (debug)
+		cherokee_buffer_add_str  (&buf, "source!1!debug = 1\n");
+
+	cherokee_buffer_add_str  (&buf, 
+				  RULE_PRE "1!match = default\n"
+				  RULE_PRE "1!handler = scgi\n"
+				  RULE_PRE "1!handler!balancer = round_robin\n"
+				  RULE_PRE "1!handler!balancer!source!1 = 1\n");
 
 	cherokee_buffer_add_str (&buf, 
 				 RULE_PRE "2!match = directory\n"
@@ -137,6 +145,13 @@ config_server (cherokee_server_t *srv)
 				 RULE_PRE "5!handler!iocache = 0\n"
 				 RULE_PRE "5!document_root = %s\n", CHEROKEE_ICONSDIR);
 
+	cherokee_buffer_add_va  (&buf, 
+				 RULE_PRE "6!match = directory\n"
+				 RULE_PRE "6!match!directory = /help\n"
+				 RULE_PRE "6!handler = file\n"
+				 RULE_PRE "6!handler!iocache = 0\n"
+				 RULE_PRE "6!document_root = %s\n", CHEROKEE_DOCDIR);
+
 	ret = cherokee_server_read_config_string (srv, &buf);
 	if (ret != ret_ok) return ret;
 
@@ -151,6 +166,7 @@ print_help (void)
 		"Usage: cherokee-admin [options]\n\n"
 		"  -h,  --help                   Print this help\n"
 		"  -V,  --version                Print version and exit\n"
+		"  -x,  --debug                  Enables debug\n"
 		"  -b,  --bind[=IP]              Bind net iface; no arg means all\n"
 		"  -d,  --appdir=DIR             Application directory\n"
 		"  -p,  --port=NUM               TCP port\n"
@@ -166,6 +182,7 @@ process_parameters (int argc, char **argv)
 	struct option long_options[] = {
 		{"help",    no_argument,       NULL, 'h'},
 		{"version", no_argument,       NULL, 'V'},
+		{"debug",   no_argument,       NULL, 'x'},
 		{"bind",    optional_argument, NULL, 'b'},
 		{"appdir",  required_argument, NULL, 'd'},
 		{"port",    required_argument, NULL, 'p'},
@@ -173,7 +190,7 @@ process_parameters (int argc, char **argv)
 		{NULL, 0, NULL, 0}
 	};
 
-	while ((c = getopt_long(argc, argv, "hVb::d:p:C:", long_options, NULL)) != -1) {
+	while ((c = getopt_long(argc, argv, "hVxb::d:p:C:", long_options, NULL)) != -1) {
 		switch(c) {
 		case 'b':
 			if (optarg)
@@ -189,6 +206,9 @@ process_parameters (int argc, char **argv)
 			break;
 		case 'C':
 			config_file = strdup(optarg);
+			break;
+		case 'x':
+			debug = 1;
 			break;
 		case 'V':
 			printf (APP_NAME " " PACKAGE_VERSION "\n" APP_COPY_NOTICE);
