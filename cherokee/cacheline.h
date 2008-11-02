@@ -22,23 +22,19 @@
  * USA
  */
 
-#ifndef CHEROKEE_VIRTUAL_ENTRIES_H
-#define CHEROKEE_VIRTUAL_ENTRIES_H
+#if !defined (CHEROKEE_INSIDE_CHEROKEE_H) && !defined (CHEROKEE_COMPILATION)
+# error "Only <cherokee/cherokee.h> can be included directly, this file may disappear or change contents."
+#endif
 
-#include "common.h"
+#ifndef CHEROKEE_CACHELINE_H
+#define CHEROKEE_CACHELINE_H
 
-#include "reqs_list.h"
-#include "dirs_table.h"
-#include "exts_table.h"
+#include <cherokee/common.h>
 
-typedef struct {
-	cherokee_dirs_table_t  dirs;            /* Eg: (/public, common) */
-	cherokee_exts_table_t  exts;            /* Eg: (.php,    phpcgi) */
-	cherokee_reqs_list_t   reqs;            /* Eg: ("*.mp3"  auth{}) */
-} cherokee_virtual_entries_t;
+CHEROKEE_BEGIN_DECLS
 
+ret_t cherokee_cacheline_size_get (cuint_t *size);
 
-ret_t cherokee_virtual_entries_init     (cherokee_virtual_entries_t *ventry);
-ret_t cherokee_virtual_entries_mrproper (cherokee_virtual_entries_t *ventry);
+CHEROKEE_END_DECLS
 
-#endif /* CHEROKEE_VIRTUAL_ENTRIES_H */
+#endif /* CHEROKEE_CACHELINE_H */

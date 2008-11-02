@@ -76,7 +76,6 @@
 #include "thread.h"
 #include "socket.h"
 #include "connection.h"
-#include "ncpus.h"
 #include "mime.h"
 #include "util.h"
 #include "dtm.h"
@@ -87,6 +86,7 @@
 #include "connection-protected.h"
 #include "nonce.h"
 #include "config_reader.h"
+#include "init.h"
 
 #define ENTRIES "core,server"
 
@@ -99,8 +99,6 @@ cherokee_server_new  (cherokee_server_t **srv)
 {
 	ret_t ret;
 	CHEROKEE_CNEW_STRUCT(1, n, server);
-
-	cherokee_trace_init ();
 	
 	/* Thread list
 	 */
@@ -139,7 +137,6 @@ cherokee_server_new  (cherokee_server_t **srv)
 	n->keepalive       = true;
 	n->keepalive_max   = MAX_KEEPALIVE;
 
-	n->ncpus           = -1;
 	n->thread_num      = -1;
 	n->thread_policy   = -1;
 
@@ -151,9 +148,9 @@ cherokee_server_new  (cherokee_server_t **srv)
 
 	n->timeout         = 15;
 
-	n->max_fds         = -1;
-	n->fds_per_thread  = -1;
-	n->system_fd_limit = -1;
+	n->fdlimit_custom      = -1;
+	n->fdlimit_available   = -1;
+	n->fdlimit_per_thread  = -1;
 
 	n->conns_max           =  0;
 	n->conns_reuse_max     = -1;
@@ -233,9 +230,9 @@ cherokee_server_new  (cherokee_server_t **srv)
 	 */
 	n->server_token = cherokee_version_full;
 	cherokee_buffer_init (&n->server_string);
-	cherokee_buffer_init (&n->ext_server_string);
-	cherokee_buffer_init (&n->ext_server_w_port_string);
-	cherokee_buffer_init (&n->ext_server_w_port_tls_string);
+	cherokee_buffer_init (&n->server_string_ext);
+	cherokee_buffer_init (&n->server_string_w_port);
+	cherokee_buffer_init (&n->server_string_w_port_tls);
 
 	/* Loggers
 	 */
@@ -371,9 +368,9 @@ cherokee_server_free (cherokee_server_t *srv)
 	cherokee_buffer_mrproper (&srv->timeout_header);
 
 	cherokee_buffer_mrproper (&srv->server_string);
-	cherokee_buffer_mrproper (&srv->ext_server_string);
-	cherokee_buffer_mrproper (&srv->ext_server_w_port_string);
-	cherokee_buffer_mrproper (&srv->ext_server_w_port_tls_string);
+	cherokee_buffer_mrproper (&srv->server_string_ext);
+	cherokee_buffer_mrproper (&srv->server_string_w_port);
+	cherokee_buffer_mrproper (&srv->server_string_w_port_tls);
 
 	cherokee_buffer_mrproper (&srv->listen_to);
 	cherokee_buffer_mrproper (&srv->chroot);
@@ -564,7 +561,7 @@ initialize_server_socket6 (cherokee_server_t *srv, cherokee_socket_t *sock, unsi
 
 
 static ret_t
-initialize_server_socket_unix (cherokee_server_t *srv, cherokee_socket_t *sock, unsigned short port)
+initialize_server_socket_unix (cherokee_server_t *srv, cherokee_socket_t *sock)
 {
 #ifndef AF_LOCAL
 	return ret_no_sys;
@@ -641,16 +638,17 @@ print_banner (cherokee_server_t *srv)
 
 	/* File descriptor limit
 	 */
-	cherokee_buffer_add_va (&n, ", %d fds system limit, max. %d connections", srv->system_fd_limit, srv->conns_max);
+	cherokee_buffer_add_va (&n, ", %d fds system limit, max. %d connections", 
+				cherokee_fdlimit, srv->conns_max);
 
 	/* Threading stuff
 	 */
 	if (srv->thread_num <= 1) {
 		cherokee_buffer_add_str (&n, ", single thread");
-		cherokee_buffer_add_va (&n, ", %d fds per thread", srv->fds_per_thread);	
+		cherokee_buffer_add_va (&n, ", %d fds per thread", srv->fdlimit_per_thread);	
 	} else {
 		cherokee_buffer_add_va (&n, ", %d threads", srv->thread_num);
-		cherokee_buffer_add_va (&n, ", %d fds per thread", srv->fds_per_thread);	
+		cherokee_buffer_add_va (&n, ", %d fds per thread", srv->fdlimit_per_thread);	
 
 		switch (srv->thread_policy) {
 #ifdef HAVE_PTHREAD
@@ -693,7 +691,7 @@ initialize_server_socket (cherokee_server_t *srv, cherokee_socket_t *socket, uns
 
 #ifdef AF_LOCAL
 	if (! cherokee_buffer_is_empty (&srv->unix_socket)) {
-		ret = initialize_server_socket_unix (srv, socket, port);
+		ret = initialize_server_socket_unix (srv, socket);
 	}
 #endif
 
@@ -739,10 +737,15 @@ initialize_server_socket (cherokee_server_t *srv, cherokee_socket_t *socket, uns
 static ret_t
 initialize_server_threads (cherokee_server_t *srv)
 {	
-	ret_t ret;
-	int   i, fds_per_thread, fds_per_thread1, conns_per_thread;
+	ret_t   ret;
+	cint_t  i;
+	cuint_t fds_per_thread;
+	cuint_t fds_per_thread1;
+	cuint_t conns_per_thread;
+
 #ifdef HAVE_PTHREAD
-	int   thr_fds, spare_fds;
+	cuint_t thr_fds;
+	cuint_t spare_fds;
 #endif
 
 	/* Reset max. conns value
@@ -751,18 +754,11 @@ initialize_server_threads (cherokee_server_t *srv)
 	srv->conns_num_bogo      = 0;
 	srv->conns_keepalive_max = 0;
 
-	/* Verify max_fds value
-	 */
-	if (srv->max_fds < MIN_MAX_FDS) {
-		PRINT_ERROR ("max_fds %d < %d MIN_MAX_FDS\n", srv->max_fds, MIN_MAX_FDS);
-		return ret_error;
-	}
-
 	/* Set fd upper limit for threads.
 	 */
 #ifdef HAVE_PTHREAD
-	if (srv->thread_num > (srv->max_fds / MIN_THR_FDS))
-		srv->thread_num = (srv->max_fds / MIN_THR_FDS);
+	if (srv->thread_num > (srv->fdlimit_available / FD_NUM_MIN_PER_THREAD))
+		srv->thread_num = (srv->fdlimit_available / FD_NUM_MIN_PER_THREAD);
 
 	if (srv->thread_num < 1)
 		srv->thread_num = 1;
@@ -770,11 +766,11 @@ initialize_server_threads (cherokee_server_t *srv)
 	srv->thread_num = 1;
 #endif
 
-	fds_per_thread1 = fds_per_thread = srv->max_fds / srv->thread_num;
+	fds_per_thread1 = fds_per_thread = srv->fdlimit_available / srv->thread_num;
 
 #ifdef HAVE_PTHREAD
 	thr_fds = fds_per_thread * srv->thread_num;
-	spare_fds = srv->max_fds - thr_fds;
+	spare_fds = srv->fdlimit_available - thr_fds;
 
 	/* Add a couple more fds to this thread,
 	 * this is useful if we are using a huge number of threads
@@ -791,8 +787,8 @@ initialize_server_threads (cherokee_server_t *srv)
 	/* Get fdpoll limits.
 	 */
 	if (srv->fdpoll_method != cherokee_poll_UNSET) {
-		int sys_fd_limit = 0;
-		int poll_fd_limit = 0;
+		cuint_t sys_fd_limit  = 0;
+		cuint_t poll_fd_limit = 0;
 
 		ret = cherokee_fdpoll_get_fdlimits (srv->fdpoll_method, &sys_fd_limit, &poll_fd_limit);
 		if (ret != ret_ok) {
@@ -802,9 +798,9 @@ initialize_server_threads (cherokee_server_t *srv)
 
 		/* Test system fd limit (no autotune here).
 		 */
-		if (sys_fd_limit > 0 &&
-		    srv->system_fd_limit > sys_fd_limit) {
-			PRINT_ERROR ("system_fd_limit %d > %d sys_fd_limit\n", srv->system_fd_limit, sys_fd_limit);
+		if ((sys_fd_limit > 0) &&
+		    (cherokee_fdlimit > sys_fd_limit)) {
+			PRINT_ERROR ("system_fd_limit %d > %d sys_fd_limit\n", cherokee_fdlimit, sys_fd_limit);
 			return ret_error;
 		}
 
@@ -829,12 +825,12 @@ initialize_server_threads (cherokee_server_t *srv)
 
 	/* Set mean fds per thread.
 	 */
-	srv->fds_per_thread = fds_per_thread1;
+	srv->fdlimit_per_thread = fds_per_thread1;
 
 	/* Create the main thread (only structures, not a real thread)
 	 */
 	ret = cherokee_thread_new (&srv->main_thread, srv, thread_sync, 
-			srv->fdpoll_method, srv->system_fd_limit,
+			srv->fdpoll_method, cherokee_fdlimit,
 			fds_per_thread1, conns_per_thread);
 	if (unlikely(ret < ret_ok)) {
 		PRINT_ERROR("cherokee_thread_new (main_thread) failed %d\n", ret);
@@ -879,7 +875,7 @@ initialize_server_threads (cherokee_server_t *srv)
 		/* Create a real thread.
 		 */
 		ret = cherokee_thread_new (&thread, srv, thread_async, 
-				srv->fdpoll_method, srv->system_fd_limit,
+				srv->fdpoll_method, cherokee_fdlimit,
 				fds_per_thread1, conns_per_thread);
 		if (unlikely(ret < ret_ok)) {
 			PRINT_ERROR("cherokee_thread_new() failed %d\n", ret);
@@ -968,35 +964,33 @@ init_vservers_tls (cherokee_server_t *srv)
 
 
 static ret_t
-set_fdmax_limit (cherokee_server_t *srv)
+raise_fd_limit (cherokee_server_t *srv, cint_t new_limit)
 {
 	ret_t ret;
 
-	/* Try to raise the fd number system limit
-	 */
-	if (srv->max_fds != -1) {
-		/* max_fds sanity check
-		 */
-		if (srv->max_fds < MIN_SYSTEM_FD_NUM)
-			srv->max_fds = MIN_SYSTEM_FD_NUM;
+	UNUSED(srv);
 
-		/* Set it	
-		 */
-		ret = cherokee_sys_fdlimit_set (srv->max_fds);
-		if (ret < ret_ok) {
-			PRINT_ERROR ("WARNING: Unable to set file descriptor limit to %d\n",
-				     srv->max_fds);
-		}
+	/* Sanity check
+	 */
+	if (new_limit < FD_NUM_MIN_SYSTEM)
+		new_limit = FD_NUM_MIN_SYSTEM;
+
+	/* Set it	
+	 */
+	ret = cherokee_sys_fdlimit_set (new_limit);
+	if (ret < ret_ok) {
+		PRINT_ERROR ("WARNING: Unable to raise file descriptor limit to %d\n",
+			     new_limit);
 	}
 
-	/* Get system fd limit ... has it been increased?
+	/* Update the new value
 	 */
-	ret = cherokee_sys_fdlimit_get (&srv->system_fd_limit);
+	ret = cherokee_sys_fdlimit_get (&cherokee_fdlimit);
 	if (ret < ret_ok) {
 		PRINT_ERROR_S ("ERROR: Unable to get file descriptor limit\n");
 		return ret;
 	}
-
+	
 	return ret_ok;
 }
 
@@ -1007,17 +1001,17 @@ init_server_strings (cherokee_server_t *srv)
 	ret_t ret;
 
 	cherokee_buffer_clean (&srv->server_string);
-	cherokee_buffer_clean (&srv->ext_server_string);
-	cherokee_buffer_clean (&srv->ext_server_w_port_string);
-	cherokee_buffer_clean (&srv->ext_server_w_port_tls_string);
+	cherokee_buffer_clean (&srv->server_string_ext);
+	cherokee_buffer_clean (&srv->server_string_w_port);
+	cherokee_buffer_clean (&srv->server_string_w_port_tls);
 
-	ret = cherokee_version_add_w_port (&srv->ext_server_w_port_string, srv->server_token, srv->port);
+	ret = cherokee_version_add_w_port (&srv->server_string_w_port, srv->server_token, srv->port);
 	if (ret != ret_ok) return ret;
 
-	ret = cherokee_version_add_w_port (&srv->ext_server_w_port_tls_string, srv->server_token, srv->port_tls);
+	ret = cherokee_version_add_w_port (&srv->server_string_w_port_tls, srv->server_token, srv->port_tls);
 	if (ret != ret_ok) return ret;
 
-	ret = cherokee_version_add (&srv->ext_server_string, srv->server_token);
+	ret = cherokee_version_add (&srv->server_string_ext, srv->server_token);
 	if (ret != ret_ok) return ret;
 
 	ret = cherokee_version_add_simple (&srv->server_string, srv->server_token);
@@ -1042,27 +1036,31 @@ cherokee_server_initialize (cherokee_server_t *srv)
 
 	/* Set the FD number limit
 	 */
-	ret = set_fdmax_limit (srv);
-	if (unlikely(ret < ret_ok))
-		return ret;
+	if (srv->fdlimit_custom != -1) {
+		ret = raise_fd_limit (srv, srv->fdlimit_custom);
+		if (ret < ret_ok)
+			return ret;
+	}
 
 	/* Verify if there are enough fds.
 	 */
-	if (srv->system_fd_limit < MIN_SYSTEM_FD_NUM) {
-		PRINT_ERROR("Number of system files too low (%d < %d) !\n", srv->system_fd_limit, MIN_SYSTEM_FD_NUM);
+	if (cherokee_fdlimit < FD_NUM_MIN_SYSTEM) {
+		PRINT_ERROR("Number of system fds too low: %d < %d\n", 
+			    cherokee_fdlimit, FD_NUM_MIN_SYSTEM);
 		return ret_error;
 	}
 
-	/* Set max_fds used for max. number of accepted connections.
-	 * NOTE: max_fds is roughly half of max. system limit because
-	 *       for each accepted connection we reserve 1 spare fd
-	 *       that can be used for opening a file or for making
-	 *       a new connection to a backend server
+	/* Set the max number of usable file descriptors
+	 * NOTE: fdlimit_available is roughly half of max. system
+	 *       limit because for each accepted connection we reserve
+	 *       1 spare fd that can be used for opening a file or for
+	 *       making a new connection to a backend server
 	 *       (i.e. FastCGI, SCGI, mirror, etc.).
 	 */
-	srv->max_fds = (srv->system_fd_limit - MIN_SPARE_FDS);
-	if (srv->max_fds < MIN_MAX_FDS) {
-		PRINT_ERROR("Number of max. fds too low %d < %d !\n", srv->max_fds, MIN_MAX_FDS);
+	srv->fdlimit_available = (cherokee_fdlimit - FD_NUM_SPARE);
+	if (srv->fdlimit_available < FD_NUM_MIN_AVAILABLE) {
+		PRINT_ERROR("Number of max. fds too low: %d < %d\n", 
+			    srv->fdlimit_available, FD_NUM_MIN_AVAILABLE);
 		return ret_error;
 	}
 
@@ -1083,26 +1081,19 @@ cherokee_server_initialize (cherokee_server_t *srv)
 		if (ret != ret_ok) return ret;
 	}
 
-	/* Get the CPU number
-	 */
-	dcc_ncpus (&srv->ncpus);
-	if (srv->ncpus < 1) {
-		PRINT_ERROR("Bad number of processors (%d < 1), use default 1 !\n", srv->ncpus);
-		srv->ncpus = 1;
-	}
-
 	/* Verify the thread number and force it within sane limits.
-	 * See also subsequent fds_per_threads.
+	 * See also subsequent fdlimit_per_threads.
 	 */
 #ifdef HAVE_PTHREAD
 	if (srv->thread_num < 1) {
-		srv->thread_num = srv->ncpus * 5;
+		srv->thread_num = cherokee_cpu_number * 5;
 	}
+
 	/* Limit the number of threads
 	 * so that each thread has at least 2 fds available.
 	 */
-	if (srv->thread_num > (srv->max_fds / MIN_THR_FDS)) {
-		srv->thread_num = (srv->max_fds / MIN_THR_FDS);
+	if (srv->thread_num > (srv->fdlimit_available / FD_NUM_MIN_PER_THREAD)) {
+		srv->thread_num = (srv->fdlimit_available / FD_NUM_MIN_PER_THREAD);
 		if (srv->thread_num < 1)
 			srv->thread_num = 1;
 	}
@@ -1115,8 +1106,8 @@ cherokee_server_initialize (cherokee_server_t *srv)
 	if (srv->conns_reuse_max == -1)
 		srv->conns_reuse_max = DEFAULT_CONN_REUSE;
 
-	if (srv->conns_reuse_max > srv->max_fds)
-		srv->conns_reuse_max = srv->max_fds;
+	if (srv->conns_reuse_max > srv->fdlimit_available)
+		srv->conns_reuse_max = srv->fdlimit_available;
 
 	/* Get the passwd file entry before chroot
 	 */
@@ -1359,7 +1350,7 @@ cherokee_server_step (cherokee_server_t *srv)
 	/* Clean IO cache
 	 */
 	if (srv->iocache_clean_next < srv->bogo_now) {
-		cherokee_iocache_clean_up (srv->iocache, IOCACHE_BASIC_SIZE);	
+		cherokee_iocache_clean_up (srv->iocache);	
 		srv->iocache_clean_next = srv->bogo_now + IOCACHE_DEFAULT_CLEAN_ELAPSE;
 	}
 
@@ -1473,30 +1464,6 @@ add_vserver (cherokee_config_node_t *conf, void *data)
 
 
 static ret_t 
-load_mime_file (char *file, void *data)
-{
-	ret_t              ret;
-	cherokee_server_t *srv = SRV(data);
-
-	if (srv->mime == NULL) {
-		ret = cherokee_mime_new (&srv->mime);
-		if (ret < ret_ok) {
-			PRINT_MSG_S ("ERROR: Couldn't get default MIME configuration file\n");
-			return ret;
-		}
-	}
-
-	ret = cherokee_mime_load_mime_types (srv->mime, file);
-	if (ret < ret_ok) {
-		PRINT_MSG ("Couldn't load MIME configuration file '%s'\n", file);
-		return ret;
-	}
-
-	return ret_ok;
-}
-
-
-static ret_t 
 configure_server_property (cherokee_config_node_t *conf, void *data)
 {
 	ret_t              ret;
@@ -1509,8 +1476,8 @@ configure_server_property (cherokee_config_node_t *conf, void *data)
 	} else if (equal_buf_str (&conf->key, "port_tls")) {
 		srv->port_tls = atoi(conf->val.buf);
 
-	} else if (equal_buf_str (&conf->key, "max_fds")) {
-		srv->max_fds = atoi (conf->val.buf);
+	} else if (equal_buf_str (&conf->key, "fdlimit")) {
+		srv->fdlimit_custom = atoi (conf->val.buf);
 
 	} else if (equal_buf_str (&conf->key, "listen_queue")) {
 		srv->listen_queue = atoi (conf->val.buf);
@@ -1528,7 +1495,7 @@ configure_server_property (cherokee_config_node_t *conf, void *data)
 		srv->conns_reuse_max = atoi (conf->val.buf);
 
 	} else if (equal_buf_str (&conf->key, "ipv6")) {
-		srv->ipv6 = atoi (conf->val.buf);
+		srv->ipv6 = !!atoi (conf->val.buf);
 
 	} else if (equal_buf_str (&conf->key, "timeout")) {
 		srv->timeout = atoi (conf->val.buf);
@@ -1537,7 +1504,7 @@ configure_server_property (cherokee_config_node_t *conf, void *data)
 		srv->log_flush_elapse = atoi (conf->val.buf);
 
 	} else if (equal_buf_str (&conf->key, "keepalive")) {
-		srv->keepalive = (atoi (conf->val.buf) == 0) ? false : true;
+		srv->keepalive = !!atoi (conf->val.buf);
 
 	} else if (equal_buf_str (&conf->key, "keepalive_max_requests")) {
 		srv->keepalive_max = atoi (conf->val.buf);
@@ -1558,18 +1525,14 @@ configure_server_property (cherokee_config_node_t *conf, void *data)
 		cherokee_buffer_clean (&srv->pidfile);
 		cherokee_buffer_add_buffer (&srv->pidfile, &conf->val);
 
-	} else if (equal_buf_str (&conf->key, "mime_files")) {
-		ret = cherokee_config_node_read_list (conf, NULL, load_mime_file, srv);
-		if (ret != ret_ok) return ret;
-
 	} else if (equal_buf_str (&conf->key, "listen")) {
 		cherokee_buffer_clean (&srv->listen_to);
 		cherokee_buffer_add_buffer (&srv->listen_to, &conf->val);
 
 	} else if (equal_buf_str (&conf->key, "poll_method")) {
-		char *str = get_buf_str(&conf->val);
-		int  sys_fd_limit = 0;
-		int  thr_fd_limit = 0;
+		char    *str          = conf->val.buf;
+		cuint_t  sys_fd_limit = 0;
+		cuint_t  thr_fd_limit = 0;
 
 		/* Convert poll method string to type.
 		 */
@@ -1706,6 +1669,18 @@ configure_server (cherokee_server_t *srv)
 		if (ret != ret_ok) return ret;
 	}
 	
+	/* Mime
+	 */
+	TRACE (ENTRIES, "Configuring %s\n", "mime");
+	ret = cherokee_config_node_get (&srv->config, "mime", &subconf);
+	if (ret == ret_ok) {
+		ret = cherokee_mime_new (&srv->mime);
+		if (ret != ret_ok) return ret;
+		
+		ret = cherokee_mime_configure (srv->mime, subconf);
+		if (ret != ret_ok) return ret;
+	}
+
 	/* Load the virtual servers
 	 */
 	TRACE (ENTRIES, "Configuring %s\n", "virtual servers");
@@ -1998,6 +1973,31 @@ cherokee_server_del_connection (cherokee_server_t *srv, char *id_str)
 	}
 
 	return ret_not_found;
+}
+
+
+ret_t 
+cherokee_server_log_reopen (cherokee_server_t *srv)
+{
+	ret_t            ret;
+	cherokee_list_t *i;
+
+	if (srv->vserver_default->logger) {
+		ret = cherokee_logger_reopen (srv->vserver_default->logger);
+		if (unlikely (ret != ret_ok)) return ret;		
+	}
+
+	list_for_each (i, &srv->vservers) {
+		cherokee_logger_t *logger = VSERVER(i)->logger;
+		
+		if (logger == NULL) 
+			continue;
+
+		ret = cherokee_logger_reopen (logger);
+		if (unlikely (ret != ret_ok)) return ret;		
+	}
+	
+	return ret_ok;
 }
 
 

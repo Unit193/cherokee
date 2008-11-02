@@ -7,15 +7,16 @@ REQ  = "%s/e/f" % (DIR)
 DIR2 = "%s/g/h" % (REQ)
 
 CONF = """
-vserver!default!directory!/<dir>!handler = common
-vserver!default!directory!/<dir>!document_root = %s
-vserver!default!directory!/<dir>!priority = 1550
+vserver!default!rule!1550!match = directory
+vserver!default!rule!1550!match!directory = /<dir>
+vserver!default!rule!1550!handler = common
+vserver!default!rule!1550!document_root = %s
 """
 
 class Test (TestBase):
     def __init__ (self):
         TestBase.__init__ (self)
-        self.name              = "common -> dirlist: redir to add final / 2"
+        self.name              = "common-dirlist: redir to add final / 2"
         self.request           = "GET /%s HTTP/1.0\r\n" % (REQ)
         self.expected_error    = 301
         self.expected_content  = "Location: /%s/" % (REQ)

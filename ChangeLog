@@ -1,30 +1,887 @@
-2008-03-24  Alvaro Lopez Ortega  <alvaro@alobbs.com>
+2008-06-12  Alvaro Lopez Ortega  <alvaro@alobbs.com>
 
-	* Released 0.6.1
+	* 0.7.2 released.
+
+2008-06-11  Alvaro Lopez Ortega  <alvaro@alobbs.com>
+
+	* admin/server.py (main): Catch the KeyboardInterrupt exception
+	and print a nice exiting message instead of the default
+	back-trace.  Patch by Gunnar Wolf <gwolf@gwolf.org>.
+
+	* cherokee/main_admin.c (find_empty_port), admin/server.py (main):
+	cherokee-admin is smarter: it finds an empty port for the
+	connection with the SCGI instead of supposing that the port 4000
+	would be empty.
+
+	* admin/ModuleRequest.py (ModuleRequest._op_render): Bugfix. It
+	was not handling the regular expression in the right way.
+
+2008-06-06  Alvaro Lopez Ortega  <alvaro@alobbs.com>
+
+	* cherokee/virtual_server.c (cherokee_virtual_server_new_rule):
+	Fixes a wrong sanity check.
+
+2008-06-04  Alvaro Lopez Ortega  <alvaro@alobbs.com>
+
+	* 0.7.1 released.
+
+	* cherokee/handler_cgi_base.c (cherokee_handler_cgi_base_add_headers):
+	It was not adding the Content-Length header in any of the CGI
+	based handler.  This small change will improve performance
+	significantly, because it will allow the server and the client to
+	use keep-alive connections.
+
+	* cherokee/handler_cgi_base.c (parse_header): Fixes an potential
+	error when more than one response header were substituted at the
+	same time.
+
+2008-06-03  Alvaro Lopez Ortega  <alvaro@alobbs.com>
+
+	* admin/PageEntry.py: Added a new check. The Default match should
+	not be changed. There ought to be a single 'default' rule.
+
+	* admin/PageEntry.py: Updated. It was using the old 0.6
+	configuration file format.
+
+	* cherokee/rule_request.c (configure),
+	cherokee/rule_directory.c (configure): PRINT_ERROR calls were
+	missing the new line character.
+
+2008-05-26  Alvaro Lopez Ortega  <alvaro@alobbs.com>
+
+	* contrib/Makefile.am: Added an extra -I entry. It was failing to
+	compile with VPATH on Linux.
+
+2008-05-25  Alvaro Lopez Ortega  <alvaro@alobbs.com>
+
+	* 0.7.0 released
+
+2008-05-24  Alvaro Lopez Ortega  <alvaro@alobbs.com>
+
+	* cherokee/Makefile.am (INCLUDES), cget/Makefile.am: Added a new
+	-I entry for the C compiler. It was needed to allow to work in a
+	VPATH environment.
+
+	* doc/build_docs.py (main), doc/Makefile.am: A few path management
+	issues have been fixed.  There were a couple of VPATH compiling
+	issues because of this problem.
+
+2008-05-23  Alvaro Lopez Ortega  <alvaro@alobbs.com>
+
+	* cherokee/Makefile.am (libplugin_server_info_la_LIBADD): This
+	patch fixs a compiling dependency problem. It should fix the
+	Gentoo bug 213981: http://bugs.gentoo.org/show_bug.cgi?id=213981
+
+	* cherokee/icons.c, cherokee/icons.h: The file matching AVL
+	structure has been replaced with a linked list. It is cleaner, and
+	at the end of the day, the old code was using a AVL with O(n)
+	complexity. It wasn't worth having a tree here and the list
+	implementation is easier to maintain.
+
+2008-05-22  Alvaro Lopez Ortega  <alvaro@alobbs.com>
+
+	* configure.in, cherokee/Makefile.am, cherokee/handler_proxy.c,
+	cherokee/handler_proxy.h: The handler proxy has been removed. It
+	isn't ready for 0.7; development continues in trunk.
+
+	* 0.7 branch created:
+	svn://cherokee-project.com/cherokee/branches/0.7
+
+	* doc/media/images/admin_behaviour.png,
+	doc/media/images/admin_encoding.png,
+	doc/media/images/admin_vserver_errors.png,
+	doc/media/images/admin_validators_plain.png,
+	doc/media/images/admin_vserver.png,
+	doc/media/images/admin_icons1.png,
+	doc/media/images/admin_icons2.png,
+	doc/media/images/admin_handler_fastcgi1.png,
+	doc/media/images/admin_icons3.png,
+	doc/media/images/admin_handler_cgi.png,
+	doc/media/images/admin_handler_fastcgi2.png,
+	doc/media/images/admin_validators_pam.png,
+	doc/media/images/admin_advanced.png,
+	doc/media/images/admin_index.png,
+	doc/media/images/admin_handler_dirlist.png,
+	doc/media/images/admin_handler_onlylisting.png,
+	doc/media/images/admin_launch.png,
+	doc/media/images/admin_handler_file.png,
+	doc/media/images/admin_general.png,
+	doc/media/images/admin_vserver_loggers.png: All these images have
+	been updated to reflect all the cherokee-admin changes since 0.6.
+
+2008-05-21  Alvaro Lopez Ortega  <alvaro@alobbs.com>
+
+	* qa/run-tests.py: Added a new '-a' parameter. It randomizes the
+	QA tests before being tested against.
+
+	* qa/158-RuleHeader1.py, qa/159-RuleHeader2.py: Bug fix. These QA
+	tests were detecting .com and .net extensions, which was causing
+	random issues depending on how the QA test set was executed.
+
+	* cherokee/rule_extensions.c (parse_value): This function was
+	leaking ~100 bytes during the ->configure() invocation.
+
+	* cherokee/server.c (cherokee_server_initialize): Tiny C&P mistake
+	fixed. There was an uninitialized buffer.
+
+	* cherokee/rule_not.c, cherokee/rule_and.c, cherokee/rule_or.c:
+	->free() methods have been added.
+
+	* cherokee/rule.c (cherokee_rule_free): Some memory was being lost
+	here when the server was restarted. It is not an important fix.
+
+	* cherokee/rule_extensions.c (_free): Bugfix: an incorrect memory
+	free has been fixed.
+
+	* cherokee/socket.c (cherokee_socket_sendfile),
+	m4/sendfile_samba.m4: Implements sendfile() support for MacOS X.
+
+2008-05-20  Alvaro Lopez Ortega  <alvaro@alobbs.com>
+
+	* cherokee/validator_ldap.c, cherokee/socket.c: Another couple of
+	small compiling warning fixed.
+
+	* rule_header.c, rule_directory.c, rule_default.c, rule_request.c,
+	rule_extensions.c: Implements the ->free() methods.
+
+	* cherokee/virtual_server.c (init_entry_property): Removed duped
+	configuration entry.
+
+	* cherokee/rule.c (cherokee_rule_init_base): Bug fix: It had to
+	initialize its underling cherokee_module_t structure.
+
+	* downloader-protected.h, downloader.c, buffer.c, buffer.h,
+	header.c, util.c, util.h, connection.c: More compiling warnings
+	have been fixed. In this case, most of them were signess issues.
+
+	* cherokee/handler_redir.c, cherokee/handler_error_redir.c,
+	cherokee/handler_server_info.c, cherokee/fdpoll.c,
+	cherokee/handler_admin.c, cherokee/fdpoll.h,
+	cherokee/handler_cgi_base.c, cherokee/rule_directory.c,
+	cherokee/fdpoll-select.c, cherokee/handler_dirlist.c,
+	cherokee/handler_mirror.c, cherokee/rule_default.c,
+	cherokee/validator_ldap.c, cherokee/fdpoll-epoll.c,
+	cherokee/macros.h, cherokee/validator_plain.c, cherokee/avl.c,
+	cherokee/fdpoll-poll.c, cherokee/validator_htpasswd.c,
+	cherokee/plugin.h, cherokee/buffer.c, cherokee/fdpoll-protected.h,
+	cherokee/handler_file.c, cherokee/buffer.h, cherokee/main.c,
+	cherokee/header.c, cherokee/balancer_round_robin.c,
+	cherokee/rule.c, cherokee/encoder_gzip.c, cherokee/icons.c,
+	cherokee/handler_fastcgi.c, cherokee/util.c,
+	cherokee/fdpoll-win32.c, cherokee/main_guardian.c,
+	cherokee/fdpoll-port.c, cherokee/handler_scgi.c, cherokee/post.c,
+	cherokee/handler_error.c, cherokee/admin_client.c,
+	cherokee/rule_extensions.c, cherokee/handler_cgi.c,
+	cherokee/server-protected.h, cherokee/fdpoll-kqueue.c,
+	cherokee/admin_server.c, cherokee/main_tweak.c,
+	cherokee/validator_htdigest.c, cherokee/iocache.c,
+	cherokee/connection.c, cherokee/iocache.h, cherokee/server.c,
+	cherokee/socket.c: This patch fixes a bunch of minor compiling
+	warnings, most of them related to unused variables.
+
+2008-05-19  Alvaro Lopez Ortega  <alvaro@alobbs.com>
+
+	* cherokee/http.h, cherokee/http.c: Added "204 No Content" HTTP
+	response.
+
+2008-05-17  Alvaro Lopez Ortega  <alvaro@alobbs.com>
+
+	* admin/validations.py (is_local_file_exists)
+	(is_local_dir_exists), PageEntry.py, ModuleHtdigest.py,
+	PageAdvanced.py, ModulePlain.py, PageVServers.py, PageGeneral.py,
+	PageVServer.py, Form.py, ModuleHtpasswd.py: Added chroot support
+	to the local file/directory testing. This fix is kind of hacky: I
+	needed to import the "cfg" global in order to check whether the
+	server is jailed within a chroot. Anyway, even if it isn't clean,
+	it's a fairly acceptable solution.
+
+	* cherokee/main_tweak.c: Updated to use getopt_long(). The help
+	text has been rewritten as well.
+
+	* cherokee/Makefile.am (bin_PROGRAMS): "Cherokee tweak" binary
+	executable has changed from cherokee_tweak to cherokee-tweak. It
+	looked kind of weird with the underscore. 
+
+	* cherokee/admin_client.c: Cleaned out. The internal phase
+	property was no needed. ->dowloader->status is enough to know in
+	this case.
+
+	* cherokee/downloader.c (cherokee_downloader_step): ->status set
+	and unset code rewritten to use BIT_SET and BIT_UNSET macros. It
+	is more readable now.
+
+	* cherokee/handler_proxy.c (cherokee_handler_proxy_add_headers):
+	It had to pass the downloader HTTP error code to the Cherokee
+	client. Now, non-200 responses work properly.
+
+	* downloader.c, downloader.h, handler.h, handler_proxy.c,
+	handler_proxy.h, connection.c: Fixes a number of problems with the
+	alpha proxy handler. After these changes I have been able to point
+	my browser to Cherokee and browse the Internet successfully.
+
+2008-05-04  Alvaro Lopez Ortega  <alvaro@alobbs.com>
+
+	* admin/PageVServer.py (PageVServer._render_rules_generic): Little
+	fix for fixing list reorder. The last change broke the drag &
+	drop.
+
+	* admin/PageVServer.py, admin/RuleList.py: Rule list has been
+	reversed. Not the highest priority stands first. It is basically
+	an usability fix.
+
+2008-05-03  Alvaro Lopez Ortega  <alvaro@alobbs.com>
+
+	* cherokee/config_entry.h, cherokee/Makefile.am, cherokee/rule.h,
+	cherokee/cherokee.h: The public cherokee.h header has been fixes
+	to include the new rule type.
+
+2008-05-03  A.D.F  <adefacc@tin.it>
+
+	* cherokee/fdpoll*.c,
+	  - added error message to fdpoll _add() functions;
+	  - fixed a few mispellings.
+
+	* cherokee/util.c
+	  - cherokee_print_errno(), add test on string pointer.
+
+2008-05-03  Alvaro Lopez Ortega  <alvaro@alobbs.com>
+
+	* admin/ModuleBalancer.py (ModuleBalancerGeneric._op_apply_changes):
+	Bugfix. It was not building the balancer type entry properly.
+
+2008-05-01  Alvaro Lopez Ortega  <alvaro@alobbs.com>
+
+	(Another example of how long a MacBook Pro battery lasts: Flight
+	from Madrid to San Francisco).
+
+	* qa/164-RuleOr1.py, qa/165-RuleOr2.py, qa/Makefile.am: Added a
+	couple of new QA tests in order to ensure that the new "or" rule
+	works fine.
+
+	* cherokee/rule_or.h, cherokee/rule_or.c, cherokee/Makefile.am,
+	configure.in: Added a new "or" rule. It accesses two sub-matches
+	rules and returns 'true' when the first one matches.
+
+	* qa/162-RuleAnd1.py, qa/163-RuleAnd2.py, qa/Makefile.am: Added a
+	couple of new QA tests in order to ensure that the new "and" rule
+	works as expected.
+
+	* cherokee/rule_and.h, cherokee/rule_and.c, cherokee/Makefile.am,
+	configure.in: Added a new "and" rule. It accesses two sub-matches
+	rules and returns 'true' only when both match the request.
+
+	* qa/160-RuleNot1.py, qa/161-RuleNot2.py, qa/Makefile.am: Added a
+	couple of new QA tests in order to ensure that the new "not" rule
+	works properly.
+
+	* cherokee/rule_not.h, cherokee/rule_not.c, cherokee/Makefile.am,
+	configure.in: Added a new "not" rule. It inverts the return value
+	of any rule.
+
+	* qa/158-RuleHeader1.py, qa/159-RuleHeader2.py: CGI code fixed; it
+	wasn't including a required header.
+
+2008-04-29  Alvaro Lopez Ortega  <alvaro@alobbs.com>
+
+	* contrib/06to07.py: Rewritten. now it supports the lastest 0.7
+	configuration format.
+
+2008-04-28  Alvaro Lopez Ortega  <alvaro@alobbs.com>
+
+	* cherokee/rule_header.c, qa/158-RuleHeader1.py,
+	qa/159-RuleHeader2.py: It should only support matches. The
+	'mismatch' behavior and configuration entries have been removed.
+
+	* admin/PageVServer.py (PageVServer._get_auth_name): Fixes small
+	issue with rule entries that has only a validator (without a
+	handler).
+
+	* admin/PageGeneral.py: Entry notes are shorter now. The previous
+	note were to verbose.
+
+2008-04-27  Alvaro Lopez Ortega  <alvaro@alobbs.com>
+
+	* admin/PageEntry.py, admin/ModuleAuth.py,
+	admin/ModuleHtdigest.py, admin/ModuleLdap.py,
+	admin/ModulePlain.py, admin/ModuleHtpasswd.py,
+	admin/ModuleMysql.py: Updated to use the new style: Table to
+	TableProp, and a few header related changes.
+
+	* admin/ModuleMirror.py, admin/ModuleCgi.py: Updated to use the
+	new TableProps widget.
+
+	* performance.conf.sample.pre: Updated to the latest configuration
+	file format change.
+
+2008-04-26  Alvaro Lopez Ortega  <alvaro@alobbs.com>
+
+	* admin/ModuleDirlist.py (ModuleDirlist._op_render),
+	admin/ModuleRedir.py (ModuleRedir._op_render): Updated to use the
+	new TableProps class instead of the plain old Table.
+
+	* cherokee/virtual_server.c (configure_rule_match), qa/*.py,
+	cherokee.conf.sample.pre, cherokee/main_admin.c, cherokee/admin.c:
+	Configuration format has changed again. The new entries weren't
+	following the style of the rest of the configuration. The change
+	is really small; however it impacts almost all of the QA cases.
+	Now, rules are defined like: "rule!<num>!match = <TYPE>" instead
+	of "rule!<num>!match!type = <TYPE>".
+
+	* admin/ModuleHeader.py, admin/Makefile.am: Added support of
+	header rules. This is a new module.
+
+	* admin/static/css/cherokee.css: This couple of minor changes make
+	the interface look much better. It basically improves the
+	PropertyTable look.
+
+	* qa/PageEntry.py, qa/config.py, qa/ModuleDefault.py,
+	qa/ModuleRequest.py, qa/ModuleExtensions.py, qa/consts.py,
+	qa/PageVServer.py, qa/static/js/common.js, qa/RuleList.py,
+	qa/Form.py, qa/ModuleDirectory.py, qa/Makefile.am: Rule types are
+	no longer hardcoded. They are independent modules, as they are
+	in the server.
+
+2008-04-25  Alvaro Lopez Ortega  <alvaro@alobbs.com>
+
+	* cherokee/main_admin.c (main): There was an unneeded Win32
+	initialization.
+
+2008-04-24  Alvaro Lopez Ortega  <alvaro@alobbs.com>
+
+	* qa/158-RuleHeader1.py, qa/159-RuleHeader2.py,
+	qa/Makefile.am (EXTRA_DIST): Added new test to ensure that the new
+	rule module works properly.
+
+	* cherokee/rule_header.c, cherokee/rule_header.h: Implemented. It
+	allows to configure rules that match the request headers.
+
+2008-04-23  Alvaro Lopez Ortega  <alvaro@alobbs.com>
+
+	* admin/PageMime.py (PageMime._render_mime_list): Extension
+	entries are shorter now. They should not overflow the frame
+	limits.
+
+	* admin/PageEntry.py, admin/ModuleServerInfo.py,
+	admin/ModuleFile.py: Updated to use the new layout (it adds a nice
+	comment right under the entry).
+
+	* admin/CherokeeManagement.py: Fixes a error when the PID file
+	cannot be read.
+
+2008-04-22  Alvaro Lopez Ortega  <alvaro@alobbs.com>
+
+	* admin/PageVServer.py (PageVServer._op_handler): Fixes a
+	regression. When user_dir is enabled it must add a rule for the
+	default match.
+
+	* admin/PageVServer.py: Fixes a bug managing !rule!x!match!final
+	entries.
+
+	* admin/Form.py (FormHelper.InstanceTab): Tab switching animation
+	is dissabled now. Even it we are losing some eye-candy by
+	disabling this effect, it improves the interface usability.
+
+2008-04-21  Alvaro Lopez Ortega  <alvaro@alobbs.com>
+
+	* admin/ModuleRedir.py, admin/PageVServers.py,
+	admin/ModuleBalancer.py, admin/PageMime.py, admin/PageVServer.py,
+	admin/Entry.py, admin/ModuleErrorRedir.py: Fixed some text entry
+	lengths.
+
+2008-04-19  Alvaro Lopez Ortega  <alvaro@alobbs.com>
+
+	* admin/PageEncoders.py, admin/PageVServer.py, admin/Entry.py:
+	Text entries are wider now (40 characters by default).
+
+	* admin/PageEncoders.py (MatchingList._op_render): Updated to the
+	the cherokee-admin layout.
+
+2008-04-16  Alvaro Lopez Ortega  <alvaro@alobbs.com>
+
+	* cherokee.conf.sample.pre, admin/PageEntry.py, admin/config.py,
+	admin/PageVServers.py, admin/VirtualServer.py,
+	admin/PageVServer.py, admin/validations.py,admin/Makefile.am:
+	Updated to the new configuration format.
+
+	* admin/Makefile.am (adminpy_DATA), admin/VirtualServer.py,
+	admin/RuleList.py: Replaced by RuleList.py.
+
+	* cherokee.conf.sample.pre: Updated to the new format.
+
+2008-04-13  Alvaro Lopez Ortega  <alvaro@alobbs.com>
+
+	(This is what a MacBook Pro battery lasts): flying from Austin to
+	Madrid. After the Linux Foundation Collaboration Summit 2008.
+
+	* cherokee/main.c, cherokee/main_admin.c, cherokee/module.h,
+	cherokee/plugin_loader.h, cherokee/rule.c, cherokee/rule.h,
+	cherokee/rule_default.c, cherokee/rule_default.h,
+	cherokee/rule_directory.c, cherokee/rule_directory.h,
+	cherokee/rule_extensions., cherokee/rule_extensions.h,
+	cherokee/rule_list.c, cherokee/rule_request.c,
+	cherokee/rule_request.h, cherokee/validator.c,
+	cherokee/virtual_server.c, qa/001-basic.py, qa/015-CGI-simple.py,
+	qa/016-CGI-pathinfo.py, qa/017-CGI-pathinfo2.py,
+	qa/018-CGI-pathinfo3.py, qa/020-VirtualHost.py,
+	qa/021-VirtualHost2.py, qa/029-Post+Without-lenght.py,
+	qa/030-Post+urlencoded.py, qa/031-Post+urlencoded2.py,
+	qa/033-DirIndex.py, qa/034-DirIndex2.py, qa/035-PHP-simple.py,
+	qa/036-DocumentRoot-common.py, qa/039-Auth-Basic.py,
+	qa/040-Auth-Basic2.py, qa/041-Auth-Basic3.py, qa/044-Home.py,
+	qa/045-Home2.py, qa/046-Redir.py, qa/047-Redir2.py, qa/048-NN.py,
+	qa/049-NN-broken.py, qa/050-HeadBody.py, qa/061-PAM.py,
+	qa/062-PAM2.py, qa/063-DocumentRoot.py, qa/064-DirectoryIndex.py,
+	qa/066-DirectoryIndex3.py, qa/067-PathInfo.py,
+	qa/068-PathInfo2.py, qa/069-PathInfo3.py, qa/070-Inherit.py,
+	qa/071-Inherit2.py, qa/072-Inherit3.py, qa/073-Access.py,
+	qa/074-Access2.py, qa/075-AccessRange.py, qa/076-AccessRange2.py,
+	qa/077-AccessRange3.py, qa/078-AccessAny.py, qa/079-Extension.py,
+	qa/080-Extension2.py, qa/081-DocumentRoot-Common-index.py,
+	qa/082-Auth-header., qa/083-RedirParam.py,
+	qa/084-RedirParamShow.py, qa/085-AuthUsers.py,
+	qa/086-AuthUsers2.py, qa/088-CGI-envs.py, qa/089-gzip-encoding.py,
+	qa/090-Digest.py, qa/091-Digest2.py, qa/092-Digest3.py,
+	qa/093-InvalidLinks.py, qa/094-URL-request.py,
+	qa/095-htpasswd-apache-md5.py, qa/096-htpasswd-md5.py,
+	qa/097-htpasswd-sha1.py, qa/098-htpasswd-crypt.py,
+	qa/099-htpasswd-plain.py, qa/100-Digest-htdigest.py,
+	qa/102-QueryString.py, qa/103-ScriptName.py,
+	qa/104-ScriptAlias_PathInfo.py, qa/105-If-Range.py,
+	qa/106-If-Range2.py, qa/107-Priority1.py, qa/108-Priority2.py,
+	qa/109-Priority3.py, qa/110-Priority4.py, qa/112-NiceError-CGI.py,
+	qa/113-HeaderFile.py, qa/114-HeaderFile2.py, qa/115-Respin.py,
+	qa/116-RequestTiny.py, qa/117-DomainToDir.py,
+	qa/118-Request-redir.py, qa/121-NoUserDir.py, qa/122-Methods.py,
+	qa/123-ImplicitRedit.py, qa/124-DomainToDir2.py,
+	qa/125-domain-redir1.py, qa/126-SCGI.py, qa/127-SCGI-Post.py,
+	qa/128-ValidMethod-common.py, qa/129-Basic-EmptyPasswd.py,
+	qa/130-Digest-EmptyPasswd.py, qa/131-ChangeUser-phpcgi.py,
+	qa/135-RedirParams.py, qa/138-ChangeUser-cgi.py,
+	qa/139-domain-wildcards1.py, qa/140-SCGI-EmptyVars.py,
+	qa/141-FastCGI-EmptyVars.py, qa/142-SCGI-ExtraVars.py,
+	qa/143-ContentRange-NoIO.py, qa/144-ContentRange2-NoIO.py,
+	qa/145-ContentRange3-NoIO.py, qa/146-ContentRange4-NoIO.py,
+	qa/147-ContentRange-Double-NoIO.py,
+	qa/148-ContentRange-Double2-NoIO.py, qa/149-Common-PathInfo.py,
+	qa/150-Common-No-PathInfo.py, qa/151-SCGI-vars.py,
+	qa/152-SCGI-vars2.py, qa/153-SCGI-vars-root.py,
+	qa/154-DirRedirection.py, qa/155-DirRedirection2.py,
+	qa/157-Dirlist-symlinks.py, qa/run-tests.py: The configuration
+	file format for 0.7 has changed again. The latest approach was
+	fair enough, although it was not as flexible as it should have
+	been. This mega-patch makes it work as the rest of the server;
+	instead of receiving a buffer string, it receives a
+	cherokee_config_node_t reference and it is reads its
+	configuration from there. I ran into problems when I was writing
+	the header based rule plug-in because of this previous
+	implementation; not it is okay.
+
+	* cherokee/rule_header.h, cherokee/rule_header.c: Added new rule
+	type to allow to based decisions on certain header entries values.
+
+	* cherokee/config_node.c, cherokee/config_node.h: Added a new
+	convenience method for copying a key content.
+
+	* cherokee/getopt/getopt.c, cherokee/getopt/getopt1.c: Test
+	removed. There were completely useless.
+
+	* cherokee/handler_fcgi.c, cherokee/socket.c: Added a few trace
+	entries. I needed it to investigate a weird issue about the fcgi
+	handler (work on progress here).
+
+	* configure.in, cherokee/Makefile.am: Added entries for a new
+	header base rule plug-in.
+
+	* cherokee/rule_request.h (CHEROKEE_RULE_REQS_H): Fixed #if
+ 	protection against multiple inclusions.
+
+	* cherokee/main_admin.c (process_parameters): Now it adminst a
+	conditional parameter for the network interface to bind to:
+  	  cherokee-admin           --> localhost
+	  cherokee-admin --bind    --> all interfaces
+	  cherokee-admin --bind=IP --> Only IP interface
+
+	* cherokee/main.c, cherokee/main_admin.c: Ported to use
+	getopt_long. Now it accepts -- parameters and includes a better
+	version and help functions. (TODO: Update cherokee.1 and
+	cherokee-admin.1 man pages).
+
+2008-04-12  A.D.F  <adefacc@tin.it>
+
+	* admin/*.help.html:
+	  - fixed mispellings and rewritten a few sentences.
+
+	* admin/PageAdvanced.py:
+	  - replaced max_fds with fdlimit;
+	  - micro fixes to help tooltips.
+
+	* admin/PageVServer.py:
+	  - micro fixes to help tooltips.
+
+	* cherokee/connection.c:
+	  - micro optimization in cherokee_connection_step(),
+	    return early if there is no encoder configured
+	    (common fast case).
+
+2008-04-12  Alvaro Lopez Ortega  <alvaro@alobbs.com>
+
+	* admin/PageVServer.py: (PageVServer._op_handler): Tiny
+	bugfix. There was an insecure configuration check.
+
+	* admin/PageVServer.py: Added a new button useful to disable
+	logging.
+
+2008-04-11  Alvaro Lopez Ortega  <alvaro@alobbs.com>
+
+	* admin/PageAdvanced.py (PageAdvanced._render_content): Fixed
+	incorrect key.
+
+2008-04-12  Taher Shihadeh  <taher@unixwars.com>
+
+	* cherokee/main.c: fixed bug that prevented launching with -r.
+
+2008-04-11  Alvaro Lopez Ortega  <alvaro@alobbs.com>
+
+	* admin/PageVServer.py (PageVServer._render_rules_generic): The
+	'default' rule is always a final rule, so it should not show the
+	checkbox.
+
+2008-04-10  Alvaro Lopez Ortega  <alvaro@alobbs.com>
+
+	* admin/PageVServer.py (PageVServer._render_rules_generic): Added
+	support for the new !final rule property.
+
+	* admin/ModuleDirlist.py: Added support for the new "Allow
+	Symbolic Links" property of the dirlist handler. 
+
+	* cherokee/handler_dirlist.c: Added a new property 'symlinks' to
+	allow to disable the symbolic links inclusion.
+
+	* qa/157-Dirlist-symlinks.py, qa/Makefile.am (EXTRA_DIST): Added a
+	new QA to ensure that the new !symlinks property of handler_file
+	works properly.
+
+	* cherokee/util.h (cherokee_lstat): Added new macro to call
+	lstat().
+
+	* contrib/06to07.py: Added 0.6 to 0.7 configuration convertion
+	script.
+
+	* doc/locale/en/internal_configuration.txt: Updated to the new
+	rule format.
+
+	* doc/locale/en/internal_configuration.txt: Removes
+	server!mime_files reference.
+
+2008-04-09  Alvaro Lopez Ortega  <alvaro@alobbs.com>
+
+	* cherokee/main_admin.c, admin/VirtualServer.py,
+	admin/PageVServer.py: Updated to the new configuration file
+	syntax.
+
+	* cherokee/main_admin.c (config_server): Update to the new
+	configuration format.
+
+	* cherokee.conf.sample.pre, performance.conf.sample.pre: Updated
+	to the new configuration file format.
+
+2008-04-08  Alvaro Lopez Ortega  <alvaro@alobbs.com>
+
+	* qa/156-Mime2.py, qa/Makefile.am (EXTRA_DIST): Added a new QA to
+	ensure that the max-age cache control header works.
+
+	* cherokee/rule_list.c, cherokee/rule_list.h, cherokee/rule.c,
+	cherokee/rule.h, cherokee/rule_default.c, cherokee/rule_default.h,
+	cherokee/rule_directory.c, cherokee/rule_directory.h,
+	cherokee/rule_extensions.c, cherokee/rule_extensions.h,
+	cherokee/rule_request.c, cherokee/rule_request.h: New files for
+	the brand new rule list implementation.
+
+	* cherokee/exts_table.c, cherokee/exts_table.h,
+	cherokee/dirs_table.c, cherokee/dirs_table.h,
+	cherokee/reqs_list.c, cherokee/reqs_list.h,
+	cherokee/reqs_list_entry.c, cherokee/reqs_list_entry.h:
+	Removed. This is the old implementation that I'm dropping.
+
+	* cherokee/Makefile.am, configure.in, cherokee/avl.h,
+	cherokee/config_entry.c, cherokee/config_entry.h,
+	cherokee/config_node.c, cherokee/config_node.h,
+	cherokee/connection-protected.h, cherokee/connection.c,
+	cherokee/connection_info.c, cherokee/connection_info.h,
+	cherokee/handler_cgi_base.c, cherokee/handler_dirlist.c,
+	cherokee/handler_file.c, cherokee/handler_redir.c,
+	cherokee/handler_server_info.c, cherokee/iocache.c,
+	cherokee/mime.c, cherokee/mime_entry.c, cherokee/mime_entry.h,
+	cherokee/plugin.h, cherokee/regex.h, cherokee/request.c,
+	cherokee/request.h, cherokee/server-protected.h,
+	cherokee/server.c, cherokee/thread.c, cherokee/validator_mysql.c,
+	cherokee/virtual_entries.c, cherokee/virtual_entries.h,
+	cherokee/virtual_server.c, cherokee/virtual_server.h: A number of
+	changes have been performed to adapt the server to the new rule
+	list mechanism.
+
+	* qa/001-basic.py, qa/015-CGI-simple.py, qa/016-CGI-pathinfo.py,
+	qa/017-CGI-pathinfo2.py, qa/018-CGI-pathinfo3.py,
+	qa/020-VirtualHost.py, qa/021-VirtualHost2.py,
+	qa/029-Post+Without-lenght.py, qa/030-Post+urlencoded.py,
+	qa/031-Post+urlencoded2.py, qa/033-DirIndex.py,
+	qa/034-DirIndex2.py, qa/035-PHP-simple.py,
+	qa/036-DocumentRoot-common.py, qa/039-Auth-Basic.py,
+	qa/040-Auth-Basic2.py, qa/041-Auth-Basic3.py, qa/044-Home.py,
+	qa/045-Home2.py, qa/046-Redir.py, qa/047-Redir2.py, qa/048-NN.py,
+	qa/049-NN-broken.py, qa/050-HeadBody.py, qa/061-PAM.py,
+	qa/062-PAM2.py, qa/063-DocumentRoot.py, qa/064-DirectoryIndex.py,
+	qa/066-DirectoryIndex3.py, qa/067-PathInfo.py,
+	qa/068-PathInfo2.py, qa/069-PathInfo3.py, qa/070-Inherit.py,
+	qa/071-Inherit2.py, qa/072-Inherit3.py, qa/073-Access.py,
+	qa/074-Access2.py, qa/075-AccessRange.py, qa/076-AccessRange2.py,
+	qa/077-AccessRange3.py, qa/078-AccessAny.py, qa/079-Extension.py,
+	qa/080-Extension2.py, qa/081-DocumentRoot-Common-index.py,
+	qa/082-Auth-header.py, qa/083-RedirParam.py,
+	qa/084-RedirParamShow.py, qa/085-AuthUsers.py,
+	qa/086-AuthUsers2.py, qa/088-CGI-envs., qa/089-gzip-encoding.py,
+	qa/090-Digest.py, qa/091-Digest2.py, qa/092-Digest3.py,
+	qa/093-InvalidLinks.py, qa/094-URL-request.py,
+	qa/095-htpasswd-apache-md5.py, qa/096-htpasswd-md5.py,
+	qa/097-htpasswd-sha1.py, qa/098-htpasswd-crypt.py,
+	qa/099-htpasswd-plain.py, qa/100-Digest-htdigest.py,
+	qa/102-QueryString.py, qa/103-ScriptName.py,
+	qa/104-ScriptAlias_PathInfo.py, qa/105-If-Range.py,
+	qa/106-If-Range2.py, qa/107-Priority1.py, qa/108-Priority2.py,
+	qa/109-Priority3.py, qa/110-Priority4.py, qa/112-NiceError-CGI.py,
+	qa/113-HeaderFile.py, qa/114-HeaderFile2.py, qa/115-Respin.py,
+	qa/116-RequestTiny.py, qa/117-DomainToDir.py,
+	qa/118-Request-redir.py, qa/121-NoUserDir.py, qa/122-Methods.py,
+	qa/123-ImplicitRedit.py, qa/124-DomainToDir2.py,
+	qa/125-domain-redir1.py, qa/126-SCGI.py, qa/127-SCGI-Post.py,
+	qa/128-ValidMethod-common.py, qa/129-Basic-EmptyPasswd.py,
+	qa/130-Digest-EmptyPasswd.py, qa/131-ChangeUser-phpcgi.py,
+	qa/135-RedirParams.py, qa/137-Mime1.py, qa/138-ChangeUser-cgi.py,
+	qa/139-domain-wildcards1.py, qa/140-SCGI-EmptyVars.py,
+	qa/141-FastCGI-EmptyVars.py, qa/142-SCGI-ExtraVars.py,
+	qa/143-ContentRange-NoIO.py, qa/144-ContentRange2-NoIO.py,
+	qa/145-ContentRange3-NoIO.py, qa/146-ContentRange4-NoIO.py,
+	qa/147-ContentRange-Double-NoIO.py,
+	qa/148-ContentRange-Double2-NoIO.py, qa/149-Common-PathInfo.py,
+	qa/150-Common-No-PathInfo.py, qa/151-SCGI-vars.py,
+	qa/152-SCGI-vars2.py, qa/153-SCGI-vars-root.py,
+	qa/154-DirRedirection.py, qa/155-DirRedirection2.py, qa/conf.py,
+	qa/run-tests.py: Adapted to the new rule list implementation.
+
+2008-04-05  A.D.F  <adefacc@tin.it>
+
+	* cherokee/buffer.h, cherokee/buffer.c
+	  - added new function cherokee_buffer_add_escape_html()
+	    with new escape method to avoid too many data copies
+	    and trash the CPU L1 cache;
+	  - cherokee_buffer_unescape_uri(), added test on string
+	    termination character;
+	  - cherokee_buffer_add_fixed(),
+	    cherokee_buffer_add_va_list(), fixed tests on buffer
+	    boundaries in order to make them standard conformant.
+
+	* cherokee/handler_error.c
+	  - replaced cherokee_buffer_escape_html() with
+	    cherokee_buffer_add_escape_html();
+	  - removed usage of tmp buffer (thanks to previous changes).
+
+2008-04-01  Alvaro Lopez Ortega  <alvaro@alobbs.com>
+
+	* cherokee/server-protected.h, cherokee/server.c,
+	cherokee/handler_dirlist.c, cherokee/handler_error.c: Clean
+	up. The server string variables have been consolidated under a
+	common prefix: srv->server_string*.
+
+	* cherokee/init.c, cherokee/init.h, cherokee/fdpoll.c,
+	cherokee/macros.h, cherokee/server-protected.h, cherokee/server.c:
+	Clean up. The fdlimit variables have been consolidated under a
+	common prefix fdlimit_. Besides, cherokee_init() gets the system
+	file descriptor limit number.
+
+	* admin/static/js/Makefile.am (THIRD_PARTY): Bug fix. It had to
+	include jquery.dimensions.js and jquery.tablednd.js. The new
+	sortable rules table was not working because these two files were
+	missing.
+
+	* cherokee/server.c, cherokee/server.h: cpu number information is
+	now a global variable instead of a property of the server class.
+
+2008-03-29  Alvaro Lopez Ortega  <alvaro@alobbs.com>
+
+	* cherokee/init.h, cherokee/init.c, cherokee/Makefile.am: Added a
+	new global initialization function. It works at libcherokee_base
+	level, so calling cherokee_init() is not mandatory is now
+	mandatory for all the cherokee based applications.
+
+	* cherokee/main_admin.c, cherokee/main.c, cherokee/main_tweak.c,
+	cherokee/cherokee.h, cherokee/server.c, cget/main.c: Adapted to
+	use cherokee_init().
+
+	* configure.in, cherokee/cacheline.h, cherokee/cacheline.c: Added
+	a check to guess what the L2 cache line size is. It is an initial
+	implementation, some additional work is still required.
+
+	* cget/Makefile.am (EXTRA_DIST): Bugfix: cget.1 needed to be in
+	the EXTRA_DIST list.
+
+	* admin/Makefile.am (EXTRA_DIST): Bugfix: server.py must be
+	distributed.
+
+	* cherokee/main.c: (test_configuration_file): Include the
+	configuration file name in the reporting message.
+
+	* cherokee/main.c: On SIGUSR1 the server reopen the log for all
+	its virtual servers.
+
+	* cherokee/server.c (cherokee_server_log_reopen): Added new method.
+
+	* cherokee/main.c (main), cherokee.1: Added the -t parameter. It
+	tests the configuration file.
+
+2008-03-28  Alvaro Lopez Ortega  <alvaro@alobbs.com>
+
+	* Makefile.am (man_MANS), cget/Makefile.am (man_MANS), cget.1: The
+	cget man page has been relocated inside the cget directory.
+
+	* Makefile.am (man_MANS), cherokee_logrotate.1: Man page removed.
+
+	* admin/PageAdvanced.py: Added the server!thread_number
+	configuration entry.
+
+2008-03-27  Alvaro Lopez Ortega  <alvaro@alobbs.com>
+
+	* cherokee/main.c: Added new parameter -p to specify the listening
+	port. It can be used when cherokee is invoked with the -r
+	parameter (servers static content from a local directory).
+
+	* cherokee-admin.8, file cherokee_tweak.1, file spawn-fcgi.1:
+	Added new man pages. Written by Gunnar Wolf <gwolf@gwolf.org>.
+
+	* cherokee.1, cherokee-config.1, Makefile.am: Man pages have been
+	updated. By Gunnar Wolf <gwolf@gwolf.org>.
+
+	* admin/PageVServer.py: A few sections more have been converted to
+	the new table layout.
+
+	* admin/static/css/cherokee.css: Table headers are bold now.
+
+	* admin/Makefile.am (adminpy_SCRIPTS): server.py had to be
+	installed as an executable script.
+
+2008-03-26  Alvaro Lopez Ortega  <alvaro@alobbs.com>
+
+	* Makefile.am (install-data-local): It has to create /var/log and
+	/var/run when installing, otherwise it would fail after the
+	installation if DESTDIR wasn't /.
+
+	* admin/Form.py, admin/PageVServer.py: The Virtual Server
+	configuration page has been updated to use the new table format.
+	Besides, a few changes in the table itself have been performed.
+
+	* admin/Form.py, admin/Table.py, admin/static/css/cherokee.css:
+	Added support for the new format table. The new table includes
+	more information and a new layout.
+
+	* admin/PageAdvanced.py, admin/PageGeneral.py: Migrated to the new
+	table format.
+
+	* admin/PageIcon.py: Extension entries are wider now.
+
+2008-03-23  Alvaro Lopez Ortega  <alvaro@alobbs.com>
+
+	* cherokee.conf.sample.pre: "server!mime_files" configuration key
+	is no longer a valid key. Removed from the default configuration
+	file.
+
+	* admin/PageMime.py (PageMime._render_mime_list),
+	admin/static/css/cherokee.css: Added a scrollbar. The default mime
+	type list is quite big. The scroll makes the page to look better.
+
+	* admin/PageMime.py (PageMime._render_mime_list): Show the mime
+	entries sorted.
+
+	* admin/PageMime.py: Mime Type configuration page has been
+	re-implemented.
+
+	* admin/pyscgi.py: Updated to pyscgi 1.6. It fixes a writing issue
+	on OS X.
+
+	* Makefile.am, mime.types.sample, mime.compression.types.sample:
+	Example mime type files have been removed. They are no longer
+	needed.
+
+	* cherokee.conf.sample.pre: Added a bunch of mime types. Most of
+	the old mimes have been converted.
+
+	* cherokee/mime.c, cherokee/server.c (configure_server): The mime
+	class has been reworked. Mime types are not longer read from a
+	text file; from now on, the general configuration system is used
+	instead.
+
+	* admin/PageVServer.py: Added a note explaining how rules are
+	evaluated.
+
+2008-03-22  Alvaro Lopez Ortega  <alvaro@alobbs.com>
+
+	* admin/PageVServer.py (PageVServer._op_add_new_entry): It does
+	not require to enter a priority by hand any longer. Now it looks
+	for the highest on the list and put the new entry right after it.
+
+	* admin/PageVServer.py (PageVServer._render_rules_generic): The
+	generic rule list has been rewritten. It does no longer use the
+	Jquery sortable module.
+
+	* admin/default.template.html, admin/PageVServer.py,
+	admin/static/js/ui.mouse.js, admin/static/js/jquery.dimensions.js,
+	admin/static/js/ui.sortable.js: Added a new fancy rule list. This
+	version does not require to write the priority of the rules by
+	hand; instead the rules are arranged by dragging and dropping
+	them.
+
+	* cherokee/buffer.c (cherokee_buffer_add_va_list): Error recovery
+	improved. In the case cherokee_estimate_va_length() misses the
+	right length it tries again with the length previously returned by
+	vsnprintf().
+
+	* configure.in, themes/Makefile.am, themes/default/*,
+	themes/firefox3/*: Themes have been split in directories.
 
 2008-03-21  Alvaro Lopez Ortega  <alvaro@alobbs.com>
 
- 	* configure.in, cherokee/Makefile.am: crypt() and PAM detection
- 	improved.
+	* configure.in, cherokee/Makefile.am: crypt() and PAM detection
+	improved.
 
- 	* qa/069-PathInfo3.py, qa/088-CGI-envs.py: /bin/bash has been
- 	replaced with /bin/sh.
+	* qa/069-PathInfo3.py, qa/088-CGI-envs.py: /bin/bash has been
+	replaced with /bin/sh.
 
- 	* cherokee/Makefile.am (cherokee_tweak_LDADD), configure.in: It
- 	had to include the pthread library (by adding the -pthread ld
- 	parameter). This made the compilation on FreeBSD to fail.
+	* cherokee/Makefile.am (cherokee_tweak_LDADD), configure.in: It
+	had to include the pthread library (by adding the -pthread ld
+	parameter). This made the compilation on FreeBSD to fail.
+
+	* admin/server.py, cherokee/main_admin.c (config_server):
+	cherokee-admin calls server.py directly (without calling
+	python). server.py is now executable.
+
+	* configure.in: Check for socklen_t has been reworked.
 
 	* configure.in: Removed a few bashisms.
+
+	* doc/Makefile.am: Removed unnecessary checks. Not concurrency is
+	already provided by make, there is no longer need for the hack.
 
 	* doc/locale/en/index.txt: Updated to point to the internal
 	configuration page. There was no link to it.
 
 	* cherokee/exts_table.c, cherokee/validator_htpasswd.c,
 	cherokee/logger_writer.c, cherokee/mime.c, cherokee/connection.c,
-	cherokee/dirs_table.c, cherokee/socket.c: This patches fixes a few
+	cherokee/dirs_table.c, cherokee/socket.c: This patch fixes a few
 	harmless compilation warnings.
 
 2008-03-20  Alvaro Lopez Ortega  <alvaro@alobbs.com>
+
+	* Makefile.am (install-data-local): Ensure that the admin
+	directory exists before trying to copy the configuration file
+	example.
 
 	* admin/ModuleRedir.py, admin/PageEncoders.py,
 	admin/PageVServers.py, admin/ModuleBalancer.py,
@@ -46,43 +903,44 @@
 
 2008-03-17  Alvaro Lopez Ortega  <alvaro@alobbs.com>
 
- 	* cherokee/handler_dirlist.c (check_request_finish_with_slash),
- 	cherokee/connection.c, cherokee/connection-protected.h,
- 	qa/155-DirRedirection2.py, qa/Makefile.am (EXTRA_DIST): Added a
- 	new property to the connection class that indicates whether its
- 	using a custom document_root. It was needed by the dirlist to
- 	build the redirection URL in case the request do not end by /. A
- 	new QA test has been also written to cover this case.
+	* cherokee/handler_dirlist.c (check_request_finish_with_slash),
+	cherokee/connection.c, cherokee/connection-protected.h,
+	qa/155-DirRedirection2.py, qa/Makefile.am (EXTRA_DIST): Added a
+	new property to the connection class that indicates whether its
+	using a custom document_root. It was needed by the dirlist to
+	build the redirection URL in case the request do not end by /. A
+	new QA test has been also written to cover this case.
 
-2008-03-17  Alvaro Lopez Ortega  <alvaro@alobbs.com>
+	* TODO: Road Map updated
 
-	* 0.6.0 Released
+	* qa/154-DirRedirection.py, qa/Makefile.am (EXTRA_DIST): Added new
+	QA case to cover the previous patch.
 
-2008-03-17  Alvaro Lopez Ortega  <alvaro@alobbs.com>
-
- 	* qa/154-DirRedirection.py, qa/Makefile.am (EXTRA_DIST): Added new
- 	QA case to cover the previous patch.
-
- 	* cherokee/handler_dirlist.c (check_request_finish_with_slash): It
- 	must use the web_directory when redirecting a directory request
- 	not ending by slash.
-
-2008-03-17  Alvaro Lopez Ortega  <alvaro@alobbs.com>
-
-	* doc/*: Updated to latest trunk version.
+	* cherokee/handler_dirlist.c (check_request_finish_with_slash): It
+	must use the web_directory when redirecting a directory request
+	not ending by slash.
 
 2008-03-16  Alvaro Lopez Ortega  <alvaro@alobbs.com>
 
+	* cherokee/Makefile.am (INCLUDES), constants.h.pre,
+	Makefile.am (SUBDIRS), cget/Makefile.am (INCLUDES),
+	contrib/Makefile.am (INCLUDES): Most of the compilation
+	definitions have been moved to a file that is built just before
+	the main compilation.
+
 	* doc/Makefile.am (.NOTPARALLEL): Documentation shouldn't be
-	generated in pararell. At this moment a simple call to
-	build_docs.py compiles it all. When it compiles in pararell, make
+	generated in parallel. At this moment a simple call to
+	build_docs.py compiles it all. When it compiles in parallel, make
 	calls many times to build_docs.py so the documentation is
 	regenerated and overwritten many times.
 
 2008-03-15  Alvaro Lopez Ortega  <alvaro@alobbs.com>
 
+	* cherokee/handler_dirlist.h: Removed configuration property list.
+
 	* cherokee/handler_file.c (cherokee_handler_file_configure):
-	Removed error reporting on unknown configuration key.
+	Removed error reporting on invalid confguration key. It was the
+	source of many minor issues.
 
 2008-03-15  A.D.F  <adefacc@tin.it>
 
@@ -92,6 +950,15 @@
 
 	* admin/PageAdvanced.py:
 	  - fixed a mispelled word in warning help.
+
+2008-03-14  Alvaro Lopez Ortega  <alvaro@alobbs.com>
+
+	* cherokee/handler_file.c (cherokee_handler_file_configure),
+	cherokee/handler_dirlist.h (HDL_DIRLIST_PROP_LIST): Added special
+	case: when it finds a handler dirlist key it should ignore it
+	instead of reporting an error. The handler common shares the same
+	configuration between both (file and dirlist) handlers. It was
+	printing a confising error message about an invalid config key.
 
 2008-03-12  Alvaro Lopez Ortega  <alvaro@alobbs.com>
 
@@ -108,6 +975,14 @@
 	* cherokee/main_guardian.c (process_launch): It had to check
 	whether -b was used, in which case it had to daemonize itself and
 	remove the parameter for argv.
+
+2008-03-12  Taher Shihadeh <taher@unixwars.com>
+
+	* doc/: Some more documentation.
+
+2008-03-11  Cesar Fernandez Gago  <cesar@pk2.org>
+
+	* doc/: Added lots of new documentation for 0.6.
 
 2008-03-10  Alvaro Lopez Ortega  <alvaro@alobbs.com>
 
@@ -140,15 +1015,6 @@
 
 	* cherokee/icons.c (cherokee_icons_get_icon): Fixed a call to
 	cherokee_avl_while() that could end up generating a SEGFAULT.
-
-	* configure.in, cherokee/Makefile.am, cherokee/handler_proxy.c,
-	cherokee/handler_proxy.h: Removed proxy handler, it is not ready
-	for the 0.6 branch; it continues in trunk though.
-
-2008-03-06  Alvaro Lopez Ortega  <alvaro@alobbs.com>
-
-	* BRANCHED: Cherokee 0.6 branch follows
-	  =====================================
 
 2008-03-05  Taher Shihadeh <taher@unixwars.com>
 	* admin/*: Several files needed corrections for consistency.

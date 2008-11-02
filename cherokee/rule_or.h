@@ -22,24 +22,28 @@
  * USA
  */
 
-#ifndef CHEROKEE_DIRS_TABLE_H
-#define CHEROKEE_DIRS_TABLE_H
+#if !defined (CHEROKEE_INSIDE_CHEROKEE_H) && !defined (CHEROKEE_COMPILATION)
+# error "Only <cherokee/cherokee.h> can be included directly, this file may disappear or change contents."
+#endif
 
-#include "common.h"
-#include "avl.h"
-#include "config_entry.h"
+#ifndef CHEROKEE_RULE_OR_H
+#define CHEROKEE_RULE_OR_H
 
+#include <cherokee/common.h>
+#include <cherokee/rule.h>
 
-typedef cherokee_avl_t cherokee_dirs_table_t;  /* Web_directory -> config_entry */
-#define DTABLE(x) ((cherokee_dirs_table_t *)(x))
+CHEROKEE_BEGIN_DECLS
 
+typedef struct {
+	cherokee_rule_t  rule;
+	cherokee_rule_t *left;
+	cherokee_rule_t *right;
+} cherokee_rule_or_t;
 
-ret_t cherokee_dirs_table_init     (cherokee_dirs_table_t *pt);
-ret_t cherokee_dirs_table_mrproper (cherokee_dirs_table_t *pt);
+#define RULE_OR(x) ((cherokee_rule_or_t *)(x))
 
-ret_t cherokee_dirs_table_clean    (cherokee_dirs_table_t *pt);
-ret_t cherokee_dirs_table_get      (cherokee_dirs_table_t *pt, cherokee_buffer_t *requested_url, cherokee_config_entry_t *plugin_entry, cherokee_buffer_t *web_directory);
-ret_t cherokee_dirs_table_add      (cherokee_dirs_table_t *pt, char *dir, cherokee_config_entry_t  *plugin_entry);
-ret_t cherokee_dirs_table_relink   (cherokee_dirs_table_t *pt);
+ret_t cherokee_rule_or_new (cherokee_rule_t **rule);
 
-#endif /* CHEROKEE_DIRS_TABLE_H */
+CHEROKEE_END_DECLS
+
+#endif /* CHEROKEE_RULE_OR_H */

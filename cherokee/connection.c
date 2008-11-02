@@ -66,7 +66,6 @@
 #include "http.h"
 #include "handler.h"
 #include "thread.h"
-#include "dirs_table.h"
 #include "handler_error.h"
 #include "buffer.h"
 #include "config_entry.h"
@@ -78,7 +77,6 @@
 #include "header.h"
 #include "header-protected.h"
 #include "iocache.h"
-#include "reqs_list.h"
 
 #define ENTRIES "core,connection"
 
@@ -88,39 +86,40 @@ cherokee_connection_new  (cherokee_connection_t **conn)
 {
 	CHEROKEE_NEW_STRUCT(n, connection);
 	   
-	INIT_LIST_HEAD(&n->list_entry);
+	INIT_LIST_HEAD (&n->list_node);
 
-	n->error_code         = http_ok;
-	n->phase              = phase_reading_header;
-	n->phase_return       = phase_nothing;
-	n->auth_type          = http_auth_nothing;
-	n->req_auth_type      = http_auth_nothing;
-	n->upgrade            = http_upgrade_nothing;
-	n->options            = conn_op_log_at_end;
-	n->handler            = NULL; 
-	n->encoder            = NULL;
-	n->logger_ref         = NULL;
-	n->keepalive          = 0;
-	n->range_start        = 0;
-	n->range_end          = 0;
-	n->vserver            = NULL;
-	n->arguments          = NULL;
-	n->realm_ref          = NULL;
-	n->mmaped             = NULL;
-	n->mmaped_len         = 0;
-	n->io_entry_ref       = NULL;
-	n->thread             = NULL;
-	n->rx                 = 0;	
-	n->tx                 = 0;
-	n->rx_partial         = 0;
-	n->tx_partial         = 0;
-	n->traffic_next       = 0;
-	n->validator          = NULL;
-	n->req_matched_ref    = NULL;
-	n->timeout            = -1;
-	n->polling_fd         = -1;
-	n->polling_multiple   = false;
-	n->uses_document_root = false;
+	n->error_code           = http_ok;
+	n->phase                = phase_reading_header;
+	n->phase_return         = phase_nothing;
+	n->auth_type            = http_auth_nothing;
+	n->req_auth_type        = http_auth_nothing;
+	n->upgrade              = http_upgrade_nothing;
+	n->options              = conn_op_log_at_end;
+	n->handler              = NULL; 
+	n->encoder              = NULL;
+	n->logger_ref           = NULL;
+	n->keepalive            = 0;
+	n->range_start          = 0;
+	n->range_end            = 0;
+	n->vserver              = NULL;
+	n->arguments            = NULL;
+	n->realm_ref            = NULL;
+	n->mmaped               = NULL;
+	n->mmaped_len           = 0;
+	n->io_entry_ref         = NULL;
+	n->thread               = NULL;
+	n->rx                   = 0;	
+	n->tx                   = 0;
+	n->rx_partial           = 0;
+	n->tx_partial           = 0;
+	n->traffic_next         = 0;
+	n->validator            = NULL;
+	n->regex_match_ovector  = NULL;
+	n->regex_match_ovecsize = NULL;
+	n->timeout              = -1;
+	n->polling_fd           = -1;
+	n->polling_multiple     = false;
+	n->uses_document_root   = false;
 
 	cherokee_buffer_init (&n->buffer);
 	cherokee_buffer_init (&n->header_buffer);
@@ -215,28 +214,29 @@ cherokee_connection_clean (cherokee_connection_t *conn)
 		conn->io_entry_ref = NULL;	
 	}
 
-	conn->timeout            = -1;
-	conn->phase              = phase_reading_header;
-	conn->phase_return       = phase_nothing;
-	conn->auth_type          = http_auth_nothing;
-	conn->req_auth_type      = http_auth_nothing;
-	conn->upgrade            = http_upgrade_nothing;
-	conn->options            = conn_op_log_at_end;
-	conn->error_code         = http_ok;
-	conn->range_start        = 0;
-	conn->range_end          = 0;
-	conn->logger_ref         = NULL;
-	conn->realm_ref          = NULL;
-	conn->mmaped             = NULL;
-	conn->mmaped_len         = 0;
-	conn->rx                 = 0;	
-	conn->tx                 = 0;
-	conn->rx_partial         = 0;	
-	conn->tx_partial         = 0;
-	conn->traffic_next       = 0;
-	conn->req_matched_ref    = NULL;
-	conn->polling_multiple   = false;
-	conn->uses_document_root = false;
+	conn->timeout              = -1;
+	conn->phase                = phase_reading_header;
+	conn->phase_return         = phase_nothing;
+	conn->auth_type            = http_auth_nothing;
+	conn->req_auth_type        = http_auth_nothing;
+	conn->upgrade              = http_upgrade_nothing;
+	conn->options              = conn_op_log_at_end;
+	conn->error_code           = http_ok;
+	conn->range_start          = 0;
+	conn->range_end            = 0;
+	conn->logger_ref           = NULL;
+	conn->realm_ref            = NULL;
+	conn->mmaped               = NULL;
+	conn->mmaped_len           = 0;
+	conn->rx                   = 0;	
+	conn->tx                   = 0;
+	conn->rx_partial           = 0;	
+	conn->tx_partial           = 0;
+	conn->traffic_next         = 0;
+	conn->regex_match_ovector  = NULL;
+	conn->regex_match_ovecsize = NULL;
+	conn->polling_multiple     = false;
+	conn->uses_document_root   = false;
 
 	if (conn->handler != NULL) {
 		cherokee_handler_free (conn->handler);
@@ -460,6 +460,11 @@ build_response_header (cherokee_connection_t *conn, cherokee_buffer_t *buffer)
 	
 	cherokee_http_code_copy (conn->error_code, buffer);
 	cherokee_buffer_add_str (buffer, CRLF);
+
+	/* Exit now if the handler already added all the headers
+	 */
+	if (HANDLER_SUPPORTS (conn->handler, hsupport_full_headers)) 
+		return;
 
 	/* Add the "Connection:" header
 	 */
@@ -739,6 +744,9 @@ cherokee_connection_set_cork (cherokee_connection_t *conn, cherokee_boolean_t en
 		setsockopt(fd, IPPROTO_TCP, TCP_NODELAY,  &on, sizeof on);
 		BIT_UNSET (conn->options, conn_op_tcp_cork);
 	}
+#else
+	UNUSED(conn);
+	UNUSED(enable);
 #endif
 
 	return ret_ok;
@@ -880,9 +888,8 @@ cherokee_connection_step (cherokee_connection_t *conn)
 
 	/* Need to 'read' from handler ?
 	 */
-	if (conn->buffer.len > 0) {
+	if (conn->buffer.len > 0)
 		return ret_ok;
-	}
 
 	/* Do a step in the handler
 	 */
@@ -903,9 +910,14 @@ cherokee_connection_step (cherokee_connection_t *conn)
 		return step_ret;
 	}
 
-	/* May be encode..
+	/* Return now if no encoding is needed.
 	 */
-	if (conn->encoder != NULL) {
+	if (conn->encoder == NULL)
+		return step_ret;
+
+	/* Encode handler output.
+	 */
+	{
 		ret_t ret;
 
 		/* Encode
@@ -914,7 +926,7 @@ cherokee_connection_step (cherokee_connection_t *conn)
 		case ret_eof:
 		case ret_eof_have_data:
 			ret = cherokee_encoder_flush (conn->encoder, &conn->buffer, &conn->encoder_buffer);			
-			step_ret = (conn->encoder_buffer.len == 0)? ret_eof : ret_eof_have_data;
+			step_ret = (conn->encoder_buffer.len == 0) ? ret_eof : ret_eof_have_data;
 			break;
 		default:
 			ret = cherokee_encoder_encode (conn->encoder, &conn->buffer, &conn->encoder_buffer);
@@ -1224,8 +1236,8 @@ cherokee_connection_build_local_directory_userdir (cherokee_connection_t *conn, 
 static ret_t
 get_range (cherokee_connection_t *conn, char *ptr, int ptr_len) 
 {
+	cuint_t num_len = 0;
 	CHEROKEE_TEMP(tmp, ptr_len+1);
-	int num_len = 0;
 
 	/* Read the start position
 	 */
@@ -1533,110 +1545,6 @@ cherokee_connection_send_switching (cherokee_connection_t *conn)
 	}
 
 	return ret_ok;
-}
-
-
-ret_t 
-cherokee_connection_get_dir_entry (cherokee_connection_t *conn, cherokee_dirs_table_t *dirs, cherokee_config_entry_t *config_entry)
-{
-	ret_t ret;
-
-	return_if_fail (dirs != NULL, ret_error);
-
-	/* Look for the handler "*_new" function
-	 */
-	ret = cherokee_dirs_table_get (dirs, &conn->request, config_entry, &conn->web_directory);
-	if (unlikely (ret == ret_error)) {
-		conn->error_code = http_internal_error;
-		return ret_error;
-	}	
-
-	/* If the request is exactly the directory entry, and it
-	 * doesn't end with a slash, it must be redirected. Eg:
-	 *
-	 * web_directory = "/blog"
-	 * request       = "/blog"
-	 *
-	 * It must be redirected to "/blog/"
-	 */
-	if ((conn->request.len > 1) &&
-	    (cherokee_buffer_end_char (&conn->request) != '/') &&
-	    (cherokee_buffer_cmp_buf (&conn->request, &conn->web_directory) == 0)) {
-		cherokee_buffer_ensure_size (&conn->redirect, conn->request.len + 4);
-		cherokee_buffer_add_buffer (&conn->redirect, &conn->request);
-		cherokee_buffer_add (&conn->redirect, "/", 1);
-
-		conn->error_code = http_moved_permanently;
-		return ret_error;
-	}
-
-	/* Set the refereces
-	 */
-	conn->realm_ref = config_entry->auth_realm;
-	conn->auth_type = config_entry->authentication;
-
-	return ret_ok;
-}
-
-
-ret_t 
-cherokee_connection_get_ext_entry (cherokee_connection_t *conn, cherokee_exts_table_t *exts, cherokee_config_entry_t *config_entry)
-{
-	ret_t ret;
-
-	return_if_fail (exts != NULL, ret_error);
-
-	/* Look in the extension table
-	 */
-	ret = cherokee_exts_table_get (exts, &conn->request, config_entry);
-	switch (ret) {
-	case ret_ok:
-		break;
-	case ret_not_found:
-		return ret_ok;
-	default:
-		conn->error_code = http_internal_error;
-		return ret_error;
-	}
-
-	/* Set the refereces
-	 */
-	conn->realm_ref = config_entry->auth_realm;
-	conn->auth_type = config_entry->authentication;
-
-	return ret_ok;
-}
-
-
-ret_t 
-cherokee_connection_get_req_entry (cherokee_connection_t *conn, cherokee_reqs_list_t *reqs, cherokee_config_entry_t *config_entry)
-{
-	ret_t ret;
-
-	return_if_fail (reqs != NULL, ret_error);
-
-	/* Look in the extension table
-	 */
-	ret = cherokee_reqs_list_get (reqs, &conn->request, config_entry, conn);
-	switch (ret) {
-	case ret_not_found:
-		break;
-	case ret_ok:
-		cherokee_buffer_clean (&conn->web_directory);
-		break;
-	case ret_error:
-		conn->error_code = http_internal_error;
-		return ret_error;
-	default:
-		SHOULDNT_HAPPEN;
-	}	
-
-	/* Set the refereces
-	 */
-	conn->realm_ref = config_entry->auth_realm;
-	conn->auth_type = config_entry->authentication;
-
-	return ret;
 }
 
 

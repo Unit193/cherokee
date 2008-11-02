@@ -1,4 +1,5 @@
 import re
+import types
 
 from Entry import *
 from Module import *
@@ -56,7 +57,7 @@ class Form:
         self._method       = method
         self._add_submit   = add_submit
         
-    def Render (self, content='', submit_props=''):
+    def Render (self, content='', submit_props='' ):
         keys = {'submit':       '',
                 'submit_props': submit_props,
                 'content':      content,
@@ -127,7 +128,7 @@ class FormHelper (WebComponent):
           var settings = {
              autoheight: true,
              alwaysOpen: true,
-             animated:   'easeslide'
+             animated:   false
           };
 
           open_tab = get_cookie('open_tab');
@@ -169,12 +170,11 @@ class FormHelper (WebComponent):
     def _get_auto_wrap_id (self):
         return "options_wrap_%d" % (FormHelper.options_wrap_num)
 
-    def AddTableOptions (self, table, title, cfg_key, options, *args, **kwargs):
-        try:
-            value = self._cfg[cfg_key].value
+    def InstanceOptions (self, cfg_key, options, *args, **kwargs):
+        value = self._cfg.get_val (cfg_key)
+        if value != None:
             ops = EntryOptions (cfg_key, options, selected=value, *args, **kwargs)
-        except AttributeError:
-            value = ''
+        else:
             ops = EntryOptions (cfg_key, options, *args, **kwargs)
 
         # Auto wrap
@@ -182,8 +182,13 @@ class FormHelper (WebComponent):
         FormHelper.options_wrap_num += 1
 
         ops = '<div id="%s" name="%s">%s</div>'%(auto_wrap_id, auto_wrap_id, ops)
+        return (ops, value, auto_wrap_id)
+
+    def AddTableOptions (self, table, title, cfg_key, options, *args, **kwargs):
+        entry, value, wrap = self.InstanceOptions (cfg_key, options, *args, **kwargs)
+
         label = self.Label(title, cfg_key)
-        table += (label, ops)
+        table += (label, entry)
 
         return value
 
@@ -194,8 +199,44 @@ class FormHelper (WebComponent):
 
         return self.AddTableOptions (table, title, cfg_key, options, *args, **kwargs)
 
+    def AddPropOptions_Ajax (self, table, title, cfg_key, options, comment, *args, **kwargs):
+        wrap_id = self._get_auto_wrap_id()
+        js = "options_changed('/ajax/update','%s','%s');" % (cfg_key, wrap_id)
+        kwargs['onChange'] = js
+
+        return self.AddPropOptions (table, title, cfg_key, options, comment, *args, **kwargs)
+
+    def AddPropOptions_Reload (self, table, title, cfg_key, options, comment, **kwargs):
+        assert (self.submit_url)
+
+        # The Table entry itself
+        auto_wrap_id = self._get_auto_wrap_id()
+        js = "options_changed('/ajax/update','%s','%s');" % (cfg_key, auto_wrap_id)
+        kwargs['onChange'] = js
+        name = self.AddPropOptions (table, title, cfg_key, options, comment, **kwargs)
+        
+        # If there was no cfg value, pick the first
+        if not name:
+            name = options[0][0]
+        
+        # Render active option
+        if name:
+            try:
+                # Inherit the errors, if any
+                kwargs['errors'] = self.errors
+                props_widget = module_obj_factory (name, self._cfg, cfg_key, 
+                                                   self.submit_url, **kwargs)
+                render = props_widget._op_render()
+            except IOError:
+                render = "Couldn't load the properties module: %s" % (name)
+        else:
+            render = ''
+        
+        return render
+
     def AddTableOptions_Reload (self, table, title, cfg_key, options, **kwargs):
         assert (self.submit_url)
+        print "DEPRECATED: AddTableOptions_Reload"
 
         # The Table entry itself
         auto_wrap_id = self._get_auto_wrap_id()
@@ -272,14 +313,30 @@ class FormHelper (WebComponent):
             self._error_add (cfg_key, '', error_msg)
     
     def ValidateChange_SingleKey (self, key, post, validation):
-        for regex, validation_func in validation:
+        for regex, tmp in validation:
+            pass_cfg = False
+
+            if type(tmp) == types.FunctionType:
+                validation_func = tmp
+
+            elif type(tmp) == types.TupleType:
+                validation_func = tmp[0]
+                for k in tmp[1:]:
+                    if k == 'cfg':
+                        pass_cfg = True
+                    else:
+                        print "UNKNOWN validation option:", k
+
             p = re.compile (regex)
             if p.match (key):
                 value = post.get_val(key)
                 if not value:
                     continue
                 try:
-                    tmp = validation_func (value)
+                    if pass_cfg:
+                        tmp = validation_func (value, self._cfg)
+                    else:
+                        tmp = validation_func (value)
                     post[key] = [tmp]
                 except ValueError, error:
                     self._error_add (key, value, error)
@@ -352,3 +409,44 @@ class FormHelper (WebComponent):
 
         for entry in to_be_deleted:
             del(self._cfg[entry])
+
+    def AddProp (self, table, title, cfg_key, entry, comment=None):
+        label = self.Label (title, cfg_key);
+        table += (label, entry, comment)
+
+    def AddPropEntry (self, table, title, cfg_key, comment=None, **kwargs):
+        entry = self.InstanceEntry (cfg_key, 'text', **kwargs)
+        self.AddProp (table, title, cfg_key, entry, comment)
+
+    def AddPropCheck (self, table, title, cfg_key, default, comment=None):
+        entry = self.InstanceCheckbox (cfg_key, default)
+        self.AddProp (table, title, cfg_key, entry, comment)
+
+    def AddPropOptions (self, table, title, cfg_key, options, comment=None, **kwargs):
+        entry, v, w = self.InstanceOptions (cfg_key, options, **kwargs)
+        self.AddProp (table, title, cfg_key, entry, comment)
+        return v
+
+
+class TableProps:
+    def __init__ (self):
+        self._content = []
+
+    def __add__ (self, (title, content, comment)):
+        self._content.append((title, content, comment))
+
+    def _render_entry (self, (title, content, comment)):
+        txt  = '<table class="tableprop">'
+        txt += '  <tr><th class="title">%s</th><td>%s</td></tr>' % (title, content)
+        txt += '  <tr><td colspan="2"><div class="comment">%s</div></td></tr>' % (comment)
+        txt += '</table>'
+        return txt
+
+    def __str__ (self):
+        tmp = []
+        for entry in self._content:
+            tmp.append (self._render_entry(entry))
+
+        txt = "<hr />".join(tmp)
+        return '<div class="tableprop_block">%s</div>' % (txt)
+                        

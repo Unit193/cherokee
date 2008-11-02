@@ -4,6 +4,9 @@ from Module import *
 
 from consts import *
 
+NOTE_SOURCE   = 'The source can be either a local interpreter or a remote host acting as an application server.'
+NOTE_BALANCER = 'Allow to select how the connections will be dispatched.'
+
 class ModuleBalancerGeneric (Module, FormHelper):
     def __init__ (self, cfg, prefix, submit_url, name):
         FormHelper.__init__ (self, name, cfg)
@@ -43,10 +46,10 @@ class ModuleBalancerGeneric (Module, FormHelper):
 
         # Options
         if self.allow_type_change:
-            table = Table(2)
-            self.AddTableOptions_Reload (table, "Information sources", 
-                                         "%s!type" % (self._prefix), 
-                                         BALANCER_TYPES)
+            table = TableProps()
+            self.AddPropOptions_Reload (table, "Information sources", 
+                                        "%s!type" % (self._prefix), 
+                                        BALANCER_TYPES, NOTE_SOURCE)
             txt += str(table)
 
         if self._type == 'host':
@@ -78,7 +81,7 @@ class ModuleBalancerGeneric (Module, FormHelper):
                     e_inte = self.InstanceEntry('%s!interpreter'%(pre), 'text')
                     e_envs = self._render_envs('%s!env'%(pre))
 
-                    t2 = Table(2)
+                    t2 = Table(2, title_left=1)
                     t2 += ('Host', e_host)
                     t2 += ('Interpreter', e_inte)
                     t2 += ('Environment', e_envs)
@@ -91,8 +94,8 @@ class ModuleBalancerGeneric (Module, FormHelper):
             # New Interpreter
             t2 = Table(3,1)
             t2 += ('Host', 'Interpreter', '')
-            e_host = self.InstanceEntry('new_host', 'text')
-            e_inte = self.InstanceEntry('new_interpreter', 'text')
+            e_host = self.InstanceEntry('new_host', 'text', size=25)
+            e_inte = self.InstanceEntry('new_interpreter', 'text', size=25)
             t2 += (e_host, e_inte, SUBMIT_ADD)
             txt += str(t2)
             
@@ -118,8 +121,8 @@ class ModuleBalancerGeneric (Module, FormHelper):
             txt += str(table)
 
         # Add new environment variable
-        en_env = self.InstanceEntry('balancer_new_env',     'text')
-        en_val = self.InstanceEntry('balancer_new_env_val', 'text')
+        en_env = self.InstanceEntry('balancer_new_env',     'text', size=20)
+        en_val = self.InstanceEntry('balancer_new_env_val', 'text', size=20)
         hidden = self.HiddenInput  ('balancer_new_env_key', cfg_key)
 
         table = Table(3,1)
@@ -142,7 +145,7 @@ class ModuleBalancerGeneric (Module, FormHelper):
         # Type
         if not self._type:
             self._type = self._get_type (post)
-        self._cfg['%s!type'] = self._type
+        self._cfg['%s!type'%(self._prefix)] = self._type
 
         # Addind new host/interpreter
         new_host        = post.pop('new_host')

@@ -3,8 +3,9 @@ from base import *
 MAGIC = "Cherokee rocks"
 
 CONF = """
-vserver!default!directory!/cgi-bin3!handler = cgi
-vserver!default!directory!/cgi-bin3!priority = 170
+vserver!default!rule!170!match = directory
+vserver!default!rule!170!match!directory = /cgi-bin3
+vserver!default!rule!170!handler = cgi
 """
 
 class Test (TestBase):

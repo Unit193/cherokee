@@ -1,8 +1,9 @@
 from base import *
 
 CONF = """
-vserver!default!directory!/post3!handler = common
-vserver!default!directory!/post3!priority = 310
+vserver!default!rule!310!match = directory
+vserver!default!rule!310!match!directory = /post3
+vserver!default!rule!310!handler = common
 """
 
 class Test (TestBase):

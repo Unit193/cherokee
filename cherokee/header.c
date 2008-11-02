@@ -728,7 +728,7 @@ cherokee_header_copy_version (cherokee_header_t *hdr, cherokee_buffer_t *buf)
 
 
 static ret_t 
-has_header_response (cherokee_header_t *hdr, cherokee_buffer_t *buffer, int tail_len)
+has_header_response (cherokee_header_t *hdr, cherokee_buffer_t *buffer)
 {
 	char *tmp;
 
@@ -744,7 +744,7 @@ has_header_response (cherokee_header_t *hdr, cherokee_buffer_t *buffer, int tail
 
 
 static ret_t 
-has_header_request (cherokee_header_t *hdr, cherokee_buffer_t *buffer, int tail_len)
+has_header_request (cherokee_header_t *hdr, cherokee_buffer_t *buffer, cuint_t tail_len)
 {
 	char   *start;
 	char   *end;
@@ -778,12 +778,6 @@ has_header_request (cherokee_header_t *hdr, cherokee_buffer_t *buffer, int tail_
 	 */
 	if (unlikely (buffer->len < 7)) {
 		return ret_not_found;
-	}
-
-	if (unlikely (tail_len < 0)) {
-		/* Bad parameter value 
-		 */
-		return ret_error;
 	}
 
 	/* Look for the starting point
@@ -820,7 +814,7 @@ cherokee_header_has_header (cherokee_header_t *hdr, cherokee_buffer_t *buffer, i
 
 	case header_type_response:
 	case header_type_basic:
-		return has_header_response (hdr, buffer, tail_len);
+		return has_header_response (hdr, buffer);
 
 	default:
 		SHOULDNT_HAPPEN;

@@ -2,10 +2,11 @@ import os
 from base import *
 
 CONF = """
-vserver!directoryindex3!directory!/!handler = common
-vserver!directoryindex3!directory_index = index.php,/super_test_index.php
 vserver!directoryindex3!document_root = %s
 vserver!directoryindex3!domain!1 = directoryindex3
+vserver!directoryindex3!directory_index = index.php,/super_test_index.php
+vserver!directoryindex3!rule!1!match = default
+vserver!directoryindex3!rule!1!handler = common
 """
 
 
@@ -29,7 +30,7 @@ class Test (TestBase):
         self.conf = CONF % (self.dr)
 
         for php in self.php_conf.split("\n"):
-            self.conf += "vserver!directoryindex3!%s\n" % (php)
+            self.conf += "vserver!directoryindex3!rule!%s\n" % (php)
 
     def JustBefore (self, www):
         self.WriteFile (self.dr, "super_test_index.php", 0666, """<?php

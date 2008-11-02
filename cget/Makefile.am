@@ -1,13 +1,13 @@
 ## Cherokee: src/cget/Makefile.am  -*- makefile -*-
 
 INCLUDES = -I. \
--DCHEROKEE_COMPILATION \
 -I${top_srcdir} \
 -I${top_srcdir}/cherokee \
 $(TLS_CFLAGS) \
 $(PTHREAD_CFLAGS) \
 $(LARGEFILE_CFLAGS)
 
+bin_PROGRAMS = cget
 
 cget_LDADD = \
 $(TLS_LIBS) \
@@ -19,4 +19,9 @@ main.c \
 proxy.h \
 proxy.c
 
-bin_PROGRAMS = cget
+# Man pag
+man_MANS = \
+cget.1
+
+EXTRA_DIST = \
+$(man_MANS)

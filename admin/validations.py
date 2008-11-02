@@ -32,6 +32,15 @@ def is_dir_formated (value):
             value = value[:-1]
     except:
         is_not_empty('')
+
+    # Replace double slashes
+    while True:
+        tmp = value.replace('//','/')
+        tmp = tmp.replace ('\\\\', '\\')
+        if tmp == value:
+            break
+        value = tmp
+
     return value
 
 def is_path_list (value):
@@ -77,33 +86,45 @@ def is_ipv6 (value):
         raise ValueError, 'Malformed IPv6'
     return value
     
-def is_local_dir_exists (value):
+def is_local_dir_exists (value, cfg):
     value = is_path (value)
 
-    if not os.path.exists(value):
+    chroot = cfg.get_val('server!chroot')
+    if chroot:
+        path = os.path.normpath (chroot + os.path.sep + value)
+    else:
+        path = value
+
+    if not os.path.exists(path):
         raise ValueError, 'Path does not exits'
 
-    if not os.path.isdir(value):
+    if not os.path.isdir(path):
         raise ValueError, 'Path is not a directory'
 
     return value
 
-def is_local_file_exists (value):
+def is_local_file_exists (value, cfg):
     value = is_path (value)
 
-    if not os.path.exists(value):
+    chroot = cfg.get_val('server!chroot')
+    if chroot:
+        path = os.path.normpath (chroot + os.path.sep + value)
+    else:
+        path = value
+
+    if not os.path.exists(path):
         raise ValueError, 'Path does not exits'
 
-    if not os.path.isfile(value):
+    if not os.path.isfile(path):
         raise ValueError, 'Path is not a regular file'
 
     return value
 
-def parent_is_dir (value):
+def parent_is_dir (value, cfg):
     value = is_path (value)
 
     dirname, filename = os.path.split(value)
-    is_local_dir_exists (dirname)
+    is_local_dir_exists (dirname, cfg)
 
     return value
 

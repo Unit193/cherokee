@@ -21,4 +21,11 @@
  extern cherokee_plugin_info_t cherokee_htpasswd_info; 
  extern cherokee_plugin_info_t cherokee_plain_info; 
  extern cherokee_plugin_info_t cherokee_htdigest_info; 
- extern cherokee_plugin_info_t cherokee_round_robin_info;
+ extern cherokee_plugin_info_t cherokee_round_robin_info; 
+ extern cherokee_plugin_info_t cherokee_directory_info; 
+ extern cherokee_plugin_info_t cherokee_extensions_info; 
+ extern cherokee_plugin_info_t cherokee_request_info; 
+ extern cherokee_plugin_info_t cherokee_header_info; 
+ extern cherokee_plugin_info_t cherokee_not_info; 
+ extern cherokee_plugin_info_t cherokee_and_info; 
+ extern cherokee_plugin_info_t cherokee_or_info;

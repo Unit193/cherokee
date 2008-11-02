@@ -7,11 +7,13 @@ USER   = "username"
 PASSWD = "itissecret"
 
 CONF = """
-vserver!default!directory!/digest2!auth = plain
-vserver!default!directory!/digest2!auth!methods = digest
-vserver!default!directory!/digest2!auth!realm = %s
-vserver!default!directory!/digest2!auth!passwdfile = %s
-vserver!default!directory!/digest2!priority = 910
+vserver!default!rule!910!match = directory
+vserver!default!rule!910!match!directory = /digest2
+vserver!default!rule!910!match!final = 0
+vserver!default!rule!910!auth = plain
+vserver!default!rule!910!auth!methods = digest
+vserver!default!rule!910!auth!realm = %s
+vserver!default!rule!910!auth!passwdfile = %s
 """
 
 class Test (TestBase):

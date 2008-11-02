@@ -24,36 +24,52 @@
 
 #include "common-internal.h"
 #include <signal.h>
+#include "init.h"
 #include "server.h"
 
 #ifdef HAVE_GETOPT_H
 # include <getopt.h>
 #endif
 
+/* Notices 
+ */
+#define APP_NAME        \
+	"Cherokee Web Server"
+
+#define APP_COPY_NOTICE \
+	"Written by Alvaro Lopez Ortega <alvaro@gnu.org>\n\n"                          \
+	"Copyright (C) 2001-2008 Alvaro Lopez Ortega.\n"                               \
+	"This is free software; see the source for copying conditions.  There is NO\n" \
+	"warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n"
+
+
+/* Default configuration
+ */
 #define DEFAULT_CONFIG_FILE CHEROKEE_CONFDIR "/cherokee.conf"
 
-#define GETOPT_OPT  "C:r:bhvg"
-#define CONFIG_FILE_HELP "[-C configfile] [-r] [-g]"
-
-#define BASIC_CONFIG                                                                         \
-	"vserver!default!directory!/!handler = common\n"                                     \
-	"vserver!default!directory!/!handler!iocache = 0\n"                                  \
-	"vserver!default!directory!/!priority = 1\n"                                         \
-	"vserver!default!directory!/icons!handler = file\n"                                  \
-	"vserver!default!directory!/icons!document_root = " CHEROKEE_ICONSDIR "\n"           \
-	"vserver!default!directory!/icons!priority = 2\n"                                    \
-	"vserver!default!directory!/cherokee_themes!handler = file\n"                        \
-	"vserver!default!directory!/cherokee_themes!document_root = " CHEROKEE_THEMEDIR "\n" \
-	"vserver!default!directory!/cherokee_themes!priority = 3\n"                          \
-	"icons!default = page_white.png\n"                                                   \
-	"icons!directory = folder.png\n"      	                                             \
-	"icons!parent_directory = arrow_turn_left.png\n"                                     \
+#define BASIC_CONFIG                                                      \
+	"vserver!default!rule!1!match = default\n"                        \
+	"vserver!default!rule!1!handler = common\n"                       \
+	"vserver!default!rule!1!handler!iocache = 0\n"                    \
+	"vserver!default!rule!2!match = directory\n"                      \
+	"vserver!default!rule!2!match!directory = /icons\n"               \
+	"vserver!default!rule!2!handler = file\n"                         \
+	"vserver!default!rule!2!document_root = " CHEROKEE_ICONSDIR "\n"  \
+	"vserver!default!rule!3!match = directory\n"                      \
+	"vserver!default!rule!3!match!directory = /cherokee_themes\n"     \
+	"vserver!default!rule!3!handler = file\n"                         \
+	"vserver!default!rule!3!document_root = " CHEROKEE_THEMEDIR "\n"  \
+	"icons!default = page_white.png\n"                                \
+	"icons!directory = folder.png\n"      	                          \
+	"icons!parent_directory = arrow_turn_left.png\n"                  \
 	"try_include = " CHEROKEE_CONFDIR "/mods-enabled\n"
 
 static cherokee_server_t  *srv           = NULL;
 static char               *config_file   = NULL;
 static char               *document_root = NULL;
 static cherokee_boolean_t  daemon_mode   = false;
+static cherokee_boolean_t  just_test     = false;
+static cuint_t             port          = 80;
 
 static ret_t common_server_initialization (cherokee_server_t *srv);
 
@@ -61,12 +77,14 @@ static ret_t common_server_initialization (cherokee_server_t *srv);
 static void
 panic_handler (int code)
 {
+	UNUSED(code);
 	cherokee_server_handle_panic (srv);
 }
 
 static void
 prepare_to_die (int code)
 {
+	UNUSED(code);
 	cherokee_server_handle_TERM (srv);
 }
 
@@ -83,10 +101,31 @@ restart_server_cb (cherokee_server_t *new_srv)
 static void
 restart_server (int code)
 {	
+	UNUSED(code);
 	printf ("Handling HUP signal..\n");
 	cherokee_server_handle_HUP (srv, restart_server_cb);
 }
 
+static void
+reopen_log_files (int code)
+{	
+	UNUSED(code);
+	printf ("Reopeing log files..\n");
+	cherokee_server_log_reopen (srv);
+}
+
+static ret_t
+test_configuration_file (void)
+{
+	ret_t   ret;
+	char   *config;
+
+	config = (config_file) ? config_file : DEFAULT_CONFIG_FILE;
+	ret = cherokee_server_read_config_file (srv, config);
+
+	PRINT_MSG ("Test on %s: %s\n", config, (ret == ret_ok)? "OK": "Failed"); 
+	return ret;
+}
 
 static ret_t
 common_server_initialization (cherokee_server_t *srv)
@@ -97,7 +136,10 @@ common_server_initialization (cherokee_server_t *srv)
         signal (SIGPIPE, SIG_IGN);
 #endif
 #ifdef SIGHUP
-        signal (SIGHUP,  restart_server);
+        signal (SIGHUP, restart_server);
+#endif
+#ifdef SIGUSR1
+        signal (SIGUSR1, reopen_log_files);
 #endif
 #ifdef SIGSEGV
         signal (SIGSEGV, panic_handler);
@@ -109,8 +151,10 @@ common_server_initialization (cherokee_server_t *srv)
 	if (document_root != NULL) {
 		cherokee_buffer_t tmp = CHEROKEE_BUF_INIT;
 
-		cherokee_buffer_add_va (&tmp, "vserver!default!document_root = %s\n"
-					BASIC_CONFIG, document_root);
+		cherokee_buffer_add_va (&tmp, 
+					"server!port = %d\n"
+					"vserver!default!document_root = %s\n"
+					BASIC_CONFIG, port, document_root);
 
 		ret = cherokee_server_read_config_string (srv, &tmp);
 		cherokee_buffer_mrproper (&tmp);
@@ -131,7 +175,7 @@ common_server_initialization (cherokee_server_t *srv)
 			return ret_error;
 		}
 	}
-		
+
 	if (daemon_mode)
 		cherokee_server_daemonize (srv);
 
@@ -144,31 +188,62 @@ common_server_initialization (cherokee_server_t *srv)
 	return ret_ok;
 }
 
+static void
+print_help (void)
+{
+	printf (APP_NAME "\n"
+		"Usage: cherokee [options]\n\n"
+		"  -h,  --help                   Print this help\n"
+		"  -V,  --version                Print version and exit\n"
+		"  -t,  --test                   Just test configuration file\n"
+		"  -d,  --detach                 Detach from the console\n"
+		"  -C,  --config=PATH            Configuration file\n"
+		"  -p,  --port=NUM               TCP port number\n"
+		"  -r,  --documentroot=PATH      Server directory content\n\n"
+		"Report bugs to " PACKAGE_BUGREPORT "\n");
+}
 
 static void
 process_parameters (int argc, char **argv)
 {
 	int c;
 
-	while ((c = getopt(argc, argv, GETOPT_OPT)) != -1) {
+	struct option long_options[] = {
+		{"help",         no_argument,       NULL, 'h'},
+		{"version",      no_argument,       NULL, 'V'},
+		{"detach",       no_argument,       NULL, 'd'},
+		{"test",         no_argument,       NULL, 't'},
+		{"port",         required_argument, NULL, 'p'},
+		{"documentroot", required_argument, NULL, 'r'},
+		{"config",       required_argument, NULL, 'C'},
+		{NULL, 0, NULL, 0}
+	};
+
+	while ((c = getopt_long(argc, argv, "hVdtp:r:C:", long_options, NULL)) != -1) {
 		switch(c) {
 		case 'C':
 			config_file = strdup(optarg);
 			break;
-		case 'b':
+		case 'd':
 			daemon_mode = true;
 			break;
 		case 'r':
 			document_root = strdup(optarg);
 			break;
-		case 'v':
-			fprintf (stdout, "%s\n", PACKAGE_STRING);
-			exit(1);
+		case 'p':
+			port = atoi(optarg);
 			break;
+		case 't':
+			just_test = true;
+			break;
+		case 'V':
+			printf (APP_NAME " " PACKAGE_VERSION "\n" APP_COPY_NOTICE);
+			exit(0);
 		case 'h':
+		case '?':
 		default:
-			fprintf (stderr, "Usage: %s " CONFIG_FILE_HELP " [-b] -h -v\n", argv[0]);
-			exit(1);
+			print_help();
+			exit(0);
 		}
 	}
 }
@@ -179,14 +254,17 @@ main (int argc, char **argv)
 {
 	ret_t ret;
 
-#ifdef _WIN32
-	init_win32();
-#endif	
+	cherokee_init();
 
 	ret = cherokee_server_new (&srv);
 	if (ret < ret_ok) return 1;
 	
 	process_parameters (argc, argv);
+	
+	if (just_test) {
+		ret = test_configuration_file();
+		exit (ret);
+	}
 
 	ret = common_server_initialization (srv);
 	if (ret < ret_ok) return 2;

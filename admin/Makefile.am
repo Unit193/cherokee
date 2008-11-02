@@ -15,6 +15,9 @@ generated_DATA = \
 $(PY_PRE:.py.pre=.py)
 
 adminpydir = "$(datadir)/cherokee/admin"
+adminpy_SCRIPTS = \
+server.py 
+
 adminpy_DATA = \
 consts.py \
 Entry.py \
@@ -35,7 +38,7 @@ PageError.py \
 PageFeedback.py \
 Table.py \
 Theme.py \
-VirtualServer.py \
+RuleList.py \
 Module.py \
 ModuleFile.py \
 ModuleDirlist.py \
@@ -57,9 +60,12 @@ ModuleHtpasswd.py \
 ModuleMysql.py \
 ModulePam.py \
 ModuleRoundRobin.py \
+ModuleDefault.py \
+ModuleRequest.py \
+ModuleDirectory.py \
+ModuleExtensions.py \
 config.py \
 pyscgi.py \
-server.py \
 validations.py \
 CherokeeManagement.py
 
@@ -86,6 +92,7 @@ feedback.help.html
 EXTRA_DIST = \
 $(PY_PRE) \
 $(adminpy_DATA) \
+$(adminpy_SCRIPTS) \
 $(adminhelp_DATA)
 
 CLEANFILES = \

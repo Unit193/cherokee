@@ -22,6 +22,13 @@
  void PLUGIN_INIT_NAME(plain) (cherokee_plugin_loader_t *loader); 
  void PLUGIN_INIT_NAME(htdigest) (cherokee_plugin_loader_t *loader); 
  void PLUGIN_INIT_NAME(round_robin) (cherokee_plugin_loader_t *loader); 
+ void PLUGIN_INIT_NAME(directory) (cherokee_plugin_loader_t *loader); 
+ void PLUGIN_INIT_NAME(extensions) (cherokee_plugin_loader_t *loader); 
+ void PLUGIN_INIT_NAME(request) (cherokee_plugin_loader_t *loader); 
+ void PLUGIN_INIT_NAME(header) (cherokee_plugin_loader_t *loader); 
+ void PLUGIN_INIT_NAME(not) (cherokee_plugin_loader_t *loader); 
+ void PLUGIN_INIT_NAME(and) (cherokee_plugin_loader_t *loader); 
+ void PLUGIN_INIT_NAME(or) (cherokee_plugin_loader_t *loader); 
 
   
  add_static_entry (loader, "error_redir", PLUGIN_INFO_PTR(error_redir)); 
@@ -47,6 +54,13 @@
  add_static_entry (loader, "plain", PLUGIN_INFO_PTR(plain)); 
  add_static_entry (loader, "htdigest", PLUGIN_INFO_PTR(htdigest)); 
  add_static_entry (loader, "round_robin", PLUGIN_INFO_PTR(round_robin)); 
+ add_static_entry (loader, "directory", PLUGIN_INFO_PTR(directory)); 
+ add_static_entry (loader, "extensions", PLUGIN_INFO_PTR(extensions)); 
+ add_static_entry (loader, "request", PLUGIN_INFO_PTR(request)); 
+ add_static_entry (loader, "header", PLUGIN_INFO_PTR(header)); 
+ add_static_entry (loader, "not", PLUGIN_INFO_PTR(not)); 
+ add_static_entry (loader, "and", PLUGIN_INFO_PTR(and)); 
+ add_static_entry (loader, "or", PLUGIN_INFO_PTR(or)); 
 
   
  PLUGIN_INIT_NAME(error_redir)(loader); 
@@ -71,4 +85,11 @@
  PLUGIN_INIT_NAME(htpasswd)(loader); 
  PLUGIN_INIT_NAME(plain)(loader); 
  PLUGIN_INIT_NAME(htdigest)(loader); 
- PLUGIN_INIT_NAME(round_robin)(loader);
+ PLUGIN_INIT_NAME(round_robin)(loader); 
+ PLUGIN_INIT_NAME(directory)(loader); 
+ PLUGIN_INIT_NAME(extensions)(loader); 
+ PLUGIN_INIT_NAME(request)(loader); 
+ PLUGIN_INIT_NAME(header)(loader); 
+ PLUGIN_INIT_NAME(not)(loader); 
+ PLUGIN_INIT_NAME(and)(loader); 
+ PLUGIN_INIT_NAME(or)(loader);

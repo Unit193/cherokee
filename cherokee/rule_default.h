@@ -22,29 +22,23 @@
  * USA
  */
 
-#ifndef CHEROKEE_REQS_LIST_ENTRY_H
-#define CHEROKEE_REQS_LIST_ENTRY_H
+#if !defined (CHEROKEE_INSIDE_CHEROKEE_H) && !defined (CHEROKEE_COMPILATION)
+# error "Only <cherokee/cherokee.h> can be included directly, this file may disappear or change contents."
+#endif
 
-#include "common-internal.h"
-#include "config_entry.h"
+#ifndef CHEROKEE_RULE_DEFAULT_H
+#define CHEROKEE_RULE_DEFAULT_H
 
-#define OVECTOR_LEN 10
+#include <cherokee/common.h>
+#include <cherokee/rule.h>
 
+CHEROKEE_BEGIN_DECLS
 
-typedef struct {
-	cherokee_config_entry_t  base_entry;
-	cherokee_buffer_t        request;
-	cherokee_list_t          list_node;
-	
-	int                      ovector[OVECTOR_LEN];
-	int                      ovecsize;
-} cherokee_reqs_list_entry_t; 
+typedef cherokee_rule_t cherokee_rule_default_t;
+#define RULE_DEFAULT(x) ((cherokee_rule_default_t *)(x))
 
-#define RQ_ENTRY(x) ((cherokee_reqs_list_entry_t *)(x))
+ret_t cherokee_rule_default_new (cherokee_rule_t **rule);
 
+CHEROKEE_END_DECLS
 
-ret_t cherokee_reqs_list_entry_new  (cherokee_reqs_list_entry_t **entry);
-ret_t cherokee_reqs_list_entry_free (cherokee_reqs_list_entry_t  *entry);
-
-
-#endif /* CHEROKEE_REQS_LIST_ENTRY_H */
+#endif /* CHEROKEE_RULE_DEFAULT_H */

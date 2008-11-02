@@ -1,20 +1,9 @@
 ## Cherokee: cherokee/Makefile.am  -*- makefile -*-
 
 INCLUDES = \
--DPCRE_STATIC \
+-I${top_srcdir} \
 $(TLS_CFLAGS) \
-$(PTHREAD_CFLAGS) \
--I$(top_srcdir) \
--DCHEROKEE_COMPILATION \
--DCHEROKEE_PLUGINDIR="\"$(plugindir)\"" \
--DCHEROKEE_DEPSDIR=\""$(cherokeedepsdir)"\" \
--DCHEROKEE_DATADIR=\""$(cherokeedatadir)"\" \
--DCHEROKEE_VAR_RUN=\""$(localstatedir)/run"\" \
--DCHEROKEE_CONFDIR=\""$(sysconfdir)/cherokee"\" \
--DCHEROKEE_SRV_PATH=\""$(prefix)/sbin/cherokee"\" \
--DCHEROKEE_ICONSDIR=\""$(prefix)/share/cherokee/icons"\" \
--DCHEROKEE_THEMEDIR=\""$(prefix)/share/cherokee/themes"\" \
--DCHEROKEE_PANIC_PATH=\""$(prefix)/bin/cherokee-panic"\" 
+$(PTHREAD_CFLAGS)
 
 #
 # Scripts
@@ -99,6 +88,125 @@ $(module_ldflags_w32)
 
 
 #
+# Rule directory
+#
+rule_directory = \
+rule_directory.c \
+rule_directory.h
+
+libplugin_directory_la_LDFLAGS = $(module_ldflags)  
+libplugin_directory_la_SOURCES = $(rule_directory)
+
+if STATIC_RULE_DIRECTORY
+static_rule_directory_src = $(rule_directory)
+else
+dynamic_rule_directory_lib = libplugin_directory.la
+endif
+
+
+#
+# Rule extensions
+#
+rule_extensions = \
+rule_extensions.c \
+rule_extensions.h
+
+libplugin_extensions_la_LDFLAGS = $(module_ldflags)  
+libplugin_extensions_la_SOURCES = $(rule_extensions)
+
+if STATIC_RULE_EXTENSIONS
+static_rule_extensions_src = $(rule_extensions)
+else
+dynamic_rule_extensions_lib = libplugin_extensions.la
+endif
+
+
+#
+# Rule request
+#
+rule_request = \
+rule_request.c \
+rule_request.h
+
+libplugin_request_la_LDFLAGS = $(module_ldflags)  
+libplugin_request_la_SOURCES = $(rule_request)
+
+if STATIC_RULE_REQUEST
+static_rule_request_src = $(rule_request)
+else
+dynamic_rule_request_lib = libplugin_request.la
+endif
+
+
+#
+# Rule header
+#
+rule_header = \
+rule_header.c \
+rule_header.h
+
+libplugin_header_la_LDFLAGS = $(module_ldflags)  
+libplugin_header_la_SOURCES = $(rule_header)
+
+if STATIC_RULE_HEADER
+static_rule_header_src = $(rule_header)
+else
+dynamic_rule_header_lib = libplugin_header.la
+endif
+
+
+#
+# Rule not
+#
+rule_not = \
+rule_not.c \
+rule_not.h
+
+libplugin_not_la_LDFLAGS = $(module_ldflags)  
+libplugin_not_la_SOURCES = $(rule_not)
+
+if STATIC_RULE_NOT
+static_rule_not_src = $(rule_not)
+else
+dynamic_rule_not_lib = libplugin_not.la
+endif
+
+
+#
+# Rule and
+#
+rule_and = \
+rule_and.c \
+rule_and.h
+
+libplugin_and_la_LDFLAGS = $(module_ldflags)  
+libplugin_and_la_SOURCES = $(rule_and)
+
+if STATIC_RULE_AND
+static_rule_and_src = $(rule_and)
+else
+dynamic_rule_and_lib = libplugin_and.la
+endif
+
+
+#
+# Rule or
+#
+rule_or = \
+rule_or.c \
+rule_or.h
+
+libplugin_or_la_LDFLAGS = $(module_ldflags)  
+libplugin_or_la_SOURCES = $(rule_or)
+
+if STATIC_RULE_OR
+static_rule_or_src = $(rule_or)
+else
+dynamic_rule_or_lib = libplugin_or.la
+endif
+
+
+#
 # Handler server_info
 #
 handler_server_info = \
@@ -106,8 +214,9 @@ handler_server_info.c \
 handler_server_info.h \
 logo.inc 
 
-libplugin_server_info_la_LDFLAGS = $(module_ldflags) -lcherokee-config
+libplugin_server_info_la_LDFLAGS = $(module_ldflags)
 libplugin_server_info_la_SOURCES = $(handler_server_info)
+libplugin_server_info_la_LIBADD  = libcherokee-config.la
 
 if STATIC_HANDLER_SERVER_INFO
 static_handler_server_info_src = $(handler_server_info)
@@ -700,6 +809,8 @@ $(poll_select_src) \
 $(poll_win32_src) \
 $(win32_src) \
 cherokee.h \
+init.h \
+init.c \
 avl.h \
 avl.c \
 avl_r.h \
@@ -710,6 +821,8 @@ list.h \
 list.c \
 ncpus.h \
 ncpus.c \
+cacheline.h \
+cacheline.c \
 crc32.h \
 crc32.c \
 macros.h \
@@ -798,6 +911,14 @@ endif
 
 
 libcherokee_server_la_SOURCES = \
+$(static_rule_directory_src) \
+$(static_rule_extensions_src) \
+$(static_rule_request_src) \
+$(static_rule_header_src) \
+$(static_rule_not_src) \
+$(static_rule_and_src) \
+$(static_rule_or_src) \
+\
 $(static_handler_file_src) \
 $(static_handler_admin_src) \
 $(static_handler_dirlist_src) \
@@ -835,18 +956,14 @@ connection-protected.h \
 connection.c \
 handler.h \
 handler.c \
+rule.h \
+rule.c \
+rule_list.h \
+rule_list.c \
+rule_default.h \
+rule_default.c \
 config_entry.h \
 config_entry.c \
-virtual_entries.h \
-virtual_entries.c \
-dirs_table.h \
-dirs_table.c \
-exts_table.h \
-exts_table.c \
-reqs_list.h \
-reqs_list.c \
-reqs_list_entry.h \
-reqs_list_entry.c \
 server-protected.h \
 server.h \
 server.c \
@@ -896,23 +1013,26 @@ admin_client.c
 libcherokeeincludedir = $(includedir)/cherokee
 libcherokeeinclude_HEADERS = \
 cherokee.h \
+\
 macros.h \
 common.h \
+init.h \
 util.h \
 version.h \
-avl.h \
-avl_r.h \
 buffer.h\
 fdpoll.h \
 http.h \
-mime.h \
-mime_entry.h \
 list.h \
+mime_entry.h \
+mime.h \
 url.h \
 header.h \
 resolv_cache.h \
 post.h \
+trace.h \
 \
+config_node.h \
+config_entry.h \
 server.h \
 module.h \
 logger.h \
@@ -922,12 +1042,16 @@ connection.h \
 plugin.h \
 plugin_loader.h \
 nonce.h \
-config_node.h \
+rule.h \
+validator.h \
 \
 downloader.h \
 \
 admin_client.h \
-connection_info.h
+connection_info.h \
+\
+avl.h \
+avl_r.h
 
 
 #
@@ -935,6 +1059,13 @@ connection_info.h
 #
 plugindir = "$(libdir)/cherokee"
 plugin_LTLIBRARIES = \
+$(dynamic_rule_directory_lib) \
+$(dynamic_rule_extensions_lib) \
+$(dynamic_rule_request_lib) \
+$(dynamic_rule_header_lib) \
+$(dynamic_rule_not_lib) \
+$(dynamic_rule_and_lib) \
+$(dynamic_rule_or_lib) \
 $(dynamic_handler_cgi_lib) \
 $(dynamic_handler_phpcgi_lib) \
 $(dynamic_handler_server_info_lib) \
@@ -995,7 +1126,7 @@ cherokee_admin_LDFLAGS = $(cherokee_LDFLAGS)
 #
 # Log rotate utility
 #
-bin_PROGRAMS = cherokee_tweak
+bin_PROGRAMS = cherokee-tweak
 
 cherokee_tweak_SOURCES = main_tweak.c
 cherokee_tweak_LDADD = \

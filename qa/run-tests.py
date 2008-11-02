@@ -16,6 +16,7 @@ import signal
 import shutil
 import thread
 import string
+import random
 import tempfile
 
 from base import *
@@ -23,26 +24,27 @@ from conf import *
 from help import *
 
 # Configuration parameters
-num      = 1
-thds     = 1
-pause    = 0
-tpause   = 0.0
-ssl      = False
-clean    = True
-kill     = True
-quiet    = False
-valgrind = None
-strace   = False
-port     = None
-method   = None
-nobody   = False
-fcgi     = True
-log      = False
-help     = False
-memproc  = False
+num       = 1
+thds      = 1
+pause     = 0
+tpause    = 0.0
+ssl       = False
+clean     = True
+kill      = True
+quiet     = False
+valgrind  = None
+strace    = False
+port      = None
+method    = None
+nobody    = False
+fcgi      = True
+log       = False
+help      = False
+memproc   = False
+randomize = False
 
-server   = CHEROKEE_PATH
-delay    = SERVER_DELAY
+server    = CHEROKEE_PATH
+delay     = SERVER_DELAY
 
 # Make the DocumentRoot directory
 www = tempfile.mkdtemp ("cherokee_www")
@@ -70,25 +72,26 @@ if len(files) == 0:
 
 # Process the parameters
 for p in param:
-    if   p     == '-c': clean    = False
-    elif p     == '-k': kill     = False
-    elif p     == '-f': fcgi     = False    
-    elif p     == '-q': quiet    = True
-    elif p     == '-s': ssl      = True
-    elif p     == '-x': strace   = True
-    elif p     == '-b': nobody   = True
-    elif p     == '-l': log      = True
-    elif p     == '-h': help     = True
-    elif p     == '-o': memproc  = True
-    elif p[:2] == '-n': num      = int(p[2:])
-    elif p[:2] == '-t': thds     = int(p[2:])
-    elif p[:2] == '-p': port     = int(p[2:])
-    elif p[:2] == '-r': delay    = int(p[2:])
-    elif p[:2] == '-j': tpause   = float(p[2:])
-    elif p[:2] == '-d': pause    = p[2:]
-    elif p[:2] == '-m': method   = p[2:]
-    elif p[:2] == '-e': server   = p[2:]
-    elif p[:2] == '-v': valgrind = p[2:]
+    if   p     == '-c': clean     = False
+    elif p     == '-k': kill      = False
+    elif p     == '-f': fcgi      = False    
+    elif p     == '-q': quiet     = True
+    elif p     == '-s': ssl       = True
+    elif p     == '-x': strace    = True
+    elif p     == '-b': nobody    = True
+    elif p     == '-l': log       = True
+    elif p     == '-h': help      = True
+    elif p     == '-o': memproc   = True
+    elif p     == '-a': randomize = True
+    elif p[:2] == '-n': num       = int(p[2:])
+    elif p[:2] == '-t': thds      = int(p[2:])
+    elif p[:2] == '-p': port      = int(p[2:])
+    elif p[:2] == '-r': delay     = int(p[2:])
+    elif p[:2] == '-j': tpause    = float(p[2:])
+    elif p[:2] == '-d': pause     = p[2:]
+    elif p[:2] == '-m': method    = p[2:]
+    elif p[:2] == '-e': server    = p[2:]
+    elif p[:2] == '-v': valgrind  = p[2:]
     else:
         help = True
 
@@ -127,28 +130,32 @@ server!listen = 127.0.0.1
 server!panic_action = %s
 server!encoder!gzip!allow = txt
 server!pid_file = %s
-server!mime_files = %s
 server!module_dir = %s
 server!module_deps = %s
 
 vserver!default!document_root = %s
 vserver!default!directory_index = test_index.html,test_index.php,/super_test_index.php
-vserver!default!directory!/!handler = common
-vserver!default!directory!/!priority = 1
-""" % (PORT, panic, pid, CHEROKEE_MIME, CHEROKEE_MODS, CHEROKEE_DEPS, www)
+vserver!default!rule!1!match = default
+vserver!default!rule!1!handler = common
+""" % (PORT, panic, pid, CHEROKEE_MODS, CHEROKEE_DEPS, www)
 
-PHP_FCGI = """extensions!php!handler = fcgi
-extensions!php!priority = 10000
-extensions!php!handler!balancer = round_robin
-extensions!php!handler!balancer!type = interpreter
-extensions!php!handler!balancer!local1!host = localhost:%d
-extensions!php!handler!balancer!local1!env!PHP_FCGI_CHILDREN = 5
-extensions!php!handler!balancer!local1!interpreter = %s -b %d""" % (PHP_FCGI_PORT, look_for_php(), PHP_FCGI_PORT)
+PHP_FCGI = """\
+10000!match = extensions
+10000!match!extensions = php
+10000!match!final = 0
+10000!handler = fcgi
+10000!handler!balancer = round_robin
+10000!handler!balancer!type = interpreter
+10000!handler!balancer!local1!host = localhost:%d
+10000!handler!balancer!local1!env!PHP_FCGI_CHILDREN = 5
+10000!handler!balancer!local1!interpreter = %s -b %d""" % (PHP_FCGI_PORT, look_for_php(), PHP_FCGI_PORT)
 
-PHP_CGI = """extensions!php!handler = phpcgi
-extensions!php!priority = 10000
-extensions!php!handler!interpreter = %s""" % (look_for_php())
-
+PHP_CGI = """\
+10000!match = extensions
+10000!match!extensions = php
+10000!match!final = 0
+10000!handler = phpcgi
+10000!handler!interpreter = %s""" % (look_for_php())
 
 if fcgi:
     php_ext = PHP_FCGI
@@ -156,7 +163,7 @@ else:
     php_ext = PHP_CGI
 
 for php in php_ext.split("\n"):
-    CONF_BASE += "vserver!default!%s\n" % (php)
+    CONF_BASE += "vserver!default!rule!%s\n" % (php)
 
 if method:
     CONF_BASE += "server!poll_method = %s" % (method)
@@ -234,7 +241,6 @@ if port is None:
         print "Server"
         print_key ('PID', str(pid));
         print_key ('Path', CHEROKEE_PATH)
-        print_key ('Mime', CHEROKEE_MIME)
         print_key ('Mods', CHEROKEE_MODS)
         print_key ('Deps', CHEROKEE_DEPS)
         print
@@ -290,6 +296,16 @@ def mainloop_iterator(objs):
     time.sleep (.2)
 
     for n in range(num):
+        # Randomize files
+        if randomize:
+            for n in range(len(objs))*2:
+                o = random.randint(0,len(objs)-1)
+                t = random.randint(0,len(objs)-1)
+                tmp = objs[t]
+                objs[t] = objs[o]
+                objs[o] = tmp
+
+        # Iterate
         for obj in objs:
             go_ahead = obj.Precondition()
 
