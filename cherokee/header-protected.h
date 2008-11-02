@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2006 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2008 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -56,6 +56,7 @@ struct cherokee_header {
 
 	/* Properties
 	 */
+	cherokee_header_type_t  type;
 	cherokee_http_version_t version;
 	cherokee_http_method_t  method;
 	cherokee_http_t         response;
@@ -75,13 +76,12 @@ struct cherokee_header {
 	 */
 	cherokee_buffer_t      *input_buffer;
 	crc_t                   input_buffer_crc;
-	uint32_t                input_header_start;
 	uint32_t                input_header_len;
-
 };
 
 
 #define HDR_METHOD(h)   (HDR(h)->method)
+#define HDR_VERSION(h)  (HDR(h)->version)
 #define HDR_RESPONSE(h) (HDR(h)->response)
 
 

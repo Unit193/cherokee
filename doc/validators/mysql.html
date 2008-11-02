@@ -1,0 +1,81 @@
+<html>
+<head>
+    <title>Mysql Validator</title>
+    <link href="../media/css/documentation.css" type="text/css" rel="stylesheet" />
+</head>
+
+<body>
+    
+    
+    <h1>Mysql Validator</h1>
+    
+    <p>The MySQL validator allows you to authenticate a user against a MySQL database.</p>
+<div class="section" id="parameters">
+<h1>Parameters</h1>
+<table class="docutils">
+<colgroup>
+<col width="34%" />
+<col width="66%" />
+</colgroup>
+<thead valign="bottom">
+<tr><th class="head">Parameter</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr><td><tt class="docutils literal"><span class="pre">host</span></tt></td>
+<td>Optional. The running that is running the MySQL
+database server. Default: <tt class="docutils literal"><span class="pre">localhost</span></tt>.</td>
+</tr>
+<tr><td><tt class="docutils literal"><span class="pre">port</span></tt></td>
+<td>Optional. The port that MySQL is listening on.
+Default: <tt class="docutils literal"><span class="pre">3306</span></tt>.</td>
+</tr>
+<tr><td><tt class="docutils literal"><span class="pre">unix_socket</span></tt></td>
+<td>Optional. A Unix socket.</td>
+</tr>
+<tr><td><tt class="docutils literal"><span class="pre">user</span></tt></td>
+<td>The MySQL user to authenticate as.</td>
+</tr>
+<tr><td><tt class="docutils literal"><span class="pre">passwd</span></tt></td>
+<td>The MySQL user password to use.</td>
+</tr>
+<tr><td><tt class="docutils literal"><span class="pre">database</span></tt></td>
+<td>Required. The MySQL database to select upon
+connection.</td>
+</tr>
+<tr><td><tt class="docutils literal"><span class="pre">query</span></tt></td>
+<td>Required. The query to execute to authenticate
+the HTTP user.</td>
+</tr>
+<tr><td><tt class="docutils literal"><span class="pre">use_md5_passwd</span></tt></td>
+<td>Optional. The passwords in the database table are
+hashed with MD5.  Default: <tt class="docutils literal"><span class="pre">0</span></tt>.</td>
+</tr>
+</tbody>
+</table>
+<p>The <tt class="docutils literal"><span class="pre">query</span></tt> parameter is given an argument <tt class="docutils literal"><span class="pre">${user}</span></tt> so you can query
+against it.  Take a look at the following example:</p>
+<pre class="literal-block">
+SELECT password FROM auth_users WHERE username = '${user}'
+</pre>
+<p>The query must return one row with one column as the password.  The name of the
+column does not matter.</p>
+</div>
+<div class="section" id="compatibility">
+<h1>Compatibility</h1>
+<p>This validator is compatible with both <strong>basic</strong> and <strong>digest</strong> schemes.</p>
+<div class="section" id="example">
+<h2>Example</h2>
+<pre class="literal-block">
+vserver!default!directory!/members!handler = mysql
+vserver!default!directory!/members!handler!user = brian
+</pre>
+</div>
+</div>
+
+    
+
+    
+</body>
+</html>

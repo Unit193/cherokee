@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2006 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2008 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -35,24 +35,80 @@ cherokee_matching_list_new (cherokee_matching_list_t **mlist)
 	INIT_LIST_HEAD(&n->list_allow);
 	INIT_LIST_HEAD(&n->list_deny);
 	   
-	n->type = default_allow;
+	n->type = default_deny;
 
 	*mlist = n;
 	return ret_ok;
 }
 
 
-static void
-free_list (list_t *list)
+static ret_t 
+matching_list_add_allow_cb  (char *val, void *data)
 {
-	list_t *i, *tmp;
+	return cherokee_matching_list_add_allow (MLIST(data), val);
+}
+
+
+static ret_t 
+matching_list_add_deny_cb  (char *val, void *data)
+{
+	return cherokee_matching_list_add_deny (MLIST(data), val);
+}
+
+
+ret_t 
+cherokee_matching_list_configure (cherokee_matching_list_t *mlist, cherokee_config_node_t *config)
+{
+	ret_t              ret;
+	ret_t              ret2;
+	cherokee_buffer_t *buf;
+
+	/* Allow and Deny lists
+	 */
+	ret = cherokee_config_node_read_list (config, "allow", matching_list_add_allow_cb, mlist);
+	if ((ret != ret_ok) && (ret != ret_not_found)) return ret;
+
+	ret2 = cherokee_config_node_read_list (config, "deny", matching_list_add_deny_cb, mlist);
+	if ((ret != ret_ok) && (ret != ret_not_found)) return ret;
+
+	if ((ret == ret_ok) && (ret2 == ret_not_found))
+		mlist->type = default_deny;
+	if ((ret == ret_not_found) && (ret2 == ret_ok))
+		mlist->type = default_allow;
+
+	/* Type
+	 */
+	ret = cherokee_config_node_read (config, "type", &buf);
+	if (ret == ret_ok) {
+		if (! cherokee_buffer_cmp_str (buf, "default_allow")) {
+			mlist->type = default_allow;
+		} else if (! cherokee_buffer_cmp_str (buf, "default_deny")) {
+			mlist->type = default_deny;
+		} else if (! cherokee_buffer_cmp_str (buf, "deny_allow")) {
+			mlist->type = deny_allow;
+		} else if (! cherokee_buffer_cmp_str (buf, "allow_deny")) {
+			mlist->type = allow_deny;
+		} else {
+			PRINT_MSG ("ERROR: Unknown matching list type '%s'\n", buf->buf);
+			return ret_error;
+		}
+	}
+	
+	return ret_ok;
+}
+
+
+static void
+free_list (cherokee_list_t *list)
+{
+	cherokee_list_t *i, *tmp;
 
 	list_for_each_safe (i, tmp, list) {
-		   if (MLIST_ENTRY(i)->string) {
-				 free (MLIST_ENTRY(i)->string);
-		   }
+		if (MLIST_ENTRY(i)->string) {
+			free (MLIST_ENTRY(i)->string);
+		}
 
-		   list_del(i);
+		free(i);
 	}
 }
 
@@ -60,23 +116,23 @@ free_list (list_t *list)
 ret_t 
 cherokee_matching_list_free (cherokee_matching_list_t *mlist)
 {
-	   free_list (&mlist->list_allow);
-	   free_list (&mlist->list_deny);
+	free_list (&mlist->list_allow);
+	free_list (&mlist->list_deny);
 
-	   free (mlist);
-	   return ret_ok;
+	free (mlist);
+	return ret_ok;
 }
 
 
 static ret_t
-add_to_list (list_t *list, const char *item)
+add_to_list (cherokee_list_t *list, const char *item)
 {
 	CHEROKEE_NEW_STRUCT (n, matching_list_entry);
 
 	INIT_LIST_HEAD(&n->list);
 	n->string = strdup(item);
 
-	list_add ((list_t *)n, list);	
+	cherokee_list_add (LIST(n), list);	
 	return ret_ok;
 }
 
@@ -84,29 +140,29 @@ add_to_list (list_t *list, const char *item)
 ret_t 
 cherokee_matching_list_add_allow (cherokee_matching_list_t *mlist, const char *item)
 {
-	   return add_to_list (&mlist->list_allow, item);
+	return add_to_list (&mlist->list_allow, item);
 }
 
 
 ret_t 
 cherokee_matching_list_add_deny  (cherokee_matching_list_t *mlist, const char *item)
 {
-	   return add_to_list (&mlist->list_deny, item);
+	return add_to_list (&mlist->list_deny, item);
 }
 
 
 ret_t 
 cherokee_matching_list_set_type (cherokee_matching_list_t *mlist, cherokee_matching_t type)
 {
-	   mlist->type = type;
-	   return ret_ok;
+	mlist->type = type;
+	return ret_ok;
 }
 
 
 static int
-in_list  (list_t *list, char *match)
+in_list  (cherokee_list_t *list, char *match)
 {
-	list_t *i;
+	cherokee_list_t *i;
 
 	list_for_each (i, list) {
 		if (!strcmp (MLIST_ENTRY(i)->string, match)) {
@@ -120,33 +176,33 @@ in_list  (list_t *list, char *match)
 static int
 match_default_allow (cherokee_matching_list_t *mlist, char *match)
 {
-	   return ! in_list (&mlist->list_deny, match);
+	return ! in_list (&mlist->list_deny, match);
 }
 
 static int
 match_default_deny (cherokee_matching_list_t *mlist, char *match)
 {
-	   return in_list (&mlist->list_allow, match);
+	return in_list (&mlist->list_allow, match);
 }
 
 static int
 match_deny_allow (cherokee_matching_list_t *mlist, char *match)
 {
-	   int tmp;
+	int tmp;
 
-	   tmp = ! in_list (&mlist->list_deny, match);
-	   if (!tmp) {
-			 tmp = in_list (&mlist->list_allow, match);
-	   }
+	tmp = ! in_list (&mlist->list_deny, match);
+	if (!tmp) {
+		tmp = in_list (&mlist->list_allow, match);
+	}
 
-	   return tmp;
+	return tmp;
 }
 
 static int
 match_allow_deny (cherokee_matching_list_t *mlist, char *match)
 {
-	   return (in_list (&mlist->list_allow, match) &&
-			 (!in_list (&mlist->list_deny, match)));
+	return (in_list (&mlist->list_allow, match) &&
+		(!in_list (&mlist->list_deny, match)));
 }
 
 int 
@@ -156,21 +212,22 @@ cherokee_matching_list_match (cherokee_matching_list_t *mlist, char *match)
 	case default_allow:
 		return match_default_allow (mlist, match);
 		break;
-		
+
 	case default_deny:
 		return match_default_deny (mlist, match);
 		break;
-		
+
 	case deny_allow:
 		return match_deny_allow (mlist, match);
 		break;
-		
+
 	case allow_deny:
 		return match_allow_deny (mlist, match);
 		break;
 	}
-	
+
 	SHOULDNT_HAPPEN;
 	return 0;
 }
+
 

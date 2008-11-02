@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2006 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2008 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -23,54 +23,44 @@
  */
 
 #include "exts_table.h"
-#include "list_ext.h"
-#include "table.h"
-#include "table-protected.h"
+#include "util.h"
 
 #define ENTRIES "exts"
 
 
-struct cherokee_exts_table {
-	cherokee_table_t table;
-	list_t           list;
-};
-
 ret_t 
-cherokee_exts_table_new (cherokee_exts_table_t **et)
+cherokee_exts_table_init (cherokee_exts_table_t *et)
 {
 	ret_t ret;
-	CHEROKEE_NEW_STRUCT(n, exts_table);
 
-	ret = cherokee_table_init(&n->table);
-	if (unlikely(ret != ret_ok)) return ret;
+	ret = cherokee_avl_init(&et->avl);
+	if (unlikely (ret != ret_ok)) return ret;
 
-	INIT_LIST_HEAD(&n->list);
+	INIT_LIST_HEAD(&et->list);
 
-	*et = n;
 	return ret_ok;
 }
 
 
 ret_t 
-cherokee_exts_table_free (cherokee_exts_table_t *et)
+cherokee_exts_table_mrproper (cherokee_exts_table_t *et)
 {
-	cherokee_list_free (&et->list, (void *)cherokee_config_entry_free);
-	cherokee_table_clean (&et->table);
+	cherokee_list_content_free (&et->list, (cherokee_list_free_func) cherokee_config_entry_free);
+	cherokee_avl_mrproper (&et->avl, NULL);
 	return ret_ok;
 }
-
 
 ret_t 
 cherokee_exts_table_get (cherokee_exts_table_t *et, cherokee_buffer_t *requested_url, cherokee_config_entry_t *plugin_entry)
 {
-	ret_t                        ret;
-	char                        *dot;
+	ret_t                    ret;
+	char                    *dot;
 	cherokee_config_entry_t *entry;
 
 	dot = strrchr (requested_url->buf, '.');
 	if (dot == NULL) return ret_not_found;
 
-	ret = cherokee_table_get (&et->table, dot+1, (void **)&entry);
+	ret = cherokee_avl_get_ptr (&et->avl, dot+1, (void **)&entry);
 	if (ret != ret_ok) return ret;
 
 	TRACE (ENTRIES, "Match with \"%s\"\n", dot+1);
@@ -83,7 +73,7 @@ cherokee_exts_table_get (cherokee_exts_table_t *et, cherokee_buffer_t *requested
 ret_t 
 cherokee_exts_table_add  (cherokee_exts_table_t *et, char *ext, cherokee_config_entry_t *plugin_entry)
 {
-	list_t            *i;
+	cherokee_list_t   *i;
 	cherokee_boolean_t found = false;
 
 	/* Each plugin entry has to be added to the list only once
@@ -93,17 +83,20 @@ cherokee_exts_table_add  (cherokee_exts_table_t *et, char *ext, cherokee_config_
 	}
 
 	if (!found) {
-		cherokee_list_add (&et->list, plugin_entry);
+		cherokee_list_add_content (&et->list, plugin_entry);
 	}
 
 	/* Add to the table. It is ok if many entries point to the same
 	 * plugin entry object.
 	 */
-	return cherokee_table_add (&et->table, ext, plugin_entry);
+	TRACE (ENTRIES, "ADD: et %p avl %p ext %s\n", et, &et->avl, ext);
+
+	return cherokee_avl_add_ptr (&et->avl, ext, plugin_entry);
 }
 
 ret_t 
 cherokee_exts_table_has (cherokee_exts_table_t *et, char *ext)
 {
-	return (cherokee_table_get_val (&et->table, ext) == NULL) ? ret_not_found : ret_ok;
+	void *foo;
+	return cherokee_avl_get_ptr (&et->avl, ext, &foo);
 }

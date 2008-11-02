@@ -1,0 +1,67 @@
+import validations
+
+from Page import *
+from Table import *
+from Entry import *
+from Form import *
+
+
+PRODUCT_TOKENS = [
+    ('',        'Default'),
+    ('product', 'Product only'),
+    ('minor',   'Product + Minor version'),
+    ('minimal', 'Product + Minimal version'),
+    ('os',      'Product + Platform'),
+    ('full',    'Full Server string')
+]
+
+DATA_VALIDATION = [
+    ("server!keepalive", validations.is_boolean),
+    ("server!ipv6",      validations.is_boolean),
+    ("server!port.*",    validations.is_tcp_port),
+    ("server!listen",    validations.is_ip),
+    ("server!chroot",    validations.is_local_dir_exists),
+]
+
+class PageGeneral (PageMenu, FormHelper):
+    def __init__ (self, cfg):
+        PageMenu.__init__ (self, 'general', cfg)
+        FormHelper.__init__ (self, 'general', cfg)
+
+    def _op_render (self):
+        content = self._render_content()
+        self.AddMacroContent ('title', 'General configuration')
+        self.AddMacroContent ('content', content)
+        return Page.Render(self)
+
+    def _render_content (self):
+        txt = "<h1>General Settings</h1>"
+
+        txt += "<h2>Networking</h2>"
+        table = Table(2)
+        self.AddTableEntry    (table, 'Port',     'server!port')
+        self.AddTableEntry    (table, 'Port TLS', 'server!port_tls')
+        self.AddTableCheckbox (table, 'IPv6',     'server!ipv6', True)
+        self.AddTableEntry    (table, 'Listen',   'server!listen')
+        txt += self.Indent(table)
+
+        txt += "<h2>Basic Behaviour</h2>"
+        table = Table(2)
+        self.AddTableEntry    (table, 'Timeout (<i>secs</i>)', 'server!timeout')
+        self.AddTableCheckbox (table, 'KeepAlive',           'server!keepalive', True)
+        self.AddTableOptions  (table, 'Server Tokens',       'server!server_tokens', PRODUCT_TOKENS)
+        txt += self.Indent(table)
+
+        txt += "<h2>Server Permissions</h2>"
+        table = Table(2)
+        self.AddTableEntry (table, 'User',   'server!user')
+        self.AddTableEntry (table, 'Group',  'server!group')
+        self.AddTableEntry (table, 'Chroot', 'server!chroot')
+        txt += self.Indent(table)
+
+        form = Form ("/%s" % (self._id))
+        return form.Render(txt,DEFAULT_SUBMIT_VALUE)
+
+    def _op_apply_changes (self, uri, post):
+        self.ApplyChanges (['server!ipv6', 'server!keepalive'], post, 
+                           validation = DATA_VALIDATION)

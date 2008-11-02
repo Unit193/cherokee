@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2006 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2008 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -29,9 +29,10 @@
 #include "common-internal.h"
 #include "buffer.h"
 #include "request.h"
-#include "fdpoll.h"
 #include "socket.h"
 #include "header.h"
+#include "post.h"
+
 
 CHEROKEE_BEGIN_DECLS
 
@@ -40,7 +41,8 @@ typedef enum {
 	downloader_phase_send_headers,
 	downloader_phase_send_post,
 	downloader_phase_read_headers,
-	downloader_phase_step
+	downloader_phase_step,
+	downloader_phase_finished
 } cherokee_downloader_phase_t;
 
 
@@ -52,38 +54,30 @@ struct cherokee_downloader {
 	cherokee_buffer_t            reply_header;
 	cherokee_buffer_t            body;
 
-	cherokee_buffer_t           *post_ref;
-	off_t                        post_sent;
+	cherokee_post_t             *post;
+	cherokee_buffer_t            proxy;
+	cuint_t                      proxy_port;
 
-	cherokee_fdpoll_t           *fdpoll;
-	cherokee_socket_t           *socket;
+	cherokee_socket_t            socket;
 	cherokee_sockaddr_t          sockaddr;
 
 	cherokee_downloader_phase_t  phase;
+	cherokee_downloader_status_t status;
 
 	int                          content_length;
 
 	/* Information
 	 */
 	struct {
-		uint32_t headers_sent;
+		uint32_t request_sent;
 		uint32_t headers_recv;
 		uint32_t post_sent;
 		uint32_t body_recv;
 	} info;
 
-	/* Event handlers..
-	 */
-	struct {
-		cherokee_downloader_init_t        init;
-		cherokee_downloader_has_headers_t has_headers;
-		cherokee_downloader_read_body_t   read_body;
-		cherokee_downloader_finish_t      finish;
-		void                             *param[downloader_event_NUMBER];
-	} callback;
-
+	cherokee_buffer_t            tmp1;
+	cherokee_buffer_t            tmp2;
 };
-
 
 
 ret_t cherokee_downloader_init     (cherokee_downloader_t  *downloader);

@@ -1,0 +1,98 @@
+<html>
+<head>
+    <title>Virtual Server Rule</title>
+    <link href="media/css/documentation.css" type="text/css" rel="stylesheet" />
+</head>
+
+<body>
+    
+    
+    <h1>Virtual Server Rule</h1>
+    
+    <p>Beside the connection handler set for the rule, there are other
+parameters that can be set in order to customize the rule behavior.</p>
+<div class="section" id="onlysecure">
+<h1>OnlySecure</h1>
+<p>This configuration entry determines that the directory will be served
+by the secure server (<em>https</em>) only.</p>
+<p>If you access directory /admin or any sub-directory, throught
+non-secure connection Cherokee will report a <strong>426 Upgrade Required
+error</strong>.</p>
+</div>
+<div class="section" id="allow-from">
+<h1>Allow From</h1>
+<p>This parameter lets you set up rules form allow access to the
+directory contents to some IP or IP ranges. The remote client IP will
+be checked with all the provided list and only if the IP matches with
+some of the rules the access will be allowed.</p>
+<p>There are three possible entry types:</p>
+<ul class="simple">
+<li>IP addresses</li>
+<li>Host names</li>
+<li>IP ranges</li>
+</ul>
+<p>In the two cases, both IPv4 and IPv6 addresses are valid.</p>
+<div class="section" id="examples">
+<h2>Examples</h2>
+<p>Allow access only from the IPv6 localhost address:</p>
+<pre class="literal-block">
+Allow from ::1
+</pre>
+<p>Allow access from the 127.0.0.0/8 network:</p>
+<pre class="literal-block">
+Allow from 127.0.0.0/8
+</pre>
+<p>or it could also we written like:</p>
+<pre class="literal-block">
+Allow from 127.0.0.0/255.0.0.0
+</pre>
+<p>It is also possible to use lists instead of a single IP or network
+range. And ir is also possible to mix IPv4 and IPv6 addresses and
+networks if you want:</p>
+<pre class="literal-block">
+Allow from 192.168.0.0/16, ::1, 10.0.0.1, 3ffe:3200::/24
+</pre>
+</div>
+</div>
+<div class="section" id="authentication">
+<h1>Authentication</h1>
+<p>This parameter allows to configure user/password protected entries. A
+validator has to be used in each Auth entry in order to specify the
+validaton mechanism. The following <cite>validators</cite> are available:</p>
+<ul>
+<li><p class="first"><a class="reference external" href="../validators/htdigest.html">htdigest</a> - <strong>Htdigest</strong></p>
+<p>Uses something to perform HTTP authentication.</p>
+</li>
+<li><p class="first"><a class="reference external" href="../validators/htpasswd.html">htpasswd</a> - <strong>Htpasswd</strong></p>
+<p>Uses something to perform HTTP authentication.</p>
+</li>
+<li><p class="first"><a class="reference external" href="../validators/ldap.html">ldap</a> - <strong>LDAP Authentication</strong></p>
+<p>Uses an LDAP directory to perform HTTP authentication.</p>
+</li>
+<li><p class="first"><a class="reference external" href="../validators/mysql.html">mysql</a> - <strong>MySQL Authentication</strong></p>
+<p>Uses a MySQL database to perform HTTP authentication.</p>
+</li>
+<li><p class="first"><a class="reference external" href="../validators/pam.html">pam</a> - <strong>PAM Authentication</strong></p>
+<p>Uses PAM to perform HTTP authentication.</p>
+</li>
+<li><p class="first"><a class="reference external" href="../validators/plain.html">plain</a> - <strong>Plain Flat File Authentication</strong></p>
+<p>Uses a plain flat file to perform HTTP authentication.</p>
+</li>
+</ul>
+<p>It is important to take into consideration there are two different
+authentication mechanisms:</p>
+<ul class="simple">
+<li>Basic</li>
+<li>Digest</li>
+</ul>
+<p>The are some <cite>validators</cite> that, by limitations for the technology can
+only handle one of those mechanisms. In the case the module supports
+both of them, the interface allow to choose whether you can it to use
+only one of them, or whether both can be used.</p>
+</div>
+
+    
+
+    
+</body>
+</html>

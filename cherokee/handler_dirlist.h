@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2006 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2008 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -33,64 +33,88 @@
 #include "list.h"
 #include "buffer.h"
 #include "handler.h"
-#include "module_loader.h"
+#include "plugin_loader.h"
 
 
-enum cherokee_sort {
+typedef enum {
 	Name_Down,
 	Name_Up,
 	Size_Down,
 	Size_Up,
 	Date_Down,
 	Date_Up
-};
-typedef enum cherokee_sort cherokee_sort_t;
+} cherokee_dirlist_sort_t;
+
+typedef enum {
+	dirlist_phase_add_header,
+	dirlist_phase_add_parent_dir,
+	dirlist_phase_add_entries,
+	dirlist_phase_add_footer
+} cherokee_dirlist_phase_t;
 
 
 typedef struct {
-	cherokee_handler_t handler;
+	cherokee_module_props_t  props;
+
+	cherokee_list_t          notice_files;
+
+	/* Visible properties
+	 */
+ 	cherokee_boolean_t       show_size;
+	cherokee_boolean_t       show_date;
+	cherokee_boolean_t       show_user;
+	cherokee_boolean_t       show_group;
+	cherokee_boolean_t       show_icons;
+
+	/* Theme
+	 */
+	cherokee_buffer_t        header;
+	cherokee_buffer_t        footer;
+	cherokee_buffer_t        entry;
+	cherokee_buffer_t        css;
+
+	/* Paths
+	 */
+	cherokee_buffer_t        icon_web_dir;
+} cherokee_handler_dirlist_props_t;
+
+
+typedef struct {
+	cherokee_handler_t       handler;
 
 	/* File list
 	 */
-	struct list_head dirs;
-	struct list_head files;
-	cherokee_sort_t  sort;
+	cherokee_list_t          dirs;
+	cherokee_list_t          files;
+	
+	/* State
+	 */
+	cherokee_dirlist_sort_t  sort;
+	cherokee_dirlist_phase_t phase;
 
 	/* State
 	 */
-	cherokee_boolean_t  page_header;
-	cuint_t             longest_filename;
-	list_t             *dir_ptr;
-	list_t             *file_ptr;
+	cuint_t                  longest_filename;
+	cherokee_list_t         *dir_ptr;
+	cherokee_list_t         *file_ptr;	
+ 	cherokee_buffer_t        header;
 
-	/* Properties
-	 */
-	char *bgcolor;     /* background color for the document */
-	char *text;        /* color for the text of the document */
-	char *link;        /* color for unvisited hypertext links */
-	char *vlink;       /* color for visited hypertext links */
-	char *alink;       /* color for active hypertext links */
-	char *background;  /* URL for an image to be used to tile the background */
-
-	cuint_t show_size;
-	cuint_t show_date;
-	cuint_t show_owner;
-	cuint_t show_group;
-	
-	cherokee_buffer_t   header;          /* Header content */
-	list_t             *header_file;     /* List of possible header filenames */
-	char               *header_file_ref; /* Pointer to the used header filename */
-	cherokee_boolean_t  build_headers;   /* Build headers */
-
+	cherokee_buffer_t        public_dir;
+	cherokee_buffer_t       *software_str_ref;
 } cherokee_handler_dirlist_t;
 
-#define DHANDLER(x)  ((cherokee_handler_dirlist_t *)(x))
+#define PROP_DIRLIST(x)      ((cherokee_handler_dirlist_props_t *)(x))
+#define HDL_DIRLIST(x)       ((cherokee_handler_dirlist_t *)(x))
+#define HDL_DIRLIST_PROP(x)  (PROP_DIRLIST(MODULE(x)->props))
 
 
 /* Library init function
  */
-void MODULE_INIT(dirlist)          (cherokee_module_loader_t *loader);
-ret_t cherokee_handler_dirlist_new (cherokee_handler_t **hdl, void *cnt, cherokee_table_t *properties);
+void PLUGIN_INIT_NAME(dirlist)             (cherokee_plugin_loader_t *loader);
+
+ret_t cherokee_handler_dirlist_new         (cherokee_handler_t **hdl, void *cnt, cherokee_module_props_t *properties);
+ret_t cherokee_handler_dirlist_configure   (cherokee_config_node_t *conf, cherokee_server_t *srv, cherokee_module_props_t **_props);
+ret_t cherokee_handler_dirlist_props_free  (cherokee_handler_dirlist_props_t *props);
 
 /* virtual methods implementation
  */
@@ -99,6 +123,5 @@ ret_t cherokee_handler_dirlist_free        (cherokee_handler_dirlist_t *dhdl);
 void  cherokee_handler_dirlist_get_name    (cherokee_handler_dirlist_t *dhdl, char **name);
 ret_t cherokee_handler_dirlist_step        (cherokee_handler_dirlist_t *dhdl, cherokee_buffer_t *buffer);
 ret_t cherokee_handler_dirlist_add_headers (cherokee_handler_dirlist_t *dhdl, cherokee_buffer_t *buffer);
-
 
 #endif /* CHEROKEE_DIRLIST_HANDLER_H */

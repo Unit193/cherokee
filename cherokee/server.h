@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2006 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2008 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -30,18 +30,11 @@
 #define CHEROKEE_SERVER_H
 
 #include <cherokee/common.h>
+#include <cherokee/buffer.h>
 #include <stddef.h>
 
 
 CHEROKEE_BEGIN_DECLS
-
-typedef enum {
-	cherokee_version_product,
-	cherokee_version_minor,  
-	cherokee_version_minimal,
-	cherokee_version_os,
-	cherokee_version_full
-} cherokee_server_token_t;
 
 typedef struct cherokee_server cherokee_server_t;
 typedef void (* cherokee_server_reinit_cb_t) (cherokee_server_t *new_srv);
@@ -49,31 +42,35 @@ typedef void (* cherokee_server_reinit_cb_t) (cherokee_server_t *new_srv);
 #define SRV(x) ((cherokee_server_t *)(x))
 
 ret_t cherokee_server_new                (cherokee_server_t **srv);
-ret_t cherokee_server_init               (cherokee_server_t  *srv);
-ret_t cherokee_server_clean              (cherokee_server_t  *srv);
 ret_t cherokee_server_free               (cherokee_server_t  *srv);
+ret_t cherokee_server_clean              (cherokee_server_t  *srv);
 
-void  cherokee_server_step               (cherokee_server_t *srv);
+ret_t cherokee_server_initialize         (cherokee_server_t *srv);
+ret_t cherokee_server_step               (cherokee_server_t *srv);
+ret_t cherokee_server_stop               (cherokee_server_t *srv);
+ret_t cherokee_server_reinit             (cherokee_server_t *srv);
+
 void  cherokee_server_set_min_latency    (cherokee_server_t *srv, int msecs);
 ret_t cherokee_server_unlock_threads     (cherokee_server_t *srv);
+
+ret_t cherokee_server_read_config_file   (cherokee_server_t *srv, char *filename);
+ret_t cherokee_server_read_config_string (cherokee_server_t *srv, cherokee_buffer_t *string);
 
 ret_t cherokee_server_daemonize          (cherokee_server_t *srv);
 ret_t cherokee_server_write_pidfile      (cherokee_server_t *srv);
 
-ret_t cherokee_server_read_config_file   (cherokee_server_t *srv, char *filename);
-ret_t cherokee_server_read_config_string (cherokee_server_t *srv, char *string);
-
-ret_t cherokee_server_get_active_conns   (cherokee_server_t *srv, int *num);
-ret_t cherokee_server_get_reusable_conns (cherokee_server_t *srv, int *num);
+ret_t cherokee_server_get_conns_num      (cherokee_server_t *srv, cuint_t *num);
+ret_t cherokee_server_get_active_conns   (cherokee_server_t *srv, cuint_t *num);
+ret_t cherokee_server_get_reusable_conns (cherokee_server_t *srv, cuint_t *num);
 ret_t cherokee_server_get_total_traffic  (cherokee_server_t *srv, size_t *rx, size_t *tx);
 
 ret_t cherokee_server_set_backup_mode    (cherokee_server_t *srv, cherokee_boolean_t active);
 ret_t cherokee_server_get_backup_mode    (cherokee_server_t *srv, cherokee_boolean_t *active);
 
-
 /* System signal callback
  */
 ret_t cherokee_server_handle_HUP   (cherokee_server_t *srv, cherokee_server_reinit_cb_t callback);
+ret_t cherokee_server_handle_TERM  (cherokee_server_t *srv);
 ret_t cherokee_server_handle_panic (cherokee_server_t *srv);
 
 

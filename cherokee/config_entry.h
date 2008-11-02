@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2006 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2008 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -27,60 +27,55 @@
 
 #include "common-internal.h"
 
-#include "table.h"
+#include "avl.h"
 #include "handler.h"
-#include "encoder.h"
-#include "module.h"
-#include "validator.h"
 #include "http.h"
-#include "typed_table.h"
-
+#include "validator.h"
 
 #define CHEROKEE_CONFIG_PRIORITY_NONE    0
 #define CHEROKEE_CONFIG_PRIORITY_DEFAULT 1
 
 
 typedef struct {
-	/* Parent table_entry
+	/* Parent entry
 	 */
-	void                   *parent;
-	cuint_t                 priority;
+	void                       *parent;
+	cuint_t                     priority;
 
 	/* Properties
 	 */
-	cherokee_buffer_t      *document_root;
-	cherokee_boolean_t      only_secure;
-	void                   *access;
+	cherokee_buffer_t          *document_root;
+	cherokee_boolean_t          only_secure;
+	void                       *access;
 
 	/* Handler
 	 */
-	handler_func_new_t      handler_new_func;
-	cherokee_http_method_t  handler_methods;
-	cherokee_table_t       *handler_properties; 
+	handler_func_new_t          handler_new_func;
+	cherokee_http_method_t      handler_methods;
+	cherokee_module_props_t    *handler_properties; 
 
 	/* Validator
 	 */
-	validator_func_new_t    validator_new_func;
-	cherokee_table_t       *validator_properties; 
+	validator_func_new_t        validator_new_func;
+	cherokee_module_props_t    *validator_properties; 
 
-	cherokee_buffer_t      *auth_realm;
-	cherokee_http_auth_t    authentication;
-	cherokee_table_t       *users;
-
+	cherokee_buffer_t          *auth_realm;
+	cherokee_http_auth_t        authentication;
+	cherokee_avl_t             *users;
 } cherokee_config_entry_t; 
 
 #define CONF_ENTRY(x) ((cherokee_config_entry_t *)(x))
 
 
-ret_t cherokee_config_entry_new  (cherokee_config_entry_t **entry);
-ret_t cherokee_config_entry_free (cherokee_config_entry_t  *entry);
-ret_t cherokee_config_entry_init (cherokee_config_entry_t  *entry);
+ret_t cherokee_config_entry_new      (cherokee_config_entry_t **entry);
+ret_t cherokee_config_entry_free     (cherokee_config_entry_t  *entry);
+ret_t cherokee_config_entry_init     (cherokee_config_entry_t  *entry);
+ret_t cherokee_config_entry_mrproper (cherokee_config_entry_t  *entry);
 
-ret_t cherokee_config_entry_set_handler_prop   (cherokee_config_entry_t *entry, char *prop_name, cherokee_typed_table_types_t type, void *value, cherokee_table_free_item_t free_func);
-ret_t cherokee_config_entry_set_validator_prop (cherokee_config_entry_t *entry, char *prop_name, cherokee_typed_table_types_t type, void *value, cherokee_table_free_item_t free_func);
-ret_t cherokee_config_entry_set_handler        (cherokee_config_entry_t *entry, cherokee_module_info_t *modinfo); 
-
+ret_t cherokee_config_entry_set_handler (cherokee_config_entry_t *entry, cherokee_plugin_info_handler_t *modinfo); 
 ret_t cherokee_config_entry_complete    (cherokee_config_entry_t *entry, cherokee_config_entry_t *parent, cherokee_boolean_t same_type);
 ret_t cherokee_config_entry_inherit     (cherokee_config_entry_t *entry);
+
+ret_t cherokee_config_entry_print       (cherokee_config_entry_t *entry);
 
 #endif /* CHEROKEE_CONFIG_ENTRY_H */

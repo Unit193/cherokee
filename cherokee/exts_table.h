@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2006 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2008 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -28,12 +28,20 @@
 #include "common.h"
 #include "buffer.h"
 #include "config_entry.h"
+#include "list.h"
+#include "avl.h"
 
-typedef struct cherokee_exts_table cherokee_exts_table_t;      /* Extension -> config_entry */
+
+typedef struct {
+	cherokee_avl_t   avl;
+	cherokee_list_t  list;
+} cherokee_exts_table_t;
+
 #define EXTTABLE(x) ((cherokee_exts_table_t *)(x))
 
-ret_t cherokee_exts_table_new  (cherokee_exts_table_t **et);
-ret_t cherokee_exts_table_free (cherokee_exts_table_t  *et);
+
+ret_t cherokee_exts_table_init     (cherokee_exts_table_t *et);
+ret_t cherokee_exts_table_mrproper (cherokee_exts_table_t *et);
 
 ret_t cherokee_exts_table_get  (cherokee_exts_table_t *et, cherokee_buffer_t *requested_url, cherokee_config_entry_t *plugin_entry);
 ret_t cherokee_exts_table_add  (cherokee_exts_table_t *et, char *ext, cherokee_config_entry_t  *plugin_entry);

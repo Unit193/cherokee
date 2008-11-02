@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2006 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2008 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -31,6 +31,7 @@
 #define CHEROKEE_MACROS_H
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <stdarg.h>
 
 #ifdef  __cplusplus
@@ -70,7 +71,20 @@
 # define lt_ok(x)    (x <  ret_ok)
 #endif
 
-#define DEFAULT_RECV_SIZE             1024
+#if defined(__GNUC__)
+# define __GNUC_VERSION	\
+ 	(__GNUC__ * 10000 + __GNUC_MINOR__ * 100 + __GNUC_PATCHLEVEL__)
+# else
+# define __GNUC_VERSION	0
+#endif
+
+#if __GNUC_VERSION >= 30000
+# define must_check  __attribute__ ((warn_unused_result))
+#else 
+# define must_check  
+#endif
+
+#define DEFAULT_RECV_SIZE             2048
 #define DEFAULT_READ_SIZE             8192
 #define MAX_HEADER_LEN                4096
 #define MAX_HEADER_CRLF               8 
@@ -80,11 +94,37 @@
 #define TERMINAL_WIDTH                80
 #define DEFAULT_TRAFFIC_UPDATE        10
 #define CGI_TIMEOUT                   65
-#define MSECONS_TO_LINGER             2000
+#define MSECONDS_TO_LINGER            2000
 #define POST_SIZE_TO_DISK             32768
+#define LOGGER_MIN_BUFSIZE            0
+#define DEFAULT_LOGGER_MAX_BUFSIZE    32768
+#define LOGGER_MAX_BUFSIZE            (4 * 1024 * 1024)
+#define MIN_SYSTEM_FD_NUM             20	/* range: 16 - 64 */
+#define MIN_SPARE_FDS                 10	/* range:  8 - 20 */
+#define MIN_MAX_FDS                    8	/* range:  8 ... 65000 */
+#define MIN_THR_FDS                    8	/* range:  8 ... 65000 */
+
+#if (MIN_SYSTEM_FD_NUM < 16) 
+#error MIN_SYSTEM_FD_NUM too low, < 16 !
+#endif
+#if (MIN_SPARE_FDS < 8)
+#error MIN_SPARE_FDS too low, < 8 !
+#endif
+#if (MIN_MAX_FDS < 8)
+#error MIN_MAX_FDS too low, < 8 !
+#endif
+#if (MIN_THR_FDS < 8)
+#error MIN_THR_FDS too low, < 8 !
+#endif
+#if (MIN_THR_FDS > MIN_MAX_FDS)
+#error MIN_THR_FDS too high, > MIN_MAX_FDS !
+#endif
+#if ((MIN_SYSTEM_FD_NUM - MIN_SPARE_FDS) < MIN_MAX_FDS)
+#error MIN_SYSTEM_FD_NUM too low or MIN_SPARE FDS too high !
+#endif
 
 #define IOCACHE_MAX_FILE_SIZE            50000
-#define IOCACHE_DEFAULT_CLEAN_ELAPSE     10
+#define IOCACHE_DEFAULT_CLEAN_ELAPSE     2
 #define IOCACHE_BASIC_SIZE               50
 
 #define EXIT_CANT_CREATE_SERVER_SOCKET4 10
@@ -99,6 +139,7 @@
 #define CRLF_CRLF "\r\n\r\n"    /* EOHs (End Of Headers) */
 #define CRLF      "\r\n"        /* EOH (End Of Header Line) */
 #define LWS       " \t\r\n"     /* HTTP linear white space */
+#define LBS       " \t"         /* HTTP linear blank space */
 #define CHR_CR    '\r'          /* Carriage return */
 #define CHR_LF    '\n'          /* Line feed (new line) */
 #define CHR_SP    ' '           /* Space */
@@ -111,6 +152,8 @@
 #define equal_buf_str(b,str)            \
 	(((b)->len == sizeof(str)-1) &&	\
 	 (strncasecmp((b)->buf, str, sizeof(str)-1) == 0))
+
+#define get_buf_str(b)		((b)->buf)
 
 #define return_if_fail(expr,ret) \
 	if (!(expr)) {                                                      \
@@ -125,7 +168,7 @@
 
 
 #define SHOULDNT_HAPPEN \
-	do { fprintf (stderr, "file %s:%d (%s): this shouldn't happend\n",  \
+	do { fprintf (stderr, "file %s:%d (%s): this shouldn't happen\n",  \
 		      __FILE__, __LINE__, __cherokee_func__);               \
 	} while (0)
 
@@ -135,25 +178,67 @@
 	} while (0)
 
 
-#define CHEROKEE_NEW_STRUCT(obj,type) \
-	cherokee_ ## type ## _t * obj = (cherokee_ ## type ## _t *) malloc (sizeof(cherokee_ ## type ## _t)); \
+/* Make cherokee type.
+ */
+#define CHEROKEE_MK_TYPE(type) \
+	cherokee_ ## type ## _t
+
+/* Make cherokee new type function.
+ */
+#define CHEROKEE_MK_NEW(obj,type) \
+	cherokee_ ## type ## _new (& obj )
+
+/* Declare struct.
+ */
+#define CHEROKEE_DCL_STRUCT(obj,type) \
+	CHEROKEE_MK_TYPE(type) * obj
+
+/* Declare and allocate a new struct.
+ */
+#define CHEROKEE_NEW_STRUCT(obj,type)                              \
+	CHEROKEE_DCL_STRUCT(obj,type) = (CHEROKEE_MK_TYPE(type) *) \
+	malloc (sizeof(CHEROKEE_MK_TYPE(type)));                   \
 	return_if_fail (obj != NULL, ret_nomem)
 
+/* Declare and allocate a zeroed new struct.
+ */
+#define CHEROKEE_CNEW_STRUCT(nmemb,obj,type)                       \
+	CHEROKEE_DCL_STRUCT(obj,type) = (CHEROKEE_MK_TYPE(type) *) \
+	calloc ((nmemb), sizeof(CHEROKEE_MK_TYPE(type)));          \
+	return_if_fail (obj != NULL, ret_nomem)
+
+/* Declare and initialize a new object.
+ */
 #define CHEROKEE_NEW(obj,type)                   \
-	cherokee_ ## type ## _t * obj;           \
-	cherokee_ ## type ## _new (& obj );      \
+	CHEROKEE_DCL_STRUCT(obj,type) = NULL;    \
+	CHEROKEE_MK_NEW(obj,type);               \
 	return_if_fail (obj != NULL, ret_nomem)
 
+/* Decleare and initialize two new object.
+ * NOTE: if the second object allocation fails,
+ *       then we leak memory of obj1, anyway, as this is a half disaster,
+ *       and it is likely that cherokee will exit because of this,
+ *       we don't care too much (for now).
+ */
 #define CHEROKEE_NEW2(obj1,obj2,type)             \
-	cherokee_ ## type ## _t * obj1, *obj2;    \
-	cherokee_ ## type ## _new (& obj1 );      \
-	cherokee_ ## type ## _new (& obj2 );      \
-	return_if_fail (obj1 != NULL, ret_nomem); \
+	CHEROKEE_DCL_STRUCT(obj1,type) = NULL;    \
+	CHEROKEE_DCL_STRUCT(obj2,type) = NULL;    \
+	CHEROKEE_MK_NEW(obj1,type);               \
+	CHEROKEE_MK_NEW(obj2,type);               \
+	return_if_fail (obj1 != NULL, ret_nomem)  \
 	return_if_fail (obj2 != NULL, ret_nomem)
 
 #define CHEROKEE_NEW_TYPE(obj,type) \
 	type * obj = (type *) malloc(sizeof(type)); \
 	return_if_fail (obj != NULL, ret_nomem)	
+
+/* We assume to have a C ANSI free().
+ */
+#define CHEROKEE_FREE(obj) \
+	do {		\
+	free (obj);	\
+	(obj) = NULL;	\
+	} while (0)
 
 #define CHEROKEE_TEMP(obj, size)                 \
         const unsigned int obj ## _size = size;  \
@@ -167,14 +252,42 @@
 # define MAX(x,y) ((x>y) ? x : y)
 #endif
 
+/* Automatic functions:
+ * These macros implement _new/_free by using _init/_mrproper.
+ */
+#define CHEROKEE_ADD_FUNC_NEW(klass)  \
+	ret_t                                                         \
+	cherokee_ ## klass ## _new (cherokee_ ## klass ## _t **obj) { \
+		ret_t ret;                                            \
+		CHEROKEE_NEW_STRUCT (n, klass);                       \
+		                                                      \
+		ret = cherokee_ ## klass ## _init (n);                \
+		if (unlikely (ret != ret_ok)) return ret;             \
+		                                                      \
+		*obj = n;                                             \
+		return ret_ok;                                        \
+	}
+
+#define CHEROKEE_ADD_FUNC_FREE(klass)  \
+	ret_t                                                         \
+	cherokee_ ## klass ## _free (cherokee_ ## klass ## _t *obj) { \
+		cherokee_ ## klass ## _mrproper (obj);                \
+		                                                      \
+		free (obj);                                           \
+		return ret_ok;                                        \
+	}
+
+
 /* Printing macros
  */
 #ifdef __GNUC__
-# define PRINT_ERROR(fmt,arg...) fprintf(stderr, "%s:%d: "fmt, __FILE__, __LINE__, ##arg)
-# define PRINT_MSG(fmt,arg...)   fprintf(stderr, fmt, ##arg)
+# define PRINT_MSG(fmt,arg...)       fprintf(stderr, fmt, ##arg)
+# define PRINT_ERROR(fmt,arg...)     fprintf(stderr, "%s:%d: "fmt, __FILE__, __LINE__, ##arg)
+# define PRINT_ERRNO(err,fmt,arg...) cherokee_print_errno(err, fmt"\n", ##arg)
 #else
-# define PRINT_ERROR(fmt,...)    fprintf(stderr, "%s:%d: "fmt, __FILE__, __LINE__, __VA_ARGS__)
-# define PRINT_MSG(fmt,...)      fprintf(stderr, fmt, __VA_ARGS__)
+# define PRINT_MSG(fmt,...)          fprintf(stderr, fmt, __VA_ARGS__)
+# define PRINT_ERROR(fmt,...)        fprintf(stderr, "%s:%d: "fmt, __FILE__, __LINE__, __VA_ARGS__)
+# define PRINT_ERRNO(err,fmt,...)    cherokee_print_errno(err, fmt"\n", __VA_ARGS__)
 #endif
 
 #ifdef DEBUG
@@ -191,18 +304,19 @@
 # endif
 #endif
 
-#define PRINT_ERROR_S(str) PRINT_ERROR("%s",str)
-#define PRINT_MSG_S(str)   PRINT_MSG("%s",str)
+#define PRINT_ERRNO_S(e,str) PRINT_ERRNO(e, str, "")
+#define PRINT_ERROR_S(str)   PRINT_ERROR("%s",str)
+#define PRINT_MSG_S(str)     PRINT_MSG("%s",str)
 
 /* Tracing facility
  */
-#ifdef TRACE_ENABLED
-# define TRACE_ENV "CHEROKEE_TRACE"
+#define TRACE_ENV "CHEROKEE_TRACE"
 
+#ifdef TRACE_ENABLED
 # ifdef __GNUC__
-#  define TRACE(fmt,arg...) cherokee_trace (fmt, __FILE__, __LINE__, __cherokee_func__, ##arg)
+#  define TRACE(fmt,arg...) cherokee_trace_do_trace (fmt, __FILE__, __LINE__, __cherokee_func__, ##arg)
 # else
-#  define TRACE(fmt,...) cherokee_trace (fmt, __FILE__, __LINE__, __cherokee_func__, __VA_ARGS__)
+#  define TRACE(fmt,...) cherokee_trace_do_trace (fmt, __FILE__, __LINE__, __cherokee_func__, __VA_ARGS__)
 # endif
 #else
 # ifdef __GNUC__
@@ -217,19 +331,35 @@
 #define POINTER_TO_INT(pointer) ((long)(pointer))
 #define INT_TO_POINTER(integer) ((void*)((long)(integer)))
 
+/* Bit masks
+ */
+#define BIT_SET(var,bit)    var |= bit
+#define BIT_UNSET(var,bit)  var &= ~(bit)
 
-/* Format string for off_t
+/* Format string for off_t and size_t
  */
 #if (SIZEOF_OFF_T == SIZEOF_UNSIGNED_LONG_LONG)
 # define FMT_OFFSET "%llu"
 # define FMT_OFFSET_HEX "%llx"
 # define CST_OFFSET unsigned long long
-#elif (SIZEOF_OFF_T ==  SIZEOF_UNSIGNED_LONG)
+#elif (SIZEOF_OFF_T == SIZEOF_UNSIGNED_LONG)
 # define FMT_OFFSET "%lu"
 # define FMT_OFFSET_HEX "%lx"
 # define CST_OFFSET unsigned long
 #else
 # error Unknown size of off_t 
+#endif
+
+#if (SIZEOF_SIZE_T == SIZEOF_UNSIGNED_INT)
+# define FMT_SIZE "%d"
+# define FMT_SIZE_HEX "%x"
+# define CST_SIZE unsigned int
+#elif (SIZEOF_SIZE_T == SIZEOF_UNSIGNED_LONG_LONG)
+# define FMT_SIZE "%llu"
+# define FMT_SIZE_HEX "%llx"
+# define CST_SIZE unsigned long long
+#else
+# error Unknown size of size_t 
 #endif
 
 

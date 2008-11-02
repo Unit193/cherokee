@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2006 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2008 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -32,29 +32,30 @@
 #include <cherokee/macros.h>
 #include <cherokee/common.h>
 #include <cherokee/util.h>
+#include <cherokee/version.h>
 #include <cherokee/buffer.h>
 #include <cherokee/fdpoll.h>
-#include <cherokee/table.h>
 #include <cherokee/http.h>
 #include <cherokee/list.h>
 #include <cherokee/mime_entry.h>
 #include <cherokee/mime.h>
-#include <cherokee/list.h>
-#include <cherokee/list_merge_sort.h>
 #include <cherokee/url.h>
 #include <cherokee/header.h>
 #include <cherokee/resolv_cache.h>
-#include <cherokee/typed_table.h>
+#include <cherokee/post.h>
+#include <cherokee/trace.h>
 
 /* Server library
  */
+#include <cherokee/config_node.h>
 #include <cherokee/server.h>
 #include <cherokee/module.h>
 #include <cherokee/logger.h>
 #include <cherokee/handler.h>
 #include <cherokee/encoder.h>
 #include <cherokee/connection.h>
-#include <cherokee/module_loader.h>
+#include <cherokee/plugin.h>
+#include <cherokee/plugin_loader.h>
 #include <cherokee/nonce.h>
 
 /* Client library

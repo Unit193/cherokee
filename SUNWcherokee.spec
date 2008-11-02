@@ -1,7 +1,7 @@
 #
 # spec file for package SUNWcherokee
 #
-# Copyright (c) 2006 Sun Microsystems, Inc.
+# Copyright (c) 2008 Sun Microsystems, Inc.
 # This file and all modifications and additions to the pristine
 # package are under the same license as the package itself.
 #
@@ -10,8 +10,8 @@
 
 Name:                    SUNWcherokee
 Summary:                 cherokee - Fast, flexible, lightweight web server
-Version:                 0.5.3
-Source:                  http://www.0x50.org/download/0.5/%{version}/cherokee-%{version}.tar.gz
+Version:                 0.5.0
+Source:                  http://www.cherokee-project.com/download/0.5/%{version}/cherokee-%{version}.tar.gz
 SUNW_BaseDir:            %{_basedir}
 BuildRoot:               %{_tmppath}/%{name}-%{version}-build
 

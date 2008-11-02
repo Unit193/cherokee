@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2006 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2008 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -68,6 +68,7 @@ typedef unsigned short      cushort_t;
 typedef unsigned long       culong_t;
 typedef unsigned long long  cullong_t;
 
+typedef void (*cherokee_func_free_t) (void *);
 
 CHEROKEE_END_DECLS
 

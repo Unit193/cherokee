@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2006 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2008 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -26,13 +26,12 @@
 #define CHEROKEE_MIME_PROTECTED_H
 
 #include "list.h"
-#include "table.h"
-#include "table-protected.h"
+#include "avl.h"
 
 struct cherokee_mime {
-	cherokee_table_t mime_table;
-	list_t           mime_list;
-	list_t           name_list;
+	cherokee_avl_t   mime_table;
+	cherokee_list_t  mime_list;
+	cherokee_list_t  name_list;
 };
 
 #define MIME_TABLE(m)  (&((cherokee_mime_t *)(m))->mime_table)

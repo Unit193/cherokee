@@ -1,8 +1,8 @@
 # Cherokee
-# Copyright (C) 2001-2006 Alvaro Lopez Ortega
+# Copyright (C) 2001-2007 Alvaro Lopez Ortega
 
 Name:           cherokee
-Version:        0.5.5
+Version:        0.6.1
 Release:        1
 License:        GPL
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
@@ -11,7 +11,7 @@ Autoreqprov:    on
 Source:         %{name}-%{version}.tar.gz
 Summary:        Flexible and Fast web server
 Group:          Productivity/Networking/Web/Servers
-URL:            http://www.0x50.org
+URL:            http://www.cherokee-project.com
 
 %description
 Cherokee is a very fast, flexible and easy to configure Web Server.

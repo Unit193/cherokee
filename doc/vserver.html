@@ -1,0 +1,183 @@
+<html>
+<head>
+    <title>Virtual Server</title>
+    <link href="media/css/documentation.css" type="text/css" rel="stylesheet" />
+</head>
+
+<body>
+    
+    
+    <h1>Virtual Server</h1>
+    
+    <p>'Virtual Server' is an abstraction mechanism that allows you to define a custom
+number of parameters and rules that have to be applied to one or more domains.</p>
+<p>In a Cherokee server there must be at least one virtual server named default,
+and there is no maximum number.
+It is important to know that this server cannot be deleted.</p>
+<p>When the server receives a request it will try to match the domain name specified
+in the virtual server that should handle it. In case no virtual server matches
+the request, default will be used.</p>
+<div class="section" id="add-a-new-virtual-server">
+<h1>Add a new Virtual Server</h1>
+<p>You have to enter the server name and a valid Document Root directory in
+order to create a new virtual server.</p>
+<div align="center" class="align-center"><img alt="Virtual server" class="align-center" src="media/images/admin_vserver.png" /></div>
+<ul>
+<li><p class="first"><strong>Document Root</strong></p>
+<p>This directive sets the directory from which Cherokee will serve files.
+The set of rules is checked from the highest to the lowest possible priority.
+Once a rule is matched, the server appends the path from the requested URL to
+the document root to make the path to the document. If it is a directory, this
+information is used. If other rules apply to a parent directory, those are applied
+as well without overwriting the original behavior:</p>
+<pre class="literal-block">
+http://www.example.com/index.html refers to /var/www/index.html
+</pre>
+<p>This might seem complicated but it's actually simple to understand. For example suppose
+you had a directory called /secret that was protected with authentication, and there
+was also a rule with higher priority for /secret/cgi that only specified to use
+the CGI handler. Under these circumstances, if a request was received for
+/secret/cgi/something then the CGI handler would be taken and it would inherit the
+authentication specified for /secret.</p>
+</li>
+<li><p class="first"><strong>Name</strong></p>
+<p>Name is an alias. The domain names handled by the virtual server should be
+specified later in the virtual server details page.</p>
+</li>
+</ul>
+<p>Now, we can configure our new virtual server.</p>
+</div>
+<div class="section" id="basics">
+<h1>Basics</h1>
+<ul>
+<li><p class="first"><strong>Directory Indexes</strong></p>
+<p>The DirectoryIndex directive sets the list of resources to look for when
+the client requests an index of the directory by specifying a / at the end
+of the directory name. Several URLs may be given, in which case the server
+will return the first one that it finds. If none of the resources exist, the
+server will reply according to the handler behavior.</p>
+<p>Note that the documents do not need to be relative to the directory:</p>
+<pre class="literal-block">
+index.html,index.txt,/cgi-bin/index.pl
+</pre>
+<p>would cause the CGI script /cgi-bin/index.pl to be executed if neither
+index.html nor index.txt existed in a directory.</p>
+<p>There is a special case in which the directory index entry starts with
+a slash. For example, /cgi-bin/index.pl. In that case, it will use it as
+the object accessible under that public address of the same virtual server,
+so it will take care about the possible configuration of
+the /cgi-bin/ directory and/or the pl extension.</p>
+</li>
+</ul>
+</div>
+<div class="section" id="domain-names">
+<h1>Domain names</h1>
+<p>This section allows to define the list of domains that the virtual
+server implements.</p>
+<p>It can accepted either <a class="reference internal" href="#fqdn">FQDN</a> or wild cards entries. For instance:</p>
+<pre class="literal-block">
+  example.com
+*.example.org
+</pre>
+</div>
+<div class="section" id="behavior">
+<h1>Behavior</h1>
+<p>This sections allows to define a set of rules to define how the server
+should handle the different requests. These rules can be defined based
+on the directory that the request targets, the extension of the file
+that it is requesting, or a regular expression that may match with the
+request:</p>
+<ul class="simple">
+<li><strong>Directory</strong>: The entry Directory encloses a group of directives which will
+apply only to the named directory and sub-directories of that directory.</li>
+<li><strong>Extensions</strong>: The entry Extensions doesn't care about directories, it will
+just look for the extension of the object requested.</li>
+<li><strong>Regular Expressions</strong>: The Request entry provides a powerful way to apply
+custom options to requests. It is a complement for the Directory and Extension
+entries. Basically, there are two differences between them:<ul>
+<li>It uses regular expressions to define the requests in which the configuration
+will be applied.</li>
+<li>These entries are able to use the connection parameters (both pathinfo
+and query string). In this way, it is possible to set rules based on
+parameter values.</li>
+</ul>
+</li>
+</ul>
+<p>It is very important to know that this rules are prioritized, the
+bigger its priority is, the sooner that are checked against. You could
+think of a network routing table, it is quite similar.</p>
+<div align="center" class="align-center"><img alt="Virtual server" class="align-center" src="media/images/admin_behaviour.png" /></div>
+<p>Each of these behavior rules must specify which is the handler that
+the server should use to reply the requests that matches the rule.
+Handler are the modules that generate the information with which the
+server responses a client request.  By default Cherokee provide a
+number of them:</p>
+<ul>
+<li><p class="first"><a class="reference external" href="handlers/file.html">file</a> - <strong>File Sending</strong></p>
+<p>The file handler serves files straight from the filesystem.</p>
+</li>
+<li><p class="first"><a class="reference external" href="handlers/dirlist.html">dirlist</a> - <strong>Only listing</strong></p>
+<p>Displays a directory content list when a directory is requested,
+but it does not allow to download any content.</p>
+</li>
+<li><p class="first"><a class="reference external" href="handlers/common.html">common</a> - <strong>List &amp; Send</strong></p>
+<p>Combines both <a class="reference external" href="handlers/file.html">file</a> and <a class="reference external" href="handlers/dirlist.html">dirlist</a> handlers functionality to behave similarly
+to common web servers, it will display directory listings when a directory is
+requested.</p>
+</li>
+<li><p class="first"><a class="reference external" href="handlers/redir.html">redir</a> - <strong>Redirections</strong></p>
+<p>Perform simple and/or complex redirections using regexes.</p>
+</li>
+<li><p class="first"><a class="reference external" href="handlers/cgi.html">cgi</a> - <strong>CGI Execution</strong></p>
+<p>Executes CGI programs.</p>
+</li>
+<li><p class="first"><a class="reference external" href="handlers/scgi.html">scgi</a> - <strong>SCGI Server Support</strong></p>
+<p>Communicates with SCGI servers.</p>
+</li>
+<li><p class="first"><a class="reference external" href="handlers/fastcgi.html">fcgi</a> - <strong>FastCGI Server Support</strong></p>
+<p>Communicates with FastCGI servers.</p>
+</li>
+</ul>
+</div>
+<div class="section" id="error-handler">
+<h1>Error Handler</h1>
+<p>We can easily redirect errors to a custom path or website.</p>
+<div align="center" class="align-center"><img alt="Virtual server" class="align-center" src="media/images/admin_vserver_errors.png" /></div>
+</div>
+<div class="section" id="logging">
+<h1>Logging</h1>
+<p>The loggers are a type of Cherokee modules to write the server log
+information using different destinations and/or formats:</p>
+<ul class="simple">
+<li>Destination: File, syslog, program execution and standard error output.</li>
+<li>Format: Combined (Apache compatible), NCSA or W3C</li>
+</ul>
+<p>If a virtual server doesn't have a logger set up it will not log anything.</p>
+<div align="center" class="align-center"><img alt="Virtual server" class="align-center" src="media/images/admin_vserver_loggers.png" /></div>
+<p>By default Cherokee ships three loggers implementing three different
+logging formats:</p>
+<ul>
+<li><p class="first">combined - <strong>Combined Log Format</strong></p>
+<p>Logging using the Apache log format. It is the <cite>de facto standard</cite> nowadays.</p>
+</li>
+<li><p class="first">ncsa - <strong>NCSA Log Format</strong></p>
+<p>Logging using the NCSA log format.</p>
+</li>
+<li><p class="first">w3c - <strong>W3C Log Format</strong></p>
+<p>Logging using the W3C log format.</p>
+</li>
+</ul>
+</div>
+<div class="section" id="security">
+<h1>Security</h1>
+<p>The virtual server must be configured with the path to the certificate
+before using secure connections (https). There is a document which
+might help to generate SSL <a class="reference external" href="How_to_generate_SSL_keys.html">keys</a></p>
+<p id="fqdn"><strong>FQDN</strong>: Full Qualified Domain Names</p>
+</div>
+
+    
+
+    
+</body>
+</html>

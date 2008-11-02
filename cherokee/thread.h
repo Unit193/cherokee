@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2006 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2008 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -36,7 +36,7 @@
 #include "connection.h"
 #include "connection-protected.h"
 #include "fdpoll.h"
-#include "table.h"
+#include "avl.h"
 
 
 typedef enum {
@@ -51,7 +51,7 @@ typedef enum {
 
 
 typedef struct {
-	struct list_head base;
+	cherokee_list_t         base;
 
 #ifdef HAVE_PTHREAD
 	pthread_t               thread;
@@ -64,20 +64,30 @@ typedef struct {
 	cherokee_thread_pref_t  thread_pref;
 
 	time_t                  bogo_now;
-	struct tm               bogo_now_tm;
-	cherokee_buffer_t      *bogo_now_string;
+	struct tm               bogo_now_tmgmt;
+	struct tm               bogo_now_tmloc;
+	cherokee_buffer_t       bogo_now_strgmt;
+
+	cherokee_buffer_t       tmp_buf1;
+	cherokee_buffer_t       tmp_buf2;
 	
 	void                   *server;
 	cherokee_boolean_t      exit;
 
-	int                     active_list_num;
-	list_t                  active_list;
-	int                     polling_list_num;
-	list_t                  polling_list;
-	list_t                  reuse_list;
-	int                     reuse_list_num;
+	cherokee_boolean_t      is_accepting_conns; /* true=accepts new conns */
 
-	int                     pending_conns_num;   /* Waiting pipelining connections */
+	int                     conns_num;          /* open connections */
+	int                     conns_max;          /* max. connections */
+	int                     conns_accept;       /* accept limit */
+
+	int                     active_list_num;    /* active connections */
+	cherokee_list_t         active_list;
+	int                     polling_list_num;   /* polling connections */
+	cherokee_list_t         polling_list;
+	cherokee_list_t         reuse_list;
+	int                     reuse_list_num;     /* reusable connections objs */
+
+	int                     pending_conns_num;  /* Waiting pipelining connections */
 
 	struct {
 		uint32_t        continuous;
@@ -85,27 +95,31 @@ typedef struct {
 		uint32_t        recalculate;		
 	} accept;
 
-	cherokee_table_t           *fastcgi_servers;
-	cherokee_table_free_item_t  fastcgi_free_func;
+	cherokee_avl_t         *fastcgi_servers;
+	cherokee_func_free_t    fastcgi_free_func;
 
 } cherokee_thread_t;
 
 #define THREAD(x)         ((cherokee_thread_t *)(x))
 #define THREAD_SRV(t)     (SRV(THREAD(t)->server))
 #define THREAD_IS_REAL(t) (THREAD(t)->real_thread)
+#define THREAD_TMP_BUF1(t) (&THREAD(t)->tmp_buf1)
+#define THREAD_TMP_BUF2(t) (&THREAD(t)->tmp_buf2)
 
 
 #ifdef HAVE_PTHREAD
-# define cherokee_thread_step(t,b) cherokee_thread_step_MULTI_THREAD(t,b)
 ret_t cherokee_thread_step_MULTI_THREAD  (cherokee_thread_t *thd, cherokee_boolean_t dont_block);
 #else
-# define cherokee_thread_step(t,b) cherokee_thread_step_SINGLE_THREAD(t,b)
-ret_t cherokee_thread_step_SINGLE_THREAD (cherokee_thread_t *thd, cherokee_boolean_t dont_block);
+# define cherokee_thread_step_MULTI_THREAD(t,b) cherokee_thread_step_SINGLE_THREAD(t)
 #endif
+ret_t cherokee_thread_step_SINGLE_THREAD (cherokee_thread_t *thd);
 
 
-ret_t cherokee_thread_new  (cherokee_thread_t **thd, void *server, cherokee_thread_type_t type, cherokee_poll_type_t fdtype, int system_fd_num, int fd_num);
+ret_t cherokee_thread_new  (cherokee_thread_t **thd, void *server, cherokee_thread_type_t type, cherokee_poll_type_t fdtype, int system_fd_num, int fd_num, int conns_max);
 ret_t cherokee_thread_free (cherokee_thread_t  *thd);
+
+ret_t cherokee_thread_accept_on                  (cherokee_thread_t  *thd);
+ret_t cherokee_thread_accept_off                 (cherokee_thread_t  *thd);
 
 ret_t cherokee_thread_unlock                     (cherokee_thread_t *thd);
 ret_t cherokee_thread_wait_end                   (cherokee_thread_t *thd);

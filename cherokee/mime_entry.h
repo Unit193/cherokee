@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2006 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2008 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -30,7 +30,6 @@
 #define CHEROKEE_MIME_ENTRY_H
 
 #include <cherokee/common.h>
-#include <cherokee/table.h>
 #include <cherokee/buffer.h>
 #include <cherokee/list.h>
 

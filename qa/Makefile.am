@@ -2,6 +2,8 @@ EXTRA_DIST = \
 conf.py \
 base.py \
 util.py \
+pyscgi.py \
+fcgi.py \
 run-tests.py \
 001-basic.py \
 002-MissingProtocol.py \
@@ -136,7 +138,28 @@ run-tests.py \
 131-ChangeUser-phpcgi.py \
 132-file-ContentType.py \
 133-If-None-Match.py \
-134-HTTP_headers.py
+134-HTTP_headers.py \
+135-RedirParams.py \
+136-BadRange.py \
+137-Mime1.py \
+138-ChangeUser-cgi.py \
+139-domain-wildcards1.py \
+140-SCGI-EmptyVars.py \
+141-FastCGI-EmptyVars.py \
+142-SCGI-ExtraVars.py \
+143-ContentRange-NoIO.py \
+144-ContentRange2-NoIO.py \
+145-ContentRange3-NoIO.py \
+146-ContentRange4-NoIO.py \
+147-ContentRange-Double-NoIO.py \
+148-ContentRange-Double2-NoIO.py \
+149-Common-PathInfo.py \
+150-Common-No-PathInfo.py \
+151-SCGI-vars.py \
+152-SCGI-vars2.py \
+153-SCGI-vars-root.py \
+154-DirRedirection.py \
+155-DirRedirection2.py
 
 test:
 	./run-tests.py

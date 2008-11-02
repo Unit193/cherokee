@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2006 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2008 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -31,7 +31,6 @@
 #define CHEROKEE_HEADER_PROTECTED_H
 
 #include "buffer.h"
-#include "table.h"
 #include "http.h"
 
 
@@ -67,7 +66,7 @@ typedef enum {
 	header_type_request,
 	header_type_response, 
 	header_type_basic
-} cherokee_type_header_t;
+} cherokee_header_type_t;
 
 
 typedef struct cherokee_header cherokee_header_t;
@@ -76,18 +75,17 @@ typedef struct cherokee_header cherokee_header_t;
 
 typedef ret_t (* cherokee_header_foreach_func_t) (cherokee_buffer_t *header, cherokee_buffer_t *content, void *data);
 
-ret_t cherokee_header_new                 (cherokee_header_t **hdr);
+ret_t cherokee_header_new                 (cherokee_header_t **hdr, cherokee_header_type_t type);
+ret_t cherokee_header_init                (cherokee_header_t  *hdr, cherokee_header_type_t type);
 ret_t cherokee_header_free                (cherokee_header_t  *hdr);
-
-ret_t cherokee_header_init                (cherokee_header_t *hdr);
-ret_t cherokee_header_mrproper            (cherokee_header_t *hdr);
+ret_t cherokee_header_mrproper            (cherokee_header_t  *hdr);
 
 ret_t cherokee_header_clean               (cherokee_header_t *hdr);
-ret_t cherokee_header_parse               (cherokee_header_t *hdr, cherokee_buffer_t *buffer, cherokee_type_header_t type);
+ret_t cherokee_header_parse               (cherokee_header_t *hdr, cherokee_buffer_t *buffer, cherokee_http_t *error_code);
 ret_t cherokee_header_has_header          (cherokee_header_t *hdr, cherokee_buffer_t *buffer, int tail_len);
 
 ret_t cherokee_header_get_length          (cherokee_header_t *hdr, cuint_t *len);
-ret_t cherokee_header_get_number          (cherokee_header_t *hdr, cuint_t *num);
+ret_t cherokee_header_foreach_unknown     (cherokee_header_t *hdr, cherokee_header_foreach_func_t func, void *data);
 
 ret_t cherokee_header_copy_request        (cherokee_header_t *hdr, cherokee_buffer_t *request);
 ret_t cherokee_header_copy_query_string   (cherokee_header_t *hdr, cherokee_buffer_t *query_string);

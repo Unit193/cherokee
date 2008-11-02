@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2006 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2008 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -24,24 +24,23 @@
 
 #include "logger_combined.h"
 #include "logger_ncsa.h"
-#include "module_loader.h"
+#include "plugin_loader.h"
 
 
-cherokee_module_info_t MODULE_INFO(combined) = {
-	cherokee_logger,              /* type     */
-	cherokee_logger_combined_new  /* new func */
-};
+/* Plug-in definition
+ */
+PLUGIN_INFO_LOGGER_EASIEST_INIT(combined);
 
 
 ret_t
-cherokee_logger_combined_new (cherokee_logger_t **logger, cherokee_table_t *properties)
+cherokee_logger_combined_new (cherokee_logger_t **logger, cherokee_config_node_t *config)
 {
 	ret_t ret;
 	CHEROKEE_NEW_STRUCT(n, logger_combined);
 	
 	/* Init the base class object
 	 */
-	cherokee_logger_init_base(LOGGER(n));
+	cherokee_logger_init_base (LOGGER(n), PLUGIN_INFO_PTR(combined));
 
 	MODULE(n)->init         = (logger_func_init_t) cherokee_logger_ncsa_init;
 	MODULE(n)->free         = (logger_func_free_t) cherokee_logger_ncsa_free;
@@ -53,7 +52,7 @@ cherokee_logger_combined_new (cherokee_logger_t **logger, cherokee_table_t *prop
 
 	/* Init the base class: NCSA
 	 */
-	ret = cherokee_logger_ncsa_init_base (n, properties);
+	ret = cherokee_logger_ncsa_init_base (n, config);
 	if (unlikely(ret < ret_ok)) return ret;
 
 	/* Active the "Combined" bit
@@ -67,21 +66,15 @@ cherokee_logger_combined_new (cherokee_logger_t **logger, cherokee_table_t *prop
 }
 
 
-
 /* Library init function
  */
-
 static cherokee_boolean_t _combined_is_init = false;
 
-void
-MODULE_INIT(combined) (cherokee_module_loader_t *loader)
-{
-	/* Init flag
-	 */
+void                                                        
+PLUGIN_INIT_NAME(name) (cherokee_plugin_loader_t *loader)   
+{                                                           
 	if (_combined_is_init) return;
 	_combined_is_init = true;
 
-	/* Load the dependences
-	 */
-//	cherokee_module_loader_load (loader, "ncsa");
-}
+	cherokee_plugin_loader_load (loader, "ncsa");
+}                                                           

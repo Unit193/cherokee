@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2006 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2008 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -34,16 +34,10 @@ typedef enum {
 } prop_table_types_t;
 
 
-ret_t 
-cherokee_config_entry_new (cherokee_config_entry_t **entry)
-{
-	CHEROKEE_NEW_STRUCT (n, config_entry);
-		
-	cherokee_config_entry_init (n);
-
-	*entry = n;	
-	return ret_ok;
-}
+/* Implements _new() and _free() 
+ */
+CHEROKEE_ADD_FUNC_NEW  (config_entry);
+CHEROKEE_ADD_FUNC_FREE (config_entry);
 
 
 ret_t 
@@ -58,13 +52,13 @@ cherokee_config_entry_init (cherokee_config_entry_t *entry)
 
 	entry->validator_new_func   = NULL;
 	entry->validator_properties = NULL;
+	entry->auth_realm           = NULL;
 
 	entry->access               = NULL;
 	entry->authentication       = http_auth_nothing;
 	entry->only_secure          = false;
 
 	entry->document_root        = NULL;
-	entry->auth_realm           = NULL;
 	entry->users                = NULL;
 
 	return ret_ok;
@@ -72,15 +66,15 @@ cherokee_config_entry_init (cherokee_config_entry_t *entry)
 
 
 ret_t 
-cherokee_config_entry_free (cherokee_config_entry_t *entry) 
+cherokee_config_entry_mrproper (cherokee_config_entry_t *entry) 
 {
 	if (entry->handler_properties != NULL) {
-		cherokee_typed_table_free (entry->handler_properties);
+		cherokee_module_props_free (entry->handler_properties);
 		entry->handler_properties = NULL;
 	}
 
 	if (entry->validator_properties != NULL) {
-		cherokee_typed_table_free (entry->validator_properties);
+		cherokee_module_props_free (entry->validator_properties);
 		entry->validator_properties = NULL;
 	}
 	
@@ -96,88 +90,30 @@ cherokee_config_entry_free (cherokee_config_entry_t *entry)
 
 	if (entry->auth_realm != NULL) {
 		cherokee_buffer_free (entry->auth_realm);
-		entry->auth_realm = NULL;
+		entry->document_root = NULL;
 	}
 
 	if (entry->users != NULL) {
-		cherokee_table_free (entry->users);
+		cherokee_avl_free (entry->users, free);
 		entry->users = NULL;
 	}
 
-	free (entry);
 	return ret_ok;
 }
 
 
-static ret_t 
-entry_set_prop (prop_table_types_t table_type, cherokee_config_entry_t *entry, char *prop_name, cherokee_typed_table_types_t type, void *value, cherokee_table_free_item_t free_func)
-{
-	ret_t              ret;
-	cherokee_table_t **table;
-
-	/* Choose the table
-	 */
-	switch (table_type) {
-	case table_handler:
-		table = &entry->handler_properties;
-		break;
-	case table_validator:
-		table = &entry->validator_properties;
-		break;
-	}
-	
-	/* Create the table on demand to save memory
-	 */
-	if (*table == NULL) {
-		ret = cherokee_table_new (table);
-		if (unlikely(ret != ret_ok)) return ret;
-	}
-
-	/* Add the property
-	 */
-	switch (type) {
-	case typed_int:
-		return cherokee_typed_table_add_int (*table, prop_name, POINTER_TO_INT(value));
-	case typed_str:
-		return cherokee_typed_table_add_str (*table, prop_name, value);
-	case typed_data:
-		return cherokee_typed_table_add_data (*table, prop_name, value, free_func);
-	case typed_list:
-		return cherokee_typed_table_add_list (*table, prop_name, value, free_func);
-	default:
-		SHOULDNT_HAPPEN;
-	}
-	
-	return ret_error;
-}
-
-
 ret_t 
-cherokee_config_entry_set_handler_prop (cherokee_config_entry_t *entry, char *prop_name, cherokee_typed_table_types_t type, void *value, cherokee_table_free_item_t free_func)
+cherokee_config_entry_set_handler (cherokee_config_entry_t *entry, cherokee_plugin_info_handler_t *plugin_info)
 {
-	return entry_set_prop (table_handler, entry, prop_name, type, value, free_func);
-}
+	return_if_fail (plugin_info != NULL, ret_error);
 
-
-ret_t 
-cherokee_config_entry_set_validator_prop (cherokee_config_entry_t *entry, char *prop_name, cherokee_typed_table_types_t type, void *value, cherokee_table_free_item_t free_func)
-{
-	return entry_set_prop (table_validator, entry, prop_name, type, value, free_func);
-}
-
-
-ret_t 
-cherokee_config_entry_set_handler (cherokee_config_entry_t *entry, cherokee_module_info_t *modinfo)
-{
-	return_if_fail (modinfo != NULL, ret_error);
-
-	if (modinfo->type != cherokee_handler) {
+	if (PLUGIN_INFO(plugin_info)->type != cherokee_handler) {
 		PRINT_ERROR ("Directory '%s' has not a handler module!\n", entry->document_root->buf);
 		return ret_error;
 	}
 
-	entry->handler_new_func = modinfo->new_func;
-	entry->handler_methods  = MODULE_INFO_HANDLER(modinfo)->valid_methods;
+	entry->handler_new_func = PLUGIN_INFO(plugin_info)->instance;
+	entry->handler_methods  = plugin_info->valid_methods;
 
 	return ret_ok;
 }
@@ -196,7 +132,7 @@ cherokee_config_entry_complete (cherokee_config_entry_t *entry, cherokee_config_
 		overwrite = true;
 	}
 
-//	printf ("same_type=%d, overwrite=%d, prio=%d\n", same_type, overwrite, main->priority);
+/* 	printf ("same_type=%d, overwrite=%d, prio=%d\n", same_type, overwrite, main->priority); */
 
 	/* If a temporary config_entry inherits from valid entry, it will
 	 * get references than mustn't be free'd, like 'user'. Take care.
@@ -255,6 +191,26 @@ cherokee_config_entry_inherit (cherokee_config_entry_t *entry)
 	while ((parent = parent->parent) != NULL) {
 		cherokee_config_entry_complete (entry, parent, true);
 	}
+
+	return ret_ok;
+}
+
+
+ret_t 
+cherokee_config_entry_print (cherokee_config_entry_t *entry)
+{
+	printf ("parent:                    %p\n", entry->parent);
+	printf ("priority:                  %d\n", entry->priority);
+	printf ("document_root:             %s\n", entry->document_root ? entry->document_root->buf : "");
+	printf ("only_secure:               %d\n", entry->only_secure);
+	printf ("access:                    %p\n", entry->access);
+	printf ("handler_new                %p\n", entry->handler_new_func);
+	printf ("http_methods:              0x%x\n", entry->handler_methods);
+	printf ("handler_properties:        %p\n", entry->handler_properties);
+	printf ("validator_new:             %p\n", entry->validator_new_func);
+	printf ("validator_properties:      %p\n", entry->validator_properties);
+	printf ("auth_realm:                %s\n", entry->auth_realm ? entry->auth_realm->buf : "");
+	printf ("users:                     %p\n", entry->users);
 
 	return ret_ok;
 }

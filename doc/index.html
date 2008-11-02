@@ -1,176 +1,95 @@
 <html>
- <header>
-     <title>Cherokee Web Server: index</title>
-	<style>	
-	body {
-		
-		width: 760px; 
-		margin: auto;
-		font-family: 'Trebuchet MS', 'Lucida Grande', Verdana, Arial, Sans-Serif;
-		font-size: small;
-		padding: 10px;
-	}
-	
-	#header {
-		border-bottom: 2px solid #b00;
-	}
+<head>
+    <title>Cherokee 0.6 Documentation</title>
+    <link href="media/css/documentation.css" type="text/css" rel="stylesheet" />
+</head>
 
-	#toc {
-		border: 
-		color: #650;
-		background-color: #f0e9b0;
-		border: 1px solid #a99d3a;
-		font-size: small;
-		-moz-border-radius: 4px;
-		float: right;
-		margin: 4px;
-	}
+<body>
+    
+    
+    <h1>Cherokee 0.6 Documentation</h1>
+    
+    <p>Welcome to the 0.6 documentation.</p>
+<div class="section" id="compiling-and-installing">
+<h1>Compiling and Installing</h1>
+<p>If you are not comfortable with rolling your own Cherokee, then check our
+listings of pre-compiled <a class="reference external" href="http://www.cherokee-project.com/downloads">binaries</a>.
+Specific instructions for building your own copy are available at:</p>
+<ul class="simple">
+<li><a class="reference external" href="compiling_and_installing_unix.html">Unix</a></li>
+<li><a class="reference external" href="compiling_and_installing_windows.html">Windows</a></li>
+</ul>
+</div>
+<div class="section" id="configuration-interface">
+<h1>Configuration Interface</h1>
+<p>Cherokee provides an administration interface named <a class="reference external" href="admin.html">Cherokee Admin</a>
+that allows to configure the web server without having to worry about
+editing a text file written with a certain syntax.</p>
+<div align="center" class="align-center"><img alt="Cherokee Admin interface" class="align-center" src="media/images/admin_index.png" /></div>
+</div>
+<div class="section" id="general-configuration">
+<h1>General configuration</h1>
+<p>There are a number a <a class="reference external" href="general.html">general configuration</a> entries that specify the
+most significant configuration options such as the port - or ports -
+that the server will listen to, the default timeout, whether to
+support keep-alive connections and so on.</p>
+</div>
+<div class="section" id="virtual-servers">
+<h1>Virtual Servers</h1>
+<p>If you want your web server to work with more than one <a class="reference external" href="vserver.html">virtual
+server</a> you will have just to create them. Each more will have a
+complete independent configuration: paths, behavior, logging
+facilities, etc.</p>
+</div>
+<div class="section" id="encoders">
+<h1>Encoders</h1>
+<p>The encoders allow to transform whatever information the server
+is sending as a response of a request, no matter what handler
+is generating it.</p>
+<ul>
+<li><p class="first"><a class="reference external" href="encoders/gzip.html">gzip</a> - GZip compression</p>
+<p>Encodes the output with GZip</p>
+</li>
+</ul>
+</div>
+<div class="section" id="icons">
+<h1>Icons</h1>
+<p>The <a class="reference external" href="icons.html">icons</a> configuration associates an icon image with one or more file
+extensions. This information will be used mainly by the <a class="reference external" href="handlers/dirlist.html">dirlist</a> handler.</p>
+</div>
+<div class="section" id="advanced-topics">
+<h1>Advanced topics</h1>
+<p>There is an <a class="reference external" href="advanced.html">advanced section</a> that allows to configure the most
+complex parameters of the server and how it works with the operating
+system.</p>
+<p>If you are unsure about any of the options presented within the
+advanced section, we recommend you to not change it and use the
+default value.</p>
+<div class="section" id="other-advanced-topics">
+<h2>Other advanced topics</h2>
+<ul class="simple">
+<li><a class="reference external" href="debug.html">Debugging</a> Cherokee</li>
+<li>How to <a class="reference external" href="cross_compile_cherokee.html">cross compile Cherokee</a> (Win32 from Linux or OS X)</li>
+<li>How to <a class="reference external" href="How_to_generate_SSL_keys.html">generate SSL keys</a></li>
+</ul>
+</div>
+<div class="section" id="internal-configuration-system">
+<h2>Internal configuration system</h2>
+<p>The administration interface is highly recommended, and is in fact the
+only administration mechanism that should be used to configure
+Cherokee. However, there is another way in which Cherokee developers
+and very advance users can modify the configuration.</p>
+<p>The <a class="reference external" href="internal_configuration.html">internal configuration system</a> text file format is documented so
+if you are completely sure about what you are doing, you can modify it
+by hand. We recommend you not to do so.</p>
+<p>The default location for Cherokee configuration files is
+<tt class="docutils literal"><span class="pre">/etc/cherokee</span></tt>, but this may vary based on distribution or
+installation parameters.</p>
+</div>
+</div>
 
-	#toc a {
-		color: #650;
-	}
+    
 
-	#toctitle {
-		color: #fff;
-		background-color: #650;
-	}
-	
-	h1 {
-		border-bottom: 1px solid #b00;
-		float: right;
-		border-bottom: 0px;
-	}
-
-	h2 {
-		border-bottom: 1px solid #b00;
-	}
-
-	pre {
-		background-color: #000;
-		color: #ddd;
-		padding: 5px;
-	}
-
-	#footer {
-		border-top: 1px dotted #ddd;
-		color: #666;
-		font-size: 90%;
-		padding: 10px;
-		padding-bottom: 40px;
-	}
-
-/* Merge template style */
-
-.messagebox {
-   border: 1px solid #aaaaaa;
-   background-color: #f9f9f9;
-   width: 80%;
-   margin: 0 auto 1em auto;
-   padding: .2em;
-   text-align: justify;
-}
-.messagebox.merge {
-   border: 1px solid #cf9fff;
-   background-color: #f5edf5;
-   text-align: center;
-}
-.messagebox.cleanup {
-   border: 1px solid #9f9fff;
-   background-color: #efefff;
-   text-align: center;
-}
-.messagebox.standard-talk {
-   border: 1px solid #c0c090;
-   background-color: #f8eaba;
-}
-
-	</style>
- </header>
- <body>
-     <h1>index</h1>
-	<div id="header"><img src="cherokee.png" /></div>
-	   <p><br />
-<span style="color:#cc0000; font-size:200%;"><b>Welcome to the</b>&nbsp;</span><span style="color:#3465a4; font-size:200%;"><b>Cherokee Web Server</b>&nbsp;</span><span style="color:#cc0000; font-size:200%;"><b>documentation</b>&nbsp;</span><br /><br />
-</p>
-<table style="width:100%; background-color:transparent;">
-
-<tr>
-<td style="vertical-align:top; width:50%">
-<a name="Introduction"></a><h1> Introduction </h1>
-<ul><li> <a href="Compiling_and_Installing.html" title="Compiling and Installing">Compiling and Installing</a>
-</li><li> <a href="Configuration.html" title="Configuration">Configuration</a> 
-<ul><li> <a href="Server_configuration.html" title="Server configuration">Server configuration</a>
-</li><li> <a href="Behavior_configuration.html" title="Behavior configuration">Behavior configuration</a>
-<ul><li> <a href="Extension_configuration.html" title="Extension configuration">Extension configuration</a>
-</li><li> <a href="Directory_configuration.html" title="Directory configuration">Directory configuration</a>
-</li><li> <a href="Request_configuration.html" title="Request configuration">Request configuration</a>
-</li></ul>
-</li><li> <a href="Mime_types_configuration.html" title="Mime types configuration">Mime types configuration</a>
-</li><li> <a href="Icons_configuration.html" title="Icons configuration">Icons configuration</a>
-</li></ul>
-</li><li> <a href="Authors.html" title="Authors">Authors</a>
-</li><li> <a href="Copying_and_license.html" title="Copying and license">Copying and license</a>
-</li><li> <a href="Current_events.html" title="Current events">Changelog</a>
-</li></ul>
-</td><td style="vertical-align:top">
-<div class="center"><div class="floatnone"><span><img src="images/Cherokee-icono.png" /></span></div></div>
-<p>Cherokee is a very fast, flexible, and lightweight Web server. It is implemented entirely in C, and has no dependencies beyond a standard C library. It is embeddable and extensible with plug-ins. It supports on-the-fly configuration by reading files or strings, TLS/SSL (via GNUTLS or OpenSSL), virtual hosts, authentication, cache friendly features, PHP, custom error management, and much more.
-</p>
-</td></tr>
-<tr>
-<td style="vertical-align:top">
-<a name="Handlers"></a><h1> Handlers </h1>
-<ul><li> <a href="File_sending.html" title="File sending">File sending</a>
-</li><li> <a href="Directory_listing.html" title="Directory listing">Directory listing</a>
-</li><li> <a href="Common_behavior.html" title="Common behavior">Common behavior</a>
-</li><li> <a href="Redirections.html" title="Redirections">Redirections</a>
-</li><li> <a href="CGI_executing.html" title="CGI executing">CGI executing</a>
-</li><li> <a href="PHP_execution.html" title="PHP execution">PHP execution</a>
-</li><li> <a href="SCGI.html" title="SCGI">SCGI</a>
-</li><li> <a href="FastCGI.html" title="FastCGI">FastCGI</a>
-</li></ul>
-<p><br />
-</p>
-</td><td style="vertical-align:top">
-<a name="Other_modules"></a><h1> Other modules </h1>
-<ul><li> <a href="Logging_system.html" title="Logging system">Logging system</a>
-<ul><li> <a href="Combined_logs.html" title="Combined logs">Combined</a>
-</li><li> <a href="NCSA_logs.html" title="NCSA logs">NCSA</a>
-</li><li> <a href="W3C_logs.html" title="W3C logs">W3C</a>
-</li></ul>
-</li></ul>
-<ul><li> <a href="Authentication.html" title="Authentication">Authentication</a>
-<ul><li> <a href="Htpasswd_validator.html" title="Htpasswd validator">Htpasswd</a>
-</li><li> <a href="Htdigest_validator.html" title="Htdigest validator">Htdigest</a>
-</li><li> <a href="Plain_validator.html" title="Plain validator">Plain text</a>
-</li><li> <a href="PAM_validator.html" title="PAM validator">PAM</a>
-</li></ul>
-</li></ul>
-<ul><li> <a href="Encoders.html" title="Encoders">Encoders</a>
-<ul><li> <a href="Gzip_encoder.html" title="Gzip encoder">Gzip</a>
-</li></ul>
-</li></ul>
-</td></tr>
-<tr>
-<td style="vertical-align:top">
-<a name="FAQ"></a><h1> FAQ </h1>
-<ul><li> <a href="Frequently_asked_questions.html" title="Frequently asked questions">Frequently asked questions</a>
-</li></ul>
-</td><td style="vertical-align:top">
-<a name="How_to:"></a><h1> How to: </h1>
-<ul><li> <a href="How_to_generate_SSL_keys.html" title="How to generate SSL keys">How to generate SSL keys</a>
-</li><li> <a href="How_to_manage_Virtual_Host.html" title="How to manage Virtual Host">How to manage Virtual Host</a>
-</li><li> <a href="Ruby_on_Rails_with_SCGI.html" title="Ruby on Rails with SCGI">Ruby on Rails with SCGI</a>
-</li><li> <a href="Jaws_and_Cherokee_with_FastCGI.html" title="Jaws and Cherokee with FastCGI">Jaws and Cherokee with FastCGI</a>
-</li></ul>
-</td></tr></table>
-<a name="Development"></a><h1> Development </h1> 
-<p>We are also working in some sub-project and derivated tools:
-</p>
-<ul><li> <a href="U-Cherokee.html" title="U-Cherokee">u-Cherokee</a> - an embedded version of Cherokee!
-</li><li> <a href="Cget.html" title="Cget">cget</a> - a downloading tool
-</li></ul>
-
-     <div id="footer"><a href="http://www.0x50.org">Cherokee</a> Web Server</div>
- </body>
+    
+</body>
 </html>

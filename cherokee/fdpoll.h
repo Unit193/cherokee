@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2006 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2008 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -34,6 +34,10 @@
 
 CHEROKEE_BEGIN_DECLS
 
+#define FDPOLL_MODE_NONE	(-1)	/* no mode set */
+#define FDPOLL_MODE_READ	0	/* poll read  side */
+#define FDPOLL_MODE_WRITE	1	/* poll write side */
+
 typedef enum {
 	cherokee_poll_epoll,
 	cherokee_poll_kqueue,
@@ -48,20 +52,24 @@ typedef enum {
 
 typedef struct cherokee_fdpoll cherokee_fdpoll_t;
 
-ret_t cherokee_fdpoll_new        (cherokee_fdpoll_t **fdp, cherokee_poll_type_t type, int sys_limit, int limit);
+ret_t cherokee_fdpoll_get_fdlimits(cherokee_poll_type_t type, int *sys_fd_limit, int *fd_limit);
+
+ret_t cherokee_fdpoll_new        (cherokee_fdpoll_t **fdp, cherokee_poll_type_t type, int sys_fd_limit, int fd_limit);
 ret_t cherokee_fdpoll_best_new   (cherokee_fdpoll_t **fdp, int sys_limit, int limit);
 ret_t cherokee_fdpoll_free       (cherokee_fdpoll_t  *fdp);
 
-ret_t cherokee_fdpoll_get_method     (cherokee_fdpoll_t *fdp, cherokee_poll_type_t *type);
-ret_t cherokee_fdpoll_get_method_str (cherokee_fdpoll_t *fdp, char **name);
+ret_t cherokee_fdpoll_get_method (cherokee_fdpoll_t *fdp, cherokee_poll_type_t *poll_type);
+ret_t cherokee_fdpoll_get_method_str (cherokee_fdpoll_t *fdp, char **str_method);
+ret_t cherokee_fdpoll_str_to_method  (char *str_method, cherokee_poll_type_t *poll_method);
 
 ret_t cherokee_fdpoll_add        (cherokee_fdpoll_t *fdp, int fd, int rw);
 ret_t cherokee_fdpoll_del        (cherokee_fdpoll_t *fdp, int fd);
 ret_t cherokee_fdpoll_reset      (cherokee_fdpoll_t *fdp, int fd);
-void  cherokee_fdpoll_set_mode   (cherokee_fdpoll_t *fdp, int fd, int rw);
+ret_t cherokee_fdpoll_set_mode   (cherokee_fdpoll_t *fdp, int fd, int rw);
 int   cherokee_fdpoll_check      (cherokee_fdpoll_t *fdp, int fd, int rw);
 int   cherokee_fdpoll_watch      (cherokee_fdpoll_t *fdp, int timeout_msecs);
 ret_t cherokee_fdpoll_is_full    (cherokee_fdpoll_t *fdp);
+int   cherokee_fdpoll_is_empty   (cherokee_fdpoll_t *fdp);
 
 CHEROKEE_END_DECLS
 

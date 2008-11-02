@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2006 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2008 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -38,9 +38,6 @@ CHEROKEE_BEGIN_DECLS
 
 
 typedef struct {	
-	cherokee_buffer_t  user;
-	cherokee_buffer_t  passwd;
-
 	cherokee_buffer_t  host;
 	cuint_t            port;
 	cherokee_buffer_t  request;
@@ -62,7 +59,7 @@ ret_t cherokee_url_init     (cherokee_url_t *url);
 ret_t cherokee_url_clean    (cherokee_url_t *url);
 ret_t cherokee_url_mrproper (cherokee_url_t *url);
 
-ret_t cherokee_url_parse        (cherokee_url_t *url, cherokee_buffer_t *string);
+ret_t cherokee_url_parse        (cherokee_url_t *url, cherokee_buffer_t *string, cherokee_buffer_t *user_ret, cherokee_buffer_t *password_ret);
 ret_t cherokee_url_build_string (cherokee_url_t *url, cherokee_buffer_t *buf);
 
 ret_t cherokee_url_print (cherokee_url_t *url);

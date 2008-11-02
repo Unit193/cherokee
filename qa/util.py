@@ -1,4 +1,13 @@
-import random
+import os, sys, time, random
+from conf import *
+
+def count_down (msg, nsecs, nl=True):
+    for s in range(nsecs):
+        sys.stdout.write ((msg+'\r') % (nsecs - s - 1))
+        sys.stdout.flush()
+        time.sleep(1)
+    if nl:
+        print
 
 def str_random_generate (n):
     c = ""
@@ -71,3 +80,67 @@ def str_random (n):
     str_buf += tmp
     return str_buf[offset:]
 
+
+def check_php_interpreter (fullpath):
+    f = os.popen ("%s -v" % (fullpath))
+    all = reduce (lambda x,y: x+y, f.readlines())
+    f.close()
+    return "cgi-fcgi" in all
+
+__php_ref = None
+def look_for_php():    
+    global __php_ref
+
+    if __php_ref != None:
+        return __php_ref
+    
+    if PHPCGI_PATH != "auto":
+        if check_php_interpreter (PHPCGI_PATH):
+            __php_ref = PHPCGI_PATH
+            return __php_ref
+
+    for p in PHP_DIRS:
+        for n in PHP_NAMES:
+            php = os.path.join(p,n)
+            if os.path.exists(php):
+                if check_php_interpreter(php):
+                    __php_ref = php
+                    return php
+
+    error = "Couldn't find a suitable PHP interpreter (with fastcgi support)"
+    __php_ref = error
+    return __php_ref
+
+
+__python_ref = None
+def look_for_python():
+    global __python_ref
+
+    if __python_ref != None:
+        return __python_ref    
+
+    if PYTHON_PATH != "auto":
+        __python_ref = PYTHON_PATH
+        return __python_ref
+
+    for p in PYTHON_DIRS:
+        for n in PYTHON_NAMES:
+            py = os.path.join(p,n)
+            if os.path.exists(py):
+                __python_ref = py
+                return py
+
+    print "ERROR: Python interpreter not found"
+    __python_ref = ''
+    return __python_ref
+
+
+def print_key (key, val):
+    print "%10s: %s" % (key, val)
+
+
+__free_port = 5000
+def get_free_port():
+    global __free_port
+    __free_port += 1
+    return __free_port

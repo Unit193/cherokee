@@ -50,11 +50,35 @@
 /* Define to 1 if you have the <fcntl.h> header file. */
 #undef HAVE_FCNTL_H
 
+/* Define to 1 if you have the `flockfile' function. */
+#undef HAVE_FLOCKFILE
+
+/* Define to 1 if you have the `funlockfile' function. */
+#undef HAVE_FUNLOCKFILE
+
 /* Define if getaddrinfo exists and works well enough for APR */
 #undef HAVE_GETADDRINFO
 
 /* Define to 1 if you have the `getdtablesize' function. */
 #undef HAVE_GETDTABLESIZE
+
+/* Some sys tems have getgrgid_r */
+#undef HAVE_GETGRGID_R
+
+/* Some systems have getgrgid_r */
+#undef HAVE_GETGRGID_R_4
+
+/* Some systems have getgrgid_r */
+#undef HAVE_GETGRGID_R_5
+
+/* Some systems have getgrnam_r */
+#undef HAVE_GETGRNAM_R
+
+/* Some systems have getgrnam_r */
+#undef HAVE_GETGRNAM_R_4
+
+/* Some systems have getgrnam_r */
+#undef HAVE_GETGRNAM_R_5
 
 /* Define to 1 if you have the `gethostbyname' function. */
 #undef HAVE_GETHOSTBYNAME
@@ -70,6 +94,24 @@
 
 /* Define to 1 if you have the `getpagesize' function. */
 #undef HAVE_GETPAGESIZE
+
+/* Some systems have getpwnam_r */
+#undef HAVE_GETPWNAM_R
+
+/* Some systems have getpwnam_r */
+#undef HAVE_GETPWNAM_R_4
+
+/* Some systems have getpwnam_r */
+#undef HAVE_GETPWNAM_R_5
+
+/* Some sys tems have getpwuid_r */
+#undef HAVE_GETPWUID_R
+
+/* Some systems have getpwuid_r */
+#undef HAVE_GETPWUID_R_4
+
+/* Some systems have getpwuid_r */
+#undef HAVE_GETPWUID_R_5
 
 /* Define to 1 if you have the `getrlimit' function. */
 #undef HAVE_GETRLIMIT
@@ -112,6 +154,9 @@
 
 /* Have kqueue */
 #undef HAVE_KQUEUE
+
+/* Define to 1 if you have the `crypto' library (-lcrypto). */
+#undef HAVE_LIBCRYPTO
 
 /* Define to 1 if you have the `gen' library (-lgen). */
 #undef HAVE_LIBGEN
@@ -183,6 +228,12 @@
 /* Have OpenSSL library */
 #undef HAVE_OPENSSL
 
+/* Define to 1 if you have the <openssl/engine.h> header file. */
+#undef HAVE_OPENSSL_ENGINE_H
+
+/* Have _pam_dispatch function */
+#undef HAVE_PAM_DISPATCH
+
 /* Have poll */
 #undef HAVE_POLL
 
@@ -192,7 +243,7 @@
 /* Have event ports */
 #undef HAVE_PORT
 
-/* Define if you have POSIX threads libraries and header files. */
+/* Have pthread support */
 #undef HAVE_PTHREAD
 
 /* Define to 1 if you have the <pthread.h> header file. */
@@ -259,9 +310,6 @@
 /* Whether sendfilev64() is available */
 #undef HAVE_SENDFILEV64
 
-/* broken sendfile */
-#undef HAVE_SENDFILE_BROKEN
-
 /* HAVE_SOCKADDR_IN6 */
 #undef HAVE_SOCKADDR_IN6
 
@@ -300,6 +348,9 @@
 
 /* Define to 1 if `st_rdev' is member of `struct stat'. */
 #undef HAVE_STRUCT_STAT_ST_RDEV
+
+/* gmtoff in struct tm */
+#undef HAVE_STRUCT_TM_GMTOFF
 
 /* Define to 1 if `tm_zone' is member of `struct tm'. */
 #undef HAVE_STRUCT_TM_TM_ZONE
@@ -411,6 +462,9 @@
 /* Whether the hpux sendfile() API is available */
 #undef HPUX_SENDFILE_API
 
+/* Define if you have ldap_start_tls_s */
+#undef LDAP_HAVE_START_TLS_S
+
 /* Whether (linux) sendfile() is broken */
 #undef LINUX_BROKEN_SENDFILE_API
 
@@ -447,12 +501,8 @@
 /* Define to the one symbol short name of this package. */
 #undef PACKAGE_TARNAME
 
-/* Define to the version of this package. */
+/* Package version */
 #undef PACKAGE_VERSION
-
-/* Define to the necessary symbol if this constant uses a non-standard name on
-   your system. */
-#undef PTHREAD_CREATE_JOINABLE
 
 /* Define as the return type of signal handlers (`int' or `void'). */
 #undef RETSIGTYPE
@@ -460,8 +510,14 @@
 /* setenv function is thread safe */
 #undef SETENV_IS_THREADSAFE
 
+/* The size of `int', as computed by sizeof. */
+#undef SIZEOF_INT
+
 /* The size of `off_t', as computed by sizeof. */
 #undef SIZEOF_OFF_T
+
+/* The size of `size_t', as computed by sizeof. */
+#undef SIZEOF_SIZE_T
 
 /* The size of `unsigned int', as computed by sizeof. */
 #undef SIZEOF_UNSIGNED_INT
@@ -493,16 +549,15 @@
 /* Trace facility */
 #undef TRACE_ENABLED
 
+/* Software version */
+#undef VERSION
+
 /* Whether to include sendfile() support */
 #undef WITH_SENDFILE
 
 /* Define to 1 if your processor stores words with the most significant byte
    first (like Motorola and SPARC, unlike Intel and VAX). */
 #undef WORDS_BIGENDIAN
-
-/* Define to 1 if `lex' declares `yytext' as a `char *' by default, not a
-   `char[]'. */
-#undef YYTEXT_POINTER
 
 /* Number of bits in a file offset, on hosts where this is settable. */
 #undef _FILE_OFFSET_BITS

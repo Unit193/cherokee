@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2006 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2008 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -25,7 +25,7 @@
 #include "common-internal.h"
 #include "md5.h"
 #include "md5crypt.h"
-
+#include "util.h"
 
 /*
  * ----------------------------------------------------------------------------
@@ -39,7 +39,7 @@
 
 /* 0 ... 63 => ascii - 64 */
 static unsigned char itoa64[] =
-    "./0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+	"./0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
 static char *
 to64(unsigned long v, int n)
@@ -48,7 +48,7 @@ to64(unsigned long v, int n)
 	char *s = buf;
 
 	if (n > 4)
-		return (NULL);
+		return NULL;
 
 	memset(buf, '\0', sizeof(buf));
 	while (--n >= 0) {
@@ -56,7 +56,7 @@ to64(unsigned long v, int n)
 		v >>= 6;
 	}
 
-	return (buf);
+	return buf;
 }
 
 
@@ -69,24 +69,26 @@ md5_crypt(const char *pw, const char *salt, const char *magic, char passwd[MD5CR
 	int sl, pl, i, j;
 	struct MD5Context ctx, ctx1;
 	unsigned long l;
+	cuint_t magic_len;
 
 	/* Refine the salt first.  It's possible we were given an already-hashed
 	 * string as the salt argument, so extract the actual salt value from it
 	 * if so.  Otherwise just use the string up to the first '$' as the salt.
 	 */
 	sp = salt;
-	
 
 	/* If it starts with the magic string, then skip that.
 	 */
-	if(strncmp(sp, magic, strlen(magic)) == 0)
-		sp += strlen(magic);
+	magic_len = strlen (magic);
+
+	if (strncmp(sp, magic, magic_len) == 0)
+		sp += magic_len;
 
 	/* It stops at the first '$', max 8 chars 
 	 */
 	for (ep = sp; *ep != '$'; ep++) {
 		if (*ep == '\0' || ep >= (sp + 8))
-			return (NULL);
+			return NULL;
 	}
 
 	/* Get the length of the true salt 
@@ -103,7 +105,7 @@ md5_crypt(const char *pw, const char *salt, const char *magic, char passwd[MD5CR
 	MD5Update(&ctx, (unsigned char *)pw, strlen(pw));
 
 	/* Then our magic string */
-	MD5Update(&ctx, (unsigned char *)magic, strlen(magic));
+	MD5Update(&ctx, (unsigned char *)magic, magic_len);
 
 	/* Then the raw salt */
 	MD5Update(&ctx, (unsigned char *)sp, sl);
@@ -122,11 +124,12 @@ md5_crypt(const char *pw, const char *salt, const char *magic, char passwd[MD5CR
 	memset(final, '\0', sizeof final);
 
 	/* Then something really weird... */
-	for (j = 0, i = strlen(pw); i != 0; i >>= 1)
+	for (j = 0, i = strlen(pw); i != 0; i >>= 1) {
 		if (i & 1)
 			MD5Update(&ctx, final + j, 1);
 		else
 			MD5Update(&ctx, (unsigned char *)pw + j, 1);
+	}
 
 	/* Now make the output string 
 	 */
@@ -164,17 +167,17 @@ md5_crypt(const char *pw, const char *salt, const char *magic, char passwd[MD5CR
 	p = passwd + strlen(passwd);
 
 	l = (final[ 0]<<16) | (final[ 6]<<8) | final[12];
-	strlcat(passwd, to64(l, 4), MD5CRYPT_PASSWD_LEN);
+	cherokee_strlcat(passwd, to64(l, 4), MD5CRYPT_PASSWD_LEN);
 	l = (final[ 1]<<16) | (final[ 7]<<8) | final[13];
-	strlcat(passwd, to64(l, 4), MD5CRYPT_PASSWD_LEN);
+	cherokee_strlcat(passwd, to64(l, 4), MD5CRYPT_PASSWD_LEN);
 	l = (final[ 2]<<16) | (final[ 8]<<8) | final[14];
-	strlcat(passwd, to64(l, 4), MD5CRYPT_PASSWD_LEN);
+	cherokee_strlcat(passwd, to64(l, 4), MD5CRYPT_PASSWD_LEN);
 	l = (final[ 3]<<16) | (final[ 9]<<8) | final[15];
-	strlcat(passwd, to64(l, 4), MD5CRYPT_PASSWD_LEN);
+	cherokee_strlcat(passwd, to64(l, 4), MD5CRYPT_PASSWD_LEN);
 	l = (final[ 4]<<16) | (final[10]<<8) | final[ 5];
-	strlcat(passwd, to64(l, 4), MD5CRYPT_PASSWD_LEN);
+	cherokee_strlcat(passwd, to64(l, 4), MD5CRYPT_PASSWD_LEN);
 	l =                    final[11]                ;
-	strlcat(passwd, to64(l, 2), MD5CRYPT_PASSWD_LEN);
+	cherokee_strlcat(passwd, to64(l, 2), MD5CRYPT_PASSWD_LEN);
 
 	/* Don't leave anything around in vm they could use. 
 	 */

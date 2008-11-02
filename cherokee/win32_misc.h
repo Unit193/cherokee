@@ -4,8 +4,9 @@
  *
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
+ *      Ross Smith II <cherokee at smithii.com>
  *
- * Copyright (C) 2001-2006 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2008 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -25,21 +26,31 @@
 #ifndef CHEROKEE_WIN32_MISC_H
 #define CHEROKEE_WIN32_MISC_H
 
-#include <fcntl.h>
-#include <winsock2.h>
 #include "common-internal.h"
 
+#include <fcntl.h>
+#include <winsock2.h>
+#include <time.h>
+
+#include "buffer.h"
+
+/* bool definition
+ */
+#ifndef bool
+# define bool  int
+#endif
 
 #undef  localtime_r       /* in <pthread.h> */
 #define SHUT_WR           SD_SEND
-#define strerror(e)       win_strerror(e)
 #define pipe(h)           _pipe(h,0,0)
 
 void          init_win32          (void);
-char         *win_strerror        (int err);
+char         *win_strerror        (int err, char *buf, size_t bufsize);
 struct tm    *localtime_r         (const time_t *time, struct tm *tm);
 unsigned int  sleep               (unsigned int seconds);
 
 int           cherokee_win32_stat (const char *path, struct stat *buf);
+bool          cherokee_win32_shutdown_signaled(time_t bogo_now);
+int           cherokee_win32_mkstemp (cherokee_buffer_t *buffer);
 
 #endif /* CHEROKEE_WIN32_MISC_H */

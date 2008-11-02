@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2006 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2008 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -76,6 +76,7 @@ cherokee_connection_info_free (cherokee_connection_info_t *info)
 ret_t 
 cherokee_connection_info_fill_up (cherokee_connection_info_t *info, cherokee_connection_t *conn)
 {
+	ret_t                        ret;
 	const char                  *handler_name = NULL;
  	cherokee_icons_t            *icons        = CONN_SRV(conn)->icons;
 	cherokee_connection_phase_t  phase;
@@ -141,19 +142,21 @@ cherokee_connection_info_fill_up (cherokee_connection_info_t *info, cherokee_con
 
 	/* From
 	 */
-	if (conn->socket.socket > 0) {
+	if (conn->socket.socket >= 0) {
 		cherokee_buffer_ensure_size (&info->ip, CHE_INET_ADDRSTRLEN + 1);
+		memset (info->ip.buf, 0, info->ip.size);
 		cherokee_socket_ntop (&conn->socket, info->ip.buf, info->ip.size - 1);
+		info->ip.len = strlen(info->ip.buf);
 	}
 
 	/* Request
 	 */
 	if (! cherokee_buffer_is_empty (&conn->request_original)) {
 		cherokee_buffer_add_buffer (&info->request, &conn->request_original);
-	} 
-	else if (! cherokee_buffer_is_empty (&conn->request)) {
+
+	} else if (! cherokee_buffer_is_empty (&conn->request)) {
 		cherokee_buffer_add_buffer (&info->request, &conn->request);
-	}
+	} 
 
 	/* Transference
 	 */
@@ -166,7 +169,7 @@ cherokee_connection_info_fill_up (cherokee_connection_info_t *info, cherokee_con
 		cherokee_module_get_name (MODULE(conn->handler), &handler_name);
 		
 		if (handler_name)
-			cherokee_buffer_add (&info->handler, (char *)handler_name, strlen(handler_name));
+			cherokee_buffer_add (&info->handler, handler_name, strlen(handler_name));
 	}
 
 	/* Total size
@@ -174,7 +177,7 @@ cherokee_connection_info_fill_up (cherokee_connection_info_t *info, cherokee_con
 	if (handler_name && !strcmp (handler_name, "file")) {
 		char                    *point;
 		double                   percent;
-		cherokee_handler_file_t *file = FHANDLER(conn->handler);		
+		cherokee_handler_file_t *file = HDL_FILE(conn->handler);		
 
 		/* File size
 		 */
@@ -196,7 +199,7 @@ cherokee_connection_info_fill_up (cherokee_connection_info_t *info, cherokee_con
 	    (!cherokee_buffer_is_empty (&info->request)))
 	{
 		char              *tmp;
-		char              *icon;
+		cherokee_buffer_t *icon;
 		cherokee_buffer_t  name = CHEROKEE_BUF_INIT;
 
 		cherokee_buffer_add_buffer (&name, &info->request);
@@ -209,9 +212,9 @@ cherokee_connection_info_fill_up (cherokee_connection_info_t *info, cherokee_con
 		if (tmp != NULL) 
 			cherokee_buffer_move_to_begin (&name, tmp - name.buf);
 		
-		cherokee_icons_get_icon (icons, name.buf, &icon);
-		if (icon != NULL)
-			cherokee_buffer_add (&info->icon, icon, strlen(icon));
+		ret = cherokee_icons_get_icon (icons, &name, &icon);
+		if (ret == ret_ok)
+			cherokee_buffer_add_buffer (&info->icon, icon);
 
 		cherokee_buffer_mrproper (&name);
 	}
@@ -221,9 +224,10 @@ cherokee_connection_info_fill_up (cherokee_connection_info_t *info, cherokee_con
 
 
 ret_t 
-cherokee_connection_info_list_thread (list_t *list, void *_thread, cherokee_handler_t *self_handler)
+cherokee_connection_info_list_thread (cherokee_list_t *list, void *_thread, cherokee_handler_t *self_handler)
 {
-	list_t             *i;
+	ret_t               ret;
+	cherokee_list_t    *i;
 	cherokee_boolean_t  locked = false;
 	cherokee_thread_t  *thread = THREAD(_thread);
 
@@ -237,8 +241,7 @@ cherokee_connection_info_list_thread (list_t *list, void *_thread, cherokee_hand
 	 * a deadlock situation.  Check it before lock.
 	 */
 	if ((self_handler != NULL) &&
-	    (HANDLER_THREAD(self_handler) != thread))
-	{
+	    (HANDLER_THREAD(self_handler) != thread)) {
 		/* Adquire the ownership of the thread
 		 */
 		CHEROKEE_MUTEX_LOCK (&thread->ownership);
@@ -251,25 +254,33 @@ cherokee_connection_info_list_thread (list_t *list, void *_thread, cherokee_hand
 		CHEROKEE_NEW(n,connection_info);
 
 		cherokee_connection_info_fill_up (n, CONN(i));
-		list_add ((list_t *)n, list);
+		cherokee_list_add (LIST(n), list);
 	}
 
-	if (list_empty(list))
-		return ret_not_found;
+	list_for_each (i, &thread->polling_list) {
+		CHEROKEE_NEW(n,connection_info);
+
+		cherokee_connection_info_fill_up (n, CONN(i));
+		cherokee_list_add (LIST(n), list);
+	}
+
+	ret = ret_ok;
+	if (cherokee_list_empty (list))
+		ret = ret_not_found;
 
 	/* Release it
 	 */
 	if (locked)
 		CHEROKEE_MUTEX_UNLOCK (&thread->ownership);
 
-	return ret_ok;
+	return ret;
 }
 
 
 ret_t 
-cherokee_connection_info_list_server (list_t *list, cherokee_server_t *server, cherokee_handler_t *self)
+cherokee_connection_info_list_server (cherokee_list_t *list, cherokee_server_t *server, cherokee_handler_t *self)
 {
-	list_t *i;
+	cherokee_list_t *i;
 
 	cherokee_connection_info_list_thread (list, server->main_thread, self);
 
@@ -277,7 +288,7 @@ cherokee_connection_info_list_server (list_t *list, cherokee_server_t *server, c
 		cherokee_connection_info_list_thread (list, i, self);
 	}
 
-	if (list_empty(list))
+	if (cherokee_list_empty (list))
 		return ret_not_found;
 
 	return ret_ok;

@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2006 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2008 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -82,6 +82,9 @@
 #endif
 
 #ifdef HAVE_PTHREAD
+# define CHEROKEE_MUTEX_T(n)          pthread_mutex_t n
+# define CHEROKEE_RWLOCK_T(n)         pthread_rwlock_t n
+
 # define CHEROKEE_MUTEX_LOCK(m)       pthread_mutex_lock(m)
 # define CHEROKEE_MUTEX_UNLOCK(m)     pthread_mutex_unlock(m)
 # define CHEROKEE_MUTEX_INIT(m,n)     pthread_mutex_init(m,n)
@@ -96,6 +99,9 @@
 # define CHEROKEE_RWLOCK_UNLOCK(m)    pthread_rwlock_unlock(m)
 # define CHEROKEE_RWLOCK_DESTROY(m)   pthread_rwlock_destroy(m)
 #else
+# define CHEROKEE_MUTEX_T(n)          
+# define CHEROKEE_RWLOCK_T(n)         
+
 # define CHEROKEE_MUTEX_LOCK(m)
 # define CHEROKEE_MUTEX_UNLOCK(m)
 # define CHEROKEE_MUTEX_INIT(m,n)  
@@ -116,8 +122,9 @@
 # define CLOSE_ON_EXEC(h)  ((void)0)
 #else
 # define SOCK_ERRNO()      errno
-# define CLOSE_ON_EXEC(h)  fcntl (h, F_SETFD, FD_CLOEXEC, 1)
+# define CLOSE_ON_EXEC(h)  fcntl (h, F_SETFD, FD_CLOEXEC)
 #endif
+
 
 
 /* IMPORTANT:
@@ -158,6 +165,18 @@ char *strsep(char **str, const char *delims);
 
 #ifndef HAVE_STRCASESTR
 char *strcasestr(char *s, char *find);
+#endif
+
+/* Int limit
+ */
+#ifndef INT_MAX
+# if (SIZEOF_INT == 4)
+#  define INT_MAX 0x7fffffffL          /* 2^32 - 1 */
+# elif (SIZEOF_INT == 8)
+#  define INT_MAX 0x7fffffffffffffffL  /* 2^64 - 1 */
+# else
+#  error "Can't define INT_MAX"
+# endif
 #endif
 
 #endif /* CHEROKEE_COMMON_INTERNAL_H */

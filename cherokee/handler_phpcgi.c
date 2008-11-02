@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2006 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2008 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -48,30 +48,40 @@
 #endif
 
 #include "module.h"
-#include "module_loader.h"
+#include "plugin_loader.h"
 #include "handler_cgi.h"
 #include "connection.h"
 #include "connection-protected.h"
 
 
-HANDLER_MODULE_INFO_INIT_EASY (phpcgi, http_get | http_post | http_head);
-
-
 static char *php_paths[] = {
+#ifndef _WIN32
 	"/usr/lib/cgi-bin/",
 	"/usr/local/bin/",
 	"/usr/bin/",
+#else
+	"C:/PHP/",
+#endif
 	NULL
 };
 
 static char *php_names[] = {
+#ifndef _WIN32
 	"php-cgi",
 	"php", 
 	"php5", 
 	"php4", 
-	"php3",
+	"php-cgi",
+#else
+	"PHP.EXE",
+#endif
 	NULL
 };
+
+
+/* Plugin initialization
+ */
+PLUGIN_INFO_HANDLER_EASY_INIT (phpcgi, http_get | http_post | http_head);
 
 
 static ret_t
@@ -125,7 +135,7 @@ out:
 
 
 ret_t 
-cherokee_handler_phpcgi_new  (cherokee_handler_t **hdl, void *cnt, cherokee_table_t *properties)
+cherokee_handler_phpcgi_new  (cherokee_handler_t **hdl, void *cnt, cherokee_module_props_t *props)
 {
 	ret_t                        ret;
 	cherokee_handler_cgi_base_t *cgi;
@@ -133,10 +143,11 @@ cherokee_handler_phpcgi_new  (cherokee_handler_t **hdl, void *cnt, cherokee_tabl
 
 	/* Create the new handler CGI object
 	 */
-	ret = cherokee_handler_cgi_new (hdl, cnt, properties);
-	if (unlikely(ret != ret_ok)) return ret;
+	ret = cherokee_handler_cgi_new (hdl, cnt, props);
+	if (unlikely(ret != ret_ok))
+		return ret;
 
-	cgi = CGI_BASE(*hdl);
+	cgi = HDL_CGI_BASE(*hdl);
 	   
 	/* Redefine the init method
 	 */
@@ -144,8 +155,8 @@ cherokee_handler_phpcgi_new  (cherokee_handler_t **hdl, void *cnt, cherokee_tabl
 
 	/* Look for the interpreter in the properties
 	 */
-	if (properties) {
-		cherokee_typed_table_get_str (properties, "interpreter", &interpreter);
+	if (props) {
+		interpreter = PROP_PHPCGI(props)->interpreter.buf;
 	}
 
 	if (interpreter == NULL) 
@@ -179,7 +190,7 @@ cherokee_handler_phpcgi_new  (cherokee_handler_t **hdl, void *cnt, cherokee_tabl
 ret_t 
 cherokee_handler_phpcgi_init (cherokee_handler_t *hdl)
 {
-	cherokee_handler_cgi_base_t *cgi  = CGI_BASE(hdl);
+	cherokee_handler_cgi_base_t *cgi  = HDL_CGI_BASE(hdl);
 	cherokee_connection_t       *conn = HANDLER_CONN(hdl);
 	cherokee_buffer_t           *ld   = &conn->local_directory;
 
@@ -189,7 +200,7 @@ cherokee_handler_phpcgi_init (cherokee_handler_t *hdl)
 	 * is to call again the CGI handler
 	 */
 	if (cgi->init_phase != hcgi_phase_build_headers) {
-		return cherokee_handler_cgi_init (HANDLER_CGI(hdl));
+		return cherokee_handler_cgi_init (HDL_CGI(hdl));
 	}
 
 	/* Add parameter to CGI handler
@@ -203,7 +214,45 @@ cherokee_handler_phpcgi_init (cherokee_handler_t *hdl)
 	cherokee_handler_cgi_add_env_pair (cgi, "REDIRECT_STATUS", 15, "200", 3); 
 	cherokee_handler_cgi_add_env_pair (cgi, "SCRIPT_FILENAME", 15, cgi->param.buf, cgi->param.len);	
 
-	return cherokee_handler_cgi_init (HANDLER_CGI(hdl));
+	return cherokee_handler_cgi_init (HDL_CGI(hdl));
+}
+
+
+static ret_t 
+props_free (cherokee_handler_phpcgi_props_t *props)
+{
+	cherokee_buffer_mrproper (&props->interpreter);
+	return cherokee_module_props_free_base (MODULE_PROPS(props));
+}
+
+
+ret_t 
+cherokee_handler_phpcgi_configure (cherokee_config_node_t *conf, cherokee_server_t *srv, cherokee_module_props_t **_props)
+{
+	cherokee_list_t                 *i;
+	cherokee_handler_phpcgi_props_t *props;
+
+	if (*_props == NULL) {
+		CHEROKEE_NEW_STRUCT(n, handler_phpcgi_props);
+
+		cherokee_module_props_init_base (MODULE_PROPS(n), 
+						 MODULE_PROPS_FREE(props_free));		
+
+		cherokee_buffer_init (&n->interpreter);
+		*_props = MODULE_PROPS(n);
+	}
+
+	props = PROP_PHPCGI(*_props);
+
+	cherokee_config_node_foreach (i, conf) {
+		cherokee_config_node_t *subconf = CONFIG_NODE(i);
+
+		if (equal_buf_str (&subconf->key, "interpreter")) {
+			cherokee_buffer_add_buffer (&props->interpreter, &subconf->val);
+		}
+	}
+
+	return cherokee_handler_cgi_configure (conf, srv, _props);
 }
 
 
@@ -211,17 +260,17 @@ cherokee_handler_phpcgi_init (cherokee_handler_t *hdl)
  */
 static cherokee_boolean_t _phpcgi_is_init = false;
 
-void
-MODULE_INIT(phpcgi) (cherokee_module_loader_t *loader)
+void  
+PLUGIN_INIT_NAME(phpcgi) (cherokee_plugin_loader_t *loader)
 {
 	/* Is init?
 	 */
-	if (_phpcgi_is_init) return;
+	if (_phpcgi_is_init)
+		return;
 	_phpcgi_is_init = true;
 	
 	/* Load the dependences
 	 */
-	cherokee_module_loader_load (loader, "cgi");
+	cherokee_plugin_loader_load (loader, "cgi");
 }
-
 

@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2006 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2008 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -29,33 +29,38 @@
 
 #include "handler.h"
 #include "buffer.h"
-#include "module_loader.h"
+#include "plugin_loader.h"
 #include "socket.h"
 #include "handler_cgi_base.h"
+#include "balancer.h"
 
 
 typedef struct {
-	cherokee_handler_cgi_base_t base;
+	cherokee_handler_cgi_base_t  base;
+	cherokee_list_t              scgi_env_ref;
+	cherokee_balancer_t         *balancer;
+} cherokee_handler_scgi_props_t;
 
-	cherokee_buffer_t   header;
-	cherokee_socket_t  *socket;
 
-	list_t             *scgi_env_ref;
-	list_t             *server_list;	
-
-	size_t              post_len;
+typedef struct {
+	cherokee_handler_cgi_base_t  base;
+	cherokee_buffer_t            header;
+	cherokee_socket_t            socket;
+	off_t                        post_len;
 } cherokee_handler_scgi_t;
 
-#define HANDLER_SCGI(x)  ((cherokee_handler_scgi_t *)(x))
+#define HDL_SCGI(x)       ((cherokee_handler_scgi_t *)(x))
+#define PROP_SCGI(x)      ((cherokee_handler_scgi_props_t *)(x))
+#define HDL_SCGI_PROPS(x) (PROP_SCGI(MODULE(x)->props))
 
  
 /* Library init function
  */
-void MODULE_INIT(scgi) (cherokee_module_loader_t *loader);
+void PLUGIN_INIT_NAME(scgi)      (cherokee_plugin_loader_t *loader);
 
 /* Methods
  */
-ret_t cherokee_handler_scgi_new  (cherokee_handler_t     **hdl, void *cnt, cherokee_table_t *properties);
+ret_t cherokee_handler_scgi_new  (cherokee_handler_t     **hdl, void *cnt, cherokee_module_props_t *props);
 ret_t cherokee_handler_scgi_free (cherokee_handler_scgi_t *hdl);
 ret_t cherokee_handler_scgi_init (cherokee_handler_scgi_t *hdl);
 

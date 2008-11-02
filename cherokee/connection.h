@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2006 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2008 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -41,7 +41,7 @@ typedef struct cherokee_connection cherokee_connection_t;
 
 /* Public methods
  */
-ret_t cherokee_connection_set_cork       (cherokee_connection_t *cnt, int enable);
+ret_t cherokee_connection_set_cork       (cherokee_connection_t *cnt, cherokee_boolean_t enable);
 ret_t cherokee_connection_parse_args     (cherokee_connection_t *cnt);
 
 CHEROKEE_END_DECLS

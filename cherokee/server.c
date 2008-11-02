@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2006 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2008 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -21,6 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  */
+
 #include "common-internal.h"
 #include "server-protected.h"
 #include "server.h"
@@ -77,26 +78,29 @@
 #include "connection.h"
 #include "ncpus.h"
 #include "mime.h"
-#include "list_ext.h"
 #include "util.h"
+#include "dtm.h"
 #include "fdpoll.h"
 #include "fdpoll-protected.h"
 #include "regex.h"
 #include "fcgi_manager.h"
 #include "connection-protected.h"
 #include "nonce.h"
+#include "config_reader.h"
 
 #define ENTRIES "core,server"
 
+/* Number of listen fds (HTTP + HTTPS)
+ */
+#define MAX_LISTEN_FDS 2
 
 ret_t
 cherokee_server_new  (cherokee_server_t **srv)
 {
 	ret_t ret;
+	CHEROKEE_CNEW_STRUCT(1, n, server);
 
-	/* Get memory
-	 */
-	CHEROKEE_NEW_STRUCT(n, server);
+	cherokee_trace_init ();
 	
 	/* Thread list
 	 */
@@ -104,16 +108,14 @@ cherokee_server_new  (cherokee_server_t **srv)
 
 	/* Sockets
 	 */
-	n->socket          = -1;
-	n->socket_tls      = -1;
-	n->ipv6            =  1;
+	cherokee_socket_init (&n->socket);
+	cherokee_socket_init (&n->socket_tls);
+
+	cherokee_buffer_init (&n->unix_socket);
+
+	n->ipv6            = true;
 	n->fdpoll_method   = cherokee_poll_UNSET;
 
-	/* Config files
-	 */
-	n->config_file     = NULL;	
-	n->icons_file      = NULL;
-	
 	/* Mime types
 	 */
 	n->mime            = NULL;
@@ -121,7 +123,7 @@ cherokee_server_new  (cherokee_server_t **srv)
 	/* Exit related
 	 */
 	n->wanna_exit      = false;
-	n->panic_action    = NULL;
+	n->wanna_reinit    = false;
 	n->reinit_callback = NULL;
 	
 	/* Server config
@@ -130,7 +132,6 @@ cherokee_server_new  (cherokee_server_t **srv)
 	n->port_tls        = 443;
 	n->tls_enabled     = false;
 
-	n->listen_to       = NULL;
 	n->fdwatch_msecs   = 999;
 
 	n->start_time      = time(NULL);
@@ -142,9 +143,7 @@ cherokee_server_new  (cherokee_server_t **srv)
 	n->thread_num      = -1;
 	n->thread_policy   = -1;
 
-	n->chroot          = NULL;
-	n->chrooted        = 0;
-
+	n->chrooted        = false;
 	n->user_orig       = getuid();
 	n->user            = n->user_orig;
 	n->group_orig      = getgid();
@@ -153,31 +152,44 @@ cherokee_server_new  (cherokee_server_t **srv)
 	n->timeout         = 15;
 
 	n->max_fds         = -1;
+	n->fds_per_thread  = -1;
 	n->system_fd_limit = -1;
-	n->max_conn_reuse  = -1;
+
+	n->conns_max           =  0;
+	n->conns_reuse_max     = -1;
+	n->conns_keepalive_max =  0;
+	n->conns_num_bogo      =  0;
 
 	n->listen_queue    = 1024;
 	n->sendfile.min    = 32768;
 	n->sendfile.max    = 2147483647;
 
-	n->regexs          = NULL;
 	n->icons           = NULL;
+	n->regexs          = NULL;
 	n->iocache         = NULL;
+
+	cherokee_buffer_init (&n->listen_to);
+	cherokee_buffer_init (&n->chroot);
+
+	cherokee_buffer_init (&n->panic_action);
+	cherokee_buffer_add_str (&n->panic_action, CHEROKEE_PANIC_PATH);
 
 	/* Bogo now
 	 */
 	n->bogo_now        = 0;
+	n->bogo_now_tzloc_sign = '+';
+	n->bogo_now_tzloc_offset = 0;
 	CHEROKEE_RWLOCK_INIT (&n->bogo_now_mutex, NULL);
 
 	CHEROKEE_RWLOCK_WRITER (&n->bogo_now_mutex);
-	cherokee_buffer_new (&n->bogo_now_string);
-	cherokee_buffer_ensure_size (n->bogo_now_string, 100);	
+	cherokee_buffer_init (&n->bogo_now_strgmt);
+	cherokee_buffer_ensure_size (&n->bogo_now_strgmt, DTM_SIZE_GMTTM_STR);
 	CHEROKEE_RWLOCK_UNLOCK (&n->bogo_now_mutex);
 
 	/* Time managing hack
 	 */
-	cherokee_buffer_new(&n->timeout_header);
-	cherokee_buffer_add_str(n->timeout_header, "Keep-Alive: timeout=15"CRLF);
+	cherokee_buffer_init (&n->timeout_header);
+	cherokee_buffer_add_str (&n->timeout_header, "Keep-Alive: timeout=15"CRLF);
 
 	/* Accepting mutexes
 	 */
@@ -185,12 +197,6 @@ cherokee_server_new  (cherokee_server_t **srv)
 	CHEROKEE_MUTEX_INIT (&n->accept_tls_mutex, NULL);
 #endif
 	CHEROKEE_MUTEX_INIT (&n->accept_mutex, NULL);
-
-#ifndef CHEROKEE_EMBEDDED
-	/* Icons 
-	 */
-	cherokee_icons_new (&n->icons);
-	return_if_fail (n->icons != NULL, ret_nomem);
 
 	/* IO Cache cache
 	 */
@@ -207,39 +213,34 @@ cherokee_server_new  (cherokee_server_t **srv)
 	 */
 	ret = cherokee_nonce_table_new (&n->nonces);
 	if (unlikely(ret < ret_ok)) return ret;	
-#endif
 
 	/* Module loader
 	 */
-	cherokee_module_loader_init (&n->loader);
+	cherokee_plugin_loader_init (&n->loader);
 
-	/* Virtual servers table
+	/* Virtual servers list
 	 */
 	INIT_LIST_HEAD (&n->vservers);
 
-	cherokee_table_new (&n->vservers_ref);
-	return_if_fail (n->vservers_ref!=NULL, ret_nomem);
-
-	cherokee_virtual_server_new (&n->vserver_default);
+	cherokee_virtual_server_new (&n->vserver_default, n);
 	return_if_fail (n->vserver_default!=NULL, ret_nomem);
 		
 	/* Encoders 
 	 */
-	cherokee_encoder_table_new (&n->encoders);
-	return_if_fail (n->encoders != NULL, ret_nomem);
+	cherokee_encoder_table_init (&n->encoders);
 
 	/* Server string
 	 */
 	n->server_token = cherokee_version_full;
-	cherokee_buffer_new (&n->server_string);
+	cherokee_buffer_init (&n->server_string);
+	cherokee_buffer_init (&n->ext_server_string);
+	cherokee_buffer_init (&n->ext_server_w_port_string);
+	cherokee_buffer_init (&n->ext_server_w_port_tls_string);
 
 	/* Loggers
 	 */
 	n->log_flush_next   = 0;
 	n->log_flush_elapse = 10;
-
-	cherokee_logger_table_new (&n->loggers);
-	return_if_fail (n->loggers != NULL, ret_nomem);
 
 	/* TLS
 	 */
@@ -251,6 +252,10 @@ cherokee_server_new  (cherokee_server_t **srv)
 	/* PID
 	 */
 	cherokee_buffer_init (&n->pidfile);
+
+	/* Config
+	 */
+	cherokee_config_node_init (&n->config);
 	
 	/* Return the object
 	 */
@@ -262,7 +267,7 @@ cherokee_server_new  (cherokee_server_t **srv)
 static void
 close_all_connections (cherokee_server_t *srv)
 {
-	list_t *i;
+	cherokee_list_t *i;
 
 	cherokee_thread_close_all_connections (srv->main_thread);
 	
@@ -275,100 +280,110 @@ close_all_connections (cherokee_server_t *srv)
 static void
 free_virtual_servers (cherokee_server_t *srv)
 {
-	list_t *i, *j;
+	cherokee_list_t *i, *j;
 
 	list_for_each_safe (i, j, &srv->vservers) {
 		cherokee_virtual_server_free (VSERVER(i));
-		list_del(i);
 	}
+}
+
+
+static ret_t
+destroy_thread (cherokee_thread_t *thread)
+{
+	cherokee_thread_wait_end (thread);
+	cherokee_thread_free (thread);
+
+	return ret_ok;
+}
+
+
+static ret_t
+destroy_all_threads (cherokee_server_t *srv)
+{
+	cherokee_list_t *i, *tmp;
+
+	/* Set the exit flag, and try to ensure the threads are not
+	 * locked on a semaphore
+	 */
+	list_for_each_safe (i, tmp, &srv->thread_list) {
+		THREAD(i)->exit = true;
+		CHEROKEE_MUTEX_UNLOCK (&srv->accept_mutex);
+#ifdef HAVE_TLS
+		CHEROKEE_MUTEX_UNLOCK (&srv->accept_tls_mutex);
+#endif
+	}
+
+	/* Destroy the thread object
+	 */
+	list_for_each_safe (i, tmp, &srv->thread_list) {
+		destroy_thread (THREAD(i));
+	}
+
+	/* Main thread
+	 */
+	return cherokee_thread_free (srv->main_thread);
 }
 
 
 ret_t
 cherokee_server_free (cherokee_server_t *srv)
 {
-	close (srv->socket);
-	
-	if (srv->socket_tls != -1) {
-		close (srv->socket_tls);		
-	}
+	/* Threads
+	 */
+	destroy_all_threads (srv);
 
-	cherokee_encoder_table_free (srv->encoders);
-	cherokee_logger_table_free (srv->loggers);
+	/* File descriptors
+	 */
+	cherokee_buffer_mrproper (&srv->unix_socket);
+
+	cherokee_socket_close (&srv->socket);
+	cherokee_socket_mrproper (&srv->socket);
+
 
 #ifdef HAVE_TLS
+	cherokee_socket_close (&srv->socket);
+	cherokee_socket_mrproper (&srv->socket);
+
 	CHEROKEE_MUTEX_DESTROY (&srv->accept_tls_mutex);
 #endif
 	CHEROKEE_MUTEX_DESTROY (&srv->accept_mutex);
 
-#ifndef CHEROKEE_EMBEDDED
-	/* Nonces
+	/* Attached objects
 	 */
-	cherokee_nonce_table_free (srv->nonces);
-	srv->nonces = NULL;
+	cherokee_encoder_table_mrproper (&srv->encoders);
 
-	/* Icons 
-	 */
+	cherokee_mime_free (srv->mime);
 	cherokee_icons_free (srv->icons);
-	if (srv->icons_file != NULL) {
-		free (srv->icons_file);
-		srv->icons_file = NULL;
-	}
-
-	/* Mime
-	 */
-	if (srv->mime != NULL) {
-		cherokee_mime_free (srv->mime);
-		srv->mime = NULL;
-	}
-
+	cherokee_regex_table_free (srv->regexs);
 	cherokee_iocache_free_default (srv->iocache);
 
-	cherokee_regex_table_free (srv->regexs);
-#endif
+	cherokee_nonce_table_free (srv->nonces);
 	
 	/* Virtual servers
 	 */
+	free_virtual_servers (srv);
+
 	cherokee_virtual_server_free (srv->vserver_default);
 	srv->vserver_default = NULL;
 
-	free_virtual_servers (srv);
-	cherokee_table_free (srv->vservers_ref);
+	cherokee_buffer_mrproper (&srv->bogo_now_strgmt);
+	cherokee_buffer_mrproper (&srv->timeout_header);
 
-	cherokee_buffer_free (srv->bogo_now_string);
-	cherokee_buffer_free (srv->server_string);
+	cherokee_buffer_mrproper (&srv->server_string);
+	cherokee_buffer_mrproper (&srv->ext_server_string);
+	cherokee_buffer_mrproper (&srv->ext_server_w_port_string);
+	cherokee_buffer_mrproper (&srv->ext_server_w_port_tls_string);
 
-	cherokee_buffer_free (srv->timeout_header);
-
-	if (srv->listen_to != NULL) {
-		free (srv->listen_to);
-		srv->listen_to = NULL;
-	}
-
-	if (srv->chroot != NULL) {
-		free (srv->chroot);
-		srv->chroot = NULL;
-	}
-
-	/* Clean config files entries
-	 */
-	if (srv->config_file != NULL) {
-		free (srv->config_file);
-		srv->config_file = NULL;
-	}
-
-	if (srv->panic_action != NULL) {
-		free (srv->panic_action);
-		srv->panic_action = NULL;
-	}
-
+	cherokee_buffer_mrproper (&srv->listen_to);
+	cherokee_buffer_mrproper (&srv->chroot);
 	cherokee_buffer_mrproper (&srv->pidfile);
+	cherokee_buffer_mrproper (&srv->panic_action);
 
-	/* Module loader:
-	 * It must be the last action to perform because
-	 * it will close all the opened modules
+	/* Module loader: It must be the last action to be performed
+	 * because it will close all the opened modules.
 	 */
-	cherokee_module_loader_mrproper (&srv->loader);
+	cherokee_plugin_loader_mrproper (&srv->loader);
 
 	free (srv);	
 	return ret_ok;
@@ -380,14 +395,16 @@ change_execution_user (cherokee_server_t *srv, struct passwd *ent)
 {
 	int error;
 
-/*         /\* Get user information */
-/* 	 *\/ */
-/* 	ent = getpwuid (srv->user); */
-/* 	if (ent == NULL) { */
-/* 		PRINT_ERROR ("Can't get username for UID %d\n", srv->user); */
-/* 		return ret_error; */
-/* 	} */
-	
+#if 0
+	/* Get user information
+	*/
+	ent = getpwuid (srv->user);
+	if (ent == NULL) {
+		PRINT_ERROR ("Can't get username for UID %d\n", srv->user);
+		return ret_error;
+	}
+#endif
+
 	/* Reset `groups' attributes.
 	 */
 	if (srv->user_orig == 0) {
@@ -430,7 +447,7 @@ cherokee_server_set_min_latency (cherokee_server_t *srv, int msecs)
 
 
 static ret_t
-set_server_socket_opts (int socket)
+set_server_fd_socket_opts (int socket)
 {
 	int           re;
 	int           on;
@@ -461,8 +478,9 @@ set_server_socket_opts (int socket)
 	 */
 #ifdef TCP_MAXSEG
 	on = 64000;
-	re = setsockopt (socket, SOL_SOCKET, TCP_MAXSEG, &on, sizeof(on));
-	if (re != 0) return ret_error;
+	setsockopt (socket, SOL_SOCKET, TCP_MAXSEG, &on, sizeof(on));
+
+	/* Do no check the returned value */
 #endif	
 
 	/* SO_LINGER
@@ -489,7 +507,7 @@ set_server_socket_opts (int socket)
 #endif
 
 	/* TODO:
-	 * Maybe add support for the FreeBSD accept filters:
+	 * It could be good to add support for the FreeBSD accept filters:
 	 * http://www.freebsd.org/cgi/man.cgi?query=accf_http
 	 */
 
@@ -498,219 +516,219 @@ set_server_socket_opts (int socket)
 
 
 static ret_t
-initialize_server_socket4 (cherokee_server_t *srv, unsigned short port, int *srv_socket_ret)
+initialize_server_socket4 (cherokee_server_t *srv, cherokee_socket_t *sock, unsigned short port)
 {
-	int re;
-	int srv_socket;
-	struct sockaddr_in sockaddr;
+	ret_t ret;
 
-	srv_socket = socket (AF_INET, SOCK_STREAM, 0);
-	if (srv_socket < 0) {
-		PRINT_ERROR_S ("Error creating IPv4 server socket\n");
-		exit(EXIT_CANT_CREATE_SERVER_SOCKET4);
-	}
+	/* Create the socket, and set its properties
+	 */
+	ret = cherokee_socket_set_client (sock, AF_INET);
+	if (ret != ret_ok) return ret;
 
-	*srv_socket_ret = srv_socket;
-	set_server_socket_opts(srv_socket);
+	ret = set_server_fd_socket_opts (SOCKET_FD(sock));
+	if (ret != ret_ok) return ret;
 
 	/* Bind the socket
 	 */
-	memset (&sockaddr, 0, sizeof(struct sockaddr_in));
-
-	sockaddr.sin_port   = htons (port);
-	sockaddr.sin_family = AF_INET;
-
-	if (srv->listen_to == NULL) {
-		sockaddr.sin_addr.s_addr = INADDR_ANY; 
-	} else {
-#ifdef HAVE_INET_PTON
-		inet_pton (sockaddr.sin_family, srv->listen_to, &sockaddr.sin_addr);
-#else
-		/* IPv6 needs inet_pton. inet_addr just doesn't work without
-		 * it. We'll suppose then that we haven't IPv6 support 
-		 */
-		sockaddr.sin_addr.s_addr = inet_addr (srv->listen_to);
-#endif
-	}
-
-	re = bind (srv_socket, (struct sockaddr *)&sockaddr, sizeof(struct sockaddr_in));
-	return (re == 0) ? ret_ok : ret_error;
-}
-
-
-static ret_t
-initialize_server_socket6 (cherokee_server_t *srv, unsigned short port, int *srv_socket_ret)
-{
-#ifdef HAVE_IPV6
-	int re;
-	int srv_socket;
-	struct sockaddr_in6 sockaddr;
-
-	/* Create the socket
-	 */
-	srv_socket = socket (AF_INET6, SOCK_STREAM, 0);
-	if (srv_socket < 0) {
-		PRINT_ERROR_S ("Error creating IPv6 server socket.. switching to IPv4\n");
-		srv->ipv6 = 0;
-		return ret_error;
-	}
-
-	*srv_socket_ret = srv_socket;
-	set_server_socket_opts(srv_socket);
-
-	/* Bind the socket
-	 */
-	memset (&sockaddr, 0, sizeof(struct sockaddr_in6));
-
-	sockaddr.sin6_port   = htons (port);  /* Transport layer port #   */
-	sockaddr.sin6_family = AF_INET6;      /* AF_INET6                 */
-
-	if (srv->listen_to == NULL) {
-		sockaddr.sin6_addr = in6addr_any; 
-	} else {
-		inet_pton (sockaddr.sin6_family, srv->listen_to, &sockaddr.sin6_addr);
-	}
-
-	re = bind (srv_socket, (struct sockaddr *)&sockaddr, sizeof(struct sockaddr_in6));
-	return (re == 0) ? ret_ok : ret_error;
-#endif
-}
-
-
-static ret_t
-print_banner (cherokee_server_t *srv)
-{
-	char *p;
-	char *method;
-	CHEROKEE_NEW(n,buffer);
-
-	/* First line
-	 */
-	cherokee_buffer_add_va (n, "Cherokee Web Server %s: ", PACKAGE_VERSION);
-
-	if (srv->socket_tls != -1 && srv->socket != -1) {
-		cherokee_buffer_add_va (n, "Listening on ports %d and %d", srv->port, srv->port_tls);
-	} else {
-		cherokee_buffer_add_va (n, "Listening on port %d", 
-					(srv->socket != -1)? srv->port : srv->port_tls);
-	}
-
-	if (srv->chrooted) {
-		cherokee_buffer_add (n, ", chrooted", 10);
-	}
-
-	/* TLS / SSL
-	 */
-	if (srv->tls_enabled) {
-#if defined(HAVE_GNUTLS)
-		cherokee_buffer_add (n, ", with TLS support via GNUTLS", 29);
-#elif defined(HAVE_OPENSSL)
-		cherokee_buffer_add (n, ", with TLS support via OpenSSL", 30);
-#endif
-	} else {
-		cherokee_buffer_add (n, ", TLS disabled", 14);		
-	}
-
-	/* IPv6
-	 */
-#ifdef HAVE_IPV6
-	if (srv->ipv6) {
-		cherokee_buffer_add (n, ", IPv6 enabled", 14);		
-	} else
-#endif
-		cherokee_buffer_add (n, ", IPv6 disabled", 14);
-
-	/* Polling method
-	 */
-	cherokee_fdpoll_get_method_str (srv->main_thread->fdpoll, &method);
-	cherokee_buffer_add_va (n, ", using %s", method);
-
-	/* File descriptor limit
-	 */
-	cherokee_buffer_add_va (n, ", %d fds limit", srv->system_fd_limit);
-
-	/* Threading stuff
-	 */
-	if (srv->thread_num <= 1) {
-		cherokee_buffer_add (n, ", single thread", 15);
-	} else {
-		cherokee_buffer_add_va (n, ", %d threads", srv->thread_num);
-		cherokee_buffer_add_va (n, ", %d fds in each", srv->system_fd_limit / (srv->thread_num));	
-
-		switch (srv->thread_policy) {
-#ifdef HAVE_PTHREAD
-		case SCHED_FIFO:
-			cherokee_buffer_add (n, ", FIFO scheduling policy", 24);
-			break;
-		case SCHED_RR:
-			cherokee_buffer_add (n, ", RR scheduling policy", 22);
-			break;
-#endif
-		default:
-			cherokee_buffer_add (n, ", standard scheduling policy", 28);
-			break;
-		}
-	}
-
-	/* Print it!
-	 */
-	for (p = n->buf+TERMINAL_WIDTH; p < n->buf+n->len; p+=75) {
-		while (*p != ',') p--;
-		*p = '\n';
-	}
-
-	printf ("%s\n", n->buf);
-	cherokee_buffer_free (n);
+	ret = cherokee_socket_bind (sock, port, &srv->listen_to);
+	if (ret != ret_ok) return ret;
 	
 	return ret_ok;
 }
 
 
 static ret_t
-initialize_server_socket (cherokee_server_t *srv, unsigned short port, int *srv_socket_ptr)
+initialize_server_socket6 (cherokee_server_t *srv, cherokee_socket_t *sock, unsigned short port)
 {
-	int   flags;
-	int   srv_socket;
-	ret_t ret = ret_error;
+#ifndef HAVE_IPV6
+	return ret_no_sys;
+#else
+	ret_t ret;
 
+	/* Create the socket, and set its properties
+	 */
+	ret = cherokee_socket_set_client (sock, AF_INET6);
+	if (ret != ret_ok) return ret;
+
+	ret = set_server_fd_socket_opts (SOCKET_FD(sock));
+	if (ret != ret_ok) return ret;
+
+	/* Bind the socket
+	 */
+	ret = cherokee_socket_bind (sock, port, &srv->listen_to);
+	if (ret != ret_ok) return ret;
+	
+	return ret_ok;
+#endif
+}
+
+
+static ret_t
+initialize_server_socket_unix (cherokee_server_t *srv, cherokee_socket_t *sock, unsigned short port)
+{
+#ifndef AF_LOCAL
+	return ret_no_sys;
+#else
+	ret_t ret;
+
+	/* Create the socket, and set its properties
+	 */
+	ret = cherokee_socket_set_client (sock, AF_LOCAL);
+	if (ret != ret_ok) return ret;
+
+	/* Bind the socket
+	 */
+	ret = cherokee_socket_bind (sock, -1, &srv->unix_socket);
+	if (ret != ret_ok) return ret;
+	
+	return ret_ok;
+#endif
+}
+
+static ret_t
+print_banner (cherokee_server_t *srv)
+{
+	char             *p;
+	char             *method;
+	cherokee_buffer_t n = CHEROKEE_BUF_INIT;
+
+	/* First line
+	 */
+	cherokee_buffer_add_va (&n, "Cherokee Web Server %s (%s): ", PACKAGE_VERSION, __DATE__);
+
+	if (cherokee_socket_configured (&srv->socket) &&
+	    cherokee_socket_configured (&srv->socket_tls)) {
+		cherokee_buffer_add_va (&n, "Listening on ports %d and %d", srv->port, srv->port_tls);
+	} else {
+		if (cherokee_socket_configured (&srv->socket)) {
+			if (cherokee_buffer_is_empty (&srv->unix_socket))
+				cherokee_buffer_add_va (&n, "Listening on port %d", srv->port);
+			else
+				cherokee_buffer_add_va (&n, "Listening on %s", srv->unix_socket.buf);
+		} else 
+			cherokee_buffer_add_va (&n, "Listening on port %d", srv->port_tls);
+	}
+
+	if (srv->chrooted) {
+		cherokee_buffer_add_str (&n, ", chrooted");
+	}
+
+	/* TLS / SSL
+	 */
+	if (srv->tls_enabled) {
+#ifdef HAVE_GNUTLS
+		cherokee_buffer_add_str (&n, ", with TLS support via GNUTLS");
+#elif HAVE_OPENSSL
+		cherokee_buffer_add_str (&n, ", with TLS support via OpenSSL");
+#endif
+	} else {
+		cherokee_buffer_add_str (&n, ", TLS disabled");
+	}
+
+	/* IPv6
+	 */
 #ifdef HAVE_IPV6
 	if (srv->ipv6) {
-		ret = initialize_server_socket6 (srv, port, srv_socket_ptr);
+		cherokee_buffer_add_str (&n, ", IPv6 enabled");		
+	} else
+#endif
+		cherokee_buffer_add_str (&n, ", IPv6 disabled");
+
+	/* Polling method
+	 */
+	cherokee_fdpoll_get_method_str (srv->main_thread->fdpoll, &method);
+	cherokee_buffer_add_va (&n, ", using %s", method);
+
+	/* File descriptor limit
+	 */
+	cherokee_buffer_add_va (&n, ", %d fds system limit, max. %d connections", srv->system_fd_limit, srv->conns_max);
+
+	/* Threading stuff
+	 */
+	if (srv->thread_num <= 1) {
+		cherokee_buffer_add_str (&n, ", single thread");
+		cherokee_buffer_add_va (&n, ", %d fds per thread", srv->fds_per_thread);	
+	} else {
+		cherokee_buffer_add_va (&n, ", %d threads", srv->thread_num);
+		cherokee_buffer_add_va (&n, ", %d fds per thread", srv->fds_per_thread);	
+
+		switch (srv->thread_policy) {
+#ifdef HAVE_PTHREAD
+		case SCHED_FIFO:
+			cherokee_buffer_add_str (&n, ", FIFO scheduling policy");
+			break;
+		case SCHED_RR:
+			cherokee_buffer_add_str (&n, ", RR scheduling policy");
+			break;
+#endif
+		default:
+			cherokee_buffer_add_str (&n, ", standard scheduling policy");
+			break;
+		}
+	}
+
+	/* Print it!
+	 */
+	for (p = n.buf+TERMINAL_WIDTH; p < n.buf+n.len; p+=75) {
+		while (*p != ',') p--;
+		*p = '\n';
+	}
+
+	printf ("%s\n", n.buf);
+	fflush (stdout);
+	cherokee_buffer_mrproper (&n);
+	
+	return ret_ok;
+}
+
+
+static ret_t
+initialize_server_socket (cherokee_server_t *srv, cherokee_socket_t *socket, unsigned short port)
+{
+	ret_t ret;
+
+	/* Initialize the socket
+	 */
+	ret = ret_not_found;
+
+#ifdef AF_LOCAL
+	if (! cherokee_buffer_is_empty (&srv->unix_socket)) {
+		ret = initialize_server_socket_unix (srv, socket, port);
 	}
 #endif
 
-	if ((srv->ipv6 == 0) || (ret != ret_ok)) {
-		ret = initialize_server_socket4 (srv, port, srv_socket_ptr);
+#ifdef HAVE_IPV6
+	if (srv->ipv6 && (ret != ret_ok)) {
+		ret = initialize_server_socket6 (srv, socket, port);
 	}
+#else
+	ret = ret_not_found;
+#endif
 
-	if (ret != 0) {
-		uid_t uid = getuid();
-		gid_t gid = getgid();
+	if (ret != ret_ok) {
+		ret = initialize_server_socket4 (srv, socket, port);
 
-		PRINT_ERROR ("Can't bind() socket (port=%d, UID=%d, GID=%d)\n", port, uid, gid);
-		return ret_error;
+		if (ret != ret_ok) {
+			if (! cherokee_buffer_is_empty (&srv->unix_socket)) 
+				PRINT_ERROR ("Can't bind() socket (unix=%s, UID=%d, GID=%d)\n", 
+					     srv->unix_socket.buf, getuid(), getgid());
+			else
+				PRINT_ERROR ("Can't bind() socket (port=%d, UID=%d, GID=%d)\n", 
+					     port, getuid(), getgid());
+			return ret_error;
+		}
 	}
 	   
-	srv_socket = *srv_socket_ptr;
-
 	/* Set no-delay mode
 	 */
-#ifdef _WIN32
-	flags = 1;
-	ret = ioctlsocket (srv_socket, FIONBIO, (u_long)&flags);
-#else
-	flags = fcntl (srv_socket, F_GETFL, 0);
-	return_if_fail (flags != -1, ret_error);
-	
-	ret = fcntl (srv_socket, F_SETFL, flags | O_NDELAY);
-	return_if_fail (ret >= 0, ret_error);
-#endif	
+	ret = cherokee_socket_set_nodelay (socket);
+	if (ret != ret_ok) return ret;
 
 	/* Listen
 	 */
-	ret = listen (srv_socket, srv->listen_queue);
-	if (ret < 0) {
-		close (srv_socket);
+	ret = cherokee_socket_listen (socket, srv->listen_queue);
+	if (ret != ret_ok) {
+		cherokee_socket_close (socket);
 		return ret_error;
 	}
 
@@ -722,74 +740,193 @@ static ret_t
 initialize_server_threads (cherokee_server_t *srv)
 {	
 	ret_t ret;
-	int   i, fds_per_thread;
+	int   i, fds_per_thread, fds_per_thread1, conns_per_thread;
+#ifdef HAVE_PTHREAD
+	int   thr_fds, spare_fds;
+#endif
 
-	/* Get the system fd number limit
+	/* Reset max. conns value
 	 */
-	fds_per_thread = srv->system_fd_limit / srv->thread_num;
+	srv->conns_max           = 0;
+	srv->conns_num_bogo      = 0;
+	srv->conns_keepalive_max = 0;
 
-	/* Create the main thread
+	/* Verify max_fds value
+	 */
+	if (srv->max_fds < MIN_MAX_FDS) {
+		PRINT_ERROR ("max_fds %d < %d MIN_MAX_FDS\n", srv->max_fds, MIN_MAX_FDS);
+		return ret_error;
+	}
+
+	/* Set fd upper limit for threads.
+	 */
+#ifdef HAVE_PTHREAD
+	if (srv->thread_num > (srv->max_fds / MIN_THR_FDS))
+		srv->thread_num = (srv->max_fds / MIN_THR_FDS);
+
+	if (srv->thread_num < 1)
+		srv->thread_num = 1;
+#else
+	srv->thread_num = 1;
+#endif
+
+	fds_per_thread1 = fds_per_thread = srv->max_fds / srv->thread_num;
+
+#ifdef HAVE_PTHREAD
+	thr_fds = fds_per_thread * srv->thread_num;
+	spare_fds = srv->max_fds - thr_fds;
+
+	/* Add a couple more fds to this thread,
+	 * this is useful if we are using a huge number of threads
+	 * (i.e. 1000 or more) and we don't want to leave lots of
+	 * unused fds.
+	 */
+	if (spare_fds >= 2) {
+		spare_fds -= 2;
+		fds_per_thread1 += 2;
+	}
+#else
+	fds_per_thread1 -= MAX_LISTEN_FDS;
+#endif
+	/* Get fdpoll limits.
+	 */
+	if (srv->fdpoll_method != cherokee_poll_UNSET) {
+		int sys_fd_limit = 0;
+		int poll_fd_limit = 0;
+
+		ret = cherokee_fdpoll_get_fdlimits (srv->fdpoll_method, &sys_fd_limit, &poll_fd_limit);
+		if (ret != ret_ok) {
+			PRINT_ERROR ("cherokee_fdpoll_get_fdlimits: failed %d (poll_type %d)\n", (int)ret, (int) srv->fdpoll_method);
+			return ret_error;
+		}
+
+		/* Test system fd limit (no autotune here).
+		 */
+		if (sys_fd_limit > 0 &&
+		    srv->system_fd_limit > sys_fd_limit) {
+			PRINT_ERROR ("system_fd_limit %d > %d sys_fd_limit\n", srv->system_fd_limit, sys_fd_limit);
+			return ret_error;
+		}
+
+		/* If polling set limit has too many fds,
+		 * then decrease that number.
+		 */
+		if (poll_fd_limit > 0 &&
+		    fds_per_thread1 > poll_fd_limit) {
+			PRINT_ERROR ("fds_per_thread1 %d > %d poll_fd_limit (reduce that limit)\n", fds_per_thread1, poll_fd_limit);
+			fds_per_thread1 = poll_fd_limit - MAX_LISTEN_FDS;
+		}
+	}
+
+	/* Max. number of connections is halved because opening a new file
+	 * or using a socket to connect to an external helper
+	 * might be required to satisfy a request coming from an accepted
+	 * and thus already open connection.
+	 */
+	conns_per_thread = fds_per_thread1 / 2;
+	srv->conns_max += conns_per_thread;
+	fds_per_thread1 += MAX_LISTEN_FDS;
+
+	/* Set mean fds per thread.
+	 */
+	srv->fds_per_thread = fds_per_thread1;
+
+	/* Create the main thread (only structures, not a real thread)
 	 */
 	ret = cherokee_thread_new (&srv->main_thread, srv, thread_sync, 
-				   srv->fdpoll_method, srv->system_fd_limit, fds_per_thread);
-	if (unlikely(ret < ret_ok)) return ret;
+			srv->fdpoll_method, srv->system_fd_limit,
+			fds_per_thread1, conns_per_thread);
+	if (unlikely(ret < ret_ok)) {
+		PRINT_ERROR("cherokee_thread_new (main_thread) failed %d\n", ret);
+		return ret;
+	}
 
 	/* If Cherokee is compiled in single thread mode, it has to
 	 * add the server socket to the fdpoll of the sync thread
 	 */
-#ifndef HAVE_PTHREAD
-	ret = cherokee_fdpoll_add (srv->main_thread->fdpoll, srv->socket, 0);
-	if (unlikely(ret < ret_ok)) return ret;
-
-	if (srv->tls_enabled) {
-		ret = cherokee_fdpoll_add (srv->main_thread->fdpoll, srv->socket_tls, 0);
-		if (unlikely(ret < ret_ok)) return ret;
+	if (srv->thread_num == 1) {
+		ret = cherokee_thread_accept_on (srv->main_thread);
+		if (unlikely(ret < ret_ok)) {
+			PRINT_ERROR("cherokee_thread_accept_on failed %d\n", ret);
+			return ret;
+		}
 	}
-#endif
 
-	/* If Cherokee is compiles in multi-thread mode, it has to
-	 * launch the threads
+	/* If Cherokee has been compiled in multi-thread mode,
+	 * then it may need to launch other threads.
 	 */
 #ifdef HAVE_PTHREAD
-	for (i=0; i<srv->thread_num - 1; i++) {
+	for (i = 0; i < srv->thread_num - 1; i++) {
 		cherokee_thread_t *thread;
 
-		ret = cherokee_thread_new (&thread, srv, thread_async, 
-					   srv->fdpoll_method, srv->system_fd_limit, fds_per_thread);
-		if (unlikely(ret < ret_ok)) return ret;
-		
-		thread->thread_pref = (i % 2)? thread_normal_tls : thread_tls_normal;
+		/* Add a couple more fds to this thread,
+		 * this is useful if we are using a huge number of threads
+		 * (i.e. 1000 or more) and we don't want to leave lots of
+		 * unused fds.
+		 */
+		fds_per_thread1 = fds_per_thread;
+		if (spare_fds >= 2) {
+			spare_fds -= 2;
+			fds_per_thread1 += 2;
+		}
+		conns_per_thread = fds_per_thread1 / 2;
+		srv->conns_max += conns_per_thread;
+		fds_per_thread1 += MAX_LISTEN_FDS;
 
-		list_add ((list_t *)thread, &srv->thread_list);
+		/* NOTE: mean fds per thread has already been set above.
+		 */
+
+		/* Create a real thread.
+		 */
+		ret = cherokee_thread_new (&thread, srv, thread_async, 
+				srv->fdpoll_method, srv->system_fd_limit,
+				fds_per_thread1, conns_per_thread);
+		if (unlikely(ret < ret_ok)) {
+			PRINT_ERROR("cherokee_thread_new() failed %d\n", ret);
+			return ret;
+		}
+		
+		thread->thread_pref = (i % 2) ? thread_normal_tls : thread_tls_normal;
+
+		cherokee_list_add (LIST(thread), &srv->thread_list);
 	}
 #endif
 
+	/* Set keepalive limit for open connections.
+	 * NOTE: this limit has to be lower (93%)
+	 *       than conns_accept limit (95% - 99%) used for threads.
+	 */
+	srv->conns_keepalive_max = srv->conns_max - (srv->conns_max / 16);
+	if (srv->conns_keepalive_max + 6 > srv->conns_max)
+		srv->conns_keepalive_max = srv->conns_max - 6;
+
+	/* OK, return.
+	 */
 	return ret_ok;
 }
 
 
-static void
-for_each_vserver_init_tls_func (const char *key, void *value)
+static ret_t
+check_vservers_tls (cherokee_server_t *srv)
 {
-	ret_t ret;
-	cherokee_virtual_server_t *vserver = VSERVER(value);
+	ret_t            ret;
+	cherokee_list_t *i;
 
-	ret = cherokee_virtual_server_init_tls (vserver);
-	if (ret < ret_ok) {
-		PRINT_ERROR ("Can not initialize TLS for `%s' virtual host\n", 
-			     cherokee_buffer_is_empty(vserver->name) ? "unknown" : vserver->name->buf);
+	list_for_each (i, &srv->vservers) {
+		ret = cherokee_virtual_server_has_tls (VSERVER(i));
+		if (ret == ret_ok) {
+			TRACE (ENTRIES, "Virtual Server %s: TLS enabled\n", VSERVER(i)->name.buf);
+			return ret_ok;
+		}
 	}
-}
 
+	ret = cherokee_virtual_server_has_tls (srv->vserver_default);
+	if (ret == ret_ok) {
+		TRACE (ENTRIES, "Virtual Server %s: TLS enabled\n", "default");
+		return ret_ok;
+	}
 
-static int  
-while_vserver_check_tls_func (const char *key, void *value, void *param)
-{
-	cherokee_boolean_t found;
-	
-	found = (cherokee_virtual_server_have_tls (VSERVER(value)) == ret_ok);
-
-	return (found) ? 0 : 1;
+	return ret_not_found;
 }
 
 
@@ -797,12 +934,13 @@ static ret_t
 init_vservers_tls (cherokee_server_t *srv)
 {
 #ifdef HAVE_TLS
-	ret_t ret;
+	ret_t            ret;
+	cherokee_list_t *i;
 
 	/* Initialize the server TLS socket
 	 */
-	if (srv->socket_tls == -1) {
-		ret = initialize_server_socket (srv, srv->port_tls, &srv->socket_tls);
+	if (! cherokee_socket_is_connected (&srv->socket_tls)) {
+		ret = initialize_server_socket (srv, &srv->socket_tls, srv->port_tls);
 		if (unlikely(ret != ret_ok)) return ret;
 	}
 
@@ -814,7 +952,15 @@ init_vservers_tls (cherokee_server_t *srv)
 		return ret_error;
 	}
 
-	cherokee_table_foreach (srv->vservers_ref, for_each_vserver_init_tls_func);
+	list_for_each (i, &srv->vservers) {
+		cherokee_virtual_server_t *vserver = VSERVER(i);
+
+		ret = cherokee_virtual_server_init_tls (vserver);
+		if (ret < ret_ok) {
+			PRINT_ERROR ("Can not initialize TLS for `%s' virtual host\n", 
+				     cherokee_buffer_is_empty(&vserver->name) ? "unknown" : vserver->name.buf);
+		}
+	}
 #endif
 
 	return ret_ok;	
@@ -829,6 +975,11 @@ set_fdmax_limit (cherokee_server_t *srv)
 	/* Try to raise the fd number system limit
 	 */
 	if (srv->max_fds != -1) {
+		/* max_fds sanity check
+		 */
+		if (srv->max_fds < MIN_SYSTEM_FD_NUM)
+			srv->max_fds = MIN_SYSTEM_FD_NUM;
+
 		/* Set it	
 		 */
 		ret = cherokee_sys_fdlimit_set (srv->max_fds);
@@ -838,7 +989,7 @@ set_fdmax_limit (cherokee_server_t *srv)
 		}
 	}
 
-	/* Get system fd limimt.. has it been increased?
+	/* Get system fd limit ... has it been increased?
 	 */
 	ret = cherokee_sys_fdlimit_get (&srv->system_fd_limit);
 	if (ret < ret_ok) {
@@ -850,104 +1001,122 @@ set_fdmax_limit (cherokee_server_t *srv)
 }
 
 
-static void
-build_server_string (cherokee_server_t *srv)
+static ret_t
+init_server_strings (cherokee_server_t *srv)
 {
-	cherokee_buffer_clean (srv->server_string);
+	ret_t ret;
 
-	/* Cherokee
-	 */
-	cherokee_buffer_add (srv->server_string, "Cherokee", 8); 
-	if (srv->server_token <= cherokee_version_product) 
-		return;
+	cherokee_buffer_clean (&srv->server_string);
+	cherokee_buffer_clean (&srv->ext_server_string);
+	cherokee_buffer_clean (&srv->ext_server_w_port_string);
+	cherokee_buffer_clean (&srv->ext_server_w_port_tls_string);
 
-	/* Cherokee/x.y
-	 */
-	cherokee_buffer_add_va (srv->server_string, "/%s.%s", PACKAGE_MAJOR_VERSION, PACKAGE_MINOR_VERSION);
-	if (srv->server_token <= cherokee_version_minor) 
-		return;
+	ret = cherokee_version_add_w_port (&srv->ext_server_w_port_string, srv->server_token, srv->port);
+	if (ret != ret_ok) return ret;
 
-	/* Cherokee/x.y.z-betaXX
-	 */
-	cherokee_buffer_add_va (srv->server_string, ".%s", PACKAGE_MICRO_VERSION PACKAGE_PATCH_VERSION);
-	if (srv->server_token <= cherokee_version_minimal) 
-		return;
+	ret = cherokee_version_add_w_port (&srv->ext_server_w_port_tls_string, srv->server_token, srv->port_tls);
+	if (ret != ret_ok) return ret;
 
-	/* Cherokee/x.y.z-betaXX (UNIX)
-	 */
-	cherokee_buffer_add_va (srv->server_string, " (%s)", OS_TYPE);
-	if (srv->server_token <= cherokee_version_os) return;
+	ret = cherokee_version_add (&srv->ext_server_string, srv->server_token);
+	if (ret != ret_ok) return ret;
 
-	/* Cherokee/x.y.z-betaXX (UNIX) Ext1/x.y Ext2/x.y
-	 * TODO
-	 */
+	ret = cherokee_version_add_simple (&srv->server_string, srv->server_token);
+	if (ret != ret_ok) return ret;
+
+	return ret_ok;
 }
 
 
 ret_t
-cherokee_server_init (cherokee_server_t *srv) 
+cherokee_server_initialize (cherokee_server_t *srv) 
 {   
+	int            re;
 	ret_t          ret;
 	struct passwd *ent;
 
 	/* Build the server string
 	 */
-	build_server_string (srv);
+	ret = init_server_strings (srv);
+	if (ret != ret_ok)
+		return ret;
 
 	/* Set the FD number limit
 	 */
 	ret = set_fdmax_limit (srv);
-	if (unlikely(ret < ret_ok)) return ret;
+	if (unlikely(ret < ret_ok))
+		return ret;
+
+	/* Verify if there are enough fds.
+	 */
+	if (srv->system_fd_limit < MIN_SYSTEM_FD_NUM) {
+		PRINT_ERROR("Number of system files too low (%d < %d) !\n", srv->system_fd_limit, MIN_SYSTEM_FD_NUM);
+		return ret_error;
+	}
+
+	/* Set max_fds used for max. number of accepted connections.
+	 * NOTE: max_fds is roughly half of max. system limit because
+	 *       for each accepted connection we reserve 1 spare fd
+	 *       that can be used for opening a file or for making
+	 *       a new connection to a backend server
+	 *       (i.e. FastCGI, SCGI, mirror, etc.).
+	 */
+	srv->max_fds = (srv->system_fd_limit - MIN_SPARE_FDS);
+	if (srv->max_fds < MIN_MAX_FDS) {
+		PRINT_ERROR("Number of max. fds too low %d < %d !\n", srv->max_fds, MIN_MAX_FDS);
+		return ret_error;
+	}
 
 	/* If the server has a previous server socket opened, Eg:
 	 * because a SIGHUP, it shouldn't init the server socket.
 	 */
-	if (srv->socket == -1) {
-		ret = initialize_server_socket (srv, srv->port, &srv->socket);
+	if (! cherokee_socket_is_connected (&srv->socket)) {
+		ret = initialize_server_socket (srv, &srv->socket, srv->port);
 		if (unlikely(ret != ret_ok)) return ret;
 	}
 
-	/* Look if TLS is enabled
+	/* Init the SSL/TLS support
 	 */
-	srv->tls_enabled = (cherokee_virtual_server_have_tls (srv->vserver_default) == ret_ok);
-
-	if (srv->tls_enabled == false) {
-		ret = cherokee_table_while (srv->vservers_ref, while_vserver_check_tls_func, NULL, NULL, NULL);
-		srv->tls_enabled = (ret == ret_ok);
-	}
+	srv->tls_enabled = (check_vservers_tls (srv) == ret_ok);
 
 	if (srv->tls_enabled) {
 		ret = init_vservers_tls (srv);
-		if (unlikely(ret != ret_ok)) return ret;
+		if (ret != ret_ok) return ret;
 	}
 
-        /* Get the CPU number
+	/* Get the CPU number
 	 */
-#ifndef CHEROKEE_EMBEDDED
 	dcc_ncpus (&srv->ncpus);
-#else
-	srv->ncpus = 1;
-#endif
-	if (srv->ncpus == -1) {
-		PRINT_ERROR_S ("Can not deternime the number of processors\n");
+	if (srv->ncpus < 1) {
+		PRINT_ERROR("Bad number of processors (%d < 1), use default 1 !\n", srv->ncpus);
 		srv->ncpus = 1;
 	}
 
-	/*  Maybe recalculate the thread number
+	/* Verify the thread number and force it within sane limits.
+	 * See also subsequent fds_per_threads.
 	 */
-	if (srv->thread_num == -1) {
 #ifdef HAVE_PTHREAD
+	if (srv->thread_num < 1) {
 		srv->thread_num = srv->ncpus * 5;
-#else
-		srv->thread_num = 1;
-#endif
 	}
-		
+	/* Limit the number of threads
+	 * so that each thread has at least 2 fds available.
+	 */
+	if (srv->thread_num > (srv->max_fds / MIN_THR_FDS)) {
+		srv->thread_num = (srv->max_fds / MIN_THR_FDS);
+		if (srv->thread_num < 1)
+			srv->thread_num = 1;
+	}
+#else
+	srv->thread_num = 1;
+#endif
+
 	/* Check the number of reusable connections
 	 */
-	if (srv->max_conn_reuse == -1) {
-		srv->max_conn_reuse = DEFAULT_CONN_REUSE;
-	}
+	if (srv->conns_reuse_max == -1)
+		srv->conns_reuse_max = DEFAULT_CONN_REUSE;
+
+	if (srv->conns_reuse_max > srv->max_fds)
+		srv->conns_reuse_max = srv->max_fds;
 
 	/* Get the passwd file entry before chroot
 	 */
@@ -959,10 +1128,12 @@ cherokee_server_init (cherokee_server_t *srv)
 
 	/* Chroot
 	 */
-	if (srv->chroot) {
-		srv->chrooted = (chroot (srv->chroot) == 0);
+	if (! cherokee_buffer_is_empty (&srv->chroot)) {
+		re = chroot (srv->chroot.buf);
+		srv->chrooted = (re == 0);
 		if (srv->chrooted == 0) {
-			PRINT_ERROR ("Cannot chroot() to '%s': %s\n", srv->chroot, strerror(errno));
+			PRINT_ERRNO (errno, "Cannot chroot() to '%s': '${errno}'", srv->chroot.buf);
+			return ret_error;
 		}
 	} 
 
@@ -975,67 +1146,60 @@ cherokee_server_init (cherokee_server_t *srv)
 
 	/* Change current directory
 	 */
-	chdir ("/");
+	re = chdir ("/");
+	if (re < 0) {
+		PRINT_ERRNO_S (errno, "Couldn't chdir(\"/\"): '${errno}'");
+		return ret_error;
+	}
 
 	/* Create the threads
 	 */
 	ret = initialize_server_threads (srv);
-	if (unlikely(ret < ret_ok)) return ret;
+	if (unlikely(ret < ret_ok))
+		return ret;
 
 	/* Print the server banner
 	 */
-	print_banner (srv);
-
-	return ret_ok;
+	return print_banner (srv);
 }
 
 
 static void
-flush_vserver (const char *key, void *value)
-{
-	/* There's no logger in this virtual server
-	 */
-	if ((value == NULL) || (VSERVER_LOGGER(value) == NULL))
-		return;
-
-	cherokee_logger_flush (VSERVER_LOGGER(value));
-}
-
-
-void static 
 flush_logs (cherokee_server_t *srv)
 {
-	flush_vserver (NULL, srv->vserver_default);
-	cherokee_table_foreach (srv->vservers_ref, flush_vserver);
+	cherokee_list_t   *i;
+	cherokee_logger_t *logger;
+
+	list_for_each (i, &srv->vservers) {
+		logger = VSERVER_LOGGER(i);
+
+		if (logger)
+			cherokee_logger_flush (VSERVER_LOGGER(i));
+	}
+
+	logger = VSERVER_LOGGER(srv->vserver_default);
+	if (logger) 
+		cherokee_logger_flush (VSERVER_LOGGER(srv->vserver_default));
 }
 
-static ret_t
-destroy_all_threads (cherokee_server_t *srv)
+
+ret_t 
+cherokee_server_stop (cherokee_server_t *srv)
 {
-	list_t *i, *tmp;
+	if (srv == NULL)
+		return ret_ok;
 
-	/* Set the exit flag, and try to ensure the threads are not
-	 * locked on a semaphore
+	/* Close all connections
 	 */
-	list_for_each_safe (i, tmp, &srv->thread_list) {
-		THREAD(i)->exit = true;
-		CHEROKEE_MUTEX_UNLOCK (&srv->accept_mutex);
-#ifdef HAVE_TLS
-		CHEROKEE_MUTEX_UNLOCK (&srv->accept_tls_mutex);
-#endif
-	} 
+	close_all_connections (srv);
 
-	/* Let's destroy the threads
+	/* Flush logs
 	 */
-	list_for_each_safe (i, tmp, &srv->thread_list) {
-		cherokee_thread_t *thread = THREAD(i);
-
-		cherokee_thread_wait_end (thread);
-		cherokee_thread_free (thread);
-	}
+	flush_logs (srv);
 
 	return ret_ok;
 }
+
 
 ret_t 
 cherokee_server_reinit (cherokee_server_t *srv)
@@ -1060,24 +1224,24 @@ cherokee_server_reinit (cherokee_server_t *srv)
 
 	reinit_cb = srv->reinit_callback;
 
-	/* Close all connections
+	/* Stop the server.
 	 */
-	close_all_connections (srv);
+	ret = cherokee_server_stop (srv);
+	if (ret != ret_ok)
+		return ret;
 
-	/* Destroy all the threads
-	 */
-	destroy_all_threads (srv);
-
-	/* Destroy the server object
+	/* Destroy the server.
 	 */
 	ret = cherokee_server_free (srv);
-	if (ret != ret_ok) return ret;
+	if (ret != ret_ok)
+		return ret;
 	srv = NULL;
 
 	/* Create a new one
 	 */
 	ret = cherokee_server_new (&new_srv);
-	if (ret != ret_ok) return ret;
+	if (ret != ret_ok)
+		return ret;
 
 	/* Send event
 	 */
@@ -1090,44 +1254,55 @@ cherokee_server_reinit (cherokee_server_t *srv)
 
 
 static void
+update_bogo_conns_num (cherokee_server_t *srv)
+{
+	cherokee_server_get_conns_num (srv, &srv->conns_num_bogo);
+}
+
+
+static void
 update_bogo_now (cherokee_server_t *srv)
 {
-	time_t       newtime;
-	static long *this_timezone = NULL;
+	time_t  newtime;
 
+	/* Read the time
+	 */
+	newtime = time (NULL);
+	if (srv->bogo_now >= newtime) 
+		return;
+
+	/* Update internal variables
+	 */
 	CHEROKEE_RWLOCK_WRITER (&srv->bogo_now_mutex);      /* 1.- lock as writer */
 
-	newtime = time (NULL);
-	if (srv->bogo_now != newtime) {
-		time_t prevtime = srv->bogo_now;
+	srv->bogo_now = newtime;
 
-		srv->bogo_now  = newtime;
-		cherokee_localtime (&newtime, &srv->bogo_now_tm);
+	/* Convert time to both GMT and local time struct
+	 */
+	cherokee_gmtime    (&newtime, &srv->bogo_now_tmgmt);
+	cherokee_localtime (&newtime, &srv->bogo_now_tmloc);
 
-		/* Update time string if needed
-		 */
-		if (prevtime < newtime) {
-			int z;
+#ifdef HAVE_STRUCT_TM_GMTOFF
+	srv->bogo_now_tzloc_sign = srv->bogo_now_tmloc.tm_gmtoff < 0 ? '-' : '+';
+	srv->bogo_now_tzloc_offset = abs(srv->bogo_now_tmloc.tm_gmtoff / 3600);
+#else
+	srv->bogo_now_tzloc_sign = timezone < 0 ? '-' : '+';
+	srv->bogo_now_tzloc_offset = abs(timezone / 3600);
+#endif
+	
+	cherokee_buffer_clean (&srv->bogo_now_strgmt);
+	{
+	size_t  szlen = 0;
+	char bufstr[DTM_SIZE_GMTTM_STR + 2];
 
-			cherokee_buffer_clean (srv->bogo_now_string);
-
-			if (this_timezone == NULL) 
-				this_timezone = cherokee_get_timezone_ref();
-			z = - (*this_timezone / 60);
-
-			cherokee_buffer_add_va (srv->bogo_now_string,
-					"%s, %02d %s %d %02d:%02d:%02d GMT%c%d",
-					cherokee_weekdays[srv->bogo_now_tm.tm_wday], 
-					srv->bogo_now_tm.tm_mday,
-					cherokee_months[srv->bogo_now_tm.tm_mon], 
-					srv->bogo_now_tm.tm_year + 1900,
-					srv->bogo_now_tm.tm_hour,
-					srv->bogo_now_tm.tm_min,
-					srv->bogo_now_tm.tm_sec,
-					(z < 0) ? '-' : '+',
-					(z / 60));
-		}
+	szlen = cherokee_dtm_gmttm2str (bufstr, sizeof(bufstr),
+	                                &srv->bogo_now_tmgmt);
+	cherokee_buffer_add (&srv->bogo_now_strgmt, bufstr, szlen);
 	}
+
+	/* NOTE: a local time string should have {+-}timezone_offset (hours)
+	 *       added to date-time GMT string.
+	 */
 
 	CHEROKEE_RWLOCK_UNLOCK (&srv->bogo_now_mutex);      /* 2.- release */
 }
@@ -1136,8 +1311,8 @@ update_bogo_now (cherokee_server_t *srv)
 ret_t
 cherokee_server_unlock_threads (cherokee_server_t *srv)
 {
-	ret_t   ret;
-	list_t *i;
+	ret_t            ret;
+	cherokee_list_t *i;
 
 	/* Update bogo_now before launch the threads
 	 */
@@ -1154,16 +1329,26 @@ cherokee_server_unlock_threads (cherokee_server_t *srv)
 }
 
 
-void
+ret_t
 cherokee_server_step (cherokee_server_t *srv)
 {
 	ret_t ret;
 
-	/* Get the time
+	/* Get the server time.
 	 */
 	update_bogo_now (srv);
-	ret = cherokee_thread_step (srv->main_thread, true);
+	update_bogo_conns_num (srv);
 
+	/* Execute thread step.
+	 */
+#ifndef HAVE_PTHREAD
+	ret = cherokee_thread_step_SINGLE_THREAD (srv->main_thread);
+#else
+	if (srv->thread_num == 1)
+		ret = cherokee_thread_step_SINGLE_THREAD (srv->main_thread);
+	else
+		ret = cherokee_thread_step_MULTI_THREAD (srv->main_thread, true);
+#endif
 	/* Logger flush 
 	 */
 	if (srv->log_flush_next < srv->bogo_now) {
@@ -1171,72 +1356,454 @@ cherokee_server_step (cherokee_server_t *srv)
 		srv->log_flush_next = srv->bogo_now + srv->log_flush_elapse;
 	}
 
-#ifndef CHEROKEE_EMBEDDED
 	/* Clean IO cache
 	 */
 	if (srv->iocache_clean_next < srv->bogo_now) {
 		cherokee_iocache_clean_up (srv->iocache, IOCACHE_BASIC_SIZE);	
 		srv->iocache_clean_next = srv->bogo_now + IOCACHE_DEFAULT_CLEAN_ELAPSE;
 	}
+
+#ifdef _WIN32
+	if (unlikely (cherokee_win32_shutdown_signaled(srv->bogo_now)))
+		srv->wanna_exit = true;
 #endif
 
-	/* Wanna exit?
+	/* Wanna reinit or exit ?
+	 */
+	if (likely ((srv->wanna_reinit | srv->wanna_exit) == 0))
+		return ret_eagain;
+
+	/* Wanna reinit ?
+	 */
+	if (srv->wanna_reinit) {
+		ret = cherokee_server_reinit (srv);
+
+		/* NOTE: we MUST return in any case because
+		 * the old srv server should have just been destroyed and
+		 * a new server should have been created,
+		 * in this case we cannot use the old srv ptr.
+		 */
+		return ret;
+	}
+	
+	/* Wanna exit ?
 	 */
 	if (srv->wanna_exit) {
-		cherokee_server_reinit (srv);
+		flush_logs (srv);
+		return ret_ok;
 	}
+
+	/* Should not be reached.
+	 */
+	return ret_eagain;
+}
+
+
+static ret_t 
+add_encoder (cherokee_config_node_t *node, void *data)
+{
+	ret_t                           ret;
+	cherokee_encoder_table_entry_t *enc      = NULL;
+	cherokee_matching_list_t       *matching = NULL;
+	cherokee_plugin_info_t         *info     = NULL;
+ 	cherokee_server_t              *srv      = SRV(data);
+
+	TRACE(ENTRIES, "Encoder: %s\n", node->key.buf);
+
+	/* Set the matching list
+	 */
+	ret = cherokee_matching_list_new (&matching);
+	if (ret != ret_ok) goto error;
+
+	ret = cherokee_matching_list_configure (matching, node);
+	if (ret != ret_ok) goto error;	
+
+	/* Load the module library and set the info
+	 */
+	ret = cherokee_plugin_loader_get (&srv->loader, node->key.buf, &info);
+	if (ret != ret_ok) goto error;
+
+	ret = cherokee_encoder_table_entry_new (&enc);
+	if (ret != ret_ok) goto error;
+
+	ret = cherokee_encoder_table_entry_get_info (enc, info);
+	if (ret != ret_ok) goto error;
+
+	cherokee_encoder_entry_set_matching_list (enc, matching);
+ 
+	/* Set in the encoders table
+	 */
+	ret = cherokee_encoder_table_set (&srv->encoders, &node->key, enc);
+	if (ret != ret_ok) goto error;
+
+	return ret_ok;
+
+error:
+	TRACE(ENTRIES, "Could not add '%s' encoder\n", node->key.buf);
+	return ret;
+}
+
+
+static ret_t 
+add_vserver (cherokee_config_node_t *conf, void *data)
+{
+	ret_t                      ret;
+	cherokee_virtual_server_t *vsrv;
+ 	cherokee_server_t         *srv = SRV(data);
+
+	TRACE (ENTRIES, "Adding vserver %s\n", conf->key.buf);
+
+	if (equal_buf_str (&conf->key, "default")) {
+		vsrv = srv->vserver_default;
+
+	} else {
+		/* Create a new vserver and enqueue it
+		 */
+		ret = cherokee_virtual_server_new (&vsrv, srv);
+		if (ret != ret_ok) return ret;
+
+		cherokee_list_add (LIST(vsrv), &srv->vservers);
+	}
+
+	ret = cherokee_virtual_server_configure (vsrv, &conf->key, conf);
+	if (ret != ret_ok) return ret;	
+
+	return ret_ok;
+}
+
+
+static ret_t 
+load_mime_file (char *file, void *data)
+{
+	ret_t              ret;
+	cherokee_server_t *srv = SRV(data);
+
+	if (srv->mime == NULL) {
+		ret = cherokee_mime_new (&srv->mime);
+		if (ret < ret_ok) {
+			PRINT_MSG_S ("ERROR: Couldn't get default MIME configuration file\n");
+			return ret;
+		}
+	}
+
+	ret = cherokee_mime_load_mime_types (srv->mime, file);
+	if (ret < ret_ok) {
+		PRINT_MSG ("Couldn't load MIME configuration file '%s'\n", file);
+		return ret;
+	}
+
+	return ret_ok;
+}
+
+
+static ret_t 
+configure_server_property (cherokee_config_node_t *conf, void *data)
+{
+	ret_t              ret;
+	char              *key = conf->key.buf;
+	cherokee_server_t *srv = SRV(data);
+
+	if (equal_buf_str (&conf->key, "port")) {
+		srv->port = atoi(conf->val.buf);
+
+	} else if (equal_buf_str (&conf->key, "port_tls")) {
+		srv->port_tls = atoi(conf->val.buf);
+
+	} else if (equal_buf_str (&conf->key, "max_fds")) {
+		srv->max_fds = atoi (conf->val.buf);
+
+	} else if (equal_buf_str (&conf->key, "listen_queue")) {
+		srv->listen_queue = atoi (conf->val.buf);
+
+	} else if (equal_buf_str (&conf->key, "thread_number")) {
+		srv->thread_num = atoi (conf->val.buf);
+
+	} else if (equal_buf_str (&conf->key, "sendfile_min")) {
+		srv->sendfile.min = atoi (conf->val.buf);
+
+	} else if (equal_buf_str (&conf->key, "sendfile_max")) {
+		srv->sendfile.max = atoi (conf->val.buf);
+
+	} else if (equal_buf_str (&conf->key, "max_connection_reuse")) {
+		srv->conns_reuse_max = atoi (conf->val.buf);
+
+	} else if (equal_buf_str (&conf->key, "ipv6")) {
+		srv->ipv6 = atoi (conf->val.buf);
+
+	} else if (equal_buf_str (&conf->key, "timeout")) {
+		srv->timeout = atoi (conf->val.buf);
+
+	} else if (equal_buf_str (&conf->key, "log_flush_elapse")) {
+		srv->log_flush_elapse = atoi (conf->val.buf);
+
+	} else if (equal_buf_str (&conf->key, "keepalive")) {
+		srv->keepalive = (atoi (conf->val.buf) == 0) ? false : true;
+
+	} else if (equal_buf_str (&conf->key, "keepalive_max_requests")) {
+		srv->keepalive_max = atoi (conf->val.buf);
+
+	} else if (equal_buf_str (&conf->key, "unix_socket")) {
+		cherokee_buffer_clean (&srv->unix_socket);
+		cherokee_buffer_add_buffer (&srv->unix_socket, &conf->val);
+
+	} else if (equal_buf_str (&conf->key, "panic_action")) {
+		cherokee_buffer_clean (&srv->panic_action);
+		cherokee_buffer_add_buffer (&srv->panic_action, &conf->val);
+
+	} else if (equal_buf_str (&conf->key, "chroot")) {
+		cherokee_buffer_clean (&srv->chroot);
+		cherokee_buffer_add_buffer (&srv->chroot, &conf->val);
+
+	} else if (equal_buf_str (&conf->key, "pid_file")) {
+		cherokee_buffer_clean (&srv->pidfile);
+		cherokee_buffer_add_buffer (&srv->pidfile, &conf->val);
+
+	} else if (equal_buf_str (&conf->key, "mime_files")) {
+		ret = cherokee_config_node_read_list (conf, NULL, load_mime_file, srv);
+		if (ret != ret_ok) return ret;
+
+	} else if (equal_buf_str (&conf->key, "listen")) {
+		cherokee_buffer_clean (&srv->listen_to);
+		cherokee_buffer_add_buffer (&srv->listen_to, &conf->val);
+
+	} else if (equal_buf_str (&conf->key, "poll_method")) {
+		char *str = get_buf_str(&conf->val);
+		int  sys_fd_limit = 0;
+		int  thr_fd_limit = 0;
+
+		/* Convert poll method string to type.
+		 */
+		ret = cherokee_fdpoll_str_to_method(str, &(srv->fdpoll_method));
+		if (ret != ret_ok) {
+			PRINT_MSG ("ERROR: Unknown polling method '%s'\n", str);
+			return ret_error;
+		}
+
+		/* Verify whether the method is supported by this OS.
+		 */
+		ret = cherokee_fdpoll_get_fdlimits (srv->fdpoll_method, &sys_fd_limit, &thr_fd_limit);
+		switch (ret) {
+		case ret_ok:
+			break;
+		case ret_no_sys:
+			PRINT_MSG ("ERROR: polling method '%s' is NOT supported by this OS\n", str);
+			return ret;
+		default:
+			PRINT_MSG ("ERROR: polling method '%s' has NOT been recognized (internal ERROR)\n", str);
+			return ret_error;
+		}
+
+	} else if (equal_buf_str (&conf->key, "server_tokens")) {
+		if (equal_buf_str (&conf->val, "Product")) {
+			srv->server_token = cherokee_version_product;
+		} else if (equal_buf_str (&conf->val, "Minor")) {
+			srv->server_token = cherokee_version_minor;
+		} else if (equal_buf_str (&conf->val, "Minimal")) {
+			srv->server_token = cherokee_version_minimal;
+		} else if (equal_buf_str (&conf->val, "OS")) {
+			srv->server_token = cherokee_version_os;
+		} else if (equal_buf_str (&conf->val, "Full")) {
+			srv->server_token = cherokee_version_full;
+		} else {
+			PRINT_MSG ("ERROR: Unknown server token '%s'\n", conf->val.buf);
+			return ret_error;
+		}
+
+	} else if (equal_buf_str (&conf->key, "thread_policy")) {
+#ifdef HAVE_PTHREAD
+		if (equal_buf_str (&conf->val, "fifo")) {
+			srv->thread_policy = SCHED_FIFO;
+		} else if (equal_buf_str (&conf->val, "rr")) {
+			srv->thread_policy = SCHED_RR;
+		} else if (equal_buf_str (&conf->val, "other")) {
+			srv->thread_policy = SCHED_OTHER;
+		} else {
+			PRINT_MSG ("ERROR: Unknown thread policy '%s'\n", conf->val.buf);
+			return ret_error;
+		}
+#else
+		PRINT_MSG ("WARNING: Ignoring thread_policy entry '%s'\n", conf->val.buf);
+#endif
+
+	} else if (equal_buf_str (&conf->key, "user")) {
+		struct passwd *pwd;
+	   
+		pwd = (struct passwd *) getpwnam (conf->val.buf);
+		if (pwd == NULL) {
+			 PRINT_MSG ("ERROR: User '%s' not found in the system\n", conf->val.buf);
+			 return ret_error;
+		}
+		srv->user = pwd->pw_uid;		
+
+	} else if (equal_buf_str (&conf->key, "group")) {
+		struct group *grp;
+		
+		grp = (struct group *) getgrnam (conf->val.buf);
+		if (grp == NULL) {
+			PRINT_MSG ("ERROR: Group '%s' not found in the system\n", conf->val.buf);
+			return ret_error;
+		}		
+		srv->group = grp->gr_gid;
+
+	} else if (equal_buf_str (&conf->key, "encoder")) {
+		ret = cherokee_config_node_while (conf, add_encoder, srv);
+		if (ret != ret_ok) return ret;
+
+	} else if (equal_buf_str (&conf->key, "module_dir") ||
+		   equal_buf_str (&conf->key, "module_deps")) {
+		/* Ignore it: Previously handled 
+		 */
+
+	} else {
+		PRINT_MSG ("ERROR: Server parser: Unknown key \"%s\"\n", key);
+		return ret_error;
+	}
+	
+	return ret_ok;
 }
 
 
 static ret_t
-config_module_execute_function (cherokee_server_t *srv, char *param, char *func_name)
+configure_server (cherokee_server_t *srv)
 {
-#ifdef CHEROKEE_EMBEDDED
-	return cherokee_embedded_read_config (srv);
-#else
-	ret_t   ret;
-	ret_t (*read_config) (cherokee_server_t *srv, char *config_string);
+	ret_t                   ret;
+	cherokee_config_node_t *subconf, *subconf2;
 
-	/* Load the module
+	/* Server
 	 */
-	ret = cherokee_module_loader_load_no_global (&srv->loader, "read_config");
-	if (ret != ret_ok) return ret_error;
+	TRACE (ENTRIES, "Configuring %s\n", "server");
+	ret = cherokee_config_node_get (&srv->config, "server", &subconf);
+	if (ret == ret_ok) {
+		/* Modules dir and deps
+		 */
+		ret = cherokee_config_node_get (subconf, "module_dir", &subconf2);
+		if (ret == ret_ok) {
+			ret = cherokee_plugin_loader_set_directory (&srv->loader, &subconf2->val);
+			if (ret != ret_ok) return ret;
+		}
 
-	/* Get the function
+		ret = cherokee_config_node_get (subconf, "module_deps", &subconf2);
+		if (ret == ret_ok) {
+			ret = cherokee_plugin_loader_set_deps_dir (&srv->loader, &subconf2->val);
+			if (ret != ret_ok) return ret;
+		}
+
+		/* Rest of the properties
+		 */
+		ret = cherokee_config_node_while (subconf, configure_server_property, srv);
+		if (ret != ret_ok) return ret;
+	}
+
+	/* Icons
 	 */
-	ret = cherokee_module_loader_get_sym (&srv->loader, "read_config", 
-					      func_name,
-					      (void **)&read_config);
+	TRACE (ENTRIES, "Configuring %s\n", "icons");
+	ret = cherokee_config_node_get (&srv->config, "icons", &subconf);
+	if (ret == ret_ok) {
+		ret = cherokee_icons_new (&srv->icons);
+		if (ret != ret_ok) return ret;
+		
+		ret =  cherokee_icons_configure (srv->icons, subconf);
+		if (ret != ret_ok) return ret;
+	}
+	
+	/* Load the virtual servers
+	 */
+	TRACE (ENTRIES, "Configuring %s\n", "virtual servers");
+	ret = cherokee_config_node_get (&srv->config, "vserver", &subconf);
+	if (ret == ret_ok) {
+		ret = cherokee_config_node_while (subconf, add_vserver, srv);
+		if (ret != ret_ok) return ret;
+	}
+
+	return ret_ok;
+}
+
+
+static ret_t
+perform_post_configure_checks (cherokee_server_t *srv)
+{
+	int              re;
+	cherokee_list_t *i;
+
+	/* Ensure that Virtual servers have a document root
+	 */
+	re = cherokee_buffer_is_empty (&(srv->vserver_default)->root);
+	if (re) {
+		PRINT_MSG_S ("Default Virtual Server needs a Document Root\n");
+		return ret_error;
+	}
+
+	list_for_each (i, &srv->vservers) {
+		re = cherokee_buffer_is_empty (&VSERVER(i)->root);
+		if (re) {
+			PRINT_MSG_S ("Virtual Server  needs a Document Root\n");
+			return ret_error;
+		}
+	}
+
+	return ret_ok;
+}
+
+
+ret_t 
+cherokee_server_read_config_string (cherokee_server_t *srv, cherokee_buffer_t *string)
+{
+	ret_t ret;
+
+	/* Load the main file
+	 */
+	ret = cherokee_config_reader_parse_string (&srv->config, string);
 	if (ret != ret_ok) return ret;
 
-	/* Execute it!
+	ret = configure_server (srv);
+	if (ret != ret_ok) return ret;
+
+	/* Ensure that the server is ready
 	 */
-	ret = read_config (srv, param);
+	ret = perform_post_configure_checks (srv);
+	if (ret != ret_ok) return ret;
 
 	/* Clean up
 	 */
-	cherokee_module_loader_unload (&srv->loader, "read_config");
-
-	return ret;
-#endif
-}
-
-
-ret_t 
-cherokee_server_read_config_file (cherokee_server_t *srv, char *path)
-{
- 	if (path == NULL) { 
- 		path = CHEROKEE_CONFDIR"/cherokee.conf"; 
- 	} 
+	ret = cherokee_config_node_mrproper (&srv->config);
+	if (ret != ret_ok) return ret;
 	
-	return config_module_execute_function (srv, path, "read_config_file");
+	return ret_ok;
 }
 
 
 ret_t 
-cherokee_server_read_config_string (cherokee_server_t *srv, char *config_string)
+cherokee_server_read_config_file (cherokee_server_t *srv, char *fullpath)
 {
-	return config_module_execute_function (srv, config_string, "read_config_string");
+	ret_t             ret;
+	cherokee_buffer_t tmp = CHEROKEE_BUF_INIT;
+
+	cherokee_buffer_add (&tmp, fullpath, strlen(fullpath));
+
+	/* Load the main file
+	 */
+	ret = cherokee_config_reader_parse (&srv->config, &tmp);
+	if (ret != ret_ok) goto error;
+
+	ret = configure_server (srv);
+	if (ret != ret_ok) goto error;
+
+	/* Ensure that the server is ready
+	 */
+	ret = perform_post_configure_checks (srv);
+	if (ret != ret_ok) return ret;
+
+	/* Clean up
+	 */
+	ret = cherokee_config_node_mrproper (&srv->config);
+	if (ret != ret_ok) goto error;
+
+	cherokee_buffer_mrproper (&tmp);
+	return ret_ok;
+
+error:
+	cherokee_buffer_mrproper (&tmp);
+	return ret;
 }
 
 
@@ -1272,10 +1839,31 @@ cherokee_server_daemonize (cherokee_server_t *srv)
 
 
 ret_t 
-cherokee_server_get_active_conns (cherokee_server_t *srv, int *num)
+cherokee_server_get_conns_num (cherokee_server_t *srv, cuint_t *num)
 {
-	int     active = 0;
-	list_t *thread;
+	cuint_t          conns_num = 0;
+	cherokee_list_t *thread;
+
+	/* Open HTTP connections number
+	 */
+	list_for_each (thread, &srv->thread_list) {
+		conns_num += THREAD(thread)->conns_num;
+	}
+	
+	conns_num += srv->main_thread->conns_num;
+
+	/* Return out parameters
+	 */
+	*num = conns_num;
+	return ret_ok;
+}
+
+
+ret_t 
+cherokee_server_get_active_conns (cherokee_server_t *srv, cuint_t *num)
+{
+	cuint_t          active = 0;
+	cherokee_list_t *thread;
 
 	/* Active connections number
 	 */
@@ -1294,21 +1882,17 @@ cherokee_server_get_active_conns (cherokee_server_t *srv, int *num)
 
 
 ret_t 
-cherokee_server_get_reusable_conns (cherokee_server_t *srv, int *num)
+cherokee_server_get_reusable_conns (cherokee_server_t *srv, cuint_t *num)
 {
-	int     reusable = 0;
-	list_t *thread, *i;
+	cuint_t          reusable = 0;
+	cherokee_list_t *thread;
 
 	/* Reusable connections
 	 */
 	list_for_each (thread, &srv->thread_list) {
-		list_for_each (i, &THREAD(thread)->reuse_list) {
-			reusable++;
-		}
+		reusable += THREAD(thread)->reuse_list_num;
 	}
-	list_for_each (i, &THREAD(srv->main_thread)->reuse_list) {
-		reusable++;
-	}
+	reusable += srv->main_thread->reuse_list_num;
 
 	/* Return out parameters
 	 */
@@ -1320,7 +1904,7 @@ cherokee_server_get_reusable_conns (cherokee_server_t *srv, int *num)
 ret_t 
 cherokee_server_get_total_traffic (cherokee_server_t *srv, size_t *rx, size_t *tx)
 {
-	list_t *i;
+	cherokee_list_t *i;
 
 	*rx = srv->vserver_default->data.rx;
 	*tx = srv->vserver_default->data.tx;
@@ -1338,7 +1922,17 @@ ret_t
 cherokee_server_handle_HUP (cherokee_server_t *srv, cherokee_server_reinit_cb_t callback)
 {
 	srv->reinit_callback = callback;
-	srv->wanna_exit      = true;
+	srv->wanna_reinit    = true;
+
+	return ret_ok;
+}
+
+
+ret_t 
+cherokee_server_handle_TERM (cherokee_server_t *srv)
+{
+	if (srv != NULL)
+		srv->wanna_exit = true;
 
 	return ret_ok;
 }
@@ -1347,30 +1941,28 @@ cherokee_server_handle_HUP (cherokee_server_t *srv, cherokee_server_reinit_cb_t 
 ret_t
 cherokee_server_handle_panic (cherokee_server_t *srv)
 {
-	int                re;
-	cherokee_buffer_t *cmd;
+	int               re;
+	cherokee_buffer_t cmd = CHEROKEE_BUF_INIT;
 
-	PRINT_ERROR_S ("Cherokee feels panic!\n");
+	PRINT_MSG_S ("Cherokee feels panic!\n");
 	
-	if ((srv == NULL) || (srv->panic_action == NULL)) {
+	if ((srv == NULL) || (srv->panic_action.len <= 0)) {
 		goto fin;
 	}
 
-	cherokee_buffer_new (&cmd);
-	cherokee_buffer_add_va (cmd, "%s %d", srv->panic_action, getpid());
+	cherokee_buffer_add_va (&cmd, "%s %d", srv->panic_action.buf, getpid());
 
-	re = system (cmd->buf);
+	re = system (cmd.buf);
 	if (re < 0) {
 #ifdef WEXITSTATUS		
 		int val = WEXITSTATUS(re);
 #else
 		int val = re;			
 #endif
-		PRINT_ERROR ("PANIC: re-panic: '%s', status %d\n", cmd->buf, val);
+		PRINT_ERROR ("PANIC: re-panic: '%s', status %d\n", cmd.buf, val);
 	}
 
-	cherokee_buffer_free (cmd);
-
+	cherokee_buffer_mrproper (&cmd);
 fin:
 	abort();
 }
@@ -1379,20 +1971,30 @@ fin:
 ret_t 
 cherokee_server_del_connection (cherokee_server_t *srv, char *id_str)
 {
-	list_t *t, *c;
-	culong_t id;
+	culong_t         id;
+	cherokee_list_t *t, *c;
 	
 	id = strtol (id_str, NULL, 10);
 
 	list_for_each (t, &srv->thread_list) {
+		cherokee_thread_t *thread = THREAD(t);
+
+		CHEROKEE_MUTEX_LOCK (&thread->ownership);
+
 		list_for_each (c, &THREAD(t)->active_list) {
 			cherokee_connection_t *conn = CONN(c);
 
 			if (conn->id == id) {
-				conn->phase = phase_lingering;
-				return ret_ok;
+				if ((conn->phase != phase_nothing) && 
+				    (conn->phase != phase_lingering))
+				{
+					conn->phase = phase_shutdown;
+					CHEROKEE_MUTEX_UNLOCK (&thread->ownership);
+					return ret_ok;
+				}
 			}
 		}
+		CHEROKEE_MUTEX_UNLOCK (&thread->ownership);
 	}
 
 	return ret_not_found;
@@ -1402,11 +2004,13 @@ cherokee_server_del_connection (cherokee_server_t *srv, char *id_str)
 ret_t 
 cherokee_server_set_backup_mode (cherokee_server_t *srv, cherokee_boolean_t active)
 {
-	ret_t   ret;
-	list_t *i;
+	ret_t            ret;
+	cherokee_list_t *i;
 
-	ret = cherokee_logger_set_backup_mode (srv->vserver_default->logger, active);
-	if (unlikely (ret != ret_ok)) return ret;
+	if (srv->vserver_default->logger) {
+		ret = cherokee_logger_set_backup_mode (srv->vserver_default->logger, active);
+		if (unlikely (ret != ret_ok)) return ret;
+	}
 
 	list_for_each (i, &srv->vservers) {
 		cherokee_logger_t *logger = VSERVER(i)->logger;
@@ -1425,12 +2029,14 @@ cherokee_server_set_backup_mode (cherokee_server_t *srv, cherokee_boolean_t acti
 ret_t 
 cherokee_server_get_backup_mode (cherokee_server_t *srv, cherokee_boolean_t *active)
 {
-	list_t *i;
+	cherokee_list_t *i;
 
 	*active = false;
 
-	cherokee_logger_get_backup_mode (srv->vserver_default->logger, active);
-	if (*active == true) return ret_ok;
+	if (srv->vserver_default->logger) {
+		cherokee_logger_get_backup_mode (srv->vserver_default->logger, active);
+		if (*active == true) return ret_ok;
+	}
 
 	list_for_each (i, &srv->vservers) {
 		cherokee_logger_t *logger = VSERVER(i)->logger;
@@ -1449,21 +2055,56 @@ cherokee_server_get_backup_mode (cherokee_server_t *srv, cherokee_boolean_t *act
 ret_t 
 cherokee_server_write_pidfile (cherokee_server_t *srv)
 {
-	FILE *file;
+	size_t  written;
+	FILE   *file;
 	CHEROKEE_TEMP(buffer, 10);
 
 	if (cherokee_buffer_is_empty (&srv->pidfile))
 		return ret_not_found;
 
-	file = fopen (srv->pidfile.buf, "w");
+	file = fopen (srv->pidfile.buf, "w+");
 	if (file == NULL) {
-		PRINT_MSG ("ERROR: Can't write PID file '%s': %s\n", srv->pidfile.buf, strerror(errno));
+		PRINT_ERRNO (errno, "Cannot write PID file '%s': '${errno}'", srv->pidfile.buf);
 		return ret_error;
 	}
 
 	snprintf (buffer, buffer_size, "%d\n", getpid());
-	fwrite (buffer, 1, strlen(buffer), file);
+	written = fwrite (buffer, 1, strlen(buffer), file);
 	fclose (file);
 
+	if (written <= 0)
+		return ret_error;
+
+	return ret_ok;
+}
+
+
+ret_t 
+cherokee_server_get_vserver (cherokee_server_t *srv, cherokee_buffer_t *name, cherokee_virtual_server_t **vsrv)
+{
+	cint_t                     re;
+	ret_t                      ret;
+	cherokee_list_t           *i;
+	cherokee_virtual_server_t *vserver;
+
+	list_for_each (i, &srv->vservers) {
+		vserver = VSERVER(i);
+
+		ret = cherokee_vserver_names_find (&vserver->domains, name);
+		if (ret == ret_ok) {
+			TRACE (ENTRIES, "Virtual server '%s' matched domain '%s'\n", vserver->name.buf, name->buf);
+			*vsrv = vserver;
+			return ret_ok;
+		}
+
+		re = cherokee_buffer_cmp_buf (name, &vserver->name);
+		if (re == 0) {
+			TRACE (ENTRIES, "Virtual server '%s' matched by its alias\n", vserver->name.buf);
+			*vsrv = vserver;
+			return ret_ok;
+		}
+	}
+
+	*vsrv = srv->vserver_default;
 	return ret_ok;
 }

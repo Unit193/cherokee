@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2006 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2008 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -32,7 +32,7 @@
 ret_t 
 cherokee_fcgi_dispatcher_new (cherokee_fcgi_dispatcher_t **fcgi, 
 			      cherokee_thread_t           *thd, 
-			      cherokee_ext_source_t       *src, 
+			      cherokee_source_t           *src, 
 			      cuint_t                      mgr_num, 
 			      cuint_t                      keepalive,
 			      cuint_t                      pipeline)
@@ -67,8 +67,8 @@ cherokee_fcgi_dispatcher_new (cherokee_fcgi_dispatcher_t **fcgi,
 ret_t 
 cherokee_fcgi_dispatcher_free (cherokee_fcgi_dispatcher_t *fcgi)
 {
-	cuint_t  i;
-	list_t  *l, *tmp;
+	cuint_t          i;
+	cherokee_list_t *l, *tmp;
 
 	CHEROKEE_MUTEX_DESTROY(&fcgi->lock);
 	
@@ -79,7 +79,7 @@ cherokee_fcgi_dispatcher_free (cherokee_fcgi_dispatcher_t *fcgi)
 	list_for_each_safe (l, tmp, &fcgi->queue) {
 		cherokee_connection_t *conn = HANDLER_CONN(l);
 
-		list_del ((list_t *)conn);
+		cherokee_list_del (LIST(conn));
 		cherokee_thread_inject_active_connection (HANDLER_THREAD(l), conn);
 	}
 
@@ -174,13 +174,13 @@ cherokee_fcgi_dispatcher_dispatch (cherokee_fcgi_dispatcher_t  *fcgi,
 ret_t
 cherokee_fcgi_dispatcher_end_notif (cherokee_fcgi_dispatcher_t *fcgi)
 {
-	list_t *i;
+	cherokee_list_t *i;
 
-	if (list_empty (&fcgi->queue))
+	if (cherokee_list_empty (&fcgi->queue))
 		return ret_ok;
 
 	i = fcgi->queue.next;
-	list_del (i);
+	cherokee_list_del (i);
 
 	return cherokee_thread_inject_active_connection (CONN_THREAD(i), CONN(i));
 }
@@ -189,6 +189,6 @@ cherokee_fcgi_dispatcher_end_notif (cherokee_fcgi_dispatcher_t *fcgi)
 ret_t
 cherokee_fcgi_dispatcher_queue_conn (cherokee_fcgi_dispatcher_t *fcgi, cherokee_connection_t *conn)
 {
-	list_add_tail ((list_t *)conn, &fcgi->queue);
+	cherokee_list_add_tail (LIST(conn), &fcgi->queue);
 	return ret_ok;
 }

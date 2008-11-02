@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2006 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2008 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -40,12 +40,12 @@ typedef struct cherokee_resolv_cache cherokee_resolv_cache_t;
 
 ret_t cherokee_resolv_cache_get_default (cherokee_resolv_cache_t **resolv);
 
-ret_t cherokee_resolv_cache_init     (cherokee_resolv_cache_t *resolv);
-ret_t cherokee_resolv_cache_mrproper (cherokee_resolv_cache_t *resolv);
+ret_t cherokee_resolv_cache_init      (cherokee_resolv_cache_t *resolv);
+ret_t cherokee_resolv_cache_mrproper  (cherokee_resolv_cache_t *resolv);
+ret_t cherokee_resolv_cache_clean     (cherokee_resolv_cache_t *resolv);
 
-ret_t cherokee_resolv_cache_resolve  (cherokee_resolv_cache_t *resolv,  const char *domain, const char **ip);
-ret_t cherokee_resolv_cache_clean    (cherokee_resolv_cache_t *resolv);
-
+ret_t cherokee_resolv_cache_get_ipstr (cherokee_resolv_cache_t *resolv,  const char *domain, const char **ip);
+ret_t cherokee_resolv_cache_get_host  (cherokee_resolv_cache_t *resolv,  const char *domain, void *sock);
 
 CHEROKEE_END_DECLS
 

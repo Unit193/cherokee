@@ -9,7 +9,7 @@
  *      Miguel Angel Ajo Pelayo <ajo@godsmaze.org> 
  *      Pablo Neira Ayuso <pneira@optimat.com>
  *
- * Copyright (C) 2001-2006 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2008 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -55,6 +55,11 @@
 #include "module.h"
 
 
+/* Plug-in initialization
+ */
+PLUGIN_INFO_LOGGER_EASIEST_INIT (ncsa);
+
+
 /* Some constants
  */
 static char *month[] = {
@@ -64,30 +69,26 @@ static char *month[] = {
 };
 
 
-cherokee_module_info_t MODULE_INFO(ncsa) = {
-	cherokee_logger,            /* type     */
-	cherokee_logger_ncsa_new    /* new func */
-};
-
 ret_t
-cherokee_logger_ncsa_new (cherokee_logger_t **logger, cherokee_table_t *properties)
+cherokee_logger_ncsa_new (cherokee_logger_t **logger, cherokee_config_node_t *config)
 {
 	ret_t ret;
 	CHEROKEE_NEW_STRUCT (n, logger_ncsa);
 	
 	/* Init the base class object
 	 */
-	cherokee_logger_init_base(LOGGER(n));
+	cherokee_logger_init_base (LOGGER(n), PLUGIN_INFO_PTR(ncsa));
 
 	MODULE(n)->init         = (logger_func_init_t) cherokee_logger_ncsa_init;
 	MODULE(n)->free         = (logger_func_free_t) cherokee_logger_ncsa_free;
+	
 	LOGGER(n)->flush        = (logger_func_flush_t) cherokee_logger_ncsa_flush;
 	LOGGER(n)->reopen       = (logger_func_reopen_t) cherokee_logger_ncsa_reopen;
 	LOGGER(n)->write_error  = (logger_func_write_error_t)  cherokee_logger_ncsa_write_error;
 	LOGGER(n)->write_access = (logger_func_write_access_t) cherokee_logger_ncsa_write_access;
 	LOGGER(n)->write_string = (logger_func_write_string_t) cherokee_logger_ncsa_write_string;
 
-	ret = cherokee_logger_ncsa_init_base (n, properties);
+	ret = cherokee_logger_ncsa_init_base (n, config);
 	if (unlikely(ret < ret_ok)) return ret;
 
 	/* Return the object
@@ -98,151 +99,132 @@ cherokee_logger_ncsa_new (cherokee_logger_t **logger, cherokee_table_t *properti
 
 
 ret_t 
-cherokee_logger_ncsa_init_base (cherokee_logger_ncsa_t *logger, cherokee_table_t *properties)
+cherokee_logger_ncsa_init_base (cherokee_logger_ncsa_t *logger, cherokee_config_node_t *config)
 {
-	/* Init
+	ret_t                   ret;
+	long                   *this_timezone = NULL;
+	cherokee_config_node_t *subconf;
+
+	/* Init the local vars
 	 */
-	logger->errorlog_fd        = NULL;
-	logger->accesslog_fd       = NULL;
-	logger->accesslog_filename = NULL;
-	logger->errorlog_filename  = NULL;
-	logger->combined           = false;
-	
-	if (properties != NULL) {
-		cherokee_typed_table_get_str (properties, "AccessLog", &logger->accesslog_filename);
-		cherokee_typed_table_get_str (properties, "ErrorLog", &logger->errorlog_filename);
-	}
-	
-	return ret_ok;
-}
 
+	/* Get the timezone reference and compute tz offset
+	 */
+	this_timezone = cherokee_get_timezone_ref();
+	logger->tz = - (*this_timezone / 60);
+	logger->now_time = (time_t) -1;
 
-static ret_t 
-open_output (cherokee_logger_ncsa_t *logger)
-{
-	if ((logger->accesslog_filename == NULL) ||
-	    (logger->errorlog_filename == NULL))
-	{
-		openlog ("Cherokee", LOG_CONS | LOG_PID | LOG_NDELAY, LOG_LOCAL1);
-		return ret_ok;
+	/* Init the local buffers
+	 */
+	cherokee_buffer_init (&logger->now_dtm);
+	cherokee_buffer_init (&logger->referer);
+	cherokee_buffer_init (&logger->useragent);
+	cherokee_buffer_ensure_size (&logger->now_dtm,   64);
+	cherokee_buffer_ensure_size (&logger->referer, 1024);
+	cherokee_buffer_ensure_size (&logger->useragent, 512);
+
+	/* Init the logger writers
+	 */
+	ret = cherokee_logger_writer_init (&logger->writer_access);
+	if (ret != ret_ok) return ret;
+
+	ret = cherokee_logger_writer_init (&logger->writer_error);
+	if (ret != ret_ok) return ret;
+
+	/* Configure them
+	 */
+	ret = cherokee_config_node_get (config, "access", &subconf);
+	if (ret == ret_ok) {
+		ret = cherokee_logger_writer_configure (&logger->writer_access, subconf);
+		if (ret != ret_ok) return ret;
 	}
 
-	logger->accesslog_fd = fopen (logger->accesslog_filename, "a+");
-	if (logger->accesslog_fd == NULL) {
-		PRINT_ERROR("cherokee_logger_ncsa: error opening %s for append\n", logger->accesslog_filename); 
-		return ret_error;
+	ret = cherokee_config_node_get (config, "error", &subconf);
+	if (ret == ret_ok) {
+		ret = cherokee_logger_writer_configure (&logger->writer_error, subconf);
+		if (ret != ret_ok) return ret;
 	}
-#ifndef _WIN32
-	fcntl (fileno (logger->accesslog_fd), F_SETFD, 1);
-#endif	
-
-        logger->errorlog_fd  = fopen (logger->errorlog_filename, "a+");
-	if (logger->errorlog_fd == NULL) {
-		PRINT_ERROR("cherokee_logger_ncsa: error opening %s for append\n", logger->errorlog_filename); 
-		return ret_error;
-	}
-#ifndef _WIN32
-	fcntl (fileno (logger->errorlog_fd), F_SETFD, 1);
-#endif
 
 	return ret_ok;
-}
-
-
-static ret_t
-close_output (cherokee_logger_ncsa_t *logger)
-{
-	int n   = 2;
-	int ret = 0;
-
-	if (logger->errorlog_fd != NULL) {
-		ret = fclose (logger->errorlog_fd);
-		logger->errorlog_fd = NULL;
-		n--;
-	}
-	
-	if (logger->accesslog_fd != NULL) {
-		ret |= fclose (logger->accesslog_fd);
-		logger->accesslog_fd = NULL;
-		n--;
-	}
-	
-	if (n != 0) {
-		closelog();
-	}
-	
-	return (ret == 0) ? ret_ok : ret_error;
 }
 
 
 ret_t 
 cherokee_logger_ncsa_init (cherokee_logger_ncsa_t *logger)
 {
-	return open_output (logger);
+	ret_t ret;
+
+	ret = cherokee_logger_writer_open (&logger->writer_access);
+	if (ret != ret_ok) return ret;
+
+	ret = cherokee_logger_writer_open (&logger->writer_error);
+	if (ret != ret_ok) return ret;
+
+	return ret_ok;
 }
 
 
 ret_t
 cherokee_logger_ncsa_free (cherokee_logger_ncsa_t *logger)
 {
-	return close_output (logger);
+	ret_t ret;
+
+	cherokee_buffer_mrproper (&logger->now_dtm);
+	cherokee_buffer_mrproper (&logger->referer);
+	cherokee_buffer_mrproper (&logger->useragent);
+
+	ret = cherokee_logger_writer_mrproper (&logger->writer_access);
+	if (ret != ret_ok) return ret;
+
+	ret = cherokee_logger_writer_mrproper (&logger->writer_error);
+	if (ret != ret_ok) return ret;
+
+	return ret_ok;
 }
 
 
 ret_t 
 cherokee_logger_ncsa_flush (cherokee_logger_ncsa_t *logger)
 {
-	int tmp;
-
-	if (cherokee_buffer_is_empty (LOGGER_BUFFER(logger))) {
-		return ret_ok;
-	}
-
-	if (logger->accesslog_fd == NULL) {
-		cherokee_syslog (LOG_INFO, LOGGER_BUFFER(logger));
-		return cherokee_buffer_clean (LOGGER_BUFFER(logger));
-	}
-
-
-	tmp = fwrite (LOGGER_BUFFER(logger)->buf, 1, LOGGER_BUFFER(logger)->len, logger->accesslog_fd); 
-	fflush (logger->accesslog_fd);
-	if (tmp < 0) {
-		return ret_error;
-	}
-
-	if (tmp == LOGGER_BUFFER(logger)->len) {
-		return cherokee_buffer_clean (LOGGER_BUFFER(logger));
-	} 
-
-	return cherokee_buffer_drop_endding (LOGGER_BUFFER(logger), tmp);
+	return cherokee_logger_writer_flush (&logger->writer_access);
 }
 
 
 static ret_t
 build_log_string (cherokee_logger_ncsa_t *logger, cherokee_connection_t *cnt, cherokee_buffer_t *buf)
 {
-  	long int           z;
 	ret_t              ret;
+	size_t             username_len = 0;
+	cuint_t            method_len = 0;
+	cuint_t            version_len = 0;
 	char              *username;
 	const char        *method;
-        const char        *version;
-	struct tm         *conn_time;
+	const char        *version;
 	char               ipaddr[CHE_INET_ADDRSTRLEN];
-	static long       *this_timezone = NULL;
-	cherokee_buffer_t *combined_info = NULL;
 	cherokee_buffer_t *request;
 
-	/* Read the bogonow value from the server
+	/* Read the bogonow value from the thread and
+	 * if time has changed then recreate the date-time string.
 	 */
-	conn_time = &CONN_THREAD(cnt)->bogo_now_tm;
+	if (unlikely (logger->now_time != CONN_THREAD(cnt)->bogo_now)) {
+		struct tm *pnow_tm;
 
-	/* Get the timezone reference
-	 */
-	if (this_timezone == NULL) {
-		this_timezone = cherokee_get_timezone_ref();
+		logger->now_time = CONN_THREAD(cnt)->bogo_now;
+		pnow_tm = &CONN_THREAD(cnt)->bogo_now_tmloc;
+		cherokee_buffer_clean (&logger->now_dtm);
+		cherokee_buffer_add_va (&logger->now_dtm, 
+				" [%02d/%s/%d:%02d:%02d:%02d %c%02d%02d] \"",
+				pnow_tm->tm_mday, 
+				month[pnow_tm->tm_mon], 
+				1900 + pnow_tm->tm_year,
+				pnow_tm->tm_hour, 
+				pnow_tm->tm_min, 
+				pnow_tm->tm_sec,
+				(logger->tz < 0) ? '-' : '+', 
+				(int) (logger->tz / 60), 
+				(int) (logger->tz % 60)
+				);
 	}
-	
-	z = - (*this_timezone / 60);
 
 	memset (ipaddr, 0, sizeof(ipaddr));
 	cherokee_socket_ntop (&cnt->socket, ipaddr, sizeof(ipaddr)-1);
@@ -250,175 +232,170 @@ build_log_string (cherokee_logger_ncsa_t *logger, cherokee_connection_t *cnt, ch
 	/* Look for the user
 	 */
 	if (cnt->validator && !cherokee_buffer_is_empty (&cnt->validator->user)) {
+		username_len = cnt->validator->user.len;
 		username = cnt->validator->user.buf;
 	} else {
+		username_len = 1;
 		username = "-";
 	}
 
 	/* Get the method and version strings
 	 */
-	ret = cherokee_http_method_to_string (cnt->header.method, &method, NULL);
+	ret = cherokee_http_method_to_string (cnt->header.method, &method, &method_len);
 	if (unlikely(ret < ret_ok)) return ret;
 
-	ret = cherokee_http_version_to_string (cnt->header.version, &version, NULL);
+	ret = cherokee_http_version_to_string (cnt->header.version, &version, &version_len);
 	if (unlikely(ret < ret_ok)) return ret;
 
-	/* Look for the "combined" information
-	 */
-	if (logger->combined) {
-		char *ref;
-		char *usr;
-		CHEROKEE_NEW2(referer, useragent, buffer);
-
-		cherokee_header_copy_known (&cnt->header, header_referer, referer);
-		cherokee_header_copy_known (&cnt->header, header_user_agent, useragent);
-
-		ref = (referer->buf) ? referer->buf : "-";
-		usr = (useragent->buf) ? useragent->buf : "";
-
-		cherokee_buffer_new (&combined_info);
-		cherokee_buffer_add_va (combined_info, " \"%s\" \"%s\"", ref, usr);
-
-		cherokee_buffer_free (referer);
-		cherokee_buffer_free (useragent);
-	}
 
 	request = cherokee_buffer_is_empty(&cnt->request_original) ? 
 		&cnt->request : &cnt->request_original;
 
 	/* Build the log string
+	 *
+	 * "%s - %s [%02d/%s/%d:%02d:%02d:%02d %c%02d%02d] \"%s %s %s\" %d "
+	 * FMT_OFFSET
 	 */
-	cherokee_buffer_add_va (buf, 
-				"%s - %s [%02d/%s/%d:%02d:%02d:%02d %c%02d%02d] \"%s %s %s\" %d " FMT_OFFSET "%s\n",
-				ipaddr,
-				username, 
-				conn_time->tm_mday, 
-				month[conn_time->tm_mon], 
-				1900 + conn_time->tm_year,
-				conn_time->tm_hour, 
-				conn_time->tm_min, 
-				conn_time->tm_sec,
-				(z < 0) ? '-' : '+', 
-				(int) z/60, 
-				(int) z%60, 
-				method,
-				request->buf, 
-				version, 
-				cnt->error_code,
-				(CST_OFFSET) (cnt->range_end - cnt->range_start),
-				(logger->combined) ? combined_info->buf : "");
-	
-	/* Maybe free some memory..
+	cherokee_buffer_add        (buf, ipaddr, strlen(ipaddr));
+	cherokee_buffer_add_str    (buf, " - ");
+	cherokee_buffer_add        (buf, username, username_len);
+	/* " [date time] "
 	 */
-	if (combined_info != NULL) {
-		cherokee_buffer_free (combined_info);
+	cherokee_buffer_add_buffer (buf, &logger->now_dtm);
+	cherokee_buffer_add        (buf, method, method_len);
+	cherokee_buffer_add_char   (buf, ' ');
+	cherokee_buffer_add_buffer (buf, request);
+	cherokee_buffer_add_char   (buf, ' ');
+	cherokee_buffer_add        (buf, version, version_len);
+	cherokee_buffer_add_str    (buf, "\" ");
+	cherokee_buffer_add_long10 (buf, cnt->error_code);
+	cherokee_buffer_add_char   (buf, ' ');
+	cherokee_buffer_add_ullong10 (buf, (cullong_t) (cnt->range_end - cnt->range_start));
+
+	/* Look for the "combined" information
+	 */
+	if (!logger->combined) {
+		cherokee_buffer_add_char (buf, '\n');
+		return ret_ok;
+	}
+
+	/* "combined" information
+	 */
+	{
+		cherokee_buffer_t *referer   = &logger->referer;
+		cherokee_buffer_t *useragent = &logger->useragent;
+
+		cherokee_buffer_clean (referer);
+		cherokee_buffer_clean (useragent);
+
+		cherokee_header_copy_known (&cnt->header, header_referer, referer);
+		cherokee_header_copy_known (&cnt->header, header_user_agent, useragent);
+		cherokee_buffer_ensure_addlen (buf, 8 + referer->len + referer->len);
+
+		if (referer->len > 0) {
+			cherokee_buffer_add_str    (buf, " \"");
+			cherokee_buffer_add_buffer (buf, referer);
+			cherokee_buffer_add_str    (buf, "\" \"");
+		} else {
+			cherokee_buffer_add_str (buf, " \"-\" \"");
+		}
+		
+		if (useragent->len > 0) {
+			cherokee_buffer_add_buffer (buf, useragent);
+		} 
+		cherokee_buffer_add_str (buf, "\"\n");
 	}
 
 	return ret_ok;
-
 }
 
 
 ret_t 
 cherokee_logger_ncsa_write_string (cherokee_logger_ncsa_t *logger, const char *string)
 {
-	/* Write it down in the file..
-	 */
-	if (logger->accesslog_fd != NULL) {
-		int ret;
-		ret = fprintf (logger->accesslog_fd, "%s", string);
+	ret_t              ret;
+	cherokee_buffer_t *log;
 
-		return (ret > 0) ? ret_ok : ret_error;
-	} 
+	ret = cherokee_logger_writer_get_buf (&logger->writer_access, &log);
+	if (unlikely (ret != ret_ok)) return ret;
 
-	/* .. or, send it to syslog
+	ret = cherokee_buffer_add (log, string, strlen(string));
+ 	if (unlikely (ret != ret_ok)) return ret;
+  
+  	if (log->len < logger->writer_access.max_bufsize)
+		return ret_ok;
+
+	/* Buffer is full, flush it!
 	 */
-	syslog (LOG_INFO, "%s", string);
-	return ret_ok;
+	ret = cherokee_logger_writer_flush (&logger->writer_access);
+
+	return ret;
 }
 
 
 ret_t
 cherokee_logger_ncsa_write_access (cherokee_logger_ncsa_t *logger, cherokee_connection_t *cnt)
 {
-	ret_t             ret;
-	cherokee_buffer_t tmp = CHEROKEE_BUF_INIT;
-
-	/* Build the log string
-	 */
-	ret = build_log_string (logger, cnt, &tmp);
-	if (unlikely(ret < ret_ok)) return ret;
+	ret_t              ret;
+	cherokee_buffer_t *log;
 	
-	/* Add it to the logger buffer
+	/* Get the buffer
 	 */
-	ret = cherokee_buffer_add_buffer (LOGGER_BUFFER(logger), &tmp);
-	if (unlikely(ret < ret_ok)) return ret;
+	ret = cherokee_logger_writer_get_buf (&logger->writer_access, &log);
+	if (unlikely (ret != ret_ok)) return ret;
 
-	cherokee_buffer_mrproper (&tmp);
-	return ret_ok;
+	/* Add the new string
+	 */
+	ret = build_log_string (logger, cnt, log);
+	if (unlikely (ret != ret_ok)) return ret;
+
+	if (log->len < logger->writer_access.max_bufsize)
+		return ret_ok;
+
+	/* Buffer is full, flush it!
+	 */
+	ret = cherokee_logger_writer_flush (&logger->writer_access);
+
+	return ret;
 }
 
 
 ret_t 
 cherokee_logger_ncsa_write_error (cherokee_logger_ncsa_t *logger, cherokee_connection_t *cnt)
 {
-	ret_t             ret;
-	cherokee_buffer_t tmp = CHEROKEE_BUF_INIT;
+	ret_t              ret;
+	cherokee_buffer_t *log;
 
-	/* Build the log string
+	/* Get the buffer
 	 */
-	ret = build_log_string (logger, cnt, &tmp);
-	if (unlikely(ret < ret_ok)) return ret;
+	ret = cherokee_logger_writer_get_buf (&logger->writer_error, &log);
+	if (unlikely (ret != ret_ok)) return ret;
 
-	/* Write it in the error file
+	/* Add the new string
 	 */
-	if (logger->errorlog_fd != NULL) {
-		cuint_t wrote;
+	ret = build_log_string (logger, cnt, log);
+	if (unlikely (ret != ret_ok)) return ret;
 
-		do {
-			wrote = fwrite (tmp.buf, 1, tmp.len, logger->errorlog_fd); 
-			if (wrote < 0) break;
-
-			cherokee_buffer_move_to_begin (&tmp, wrote);
-		} while (! cherokee_buffer_is_empty(&tmp));
-
-                fflush(logger->errorlog_fd);
-
-		return (wrote > 0) ? ret_ok : ret_error;
-	}
-
-	/* or, send it to syslog
+	/* It's an error. Flush it!
 	 */
-	cherokee_syslog (LOG_ERR, &tmp);
-	cherokee_buffer_mrproper (&tmp);
+	ret = cherokee_logger_writer_flush (&logger->writer_error);
 
-	return ret_ok;
+	return ret;
 }
 
 
 ret_t 
 cherokee_logger_ncsa_reopen (cherokee_logger_ncsa_t *logger)
 {
-	ret_t ret;
+	ret_t ret1;
+	ret_t ret2;
 
-	ret = close_output (logger);
-	if (unlikely(ret != ret_ok)) return ret;
+	ret1 = cherokee_logger_writer_reopen (&logger->writer_access);
+	ret2 = cherokee_logger_writer_reopen (&logger->writer_error);
 
-	return open_output (logger);
+	if (ret1 != ret_ok)
+		return ret1;
+
+	return ret2;
 }
 
-
-
-/*   Library init function
- */
-
-static cherokee_boolean_t _ncsa_is_init = false;
-
-void
-MODULE_INIT(ncsa) (cherokee_module_loader_t *loader)
-{
-	/* Init flag
-	 */
-	if (_ncsa_is_init) return;
-	_ncsa_is_init = true;
-}

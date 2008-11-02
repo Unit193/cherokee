@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2006 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2008 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -51,8 +51,7 @@
 
 #include "http.h"
 #include "list.h"
-#include "table.h"
-#include "buffer_escape.h"
+#include "avl.h"
 #include "socket.h"
 #include "header.h"
 #include "logger.h"
@@ -77,12 +76,21 @@ typedef enum {
 	phase_add_headers,
 	phase_send_headers,
 	phase_steping,
+	phase_shutdown,
 	phase_lingering
 } cherokee_connection_phase_t;
 
 
+#define conn_op_nothing       0
+#define conn_op_log_at_end   (1 << 0)
+#define conn_op_root_index   (1 << 1)
+#define conn_op_tcp_cork     (1 << 2)
+
+typedef cuint_t cherokee_connection_options_t;
+
+
 struct cherokee_connection {
-	struct list_head              list_entry;
+	cherokee_list_t               list_entry;
 
 	/* References
 	 */
@@ -97,14 +105,12 @@ struct cherokee_connection {
 	/* Socket stuff
 	 */
 	cherokee_socket_t             socket;
-	int                           tcp_cork;
-		
-	cherokee_logger_t            *logger_ref;
-	int                           log_at_end;
-	
-	cherokee_handler_t           *handler;
 	cherokee_http_upgrade_t       upgrade;
-	
+	cherokee_connection_options_t options;
+
+	cherokee_logger_t            *logger_ref;
+	cherokee_handler_t           *handler;
+
 	/* Buffers
 	 */
 	cherokee_buffer_t             incoming_header;  /* -> header               */
@@ -135,16 +141,13 @@ struct cherokee_connection {
 	cherokee_buffer_t             pathinfo;            /* /param1 */
 	cherokee_buffer_t             userdir;             /* 'alo' in http://www.alobbs.com/~alo/thing */
 	cherokee_buffer_t             query_string;	
-	cherokee_table_t             *arguments;
+	cherokee_avl_t               *arguments;
+	cherokee_boolean_t            uses_document_root;
 
 	cherokee_buffer_t             host;
 	cherokee_buffer_t             effective_directory;
 	cherokee_buffer_t             redirect;
-
-	/* Espace versions
-	 */
 	cherokee_buffer_t             request_original;
-	cherokee_buffer_escape_t     *request_escape;      /* Buffer escape for the request */
 
 	/* Authentication
 	 */
@@ -191,61 +194,62 @@ struct cherokee_connection {
 
 /* Basic functions
  */
-ret_t cherokee_connection_new                    (cherokee_connection_t **cnt);
-ret_t cherokee_connection_free                   (cherokee_connection_t  *cnt);
-ret_t cherokee_connection_clean                  (cherokee_connection_t  *cnt);
-ret_t cherokee_connection_mrproper               (cherokee_connection_t  *cnt);
+ret_t cherokee_connection_new                    (cherokee_connection_t **conn);
+ret_t cherokee_connection_free                   (cherokee_connection_t  *conn);
+ret_t cherokee_connection_clean                  (cherokee_connection_t  *conn);
+ret_t cherokee_connection_mrproper               (cherokee_connection_t  *conn);
 
 /* Close
  */
-ret_t cherokee_connection_pre_lingering_close    (cherokee_connection_t *cnt);
+ret_t cherokee_connection_shutdown_wr            (cherokee_connection_t *conn);
+ret_t cherokee_connection_linger_read            (cherokee_connection_t *conn);
 
 /* Connection I/O
  */
-ret_t cherokee_connection_send                   (cherokee_connection_t *cnt);
-ret_t cherokee_connection_send_header            (cherokee_connection_t *cnt);
-ret_t cherokee_connection_send_header_and_mmaped (cherokee_connection_t *cnt);
-ret_t cherokee_connection_send_switching         (cherokee_connection_t *cnt);
-ret_t cherokee_connection_recv                   (cherokee_connection_t *cnt, cherokee_buffer_t *buffer, off_t *len);
+ret_t cherokee_connection_send                   (cherokee_connection_t *conn);
+ret_t cherokee_connection_send_header            (cherokee_connection_t *conn);
+ret_t cherokee_connection_send_header_and_mmaped (cherokee_connection_t *conn);
+ret_t cherokee_connection_send_switching         (cherokee_connection_t *conn);
+ret_t cherokee_connection_recv                   (cherokee_connection_t *conn, cherokee_buffer_t *buffer, off_t *len);
 
 /* Internal
  */
-ret_t cherokee_connection_get_dir_entry          (cherokee_connection_t *cnt, cherokee_dirs_table_t *dirs, cherokee_config_entry_t *config_entry);
-ret_t cherokee_connection_get_ext_entry          (cherokee_connection_t *cnt, cherokee_exts_table_t *exts, cherokee_config_entry_t *config_entry);
-ret_t cherokee_connection_get_req_entry          (cherokee_connection_t *cnt, cherokee_reqs_list_t  *reqs, cherokee_config_entry_t *config_entry);
+ret_t cherokee_connection_get_dir_entry          (cherokee_connection_t *conn, cherokee_dirs_table_t *dirs, cherokee_config_entry_t *config_entry);
+ret_t cherokee_connection_get_ext_entry          (cherokee_connection_t *conn, cherokee_exts_table_t *exts, cherokee_config_entry_t *config_entry);
+ret_t cherokee_connection_get_req_entry          (cherokee_connection_t *conn, cherokee_reqs_list_t  *reqs, cherokee_config_entry_t *config_entry);
 
-ret_t cherokee_connection_create_handler         (cherokee_connection_t *cnt, cherokee_config_entry_t *config_entry);
-ret_t cherokee_connection_setup_error_handler    (cherokee_connection_t *cnt);
-ret_t cherokee_connection_check_authentication   (cherokee_connection_t *cnt, cherokee_config_entry_t *config_entry);
-ret_t cherokee_connection_check_ip_validation    (cherokee_connection_t *cnt, cherokee_config_entry_t *config_entry);
-ret_t cherokee_connection_check_only_secure      (cherokee_connection_t *cnt, cherokee_config_entry_t *config_entry);
-ret_t cherokee_connection_check_http_method      (cherokee_connection_t *cnt, cherokee_config_entry_t *config_entry);
+ret_t cherokee_connection_create_handler         (cherokee_connection_t *conn, cherokee_config_entry_t *config_entry);
+ret_t cherokee_connection_setup_error_handler    (cherokee_connection_t *conn);
+ret_t cherokee_connection_check_authentication   (cherokee_connection_t *conn, cherokee_config_entry_t *config_entry);
+ret_t cherokee_connection_check_ip_validation    (cherokee_connection_t *conn, cherokee_config_entry_t *config_entry);
+ret_t cherokee_connection_check_only_secure      (cherokee_connection_t *conn, cherokee_config_entry_t *config_entry);
+ret_t cherokee_connection_check_http_method      (cherokee_connection_t *conn, cherokee_config_entry_t *config_entry);
 
 /* Iteration
  */
-ret_t cherokee_connection_open_request           (cherokee_connection_t *cnt);
-ret_t cherokee_connection_reading_check          (cherokee_connection_t *cnt);
-ret_t cherokee_connection_step                   (cherokee_connection_t *cnt);
+ret_t cherokee_connection_open_request           (cherokee_connection_t *conn);
+ret_t cherokee_connection_reading_check          (cherokee_connection_t *conn);
+ret_t cherokee_connection_step                   (cherokee_connection_t *conn);
 
 /* Headers
  */
-ret_t cherokee_connection_build_header           (cherokee_connection_t *cnt);
-ret_t cherokee_connection_get_request            (cherokee_connection_t *cnt);
-ret_t cherokee_connection_parse_header           (cherokee_connection_t *cnt, cherokee_encoder_table_t *encoders);
-int   cherokee_connection_is_userdir             (cherokee_connection_t *cnt);
-ret_t cherokee_connection_build_local_directory  (cherokee_connection_t *cnt, cherokee_virtual_server_t *vsrv, cherokee_config_entry_t *entry);
-ret_t cherokee_connection_build_local_directory_userdir (cherokee_connection_t *cnt, cherokee_virtual_server_t *vsrv, cherokee_config_entry_t *entry);
-ret_t cherokee_connection_clean_for_respin       (cherokee_connection_t *cnt);
+ret_t cherokee_connection_build_header           (cherokee_connection_t *conn);
+ret_t cherokee_connection_get_request            (cherokee_connection_t *conn);
+ret_t cherokee_connection_parse_header           (cherokee_connection_t *conn, cherokee_encoder_table_t *encoders);
+int   cherokee_connection_is_userdir             (cherokee_connection_t *conn);
+ret_t cherokee_connection_build_local_directory  (cherokee_connection_t *conn, cherokee_virtual_server_t *vsrv, cherokee_config_entry_t *entry);
+ret_t cherokee_connection_build_local_directory_userdir (cherokee_connection_t *conn, cherokee_virtual_server_t *vsrv, cherokee_config_entry_t *entry);
+ret_t cherokee_connection_clean_for_respin       (cherokee_connection_t *conn);
 
 /* Log
  */
-ret_t cherokee_connection_log_or_delay           (cherokee_connection_t *cnt);
-ret_t cherokee_connection_log_delayed            (cherokee_connection_t *cnt);
-ret_t cherokee_connection_update_vhost_traffic   (cherokee_connection_t *cnt);
+ret_t cherokee_connection_log_or_delay           (cherokee_connection_t *conn);
+ret_t cherokee_connection_log_delayed            (cherokee_connection_t *conn);
+ret_t cherokee_connection_update_vhost_traffic   (cherokee_connection_t *conn);
 
 /* Transfers
  */
-void cherokee_connection_rx_add                  (cherokee_connection_t *cnt, ssize_t rx);
-void cherokee_connection_tx_add                  (cherokee_connection_t *cnt, ssize_t tx);
+void cherokee_connection_rx_add                  (cherokee_connection_t *conn, ssize_t rx);
+void cherokee_connection_tx_add                  (cherokee_connection_t *conn, ssize_t tx);
 
 #endif /* CHEROKEE_CONNECTION_PROTECTED_H */

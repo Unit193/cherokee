@@ -1,3 +1,11 @@
+# Cherokee QA Tests
+#
+# Authors:
+#      Alvaro Lopez Ortega <alvaro@alobbs.com>
+#
+# Copyright (C) 2001-2008 Alvaro Lopez Ortega
+# This file is distributed under the GPL license.
+
 import os
 import imp
 import sys
@@ -21,14 +29,14 @@ def importfile(path):
 
 class TestBase:
     def __init__ (self):
-        self.name              = None    # Test 01: Basic functionality
-        self.conf              = None    # Directory /test { .. }
-        self.request           = ""      # GET / HTTP/1.0
-        self.post              = None
-        self.expected_error    = None
-        self.expected_content  = None
-        self.forbidden_content = None
-
+        self.name                    = None    # Test 01: Basic functionality
+        self.conf                    = None    # Directory /test { .. }
+        self.request                 = ""      # GET / HTTP/1.0
+        self.post                    = None
+        self.expected_error          = None
+        self.expected_content        = None
+        self.expected_content_length = None
+        self.forbidden_content       = None
         self._initialize()
         
     def _initialize (self):
@@ -137,6 +145,10 @@ class TestBase:
         if self.reply_err != self.expected_error:
             return -1
 
+        if self.expected_content_length != None:
+            if len(self.reply) != self.expected_content_length:
+                return -1
+
         if self.expected_content != None:
             if type(self.expected_content) == types.StringType:
                 r = self._check_result_expected_item (self.expected_content)
@@ -218,6 +230,9 @@ class TestBase:
         else:
             src += "\tExpected = Code: UNSET!\n"
 
+        if self.expected_content_length is not None:
+            src += "\tExpected = Content length: %d\n" % (self.expected_content_length)
+
         if self.expected_content is not None:
             src += "\tExpected = Content: %s\n" % (self.expected_content)
 
@@ -229,7 +244,9 @@ class TestBase:
             src += "\t\t%s\n" %(header)
 
         if not self.nobody:
-            src += "\tBody     = %s\n" % (self.reply[len(header_full)+4:])
+            body = self.reply[len(header_full)+4:]
+            src += "\tBody len = %d\n" % (len(body))
+            src += "\tBody     = %s\n" % (body)
 
         return src
 
@@ -245,6 +262,9 @@ class TestBase:
         f.close()
         os.chmod(fullpath, mode)
         return fullpath
+
+    def CopyFile (self, src, dst):
+        open (dst, 'w').write (open (src, 'r').read())
 
     def Remove (self, www, filename):
         fullpath = os.path.join (www, filename)

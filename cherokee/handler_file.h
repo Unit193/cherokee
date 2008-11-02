@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2006 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2008 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -36,28 +36,42 @@
 #include "handler.h"
 #include "connection.h"
 #include "mime.h"
+#include "plugin_loader.h"
+
+/* Data types
+ */
+typedef struct {
+	cherokee_module_props_t base;
+	cherokee_boolean_t      use_cache;
+} cherokee_handler_file_props_t;
 
 
 typedef struct {
-	cherokee_handler_t handler;
+	cherokee_handler_t     handler;
 	
 	int                    fd;
 	off_t                  offset;
 	struct stat           *info;
 	cherokee_mime_entry_t *mime;
-	cherokee_boolean_t     not_modified;
-	cherokee_boolean_t     using_sendfile;
-	cherokee_boolean_t     use_cache;
 	struct stat            cache_info;	
+
+	cherokee_boolean_t     using_sendfile;
+	cherokee_boolean_t     not_modified;
 } cherokee_handler_file_t;
 
-#define FHANDLER(x)  ((cherokee_handler_file_t *)(x))
+
+#define PROP_FILE(x)      ((cherokee_handler_file_props_t *)(x))
+#define HDL_FILE(x)       ((cherokee_handler_file_t *)(x))
+#define HDL_FILE_PROP(x)  (PROP_FILE(MODULE(x)->props))
 
 
 /* Library init function
  */
-void  MODULE_INIT(file)         (cherokee_module_loader_t *loader);
-ret_t cherokee_handler_file_new (cherokee_handler_t **hdl, cherokee_connection_t *cnt, cherokee_table_t *properties);
+void  PLUGIN_INIT_NAME(file)            (cherokee_plugin_loader_t *loader);
+
+ret_t cherokee_handler_file_new         (cherokee_handler_t **hdl, cherokee_connection_t *cnt, cherokee_module_props_t *props);
+ret_t cherokee_handler_file_configure   (cherokee_config_node_t *conf, cherokee_server_t *srv, cherokee_module_props_t **_props);
+ret_t cherokee_handler_file_props_free  (cherokee_handler_file_props_t *props);
 
 /* Virtual methods
  */
@@ -66,5 +80,6 @@ ret_t cherokee_handler_file_free        (cherokee_handler_file_t *hdl);
 void  cherokee_handler_file_get_name    (cherokee_handler_file_t *hdl, const char **name);
 ret_t cherokee_handler_file_step        (cherokee_handler_file_t *hdl, cherokee_buffer_t *buffer);
 ret_t cherokee_handler_file_add_headers (cherokee_handler_file_t *hdl, cherokee_buffer_t *buffer);
+
 
 #endif /* CHEROKEE_HANDLER_FILE_H */

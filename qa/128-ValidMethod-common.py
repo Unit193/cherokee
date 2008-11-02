@@ -1,7 +1,12 @@
 from base import *
 
 DIR   = "common_valid_methods1"
-MAGIC = "Report bugs to http://bugs.0x50.org"
+MAGIC = "Report bugs to http://bugs.cherokee-project.com"
+
+CONF = """
+vserver!default!directory!/%s!handler = common
+vserver!default!directory!/%s!priority = 1280
+"""
 
 class Test (TestBase):
     def __init__ (self):
@@ -14,9 +19,7 @@ class Test (TestBase):
         self.post              = "var="+MAGIC
         self.expected_error    = 200
         self.expected_content  = "Post: "+MAGIC
-        self.conf              = """Directory /%s {
-                                       Handler common
-                                 }""" % (DIR)
+        self.conf              = CONF % (DIR, DIR)
 
     def Prepare (self, www):
         d = self.Mkdir (www, DIR)
@@ -24,5 +27,5 @@ class Test (TestBase):
                             "<?php echo 'Post: '.$_POST['var']; ?>")
 
     def Precondition (self):
-        return os.path.exists (PHPCGI_PATH)
+        return os.path.exists (look_for_php())
 

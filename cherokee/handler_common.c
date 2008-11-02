@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2006 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2008 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -24,7 +24,6 @@
 
 #include "common-internal.h"
 #include "handler_common.h"
-#include "util.h"
 
 #ifdef HAVE_SYS_TYPES_H
 # include <sys/types.h>
@@ -38,6 +37,7 @@
 # include <strings.h>
 #endif
 
+#include "util.h"
 #include "connection.h"
 #include "connection-protected.h"
 #include "server.h"
@@ -45,77 +45,123 @@
 #include "module.h"
 #include "connection.h"
 
-#include "handler_file.h"
-#include "handler_dirlist.h"
-#include "list_ext.h"
-
 #define ENTRIES "handler,common"
+#define DEFAULT_ALLOW_PATHINFO true
 
-#ifdef CHEROKEE_EMBEDDED
-# define cherokee_iocache_mmap_release(iocache,file)
-#endif
+ret_t
+cherokee_handler_common_props_free (cherokee_handler_common_props_t *props)
+{
+	if (props->props_file != NULL) {
+		cherokee_handler_file_props_free (props->props_file);
+		props->props_file = NULL;
+	}
+	
+	if (props->props_dirlist != NULL) {
+		cherokee_handler_dirlist_props_free (props->props_dirlist);
+		props->props_dirlist = NULL;
+	}
+
+	return cherokee_handler_props_free_base (HANDLER_PROPS(props));
+}
 
 
-HANDLER_MODULE_INFO_INIT_EASY (common, http_all_methods);
+ret_t 
+cherokee_handler_common_configure (cherokee_config_node_t *conf, cherokee_server_t *srv, cherokee_module_props_t **_props)
+{
+	ret_t                            ret;
+	cherokee_config_node_t          *subconf;
+	cherokee_handler_common_props_t *props;
+
+	if (*_props == NULL) {
+		CHEROKEE_NEW_STRUCT (n, handler_common_props);
+
+		cherokee_handler_props_init_base (HANDLER_PROPS(n),
+			MODULE_PROPS_FREE(cherokee_handler_common_props_free));
+
+		n->props_file     = NULL;
+		n->props_dirlist  = NULL;
+		n->allow_pathinfo = DEFAULT_ALLOW_PATHINFO;
+
+		*_props = MODULE_PROPS(n);
+	}
+
+	props = PROP_COMMON(*_props);
+
+	/* Parse 'common' parameters
+	 */
+	ret = cherokee_config_node_get (conf, "allow_pathinfo", &subconf);
+	if (ret == ret_ok) {
+		props->allow_pathinfo = atoi(subconf->val.buf);
+	}
+
+	/* Parse 'file' parameters
+	 */
+	ret = cherokee_handler_file_configure (conf, srv, (cherokee_module_props_t **)&props->props_file);
+	if ((ret != ret_ok) && (ret != ret_deny)) return ret;
+
+	/* Parse 'dirlist' parameters
+	 */
+	return cherokee_handler_dirlist_configure (conf, srv, (cherokee_module_props_t **)&props->props_dirlist);
+}
 
 
 static ret_t
 stat_file (cherokee_boolean_t useit, cherokee_iocache_t *iocache, struct stat *nocache_info, 
-	   char *path, cherokee_iocache_entry_t **io_entry, struct stat **info)
+	   cherokee_buffer_t *path, cherokee_iocache_entry_t **io_entry, struct stat **info)
 {	
-	int   re;
 	ret_t ret;
-
-	/* Without cache
-	 */
-	if (!useit) {
-		re = cherokee_stat (path, nocache_info);
-
-		TRACE (ENTRIES, "%s, use_iocache=%d re=%d\n", path, useit, re);
-
-		if (re < 0) {
-			switch (errno) {
-			case ENOENT: 
-				return ret_not_found;
-			case EACCES: 
-				return ret_deny;
-			default:     
-				return ret_error;
-			}
-		}
-
-		*info = nocache_info;		
-		return ret_ok;
-	} 
+	int   re  = -1;
 
 	/* I/O cache
 	 */
-#ifndef CHEROKEE_EMBEDDED
-	ret = cherokee_iocache_stat_get (iocache, path, io_entry);
+	if (useit) {
+		ret = cherokee_iocache_get_or_create_w_stat (iocache, path, io_entry);		
+		TRACE (ENTRIES, "%s, use_iocache=1 rer=%d\n", path->buf, ret);
 
-	TRACE (ENTRIES, "%s, use_iocache=%d re=%d\n", path, useit, re);
-
-	if (ret != ret_ok) {
 		switch (ret) {
+		case ret_ok:
+			*info = &(*io_entry)->state;
+			return ret_ok;
+
 		case ret_not_found:
 			return ret_not_found;
+
+		case ret_no_sys:
+			goto without;
 		case ret_deny:
 			return ret_deny;
 		default:
 			return ret_error;
 		}
+		
 	}
 
-	*info = &(*io_entry)->state;
-	return ret_ok;
-#endif
+	/* Without cache
+	 */
+without:
+	re = cherokee_stat (path->buf, nocache_info);
+	TRACE (ENTRIES, "%s, use_iocache=0 re=%d\n", path->buf, re);
+
+	if (re >= 0) {
+		*info = nocache_info;
+		return ret_ok;
+	}
+	
+	switch (errno) {
+	case ENOENT: 
+		return ret_not_found;
+	case EACCES: 
+		return ret_deny;
+	default:
+		return ret_error;
+	}
 
 	return ret_error;
 }
 
 
 ret_t 
-cherokee_handler_common_new (cherokee_handler_t **hdl, void *cnt, cherokee_table_t *properties)
+cherokee_handler_common_new (cherokee_handler_t **hdl, void *cnt, cherokee_module_props_t *props)
 {
 	ret_t                     ret;
 	int                       exists;
@@ -128,21 +174,16 @@ cherokee_handler_common_new (cherokee_handler_t **hdl, void *cnt, cherokee_table
 
 	/* Check some properties
 	 */
-	if (properties != NULL) {
-		cherokee_typed_table_get_int (properties, "cache", &use_iocache);
+	if (PROP_COMMON(props)->props_file != NULL) {
+		use_iocache = PROP_COMMON(props)->props_file->use_cache;
 	}
 
 	/* Check the request
 	 */
 	cherokee_buffer_add_buffer (&conn->local_directory, &conn->request);
 
-#ifdef CHEROKEE_EMBEDDED
-	use_iocache = false;
-#else
 	cherokee_iocache_get_default (&iocache);
-#endif
-
-	ret = stat_file (use_iocache, iocache, &nocache_info, conn->local_directory.buf, &file, &info);
+	ret = stat_file (use_iocache, iocache, &nocache_info, &conn->local_directory, &file, &info);
 	exists = (ret == ret_ok);
 
 	TRACE (ENTRIES, "request: '%s', local: '%s', exists %d\n", 
@@ -154,6 +195,13 @@ cherokee_handler_common_new (cherokee_handler_t **hdl, void *cnt, cherokee_table
 		int    pathinfo_len;
 		int    begin;
 
+		/* If PathInfo is not allowed just return 'Not Found'
+		 */
+		if (! PROP_COMMON(props)->allow_pathinfo) {
+			conn->error_code = http_not_found; 
+			return ret_error;
+		}
+
 		/* Maybe it could stat() the file because the request contains
 		 * a PathInfo string at the end..
 		 */
@@ -162,7 +210,7 @@ cherokee_handler_common_new (cherokee_handler_t **hdl, void *cnt, cherokee_table
 		ret = cherokee_split_pathinfo (&conn->local_directory, begin, true, &pathinfo, &pathinfo_len);
 		if ((ret == ret_not_found) || (pathinfo_len <= 0)) {
 			cherokee_iocache_mmap_release (iocache, file);
-			conn->error_code = http_not_found;			
+			conn->error_code = http_not_found;
 			return ret_error;
 		}
 		
@@ -186,21 +234,22 @@ cherokee_handler_common_new (cherokee_handler_t **hdl, void *cnt, cherokee_table
 	 */
 	if (S_ISREG(info->st_mode)) {
 		TRACE (ENTRIES, "going for %s\n", "handler_file");
-		return cherokee_handler_file_new (hdl, cnt, properties);
+		return cherokee_handler_file_new (hdl, cnt, MODULE_PROPS(PROP_COMMON(props)->props_file));
 	}
 
 	/* Is it a directory
 	 */
 	if (S_ISDIR(info->st_mode)) {
-		list_t *i;
+		cherokee_thread_t *thread = CONN_THREAD(conn);
+		cherokee_list_t   *i;
 
 		cherokee_iocache_mmap_release (iocache, file);
 
 		/* Maybe it has to be redirected
 		 */
-		if (conn->request.buf[conn->request.len-1] != '/') {
+		if (cherokee_buffer_end_char (&conn->request) != '/') {
 			TRACE (ENTRIES, "going for %s\n", "handler_dir");
-			return cherokee_handler_dirlist_new (hdl, cnt, properties);
+			return cherokee_handler_dirlist_new (hdl, cnt, MODULE_PROPS(PROP_COMMON(props)->props_dirlist));
 		}
 
 		/* Add the request
@@ -217,7 +266,7 @@ cherokee_handler_common_new (cherokee_handler_t **hdl, void *cnt, cherokee_table
 			/* Check if the index is fullpath
 			 */
 			if (*index == '/') {
-				cherokee_buffer_t new_local_dir = CHEROKEE_BUF_INIT; 
+				cherokee_buffer_t *new_local_dir = THREAD_TMP_BUF1(thread);
 
 				/* This means there is a configuration entry like:
 				 * 'DirectoryIndex index.php, /index_default.php'
@@ -230,34 +279,39 @@ cherokee_handler_common_new (cherokee_handler_t **hdl, void *cnt, cherokee_table
 
 				/* Lets reconstruct the local directory
 				 */
-				cherokee_buffer_add_buffer (&new_local_dir, CONN_VSRV(conn)->root);
-				cherokee_buffer_add (&new_local_dir, index, index_len);
+				cherokee_buffer_clean (new_local_dir);
+				cherokee_buffer_add_buffer (new_local_dir, &CONN_VSRV(conn)->root);
+				cherokee_buffer_add (new_local_dir, index, index_len);
 				
-				ret = stat_file (use_iocache, iocache, &nocache_info, new_local_dir.buf, &file, &info);
+				ret = stat_file (use_iocache, iocache, &nocache_info, new_local_dir, &file, &info);
 				exists = (ret == ret_ok);
 				cherokee_iocache_mmap_release (iocache, file);
 
-				cherokee_buffer_mrproper (&new_local_dir);
-				if (!exists) continue;
-				
+				if (!exists)
+					continue;
+
 				/* Build the new request before respin
 				 */
 				cherokee_buffer_clean (&conn->local_directory);
+				cherokee_buffer_clean (&conn->request_original);
+				cherokee_buffer_add_buffer (&conn->request_original, &conn->request);
+
 				cherokee_buffer_clean (&conn->request);
 				cherokee_buffer_add (&conn->request, index, index_len);				
 
 				TRACE (ENTRIES, "top level index matched %s\n", index);
 
+				BIT_SET (conn->options, conn_op_root_index);
 				return ret_eagain;
 			}
 
-			/* Stat() the possible new path
+			/* stat() the possible new path
 			 */
 			cherokee_buffer_add (&conn->local_directory, index, index_len);
-			ret = stat_file (use_iocache, iocache, &nocache_info, conn->local_directory.buf, &file, &info);
+			ret = stat_file (use_iocache, iocache, &nocache_info, &conn->local_directory, &file, &info);
 
-			exists = (ret == ret_ok);
-			is_dir = S_ISDIR(info->st_mode);
+			exists =  (ret == ret_ok);
+			is_dir = ((ret == ret_ok) && S_ISDIR(info->st_mode));
 
 			cherokee_iocache_mmap_release (iocache, file);
 			cherokee_buffer_drop_endding (&conn->local_directory, index_len);
@@ -280,7 +334,7 @@ cherokee_handler_common_new (cherokee_handler_t **hdl, void *cnt, cherokee_table
 		/* If the dir hasn't a index file, it uses dirlist
 		 */
 		cherokee_buffer_drop_endding (&conn->local_directory, conn->request.len);
-		return cherokee_handler_dirlist_new (hdl, cnt, properties);
+		return cherokee_handler_dirlist_new (hdl, cnt, MODULE_PROPS(PROP_COMMON(props)->props_dirlist));
 	}
 
 	/* Unknown request type
@@ -296,14 +350,16 @@ cherokee_handler_common_new (cherokee_handler_t **hdl, void *cnt, cherokee_table
  */
 static cherokee_boolean_t _common_is_init = false;
 
-void
-MODULE_INIT(common) (cherokee_module_loader_t *loader)
+void  
+PLUGIN_INIT_NAME(common) (cherokee_plugin_loader_t *loader)
 {
 	if (_common_is_init) return;
 	_common_is_init = true;
 
 	/* Load the dependences
 	 */
-	cherokee_module_loader_load (loader, "file");
-	cherokee_module_loader_load (loader, "dirlist");
+	cherokee_plugin_loader_load (loader, "file");
+	cherokee_plugin_loader_load (loader, "dirlist");
 }
+
+PLUGIN_INFO_HANDLER_EASY_INIT (common, http_all_methods);

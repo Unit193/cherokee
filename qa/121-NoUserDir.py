@@ -5,6 +5,14 @@ USERNAME  = "faked"
 MAGIC     = "If UserDir isn't set, it should threat ~ as a common character"
 FILENAME  = "file"
 
+CONF = """
+vserver!<domain>!document_root = %s
+vserver!<domain>!domain!1 = <domain>
+vserver!<domain>!directory!/!handler = common
+vserver!<domain>!directory!/!priority = 10
+"""
+
+
 class Test (TestBase):
     def __init__ (self):
         TestBase.__init__ (self)
@@ -22,7 +30,5 @@ class Test (TestBase):
         d2 = self.Mkdir (d, "~%s" % (USERNAME))
         self.WriteFile (d2, FILENAME, 0444, MAGIC);
 
-        self.conf              = """Server %s {
-                                      DocumentRoot %s
-                                      Directory / { Handler common }
-                                    }""" % (SERVER, d)
+        self.conf = CONF % (d)
+        self.conf = self.conf.replace ('<domain>', SERVER)

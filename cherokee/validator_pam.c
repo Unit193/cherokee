@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2006 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2008 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -26,7 +26,7 @@
 #include "http.h"
 #include "validator_pam.h"
 #include "connection-protected.h"
-#include "module_loader.h"
+#include "plugin_loader.h"
 
 #include <security/pam_appl.h>
 
@@ -35,17 +35,26 @@
 #define CHEROKEE_AUTH_SERVICE "cherokee"
 
 
-VALIDATOR_MODULE_INFO_INIT_EASY (pam, http_auth_basic);
+/* Plug-in initialization
+ */
+PLUGIN_INFO_VALIDATOR_EASIEST_INIT (pam, http_auth_basic);
+
+
+ret_t
+cherokee_validator_pam_configure (cherokee_config_node_t *conf, cherokee_server_t *srv, cherokee_module_props_t **props)
+{
+	return ret_ok;
+}
 
 
 ret_t 
-cherokee_validator_pam_new (cherokee_validator_pam_t **pam, cherokee_table_t *properties)
+cherokee_validator_pam_new (cherokee_validator_pam_t **pam, cherokee_module_props_t *props)
 {
 	CHEROKEE_NEW_STRUCT(n,validator_pam);
 
 	/* Init 
 	 */
-	cherokee_validator_init_base (VALIDATOR(n));
+	cherokee_validator_init_base (VALIDATOR(n), VALIDATOR_PROPS(props), PLUGIN_INFO_VALIDATOR_PTR(pam));
 	VALIDATOR(n)->support = http_auth_basic;
 
 	MODULE(n)->free           = (module_func_free_t)           cherokee_validator_pam_free;
@@ -63,7 +72,6 @@ cherokee_validator_pam_free (cherokee_validator_pam_t *pam)
 	cherokee_validator_free_base (VALIDATOR(pam));
 	return ret_ok;
 }
-
 
 
 /*
@@ -145,39 +153,50 @@ cherokee_validator_pam_check (cherokee_validator_pam_t  *pam, cherokee_connectio
 		return ret_error;
 	}
 
-	/* NOTE: 
-	 * First of all, it's a really *awful* hack.  Said that, let's
-	 * see the right way to authenticate a user is call:
-	 *
-	 * 	ret = pam_authenticate (pamhandle, 0);
-	 *
-	 * Instead of it, this validator is calling:
-	 *
-	 *	ret = _pam_dispatch (pamhandle, 0, 1);
-	 * 
-	 * It is because pam_uthenticate() does a long delay if the
-	 * user is not authenticated sucesfuly.  It is a huge problem
-	 * if Cherokee is compiled without threading support because
-	 * it will be frozen for some time until pam_authenticate()
-	 * comes back.
-	 *
-	 * The second parameter: 0, is the flags
-	 * The last one: 1, is PAM_AUTHENTICATE
-	 */
-
 	/* Try to authenticate user:
 	 */
-	ret = _pam_dispatch (pamhandle, 0, 1);
+#ifdef HAVE_PAM_FAIL_DELAY
+	ret = pam_fail_delay (pamhandle, 0);
 	if (ret != PAM_SUCCESS) {
-		CHEROKEE_NEW(msg, buffer);
-
-		cherokee_buffer_add (msg, "PAM: user '", 11);
-		cherokee_buffer_add_buffer (msg, &conn->validator->user);
-		cherokee_buffer_add_va (msg, "' - not authenticated: %s", pam_strerror(pamhandle, ret));
-
-		cherokee_logger_write_string (CONN_VSRV(conn)->logger, "%s", msg->buf);
+		cherokee_buffer_t msg = CHEROKEE_BUF_INIT;
 		
-		cherokee_buffer_free (msg);
+		cherokee_buffer_add_str (&msg, "Setting pam fail delay failed");
+		cherokee_logger_write_string (CONN_VSRV(conn)->logger, "%s", msg.buf);
+		cherokee_buffer_mrproper (&msg);
+
+		conn->error_code = http_internal_error;
+		return ret_error;
+	}
+
+	ret = pam_authenticate (pamhandle, 0);
+
+#elif defined(HAVE_PAM_DISPATCH)
+
+	/* If you can't set the delay to zero, you try to call one of
+	 * the PAM internal functions. It is nasty, but reached this
+	 * point it's the only thing you can do.
+	 * 
+	 * Parameters: The second one, 0, are the flags. The third
+	 * means PAM_AUTHENTICATE
+	 */
+	ret = _pam_dispatch (pamhandle, 0, 1);
+#else
+
+	/* If it fails, it will probably block
+	 */
+	ret = pam_authenticate (pamhandle, 0);
+#endif
+
+	if (ret != PAM_SUCCESS) {
+		cherokee_buffer_t msg = CHEROKEE_BUF_INIT;
+
+		cherokee_buffer_add_str (&msg, "PAM: user '");
+		cherokee_buffer_add_buffer (&msg, &conn->validator->user);
+		cherokee_buffer_add_va (&msg, "' - not authenticated: %s", pam_strerror(pamhandle, ret));
+
+		cherokee_logger_write_string (CONN_VSRV(conn)->logger, "%s", msg.buf);
+		cherokee_buffer_mrproper (&msg);
+
 		goto unauthorized;
 	}
 
@@ -185,15 +204,15 @@ cherokee_validator_pam_check (cherokee_validator_pam_t  *pam, cherokee_connectio
 	 */
 	ret = pam_acct_mgmt (pamhandle, PAM_DISALLOW_NULL_AUTHTOK); 
 	if (ret != PAM_SUCCESS) {
-		CHEROKEE_NEW(msg, buffer);
+		cherokee_buffer_t msg = CHEROKEE_BUF_INIT;
 
-		cherokee_buffer_add (msg, "PAM: user '", 11);
-		cherokee_buffer_add_buffer (msg, &conn->validator->user);
-		cherokee_buffer_add_va (msg, "'  - invalid account: %s", pam_strerror(pamhandle, ret));
+		cherokee_buffer_add_str (&msg, "PAM: user '");
+		cherokee_buffer_add_buffer (&msg, &conn->validator->user);
+		cherokee_buffer_add_va (&msg, "'  - invalid account: %s", pam_strerror(pamhandle, ret));
 
-		cherokee_logger_write_string (CONN_VSRV(conn)->logger, "%s", msg->buf);
+		cherokee_logger_write_string (CONN_VSRV(conn)->logger, "%s", msg.buf);
+		cherokee_buffer_mrproper (&msg);
 
-		cherokee_buffer_free (msg);
 		goto unauthorized;
 	}
 
@@ -212,16 +231,3 @@ cherokee_validator_pam_add_headers (cherokee_validator_pam_t  *pam, cherokee_con
 	return ret_ok;
 }
 
-
-/* Library init function
- */
-static cherokee_boolean_t _pam_is_init = false;
-
-void
-MODULE_INIT(pam) (cherokee_module_loader_t *loader)
-{
-	/* Init flag
-	 */
-	if (_pam_is_init) return;
-	_pam_is_init = true;
-}

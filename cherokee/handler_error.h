@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2006 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2008 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -28,11 +28,11 @@
 #include "common-internal.h"
 #include "handler.h"
 #include "connection.h"
-#include "module_loader.h"
+#include "plugin_loader.h"
 
 typedef struct {
 	cherokee_handler_t handler;
-	cherokee_buffer_t *content;
+	cherokee_buffer_t  content;
 } cherokee_handler_error_t;
 
 #define ERR_HANDLER(x)  ((cherokee_handler_error_t *)(x))
@@ -40,8 +40,8 @@ typedef struct {
 
 /* Library init function
  */
-void MODULE_INIT(error) (cherokee_module_loader_t *loader);
-ret_t cherokee_handler_error_new (cherokee_handler_t **hdl, cherokee_connection_t *cnt, cherokee_table_t *properties);
+void  PLUGIN_INIT_NAME(error)            (cherokee_plugin_loader_t *loader);
+ret_t cherokee_handler_error_new         (cherokee_handler_t **hdl, cherokee_connection_t *cnt, cherokee_module_props_t *props);
 
 /* virtual methods implementation
  */

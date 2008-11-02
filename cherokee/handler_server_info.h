@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2006 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2008 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -29,14 +29,20 @@
 #include "buffer.h"
 #include "handler.h"
 #include "connection.h"
-#include "module_loader.h"
+#include "plugin_loader.h"
 
+
+/* Data types
+ */
+typedef struct {
+	cherokee_module_props_t  base;
+	cherokee_boolean_t       just_about;
+	cherokee_boolean_t       connection_details;
+} cherokee_handler_server_info_props_t;
 
 typedef struct {
-	cherokee_handler_t  handler;
-	cherokee_buffer_t   buffer;
-
-	cherokee_boolean_t  just_about;
+	cherokee_handler_t       handler;
+	cherokee_buffer_t        buffer;
 
 	enum {
 		send_page,
@@ -45,11 +51,15 @@ typedef struct {
 	   
 } cherokee_handler_server_info_t;
 
-#define SRVINFOHANDLER(x)  ((cherokee_handler_server_info_t *)(x))
+#define HDL_SRV_INFO(x)       ((cherokee_handler_server_info_t *)(x))
+#define PROP_SRV_INFO(x)      ((cherokee_handler_server_info_props_t *)(x))
+#define HDL_SRV_INFO_PROPS(x) (PROP_SRV_INFO(MODULE(x)->props))
 
 
-void MODULE_INIT(server_info) (cherokee_module_loader_t *loader);
-ret_t cherokee_handler_server_info_new   (cherokee_handler_t **hdl, cherokee_connection_t *cnt, cherokee_table_t *properties);
+/* Library init function
+ */
+void  PLUGIN_INIT_NAME(server_info)      (cherokee_plugin_loader_t *loader);
+ret_t cherokee_handler_server_info_new   (cherokee_handler_t **hdl, cherokee_connection_t *cnt, cherokee_module_props_t *props);
 
 /* virtual methods implementation
  */

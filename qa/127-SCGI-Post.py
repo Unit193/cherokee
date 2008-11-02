@@ -3,24 +3,28 @@ from base import *
 
 DIR   = "/SCGI2/"
 MAGIC = "Cherokee and SCGI rocks!"
-PORT  = 5002
+PORT  = get_free_port()
 
 SCRIPT = """
-from scgi.scgi_server import *
+from pyscgi import *
 
 class TestHandler (SCGIHandler):
-    def handle_connection (self, socket):
-        r = socket.makefile ('r')
-        s = socket.makefile ('w')
+    def handle_request (self):
+        self.handle_post()
+        self.output.write('Content-Type: text/plain\\r\\n\\r\\n')
+        self.output.write('Post: %%s\\n' %% (self.post))
 
-        env = read_env(r)
-        post = r.read (int(env['CONTENT_LENGTH']))
-        s.write('Content-Type: text/plain\\r\\n\\r\\n')
-        s.write('Post: %%s\\n' %% (post))
-        socket.close()
-
-SCGIServer(TestHandler, port=%d).serve()
+SCGIServer(TestHandler, port=%d).serve_forever()
 """ % (PORT)
+
+CONF = """
+vserver!default!directory!<dir>!handler = scgi
+vserver!default!directory!<dir>!handler!balancer = round_robin
+vserver!default!directory!<dir>!handler!balancer!type = interpreter
+vserver!default!directory!<dir>!handler!balancer!local_scgi2!host = localhost:%d
+vserver!default!directory!<dir>!handler!balancer!local_scgi2!interpreter = %s %s
+vserver!default!directory!<dir>!priority = 1270
+"""
 
 
 class Test (TestBase):
@@ -34,19 +38,14 @@ class Test (TestBase):
         self.post              = MAGIC
         self.expected_error    = 200
         self.expected_content  = "Post: "+MAGIC
-        self.forbidden_content = ["scgi.scgi_server", "SCGIServer", "write"]
+        self.forbidden_content = ["pyscgi", "SCGIServer", "write"]
 
     def Prepare (self, www):
         scgi_file = self.WriteFile (www, "scgi_test2.scgi", 0444, SCRIPT)
 
-        self.conf              = """Directory %s {
-                                         Handler scgi {
-                                            Server localhost:%d {
-                                               Interpreter "%s %s"
-                                            }
-                                         }
-                                }""" % (DIR, PORT, PYTHON_PATH, scgi_file)
+        pyscgi = os.path.join (www, 'pyscgi.py')
+        if not os.path.exists (pyscgi):
+            self.CopyFile ('pyscgi.py', pyscgi)
 
-    def Precondition (self):
-        re = os.system ("%s -c 'import scgi.scgi_server'" % (PYTHON_PATH)) 
-        return (re == 0)
+        self.conf = CONF % (PORT, look_for_python(), scgi_file)
+        self.conf = self.conf.replace ('<dir>', DIR)

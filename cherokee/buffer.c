@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2006 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2008 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -40,35 +40,18 @@
 #include "crc32.h"
 #include "sha1.h"
 
+#define ENTRIES "core,buffer"
 
-#define TO_HEX(c) (c > 9 ? c+'a'-10 : c+'0')
+#define REALLOC_EXTRA_SIZE     16
+#define IOS_NUMBUF             64	/* I/O size of digits buffer */
 
-ret_t
-cherokee_buffer_new  (cherokee_buffer_t **buf)
-{
-	CHEROKEE_NEW_STRUCT(n, buffer);
-
-	n->buf  = NULL;
-	n->size = 0;
-	n->len  = 0;
-	   
-	*buf = n;
-	return ret_ok;
-}
+#define TO_HEX(c)               ((c) > 9 ? (c) + 'a' - 10 : (c) + '0')
 
 
-ret_t
-cherokee_buffer_free (cherokee_buffer_t *buf)
-{
-	if (buf->buf) {
-		free (buf->buf);
-		buf->buf = NULL;
-	}
-	
-	free (buf);	
-	return ret_ok;
-}
-
+/* Implements _new() and _free() 
+ */
+CHEROKEE_ADD_FUNC_NEW  (buffer);
+CHEROKEE_ADD_FUNC_FREE (buffer);
 
 ret_t 
 cherokee_buffer_init (cherokee_buffer_t *buf)
@@ -80,29 +63,36 @@ cherokee_buffer_init (cherokee_buffer_t *buf)
 	return ret_ok;
 }
 
+void
+cherokee_buffer_fake (cherokee_buffer_t *buf, const char *str, cuint_t len)
+{
+	buf->buf  = (char *)str;
+	buf->len  = len;
+	buf->size = len + 1;
+}
+
+
 ret_t 
 cherokee_buffer_mrproper (cherokee_buffer_t *buf)
 {
 	if (buf->buf) {
 		free (buf->buf);
-	}
-	
-	return cherokee_buffer_init (buf);
-}
-
-ret_t
-cherokee_buffer_clean (cherokee_buffer_t *buf)
-{
-	if ((buf->buf != NULL) &&
-	    (buf->len > 0))
-	{
-		buf->buf[0] = '\0';
+		buf->buf = NULL;
 	}
 
-	buf->len = 0;	
+	buf->len  = 0;
+	buf->size = 0;
+
 	return ret_ok;
 }
 
+void
+cherokee_buffer_clean (cherokee_buffer_t *buf)
+{
+	if (buf->buf != NULL)
+		buf->buf[0] = '\0';
+	buf->len = 0;
+}
 
 void
 cherokee_buffer_swap_buffers (cherokee_buffer_t *buf, cherokee_buffer_t *second)
@@ -124,31 +114,81 @@ cherokee_buffer_swap_buffers (cherokee_buffer_t *buf, cherokee_buffer_t *second)
 	second->size = tmp_size;
 }
 
+ret_t 
+cherokee_buffer_dup (cherokee_buffer_t *buf, cherokee_buffer_t **dup)
+{
+	CHEROKEE_NEW_STRUCT(n, buffer);
+
+	n->buf = (char *) malloc(buf->len + 1);
+	if (unlikely (n->buf == NULL)) {
+		free(n);
+		return ret_nomem;
+	}
+
+	memcpy (n->buf, buf->buf, buf->len + 1);
+
+	n->len  = buf->len;
+	n->size = buf->len + 1;
+
+	*dup = n;
+	return ret_ok;
+}
+
+
+static ret_t
+realloc_inc_bufsize (cherokee_buffer_t *buf, size_t incsize)
+{
+	char *pbuf;
+	size_t newsize = buf->size + incsize + REALLOC_EXTRA_SIZE + 1;
+
+	pbuf = (char *) realloc(buf->buf, newsize);
+	if (unlikely (pbuf == NULL)) 
+		return ret_nomem;
+	buf->buf = pbuf;
+	buf->size = (int) newsize;
+
+	return ret_ok;
+}
+
+
+static ret_t
+realloc_new_bufsize (cherokee_buffer_t *buf, size_t newsize)
+{
+	char *pbuf;
+	newsize += REALLOC_EXTRA_SIZE + 1;
+
+	pbuf = (char *) realloc(buf->buf, newsize);
+	if (unlikely (pbuf == NULL)) 
+		return ret_nomem;
+	buf->buf = pbuf;
+	buf->size = (int) newsize;
+
+	return ret_ok;
+}
+
 
 ret_t
-cherokee_buffer_add (cherokee_buffer_t *buf, char *txt, size_t size)
+cherokee_buffer_add (cherokee_buffer_t *buf, const char *txt, size_t size)
 {	   
 	int free = buf->size - buf->len;
 
-	if (size <= 0)
+	if (unlikely (size <= 0))
 		return ret_ok;
 
 	/* Get memory
 	 */
 	if (free < (size+1)) {
-		buf->buf = (char *) realloc(buf->buf, buf->size + size - free + 1);
-		return_if_fail (buf->buf, ret_nomem);
-
-		buf->size += size - free + 1;
+		if (unlikely (realloc_inc_bufsize(buf, size - free)) != ret_ok)
+			return ret_nomem;
 	}
-	   
+
 	/* Copy	
 	 */
 	memcpy (buf->buf + buf->len, txt, size);
 
 	buf->len += size;
 	buf->buf[buf->len] = '\0';
-	   
+
 	return ret_ok;
 }
 
@@ -157,6 +197,262 @@ ret_t
 cherokee_buffer_add_buffer (cherokee_buffer_t *buf, cherokee_buffer_t *buf2)
 {
 	return cherokee_buffer_add (buf, buf2->buf, buf2->len);
+}
+
+
+ret_t
+cherokee_buffer_add_long10 (cherokee_buffer_t *buf, clong_t lNum)
+{
+	culong_t ulNum = (culong_t) lNum;
+	cuint_t  flgNeg = 0;
+	int      newlen = 0;
+	size_t   i = (IOS_NUMBUF - 1);
+	char     szOutBuf[IOS_NUMBUF];
+
+	if (lNum < 0L) {
+		flgNeg = 1;
+		ulNum = -ulNum;
+	}
+
+	szOutBuf[i] = '\0';
+
+	/* Convert number to string
+	 */
+	do {
+		szOutBuf[--i] = (char) ((ulNum % 10) + '0');
+	}
+	while ((ulNum /= 10) != 0);
+
+	/* Set sign in any case
+	*/
+	szOutBuf[--i] = '-';
+	i += (flgNeg ^ 1);
+
+	/* Verify free space in buffer and if needed then enlarge it.
+	*/
+	newlen = buf->len + (int) ((IOS_NUMBUF - 1) - i);
+	if (unlikely (newlen >= buf->size)) {
+		if (unlikely (realloc_new_bufsize(buf, newlen)) != ret_ok)
+			return ret_nomem;
+	}
+
+	/* Copy	including '\0'
+	 */
+	strcpy (buf->buf + buf->len, &szOutBuf[i]);
+
+	buf->len = newlen;
+
+	return ret_ok;
+}
+
+
+ret_t
+cherokee_buffer_add_llong10 (cherokee_buffer_t *buf, cllong_t lNum)
+{
+	cullong_t ulNum = (cullong_t) lNum;
+	cuint_t  flgNeg = 0;
+	int      newlen = 0;
+	size_t   i = (IOS_NUMBUF - 1);
+	char     szOutBuf[IOS_NUMBUF];
+
+	if (lNum < 0L) {
+		flgNeg = 1;
+		ulNum = -ulNum;
+	}
+
+	szOutBuf[i] = '\0';
+
+	/* Convert number to string
+	 */
+	do {
+		szOutBuf[--i] = (char) ((ulNum % 10) + '0');
+	}
+	while ((ulNum /= 10) != 0);
+
+	/* Set sign in any case
+	*/
+	szOutBuf[--i] = '-';
+	i += (flgNeg ^ 1);
+
+	/* Verify free space in buffer and if needed then enlarge it.
+	*/
+	newlen = buf->len + (int) ((IOS_NUMBUF - 1) - i);
+	if (unlikely (newlen >= buf->size)) {
+		if (unlikely (realloc_new_bufsize(buf, newlen)) != ret_ok)
+			return ret_nomem;
+	}
+
+	/* Copy	including '\0'
+	 */
+	strcpy (buf->buf + buf->len, &szOutBuf[i]);
+
+	buf->len = newlen;
+
+	return ret_ok;
+}
+
+
+ret_t
+cherokee_buffer_add_ulong10 (cherokee_buffer_t *buf, culong_t ulNum)
+{
+	int     newlen = 0;
+	size_t  i = (IOS_NUMBUF - 1);
+	char    szOutBuf[IOS_NUMBUF];
+
+	szOutBuf[i] = '\0';
+
+	/* Convert number to string
+	 */
+	do {
+		szOutBuf[--i] = (char) ((ulNum % 10) + '0');
+	}
+	while ((ulNum /= 10) != 0);
+
+	/* Verify free space in buffer and if needed then enlarge it.
+	*/
+	newlen = buf->len + (int) ((IOS_NUMBUF - 1) - i);
+	if (unlikely (newlen >= buf->size)) {
+		if (unlikely (realloc_new_bufsize(buf, newlen)) != ret_ok)
+			return ret_nomem;
+	}
+
+	/* Copy	including '\0'
+	 */
+	strcpy (buf->buf + buf->len, &szOutBuf[i]);
+
+	buf->len = newlen;
+
+	return ret_ok;
+}
+
+
+ret_t
+cherokee_buffer_add_ullong10 (cherokee_buffer_t *buf, cullong_t ulNum)
+{
+	int     newlen = 0;
+	size_t  i = (IOS_NUMBUF - 1);
+	char    szOutBuf[IOS_NUMBUF];
+
+	szOutBuf[i] = '\0';
+
+	/* Convert number to string
+	 */
+	do {
+		szOutBuf[--i] = (char) ((ulNum % 10) + '0');
+	}
+	while ((ulNum /= 10) != 0);
+
+	/* Verify free space in buffer and if needed then enlarge it.
+	*/
+	newlen = buf->len + (int) ((IOS_NUMBUF - 1) - i);
+	if (unlikely (newlen >= buf->size)) {
+		if (unlikely (realloc_new_bufsize(buf, newlen)) != ret_ok)
+			return ret_nomem;
+	}
+
+	/* Copy	including '\0'
+	 */
+	strcpy (buf->buf + buf->len, &szOutBuf[i]);
+
+	buf->len = newlen;
+
+	return ret_ok;
+}
+
+
+/*
+** Add a number in hexadecimal format to (buf).
+*/
+ret_t
+cherokee_buffer_add_ulong16 (cherokee_buffer_t *buf, culong_t ulNum)
+{
+	size_t  i = (IOS_NUMBUF - 1);
+	int     ival = 0;
+	int     newlen = 0;
+	char    szOutBuf[IOS_NUMBUF];
+
+	szOutBuf[i] = '\0';
+
+	/* Convert number to string
+	 */
+	do {
+		ival = (int) (ulNum & 0xF);
+		szOutBuf[--i] = (char) TO_HEX(ival);
+	}
+	while ((ulNum >>= 4) != 0);
+
+	/* Verify free space in buffer and if needed then enlarge it.
+	*/
+	newlen = buf->len + (int) ((IOS_NUMBUF - 1) - i);
+	if (unlikely (newlen >= buf->size)) {
+		if (unlikely (realloc_new_bufsize(buf, newlen)) != ret_ok)
+			return ret_nomem;
+	}
+
+	/* Copy	including '\0'
+	 */
+	strcpy (buf->buf + buf->len, &szOutBuf[i]);
+
+	buf->len = newlen;
+
+	return ret_ok;
+}
+
+
+/*
+** Add a number in hexadecimal format to (buf).
+*/
+ret_t
+cherokee_buffer_add_ullong16 (cherokee_buffer_t *buf, cullong_t ulNum)
+{
+	size_t  i = (IOS_NUMBUF - 1);
+	int     ival = 0;
+	int     newlen = 0;
+	char    szOutBuf[IOS_NUMBUF];
+
+	szOutBuf[i] = '\0';
+
+	/* Convert number to string
+	 */
+	do {
+		ival = (int) (ulNum & 0xF);
+		szOutBuf[--i] = (char) TO_HEX(ival);
+	}
+	while ((ulNum >>= 4) != 0);
+
+	/* Verify free space in buffer and if needed then enlarge it.
+	*/
+	newlen = buf->len + (int) ((IOS_NUMBUF - 1) - i);
+	if (unlikely (newlen >= buf->size)) {
+		if (unlikely (realloc_new_bufsize(buf, newlen)) != ret_ok)
+			return ret_nomem;
+	}
+
+	/* Copy	including '\0'
+	 */
+	strcpy (buf->buf + buf->len, &szOutBuf[i]);
+
+	buf->len = newlen;
+
+	return ret_ok;
+}
+
+
+ret_t 
+cherokee_buffer_add_va_fixed (cherokee_buffer_t  *buf, char *format, ...)
+{
+	cuint_t len;
+	va_list ap;
+
+	va_start (ap, format);
+	len = vsnprintf (buf->buf + buf->len, buf->size - buf->len - 1, format, ap);
+	va_end (ap);
+
+	if (unlikely (len < 0)) 
+		return ret_error;
+
+	buf->len += len;
+	return ret_ok;
 }
 
 
@@ -172,15 +468,16 @@ cherokee_buffer_add_va_list (cherokee_buffer_t *buf, char *format, va_list args)
 	estimated_length = cherokee_estimate_va_length (format, args);
 	cherokee_buffer_ensure_size (buf, buf->len + estimated_length + 2);
 
-	len = vsnprintf (buf->buf + buf->len, buf->size - buf->len -1, format, args2);
+	len = vsnprintf (buf->buf + buf->len, buf->size - buf->len - 1, format, args2);
 	
-#if 1
+#if 0
 	if (estimated_length < len)
 		PRINT_ERROR ("  -> '%s' -> '%s', esti=%d real=%d\n", 
 			     format, buf->buf + buf->len, estimated_length, len);
 #endif
 
-	if (len < 0) return ret_error;
+	if (unlikely (len < 0)) 
+		return ret_error;
 
 	buf->len += len;
 	return ret_ok;
@@ -201,6 +498,31 @@ cherokee_buffer_add_va (cherokee_buffer_t *buf, char *format, ...)
 }
 
 
+ret_t
+cherokee_buffer_add_char (cherokee_buffer_t *buf, char c)
+{	   
+	/* Add char (fast path)
+	 */
+	if (likely (buf->len + 1 < buf->size)) {
+		buf->buf[buf->len++] = c;
+		buf->buf[buf->len] = '\0';
+		return ret_ok;
+	}
+
+	/* Get memory
+	 */
+	if (unlikely (realloc_inc_bufsize(buf, 1)) != ret_ok)
+		return ret_nomem;
+
+	/* Add char
+	 */
+	buf->buf[buf->len++] = c;
+	buf->buf[buf->len] = '\0';
+
+	return ret_ok;
+}
+
+
 ret_t 
 cherokee_buffer_add_char_n (cherokee_buffer_t *buf, char c, int num)
 {
@@ -212,10 +534,8 @@ cherokee_buffer_add_char_n (cherokee_buffer_t *buf, char c, int num)
 	/* Get memory
 	 */
 	if (free < (num+1)) {
-		buf->buf = (char *) realloc(buf->buf, buf->size + num - free + 1);
-		return_if_fail (buf->buf, ret_nomem);
-
-		buf->size += num - free + 1;
+		if (unlikely (realloc_inc_bufsize(buf, num - free)) != ret_ok)
+			return ret_nomem;
 	}
 
 	memset (buf->buf+buf->len, c, num);
@@ -226,7 +546,6 @@ cherokee_buffer_add_char_n (cherokee_buffer_t *buf, char c, int num)
 }
 
 
-
 ret_t
 cherokee_buffer_prepend (cherokee_buffer_t  *buf, char *txt, size_t size)
 {
@@ -234,11 +553,9 @@ cherokee_buffer_prepend (cherokee_buffer_t  *buf, char *txt, size_t size)
 
 	/* Get memory
 	 */
-	if (free <= size) {
-		buf->buf = (char *) realloc(buf->buf, buf->size + size - free + 1);
-		return_if_fail (buf->buf, ret_nomem);
-		   
-		buf->size += size - free + 1;
+	if (free < (size+1)) {
+		if (unlikely (realloc_inc_bufsize(buf, size - free)) != ret_ok)
+			return ret_nomem;
 	}
 
 	memmove (buf->buf+size, buf->buf, buf->len);
@@ -246,7 +563,7 @@ cherokee_buffer_prepend (cherokee_buffer_t  *buf, char *txt, size_t size)
 	memcpy (buf->buf, txt, size);
 	buf->len += size;
 	buf->buf[buf->len] = '\0';
-	   
+ 
 	return ret_ok;
 }
 
@@ -254,9 +571,8 @@ cherokee_buffer_prepend (cherokee_buffer_t  *buf, char *txt, size_t size)
 int   
 cherokee_buffer_is_endding (cherokee_buffer_t *buf, char c)
 {
-	if (cherokee_buffer_is_empty(buf)) {
+	if (cherokee_buffer_is_empty(buf))
 		return 0;
-	}
 
 	return (buf->buf[buf->len - 1] == c);
 }
@@ -268,8 +584,10 @@ cherokee_buffer_move_to_begin (cherokee_buffer_t *buf, int pos)
 	if (pos <= 0) 
 		return ret_ok;
 
-	if (pos >= buf->len) 
-		return cherokee_buffer_clean(buf);
+	if (pos >= buf->len) {
+		cherokee_buffer_clean(buf);
+		return ret_ok;
+	}
 
 	/* At this point: 0 < pos < buf->len 
 	 */
@@ -287,73 +605,52 @@ cherokee_buffer_move_to_begin (cherokee_buffer_t *buf, int pos)
 }
 
 
+/*
+ * Ensure there is enough (addlen) free space left in the buffer.
+ */
+ret_t
+cherokee_buffer_ensure_addlen (cherokee_buffer_t *buf, size_t addlen)
+{
+	if (buf->len + addlen < buf->size)
+		return ret_ok;
+
+	return cherokee_buffer_ensure_size (buf, ((size_t)buf->len + addlen + 1));
+}
+
+
 ret_t
 cherokee_buffer_ensure_size (cherokee_buffer_t *buf, size_t size)
 {
+	char *pbuf;
+
 	/* Maybe it doesn't need it
+	 * if buf->size == 0 and size == 0 then buf can be NULL.
 	 */
-	if (size < buf->len) 
+	if (size <= buf->size) 
 		return ret_ok;
 
 	/* If it is a new buffer, take memory and return
 	 */
 	if (buf->buf == NULL) {
 		buf->buf = (char *) malloc (size);
-		if (unlikely (buf->buf == NULL)) return ret_nomem;
+		if (unlikely (buf->buf == NULL))
+			return ret_nomem;
 		buf->size = size;
 		return ret_ok;
 	}
 
 	/* It already has memory, but it needs more..
 	 */
-	buf->buf = (char *) realloc(buf->buf, size);
-	if (unlikely (buf->buf == NULL)) return ret_nomem;
+	pbuf = (char *) realloc(buf->buf, size);
+	if (unlikely (pbuf == NULL))
+		return ret_nomem;
+
+	buf->buf = pbuf;
 	buf->size = size;
-	   
-	return ret_ok;
-}
-
-
-/* This function is based on code from thttpd
- * Copyright: Jef Poskanzer <jef@acme.com>
- *
- * Copies and decodes a string.  It's ok for from and to to be the
- * same string.
- */
-
-ret_t
-cherokee_buffer_decode (cherokee_buffer_t *buffer)
-{
-	char *from;
-	char *to;
-
-	if (buffer->buf == NULL) {
-		return ret_error;
-	}
-
-	from = to = buffer->buf;
-
-	for (; *from != '\0'; ++to, ++from) {
-		if (from[0] == '%' && isxdigit(from[1]) && isxdigit(from[2])) {
-			if ((from[1] == '0') && (from[2] == '0')) {
-				/* Replace null bytes (%00) with spaces,
-				 * to prevent attacks 	
-				 */
-				*to = ' ';
-			} else {
-				*to = cherokee_hexit(from[1]) * 16 + cherokee_hexit(from[2]);
-			}
-
-			from += 2;
-			buffer->len -= 2;
-		} else {
-			*to = *from;
-		}
-	}
-	*to = '\0';
 
 	return ret_ok;
 }
+
 
 ret_t 
 cherokee_buffer_drop_endding (cherokee_buffer_t *buffer, int num_chars)
@@ -395,15 +692,16 @@ cherokee_buffer_swap_chars (cherokee_buffer_t *buffer, char a, char b)
 ret_t 
 cherokee_buffer_remove_dups (cherokee_buffer_t *buffer, char c)
 {
-	char *a      = buffer->buf;
-	int   offset = 0;
-	
+	char       *a      = buffer->buf;
+	const char *end    = buffer->buf + buffer->len;
+	cuint_t     offset = 0;
+
 	if (buffer->len < 2) {
 		return ret_ok;
 	}
 
 	do {
-		if ((a[0] == c) && (a[offset+1] == c)) {
+		if ((*a == c) && (a[offset+1] == c)) {
 			offset++;
 			continue;
 		}
@@ -411,7 +709,7 @@ cherokee_buffer_remove_dups (cherokee_buffer_t *buffer, char c)
 		a++;
 		*a = a[offset];
 
-	} while ((a && *a != '\0') && (a < buffer->buf + buffer->len) && (offset+1 < buffer->len));
+	} while ((a < end) && (offset+1 < buffer->len));
 
 	buffer->len -= offset;
 	buffer->buf[buffer->len] = '\0';
@@ -456,6 +754,66 @@ cherokee_buffer_remove_chunk (cherokee_buffer_t *buf, int from, int len)
 }
 
 
+cint_t
+cherokee_buffer_cmp_buf (cherokee_buffer_t *A, cherokee_buffer_t *B)
+{
+	if (A->len > B->len)
+		return A->len - B->len;
+	else if (B->len > A->len)
+		return - (B->len - A->len);
+
+	return strncmp (A->buf, B->buf, B->len);
+}
+
+cint_t
+cherokee_buffer_cmp (cherokee_buffer_t *buf, char *txt, cuint_t txt_len)
+{
+	cherokee_buffer_t tmp;
+	cherokee_buffer_fake (&tmp, txt, txt_len);
+	return cherokee_buffer_cmp_buf (buf, &tmp);
+}
+
+
+cint_t
+cherokee_buffer_case_cmp_buf (cherokee_buffer_t *A, cherokee_buffer_t *B)
+{
+	if (A->len > B->len)
+		return A->len - B->len;
+	else if (B->len > A->len)
+		return - (B->len - A->len);
+
+	return strncasecmp (A->buf, B->buf, B->len);
+}
+
+cint_t
+cherokee_buffer_case_cmp (cherokee_buffer_t *buf, char *txt, cuint_t txt_len)
+{
+	cherokee_buffer_t tmp;
+	cherokee_buffer_fake (&tmp, txt, txt_len);
+	return cherokee_buffer_case_cmp_buf (buf, &tmp);
+}
+
+
+size_t
+cherokee_buffer_cnt_spn (cherokee_buffer_t *buf, int offset, char *str) 
+{
+	if (unlikely ((buf->buf == NULL) || (buf->len <= offset)))
+		return 0;
+
+	return strspn (buf->buf + offset, str);
+}
+
+
+size_t 
+cherokee_buffer_cnt_cspn (cherokee_buffer_t *buf, int offset, char *str) 
+{
+	if (unlikely ((buf->buf == NULL) || (buf->len <= offset)))
+		return 0;
+
+	return strcspn (buf->buf + offset, str);
+}
+
+
 crc_t 
 cherokee_buffer_crc32 (cherokee_buffer_t  *buf)
 {
@@ -473,23 +831,25 @@ cherokee_buffer_read_file (cherokee_buffer_t *buf, char *filename)
 	/* Stat() the file
 	 */
 	r = stat (filename, &info);
-	if (r != 0) return ret_error;
+	if (r != 0)
+		return ret_error;
 
 	/* Is a regular file?
 	 */
-	if (S_ISREG(info.st_mode) == 0) {
+	if (S_ISREG(info.st_mode) == 0)
 		return ret_error;
-	}
 
 	/* Maybe get memory
 	 */
 	ret = cherokee_buffer_ensure_size (buf, buf->len + info.st_size + 1);
-	if (unlikely(ret != ret_ok)) return ret;
-	
+	if (unlikely (ret != ret_ok))
+		return ret;
+
 	/* Open the file
 	 */
 	f = open (filename, CHE_O_READ);
-	if (f < 0) return ret_error;
+	if (f < 0)
+		return ret_error;
 
 	/* Read the content
 	 */
@@ -500,7 +860,7 @@ cherokee_buffer_read_file (cherokee_buffer_t *buf, char *filename)
 		close(f);
 		return ret_error;
 	}
-	
+
 	/* Close it and exit
 	 */
 	close(f);
@@ -516,21 +876,31 @@ ret_t
 cherokee_buffer_read_from_fd (cherokee_buffer_t *buf, int fd, size_t size, size_t *ret_size)
 {
 	int  len;
-	char tmp[size+1];
 
-	len = read (fd, tmp, size);
+	/* Ensure there is enough space in buffer
+	 * NOTE: usually the caller should have already allocated
+	 *       enough space for the buffer, so this is a security measure
+	 */
+	cherokee_buffer_ensure_addlen(buf, size);
+
+	/* Read data at the end of the buffer
+	 */
+	len = read (fd, &(buf->buf[buf->len]), size);
 	if (len < 0) {
 		/* On error
 		 */
 		switch (errno) {
 		case EINTR:      return ret_eagain;
 		case EAGAIN:     return ret_eagain;
+#if defined(EWOULDBLOCK) && (EWOULDBLOCK != EAGAIN)
+		case EWOULDBLOCK:return ret_eagain;
+#endif
 		case EPIPE:      return ret_eof;
 		case ECONNRESET: return ret_eof;
 		case EIO:        return ret_error;
 		}
 
-		PRINT_ERROR ("ERROR: read(%d, %u,..) -> errno=%d '%s'\n", fd, size, errno, strerror(errno));
+		PRINT_ERRNO (errno, "read(%d, %u,..): '${errno}'", fd, size);
 		return ret_error;
 	}
 	else if (len == 0) {
@@ -539,11 +909,13 @@ cherokee_buffer_read_from_fd (cherokee_buffer_t *buf, int fd, size_t size, size_
 		return ret_eof;
 	}
 
-	/* Add readed information
+	/* Add read length, terminate buffer and return
 	 */
-	cherokee_buffer_add (buf, tmp, len);
 	*ret_size = len;
-	
+	buf->len += len;
+
+	buf->buf[buf->len] = '\0';
+
 	return ret_ok;
 }
 
@@ -554,7 +926,7 @@ cherokee_buffer_multiply (cherokee_buffer_t *buf, int num)
 	int i, initial_size;
 
 	initial_size = buf->len;
-	cherokee_buffer_ensure_size (buf, buf->len * num);
+	cherokee_buffer_ensure_size (buf, buf->len * num + 1);
 
 	for (i=0; i<num; i++) {
 		cherokee_buffer_add (buf, buf->buf, initial_size);
@@ -567,21 +939,21 @@ cherokee_buffer_multiply (cherokee_buffer_t *buf, int num)
 ret_t
 cherokee_buffer_print_debug (cherokee_buffer_t *buf, int len)
 {
-	int           i, length;
-	char          text[67];
-	char*         hex_text;
-	char*         ascii_text;
-	unsigned char tmp;
-	 
+	int            i, length;
+	char           text[67];
+	unsigned char  tmp;
+	char          *hex_text   = NULL;
+	char          *ascii_text = NULL;
+
 	if ((len == -1) || (buf->len <= len)) {
 		length = buf->len;
 	} else {
 		length = len;
 	}
-	 
+
 	if (length <= 0)
 		return ret_ok;
-	
+
 	memset(text, 0, 67);
 	for (i=0; i < length; i++) {
 		if (i%16 == 0) {
@@ -592,7 +964,7 @@ cherokee_buffer_print_debug (cherokee_buffer_t *buf, int len)
 			hex_text = text + 9;
 			ascii_text = text + 49;
 		}
-		 
+
 		tmp = buf->buf[i];
 		sprintf (hex_text, "%02x",  tmp & 0xFF);
 		hex_text += 2;
@@ -600,7 +972,7 @@ cherokee_buffer_print_debug (cherokee_buffer_t *buf, int len)
 		if ((i+1)%2 == 0) {
 			hex_text++;
 		}
-		 
+
 		if ((tmp > ' ') &&  (tmp < 128))
 			*ascii_text = tmp;
 		else
@@ -614,56 +986,176 @@ cherokee_buffer_print_debug (cherokee_buffer_t *buf, int len)
 }
 
 
-ret_t 
-cherokee_buffer_add_version (cherokee_buffer_t *buf, int port, cherokee_version_t ver)
+/*
+ * Unescape a string that may have escaped characters %xx
+ * where xx is the hexadecimal number equal to the character ascii value.
+ */
+ret_t
+cherokee_buffer_unescape_uri (cherokee_buffer_t *buffer)
 {
-	ret_t       ret;
-	static char port_str[6];
-	static int  port_len = 0;
+	static const char hex2dec_tab[256] = {
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  /* 00-0F */
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  /* 10-1F */
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  /* 20-2F */
+		0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 0, 0, 0, 0, 0,  /* 30-3F */
+		0,10,11,12,13,14,15, 0, 0, 0, 0, 0, 0, 0, 0, 0,  /* 40-4F */
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  /* 50-5F */
+		0,10,11,12,13,14,15, 0, 0, 0, 0, 0, 0, 0, 0, 0,  /* 60-6F */
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  /* 70-7F */
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  /* 80-8F */
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  /* 90-9F */
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  /* A0-AF */
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  /* B0-BF */
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  /* C0-CF */
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  /* D0-DF */
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  /* E0-EF */
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0   /* F0-FF */
+	};
 
-	if (port_len == 0) {
-		port_len = snprintf (port_str, 6, "%d", port);
+	char *psrc;
+	char *ptgt;
+	int   len;
+
+#define hex2dec_m(c)	   ( (int) hex2dec_tab[ ( (unsigned char )(c) ) ] )
+#define hex2dec_m2(c1, c2) ( hex2dec_m(c1) * 16 + hex2dec_m(c2) )
+
+	TRACE(ENTRIES, "Prev: %s\n", buffer->buf);
+
+	if (unlikely (buffer->buf == NULL))
+		return ret_error;
+
+	/* Verify if unescaping is needed.
+	 */
+	if ((psrc = strchr (buffer->buf, '%')) == NULL)
+		return ret_ok;
+
+	/* Yes, unescape string.
+	 */
+	len = buffer->len;
+	for (ptgt = psrc; *psrc != '\0'; ++ptgt, ++psrc) {
+		if (psrc[0] != '%' ||
+		    !isxdigit(psrc[1]) || !isxdigit(psrc[2])) {
+			*ptgt = *psrc;
+			continue;
+		}
+		/* Escape sequence %xx
+		 */
+		if (likely ((*ptgt = hex2dec_m2(psrc[1], psrc[2])) != '\0')) {
+			psrc += 2;
+			len  -= 2;
+			continue;
+		}
+		/* Replace null bytes (%00) with
+		 * spaces, to prevent attacks
+		 */
+		*ptgt = ' ';
+		psrc += 2;
+		len  -= 2;
 	}
+	*ptgt = '\0';
+	buffer->len = len;
 
-	switch (ver) {
-	case ver_full_html:
-		cherokee_buffer_ensure_size (buf, buf->len + 29 + sizeof(PACKAGE_VERSION) + 6 + port_len + 10);
+#undef hex2dec_m2
+#undef hex2dec_m
 
-		cherokee_buffer_add_str (buf, 
-					 "<address>Cherokee web server " PACKAGE_VERSION " Port ");
-		cherokee_buffer_add (buf, port_str, port_len);
-		cherokee_buffer_add_str (buf, "</address>");
-		break;
-
-	case ver_port_html:
-		cherokee_buffer_ensure_size (buf, buf->len + 34 + port_len + 10);
-
-		cherokee_buffer_add_str (buf, "<address>Cherokee web server Port ");
-		cherokee_buffer_add (buf, port_str, port_len);
-		cherokee_buffer_add_str (buf, "</address>");
-		break;
-
-	default:	
-		SHOULDNT_HAPPEN;
-	}
-
-	return ret;
+	TRACE(ENTRIES, "Post: %s\n", buffer->buf);
+	return ret_ok;
 }
 
 
-/* b64_decode_table has been copy&pasted from the code of thttpd:  
- * Copyright <A9> 1995,1998,1999,2000,2001 by Jef Poskanzer <jef@acme.com>
- */
+ret_t 
+cherokee_buffer_escape_html (cherokee_buffer_t *buf, cherokee_buffer_t *src)
+{
+	ret_t   ret;
+	cuint_t i;
+	cuint_t j;
+	cuint_t extra = 0;
+	char   *p0, *p;
 
-/* Base-64 decoding.  This represents binary data as printable ASCII
- * characters.  Three 8-bit binary bytes are turned into four 6-bit
- * values, like so:
- *
- *   [11111111]  [22222222]  [33333333]
- *   [111111] [112222] [222233] [333333]
- *
- * Then the 6-bit values are represented using the characters "A-Za-z0-9+/".
- */
+	/* Verify string termination,
+	 * we assume there are no '\0' inside buffer.
+	 */
+	if (src->buf[src->len] != '\0')
+		src->buf[src->len]  = '\0';
+
+	/* Verify if string has to be escaped.
+	 */
+	if ((p0 = strpbrk (src->buf, "<>&\"")) == NULL)
+		return ret_not_found;
+
+	/* Count extra characters
+	 */
+	for (p = p0; *p != '\0'; ++p) {
+		switch(*p) {
+			case '<':
+			case '>':
+				extra += 3;
+				continue;
+			case '&':
+				extra += 4;
+				continue;
+			case '"':
+				extra += 5;
+				continue;
+			default:
+				continue;
+		}
+	}
+
+	/* Verify there are no embedded '\0'.
+	 */
+	if ( ((int) (p - src->buf)) != src->len)
+		return ret_error;
+
+	/* Copy the buffer
+	 */
+	cherokee_buffer_clean (buf);
+
+	ret = cherokee_buffer_ensure_size (buf, src->len + extra + 1);
+	if (ret != ret_ok) return ret;
+	
+	ret = cherokee_buffer_add_buffer (buf, src);
+	if (ret != ret_ok) return ret;
+
+	/* Make the changes
+	 */
+	for (i = 0, j = 0; i < buf->len; i++) {
+		char c = buf->buf[i+j]; 
+
+		switch (c) {
+		case '<':
+			memmove (&buf->buf[i+j+4], &buf->buf[i+j+1], buf->len-i);
+			memcpy (&buf->buf[i+j], "&lt;", 4);
+			j += 3;
+			break;
+
+		case '>':
+			memmove (&buf->buf[i+j+4], &buf->buf[i+j+1], buf->len-i);
+			memcpy (&buf->buf[i+j], "&gt;", 4);
+			j += 3;
+			break;
+
+		case '&':
+			memmove (&buf->buf[i+j+5], &buf->buf[i+j+1], buf->len-i);
+			memcpy (&buf->buf[i+j], "&amp;", 5);
+			j += 4;
+			break;
+
+		case '"':
+			memmove (&buf->buf[i+j+6], &buf->buf[i+j+1], buf->len-i);
+			memcpy (&buf->buf[i+j], "&quot;", 6);
+			j += 5;
+			break;
+		}
+	}
+
+	/* Set the new length
+	 */
+	buf->len += extra;
+
+	return ret_ok;
+}
+
 
 ret_t 
 cherokee_buffer_decode_base64 (cherokee_buffer_t *buf)
@@ -674,8 +1166,19 @@ cherokee_buffer_decode_base64 (cherokee_buffer_t *buf)
 	int  d, prev_d = 0;
 	int  buf_pos   = 0;
 
+	/* Base-64 decoding: This represents binary data as printable
+	 * ASCII characters. Three 8-bit binary bytes are turned into
+	 * four 6-bit values, like so:
+	 *	
+	 *   [11111111]  [22222222]  [33333333]
+	 *   [111111] [112222] [222233] [333333]
+	 *
+	 * Then the 6-bit values are represented using the characters
+	 * "A-Za-z0-9+/".
+	 */
+
 	static const char
-		b64_decode_table[256] = {
+		b64_decode_tab[256] = {
 			-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,  /* 00-0F */
 			-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,  /* 10-1F */
 			-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,62,-1,-1,-1,63,  /* 20-2F */
@@ -694,11 +1197,8 @@ cherokee_buffer_decode_base64 (cherokee_buffer_t *buf)
 			-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1   /* F0-FF */
 		};
 
-
-	space_idx = 0;
-	phase = 0;
 	for (i=0; i < buf->len; i++) {
-		d = b64_decode_table[(int) buf->buf[i]];
+		d = b64_decode_tab[(int) buf->buf[i]];
 		if (d != -1) {
 			switch (phase) {
 			case 0:
@@ -725,7 +1225,7 @@ cherokee_buffer_decode_base64 (cherokee_buffer_t *buf)
 			buf_pos += 127;
 			space_idx = 0;
 		}
-        }
+	}
 
 	space[space_idx]='\0';
 
@@ -736,129 +1236,61 @@ cherokee_buffer_decode_base64 (cherokee_buffer_t *buf)
 }
 
 
+/* Encode base64 from source (buf) to destination (encoded).
+ * NOTE: resulting (encoded) content is always longer than source (buf).
+ * Source (buf) is not touched (rewritten or reallocated).
+ */
 ret_t 
-cherokee_buffer_encode_base64 (cherokee_buffer_t *buf)
+cherokee_buffer_encode_base64 (cherokee_buffer_t *buf, cherokee_buffer_t *encoded)
 {
 	cuchar_t         *in;
 	cuchar_t         *out;
 	ret_t             ret;
 	int               i, j;
 	cuint_t           inlen   = buf->len;
-	cherokee_buffer_t new_buf = CHEROKEE_BUF_INIT;
-		
+
 	static const char base64tab[]=
 		"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
 	/* Get memory
 	 */
-	ret = cherokee_buffer_ensure_size (&new_buf, (buf->len+4)*4/3);
-	if (unlikely (ret != ret_ok)) return ret;
+	ret = cherokee_buffer_ensure_size (encoded, (buf->len+4)*4/3 + 1);
+	if (unlikely (ret != ret_ok))
+		return ret;
 
-	/* Encode
+	/* Cleanup destination buffer
+	 */
+	cherokee_buffer_clean (encoded);
+
+	/* Encode source to destination
 	 */
 	in  = (cuchar_t *) buf->buf;
-	out = (cuchar_t *) new_buf.buf;
+	out = (cuchar_t *) encoded->buf;
 
-        for (i=0, j=0; i < inlen; i += 3) {
+	for (i=0, j=0; i < inlen; i += 3) {
 		int     a=0,b=0,c=0;
 		int     d, e, f, g;
 
-                a=in[i];
-                b= i+1 < inlen ? in[i+1]:0;
-                c= i+2 < inlen ? in[i+2]:0;
+		a=in[i];
+		b= i+1 < inlen ? in[i+1]:0;
+		c= i+2 < inlen ? in[i+2]:0;
 
-                d = base64tab [a >> 2 ];
-                e = base64tab [((a & 3 ) << 4) | (b >> 4)];
-                f = base64tab [((b & 15) << 2) | (c >> 6)];
-                g = base64tab [c & 63 ];
+		d = base64tab [a >> 2 ];
+		e = base64tab [((a & 3 ) << 4) | (b >> 4)];
+		f = base64tab [((b & 15) << 2) | (c >> 6)];
+		g = base64tab [c & 63 ];
 
-                if (i + 1 >= inlen) f='=';
-                if (i + 2 >= inlen) g='=';
+		if (i + 1 >= inlen) f='=';
+		if (i + 2 >= inlen) g='=';
 
-                out[j++] = d;
-                out[j++] = e;
-                out[j++] = f;
-                out[j++] = g;
-        }
-	
+		out[j++] = d;
+		out[j++] = e;
+		out[j++] = f;
+		out[j++] = g;
+	}
 
 	out[j]  = '\0';
-	new_buf.len = j;
-
-	/* Set the encoded string
-	 */
-	free (buf->buf);
-
-	buf->buf  = new_buf.buf;
-	buf->len  = new_buf.len;	
-	buf->size = new_buf.size;
-
-	return ret_ok;
-}
-
-
-ret_t 
-cherokee_buffer_escape_html (cherokee_buffer_t *buf, cherokee_buffer_t **maybe_new)
-{
-	ret_t   ret;
-	cuint_t i;
-	cuint_t j;
-	cuint_t extra = 0;
-
-	/* Count extra characters
-	 */
-	for (i=0; i<buf->len; i++) {
-		if ((buf->buf[i] == '<') || (buf->buf[i] == '>')) {
-			extra += 3;
-		} else 	if (buf->buf[i] == '&') {
-			extra += 4;
-		}
-	}
-
-	if (extra == 0) return ret_not_found;
-
-	/* Create a new buffer
-	 */
-	ret = cherokee_buffer_new (maybe_new);
-	if (unlikely(ret != ret_ok)) return ret;
-
-	ret = cherokee_buffer_ensure_size (*maybe_new, buf->len + extra + 1);
-	if (unlikely(ret != ret_ok)) return ret;
-
-	ret = cherokee_buffer_add_buffer (*maybe_new, buf);
-	if (unlikely(ret != ret_ok)) return ret;
-
-	buf = *maybe_new;
-
-	/* Make the changes
-	 */
-	for (i=0, j=0; i<buf->len; i++) {
-		char c = buf->buf[i+j]; 
-
-		switch (c) {
-		case '<':
-			memmove (&buf->buf[i+j+4], &buf->buf[i+j+1], buf->len-i);
-			memcpy (&buf->buf[i+j], "&lt;", 4);
-			j += 3;
-			break;
-
-		case '>':
-			memmove (&buf->buf[i+j+4], &buf->buf[i+j+1], buf->len-i);
-			memcpy (&buf->buf[i+j], "&gt;", 4);
-			j += 3;
-			break;
-
-		case '&':
-			memmove (&buf->buf[i+j+5], &buf->buf[i+j+1], buf->len-i);
-			memcpy (&buf->buf[i+j], "&amp;", 5);
-			j += 4;
-			break;
-		}
-	}
-
-	/* Set the new length
-	 */
-	buf->len += extra;
+	encoded->len = j;
 
 	return ret_ok;
 }
@@ -879,20 +1311,20 @@ cherokee_buffer_encode_md5_digest (cherokee_buffer_t *buf)
 	int i;
 	struct MD5Context context;
 	unsigned char digest[16];
-	
+
 	MD5Init (&context);
 	MD5Update (&context, (md5byte *)buf->buf, buf->len);
 	MD5Final (digest, &context);
 
 	cherokee_buffer_ensure_size (buf, 34);
 
-	for (i=0; i<16; i++) {
+	for (i = 0; i < 16; ++i) {
 		int tmp;
 
-		tmp = (digest[i] >> 4) & 0xf;
+		tmp = ((digest[i] >> 4) & 0xf);
 		buf->buf[i*2] = TO_HEX(tmp);
 
-		tmp = digest[i] & 0xf;
+		tmp = (digest[i] & 0xf);
 		buf->buf[(i*2)+1] = TO_HEX(tmp);
 	}
 	buf->buf[32] = '\0';
@@ -906,7 +1338,7 @@ ret_t
 cherokee_buffer_encode_md5 (cherokee_buffer_t *buf, cherokee_buffer_t *encoded)
 {
 	struct MD5Context context;
-	
+
 	cherokee_buffer_ensure_size (encoded, 17);
 
 	MD5Init (&context);
@@ -920,7 +1352,10 @@ cherokee_buffer_encode_md5 (cherokee_buffer_t *buf, cherokee_buffer_t *encoded)
 }
 
 
-#ifndef CHEROKEE_EMBEDDED
+/* Encode sha1, source buffer (buf) is not touched,
+ * whereas destination buffer (encoded) is overwritten
+ * but possibly not reallocated.
+ */
 ret_t 
 cherokee_buffer_encode_sha1 (cherokee_buffer_t *buf, cherokee_buffer_t *encoded)
 {
@@ -939,74 +1374,64 @@ cherokee_buffer_encode_sha1 (cherokee_buffer_t *buf, cherokee_buffer_t *encoded)
 }
 
 
+/* Encode sha1 in base64, both source (buf) and destination (encoded)
+ * buffers are overwritten, but possibly not reallocated.
+ */
 ret_t 
-cherokee_buffer_encode_sha1_base64 (cherokee_buffer_t *buf) 
+cherokee_buffer_encode_sha1_base64 (cherokee_buffer_t *buf, cherokee_buffer_t *encoded) 
 {
-	cuint_t           ntmp;
-	char             *ctmp;
-	cherokee_buffer_t encoded = CHEROKEE_BUF_INIT;
-
-	cherokee_buffer_ensure_size (&encoded, (SHA1_DIGEST_SIZE *2) + 1);	
-
-	cherokee_buffer_encode_sha1 (buf, &encoded);
-	cherokee_buffer_encode_base64 (&encoded);
-
-	/* Swap buffers
+	/* Prepare destination buffer
 	 */
-	ctmp = buf->buf;
-	buf->buf = encoded.buf;
-	encoded.buf = ctmp;
+	cherokee_buffer_ensure_size (encoded, (SHA1_DIGEST_SIZE * 2) + 1);	
+	cherokee_buffer_clean (encoded);
 
-	ntmp = buf->len;
-	buf->len = encoded.len;
-	encoded.len = ntmp;
-
-	ntmp = buf->size;
-	buf->size = encoded.size;
-	encoded.size = ntmp;
-
-	/* Clean and return
+	/* Encode sha1 + base64
 	 */
-	cherokee_buffer_mrproper (&encoded);
+	cherokee_buffer_encode_sha1 (buf, encoded);
+	cherokee_buffer_encode_base64 (encoded, buf);
+
+	/* Copy result to destination buffer
+	 */
+	cherokee_buffer_clean (encoded);
+	cherokee_buffer_add_buffer (encoded, buf);
 
 	return ret_ok;
 }
-#endif
 
 
+/* Encode in hexadecimal characters, source buffer (buf) is not touched,
+ * whereas destination buffer (encoded) is overwritten
+ * but possibly not reallocated.
+ */
 ret_t 
-cherokee_buffer_encode_hex (cherokee_buffer_t *buf)
+cherokee_buffer_encode_hex (cherokee_buffer_t *buf, cherokee_buffer_t *encoded)
 {
-	unsigned int  i;
-	unsigned char j;
-	char *new_buf;
+	cuchar_t        *in;
+	cuchar_t        *out;
+	cuint_t         j;
+	cuint_t         i;
+	cuint_t         inlen = buf->len;
 
-	new_buf = (char *) malloc((buf->len * 2)+1);
-	if (new_buf == NULL) {
-		return ret_error;
+	/* Prepare destination buffer
+	 */
+	cherokee_buffer_ensure_size (encoded, (inlen * 2 + 1));	
+	cherokee_buffer_clean (encoded);
+
+	/* Encode source to destination
+	 */
+	in  = (cuchar_t *) buf->buf;
+	out = (cuchar_t *) encoded->buf;
+
+	for (i = 0; i != inlen; ++i) {
+		j = ( (*in >> 4) & 0xf );
+		*out++ = (cuchar_t) TO_HEX(j);
+
+		j =   (*in++ & 0xf);
+		*out++ = (cuchar_t) TO_HEX(j);
 	}
 
-	for (i = 0; i < buf->len; i++) {
-		j = (buf->buf[i] >> 4) & 0xf;
-		if (j <= 9)
-			new_buf[i*2] = (j + '0');
-		else
-			new_buf[i*2] = (j + 'a' - 10);
-
-		j = buf->buf[i] & 0xf;
-		if (j <= 9)
-			new_buf[i*2+1] = (j + '0');
-		else
-			new_buf[i*2+1] = (j + 'a' - 10);
-	}
-
-	new_buf[buf->len*2] = '\0';
-
-	free (buf->buf);
-
-	buf->len *= 2;
-	buf->size = buf->len + 1;
-	buf->buf  = new_buf;
+	*out = '\0';
+	encoded->len = (int) (inlen * 2);
 
 	return ret_ok;
 }
@@ -1051,32 +1476,21 @@ cherokee_buffer_decode_hex (cherokee_buffer_t *buf)
 
 
 ret_t 
-cherokee_buffer_replace (cherokee_buffer_t *buf, char *string1, int len1, char *string2, int len2)
-{
-	char *p = buf->buf;
-
-	do {
-		p = strstr(p, string1);
-		if (p != NULL) {
-			if (len1 < len2) {
-				
-			} else {
-
-			}
-		}
-	} while (p);
-
-	return ret_ok;
-}
-
-
-ret_t 
 cherokee_buffer_add_chunked (cherokee_buffer_t *buf, char *txt, size_t size)
 {
 	ret_t ret;
-	
-	ret = cherokee_buffer_add_va (buf, "0x%x"CRLF, size);
-	if (unlikely(ret < ret_ok)) return ret_ok;
+
+	ret = cherokee_buffer_add_str    (buf, "0x");
+	if (unlikely (ret < ret_ok))
+		return ret_ok;
+
+	ret = cherokee_buffer_add_ulong16(buf, (culong_t) size);
+	if (unlikely (ret < ret_ok))
+		return ret_ok;
+
+	ret = cherokee_buffer_add_str    (buf, CRLF);
+	if (unlikely (ret < ret_ok))
+		return ret_ok;
 
 	return cherokee_buffer_add (buf, txt, size);
 }
@@ -1088,12 +1502,12 @@ cherokee_buffer_add_buffer_chunked (cherokee_buffer_t *buf, cherokee_buffer_t *b
 	return cherokee_buffer_add_chunked (buf, buf2->buf, buf2->len);
 }
 
+
 char  
 cherokee_buffer_end_char (cherokee_buffer_t *buf)
 {
-	if ((buf->buf == NULL) || (buf->len <= 0)) {
+	if ((buf->buf == NULL) || (buf->len <= 0))
 		return '\0';
-	}
 
 	return buf->buf[buf->len-1];
 }
@@ -1104,48 +1518,71 @@ cherokee_buffer_replace_string (cherokee_buffer_t *buf,
 				char *substring,   int substring_length, 
 				char *replacement, int replacement_length)
 {
-        int         remaining_length;
+	int         remaining_length;
 	int         result_length;
-        char       *result;
+	char       *result;
 	char       *result_position;
-        const char *p;
+	const char *p;
 	const char *substring_position;
+
+	/* Verify formal parameters
+	 * (those which are not tested would raise a segment violation).
+	 */
+	if (buf->buf == NULL ||
+	    substring == NULL || substring_length < 1 ||
+		replacement == NULL || replacement_length < 0)
+		return ret_deny;
 
 	/* Calculate the new size
 	 */
 	result_length = buf->len;
-        for (p = buf->buf; ; p = substring_position + substring_length) {
-                substring_position = strstr (p, substring);
-                if (substring_position == NULL) {
-                        break;
-                }
+	for (p = buf->buf; ; p = substring_position + substring_length) {
+		substring_position = strstr (p, substring);
 
-                result_length += (replacement_length - substring_length);
-        } 
+		if (substring_position == NULL)
+			break;
+
+		result_length += (replacement_length - substring_length);
+	}
+	
+	/* If no substring has been found, then return now.
+	 */
+	if (p == buf->buf)
+		return ret_ok;
+
+	/* If resulting length is zero, then return now.
+	 */
+	if (result_length < 1) {
+		buf->buf[0] = '\0';
+		buf->len = 0;
+		return ret_ok;
+	}
 
 	/* Take the new memory chunk
 	 */
 	result = (char *) malloc (result_length + 1);
-	if (result == NULL) return ret_nomem;
-	
+	if (unlikely (result == NULL))
+		return ret_nomem;
+
 	/* Build the new string
 	 */
 	result_position = result;
 
-        for (p = buf->buf; ; p = substring_position + substring_length) {
-                substring_position = strstr (p, substring);
-                if (substring_position == NULL) {
-                        remaining_length = strlen (p);
-                        memcpy (result_position, p, remaining_length);
-                        result_position += remaining_length;
-                        break;
-                }
-                memcpy (result_position, p, substring_position - p);
-                result_position += (substring_position - p);
+	for (p = buf->buf; ; p = substring_position + substring_length) {
+		substring_position = strstr (p, substring);
 
-                memcpy (result_position, replacement, replacement_length);
-                result_position += replacement_length;
-        }	
+		if (substring_position == NULL) {
+			remaining_length = strlen (p);
+			memcpy (result_position, p, remaining_length);
+			result_position += remaining_length;
+			break;
+		}
+		memcpy (result_position, p, substring_position - p);
+		result_position += (substring_position - p);
+
+		memcpy (result_position, replacement, replacement_length);
+		result_position += replacement_length;
+	}	
 	*result_position = '\0';
 
 	/* Change the internal buffer content
@@ -1155,6 +1592,101 @@ cherokee_buffer_replace_string (cherokee_buffer_t *buf,
 	buf->buf  = result;
 	buf->len  = result_length;
 	buf->size = result_length + 1;
+
+	return ret_ok;	
+}
+
+
+/* Substitute (substring)s found in (bufsrc) with (replacement)
+ * and writes the resulting content to (bufdst).
+ * NOTE: (bufdst) is written only if at least one (substring) instance
+ *       is found in (bufsrc); in that case return value is ret_ok;
+ *       if (substring) is NOT found in (bufsrc) then nothing is done
+ *       in order to avoid an unnecessary copy of data.
+ * Returns:
+ *  ret_ok          bufdst has been written with the substitution string(s)
+ *  ret_not_found   substring not found in bufsrc
+ *  ret_deny        bad formal parameters
+ *  ret_xxx         fatal error (failed allocation, etc.)
+ */
+ret_t 
+cherokee_buffer_substitute_string (cherokee_buffer_t *bufsrc, 
+				   cherokee_buffer_t *bufdst,
+				   char *substring,   int substring_length, 
+				   char *replacement, int replacement_length)
+{
+	ret_t       ret;
+	int         remaining_length;
+	int         result_length;
+	char       *result_position;
+	const char *p;
+	const char *substring_position;
+
+	/* Verify formal parameters
+	 * (those which are not tested would raise a segment violation).
+	 */
+	if (bufsrc->buf == NULL ||
+	    bufdst->buf == NULL ||
+	    substring == NULL || substring_length < 1 ||
+	    replacement == NULL || replacement_length < 0)
+		return ret_deny;
+
+	/* Clean / reset destination buffer.
+	 */
+	bufdst->buf[0] = '\0';
+	bufdst->len = 0;
+
+	/* Calculate the new size
+	 */
+	result_length = bufsrc->len;
+	for (p = bufsrc->buf; ; p = substring_position + substring_length) {
+		substring_position = strstr (p, substring);
+
+		if (substring_position == NULL)
+			break;
+
+		result_length += (replacement_length - substring_length);
+	}
+	
+	/* If no substring has been found, then return now.
+	 */
+	if (p == bufsrc->buf)
+		return ret_not_found;
+
+	/* If resulting length is zero, then return now.
+	 */
+	if (result_length < 1) {
+		return ret_ok;
+	}
+
+	/* Preset size of destination buffer.
+	 */
+	ret = cherokee_buffer_ensure_size(bufdst, result_length + 2);
+
+	/* Build the new string
+	 */
+	result_position = bufdst->buf;
+
+	for (p = bufsrc->buf; ; p = substring_position + substring_length) {
+		substring_position = strstr (p, substring);
+
+		if (substring_position == NULL) {
+			remaining_length = (int) (&(bufsrc->buf[bufsrc->len]) - p);
+			memcpy (result_position, p, remaining_length);
+			result_position += remaining_length;
+			break;
+		}
+		memcpy (result_position, p, substring_position - p);
+		result_position += (int) (substring_position - p);
+
+		memcpy (result_position, replacement, replacement_length);
+		result_position += replacement_length;
+	}	
+
+	/* Terminate the destination buffer
+	 */
+	*result_position = '\0';
+	bufdst->len  = result_length;
 
 	return ret_ok;	
 }
@@ -1180,12 +1712,12 @@ cherokee_buffer_add_comma_marks (cherokee_buffer_t  *buf)
 	} else {
 		p = buf->buf + off;
 	}
-	
-	for (i=0; i<num; i++) {
+
+	for (i = 0; i < num; i++) {
 		int len = (buf->buf + buf->len) - p;
 		memmove(p+1, p, len);
 		*p = ',';
-		p+=4;
+		p +=4;
 		buf->len++;
 	}
 
@@ -1195,54 +1727,34 @@ cherokee_buffer_add_comma_marks (cherokee_buffer_t  *buf)
 
 
 ret_t 
-cherokee_buffer_cmp (cherokee_buffer_t *buf, char *txt, cuint_t txt_len)
+cherokee_buffer_trim (cherokee_buffer_t *buf)
 {
-	if (buf->len != txt_len)
-		return ret_deny;
+	cuint_t s, e;
+	cuint_t len;
 
-	return (strcmp (buf->buf, txt) == 0) ? ret_ok : ret_deny;
-}
+	if (buf->len <= 0)
+		return ret_ok;
 
+	for (s=0; s < buf->len; s++) {
+		char c = buf->buf[s];
 
-ret_t
-cherokee_buffer_cmp_buf (cherokee_buffer_t *buf, cherokee_buffer_t *buf2)
-{
-	return cherokee_buffer_cmp (buf, buf2->buf, buf2->len);
-}
+		if (c != ' ' && c != '\t' && c != '\r' && c != '\n')
+			break;
+	}
 
+	for (e=0; e < (buf->len - s); e++) {
+		char c = buf->buf[buf->len-(e+1)];
 
-ret_t 
-cherokee_buffer_case_cmp (cherokee_buffer_t *buf, char *txt, cuint_t txt_len)
-{
-	if (buf->len != txt_len)
-		return ret_deny;
+		if (c != ' ' && c != '\t' && c != '\r' && c != '\n')
+			break;		
+	}
 
-	return (strcasecmp (buf->buf, txt) == 0) ? ret_ok : ret_deny;
-}
+	len = buf->len - (s + e);
 
+	memmove (buf->buf, buf->buf+s, len);
 
-ret_t
-cherokee_buffer_case_cmp_buf (cherokee_buffer_t *buf, cherokee_buffer_t *buf2)
-{
-	return cherokee_buffer_case_cmp (buf, buf2->buf, buf2->len);
-}
+	buf->len = len;
+	buf->buf[len] = '\0';
 
-size_t
-cherokee_buffer_cnt_spn (cherokee_buffer_t *buf, int offset, char *str) 
-{
-	if ((buf->buf == NULL) ||
-	    (buf->len <= offset))
-		return 0;
-	
-	return strspn (buf->buf + offset, str);
-}
-
-size_t 
-cherokee_buffer_cnt_cspn (cherokee_buffer_t *buf, int offset, char *str) 
-{
-	if ((buf->buf == NULL) ||
-	    (buf->len <= offset))
-		return 0;
-
-	return strcspn (buf->buf + offset, str);
+	return ret_ok;
 }
