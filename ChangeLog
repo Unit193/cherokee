@@ -1,3 +1,129 @@
+2006-09-12  Alvaro Lopez Ortega  <alvaro@alobbs.com>
+
+	* cherokee/http.c (cherokee_http_code_copy): add missing
+	http_request_entity_too_large. In case of unknown status code now
+	500 code. Patch by A.D.F.
+
+	* cherokee/buffer.c (cherokee_buffer_cnt_spn,
+	cherokee_buffer_cnt_cspn): It is safer if these are functions
+	rather than macros. Converted.
+
+	* cget/Makefile.am (INCLUDES): Fixed minor compilation issue.
+
+	* cherokee/cherokee_admin.c, cherokee/cherokee_logrotate.c:
+	Compilation fix, add include config.h. Patch by A.D.F.
+
+	* cherokee/handler_file.c: Fix comparison of ETag and
+	If-Modified-Since header fields for HTTP 304 responses. Other
+	changes to handle 304 responses properly with all required
+	headers, etc.  Patches by A.D.F, reworked by me.
+
+	* cherokee/handler_file.c: Fix formatting of ETag string both in
+	check_cached() and *_add_headers(). Patch by A.D.F.
+
+	* cherokee/handler.h: Added not_modified field
+
+	* cherokee/macros.h: New FMT_OFFSET_HEX define. Patch by A.D.F.
+
+	* cherokee/macros.h: New macros equal_str() and equal_buf_str().
+	
+2006-09-07  Alvaro Lopez Ortega  <alvaro@alobbs.com>
+
+	* cherokee/thread.c (process_active_connections):
+	process_active_connections(), add tests for HTTP 5xx errors too.
+
+	* cherokee/socket.c: Increase the amount (256 -> 4096) of data
+	read when cherokee_read() is called with buffer == NULL; this
+	should lower the risk to reset connection because not all data has
+	been read in linger mode. Patch by A.D.F.
+
+	* cherokee/handler_error.c: don't generate a body for HTTP
+	responses which are not allowed to have it. don't send unrelated
+	HTTP headers in case of a 304 response: which should be managed by
+	other handlers. Patch by A.D.F
+
+	* cherokee/http.h: New macro http_code_with_body
+
+	* configure.in: Adds _GNU_SOURCE definition to config.h whether
+	it's compiling with Glibc.  Patch backported by A.D.F
+
+2006-08-23  A.D.F  <adefacc@tin.it>
+
+	* advanced.conf.sample.pre: Typo fixed.  ListenQueue was meant to
+	be ListenQueueSize.
+
+2006-08-09  A.D.F  <adefacc@tin.it>
+
+	* cherokee/header.c: Now the header parser accepts multi-line
+	values.
+
+	* cherokee/macros.h: Some new macros has been added to replace
+	literal strings like '\r' or '\r\n\r\n'.
+	
+2006-08-18  Alvaro Lopez Ortega  <alvaro@alobbs.com>
+
+	* cherokee/buffer.c (cherokee_buffer_add_version): A little clean
+	up.
+
+2006-08-09  A.D.F  <adefacc@tin.it>
+
+	* cherokee/tdate_parse.c: Quite big performance patch has been
+	applied.
+
+2006-08-07  Alvaro Lopez Ortega  <alvaro@alobbs.com>
+
+	* cherokee/common-internal.h: endian.h was being included twice.
+	Fixed.
+
+2006-08-07  A.D.F  <adefacc@tin.it>
+
+	* cherokee/handler_cgi_base.c, cherokee/request.c,
+	cherokee/common-internal.h, cherokee/handler_file.c,
+	cherokee/handler_remote_control.c, cherokee/handler_webcam.c,
+	cherokee/connection.c, cherokee/server.c: Some call to
+	cherokee_buffer_add() have been replaced by
+	cherokee_buffer_add_str()
+
+2006-08-05  Alvaro Lopez Ortega  <alvaro@alobbs.com>
+
+	* cherokee/handler_redir.c, cherokee/handler_error_redir.c,
+	cherokee/handler_server_info.c, cherokee/handler_admin.c,
+	cherokee/handler_dirlist.c, cherokee/handler_nn.c,
+	cherokee/handler_common.c, cherokee/validator_plain.c,
+	cherokee/validator_htpasswd.c, cherokee/handler_file.c,
+	cherokee/handler_fcgi.c, cherokee/handler_fastcgi.c,
+	cherokee/handler_scgi.c, cherokee/handler_cgi.c,
+	cherokee/validator_htdigest.c, cherokee/handler_phpcgi.c,
+	cherokee/validator_pam.c: Moved to use the new modules
+	initialization macros.
+	
+	* cherokee/module.h (HANDLER_MODULE_INFO_INIT_EASY,
+	VALIDATOR_MODULE_INFO_INIT_EASY): Added two new convenient macros.
+
+	* cherokee/socket.c (cherokee_socket_init_client_tls): gcc-2.95
+	compilation fix.
+
+2006-08-03  A.D.F  <adefacc@tin.it>
+
+	* cherokee/header.c: Removed strsep() definition. 
+
+	* cherokee/util.h: Added strsep() and strcasestr() prototypes.
+
+	* cherokee/fdpoll-select.c: Added missing include sys/time.h.
+
+	* cherokee/module.h (HANDLER_MODULE_INFO_INIT,
+	VALIDATOR_MODULE_INFO_INIT): Fixed to be compilator neutral.
+	
+2006-07-31  Alvaro Lopez Ortega  <alvaro@alobbs.com>
+
+	* cherokee/util.c (cherokee_readdir): Windows compilation
+	fixed. Patch by Philip Pemberton <philpem@dsl.pipex.com>
+
+2006-07-28  Alvaro Lopez Ortega  <alvaro@alobbs.com>
+
+	* cherokee/handler_phpcgi.c: Added two new default values for
+	RedHat/Fedora.
+
 2006-07-11  Alvaro Lopez Ortega  <alvaro@alobbs.com>
 
 	* 0.5.4: Released

@@ -574,7 +574,7 @@ process_active_connections (cherokee_thread_t *thd)
 		}
 		
 		/* Process the connection?
-		 * Finial.- 
+		 * Final.
 		 */
 		if (process == false) {
 			continue;
@@ -685,8 +685,13 @@ process_active_connections (cherokee_thread_t *thd)
 				if (ret == ret_ok) {
 					goto phase_reading_header_EXIT;
 				}
+				if (ret != ret_not_found) {
+					/* Too many initial CRLF */
+					purge_closed_connection (thd, conn);
+					continue;
+				}
 			}
-			       			
+
 			/* Read from the client
 			 */
 			ret = cherokee_connection_recv (conn, &conn->incoming_header, &len);
@@ -720,9 +725,11 @@ process_active_connections (cherokee_thread_t *thd)
 				conn->phase = phase_reading_header;
 				continue;
 			}
+			/* fall down */
 
 		phase_reading_header_EXIT:
 			conn->phase = phase_processing_header;
+			/* fall down */
 
 		case phase_processing_header:
 			/* Get the request
@@ -754,6 +761,7 @@ process_active_connections (cherokee_thread_t *thd)
 			}
 			
 			conn->phase = phase_setup_connection;
+			/* fall down */
 			
 		case phase_setup_connection: {
 			cherokee_config_entry_t entry;
@@ -772,7 +780,8 @@ process_active_connections (cherokee_thread_t *thd)
 			/* Is it already an error response?
 			 */
 			if (http_type_300(conn->error_code) ||
-			    http_type_400(conn->error_code)) 
+			    http_type_400(conn->error_code) ||
+			    http_type_500(conn->error_code))
 			{
 				cherokee_connection_setup_error_handler (conn);
 				conn->phase = phase_init;
@@ -1014,7 +1023,9 @@ process_active_connections (cherokee_thread_t *thd)
 			/* If it is a error, we have to respin the connection
 			 * to install a proper error handler.
 			 */
-			if ((http_type_300(conn->error_code) || http_type_400(conn->error_code)) &&
+			if ((http_type_300(conn->error_code) ||
+			     http_type_400(conn->error_code) ||
+			     http_type_500(conn->error_code)) &&
 			    (!HANDLER_SUPPORT_ERROR(conn->handler)))								      
 			{
 				conn->phase = phase_setup_connection;

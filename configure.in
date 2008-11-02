@@ -24,7 +24,7 @@ AC_PREREQ(2.56)
 dnl Version
 m4_define([cherokee_major_version], [0])
 m4_define([cherokee_minor_version], [5])
-m4_define([cherokee_micro_version], [4])
+m4_define([cherokee_micro_version], [5])
 m4_define([cherokee_patch_version], [])
 m4_define([cherokee_version], m4_format('%s.%s.%s%s', cherokee_major_version, cherokee_minor_version, cherokee_micro_version, cherokee_patch_version))
 
@@ -218,7 +218,7 @@ fi
 AC_FUNC_MEMCMP
 AC_FUNC_MMAP
 
-AC_CHECK_FUNCS(gmtime gmtime_r localtime localtime_r getrlimit getdtablesize readdir_r)
+AC_CHECK_FUNCS(gmtime gmtime_r localtime localtime_r getrlimit getdtablesize readdir readdir_r)
 
 
 AH_BOTTOM([
@@ -466,6 +466,18 @@ dnl Check for vsyslog
 dnl
 AC_CHECK_FUNCS(syslog vsyslog strsep strcasestr memmove strerror bcopy strlcat)
 
+dnl
+dnl Check for Glib (usually Linux)
+dnl
+AC_PREPROC_IFELSE([
+#include <features.h>
+#ifndef __GLIBC__
+    chokeme
+#endif
+], [
+    AC_DEFINE([HAVE_GLIBC], [1], [Define to 1 if you have glibc.])
+    AC_DEFINE([_GNU_SOURCE], [1], [Define to 1 if you have glibc.])
+])
 
 dnl
 dnl Does this platform require array notation to assign to a va_list?

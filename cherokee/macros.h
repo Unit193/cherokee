@@ -33,10 +33,6 @@
 #include <stdio.h>
 #include <stdarg.h>
 
-#ifdef HAVE_SYS_VARARGS
-# include <sys/varargs.h>
-#endif
-
 #ifdef  __cplusplus
 #  define CHEROKEE_BEGIN_DECLS  extern "C" {
 #  define CHEROKEE_END_DECLS    }
@@ -44,6 +40,8 @@
 #  define CHEROKEE_BEGIN_DECLS
 #  define CHEROKEE_END_DECLS
 #endif
+
+#define __cherokee_func__ __func__
 
 #ifndef TRUE
 #  define TRUE 1
@@ -75,6 +73,7 @@
 #define DEFAULT_RECV_SIZE             1024
 #define DEFAULT_READ_SIZE             8192
 #define MAX_HEADER_LEN                4096
+#define MAX_HEADER_CRLF               8 
 #define MAX_KEEPALIVE                 500
 #define MAX_NEW_CONNECTIONS_PER_STEP  50
 #define DEFAULT_CONN_REUSE            20
@@ -93,7 +92,25 @@
 #define EXIT_SERVER_READ_CONFIG         31
 #define EXIT_SERVER_INIT                32
 
-#define CRLF "\r\n"
+
+#define CSZLEN(str) (sizeof(str) - 1)
+  
+#define LF_LF     "\n\n"        /* EOHs (End Of Headers) */
+#define CRLF_CRLF "\r\n\r\n"    /* EOHs (End Of Headers) */
+#define CRLF      "\r\n"        /* EOH (End Of Header Line) */
+#define LWS       " \t\r\n"     /* HTTP linear white space */
+#define CHR_CR    '\r'          /* Carriage return */
+#define CHR_LF    '\n'          /* Line feed (new line) */
+#define CHR_SP    ' '           /* Space */
+#define CHR_HT    '\t'          /* Horizontal tab */
+
+
+#define equal_str(m,str) \
+	(strncasecmp(m, str, sizeof(str)-1) == 0)
+
+#define equal_buf_str(b,str)            \
+	(((b)->len == sizeof(str)-1) &&	\
+	 (strncasecmp((b)->buf, str, sizeof(str)-1) == 0))
 
 #define return_if_fail(expr,ret) \
 	if (!(expr)) {                                                      \
@@ -101,7 +118,7 @@
        		         "file %s: line %d (%s): assertion `%s' failed\n",  \
                           __FILE__,                                         \
                           __LINE__,                                         \
-                          __func__,                                         \
+                          __cherokee_func__,                                \
                           #expr);                                           \
 	        return (ret);                                               \
 	}
@@ -109,12 +126,12 @@
 
 #define SHOULDNT_HAPPEN \
 	do { fprintf (stderr, "file %s:%d (%s): this shouldn't happend\n",  \
-		      __FILE__, __LINE__, __func__);                        \
+		      __FILE__, __LINE__, __cherokee_func__);               \
 	} while (0)
 
 #define RET_UNKNOWN(ret) \
 	do { fprintf (stderr, "file %s:%d (%s): ret code unknown ret=%d\n", \
-		      __FILE__, __LINE__, __func__, ret);                   \
+		      __FILE__, __LINE__, __cherokee_func__, ret);          \
 	} while (0)
 
 
@@ -183,9 +200,9 @@
 # define TRACE_ENV "CHEROKEE_TRACE"
 
 # ifdef __GNUC__
-#  define TRACE(fmt,arg...) cherokee_trace (fmt, __FILE__, __LINE__, __func__, ##arg)
+#  define TRACE(fmt,arg...) cherokee_trace (fmt, __FILE__, __LINE__, __cherokee_func__, ##arg)
 # else
-#  define TRACE(fmt,...) cherokee_trace (fmt, __FILE__, __LINE__, __func__, __VA_ARGS__)
+#  define TRACE(fmt,...) cherokee_trace (fmt, __FILE__, __LINE__, __cherokee_func__, __VA_ARGS__)
 # endif
 #else
 # ifdef __GNUC__
@@ -200,37 +217,16 @@
 #define POINTER_TO_INT(pointer) ((long)(pointer))
 #define INT_TO_POINTER(integer) ((void*)((long)(integer)))
 
-/* IMPORTANT:
- * Cross compilers should define BYTE_ORDER in CFLAGS 
- */
-#ifndef BYTE_ORDER
-
-/* Definitions for byte order, according to byte significance from low
- * address to high.
- */
-# define LITTLE_ENDIAN  1234    /* LSB first: i386, vax */
-# define    BIG_ENDIAN  4321    /* MSB first: 68000, ibm, net */
-# define    PDP_ENDIAN  3412    /* LSB first in word, MSW first in long */
-
-/* assume autoconf's AC_C_BIGENDIAN has been ran. If it hasn't, we 
- * assume (maybe falsely) the order is LITTLE ENDIAN
- */
-# ifdef WORDS_BIGENDIAN
-#   define BYTE_ORDER  BIG_ENDIAN
-# else
-#   define BYTE_ORDER  LITTLE_ENDIAN
-# endif
-
-#endif /* BYTE_ORDER */
-
 
 /* Format string for off_t
  */
 #if (SIZEOF_OFF_T == SIZEOF_UNSIGNED_LONG_LONG)
 # define FMT_OFFSET "%llu"
+# define FMT_OFFSET_HEX "%llx"
 # define CST_OFFSET unsigned long long
 #elif (SIZEOF_OFF_T ==  SIZEOF_UNSIGNED_LONG)
 # define FMT_OFFSET "%lu"
+# define FMT_OFFSET_HEX "%lx"
 # define CST_OFFSET unsigned long
 #else
 # error Unknown size of off_t 

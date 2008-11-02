@@ -58,11 +58,7 @@
 #include "post.h"
 
 
-cherokee_module_info_handler_t MODULE_INFO(cgi) = {
-	.module.type     = cherokee_handler,                /* type         */
-	.module.new_func = cherokee_handler_cgi_new,        /* new func     */
-	.valid_methods   = http_get | http_post | http_head /* http methods */
-};
+HANDLER_MODULE_INFO_INIT_EASY (cgi, http_get | http_post | http_head);
 
 
 #define ENTRIES "handler,cgi"
@@ -518,10 +514,10 @@ manage_child_cgi_process (cherokee_handler_cgi_t *cgi, int pipe_cgi[2], int pipe
 	if (re < 0) {
 		switch (errno) {
 		case ENOENT:
-			printf ("Status: 404" CRLF CRLF);
+			printf ("Status: 404" CRLF_CRLF);
 			break;
 		default:
-			printf ("Status: 500" CRLF CRLF);
+			printf ("Status: 500" CRLF_CRLF);
 		}
 
 		exit(1);
