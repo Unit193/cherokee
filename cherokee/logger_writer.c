@@ -37,10 +37,6 @@
 # include <syslog.h>
 #endif
 
-#ifndef O_LARGEFILE
-# define O_LARGEFILE 0
-#endif
-
 
 ret_t 
 cherokee_logger_writer_init (cherokee_logger_writer_t *writer)
@@ -228,13 +224,11 @@ cherokee_logger_writer_open (cherokee_logger_writer_t *writer)
 		return launch_logger_process (writer);
 
 	case cherokee_logger_writer_stderr:
-		/* Nothing to do, syslog already opened at startup.
-		 */
 		writer->fd = STDERR_FILENO;
 		return ret_ok;
 
 	case cherokee_logger_writer_file:
-		writer->fd = open (writer->filename.buf, O_APPEND | O_WRONLY | O_CREAT | O_LARGEFILE, 0644);
+		writer->fd = open (writer->filename.buf, O_APPEND | O_WRONLY | O_CREAT | O_LARGEFILE | O_NOFOLLOW, 0640);
 		if (writer->fd == -1) {
 			PRINT_MSG ("Couldn't open '%s' for appending\n", writer->filename.buf);
 			return ret_error;

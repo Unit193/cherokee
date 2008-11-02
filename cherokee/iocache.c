@@ -66,10 +66,14 @@ typedef struct {
 	time_t                   stat_expiration;
 	time_t                   mmap_expiration;
 	CHEROKEE_MUTEX_T        (updating);
+	CHEROKEE_MUTEX_T        (parent_lock);
 } cherokee_iocache_entry_extension_t;
 
 #define PUBL(o) ((cherokee_iocache_entry_t *)(o))
 #define PRIV(o) ((cherokee_iocache_entry_extension_t *)(o))
+
+static ret_t fetch_info_cb (cherokee_cache_entry_t *entry);
+
 
 
 /* Global I/O cache object
@@ -85,6 +89,8 @@ clean_info_cb (cherokee_cache_entry_t *entry)
 	TRACE (ENTRIES, "Cleaning cached info: '%s': %s\n", 
 	       entry->key.buf, ioentry->mmaped ? "mmap": "no mmap");
 
+	/* Free the mmaped info
+	 */
 	if (ioentry->mmaped) {
 		munmap (ioentry->mmaped, ioentry->mmaped_len);
 
@@ -92,13 +98,10 @@ clean_info_cb (cherokee_cache_entry_t *entry)
 		ioentry->mmaped_len = 0;
 	}
 
-	return ret_ok;
-}
+	/* Mark it as expired
+	 */
+	PRIV(entry)->mmap_expiration = 0;
 
-static ret_t
-fetch_info_cb (cherokee_cache_entry_t *entry)
-{
-	UNUSED(entry);
 	return ret_ok;
 }
 
@@ -106,6 +109,21 @@ static ret_t
 free_cb (cherokee_cache_entry_t *entry)
 {
 	UNUSED(entry);
+	return ret_ok;
+}
+
+static ret_t
+get_stats_cb (cherokee_cache_t  *cache, 
+	      cherokee_buffer_t *info)
+{
+	size_t total = 0;
+
+	cherokee_iocache_get_mmaped_size (IOCACHE(cache), &total);
+
+	cherokee_buffer_add_str (info, "IOcache mappped: ");
+	cherokee_buffer_add_fsize (info, total);
+	cherokee_buffer_add_str (info, "\n");
+
 	return ret_ok;
 }
 
@@ -121,16 +139,20 @@ iocache_entry_new_cb (cherokee_cache_t        *cache,
 	UNUSED(cache);
 	UNUSED(param);
 
+	CHEROKEE_MUTEX_INIT (&PRIV(n)->updating, NULL);
+	CHEROKEE_MUTEX_INIT (&PRIV(n)->parent_lock, NULL);
+
 	/* Init its parent class
 	 */
-	cherokee_cache_entry_init (CACHE_ENTRY(n), key);
+	cherokee_cache_entry_init (CACHE_ENTRY(n), key, 
+				   &PRIV(n)->parent_lock);
 
 	/* Set the virtual methods
 	 */
 	CACHE_ENTRY(n)->clean_cb = clean_info_cb;
 	CACHE_ENTRY(n)->fetch_cb = fetch_info_cb;
 	CACHE_ENTRY(n)->free_cb  = free_cb;
-	
+
 	/* Init its properties
 	 */
 	PRIV(n)->stat_status     = ret_ok;
@@ -138,8 +160,7 @@ iocache_entry_new_cb (cherokee_cache_t        *cache,
 	PRIV(n)->mmap_expiration = 0;
 	PUBL(n)->mmaped          = NULL;
 	PUBL(n)->mmaped_len      = 0;
-
-	CHEROKEE_MUTEX_INIT (&PRIV(n)->updating, NULL);
+	PUBL(n)->info            = 0;
 
 	/* Return the new object
 	 */
@@ -162,6 +183,7 @@ cherokee_iocache_init (cherokee_iocache_t *iocache)
 	 */
 	CACHE(iocache)->new_cb       = iocache_entry_new_cb;
 	CACHE(iocache)->new_cb_param = NULL;
+	CACHE(iocache)->stats_cb     = get_stats_cb;
 
 	return ret_ok;
 }
@@ -252,12 +274,15 @@ ioentry_update_stat (cherokee_iocache_entry_t *entry)
 	}
 
 	ret = ret_ok;
+	BIT_SET (PUBL(entry)->info, iocache_stat);
+
 	TRACE (ENTRIES, "Updated stat: %s\n", CACHE_ENTRY(entry)->key.buf);
 
 out:
 	PRIV(entry)->stat_expiration = cherokee_bogonow_now + LASTING_STAT;
 	PRIV(entry)->stat_status     = ret;
 
+	BIT_UNSET (PUBL(entry)->info, iocache_stat);
 	return ret;
 }
 
@@ -344,9 +369,39 @@ ioentry_update_mmap (cherokee_iocache_entry_t *entry,
 	PUBL(entry)->mmaped_len      = entry->state.st_size;
 	PRIV(entry)->mmap_expiration = cherokee_bogonow_now + LASTING_MMAP;
 
+	if ((fd == NULL) && (fd_local != -1))
+		close (fd_local);
+
+	BIT_SET (PUBL(entry)->info, iocache_mmap);
 	return ret_ok;
+
 error:
+	if ((fd == NULL) && (fd_local != -1))
+		close (fd_local);
+
+	BIT_UNSET (PUBL(entry)->info, iocache_mmap);
 	return ret;
+}
+
+
+static ret_t
+fetch_info_cb (cherokee_cache_entry_t *entry)
+{
+	ret_t ret;
+
+	ret = cherokee_iocache_entry_update (IOCACHE_ENTRY(entry),
+					     (iocache_stat | iocache_mmap));
+	switch(ret) {
+	case ret_ok:
+	case ret_not_found:
+	case ret_ok_and_sent:
+		return ret_ok;
+	default:
+		return ret;
+	}
+
+	SHOULDNT_HAPPEN;
+	return ret_error;
 }
 
 
@@ -375,24 +430,18 @@ cherokee_iocache_entry_update_fd (cherokee_iocache_entry_t  *entry,
 	 */
 	if (info & iocache_stat) {
 		ret = ioentry_update_stat (entry);
-		if (ret != ret_ok)
+		if (ret != ret_ok) {
 			goto out;
+		}
 	}
 
 	if (info & iocache_mmap) {
-		/* Ensure that it can be mapped
-		 */
-		if (unlikely (! fd)) {
-			SHOULDNT_HAPPEN;
-			ret = ret_error;
-			goto out;
-		}
-
 		/* Update mmap
 		 */
 		ret = ioentry_update_stat (entry);
-		if (ret != ret_ok)
+		if (ret != ret_ok) {
 			goto out;
+		}
 
 		/* Check the size before mapping it
 		 */
@@ -406,8 +455,9 @@ cherokee_iocache_entry_update_fd (cherokee_iocache_entry_t  *entry,
 		/* Go ahead
 		 */
 		ret = ioentry_update_mmap (entry, fd);
-		if (ret != ret_ok)
+		if (ret != ret_ok) {
 			goto out;
+		}
 	}
 
 	ret = ret_ok;
@@ -444,8 +494,9 @@ iocache_get (cherokee_iocache_t        *iocache,
 	switch (ret) {
 	case ret_ok:
 	case ret_ok_and_sent:
+	case ret_no_sys:
 		*ret_io = IOCACHE_ENTRY(entry);
-		break;
+		break;		
 	default:
 		return ret_error;
 	}
@@ -457,13 +508,19 @@ iocache_get (cherokee_iocache_t        *iocache,
 	else
 		ret = cherokee_iocache_entry_update (*ret_io, info);		
 
-	/* The entry couldn't been updated, but we have the last stat status                                                                                                                                                                
+	/* Check whether cache page was updated
          */
-	if ((ret == ret_ok_and_sent) &&
-            (info == iocache_stat))
+	if ((info == iocache_stat) &&
+	    ((*ret_io)->info & iocache_stat))
         {
                 return PRIV(*ret_io)->stat_status;
         }
+
+	if ((info & iocache_mmap) &&
+	    ((*ret_io)->info & iocache_mmap))
+        {
+		return ret_no_sys;
+	}
 
 	return ret;
 }
@@ -509,3 +566,21 @@ cherokee_iocache_autoget (cherokee_iocache_t        *iocache,
 	return iocache_get (iocache, file, info, NULL, ret_io);
 }
 
+
+ret_t
+cherokee_iocache_get_mmaped_size (cherokee_iocache_t *cache, size_t *total)
+{
+	cuint_t          n;
+	cherokee_list_t *i;
+	cherokee_list_t *lists[4] = {&CACHE(cache)->_t1, &CACHE(cache)->_t2};
+
+	*total = 0;
+
+	for (n=0; n<2; n++) {
+		list_for_each (i, lists[n]) {
+			*total += IOCACHE_ENTRY(i)->mmaped_len;
+		}
+	}
+
+	return ret_ok;
+}

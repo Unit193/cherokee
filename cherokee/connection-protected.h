@@ -58,7 +58,6 @@
 #include "handler.h"
 #include "encoder.h"
 #include "iocache.h"
-#include "encoder_table.h"
 #include "post.h"
 #include "header-protected.h"
 #include "regex.h"
@@ -85,6 +84,7 @@ typedef enum {
 #define conn_op_root_index    (1 << 1)
 #define conn_op_tcp_cork      (1 << 2)
 #define conn_op_document_root (1 << 3)
+#define conn_op_was_polling   (1 << 4)
 
 typedef cuint_t cherokee_connection_options_t;
 
@@ -167,6 +167,7 @@ struct cherokee_connection {
 	/* Post info
 	 */
 	cherokee_post_t               post;
+
 	uint32_t                      keepalive;
 	time_t                        timeout;
 
@@ -185,6 +186,20 @@ struct cherokee_connection {
 
 	int                           regex_ovector[OVECTOR_LEN];
 	int                           regex_ovecsize;
+	
+	/* Content Expiration
+	 */
+	cherokee_expiration_t         expiration;
+	time_t                        expiration_time;
+
+	/* Chunked encoding
+	 */
+	cherokee_boolean_t            chunked_encoding;
+	cherokee_boolean_t            chunked_last_package;
+	cherokee_buffer_t             chunked_len;
+	size_t                        chunked_sent;
+	struct iovec                  chunks[3];
+	uint16_t                      chunksn;
 };
 
 #define CONN_SRV(c)    (SRV(CONN(c)->server))
@@ -218,6 +233,7 @@ ret_t cherokee_connection_recv                   (cherokee_connection_t *conn, c
 /* Internal
  */
 ret_t cherokee_connection_create_handler         (cherokee_connection_t *conn, cherokee_config_entry_t *config_entry);
+ret_t cherokee_connection_create_encoder         (cherokee_connection_t *conn, cherokee_avl_t *encoders, cherokee_avl_t *accept_enc);
 ret_t cherokee_connection_setup_error_handler    (cherokee_connection_t *conn);
 ret_t cherokee_connection_check_authentication   (cherokee_connection_t *conn, cherokee_config_entry_t *config_entry);
 ret_t cherokee_connection_check_ip_validation    (cherokee_connection_t *conn, cherokee_config_entry_t *config_entry);
@@ -235,7 +251,7 @@ ret_t cherokee_connection_step                   (cherokee_connection_t *conn);
  */
 ret_t cherokee_connection_build_header           (cherokee_connection_t *conn);
 ret_t cherokee_connection_get_request            (cherokee_connection_t *conn);
-ret_t cherokee_connection_parse_header           (cherokee_connection_t *conn, cherokee_encoder_table_t *encoders);
+ret_t cherokee_connection_parse_range            (cherokee_connection_t *conn);
 int   cherokee_connection_is_userdir             (cherokee_connection_t *conn);
 ret_t cherokee_connection_build_local_directory  (cherokee_connection_t *conn, cherokee_virtual_server_t *vsrv, cherokee_config_entry_t *entry);
 ret_t cherokee_connection_build_local_directory_userdir (cherokee_connection_t *conn, cherokee_virtual_server_t *vsrv, cherokee_config_entry_t *entry);

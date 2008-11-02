@@ -10,7 +10,6 @@
     <meta name="Keywords" content="cherokee web server httpd http" />
     <meta name="Description" content="Cherokee is a flexible, very fast, lightweight Web server. It is implemented entirely in C, and has no dependencies beyond a standard C library. It is embeddable and extensible with plug-ins. It supports on-the-fly configuration by reading files or strings, TLS/SSL (via GNUTLS or OpenSSL), virtual hosts, authentication, cache friendly features, PHP, custom error management, and much more." />
     <link href="media/css/cherokee_doc.css" rel="stylesheet" type="text/css" media="all" />
-    <title></title>
   </head>
 <body>
 <h2 id="_a_href_index_html_index_a_8594_a_href_basics_html_getting_started_a_8594_a_href_basics_installation_html_installation_a"><a href="index.html">Index</a> &#8594; <a href="basics.html">Getting started</a> &#8594; <a href="basics_installation.html">Installation</a></h2>
@@ -38,9 +37,9 @@ Configure the package for your system:
 </p>
 <div class="listingblock">
 <div class="content">
-<pre><tt>./configure --localstatedir=/var
-            --prefix=/usr
-            --sysconfdir=/etc
+<pre><tt>./configure --localstatedir=/var     \
+            --prefix=/usr            \
+            --sysconfdir=/etc        \
             --with-wwwroot=/var/www</tt></pre>
 </div></div>
 </li>
@@ -64,7 +63,7 @@ Install the programs and any data files:
 </li>
 <li>
 <p>
-Start <a href="admin.html">cherokee-admin</a>
+Start <a href="bundle_cherokee-admin.html">cherokee-admin</a>
 </p>
 </li>
 </ol></div>
@@ -160,6 +159,14 @@ cellspacing="0" cellpadding="4">
     Allows debugging options
     </td>
   </tr>
+  <tr>
+    <td align="left">
+    <tt>&#8212;disable-admin</tt>    
+    </td>
+    <td align="left">
+    Skips cherokee-admin installation
+    </td>
+  </tr>
 </tbody>
 </table>
 </div>
@@ -177,7 +184,6 @@ each distribution offers its own tools to do so.</p></div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2008-08-18 22:11:34 BST
 </div>
 </div>
 </body>

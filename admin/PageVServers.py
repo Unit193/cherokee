@@ -16,6 +16,10 @@ a custom number of parameters and rules that have to be applied to one or
 more domains.</p>
 """
 
+HELPS = [
+    ('config_virtual_servers', "Virtual Servers")
+]
+
 def domain_cmp (d1, d2):
     d1s = d1.split('.')
     d2s = d2.split('.')
@@ -34,7 +38,7 @@ def domain_cmp (d1, d2):
 
 class PageVServers (PageMenu, FormHelper):
     def __init__ (self, cfg):
-        PageMenu.__init__ (self, 'vservers', cfg)
+        PageMenu.__init__ (self, 'vservers', cfg, HELPS)
         FormHelper.__init__ (self, 'vservers', cfg)
 
         self._normailze_vservers()
@@ -111,12 +115,20 @@ class PageVServers (PageMenu, FormHelper):
         sorted_vservers.sort(reverse=True)
 
         txt += '<table id="%s" class="rulestable">' % (table_name)
-        txt += '<tr NoDrag="1" NoDrop="1"><th>Nickname</th><th>Document Root</th><th>Logging</th><th></th></tr>'
+        txt += '<tr NoDrag="1" NoDrop="1"><th>Nickname</th><th>Root</th><th>Domains</th><th>Logging</th><th></th></tr>'
 
         for prio in sorted_vservers:
             nick          = self._cfg.get_val('vserver!%s!nick'%(prio))
             document_root = self._cfg.get_val('vserver!%s!document_root'%(prio), '')
             logger_val    = self._cfg.get_val('vserver!%s!logger'%(prio))
+            domains       = self._cfg.keys('vserver!%s!domain'%(prio))
+
+            if not domains:
+                doms = 1
+            else:
+                doms = len(domains)
+                if not nick in domains:
+                    doms += 1
 
             link = '<a href="/vserver/%s">%s</a>' % (prio, nick)
             if nick == 'default':
@@ -128,18 +140,19 @@ class PageVServers (PageMenu, FormHelper):
                 logging = 'yes'
             else:
                 logging = 'no'
-                
+
             if nick != "default":
                 js = "post_del_key('/ajax/update', 'vserver!%s');"%(prio)
                 link_del = self.InstanceImage ("bin.png", "Delete", border="0", onClick=js)
             else:
                 link_del = ''
 
-            txt += '<tr prio="%s" id="%s"%s><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>' % (
-                prio, prio, extra, link, document_root, logging, link_del)
+            txt += '<tr prio="%s" id="%s"%s><td>%s</td><td>%s</td><td>%d</td><td>%s</td><td>%s</td></tr>' % (
+                prio, prio, extra, link, document_root, doms, logging, link_del)
 
         txt += '</table>'
-        txt += '''<script type="text/javascript">
+        txt += '''
+                      <script type="text/javascript">
                       $(document).ready(function() {
                         $("#%(name)s tr:even').addClass('alt')");
 
@@ -150,16 +163,25 @@ class PageVServers (PageMenu, FormHelper):
                               for (var i=1; i<rows.length; i++) {
                                 post += rows[i].id + ',';
                               }
-	                      jQuery.post ('%(url)s', post, 
+                              jQuery.post ('%(url)s', post,
                                   function (data, textStatus) {
-                                      window.location.reload();  
+                                      window.location.reload();
                                   }
                               );
                           }
                         });
                       });
+
+                      $(document).ready(function(){
+                        $("table.rulestable tr:odd").addClass("odd");
+                      });
+
+                      $(document).mouseup(function(){
+                        $("table.rulestable tr:even").removeClass("odd");
+                        $("table.rulestable tr:odd").addClass("odd");
+                      });
                       </script>
-               ''' % {'name':   table_name, 
+               ''' % {'name':   table_name,
                       'url' :   '/vserver/ajax_update'}
 
         # Add new Virtual Server

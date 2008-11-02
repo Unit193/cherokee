@@ -641,6 +641,40 @@ reswitch:
 }
 
 
+long
+cherokee_eval_formated_time (cherokee_buffer_t *buf)
+{
+	char end;
+	int  mul = 1;
+
+	if (unlikely (cherokee_buffer_is_empty (buf)))
+		return ret_ok;
+	
+	end = cherokee_buffer_end_char (buf);
+	switch (end) {
+	case 's':
+		mul = 1;
+		break;
+	case 'm':
+		mul = 60;
+		break;
+	case 'h':
+		mul = 60 * 60;
+		break;
+	case 'd':
+		mul = 60 * 60 * 24;
+		break;
+	case 'w':
+		mul = 60 * 60 * 24 * 7;
+		break;
+	default:
+		break;
+	}
+
+	return atol(buf->buf) * mul;
+}
+
+
 
 /* gethostbyname_r () emulation
  */
@@ -726,7 +760,7 @@ cherokee_gethostbyname (const char *hostname, void *_addr)
 }
 
 
-#ifdef HAVE_GNUTLS
+#if defined(HAVE_GNUTLS) && defined (HAVE_PTHREAD)
 # ifdef GCRY_THREAD_OPTION_PTHREAD_IMPL
 GCRY_THREAD_OPTION_PTHREAD_IMPL;
 # endif
@@ -741,12 +775,14 @@ cherokee_tls_init (void)
 #ifdef HAVE_GNUTLS
 	int rc;
 
-# ifdef GCRY_THREAD_OPTION_PTHREAD_IMPL
+# ifdef HAVE_PTHREAD
+#  ifdef GCRY_THREAD_OPTION_PTHREAD_IMPL
 	/* Although the GnuTLS library is thread safe by design, some
 	 * parts of the crypto backend, such as the random generator,
 	 * are not; hence, it needs to initialize some semaphores.
 	 */
 	gcry_control (GCRYCTL_SET_THREAD_CBS, &gcry_threads_pthread); 
+#  endif
 # endif
 
 	/* Try to speed up random number generation. On Linux, it
@@ -912,7 +948,7 @@ cherokee_syslog (int priority, cherokee_buffer_t *buf)
 
 
 ret_t 
-cherokee_short_path (cherokee_buffer_t *path)
+cherokee_path_short (cherokee_buffer_t *path)
 {
 	char *p   = path->buf;
 	char *end = path->buf + path->len;
@@ -974,6 +1010,28 @@ cherokee_short_path (cherokee_buffer_t *path)
 		end = path->buf + path->len;
 		p -= (len - (dots_end - p));
 	}
+
+	return ret_ok;
+}
+
+
+ret_t
+cherokee_path_arg_eval (cherokee_buffer_t *path)
+{
+	ret_t  ret;
+	char  *d;
+	char   tmp[512];
+
+	if (path->buf[0] != '/') {
+		d = getcwd (tmp, sizeof(tmp));
+
+		cherokee_buffer_prepend (path, "/", 1);		
+		cherokee_buffer_prepend (path, d, strlen(d));		
+	}
+
+	ret = cherokee_path_short (path);
+	if (ret != ret_ok)
+		return ret_error;
 
 	return ret_ok;
 }
@@ -1370,7 +1428,7 @@ cherokee_mkdir_p (cherokee_buffer_t *path)
 			break;
 
 		*p = '\0';
-		re = mkdir (path->buf, 0700);
+		re = cherokee_mkdir (path->buf, 0700);
 		if ((re != 0) && (errno != EEXIST)) {
 			PRINT_ERRNO (errno, "Could not mkdir '%s': ${errno}\n", path->buf);
 			return ret_error;
@@ -1382,10 +1440,60 @@ cherokee_mkdir_p (cherokee_buffer_t *path)
 			return ret_ok;
 	}
 
-	re = mkdir (path->buf, 0700);
+	re = cherokee_mkdir (path->buf, 0700);
 	if ((re != 0) && (errno != EEXIST)) {
 		PRINT_ERRNO (errno, "Could not mkdir '%s': ${errno}\n", path->buf);
 		return ret_error;
+	}
+	
+	return ret_ok;
+}
+
+
+ret_t
+cherokee_iovec_skip_sent (struct iovec *orig, uint16_t  orig_len,
+			  struct iovec *dest, uint16_t *dest_len,
+			  size_t sent)
+{
+	int    i;
+ 	int    j      = 0;
+	size_t total  = 0;
+
+	for (i=0; i<orig_len; i++) {
+		if (sent >= total + orig[i].iov_len) {
+			/* Already sent */
+			total += orig[i].iov_len;
+
+		} else if (j > 0) {
+			/* Add the whole thing */
+			dest[j].iov_len  = orig[i].iov_len;
+			dest[j].iov_base = orig[i].iov_base;
+			j++;
+
+		} else {
+			/* Add only a piece */
+			dest[j].iov_len  = orig[i].iov_len  - (sent - total);
+			dest[j].iov_base = orig[i].iov_base + (sent - total);
+			j++;
+		}
+	}
+
+	*dest_len = j;
+	return ret_ok;
+}
+
+
+ret_t
+cherokee_iovec_was_sent (struct iovec *orig, uint16_t orig_len, size_t sent)
+{
+	int    i;
+	size_t total =0;
+
+	for (i=0; i<orig_len; i++) {
+		total += orig[i].iov_len;
+		if (total > sent) {
+			return ret_eagain;
+		}
 	}
 	
 	return ret_ok;

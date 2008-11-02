@@ -10,7 +10,6 @@
     <meta name="Keywords" content="cherokee web server httpd http" />
     <meta name="Description" content="Cherokee is a flexible, very fast, lightweight Web server. It is implemented entirely in C, and has no dependencies beyond a standard C library. It is embeddable and extensible with plug-ins. It supports on-the-fly configuration by reading files or strings, TLS/SSL (via GNUTLS or OpenSSL), virtual hosts, authentication, cache friendly features, PHP, custom error management, and much more." />
     <link href="media/css/cherokee_doc.css" rel="stylesheet" type="text/css" media="all" />
-    <title></title>
   </head>
 <body>
 <h2 id="_a_href_index_html_index_a_8594_a_href_other_html_other_information_a"><a href="index.html">Index</a> &#8594; <a href="other.html">Other information</a></h2>
@@ -83,20 +82,41 @@ second depend on it.</p></div>
 easier done than said.</p></div>
 <h3 id="ssl-vhosts">SSL Virtual Hosts</h3><div style="clear:left"></div>
 <div class="para"><p>You might have been told elsewhere that named virtual hosts in SSL
-cannot be supported because a web server cannot see the hostname
-header when the SSL request is being processed. Technically this might
-have been correct in the past. The first thing that the server has to
-do is to connect with the other end by using SSL/TLS, so at that
-point, before it receives the HTTP client request, the crypto <em>magic</em>
-already needs to have happened.</p></div>
+cannot be supported without SNI (Server Name Indication) because a web
+server cannot see the hostname header when the SSL request is being
+processed. Technically this might have been correct in the past. The
+first thing that the server has to do is to connect with the other end
+by using SSL/TLS. The user entered host part of the URI must match the
+Common Name (CN) provided by the certificate. Since virtual hosts are in
+use, the CN of the first available certificate may or may not match
+the one specified in the early stages of TLS negotiation.</p></div>
 <div class="para"><p>However, nothing is forever.. and that applies to SSL/TLS connections
 as well. Cherokee elegantly respins the SSL layer once it knows the
 virtual server, and the magic occurs: SSL supporting several
 certificates on the same IP address and port.</p></div>
+<div class="para"><p>Besides this there is a cleaner, more standard aproach called
+<a href="http://en.wikipedia.org/wiki/Server_Name_Indication">Server Name
+Indication</a> (SNI) that sends the name of the virtual host during the
+TLS negotiation.</p></div>
+<div class="para"><p>If <a href="http://tools.ietf.org/html/rfc4366#section-3.1">SNI</a> is
+supported by your SSL/TLS library, the SSL layer does not need to be
+restarted. Since the host info can be put in the SSL handshake, things
+will simply work as long as there is a web browser with SNI support at
+the other side. Currently every modern web browser supports this, and
+Cherokee has TLS SNI support for both the GNUTLS and OpenSSL backends.</p></div>
+<h3 id="dbslayer">Database load balancing</h3><div style="clear:left"></div>
+<div class="para"><p>Ever heard of the <strong>DB Access Layer</strong>, AKA
+<a href="http://code.nytimes.com/projects/dbslayer/">DBSlayer</a>?</p></div>
+<div class="para"><p>In case you haven't, DBSlayer is a database abstraction and pooling
+layer designed to be simple to use (it's a DB abstraction layer for
+the web age built on top of HTTP and JSON).</p></div>
+<div class="para"><p>Well, Cherokee ships our very own
+<a href="modules_handlers_dbslayer.html">DBSlayer</a> handler that provides
+the fastest implementation in existence. It also provides several
+interesting enhancements.</p></div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2008-08-19 11:58:49 BST
 </div>
 </div>
 </body>

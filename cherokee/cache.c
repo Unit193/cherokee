@@ -24,9 +24,12 @@
 
 #include "common-internal.h"
 #include "cache.h"
+#include "util.h"
 
+/* Take care (DEFAULT_MAX_SIZE % 4) must = 0 
+ */
 #define ENTRIES          "cache"
-#define DEFAULT_MAX_SIZE 50
+#define DEFAULT_MAX_SIZE 12 * 4 
 
 struct cherokee_cache_priv {
 #ifdef HAVE_PTHREAD
@@ -51,8 +54,10 @@ struct cherokee_cache_priv {
 
 #define cache_list_del_lru(list,ret_entry)				\
 	do {								\
-		ret_entry = CACHE_ENTRY((cache->_## list).prev);	\
-		cache_list_del (list,ret_entry);			\
+		if (! cherokee_list_empty (&cache->_## list)) {		\
+			ret_entry = CACHE_ENTRY((cache->_## list).prev);\
+			cache_list_del (list,ret_entry);		\
+		}							\
 	} while (false)
 
 #define cache_list_make_first(list,entry)				\
@@ -72,10 +77,12 @@ struct cherokee_cache_priv {
  */
 ret_t 
 cherokee_cache_entry_init (cherokee_cache_entry_t *entry, 
-			   cherokee_buffer_t      *key)
+			   cherokee_buffer_t      *key,
+                           void                   *mutex)
 {
 	entry->in_list   = cache_no_list;
 	entry->ref_count = 1;
+	entry->mutex     = mutex;
 
 	INIT_LIST_HEAD(&entry->listed);
 
@@ -100,6 +107,9 @@ entry_parent_info_clean (cherokee_cache_entry_t *entry)
 {
 	if (entry->clean_cb == NULL)
 		return ret_error;
+
+	TRACE(ENTRIES, "Evincing: '%s'\n", entry->key.buf);
+
 	return entry->clean_cb (entry);
 }
 
@@ -122,7 +132,10 @@ entry_parent_free (cherokee_cache_entry_t *entry)
 static ret_t
 entry_ref (cherokee_cache_entry_t *entry)
 {
+	CHEROKEE_MUTEX_LOCK (entry->mutex);
 	entry->ref_count++;
+	CHEROKEE_MUTEX_UNLOCK (entry->mutex);
+
 	return ret_ok;
 }
 
@@ -134,12 +147,15 @@ cherokee_cache_entry_unref (cherokee_cache_entry_t **entry)
 	if (*entry == NULL)
 		return ret_ok;
 
+	CHEROKEE_MUTEX_LOCK ((*entry)->mutex);
 	(*entry)->ref_count--;
 
 	/* The entry is still being used
 	 */
-	if ((*entry)->ref_count > 0)
+	if ((*entry)->ref_count > 0) {
+		CHEROKEE_MUTEX_UNLOCK ((*entry)->mutex);
 		goto out;
+	}
 	
 	/* Free it
 	 */
@@ -212,14 +228,15 @@ cherokee_cache_mrproper (cherokee_cache_t *cache)
 
 
 static ret_t
-replace (cherokee_cache_t      *cache,
-	cherokee_cache_entry_t *x)
+replace (cherokee_cache_t       *cache,
+	 cherokee_cache_entry_t *x)
 {
 	cuint_t                 p   = cache->target_t1;
 	cherokee_cache_entry_t *tmp = NULL;
 
 	if ((cache->len_t1 >= 1) &&
-	    (( x && (x->in_list == cache_b2) && (cache->len_t1 == p) ) || (cache->len_t1 > p)))
+	    ((cache->len_t1  > p) ||
+	     (cache->len_t1 == p  && (x && x->in_list == cache_b2))))
 	{
 		cache_list_del_lru (t1, tmp);
 		cache_list_add (b1, tmp);
@@ -236,34 +253,42 @@ replace (cherokee_cache_t      *cache,
 static ret_t
 on_new_added (cherokee_cache_t *cache)
 {
-	cuint_t                 l12_len;
-	cuint_t                 p        = cache->target_t1;
-	cuint_t                 c        = cache->max_size - p;
-	cherokee_cache_entry_t *tmp      = NULL;
+	cuint_t                 c         = cache->max_size;
+	cuint_t                 len_l1    = cache->len_t1 + cache->len_b1;
+	cuint_t                 len_l2    = cache->len_t2 + cache->len_b2;
+	cuint_t                 total_len = len_l1 + len_l2;
+	cherokee_cache_entry_t *tmp       = NULL;
 
 	cache->count_miss += 1;
 
-	l12_len = (cache->len_t1 + cache->len_b1 +    
-		   cache->len_t2 + cache->len_b2);
+	/* Free some room for the new obj that is about to be added.
+	 */
 
-	if ((cache->len_t1 + cache->len_b1) == c) {
+	if (len_l1 >= c) {
 		if (cache->len_t1 < c) {
+			/* Remove LRU from B1 */
 			cache_list_del_lru (b1, tmp);
+			cherokee_avl_del (&cache->map, &tmp->key, NULL);
+			cherokee_cache_entry_unref (&tmp);
+
+			replace (cache, NULL);
 		} else {
+			/* Evict T1  */
 			cache_list_del_lru (t1, tmp);
-		}
-
-		cherokee_avl_del (&cache->map, &tmp->key, NULL);
-		replace (cache, tmp);
-
-	} else if (l12_len > c) {
-		if (l12_len >= 2*c) {
-			cache_list_del_lru (b2, tmp);
 			cherokee_avl_del (&cache->map, &tmp->key, NULL);
 			cherokee_cache_entry_unref (&tmp);
 		}
 
-		replace (cache, tmp);
+	} else if ((len_l1 < c) && (total_len >= c)) {
+		if (total_len >= (2 * c)) {
+			/* The cache is full: Remove from B2 */
+			cache_list_del_lru (b2, tmp);
+			if (tmp) {
+				cherokee_avl_del (&cache->map, &tmp->key, NULL);
+				cherokee_cache_entry_unref (&tmp);
+			}
+		}
+		replace (cache, NULL);
 	}
 
 	return ret_ok;
@@ -275,23 +300,35 @@ update_ghost_b1 (cherokee_cache_t       *cache,
 {
 	ret_t ret;
 
-	/* Adapt the target size
+	/* B1 hit: favour recency
 	 */
-	if (cache->len_b1 >= cache->len_b2)
-		cache->target_t1 += 1;
-	else
-		cache->target_t1 += (cache->len_b2 / MAX (1, cache->len_b1));
+	cache->target_t1 = MIN (cache->max_size, 
+				(cache->target_t1 + MAX (1, (cache->len_b2 / cache->len_b1))));
 
-	/* Move 'entry' to the top of T2, and place it in the 2cache
+	/* Replace a page if needed
 	 */
-	cache_list_swap (b1, t2, entry);
+	replace (cache, entry);
 
 	/* Re-fetch the information
 	 */
 	ret = entry_parent_info_fetch (entry);
-	if (ret != ret_ok)
+	switch (ret) {
+	case ret_ok:
+	case ret_deny:
+	case ret_ok_and_sent:
+		break;
+	case ret_error:
+	case ret_no_sys:
+	case ret_not_found:
 		return ret;
+	default:
+		RET_UNKNOWN(ret);
+		return ret_error;
+	}
 
+	/* Move 'entry' to the top of T2, and place it in the cache
+	 */
+	cache_list_swap (b1, t2, entry);
 	return ret_ok;
 }
 
@@ -303,21 +340,30 @@ update_ghost_b2 (cherokee_cache_t       *cache,
 
 	/* Adapt the target size
 	 */
-	if (cache->len_b2 >= cache->len_b1)
-		cache->target_t1 -= 1;
-	else
-		cache->target_t1 -=  (cache->len_b1 / MAX(1, cache->len_b2));
+	cache->target_t1 = MAX (0, (cache->target_t1 - MAX(1, (cache->len_b1 / cache->len_b2))));
 
-	/* Move 'entry' to the top of T2, and place it in the cache
+	/* Replace a page if needed
 	 */
-	cache_list_swap (b2, t2, entry);
+	replace (cache, entry);
 
 	/* Re-fetch the information
 	 */
 	ret = entry_parent_info_fetch (entry);
-	if (ret != ret_ok)
+	switch (ret) {
+	case ret_ok:
+	case ret_deny:
+		break;
+	case ret_error:
+	case ret_no_sys:
 		return ret;
+	default:
+		RET_UNKNOWN(ret);
+		return ret_error;
+	}
 
+	/* Move 'entry' to the top of T2, and place it in the cache
+	 */
+	cache_list_swap (b2, t2, entry);
 	return ret_ok;
 }
 
@@ -325,31 +371,55 @@ static ret_t
 update_cache (cherokee_cache_t       *cache,
 	      cherokee_cache_entry_t *entry)
 {
+	ret_t ret;
+
 	cache->count_hit += 1;
 
 	switch (entry->in_list) {
 	case cache_t1:
 		/* LRU (Least Recently Used) cache hit
 		 */
+		TRACE(ENTRIES, "T1 hit: '%s'\n", entry->key.buf);
+
 		cache_list_swap (t1, t2, entry);
 		break;
 
 	case cache_t2:
 		/* LFU (Least Frequently Used)
 		 */
+		TRACE(ENTRIES, "T2 hit: '%s'\n", entry->key.buf);
+
 		cache_list_make_first (t2, entry);
 		break;
 
 	case cache_b1:
 		/* Ghost 'Recently' hit
 		 */
-		update_ghost_b1 (cache, entry);
+		TRACE(ENTRIES, "B1 ghost hit: '%s'\n", entry->key.buf);
+
+		ret = update_ghost_b1 (cache, entry);
+		switch (ret) {
+		case ret_ok:
+		case ret_no_sys:
+			return ret;
+		default:
+			return ret_error;
+		}
 		break;
 
 	case cache_b2:
 		/* Ghost 'Frequently' hit
 		 */
-		update_ghost_b2 (cache, entry);
+		TRACE(ENTRIES, "B2 ghost hit: '%s'\n", entry->key.buf);
+
+		ret = update_ghost_b2 (cache, entry);
+		switch (ret) {
+		case ret_ok:
+		case ret_no_sys:
+			return ret;
+		default:
+			return ret_error;
+		}
 		break;
 
 	default:
@@ -370,6 +440,16 @@ cherokee_cache_get (cherokee_cache_t        *cache,
 	CHEROKEE_MUTEX_LOCK (&cache->priv->mutex);
 	cache->count += 1;
 
+#ifdef TRACE_ENABLED
+	if (cache->count % 100 == 0) {
+		cherokee_buffer_t tmp = CHEROKEE_BUF_INIT;
+
+		cherokee_cache_get_stats (cache, &tmp);
+		TRACE(ENTRIES, "Cache stats:\n%s", tmp.buf);
+		cherokee_buffer_mrproper (&tmp);
+	}
+#endif
+
 	/* Find inside the cache
 	 */
 	ret = cherokee_avl_get (&cache->map, key, (void **)ret_entry);
@@ -380,22 +460,29 @@ cherokee_cache_get (cherokee_cache_t        *cache,
 	case ret_not_found:
 		break;
 	default:
+		SHOULDNT_HAPPEN;
 		ret = ret_error;
 		goto out;
 	}
 
-	/* Miss: Instance new entry and add it to T1
+	/* Might need to free some room for the new page
+	 */
+	on_new_added (cache);
+
+	/* Instance new page and add it to T1
 	 */
 	cache->new_cb (cache, key, cache->new_cb_param, ret_entry);
-	if (*ret_entry == NULL)
+	if (*ret_entry == NULL) {
+		SHOULDNT_HAPPEN;
+		CHEROKEE_MUTEX_UNLOCK (&cache->priv->mutex);
 		return ret_error;
+	}
 
-	/* Add new
-	 */
+	TRACE(ENTRIES, "Miss (adding): '%s'\n", key->buf);
+
 	cache_list_add (t1, *ret_entry);
 	cherokee_avl_add (&cache->map, key, *ret_entry);
 
-	on_new_added (cache);
 	ret = ret_ok;
 out:
 	entry_ref (*ret_entry);
@@ -414,11 +501,11 @@ cherokee_cache_get_stats (cherokee_cache_t  *cache,
 	cherokee_list_get_len (&cache->_t1, &len);
 	cherokee_buffer_add_va (info, "T1 size: %d (real=%d)\n", cache->len_t1, len);
 				
-	cherokee_list_get_len (&cache->_t2, &len);
-	cherokee_buffer_add_va (info, "T2 size: %d (real=%d)\n", cache->len_t2, len);
-
 	cherokee_list_get_len (&cache->_b1, &len);
 	cherokee_buffer_add_va (info, "B1 size: %d (real=%d)\n", cache->len_b1, len);
+
+	cherokee_list_get_len (&cache->_t2, &len);
+	cherokee_buffer_add_va (info, "T2 size: %d (real=%d)\n", cache->len_t2, len);
 
 	cherokee_list_get_len (&cache->_b2, &len);
 	cherokee_buffer_add_va (info, "B2 size: %d (real=%d)\n", cache->len_b2, len);
@@ -428,7 +515,8 @@ cherokee_cache_get_stats (cherokee_cache_t  *cache,
 
 	cherokee_avl_len (&cache->map, &len);
 	cherokee_buffer_add_va (info, "AVL size: %d\n", len);
-
+	
+	cherokee_buffer_add_va (info, "Total count: %d\n", cache->count);
 	cherokee_buffer_add_va (info, "Hit count: %d\n", cache->count_hit);
 	cherokee_buffer_add_va (info, "Miss count: %d\n", cache->count_miss);
 
@@ -437,6 +525,10 @@ cherokee_cache_get_stats (cherokee_cache_t  *cache,
 				(cache->count_hit + cache->count_miss));
 	}
 	cherokee_buffer_add_va (info, "Hit Rate: %.2f%%\n", rate);
+
+	if (cache->stats_cb != NULL) {
+		cache->stats_cb (cache, info);
+	}
 
 	return ret_ok;
 }

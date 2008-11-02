@@ -10,7 +10,6 @@
     <meta name="Keywords" content="cherokee web server httpd http" />
     <meta name="Description" content="Cherokee is a flexible, very fast, lightweight Web server. It is implemented entirely in C, and has no dependencies beyond a standard C library. It is embeddable and extensible with plug-ins. It supports on-the-fly configuration by reading files or strings, TLS/SSL (via GNUTLS or OpenSSL), virtual hosts, authentication, cache friendly features, PHP, custom error management, and much more." />
     <link href="media/css/cherokee_doc.css" rel="stylesheet" type="text/css" media="all" />
-    <title></title>
   </head>
 <body>
 <h2 id="_a_href_index_html_index_a_8594_a_href_cookbook_html_cookbook_a"><a href="index.html">Index</a> &#8594; <a href="cookbook.html">Cookbook</a></h2>
@@ -28,7 +27,7 @@ into your specific Cherokee build. This can be done by:</p></div>
 <div class="content">
 <pre><tt>$ cherokee -i
 Compilation
- Version: 0.8.0
+ Version: 0.9.0
 
 [...]
 
@@ -116,7 +115,7 @@ General
 <li>
 <p>
 <strong>Keep alive</strong>: This setting dramatically affects the speed at which
-  repeated connections are server to the same client. This is
+  repeated connections are served to the same client. This is
   especially noticeable when an asyncrhonous application is used. The
   trade off is that, since connections are kept open more time, less
   connections remain available for other clients in any given
@@ -157,10 +156,15 @@ Advanced
 </ul></div>
 </dd>
 </dl></div>
+<h3 id="_debug_disable_trace">Debug: Disable TRACE</h3><div style="clear:left"></div>
+<div class="para"><p>When compiled with debugging support, Cherokee's performance is
+heavily penalized. Being able to trace the state of the web server at
+a very low level is quite useful when you have to fine tune your
+infrastructure, but once it is done you should disable this feature.
+A production environment deserves only the finest tuned binaries.</p></div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2008-08-18 22:11:43 BST
 </div>
 </div>
 </body>

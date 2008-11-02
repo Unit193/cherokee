@@ -10,7 +10,6 @@
     <meta name="Keywords" content="cherokee web server httpd http" />
     <meta name="Description" content="Cherokee is a flexible, very fast, lightweight Web server. It is implemented entirely in C, and has no dependencies beyond a standard C library. It is embeddable and extensible with plug-ins. It supports on-the-fly configuration by reading files or strings, TLS/SSL (via GNUTLS or OpenSSL), virtual hosts, authentication, cache friendly features, PHP, custom error management, and much more." />
     <link href="media/css/cherokee_doc.css" rel="stylesheet" type="text/css" media="all" />
-    <title></title>
   </head>
 <body>
 <h2 id="_a_href_index_html_index_a_8594_a_href_basics_html_getting_started_a"><a href="index.html">Index</a> &#8594; <a href="basics.html">Getting started</a></h2>
@@ -74,14 +73,15 @@ If you want to make a build that serves secure content, you will
   need TLS libraries. Cherokee supports two different SSL/TLS
   libraries: OpenSSL and GNUTLS. You need to have the development
   files of one of these in order to build a package that suits your
-  needs.
+  needs. Additionally, if you are going to use GNUTLS, you will need
+  <a href="http://pkg-config.freedesktop.org/wiki/">pkg-config</a> to
+  correctly detect it during the <tt>configure</tt> stage.
 </p>
 </li>
 </ul></div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2008-08-18 22:11:33 BST
 </div>
 </div>
 </body>

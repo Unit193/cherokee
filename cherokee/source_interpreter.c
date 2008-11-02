@@ -25,6 +25,9 @@
 #include "common-internal.h"
 #include "source_interpreter.h"
 #include "util.h"
+#include "connection-protected.h"
+#include "thread.h"
+#include "bogotime.h"
 
 #include <sys/types.h>
 #include <unistd.h>
@@ -45,8 +48,13 @@ cherokee_source_interpreter_new  (cherokee_source_interpreter_t **src)
 
 	n->custom_env     = NULL;
 	n->custom_env_len = 0;
+	n->debug          = false;
 
+	SOURCE(n)->type   = source_interpreter;
 	SOURCE(n)->free   = (cherokee_func_free_t)interpreter_free;
+	
+	CHEROKEE_MUTEX_INIT (&n->launching_mutex, NULL);
+	n->launching = false;
 
 	*src = n;
 	return ret_ok;
@@ -79,6 +87,8 @@ interpreter_free (void *ptr)
 
 	if (src->custom_env)
 		free_custon_env (src);
+
+	CHEROKEE_MUTEX_DESTROY (&src->launching_mutex);
 }
 
 
@@ -102,6 +112,9 @@ cherokee_source_interpreter_configure (cherokee_source_interpreter_t *src, chero
 		if (equal_buf_str (&child->key, "interpreter")) {
 			/* TODO: fix win32 path */
 			cherokee_buffer_add_buffer (&src->interpreter, &child->val);
+
+		} else if (equal_buf_str (&child->key, "debug")) {
+			src->debug = !! atoi (child->val.buf);
 
 		} else if (equal_buf_str (&child->key, "env")) {			
 			cherokee_config_node_foreach (j, child) {
@@ -221,8 +234,16 @@ cherokee_source_interpreter_spawn (cherokee_source_interpreter_t *src)
 		close (STDOUT_FILENO);
 		close (STDERR_FILENO);
 #endif
-		argv[2] = (char *)tmp.buf;
 
+		/* Doesn't care about it's output either.  It can fill
+		 * out the system buffers and free the interpreter.
+		 */
+		if (! src->debug) {
+			close (STDOUT_FILENO);
+			close (STDERR_FILENO);
+		}
+
+		argv[2] = (char *)tmp.buf;
 		re = execve ("/bin/sh", argv, envp);
 		if (re < 0) {
 			PRINT_ERROR ("ERROR: Could spawn %s\n", tmp.buf);
@@ -245,4 +266,92 @@ cherokee_source_interpreter_spawn (cherokee_source_interpreter_t *src)
 error:
 	cherokee_buffer_mrproper (&tmp);
 	return ret_error;
+}
+
+
+ret_t
+cherokee_source_interpreter_connect_polling (cherokee_source_interpreter_t *src, 
+					     cherokee_socket_t             *socket,
+					     cherokee_connection_t         *conn,
+					     time_t                        *spawned)
+{
+	ret_t ret;
+
+	/* Try to connect
+	 */
+ 	ret = cherokee_source_connect (SOURCE(src), socket); 
+	switch (ret) {
+	case ret_ok:
+		TRACE (ENTRIES, "Connected successfully fd=%d\n", socket->socket);
+		goto out;
+	case ret_deny:
+		break;
+	case ret_eagain:
+		ret = cherokee_thread_deactive_to_polling (CONN_THREAD(conn),
+							   conn,
+							   SOCKET_FD(socket),
+							   FDPOLL_MODE_WRITE, 
+							   false);
+		if (ret != ret_ok) {
+			ret = ret_deny;
+			goto out;
+		}
+
+		/* Leave the mutex locked */
+		return ret_eagain;
+	case ret_error:
+		ret = ret_error;
+		goto out;
+	default:
+		break;
+	}
+
+	/* In case it did not success, launch a interpreter
+	 */
+	if (*spawned == 0) {
+		int unlocked;
+
+		/* Launch a new interpreter 
+		 */
+		unlocked = CHEROKEE_MUTEX_TRY_LOCK(&src->launching_mutex);
+		if (unlocked)
+			return ret_eagain;
+
+		src->launching = true;
+
+		ret = cherokee_source_interpreter_spawn (src);
+		if (ret != ret_ok) {
+			if (src->interpreter.buf)
+				TRACE (ENTRIES, "Couldn't spawn: %s\n",
+				       src->interpreter.buf);
+			else
+				TRACE (ENTRIES, "No interpreter to be spawned %s", "\n");
+
+			ret = ret_error;
+			goto out;
+		}
+
+		*spawned = cherokee_bogonow_now;
+
+		/* Reset the internal socket */
+		cherokee_socket_close (socket);
+
+	} else if (cherokee_bogonow_now > *spawned + 3) {	
+		TRACE (ENTRIES, "Giving up; spawned 3 secs ago: %s\n",
+		       src->interpreter.buf);
+
+		ret = ret_error;
+		goto out;
+	}
+
+	/* Leave the mutex locked */
+	return ret_eagain;
+
+out:
+	if (src->launching) {
+		CHEROKEE_MUTEX_UNLOCK (&src->launching_mutex);
+		src->launching = false;
+	}
+
+	return ret;
 }

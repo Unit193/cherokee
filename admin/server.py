@@ -15,18 +15,18 @@ import socket
 from config import *
 from configured import *
 from Post import *
-from PageMain import *
+from PageStatus import *
 from PageGeneral import *
 from PageIcon import *
 from PageMime import *
 from PageVServer import *
 from PageVServers import *
-from PageEncoders import *
 from PageEntry import *
 from PageAdvanced import *
 from PageFeedback import *
 from PageError import *
 from PageAjaxUpdate import *
+from PageInfoSource import *
 from CherokeeManagement import *
 
 # Constants
@@ -74,8 +74,6 @@ class Handler(pyscgi.SCGIHandler):
         # Check the URL        
         if uri.startswith('/general'):
             page = PageGeneral(cfg)
-        elif uri.startswith('/encoder'):
-            page = PageEncoders(cfg)
         elif uri.startswith('/icon'):
             page = PageIcon(cfg)
         elif uri.startswith('/mime'):
@@ -89,10 +87,12 @@ class Handler(pyscgi.SCGIHandler):
              uri == '/vserver/ajax_update':
             page = PageVServers(cfg)
         elif uri.startswith('/vserver/'):
-            if "/prio/" in uri:
+            if "/rule/" in uri:
                 page = PageEntry(cfg)
             else:
                 page = PageVServer(cfg)
+        elif uri.startswith('/source'):
+            page = PageInfoSource(cfg)
         elif uri.startswith('/apply'):
             self.handle_post()
             post = Post(self.post)
@@ -123,7 +123,7 @@ class Handler(pyscgi.SCGIHandler):
         elif uri.startswith('/ajax/update'):
             page = PageAjaxUpdate (cfg)
         elif uri == '/':
-            page = PageMain(cfg)
+            page = PageStatus(cfg)
         else:
             body = "/"
 

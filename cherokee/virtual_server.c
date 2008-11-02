@@ -35,6 +35,7 @@
 #include <errno.h>
 
 #define ENTRIES "vserver"
+#define MAX_HOST_LEN 255
 
 
 ret_t 
@@ -83,6 +84,8 @@ cherokee_virtual_server_new (cherokee_virtual_server_t **vserver, void *server)
 
 # ifdef HAVE_GNUTLS
 	n->credentials     = NULL;
+	n->privkey_x509    = NULL;
+	n->certs_x509      = NULL;
 # endif
 # ifdef HAVE_OPENSSL
 	n->context         = NULL;
@@ -136,6 +139,13 @@ cherokee_virtual_server_free (cherokee_virtual_server_t *vserver)
 		gnutls_certificate_free_credentials (vserver->credentials);
 		vserver->credentials = NULL;
 	}
+	if (vserver->privkey_x509 != NULL) {
+		gnutls_x509_privkey_deinit (vserver->privkey_x509);
+	}
+	if (vserver->certs_x509 != NULL) {
+		gnutls_x509_crt_deinit (vserver->certs_x509);
+	}
+
 # endif
 # ifdef HAVE_OPENSSL
 	if (vserver->context != NULL) {
@@ -219,11 +229,183 @@ cherokee_virtual_server_has_tls (cherokee_virtual_server_t *vserver)
 }
 
 
+#if defined(HAVE_OPENSSL) && !defined(OPENSSL_NO_TLSEXT)
+static int
+openssl_sni_servername_cb (SSL *ssl, int *ad, void *arg)
+{
+	ret_t                      ret;
+	const char                *servername;
+	cherokee_socket_t         *socket;
+	cherokee_buffer_t          tmp;
+	SSL_CTX                   *ctx;
+	cherokee_server_t         *srv       = SRV(arg);
+	cherokee_virtual_server_t *vsrv      = NULL;
+
+	/* Get the pointer to the socket 
+	 */
+	socket = SSL_get_app_data (ssl); 
+	if (unlikely (socket == NULL)) {
+		PRINT_ERROR ("Could not get the socket struct: %p\n", ssl);
+		return SSL_TLSEXT_ERR_ALERT_FATAL; 
+	}
+
+	/* Read the SNI server name
+	 */
+	servername = SSL_get_servername (ssl, TLSEXT_NAMETYPE_host_name);
+	if (servername == NULL) {
+		TRACE (ENTRIES, "No SNI: Did not provide a server name%s", "\n");
+		return SSL_TLSEXT_ERR_NOACK;
+	}
+
+	TRACE (ENTRIES, "SNI: Switching to servername='%s'\n", servername);
+
+	/* Try to match the name
+	 */
+	cherokee_buffer_fake (&tmp, servername, strlen(servername));
+	ret = cherokee_server_get_vserver (srv, &tmp, &vsrv);
+	if ((ret != ret_ok) || (vsrv == NULL)) {
+		PRINT_ERROR ("Servername did not match: '%s'\n", servername);
+		return SSL_TLSEXT_ERR_NOACK; 
+	}
+
+	TRACE (ENTRIES, "SNI: Setting new TLS context. Virtual host='%s'\n",
+	       vsrv->name.buf);
+
+	/* Set the new SSL context
+	 */
+	ctx = SSL_set_SSL_CTX (ssl, vsrv->context);
+	if (ctx != vsrv->context) {
+		PRINT_ERROR ("Could change the SSL context: servername='%s'\n", servername);
+	}
+
+	return SSL_TLSEXT_ERR_OK; 
+}
+#endif 
+
+
+#ifdef HAVE_GNUTLS
+static int
+gnutls_sni_servername_cb (gnutls_session_t  session, 
+			  gnutls_retr_st   *retr)
+{
+	int                        re;
+	ret_t                      ret;
+	cherokee_buffer_t          tmp;
+	cherokee_socket_t         *socket;
+	cherokee_server_t         *srv;
+	char                       name[MAX_HOST_LEN];
+	size_t                     data_len             = MAX_HOST_LEN;
+	unsigned int               type                 = 0;
+	cherokee_virtual_server_t *vsrv                 = NULL;
+
+	re = gnutls_server_name_get (session, name, &data_len, &type, 0);
+	if (re != 0) {
+		TRACE (ENTRIES, "No SNI: Did not provide a server name%s", "\n");
+		return 0;
+	}
+	
+	if (type != GNUTLS_NAME_DNS) {
+		TRACE (ENTRIES, "SNI: Not a name entry: '%s'\n", name);
+		return 0;
+	}
+
+	TRACE (ENTRIES, "SNI: Switching to servername='%s'\n", name);
+
+	socket = gnutls_session_get_ptr (session);
+	if (socket == NULL) {
+ 		PRINT_ERROR ("Could not access the socket struct: %s\n", name);
+		return -1;
+	}
+
+	srv = VSERVER_SRV(socket->vserver_ref);
+	
+	cherokee_buffer_fake (&tmp, name, data_len);
+	ret = cherokee_server_get_vserver (srv, &tmp, &vsrv);
+	if ((ret != ret_ok) || (vsrv == NULL)) {
+		PRINT_ERROR ("Servername did not match: '%s'\n", name);
+		return -1; 
+	}
+
+	TRACE (ENTRIES, "SNI: Setting new TLS context. Virtual host='%s'\n",
+	       vsrv->name.buf);
+	    
+	retr->deinit_all = 0;
+	retr->type       = GNUTLS_CRT_X509;
+	retr->ncerts     = 1;
+	retr->cert.x509  = &vsrv->certs_x509;
+	retr->key.x509   = vsrv->privkey_x509;
+
+	return 0;
+}
+
+static int
+set_x509_key_file (cherokee_virtual_server_t *vsrv)
+{
+	int               rc;
+	gnutls_datum_t    data;
+	unsigned int      max = 1;
+	cherokee_buffer_t tmp = CHEROKEE_BUF_INIT;
+
+	/* This function does basically the same as the previous call to:
+	 *
+	 *  rc = gnutls_certificate_set_x509_key_file (vsrv->credentials,
+	 *	  				   vsrv->server_cert.buf,
+	 *					   vsrv->server_key.buf,
+	 *					   GNUTLS_X509_FMT_PEM);
+	 *
+	 * but it keeps pointers to the X509 certs and privkey, which
+	 * was needed for the SNI callback function.
+	 */
+
+	/* X509 private key
+	 */
+	cherokee_buffer_read_file (&tmp, vsrv->server_key.buf);
+	data.data = (unsigned char *)tmp.buf;
+	data.size = tmp.len;
+
+	rc = gnutls_x509_privkey_init (&vsrv->privkey_x509);
+	if (rc < 0)
+		goto error;
+
+	rc = gnutls_x509_privkey_import (vsrv->privkey_x509, &data, GNUTLS_X509_FMT_PEM);
+	if (rc < 0)
+		goto error;
+
+	/* X509 Certificate
+	 */
+	cherokee_buffer_clean (&tmp);
+	cherokee_buffer_read_file (&tmp, vsrv->server_cert.buf);
+	data.data = (unsigned char *)tmp.buf;
+	data.size = tmp.len;
+	
+	gnutls_x509_crt_list_import (&vsrv->certs_x509, &max, &data, GNUTLS_X509_FMT_PEM, 0);
+
+	/* Update the credentials
+	 */
+	rc = gnutls_certificate_set_x509_key (vsrv->credentials,
+					      &vsrv->certs_x509, 1,
+					      vsrv->privkey_x509);
+	if (rc < 0)
+		goto error;
+
+	/* Clean up 
+	 */
+	cherokee_buffer_mrproper (&tmp);
+	return 0;
+
+error:
+	cherokee_buffer_mrproper (&tmp);
+	return rc;
+}
+#endif
+
+
 ret_t 
 cherokee_virtual_server_init_tls (cherokee_virtual_server_t *vsrv)
 {
 #ifdef HAVE_TLS
-	int rc;
+	int   rc;
+	char *error;
 
 	/* Check if all of them are empty
 	 */
@@ -234,8 +416,7 @@ cherokee_virtual_server_init_tls (cherokee_virtual_server_t *vsrv)
 
 	/* Check one or more are empty
 	 */
-	if (cherokee_buffer_is_empty (&vsrv->ca_cert)    ||
-	    cherokee_buffer_is_empty (&vsrv->server_key) ||
+	if (cherokee_buffer_is_empty (&vsrv->server_key) ||
 	    cherokee_buffer_is_empty (&vsrv->server_cert))
 		return ret_error;
 
@@ -248,32 +429,43 @@ cherokee_virtual_server_init_tls (cherokee_virtual_server_t *vsrv)
 
 	/* CA file
 	 */
-	rc = gnutls_certificate_set_x509_trust_file (vsrv->credentials,
-						     vsrv->ca_cert.buf,
-						     GNUTLS_X509_FMT_PEM);
-	if (rc < 0) {
-		PRINT_ERROR ("ERROR: reading X.509 CA Certificate: '%s'\n", vsrv->ca_cert.buf);
-		return ret_error;
+	if (! cherokee_buffer_is_empty (&vsrv->ca_cert))
+	{
+		rc = gnutls_certificate_set_x509_trust_file (vsrv->credentials,
+							     vsrv->ca_cert.buf,
+							     GNUTLS_X509_FMT_PEM);
+		if (rc < 0) {
+			PRINT_ERROR ("ERROR: reading X.509 CA Certificate: '%s'\n", 
+				     vsrv->ca_cert.buf);
+			return ret_error;
+		}
 	}
 
 	/* Key file
 	 */
-	rc = gnutls_certificate_set_x509_key_file (vsrv->credentials,
-						   vsrv->server_cert.buf,
-						   vsrv->server_key.buf,
-						   GNUTLS_X509_FMT_PEM);	
+	rc = set_x509_key_file (vsrv);
 	if (rc < 0) {
 		PRINT_ERROR ("ERROR: reading X.509 key '%s' or certificate '%s' file\n", 
 			     vsrv->server_key.buf, vsrv->server_cert.buf);
 		return ret_error;
 	}
 
+	/* SNI 
+	 */
+	gnutls_certificate_server_set_retrieve_function (vsrv->credentials,
+							 gnutls_sni_servername_cb);
+
+
+	/* Ciphers
+	 */
 	generate_dh_params (&vsrv->dh_params);
 	generate_rsa_params (&vsrv->rsa_params);
 
 	gnutls_certificate_set_dh_params (vsrv->credentials, vsrv->dh_params);
 	gnutls_anon_set_server_dh_params (vsrv->credentials, vsrv->dh_params);
 	gnutls_certificate_set_rsa_export_params (vsrv->credentials, vsrv->rsa_params);
+
+	UNUSED(error);
 # endif
 
 # ifdef HAVE_OPENSSL
@@ -289,8 +481,6 @@ cherokee_virtual_server_init_tls (cherokee_virtual_server_t *vsrv)
 	 */
 	rc = SSL_CTX_use_certificate_file (vsrv->context, vsrv->server_cert.buf, SSL_FILETYPE_PEM);
 	if (rc < 0) {
-		char *error;
-
 		OPENSSL_LAST_ERROR(error);
 		PRINT_ERROR("ERROR: OpenSSL: Can not use certificate file '%s':  %s\n", 
 			    vsrv->server_cert.buf, error);
@@ -301,8 +491,6 @@ cherokee_virtual_server_init_tls (cherokee_virtual_server_t *vsrv)
 	 */
 	rc = SSL_CTX_use_PrivateKey_file (vsrv->context, vsrv->server_key.buf, SSL_FILETYPE_PEM);
 	if (rc < 0) {
-		char *error;
-
 		OPENSSL_LAST_ERROR(error);
 		PRINT_ERROR("ERROR: OpenSSL: Can not use private key file '%s': %s\n", 
 			    vsrv->server_key.buf, error);
@@ -316,6 +504,24 @@ cherokee_virtual_server_init_tls (cherokee_virtual_server_t *vsrv)
 		PRINT_ERROR_S("ERROR: OpenSSL: Private key does not match the certificate public key\n");
 		return ret_error;
 	}
+
+#  ifndef OPENSSL_NO_TLSEXT
+	/* Enable SNI
+	 */
+	rc = SSL_CTX_set_tlsext_servername_callback (vsrv->context, openssl_sni_servername_cb);
+	if (rc < 0) {
+		OPENSSL_LAST_ERROR(error);
+		PRINT_ERROR ("Could activate TLS SNI for '%s': %s\n", vsrv->name.buf, error);
+		return ret_error;
+	}
+
+	rc = SSL_CTX_set_tlsext_servername_arg (vsrv->context, VSERVER_SRV(vsrv));
+	if (rc < 0) {
+		OPENSSL_LAST_ERROR(error);
+		PRINT_ERROR ("Could activate TLS SNI for '%s': %s\n", vsrv->name.buf, error);
+		return ret_error;
+	}
+#  endif /* OPENSSL_NO_TLSEXT */
 # endif
 #else
 	UNUSED (vsrv);
@@ -378,9 +584,11 @@ init_entry_property (cherokee_config_node_t *conf, void *data)
 {
 	ret_t                      ret;
 	cherokee_buffer_t         *tmp;
+	cherokee_list_t           *i;
 	cherokee_plugin_info_t    *info    = NULL;
 	cherokee_virtual_server_t *vserver = ((void **)data)[0];
 	cherokee_config_entry_t   *entry   = ((void **)data)[1];
+	cherokee_server_t         *srv     = VSERVER_SRV(vserver);
 
 	if (equal_buf_str (&conf->key, "allow_from")) {
 		ret = cherokee_config_node_read_list (conf, NULL, add_access, entry);
@@ -403,20 +611,41 @@ init_entry_property (cherokee_config_node_t *conf, void *data)
 	} else if (equal_buf_str (&conf->key, "handler")) {
 		tmp = &conf->val;
 
-		ret = cherokee_plugin_loader_get (&SRV(vserver->server_ref)->loader, tmp->buf, &info);
+		ret = cherokee_plugin_loader_get (&srv->loader, tmp->buf, &info);
 		if (ret != ret_ok)
 			return ret;
 
 		if (info->configure) {
 			handler_func_configure_t configure = info->configure;
 
-			ret = configure (conf, vserver->server_ref, &entry->handler_properties);
+			ret = configure (conf, srv, &entry->handler_properties);
 			if (ret != ret_ok)
 				return ret;
 		}
 
 		TRACE(ENTRIES, "Handler: %s\n", tmp->buf);
 		cherokee_config_entry_set_handler (entry, PLUGIN_INFO_HANDLER(info));
+
+	} else if (equal_buf_str (&conf->key, "encoder")) {
+		cherokee_config_node_foreach (i, conf) {
+			/* Skip the entry if it isn't enabled 
+			 */
+			if (! atoi(CONFIG_NODE(i)->val.buf))
+				continue;
+
+			tmp = &CONFIG_NODE(i)->key;
+
+			ret = cherokee_plugin_loader_get (&srv->loader, tmp->buf, &info);
+			if (ret != ret_ok) return ret;
+
+			ret = cherokee_avl_get (&srv->encoders, tmp, NULL);
+			if (ret != ret_ok) {
+				cherokee_avl_add (&srv->encoders, tmp, info);
+			}
+
+			cherokee_config_entry_add_encoder (entry, tmp, info);
+			TRACE(ENTRIES, "Encoder: %s\n", tmp->buf);
+		}
 
 	} else if (equal_buf_str (&conf->key, "auth")) {
 		cherokee_plugin_info_validator_t *vinfo;
@@ -425,7 +654,7 @@ init_entry_property (cherokee_config_node_t *conf, void *data)
 		 */
 		tmp = &conf->val;
 
-		ret = cherokee_plugin_loader_get (&SRV(vserver->server_ref)->loader, tmp->buf, &info);
+		ret = cherokee_plugin_loader_get (&srv->loader, tmp->buf, &info);
 		if (ret != ret_ok)
 			return ret;
 
@@ -434,7 +663,7 @@ init_entry_property (cherokee_config_node_t *conf, void *data)
 		if (info->configure) {
 			validator_func_configure_t configure = info->configure;
 
-			ret = configure (conf, vserver->server_ref, &entry->validator_properties);
+			ret = configure (conf, srv, &entry->validator_properties);
 			if (ret != ret_ok) return ret;
 		}
 
@@ -455,6 +684,27 @@ init_entry_property (cherokee_config_node_t *conf, void *data)
 
 	} else if (equal_buf_str (&conf->key, "only_secure")) {
 		entry->only_secure = !! atoi(conf->val.buf);
+
+	} else if (equal_buf_str (&conf->key, "expiration")) {
+		if (equal_buf_str (&conf->val, "none")) {
+			entry->expiration = cherokee_expiration_none;
+
+		} else if (equal_buf_str (&conf->val, "epoch")) {
+			entry->expiration = cherokee_expiration_epoch;
+
+		} else if (equal_buf_str (&conf->val, "max")) {
+			entry->expiration = cherokee_expiration_max;
+
+		} else if (equal_buf_str (&conf->val, "time")) {
+			entry->expiration = cherokee_expiration_time;
+			ret = cherokee_config_node_read (conf, "time", &tmp);
+			if (ret != ret_ok) {
+				PRINT_ERROR_S ("Expiration 'time' without a time property\n");
+				return ret_error;
+			}
+
+			entry->expiration_time = cherokee_eval_formated_time (tmp);
+		}
 
 	} else if (equal_buf_str (&conf->key, "match")) {
 		/* Ignore: Previously handled 
@@ -667,12 +917,6 @@ add_logger (cherokee_config_node_t *config, cherokee_virtual_server_t *vserver)
 		return ret_error;
 
 	ret = func_new ((void **) &vserver->logger, config);
-	if (ret != ret_ok)
-		return ret;
-
-	/* Logger initialization
-	 */
-	ret = cherokee_logger_init (vserver->logger);
 	if (ret != ret_ok)
 		return ret;
 

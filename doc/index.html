@@ -10,10 +10,9 @@
     <meta name="Keywords" content="cherokee web server httpd http" />
     <meta name="Description" content="Cherokee is a flexible, very fast, lightweight Web server. It is implemented entirely in C, and has no dependencies beyond a standard C library. It is embeddable and extensible with plug-ins. It supports on-the-fly configuration by reading files or strings, TLS/SSL (via GNUTLS or OpenSSL), virtual hosts, authentication, cache friendly features, PHP, custom error management, and much more." />
     <link href="media/css/cherokee_doc.css" rel="stylesheet" type="text/css" media="all" />
-    <title></title>
   </head>
 <body>
-<h2 id="_a_href_index_html_index_a_cherokee_0_8_documentation"><a href="index.html">Index</a>: Cherokee 0.8 documentation</h2>
+<h2 id="_a_href_index_html_index_a_cherokee_0_9_documentation"><a href="index.html">Index</a>: Cherokee 0.9 documentation</h2>
 <div class="sectionbody">
 <div class="sidebarblock">
 <div class="sidebar-content">
@@ -75,7 +74,7 @@
 <div class="olist"><ol>
 <li>
 <p>
-<a href="bundle_cherokee.html">cherokee</a>: The main program.
+<a href="bundle_cherokee.html">cherokee</a>: Main web server invoker.
 </p>
 </li>
 <li>
@@ -90,12 +89,12 @@
 </li>
 <li>
 <p>
-<a href="bundle_cherokee-guardian.html">cherokee-guardian</a>: Web server safe invoker.
+<a href="bundle_cherokee-tweak.html">cherokee-tweak</a>: Cherokee Swiss army knife
 </p>
 </li>
 <li>
 <p>
-<a href="bundle_cherokee-tweak.html">cherokee-tweak</a>: Cherokee Swiss army knife
+<a href="bundle_cherokee-worker.html">cherokee-worker</a>: Web server stand alone program.
 </p>
 </li>
 <li>
@@ -112,6 +111,11 @@
 <li>
 <p>
 <a href="config_quickstart.html">Quickstart</a>: Overview and walkthrough.
+</p>
+</li>
+<li>
+<p>
+<a href="config_status.html">Status</a>: Server status information.
 </p>
 </li>
 <li>
@@ -133,7 +137,7 @@
 </li>
 <li>
 <p>
-<a href="config_encoding.html">Encoding</a>: Compression settings.
+<a href="config_info_sources.html">Info Sources</a>: Defining information sources.
 </p>
 </li>
 <li>
@@ -192,6 +196,16 @@
 <a href="cookbook_authentication.html">Authentication</a>: How to set up authenticated resources.
 </p>
 </li>
+<li>
+<p>
+<a href="cookbook_maintenance.html">Maintenance</a>: Seamlessly switching to maintenance mode.
+</p>
+</li>
+<li>
+<p>
+<a href="cookbook_redirs.html">Redirections</a>: Common redirection examples
+</p>
+</li>
 </ol></div>
 <div class="sidebarblock">
 <div class="sidebar-content">
@@ -220,6 +234,11 @@
 </li>
 <li>
 <p>
+<a href="modules_handlers_custom_error.html">HTTP error</a>: Generate custom HTTP errors.
+</p>
+</li>
+<li>
+<p>
 <a href="modules_handlers_redir.html">Redirection</a>: URL forwards and rewrites.
 </p>
 </li>
@@ -241,6 +260,11 @@
 <li>
 <p>
 <a href="modules_handlers_server_info.html">Server Info</a>: Provide info about Cherokee.
+</p>
+</li>
+<li>
+<p>
+<a href="modules_handlers_dbslayer.html">MySQL bridge</a>: MySQL over HTTP bridge.
 </p>
 </li>
 <li>
@@ -351,7 +375,22 @@
 <div class="ilist"><ul>
 <li>
 <p>
+<a href="other_faq.html">FAQ</a>: List of Frequently Asked Questions.
+</p>
+</li>
+<li>
+<p>
 <a href="other_goodies.html">Cherokee Goodies</a>: Interesting Cherokee features.
+</p>
+</li>
+<li>
+<p>
+<a href="other_signals.html">Signals</a>: Signals supported by Cherokee.
+</p>
+</li>
+<li>
+<p>
+<a href="other_community.html">Community</a>: More information sources.
 </p>
 </li>
 </ul></div>
@@ -374,7 +413,6 @@
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2008-08-19 11:58:47 BST
 </div>
 </div>
 </body>

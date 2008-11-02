@@ -64,13 +64,15 @@ CHEROKEE_BEGIN_DECLS
 #define ERROR_MAX_BUFSIZE	512	/* max. buffer size */
 
 #ifdef _WIN32
-# define cherokee_stat(path,buf)  cherokee_win32_stat(path,buf)
-# define cherokee_lstat(path,buf) cherokee_win32_stat(path,buf)
-# define cherokee_error           GetLastError()
+# define cherokee_stat(path,buf)   cherokee_win32_stat(path,buf)
+# define cherokee_lstat(path,buf)  cherokee_win32_stat(path,buf)
+# define cherokee_error            GetLastError()
+# define cherokee_mkdir(path,perm) mkdir(path)
 #else
-# define cherokee_stat(path,buf)  stat(path,buf)
-# define cherokee_lstat(path,buf) lstat(path,buf)
-# define cherokee_error           errno
+# define cherokee_stat(path,buf)   stat(path,buf)
+# define cherokee_lstat(path,buf)  lstat(path,buf)
+# define cherokee_error            errno
+# define cherokee_mkdir(path,perm) mkdir(path,perm)
 #endif
 
 /* Some global information
@@ -88,6 +90,7 @@ char   *cherokee_min_str            (char *s1, char *s2);
 char   *cherokee_max_str            (char *s1, char *s2);
 size_t  cherokee_strlcat            (char *dst, const char *src, size_t siz);
 int     cherokee_estimate_va_length (char *format, va_list ap);
+long    cherokee_eval_formated_time (cherokee_buffer_t *buf);  
 ret_t   cherokee_fix_dirpath        (cherokee_buffer_t *buf);
 
 /* Time management functions
@@ -106,22 +109,36 @@ ret_t cherokee_getgrnam      (const char *name, struct group *pwbuf, char *buf, 
 ret_t cherokee_mkstemp       (cherokee_buffer_t *buffer, int *fd);
 ret_t cherokee_mkdir_p       (cherokee_buffer_t *path);
 
-/* Misc
+/* File descriptors
  */
 ret_t cherokee_fd_set_nonblocking (int fd, cherokee_boolean_t enable);
 ret_t cherokee_fd_set_nodelay     (int fd, cherokee_boolean_t enable);
 ret_t cherokee_fd_set_closexec    (int fd);
 ret_t cherokee_fd_close           (int fd);
 
+/* Misc
+ */
 ret_t cherokee_sys_fdlimit_get (cuint_t *limit);
 ret_t cherokee_sys_fdlimit_set (cuint_t  limit);
 ret_t cherokee_get_shell       (const char **shell, const char **binary);
 void  cherokee_print_wrapped   (cherokee_buffer_t *buffer);
 
+/* IO vectors
+ */
+ret_t cherokee_iovec_skip_sent (struct iovec orig[], uint16_t  orig_len,
+				struct iovec dest[], uint16_t *dest_len,
+				size_t sent);
+ret_t cherokee_iovec_was_sent  (struct iovec orig[], uint16_t orig_len, size_t sent);
+
 /* Debug
  */
 void  cherokee_trace           (const char *entry, const char *file, int line, const char *func, const char *fmt, ...);
 void  cherokee_print_errno     (int error, char *format, ...);
+
+/* Path management
+ */
+ret_t cherokee_path_short         (cherokee_buffer_t *path);
+ret_t cherokee_path_arg_eval      (cherokee_buffer_t *path);
 
 /* Path walking
  */
@@ -135,8 +152,6 @@ ret_t cherokee_split_arguments    (cherokee_buffer_t *request,
 				   int                init_pos,
 				   char             **arguments,
 				   int               *arguments_len);
-
-ret_t cherokee_short_path         (cherokee_buffer_t *path);
 
 ret_t cherokee_parse_query_string (cherokee_buffer_t *qstring, 
 				   cherokee_avl_t  *arguments);

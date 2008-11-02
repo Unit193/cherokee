@@ -1,15 +1,17 @@
 HANDLERS = [
-    ('',            'None'),
-    ('common',      'List & Send'),
-    ('file',        'Static content'),
-    ('dirlist',     'Only listing'),
-    ('redir',       'Redirection'),
-    ('cgi',         'CGI'),
-    ('fcgi',        'FastCGI'),
-    ('scgi',        'SCGI'),
-    ('server_info', 'Server Info'),
-    ('mirror',      'Generic balancer'),
-    ('admin',       'Remote Administration')
+    ('',             'None'),
+    ('common',       'List & Send'),
+    ('file',         'Static content'),
+    ('dirlist',      'Only listing'),
+    ('redir',        'Redirection'),
+    ('cgi',          'CGI'),
+    ('fcgi',         'FastCGI'),
+    ('scgi',         'SCGI'),
+    ('server_info',  'Server Info'),
+    ('dbslayer',     'MySQL bridge'),
+    ('mirror',       'Generic balancer'),
+    ('custom_error', 'HTTP error'),
+    ('admin',        'Remote Administration')
 ]
 
 ERROR_HANDLERS = [
@@ -52,7 +54,7 @@ BALANCERS = [
     ('round_robin', "Round Robin")
 ]
 
-BALANCER_TYPES = [
+SOURCE_TYPES = [
     ('interpreter', 'Local interpreter'),
     ('host',        'Remote host')
 ]
@@ -106,4 +108,11 @@ RULES = [
     ('request',    'Regular Expression'),
     ('header',     'Header'),
     ('geoip',      'GeoIP')
+]
+
+EXPIRATION_TYPE = [
+    ('',         'Not set'),
+    ('epoch',    'Already expired on 1970'),
+    ('max',      'Do not expire until 2038'),
+    ('time',     'Custom value')
 ]

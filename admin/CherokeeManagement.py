@@ -16,10 +16,10 @@ DEFAULT_PID_LOCATIONS = [
 
 CHEROKEE_MIN_DEFAULT_CONFIG = """# Default configuration
 server!pid_file = %s
-vserver!001!nick = default
-vserver!001!document_root = /tmp
-vserver!001!directory!/!handler = common
-vserver!001!directory!/!priority = 1
+vserver!1!nick = default
+vserver!1!document_root = /tmp
+vserver!1!rule!1!match = default
+vserver!1!rule!1!handler = common
 """ % (DEFAULT_PID_LOCATIONS[0])
 
 
@@ -49,7 +49,7 @@ def cherokee_management_reset ():
 class CherokeeManagement:
     def __init__ (self, cfg):
         self._cfg = cfg
-        self._pid = self._get_guardian_pid()
+        self._pid = self._get_pid (worker=False)
 
     # Public
     #
@@ -73,7 +73,7 @@ class CherokeeManagement:
         def daemonize():
             os.setsid() 
 
-        p = Popen ([CHEROKEE_GUARDIAN, '-C', self._cfg.file], 
+        p = Popen ([CHEROKEE_SERVER, '-C', self._cfg.file], 
                    stdout=PIPE, stderr=PIPE, 
                    preexec_fn=daemonize, close_fds=True)
 
@@ -111,7 +111,7 @@ class CherokeeManagement:
         self._pid = None
         
         # Get the PID
-        pid = self._get_cherokee_pid()
+        pid = self._get_pid (worker=True)
         if not pid: return
 
         # Stop Cherokee
@@ -138,15 +138,16 @@ class CherokeeManagement:
 
     # Protected
     #
-
-    def _get_guardian_pid (self):
-        pid_file = os.path.join (CHEROKEE_VAR_RUN, "cherokee-guardian.pid")
-        return self.__read_pid_file (pid_file)
-
-    def _get_cherokee_pid (self):
+    def _get_pid_path (self, worker):
         pid_file = self._cfg.get_val("server!pid_file")
         if not pid_file:
-            pid_file = os.path.join (CHEROKEE_VAR_RUN, "cherokee-guardian.pid")
+            pid_file = os.path.join (CHEROKEE_VAR_RUN, "cherokee.pid")
+        if worker:
+            pid_file += ".worker"            
+        return pid_file
+
+    def _get_pid (self, worker=False):
+        pid_file = self._get_pid_path(worker)
         return self.__read_pid_file (pid_file)
 
     def _restart (self, graceful=False):
@@ -218,45 +219,41 @@ def cherokee_get_server_info ():
 
     if _server_info == None:
         try:
-            f = os.popen ("%s -i" % (CHEROKEE_SRV_PATH))
-            _server_info = f.read()
-            f.close()
+            f = os.popen ("%s -i" % (CHEROKEE_WORKER))
         except:
-            pass
+            print ("ERROR: Couldn't execute '%s -i'"  % (CHEROKEE_WORKER))
+
+        _server_info = f.read()
+
+        try:
+            f.close()
+        except: pass
 
     return _server_info
 
 
-_built_in_list      = []
-_built_in_list_done = False
-
+_built_in_lists = {}
 
 def cherokee_build_info_has (filter, module):
     # Let's see whether it's built-in
-    global _built_in_list
-    global _built_in_list_done
+    global _built_in_lists
 
-    if not _built_in_list_done:
-        _built_in_list_done = True
+    if not _built_in_lists.has_key(filter):
+        _built_in_lists[filter] = {}
 
-        try:
-            f = os.popen ("%s -i" % (CHEROKEE_SRV_PATH))
-            cont = f.read()
-            f.close()
-        except:
-            pass
+        cont = cherokee_get_server_info()
 
         try:
             filter_string = " %s: " % (filter)
             for l in cont.split("\n"):
                 if l.startswith(filter_string):
                     line = l.replace (filter_string, "")
+                    _built_in_lists[filter] = line.split(" ")
                     break
-            _built_in_list = line.split(" ")
         except:
             pass
 
-    return module in _built_in_list
+    return module in _built_in_lists[filter]
 
 def cherokee_has_plugin (module):
     # Check for the dynamic plug-in

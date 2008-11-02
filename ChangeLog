@@ -1,6 +1,666 @@
+2008-10-06  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* 0.9.3 released
+
+2008-10-05  Alvaro Lopez Ortega  <alvaro@alobbs.com>
+
+	* cherokee/cache.c, cherokee/iocache.c: Fixes a stability issue.
+
+2008-10-04  Alvaro Lopez Ortega  <alvaro@alobbs.com>
+
+	* cherokee/cache.c, cherokee/iocache.c, cherokee/iocache.h: Fixes
+	one more bug in the cache implementation. (sigh!)
+
+2008-10-02  Alvaro Lopez Ortega  <alvaro@alobbs.com>
+
+	* configure.in: 0.9.2 Released
+
+2008-10-02  Alvaro Lopez Ortega  <alvaro@alobbs.com>
+
+	* cherokee/cache.h, cherokee/cache.c: Fixes the cache.  There were
+	a couple of bugs in the implementation that was leading the server
+	to random crashes.  The internal cache indexes work as expected.
+
+2008-09-30  Taher Shihadeh  <taher@unixwars.com>
+
+	* admin/ModuleGeoip.py, admin/ModuleDefault.py,
+	admin/ModuleErrorNn.py, admin/ModuleRequest.py,
+	admin/ModuleExtensions.py, admin/ModuleBalancer.py,
+	admin/ModuleDirectory.py, admin/ModuleErrorRedir.py: fixes and
+	prevents regressions on Option selection entries.
+
+2008-09-29  Alvaro Lopez Ortega  <alvaro@alobbs.com>
+
+	* cherokee/cache.c, cherokee/cache.h, cherokee/handler_file.c,
+	cherokee/iocache.c, cherokee/iocache.h: Takes care of a potential
+	concurrency issue that could ended up leading the server to crash.
+
+	* cherokee/thread.c, cherokee/server.c: Fixes an error while
+	freeing the memory on exit.
+
+	* cherokee/logger_writer.c (cherokee_logger_writer_open): Open the
+	log with the O_NOFOLLOW option (security enhancenment).
+
+	* cherokee/macros.h, cherokee/connection-protected.h,
+	cherokee/connection.c, qa/174-Respins-Limit.py, qa/Makefile.am:
+	Adds a protection against internal respin infinite loops. By
+	default the server can perform up to 16 internal redirections
+	before returning a 500 error.
+
+2008-09-27  Alvaro Lopez Ortega  <alvaro@alobbs.com>
+
+	* admin/ModuleAuth.py, admin/ModuleDirlist.py,
+	admin/ModuleCustomError.py, admin/ModuleHeader.py,
+	admin/PageGeneral.py, admin/ModuleBalancer.py: Auto-submit was not
+	working for a few Option selection entries. This patch should fix
+	it; although I'd wait a couple of days before applying it to the
+	0.9 branch; it might introduce unexpected regressions.
+
+2008-09-26  Alvaro Lopez Ortega  <alvaro@alobbs.com>
+
+	* Cherokee 0.9.0 released
+
+	* admin/PageAdvanced.py: Adds a missing text entry validation.
+
+	* admin/PageIcon.py (PageIcon._render_icon_list): Tiny style
+	change.  Now the 'special icons' tab looks like the rest.
+
+2008-09-26  Taher Shihadeh  <taher@unixwars.com>
+
+	* admin/static/js/common.js, admin/Form.py,
+	admin/PageInfoSource.py: fixed a missing case related to issue 131.
+
+2008-09-26  Alvaro Lopez Ortega  <alvaro@alobbs.com>
+
+	* cherokee/balancer.c (cherokee_balancer_mrproper): This should
+	fix bug: http://code.google.com/p/cherokee/issues/detail?id=129
+
+	* cherokee/main_worker.c (wait_process): Improves the SIGCHLD
+	signal management.
+
+	* admin/PageAdvanced.py: Fixes an issue setting the max keep-alive
+	time. Two validations rules were interfering with each other.
+
+	* admin/ModuleBalancer.py (ModuleBalancerGeneric._op_render): Adds
+	a link to the source configuration page.
+
+2008-09-25  Taher Shihadeh  <taher@unixwars.com>
+
+	* admin/Form.py, admin/ModuleRedir.py, admin/static/js/common.js:
+	fixes http://code.google.com/p/cherokee/issues/detail?id=131. PS:
+	I hate JavaScript.
+
+2008-09-25  Alvaro Lopez Ortega  <alvaro@alobbs.com>
+
+	* cherokee/source_interpreter.h,
+	cherokee/source_interpreter.c (cherokee_source_interpreter_spawn):
+	Do not allow the source to be spawned in pararell.
+
+	* cherokee/server.c (cherokee_server_initialize): Fixes a problem
+	with SSL/TLS initialization.
+
+	* cherokee/main_worker.c (common_server_initialization): Instead
+	of ignoring SIGCHLD, let's wait for our child. It sounds slightly
+	more polite.
+
+	* cherokee/socket.c (cherokee_socket_init_tls): Checks whether a
+	virtual server supports SSL before trying to accessing its
+	certificates.
+
+2008-09-24  Alvaro Lopez Ortega  <alvaro@alobbs.com>
+
+	* cherokee/socket.c (cherokee_socket_init_client_tls): CA checks
+	clean up.
+
+	* cherokee/server.c (init_vservers_tls): It a virtual server
+	cannot initialize its SSL engine, it should be handled like an
+	error.
+
+	* cherokee/handler_common.c (cherokee_handler_common_new): Reply
+	the the right HTTP error (415 Unsupported Media Type) when trying
+	to server a special file (not a file, nor a directory).
+
+	* cherokee/main.c (set_signals): SIGUSR2 management was missing.
+
+	* cherokee/handler_dbslayer.c (send_query): From now on, the MySQL
+	balancer gets the SQL query from the requested URL. Previously, it
+	was using POST to get the query (it just looked much cleaner).
+	However, the replies could not be cached by a proxy cache, and
+	that's a big enough problem for changinf it.
+
+	* contrib/cherokee: Updated to the new signal scheme. By Antonio
+	Perez <aperez@skarcha.com>
+
+2008-09-24  Taher Shihadeh  <taher@unixwars.com>
+
+	* static/css/cherokee.css: addresses isue
+	http://code.google.com/p/cherokee/issues/detail?id=85
+
+2008-09-23  Taher Shihadeh  <taher@unixwars.com>
+
+	* admin/Page.py, admin/static/js/thickbox.js: added another jQuery
+	plugin to finish remaking the help system.
+
+2008-09-23  Alvaro Lopez Ortega  <alvaro@alobbs.com>
+
+	* cherokee/handler_dbslayer.c, cherokee/dwriter.c,
+	cherokee/dwriter.h: Fixes a couple of problems. Now it uses a
+	different Mime type for each language. Besides, it escapes the
+	strings so the client interpreter can parse (evaluate) the result.
+
+2008-09-23  Taher Shihadeh  <taher@unixwars.com>
+
+	* admin/PageEntry.py, admin/ModuleRedir.py,
+	admin/ModuleServerInfo.py, admin/Form.py, admin/PageInfoSource.py:
+	addressed usability issues
+	http://code.google.com/p/cherokee/issues/detail?id=111 and
+	http://code.google.com/p/cherokee/issues/detail?id=125
+
+	* doc/cookbook_*, doc/modules_*: Addressed issue #126:
+	http://code.google.com/p/cherokee/issues/detail?id=126
+
+2008-09-23  Alvaro Lopez Ortega  <alvaro@alobbs.com>
+
+	* cherokee/rule_directory.c (match): Fixes a problem with the
+	directory rule. Requests starting as a directory entry were
+	matched with it, even if there were targeting another file.  If
+	fixes bug: http://code.google.com/p/cherokee/issues/detail?id=68
+
+2008-09-22  Taher Shihadeh  <taher@unixwars.com>
+
+	* doc/cookbook_redirs.txt, doc/cookbook_maintenance.txt,
+	media/images/cookbook_redir*,
+	doc/media/images/cookbook_maintenance*, doc/cookbook_redirs.txt,
+	doc/other_community.txt: some new sections were suggested.
+
+2008-09-22  Alvaro Lopez Ortega  <alvaro@alobbs.com>
+
+	* cherokee/server.c (cherokee_server_step): It was taking the
+	server too long to die. Now it does not way for the threads to
+	stop, but it takes care of closing all the connections, flush the
+	log files and point that the server ought not to accept new
+	connections (while it's dying).
+
+	* cherokee/socket.c (cherokee_socket_connect): Fixes an issues
+	spawaing the PHP interpreter. It was failing when it used a Unix
+	socket as entry point for accepting FastCGI connections.
+
+2008-09-22  Taher Shihadeh  <taher@unixwars.com>
+
+	* admin/Makefile.am: ModuleCustomError was not being installed.
+
+2008-09-22  Alvaro Lopez Ortega  <alvaro@alobbs.com>
+
+	* cherokee/source_interpreter.c, cherokee/source_interpreter.h,
+	cherokee/main_admin.c: Adds a 'debug' mode to cherokee-admin.  It
+	helps to debug the administration back-end. If cherokee-admin is
+	executed with the -x parameter, it will print the backend errors
+	in the terminal when it was executed from, otherwise those errors
+	and debug information would be lost.
+
+	* cherokee/main.c (figure_worker_path): Now Cherokee uses the
+	cherokee-worker next to it (instead of the executable located at
+	the default system path).
+
+2008-09-21  Alvaro Lopez Ortega  <alvaro@alobbs.com>
+
+	* cherokee/main_worker.c, cherokee/util.c, cherokee/util.h,
+	cherokee/connection.c: Fixes bug #124:
+	http://code.google.com/p/cherokee/issues/detail?id=124
+	The server accepts relative paths in the -r parameter now.
+
+2008-09-18  Taher Shihadeh  <taher@unixwars.com>
+
+        * doc/index.txt, doc/other_signals.txt, doc/other_faq.txt,
+        doc/other_goodies.txt: documentation updates.
+
+2008-09-18  Alvaro Lopez Ortega  <alvaro@alobbs.com>
+
+	* cherokee/macros.h, cherokee/main_worker.c, cherokee/main.c:
+	Fixes a infite loop when a wrong parameter was supplied to
+	cherokee (cherokee was relaunching the server worker with the same
+	wrong parameter).
+
+	* cherokee.conf.sample.pre: Cherokee is handling Keep-Alive way
+	much better nowadays. It's my believe that 15 seconds is a
+	reasonable timeout value for the upcoming version.
+
+2008-09-17  Taher Shihadeh  <taher@unixwars.com>
+
+	* admin/Module.py: fixed minibug that duplicated empty entry in
+	Handler list for PageEntry form.
+
+2008-09-16  Taher Shihadeh  <taher@unixwars.com>
+
+	* doc/media/images/admin_advanced1.png,
+	doc/media/images/admin_advanced2.png,
+	doc/media/images/admin_handler_dbslayer.png added.
+
+	* doc/basics_installation.txtdoc/config_advanced.txt,
+	doc/basics_installation_windows.txt, doc/modules_balancers.txt,
+	doc/dev_debug.txt, doc/modules_handlers.txt,
+	doc/basics_why_cherokee.txt, doc/config_general.txt,
+	doc/index.txt, doc/config_quickstart.txt,
+	doc/cookbook_optimizations.txt, doc/dev_cherokee.conf.txt,
+	doc/modules.txt, doc/basics_installation_svn.txt,
+	doc/basics_installation_unix.txt: documentation is up to date once more.
+
+2008-09-15  Taher Shihadeh  <taher@unixwars.com>
+
+	* doc/config_advanced.txt, doc/modules_encoders_gzip.txt,
+	doc/config_general.txt, doc/index.txt, doc/dev_cherokee.conf.txt,
+	doc/config_virtual_servers_rule.txt, doc/modules_encoders.txt:
+	Changes until r1949 reflected.
+
+2008-09-15  Taher Shihadeh  <taher@unixwars.com>
+
+	* admin/PageStatus.py, admin/ModuleBalancer.py,
+	admin/PageInfoSource.py: minimal fixes + help updates.
+
+	* doc/media/images/admin_handler_fastcgi1.png,
+	doc/media/images/admin_handler_cgi.png,
+	doc/media/images/admin_handler_fastcgi2.png,
+	doc/media/images/admin_info_sources.png: screenshots needed a
+	refresh.
+
+	* doc/config.txt, doc/modules_handlers_cgi.txt,
+	doc/cookbook_php.txt, doc/modules_handlers_fcgi.txt,
+	doc/modules_balancers.txt, doc/config_info_sources.txt,
+	doc/config_status.txt: changes were not reflected since r1915.
+
+2008-09-15  Alvaro Lopez Ortega  <alvaro@alobbs.com>
+
+	* admin/server.py, admin/Page.py, admin/PageAppServers.py,
+	admin/static/css/cherokee.css, admin/PageInfoSource.py:
+	"Application server" has been renamed to "Information Source".  As
+	long as this list contains pointers to application servers and
+	data bases it is a better naming.
+
+	* admin/ModuleCgi.py, admin/ModuleScgi.py, admin/ModuleFcgi.py:
+	The 'check file' option is still useful when the handler manages
+	an extension. (A few days ago I removed them completelly from the
+	FastCGI and SCGI configuration pages). Now it is displayed only
+	hidden when a directory is being configured.
+
+	* cherokee/server.c (set_server_fd_socket_opts): TCP_DEFER_ACCEPT
+	should be set in the TCP level rather than in the SOCKET level.
+	Additionally, it ought not to check whether it success, it's fine
+	even if it could not set the option.
+
+2008-09-14  Alvaro Lopez Ortega  <alvaro@alobbs.com>
+
+	* configure.in, admin/Makefile.am: Adds a new --disable-admin
+	option. It stops cherokee-admin from installing.
+
+2008-09-13  Alvaro Lopez Ortega  <alvaro@alobbs.com>
+
+	* admin/PageAdvanced.py, admin/PageMime.py, admin/PageIcon.py:
+	Adds a few missing references to help pages.
+
+	* admin/PageEntry.py, admin/ModuleHtdigest.py,
+	admin/ModuleLdap.py, admin/ModulePlain.py, admin/ModulePam.py,
+	admin/ModuleHtpasswd.py, admin/ModuleMysql.py: Adds contextual
+	help to the validator modules.
+
+2008-09-12  Alvaro Lopez Ortega  <alvaro@alobbs.com>
+
+	* ModuleAdmin.py, PageEntry.py, Theme.py, ModuleRedir.py, Page.py,
+	ModuleDirlist.py, Module.py, ModuleFile.py, ModuleServerInfo.py,
+	ModuleCustomError.py, ModuleScgi.py, ModuleCgi.py,
+	ModuleDbslayer.py, PageVServers.py, PageStatus.py,
+	ModuleCommon.py, PageGeneral.py, ModuleFcgi.py, PageVServer.py,
+	ModuleMirror.py: First steps to rework the whole help subsystem.
+	From now on, Cherokee-admin will use the main documentation rather
+	than the short texts it has been using until now.
+
+	* admin/advanced.help.html, admin/feedback.help.html,
+	admin/mime.help.html, admin/vservers.help.html,
+	admin/appserver.help.html, admin/general.help.html,
+	admin/status.help.html, admin/entry.help.html,
+	admin/icon.help.html, admin/vserver.help.html: Removed.
+
+	* cherokee/main_admin.c, constants.h.pre, admin/configured.py.pre,
+	admin/Makefile.am, Makefile.am: Exports a new /help web directory
+	from cherokee-admin. It points to the installed documentation.
+
+	* cherokee/Makefile.am, cherokee/matching_list.c,
+	cherokee/matching_list.h: The matching list class is no longer
+	needed. Removed.
+
+	* contrib/08to09.py (convert): Updated to remove the old
+	server!encoder entries. There is no way to convert those old
+	entries, so removing them looks like the right thing to do in this
+	case.
+
+	* cherokee/virtual_server.c, cherokee.conf.sample.pre,
+	admin/PageEntry.py, admin/server.py, admin/Page.py,
+	admin/encoder.help.html, admin/PageEncoders.py,
+	admin/static/css/cherokee.css, admin/Makefile.am,
+	qa/089-gzip-encoding.py, qa/168-Deflate-Encoding.py:
+	Dusts the latest encoders support change.
+
+2008-09-11  Alvaro Lopez Ortega  <alvaro@alobbs.com>
+
+	* cherokee/virtual_server.c, cherokee/encoder_table.c,
+	cherokee/encoder_table.h, cherokee/Makefile.am,
+	cherokee/connection-protected.h, cherokee/config_entry.c,
+	cherokee/config_entry.h, cherokee/thread.c,
+	cherokee/server-protected.h, cherokee/connection.c,
+	cherokee/server.c, qa/089-gzip-encoding.py, qa/run-tests.py,
+	qa/168-Deflate-Encoding.py: Encoders are now a configuration
+	entry (directories, regexs, extensions, etc) property rather than
+	a global server one.
+
+	* admin/ModuleDbslayer.py (ModuleDbslayer._op_apply_changes): Add
+	the cherokee-admin module for the new DBSlayer handler.
+
+	* cherokee/handler_dbslayer.h, cherokee/handler_dbslayer.c,
+	cherokee/dwriter.c, cherokee/dwrite.h, configure.in,
+	cherokee/Makefile.am: Adds our brand new data base
+	bridge/serializer/balancer.
+
+2008-09-08  Alvaro Lopez Ortega  <alvaro@alobbs.com>
+
+	* cherokee/source_interpreter.c (cherokee_source_interpreter_spawn):
+	Closes stdout and stderr. These fds should not be opened; the
+	system buffers might fill up while the interpreter prints debug
+	and it would stop working because of that.
+
+	* cherokee/connection.c, cherokee/connection-protected.h,
+	cherokee/util.c: Improves the Chunked encoding performance.
+
+	* cherokee/handler_dirlist.c, cherokee/handler_dirlist.h: Adds a
+	new state to ensure that when the list has been generated, it will
+	return eof even it is called more than once.
+
+2008-09-07  Alvaro Lopez Ortega  <alvaro@alobbs.com>
+
+	* contrib/08to09.py, contrib/Makefile.am: Added a new
+	configuration file converter. It reads Cherokee 0.8.x files and
+	translates them to the new Cherokee 0.9 format.
+
+	* qa/007-Missing-Host.py , qa/020-VirtualHost.py ,
+	qa/021-VirtualHost2.py , qa/022-NoHost.py , qa/023-Host.py ,
+	qa/024-Host+Port.py , qa/026-Host-Broken-Dot.py ,
+	qa/031-Post+urlencoded2.py , qa/042-Pipelining.py ,
+	qa/043-Pipelining2.py , qa/044-Home.py , qa/048-NN.py ,
+	qa/049-NN-broken.py , qa/094-URL-request.py , qa/105-If-Range.py ,
+	qa/106-If-Range2.py , qa/116-RequestTiny.py ,
+	qa/117-DomainToDir.py , qa/121-NoUserDir.py , qa/122-Methods.py ,
+	qa/124-DomainToDir2.py , qa/125-domain-redir1.py ,
+	qa/135-RedirParams.py , qa/139-domain-wildcards1.py,
+	qa/153-SCGI-vars-root.py, qa/160-RuleNot1.py, qa/161-RuleNot2.py,
+	qa/166-xsendfile1.py, qa/171-SCGI-Keepalive.py,
+	qa/172-Chunked-CGI.py, qa/173-Chunked-SCGI.py: QA tests using
+	HTTP/1.1 must send the "Connection: Close" header.
+
+	* qa/172-Chunked-CGI.py: This QA was failing because of an
+	unexpected new line character at the end of the output.
+
+	* qa/173-Chunked-SCGI.py, qa/Makefile.am: Adds a new QA test to
+	check whether SCGI works with chunked encoding.
+
+	* cherokee/thread.c: Fixes keep-alive timeout. It was not closing
+	the connection at the right time when it was compiled without
+	pthread support.
+
+	* cherokee/connection.c (cherokee_connection_set_keepalive): When
+	using HTTP/1.1 Cherokee should use keep-alive by default.
+	Regression reported by Rui Lopes <rgl@ruilopes.com>.
+
+	* cherokee/util.c: Fixes a problem compiling without pthread.
+
+2008-09-06  Alvaro Lopez Ortega  <alvaro@alobbs.com>
+
+	* cherokee/main.c (check_worker_version): Checks whether Cherokee
+	and Cherokee-worker were compiled from the same version. The have
+	been a few problem due to broken installation that mixed binaries
+	from different versions.
+
+2008-09-05  Alvaro Lopez Ortega  <alvaro@alobbs.com>
+
+	* admin/Page.py, admin/static/css/cherokee.css: Adds a new menu
+	entry to access the Application Server section.
+
+	* cherokee/balancer., cherokee/balancer.h, cherokee/source.h,
+	cherokee/main_admin.c, cherokee/balancer_round_robin.c,
+	cherokee/balancer_round_robin.h, cherokee/server-protected.h,
+	cherokee/connection.c, cherokee/server.c, cherokee.conf.sample.,
+	admin/config.py, admin/server.py, admin/PageAppServers.py,
+	admin/consts.py, admin/ModuleBalancer.py, qa/127-SCGI-Post.py,
+	qa/conf.py, qa/153-SCGI-vars-root.py, qa/140-SCGI-EmptyVars.py,
+	qa/run-tests.py, qa/help.py, qa/172-Chunked-CGI.py,
+	qa/126-SCGI.py, qa/151-SCGI-vars.py, qa/util.py,
+	qa/152-SCGI-vars2.py, qa/171-SCGI-Keepalive.py,
+	qa/141-FastCGI-EmptyVars.py, qa/142-SCGI-ExtraVars.py: This
+	jumbo-patch modifies the way in which the balancers used to work.
+	From now on balancers (and therefore the FastCGI and SCGI support)
+	will use the new concept to 'Application Servers'. Be careful,
+	this change does change the configuration file format, although it
+	makes much easier to configure the same application server across
+	different virtual servers. The most common case: PHP.
+
+	* admin/PageAdvanced.py, admin/PageGeneral.py: The keepalive
+	option has been moved to the advanced page. A new option to enable
+	or disable Chunked encoding has been added as well.
+
+	* cherokee/connection-protected.h, cherokee/handler_cgi_base.c,
+	cherokee/handler_cgi_base.h, cherokee/handler.h, cherokee/util.h,
+	cherokee/util.c, cherokee/connection.c: Reimplements the Chunked
+	encoding support.  Now it is system-wide and does less memory
+	moves/allocations.
+
+2008-09-04  Alvaro Lopez Ortega  <alvaro@alobbs.com>
+
+	* admin/CherokeeManagement.py: Updated the 'last option'
+	configuration snippet to the current format.
+
+	* cherokee/connection-protected.h, cherokee/handler_cgi_base.c,
+	cherokee/handler_cgi_base.h, cherokee/connection.c: Fixes a
+	chunked encoding issue while speeds it up. Now Chunked encoded
+	connections are faster than with the first implementation.
+
+2008-09-03  Alvaro Lopez Ortega  <alvaro@alobbs.com>
+
+	* cherokee/handler_server_info.c (add_data_sent_row): Fixes a
+	memory initialization issue.
+
+	* cherokee/handler_cgi_base.c (cherokee_handler_cgi_base_add_headers):
+	Fixes the chunked encoding support. It was not being used unless
+	the applicating sent the Content-Length in which case a Keep-Alive
+	reply was easier and faster to perform. Reported by Cesar Fernandez.
+
+	* qa/172-Chunked-CGI.py, qa/Makefile.am: Adds a new QA to cover
+	Chunked encoded responses from CGIs.
+
+	* qa/138-ChangeUser-cgi.py (Test.Precondition): It does not need
+	PHP.
+
+2008-09-02  Alvaro Lopez Ortega  <alvaro@alobbs.com>
+
+	* cherokee/source_interpreter.c (cherokee_source_interpreter_spawn):
+	Ignores SIGCHLD trying to get rid as soon as possible of the zombi
+	processes that are generated randomly when the server spawns
+	php-cgi processes.
+
+	* admin/config.py (Config.serialize.sorter): Fixed sorting
+	function.  It is just a configuration file aesthetical fix.
+
+	* admin/server.py, admin/main.template.html, admin/Page.py,
+	admin/main.help.html, admin/PageStatus.py, admin/PageMain.py,
+	admin/static/css/cherokee.css, admin/Makefile.am: Adds a new
+	"Status" menu entry in Cherokee admin.
+
+	* cherokee/main.c (process_launch): Report whenever the Cherokee
+	worker could not be spawned.
+
+	* admin/PageGeneral.py (PageGeneral._render_content): Fixes de TLS
+	port configuration key. Reported by César Fernández Gago
+	<cesar@pk2.org>
+
+2008-09-01  Alvaro Lopez Ortega  <alvaro@alobbs.com>
+
+	* cherokee/virtual_server.c, cherokee/server.c: The log opening
+	order has changed. Now it creates the log files as the web server
+	user (instead of root, in case it was launched as super-user).
+
+	* cherokee/logger_writer.c: Open the logs with perms 0640 rather
+	than 0644. It is not "Others"' business what the server does.
+
+	* cherokee/main.c (figure_pid_file_path): Fixes the functionality,
+	it was not working properly because and incorrect string
+	comparison.
+
+	* cherokee/main_worker.c, cherokee/handler_cgi_base.c,
+	cherokee/thread.c, cherokee/server-protected.h, cherokee/server.c:
+	Some signal management work.
+
+2008-08-31  Alvaro Lopez Ortega  <alvaro@alobbs.com>
+
+	* cherokee.1, cherokee-worker.1, Makefile.am: Updates the manual
+	pages. Now cherokee.1 shows the information and cherokee-worker.1
+	is only a note. Additionally information about the signal handling
+	was added to the cherokee man page.
+
+	* cherokee/main_worker.c: Updates the signals. There were not
+	coherent with the signals handled by main.c.
+
+2008-08-31  Taher Shihadeh <taher@unixwars.com>
+
+	* cherokee.1, cherokee-worker.1: changed man pages to accomodate
+	recent program name changes.
+
+	* doc/basics_running_cherokee.txt, doc/index.txt, doc/bundle.txt,
+	doc/bundle_cherokee.txt: changed docs to reflect the new names.
+
+2008-08-31  Alvaro Lopez Ortega  <alvaro@alobbs.com>
+
+	* cherokee/Makefile.am, cherokee/main.c, cherokee/main_guardian.c,
+	cherokee/server.c, constants.h.pre, admin/configured.py.pre,
+	admin/PageMain.py, admin/CherokeeManagement.py: Cherokee-guardian
+	becomes Cherokee, and Cherokee is renamed to Cherokee-worker. The
+	idea behind this change is to use the "guardian" feature by
+	default.
+
+2008-08-30  Alvaro Lopez Ortega  <alvaro@alobbs.com>
+
+	* admin/ModuleAdmin.py, admin/PageEntry.py, admin/server.py,
+	admin/ModuleRedir.py, admin/ModuleDirlist.py,
+	admin/ModuleHandler.py, admin/Module.py, admin/ModuleFile.py,
+	admin/ModuleServerInfo.py, admin/ModuleCustomError.py,
+	admin/ModuleScgi.py, admin/ModuleCgi.py, admin/ModuleCommon.py,
+	admin/ModuleFcgi.py, admin/PageVServer.py, admin/RuleList.py,
+	admin/ModuleMirror.py: Hides the Document Root entry box depending
+	on the case. There were a few handler with which did not make
+	sense to show it such as FastCGI, SCGI, redirections, server info,
+	etc.
+
+	* admin/config.py: Adds a couple of convenience methods and
+	improves the serialization.
+
+	* admin/ModuleCgi.py, admin/ModuleFcgi.py, admin/ModuleScgi.py:
+	Hides the "script alias", "change user" and "check file" options
+	in the FastCGI and SCGI modules. There barely made sense there.
+
+	* admin/CherokeeManagement.py (cherokee_build_info_has): This
+	function was randomly failing because a problem with the caching
+	structure.  This patch fixing the problem.
+
+2008-08-29  Alvaro Lopez Ortega  <alvaro@alobbs.com>
+
+	* cherokee/socket.h (OPENSSL_NO_TLSEXT): Fixes the twisted
+	OPENSSL_NO_TLSEXT define. It looks wrong to require a define in
+	case a feature is NOT present on the system.
+
+	* cherokee/socket.c, cherokee/connection-protected.h,
+	cherokee/socket.h, cherokee/source.c, cherokee/thread.c,
+	cherokee/thread.h, cherokee/handler_scgi.c, cherokee/server.c,
+	cherokee/server-protected.h, cherokee/connection.c: This patch
+	fixes a problem with Keep-Alive connections. It also cleans up a
+	few related methods.
+
+2008-08-28  Alvaro Lopez Ortega  <alvaro@alobbs.com>
+
+	* cherokee.conf.sample.pre: Fixes an absurdly high default
+	timeout.
+
+2008-08-27  Alvaro Lopez Ortega  <alvaro@alobbs.com>
+
+	* cherokee/handler_cgi_base.c (cherokee_handler_cgi_base_build_basic_env):
+	It was not using the right SERVER_SOFTWARE string.
+
+	* cherokee/connection.c (cherokee_connection_build_header): Fixes
+	a problem with scgi/fcgi/cgi and keep-alive connections. Reported
+	by Rui Lopes <rgl@ruilopes.com>
+
+	* qa/171-SCGI-Keepalive.py, qa/Makefile.am: Adds a new QA test. It
+	ensures that the SCGI handler replies Connection: Keep-Alive
+	connections without closing the connection.
+
+2008-08-26  Alvaro Lopez Ortega  <alvaro@alobbs.com>
+
+	* cget/Makefile.am (cget_LDADD): Added libcherokee-base.la to the
+	linking paramater of cget. This missing parameter might have
+	something to do with a compilation issue on LinuxFromScratch.
+
+2008-08-25  Alvaro Lopez Ortega  <alvaro@alobbs.com>
+
+	* cherokee/virtual_server.c: There was a wrong #ifdef that made
+	the build to fail if compiling without OpenSSL. Patch by Rui Lopes
+	<rgl@ruilopes.com>
+
+	* cherokee/http.h (http_method_with_input): PUT has also
+	input. Reported/Patched by Stefan de Konink <skinkie@xs4all.nl>
+
+2008-08-21  Alvaro Lopez Ortega  <alvaro@alobbs.com>
+
+	* cherokee/virtual_server.c, cherokee/virtual_server.h,
+	cherokee/socket.c: Adds TLS SNI support to the GNUTLS backend.
+
+	* cherokee/virtual_server.c, cherokee/socket.c, cherokee/socket.h,
+	cherokee/downloader.c: Adds TLS SNI support to the OpenSSL
+	backend.
+
+2008-08-20  Alvaro Lopez Ortega  <alvaro@alobbs.com>
+
+	* cherokee/handler_custom_error.c, configure.in,
+	cherokee/handler_custom_error.h, cherokee/Makefile.am,
+	admin/ModuleCustomError.py, admin/consts.py: This patch adds a new
+	handler for replying custom HTTP error codes. It includes both the
+	server side and the administrarion interface module.
+
+	* cherokee/virtual_server.c, cherokee/util.c, cherokee/util.h,
+	admin/PageEntry.py: Adds support for time extensions in the
+	"Expire" sections. For instance, now it allows setting "2h" for
+	two hours, or "1w" for one week.
+
+	* admin/static/js/common.js: Fixes a weird problem with Firedfox.
+	If window.location.reload() is called it pops a dialog asking
+	whether it should resend the last post. Using the twisted:
+	window.location = window.location assignament it does the same
+	thing without showing the window question.
+
+	* cherokee/Makefile.am (libcherokeeinclude_HEADERS): Installs a
+	missing header: cache.h. Reported by Stefan de Konink.
+
+	* cherokee/rule_list.c, cherokee/virtual_server.c,
+	cherokee/connection-protected.h, cherokee/config_entry.c,
+	cherokee/config_entry.h, cherokee/connection.c,
+	admin/PageEntry.py, admin/consts.py: Adds support por expiration
+	headers.  This patch adds support to both the server and the
+	configuration interface.
+
+	* cherokee/config_node.c (cherokee_config_node_read_long),
+	cherokee/config_node.h: Adds a new method to read long integers.
+
+	* cherokee/util.h, cherokee/util.c (cherokee_mkdir_p): Adds a new
+	cheroke_mkdir() and fixes compilation on Windows:
+	http://code.google.com/p/cherokee/issues/detail?id=96
+
 2008-08-19  Alvaro Lopez Ortega  <alvaro@alobbs.com>
 
-	* 0.8.1 released
+	* cherokee/handler_server_info.c (build_cache_table_content): It
+	adds a new table showing some general file caching statistics.
 
 	* cherokee/connection.c (cherokee_connection_set_redirect),
 	cherokee/connection-protected.h, cherokee/rule_directory.c,
@@ -13,7 +673,7 @@
 
 	* cherokee/handler_dirlist.c: Fixes a problem with redirections of
 	local user directories.
-	
+
 	* admin/CherokeeManagement.py: Fixes a problem with the Hard
 	restart. Reported by Miguel Angel Ajo.
 
@@ -22,22 +682,62 @@
 	* cherokee/thread.c: Fixes an issue of redirections replies over
 	Keepalive connections. This regression was introducced right
 	before releasing 0.8.0.
-	
+
 	* cherokee/handler_dirlist.c: Adds a final slash whenever the list
 	entry is a directory, so next request does go through a
 	redirection reply.
-	
+
 	* cherokee/handler_dirlist.c: Fixes an issue redirecting
 	connections when the server does not run on the port 80.
 
+2008-08-17  Alvaro Lopez Ortega  <alvaro@alobbs.com>
+
+	* cherokee/handler.h, cherokee/connection.c: Slightly improves the
+	chunked encoding support.
+
+	* cherokee/buffer.c (cherokee_buffer_convert_to_chunked): Added
+	new function. It converts buffer into a chunked "Transfer
+	Encoding" packet.
+
+2008-08-16  Taher Shihadeh <taher@unixwars.com>
+
+	* doc/basics_installation_svn.txt: added info.
+
+2008-08-16  Alvaro Lopez Ortega  <alvaro@alobbs.com>
+
+	* cherokee/balancer.c (cherokee_balancer_instance): Adds a sanity
+	check (only broken configurations could fail on this check).
+
 2008-08-15  Alvaro Lopez Ortega  <alvaro@alobbs.com>
+
+	* cherokee/handler_mirror.c, cherokee/source_interpreter.c,
+	cherokee/source_interpreter.h, cherokee/source.c,
+	cherokee/source.h, cherokee/handler_fcgi.c,
+	cherokee/handler_scgi.c: Clean up the code where handler were
+	using 'source' object in order to connect to an external
+	information source. This patch removes some code duplication.
 
 	* admin/PageVServer.py (PageVServer._render_vserver_guts): Fixes
 	an unfortunate error. The administration interface fails to set
-	the security files (certificates and keys) because and previous
+	the security files (certificates and keys) because a previous
 	variable value messed up the property key.
 
+2008-08-15  Taher Shihadeh <taher@unixwars.com>
+
+	* admin/PageVServers.py, admin/PageVServer.py,
+	admin/static/css/cherokee.css: addresses UI enhancement proposal
+	at http://code.google.com/p/cherokee/issues/detail?id=86.
+
 2008-08-14  Alvaro Lopez Ortega  <alvaro@alobbs.com>
+
+	* cherokee/socket.c, cherokee/socket.h, cherokee/thread.c,
+	cherokee/thread.h, cherokee/connection.c: Fixes the TLS/SSL
+	support. It adds support for a new concept within the server: a
+	cherokee_buffer_t can have pending information to be read, so in
+	addition to the file descriptor this property must be checked
+	whenever it real status need to be known.
+
+	* qa/run-tests.py, qa/base.py: Fixes two minor issues.
 
 	* 0.8.0 released
 

@@ -10,7 +10,6 @@
     <meta name="Keywords" content="cherokee web server httpd http" />
     <meta name="Description" content="Cherokee is a flexible, very fast, lightweight Web server. It is implemented entirely in C, and has no dependencies beyond a standard C library. It is embeddable and extensible with plug-ins. It supports on-the-fly configuration by reading files or strings, TLS/SSL (via GNUTLS or OpenSSL), virtual hosts, authentication, cache friendly features, PHP, custom error management, and much more." />
     <link href="media/css/cherokee_doc.css" rel="stylesheet" type="text/css" media="all" />
-    <title></title>
   </head>
 <body>
 <h2 id="_a_href_index_html_index_a_8594_a_href_config_html_configuration_a"><a href="index.html">Index</a> &#8594; <a href="config.html">Configuration</a></h2>
@@ -23,13 +22,36 @@ parameters. You should not attempt to do so unless you really know
 what you are doing. For most cases the default parameters will work
 just fine.</p></div>
 <div class="para"><p>You should at least read the chapter
-<a href="cookbook_optimizing_cherokee.html">Optimizing Cherokee</a> before you
+<a href="cookbook_optimizations.html">Optimizing Cherokee</a> before you
 start tweaking things here.</p></div>
 <div class="imageblock">
 <div class="content">
-<img src="media/images/admin_advanced.png" alt="Cherokee Admin interface" title="Cherokee Admin interface"/>
+<img src="media/images/admin_advanced1.png" alt="Cherokee Admin interface" title="Cherokee Admin interface"/>
 </div>
 </div>
+<h3 id="_connections_managment">Connections managment</h3><div style="clear:left"></div>
+<div class="ilist"><ul>
+<li>
+<p>
+KeepAlive:
+  Enables the global keep-alive support for the client requests. It
+  increases the client performance by reusing a connection for more
+  than one request. It should most probably be turned on.
+</p>
+</li>
+<li>
+<p>
+Max keepalive reqs:
+  Upper limit to be managed by each keepalive connection.
+</p>
+</li>
+<li>
+<p>
+Chunked encoding:
+  Enabled by default to try to keep enabled Keep-Alive.
+</p>
+</li>
+</ul></div>
 <h3 id="_system_tweaking">System tweaking</h3><div style="clear:left"></div>
 <div class="ilist"><ul>
 <li>
@@ -58,6 +80,11 @@ File descriptors:
 </p>
 </li>
 </ul></div>
+<div class="imageblock">
+<div class="content">
+<img src="media/images/admin_advanced2.png" alt="Cherokee Admin interface" title="Cherokee Admin interface"/>
+</div>
+</div>
 <h3 id="_server_tweaking">Server tweaking</h3><div style="clear:left"></div>
 <div class="ilist"><ul>
 <li>
@@ -141,7 +168,6 @@ Max keepalive reqs:
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2008-08-18 22:11:42 BST
 </div>
 </div>
 </body>

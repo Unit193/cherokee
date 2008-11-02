@@ -45,7 +45,6 @@
 #include "list.h"
 #include "fdpoll.h"
 #include "virtual_server.h"
-#include "encoder_table.h"
 #include "thread.h"
 #include "plugin_loader.h"
 #include "icons.h"
@@ -62,9 +61,12 @@ struct cherokee_server {
 	 */
 	time_t                     start_time;
 	cherokee_buffer_t          panic_action;
+
+	/* Restarts
+	 */
 	cherokee_boolean_t         wanna_exit;
 	cherokee_boolean_t         wanna_reinit;
-	
+
 	/* Virtual servers
 	 */
 	cherokee_list_t            vservers;
@@ -79,7 +81,7 @@ struct cherokee_server {
 	/* Modules
 	 */
 	cherokee_plugin_loader_t   loader;
-	cherokee_encoder_table_t   encoders;
+	cherokee_avl_t             encoders;
 
 	/* Tables: iocache, nonces, etc
 	 */
@@ -105,18 +107,17 @@ struct cherokee_server {
 	 */
 	int                        fdlimit_custom;
 	int                        fdlimit_available;
-	int                        fdlimit_per_thread;
 	cherokee_poll_type_t       fdpoll_method;
 
 	/* Connection related
 	 */
 	cuint_t                    conns_max;
 	cint_t                     conns_reuse_max;
-	cuint_t                    conns_keepalive_max;
 	cuint_t                    conns_num_bogo;
 
 	cherokee_boolean_t         keepalive;
 	cuint_t                    keepalive_max;
+	cherokee_boolean_t         chunked_encoding;
 
 	/* Networking config
 	 */
@@ -153,6 +154,7 @@ struct cherokee_server {
 	cherokee_mime_t           *mime;
 	cherokee_icons_t          *icons;
 	cherokee_iocache_t        *iocache;
+	cherokee_avl_t             sources;
 
 	/* Time related
 	 */

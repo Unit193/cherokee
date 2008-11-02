@@ -26,7 +26,7 @@ function get_by_id_and_class (id, klass)
 
 function make_visible (DivID, visible)
 {
-    if(document.layers) {	   
+    if(document.layers) {
 	  get_by_id(DivID).visibility = visible ? "show" : "hide";
     } else {
        get_by_id(DivID).style.visibility = visible ? "visible" : "hidden";
@@ -89,7 +89,7 @@ function options_changed (url, options_id, parent_id)
 
 	   jQuery.post (url, post,
               function (data, textStatus) {
-                  window.location.reload();
+   			   window.location = window.location;
               }
 	   );
 }
@@ -124,13 +124,13 @@ function post_add_entry_key (url, entry_name, cfg_key)
 
 	   jQuery.post (url, post, 
 	         function (data, textStatus) {
-                window.location.reload();
+			   window.location = window.location;
               }
         );
 }
 
 
-function get_cookie (key) 
+function get_cookie (key)
 {
   var i = document.cookie.indexOf (key+'=');
   if (i < 0) return;
@@ -141,4 +141,20 @@ function get_cookie (key)
   if (e < 0) e = document.cookie.length;
 
   return unescape (document.cookie.substring (i, e));
+}
+
+
+/* Returns true either if every field of
+   class=klass is set, or none of them is
+*/
+function check_all_or_none (klass)
+{
+	var none=true;
+	var valid=true;
+	$('.'+klass).each(function(i, o){
+		if (o.value.length > 0)
+		      none=false;
+	        else  valid=false;
+	});
+	return (none || valid);
 }
