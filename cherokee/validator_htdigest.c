@@ -28,11 +28,8 @@
 #include "connection-protected.h"
 
 
-cherokee_module_info_validator_t MODULE_INFO(htdigest) = {
-	.module.type     = cherokee_validator,                 /* type     */
-	.module.new_func = cherokee_validator_htdigest_new,    /* new func */
-	.valid_methods   = http_auth_basic | http_auth_digest  /* methods  */
-};
+VALIDATOR_MODULE_INFO_INIT_EASY (htdigest, http_auth_basic | http_auth_digest);
+
 
 ret_t 
 cherokee_validator_htdigest_new (cherokee_validator_htdigest_t **htdigest, cherokee_table_t *properties)
@@ -123,7 +120,7 @@ extract_user_entry (cherokee_buffer_t *file, char *user_, char **user, char **re
 		/* Look for the next line
 		 */
 		pos = eol;
-		while ((*pos == '\r') || (*pos == '\n')) pos++;
+		while ((*pos == CHR_CR) || (*pos == CHR_LF)) pos++;
 	}
 
 	return ret_not_found;

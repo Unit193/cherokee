@@ -34,12 +34,7 @@
 #define ERR_STR(x) 
 
 
-cherokee_module_info_handler_t MODULE_INFO(admin) = {
-	.module.type     = cherokee_handler,               /* type         */
-	.module.new_func = cherokee_handler_admin_new,     /* new func     */
-	.valid_methods   = http_get | http_post            /* http methods */
-};
-
+HANDLER_MODULE_INFO_INIT_EASY (admin, http_get | http_post);
 
 ret_t 
 cherokee_handler_admin_new (cherokee_handler_t **hdl, void *cnt, cherokee_table_t *properties)
@@ -137,8 +132,8 @@ cherokee_handler_admin_init (cherokee_handler_admin_t *ahdl)
 	cherokee_post_walk_read (&conn->post, &post, postl);
 
 	for (tmp = post.buf;;) {
-		char *end1 = strchr (tmp, '\n');
-		char *end2 = strchr (tmp, '\r');
+		char *end1 = strchr (tmp, CHR_LF);
+		char *end2 = strchr (tmp, CHR_CR);
 		char *end  = cherokee_min_str (end1, end2);
 
 		if (end == NULL) break;
@@ -147,7 +142,7 @@ cherokee_handler_admin_init (cherokee_handler_admin_t *ahdl)
 		/* Copy current line and go to the next one
 		 */
 		cherokee_buffer_add (&line, tmp, end - tmp);
-		while ((*end == '\r') || (*end == '\n')) end++;
+		while ((*end == CHR_CR) || (*end == CHR_LF)) end++;
 		tmp = end;
 
 		/* Process current line

@@ -74,6 +74,9 @@
 /* Define to 1 if you have the `getrlimit' function. */
 #undef HAVE_GETRLIMIT
 
+/* Define to 1 if you have glibc. */
+#undef HAVE_GLIBC
+
 /* Define to 1 if you have the `gmtime' function. */
 #undef HAVE_GMTIME
 
@@ -203,6 +206,9 @@
 
 /* Define to 1 if you have the <pwd.h> header file. */
 #undef HAVE_PWD_H
+
+/* Define to 1 if you have the `readdir' function. */
+#undef HAVE_READDIR
 
 /* Define to 1 if you have the `readdir_r' function. */
 #undef HAVE_READDIR_R
@@ -500,6 +506,9 @@
 
 /* Number of bits in a file offset, on hosts where this is settable. */
 #undef _FILE_OFFSET_BITS
+
+/* Define to 1 if you have glibc. */
+#undef _GNU_SOURCE
 
 /* Define for large files, on AIX-style hosts. */
 #undef _LARGE_FILES

@@ -70,6 +70,14 @@
 # include <syslog.h>
 #endif
 
+#ifdef HAVE_NETINET_IN_H
+# include <netinet/in.h>
+#endif
+
+#ifdef HAVE_ARPA_INET_H
+# include <arpa/inet.h>
+#endif 
+
 #if defined(HAVE_GNUTLS)
 # include <gnutls/gnutls.h>
 #elif defined(HAVE_OPENSSL)
@@ -399,7 +407,11 @@ static pthread_mutex_t readdir_mutex = PTHREAD_MUTEX_INITIALIZER;
 int 
 cherokee_readdir (DIR *dirstream, struct dirent *entry, struct dirent **result)
 {
-#ifdef HAVE_READDIR_R_2
+#ifndef HAVE_READDIR
+# warning "readdir() unimplemented"
+	return ENOSYS;
+#else
+# ifdef HAVE_READDIR_R_2
         /* We cannot rely on the return value of readdir_r as it
 	 * differs between various platforms (HPUX returns 0 on
 	 * success whereas Solaris returns non-zero)
@@ -412,20 +424,19 @@ cherokee_readdir (DIR *dirstream, struct dirent *entry, struct dirent **result)
                 *result = entry;
 		return 0;
 	}
-        
+
 	*result = NULL;
 	return errno;
 
-#elif defined(HAVE_READDIR_R_3)
+# elif defined(HAVE_READDIR_R_3)
 	return readdir_r (dirstream, entry, result);
-
-#else
+# else
         struct dirent *ptr;
         int            ret = 0;
-	
+
 	CHEROKEE_MUTEX_LOCK (&readdir_mutex);
-        
-        errno = 0;        
+
+        errno = 0;
         ptr = readdir(dirstream);
         
         if (!ptr && errno != 0)
@@ -438,7 +449,8 @@ cherokee_readdir (DIR *dirstream, struct dirent *entry, struct dirent **result)
 	
 	CHEROKEE_MUTEX_UNLOCK (&readdir_mutex);
         return ret;
-#endif 
+# endif
+#endif
 }
 
 
@@ -624,8 +636,9 @@ static pthread_mutex_t __global_gethostbyname_mutex = PTHREAD_MUTEX_INITIALIZER;
 #endif
 
 ret_t
-cherokee_gethostbyname (const char *hostname, struct in_addr *addr)
+cherokee_gethostbyname (const char *hostname, void *_addr)
 {
+	struct in_addr *addr = _addr;
 #if !defined(HAVE_PTHREAD) || (defined(HAVE_PTHREAD) && !defined(HAVE_GETHOSTBYNAME_R))
 
         struct hostent *host;
@@ -1016,3 +1029,4 @@ cherokee_parse_query_string (cherokee_buffer_t *query_string,
 	query_string->buf[query_string->len] = '\0';
 	return ret_ok;
 }
+

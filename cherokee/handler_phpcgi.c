@@ -54,20 +54,18 @@
 #include "connection-protected.h"
 
 
-cherokee_module_info_handler_t MODULE_INFO(phpcgi) = {
-	.module.type     = cherokee_handler,                /* type         */
-	.module.new_func = cherokee_handler_phpcgi_new,     /* new func     */
-	.valid_methods   = http_get | http_post | http_head /* http methods */
-};
+HANDLER_MODULE_INFO_INIT_EASY (phpcgi, http_get | http_post | http_head);
 
 
 static char *php_paths[] = {
 	"/usr/lib/cgi-bin/",
 	"/usr/local/bin/",
+	"/usr/bin/",
 	NULL
 };
 
 static char *php_names[] = {
+	"php-cgi",
 	"php", 
 	"php5", 
 	"php4", 

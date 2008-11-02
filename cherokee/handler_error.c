@@ -117,9 +117,13 @@ build_hardcoded_response_page (cherokee_connection_t *cnt, cherokee_buffer_t *bu
         case http_access_denied:
 		cherokee_buffer_add_str (buffer, "You have no access to the request URL");
 		break;
+	case http_request_entity_too_large:
+		cherokee_buffer_add_str (buffer,
+					 "The length of request entity exceeds the capacity limit for this server.");
+		break;
 	case http_request_uri_too_long:
 		cherokee_buffer_add_str (buffer,
-					 "The requested URL's length exceeds the capacity limit for this server.");
+					 "The length of requested URL exceeds the capacity limit for this server.");
 		break;		
 	case http_moved_permanently:
 	case http_moved_temporarily:
@@ -170,10 +174,14 @@ cherokee_handler_error_init (cherokee_handler_error_t *hdl)
 	ret_t                  ret;
 	cherokee_connection_t *conn = HANDLER_CONN(hdl);
 
-	/* Generate the error web page
+	/* Generate the error web page if needed. Some HTTP responses
+	 * codes should not include body because it's forbidden by the
+	 * RFC.
 	 */
-	ret = build_hardcoded_response_page (conn, hdl->content);
-	if (unlikely(ret < ret_ok)) return ret;
+	if (http_code_with_body (conn->error_code)) {
+		ret = build_hardcoded_response_page (conn, hdl->content);
+		if (unlikely(ret < ret_ok)) return ret;
+	}
 
 	return ret_ok;
 }
@@ -198,6 +206,15 @@ cherokee_handler_error_add_headers (cherokee_handler_error_t *hdl, cherokee_buff
 	default:
 		SHOULDNT_HAPPEN;
 	}
+
+	/* "304 Not Modified" responses should be managed by other handlers,
+	 * however this test ensures that it'll never send wrong and
+	 * unrelated headers in case that a 304 response is managed
+	 * by this handler.  304 responses should only include the
+	 * Last-Modified, ETag, Expires and Cache-Control headers.
+	 */
+	if (conn->error_code == http_not_modified)
+		return ret_ok;
 
 	/* Usual headers
 	 */
