@@ -407,6 +407,9 @@
 /* Whether linux sendfile() API is available */
 #undef LINUX_SENDFILE_API
 
+/* Dynamic modules extension */
+#undef MOD_SUFFIX
+
 /* OS type */
 #undef OS_TYPE
 
