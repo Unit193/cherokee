@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2006 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2008 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -27,6 +27,10 @@
 
 #include <cherokee/common.h>
 #include <cherokee/buffer.h>
+#include <unistd.h>
+
+
+CHEROKEE_BEGIN_DECLS
 
 typedef enum {
 	post_undefined,
@@ -36,35 +40,37 @@ typedef enum {
 
 typedef struct {
 	cherokee_post_type_t type;
-	size_t               size;
-	size_t               received;
-	size_t               walk_offset;
+	off_t                size;
+	off_t                received;
+	off_t                walk_offset;
 
 	cherokee_buffer_t    info;
 
 	cherokee_buffer_t    tmp_file;
-	FILE                *tmp_file_p;
+	int                  tmp_file_fd;
 } cherokee_post_t;
 
 #define POST(x)      ((cherokee_post_t *)(x))
 #define POST_BUF(x)  ((cherokee_buffer_t *)&POST(x)->info)
 
 
-ret_t cherokee_post_init         (cherokee_post_t *post);
-ret_t cherokee_post_mrproper     (cherokee_post_t *post);
+ret_t cherokee_post_init          (cherokee_post_t *post);
+ret_t cherokee_post_mrproper      (cherokee_post_t *post);
 
-int   cherokee_post_is_empty     (cherokee_post_t *post);
-int   cherokee_post_got_all      (cherokee_post_t *post);
+int   cherokee_post_is_empty      (cherokee_post_t *post);
+int   cherokee_post_got_all       (cherokee_post_t *post);
 
-ret_t cherokee_post_set_len      (cherokee_post_t *post, size_t  len);
-ret_t cherokee_post_get_len      (cherokee_post_t *post, size_t *len);
+ret_t cherokee_post_set_len       (cherokee_post_t *post, off_t  len);
+ret_t cherokee_post_get_len       (cherokee_post_t *post, off_t *len);
 
-ret_t cherokee_post_append       (cherokee_post_t *post, char *str, size_t len);
-ret_t cherokee_post_commit_buf   (cherokee_post_t *post, size_t len);
+ret_t cherokee_post_append        (cherokee_post_t *post, char *str, size_t len);
+ret_t cherokee_post_commit_buf    (cherokee_post_t *post, size_t len);
 
 ret_t cherokee_post_walk_reset    (cherokee_post_t *post);
 ret_t cherokee_post_walk_finished (cherokee_post_t *post);
 ret_t cherokee_post_walk_read     (cherokee_post_t *post, cherokee_buffer_t *buf, cuint_t len);
 ret_t cherokee_post_walk_to_fd    (cherokee_post_t *post, int fd, int *eagain_fd, int *mode);
+
+CHEROKEE_END_DECLS
 
 #endif /* CHEROKEE_POST_H */

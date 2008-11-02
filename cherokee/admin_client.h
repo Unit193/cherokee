@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2006 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2008 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -41,15 +41,10 @@ CHEROKEE_BEGIN_DECLS
 typedef struct cherokee_admin_client cherokee_admin_client_t;
 #define ADMIN_CLIENT(x) ((cherokee_admin_client_t *)(x))
 
-#define RUN_CLIENT_BASE(fdpoll,func_string) { \
-	int                re;                \
+#define RUN_CLIENT_LOOP(func_string) {        \
 	cherokee_boolean_t exit;              \
 	                                      \
 	for (exit = false; !exit;) {          \
-		re = cherokee_fdpoll_watch (  \
-	 		fdpoll, WATCH_SLEEP); \
-		if (re <= 0) continue;        \
-		                              \
 		ret = func_string;            \
 		switch (ret) {                \
 		case ret_error:               \
@@ -71,23 +66,23 @@ typedef struct cherokee_admin_client cherokee_admin_client_t;
 	}                                     \
 }
 
-#define RUN_CLIENT1(client,fdpoll,func,arg)  \
-	cherokee_admin_client_reuse(client); \
-        RUN_CLIENT_BASE(fdpoll,func(client,arg))
+#define RUN_CLIENT1(client,func,arg)            \
+	cherokee_admin_client_reuse(client);    \
+        RUN_CLIENT_LOOP(func(client,arg))
 
-#define RUN_CLIENT2(client,fdpoll,func,arg1,arg2) \
-	cherokee_admin_client_reuse(client);      \
-	RUN_CLIENT_BASE(fdpoll,func(client,arg1,arg2))
+#define RUN_CLIENT2(client,func,arg1,arg2)      \
+	cherokee_admin_client_reuse(client);    \
+	RUN_CLIENT_LOOP(func(client,arg1,arg2))
 
-#define RUN_CLIENT3(client,fdpoll,func,arg1,arg2,arg3) \
-	cherokee_admin_client_reuse(client);           \
-	RUN_CLIENT_BASE(fdpoll,func(client,arg1,arg2,arg3))
+#define RUN_CLIENT3(client,func,arg1,arg2,arg3) \
+	cherokee_admin_client_reuse(client);    \
+	RUN_CLIENT_LOOP(func(client,arg1,arg2,arg3))
 
 
 ret_t cherokee_admin_client_new      (cherokee_admin_client_t **admin);
 ret_t cherokee_admin_client_free     (cherokee_admin_client_t  *admin);
 
-ret_t cherokee_admin_client_prepare        (cherokee_admin_client_t *admin, cherokee_fdpoll_t *poll, cherokee_buffer_t *url);
+ret_t cherokee_admin_client_prepare        (cherokee_admin_client_t *admin, cherokee_fdpoll_t *poll, cherokee_buffer_t *url, cherokee_buffer_t *user, cherokee_buffer_t *pass);
 ret_t cherokee_admin_client_connect        (cherokee_admin_client_t *admin);
 ret_t cherokee_admin_client_reuse          (cherokee_admin_client_t *admin);
 ret_t cherokee_admin_client_internal_step  (cherokee_admin_client_t *admin);
@@ -101,11 +96,14 @@ ret_t cherokee_admin_client_ask_port_tls    (cherokee_admin_client_t *admin, cui
 ret_t cherokee_admin_client_ask_rx          (cherokee_admin_client_t *admin, cherokee_buffer_t *rx);
 ret_t cherokee_admin_client_ask_tx          (cherokee_admin_client_t *admin, cherokee_buffer_t *tx);
 
-ret_t cherokee_admin_client_ask_connections (cherokee_admin_client_t *admin, list_t *conns);
+ret_t cherokee_admin_client_ask_connections (cherokee_admin_client_t *admin, cherokee_list_t *conns);
 ret_t cherokee_admin_client_del_connection  (cherokee_admin_client_t *admin, char *id);
+
 ret_t cherokee_admin_client_ask_thread_num  (cherokee_admin_client_t *admin, cherokee_buffer_t *num);
 ret_t cherokee_admin_client_set_backup_mode (cherokee_admin_client_t *admin, cherokee_boolean_t active);
 
+ret_t cherokee_admin_client_ask_trace       (cherokee_admin_client_t *admin, cherokee_buffer_t *trace);
+ret_t cherokee_admin_client_set_trace       (cherokee_admin_client_t *admin, cherokee_buffer_t *trace);
 
 CHEROKEE_END_DECLS
 

@@ -1,6 +1,7 @@
 ## Cherokee: cherokee/Makefile.am  -*- makefile -*-
 
 INCLUDES = \
+-DPCRE_STATIC \
 $(TLS_CFLAGS) \
 $(PTHREAD_CFLAGS) \
 -I$(top_srcdir) \
@@ -8,8 +9,12 @@ $(PTHREAD_CFLAGS) \
 -DCHEROKEE_PLUGINDIR="\"$(plugindir)\"" \
 -DCHEROKEE_DEPSDIR=\""$(cherokeedepsdir)"\" \
 -DCHEROKEE_DATADIR=\""$(cherokeedatadir)"\" \
+-DCHEROKEE_VAR_RUN=\""$(localstatedir)/run"\" \
 -DCHEROKEE_CONFDIR=\""$(sysconfdir)/cherokee"\" \
--DCHEROKEE_ICONSDIR=\""$(prefix)/share/cherokee/icons"\"
+-DCHEROKEE_SRV_PATH=\""$(prefix)/sbin/cherokee"\" \
+-DCHEROKEE_ICONSDIR=\""$(prefix)/share/cherokee/icons"\" \
+-DCHEROKEE_THEMEDIR=\""$(prefix)/share/cherokee/themes"\" \
+-DCHEROKEE_PANIC_PATH=\""$(prefix)/bin/cherokee-panic"\" 
 
 #
 # Scripts
@@ -41,24 +46,20 @@ zlib/zconf.h   \
 zlib/zlib.h    \
 zlib/zutil.h
 
-dict_src =          \
-dict/dict_generic.h \
-dict/dict_generic.c \
-dict/sp_tree.h      \
-dict/sp_tree.c      \
-dict/dict_private.h
-
-avl_src = \
-avl/avl.h \
-avl/avl.c
-
 pcre_src = \
-pcre/get.c \
+pcre/ucp.h \
 pcre/pcre.h \
-pcre/pcre.c \
-pcre/internal.h \
-pcre/chartables.c \
-pcre/configuration.h
+pcre/local_config.h \
+pcre/pcre_internal.h \
+pcre/pcre_try_flipped.c \
+pcre/pcre_chartables.c \
+pcre/pcre_fullinfo.c \
+pcre/pcre_newline.c \
+pcre/pcre_globals.c \
+pcre/pcre_compile.c \
+pcre/pcre_tables.c \
+pcre/pcre_exec.c \
+pcre/pcre_get.c 
 
 getopt_src =  \
 getopt/getopt.h  \
@@ -74,6 +75,9 @@ endif
 #
 # LDFLAGS for libraries
 #
+library_soname = \
+-version-info $(CHEROKEE_CURRENT):$(CHEROKEE_REVISION):$(CHEROKEE_AGE)
+
 if PLATFORM_WIN32
 no_undefined = -no-undefined -Wl,--export-all-symbols
 module_ldflags_w32 = -lcherokee-base -lcherokee-config -lcherokee-server
@@ -95,25 +99,6 @@ $(module_ldflags_w32)
 
 
 #
-# Config stuff
-#
-module_read_config = \
-read_config_grammar.y \
-read_config_scanner.l \
-module_read_config.h \
-module_read_config.c
-
-libplugin_read_config_la_LDFLAGS = $(module_ldflags)
-libplugin_read_config_la_SOURCES = $(module_read_config)
-
-if STATIC_MODULE_READ_CONFIG
-static_module_read_config_src = $(module_read_config)
-else
-dynamic_module_read_config_lib = libplugin_read_config.la
-endif
-
-
-#
 # Handler server_info
 #
 handler_server_info = \
@@ -121,7 +106,7 @@ handler_server_info.c \
 handler_server_info.h \
 logo.inc 
 
-libplugin_server_info_la_LDFLAGS = $(module_ldflags) 
+libplugin_server_info_la_LDFLAGS = $(module_ldflags) -lcherokee-config
 libplugin_server_info_la_SOURCES = $(handler_server_info)
 
 if STATIC_HANDLER_SERVER_INFO
@@ -287,7 +272,7 @@ handler_redir = \
 handler_redir.c \
 handler_redir.h
 
-libplugin_redir_la_LDFLAGS = $(module_ldflags)  
+libplugin_redir_la_LDFLAGS = $(module_ldflags)
 libplugin_redir_la_SOURCES = $(handler_redir)
 
 if STATIC_HANDLER_REDIR
@@ -363,6 +348,24 @@ endif
 
 
 #
+# Handler mirror
+#
+handler_mirror = \
+handler_mirror.c \
+handler_mirror.h
+
+libplugin_mirror_la_LDFLAGS = $(module_ldflags)  
+libplugin_mirror_la_SOURCES = $(handler_mirror)
+libplugin_mirror_la_LIBADD  = libcherokee-client.la  
+
+if STATIC_HANDLER_MIRROR
+static_handler_mirror_src = $(handler_mirror)
+else
+dynamic_handler_mirror_lib = libplugin_mirror.la
+endif
+
+
+#
 # Handler admin
 #
 config_common = \
@@ -393,7 +396,7 @@ encoder_gzip = \
 encoder_gzip.h \
 encoder_gzip.c
 
-libplugin_gzip_la_LDFLAGS = $(module_ldflags)  
+libplugin_gzip_la_LDFLAGS = $(module_ldflags)
 libplugin_gzip_la_SOURCES = $(encoder_gzip)
 
 if STATIC_ENCODER_GZIP
@@ -478,10 +481,32 @@ dynamic_validator_pam_lib = libplugin_pam.la
 endif
 endif
 
+
+#
+# Validator LDAP
+#
+if HAVE_LDAP
+validator_ldap = \
+validator_ldap.c \
+validator_ldap.h
+
+libplugin_ldap_la_LDFLAGS = $(module_ldflags) 
+libplugin_ldap_la_SOURCES = $(validator_ldap)
+libplugin_ldap_la_LIBADD  = -lldap
+
+if STATIC_VALIDATOR_LDAP
+static_validator_ldap_src = $(validator_ldap)
+static_validator_ldap_lib = -lldap
+else
+dynamic_validator_ldap_lib = libplugin_ldap.la
+endif
+endif
+
+
 #
 # Validator htpasswd
 #
-if HAVE_CRYPT
+if USE_CRYPT
 validator_htpasswd = \
 validator_htpasswd.c \
 validator_htpasswd.h
@@ -534,14 +559,44 @@ dynamic_validator_htdigest_lib = libplugin_htdigest.la
 endif
 
 
+#
+# Validator mysql
+#
+validator_mysql = \
+validator_mysql.c \
+validator_mysql.h
+
+libplugin_mysql_la_LDFLAGS = $(module_ldflags) $(MYSQL_LDFLAGS)
+libplugin_mysql_la_SOURCES = $(validator_mysql)
+libplugin_mysql_la_CFLAGS  = $(MYSQL_CFLAGS)
+
+if HAVE_MYSQL
+if STATIC_VALIDATOR_MYSQL
+static_validator_mysql_src   = $(validator_mysql)
+static_validator_mysql_lib   = $(MYSQL_LDFLAGS)
+static_validator_mysql_flags = $(MYSQL_CFLAGS)
+else
+dynamic_validator_mysql_lib = libplugin_mysql.la
+endif
+endif
+
 
 #
-# Yacc and Lex paramters
-# -d Generate .h file
-# -l Don't use #line
-# -t Debug
-AM_YFLAGS=-d -l -t
-AM_LFLAGS=-i
+# Balancer Round Robin
+#
+balancer_round_robin = \
+balancer_round_robin.c \
+balancer_round_robin.h
+
+libplugin_round_robin_la_LDFLAGS = $(module_ldflags) 
+libplugin_round_robin_la_SOURCES = $(balancer_round_robin)
+
+if STATIC_BALANCER_ROUND_ROBIN
+static_balancer_round_robin_src = $(balancer_round_robin)
+else
+dynamic_balancer_round_robin_lib = libplugin_round_robin.la
+endif
+
 
 
 if USE_INTERNAL_PCRE
@@ -561,32 +616,36 @@ libcherokee-config.la
 # the macro puts -pthread into cflags, but we want to link
 # with this flag too, so stick it into the ldflags if it's there...
 # extra cflags at link time can't hurt
-libcherokee_base_la_LDFLAGS = $(common_ldflags)
+libcherokee_base_la_LDFLAGS = $(common_ldflags) $(library_soname)
 libcherokee_base_la_LIBADD = \
 $(TLS_LIBS) \
 $(PTHREAD_LIBS) \
 $(PTHREAD_CFLAGS) \
 $(external_pcre_lib)
 
-libcherokee_client_la_LDFLAGS = $(common_ldflags)
+libcherokee_client_la_LDFLAGS = $(common_ldflags) $(library_soname)
 libcherokee_client_la_LIBADD = \
 $(TLS_LIBS) \
 $(PTHREAD_LIBS) \
 $(PTHREAD_CFLAGS) \
 libcherokee-base.la
 
-libcherokee_server_la_LDFLAGS = $(common_ldflags)
+libcherokee_server_la_LDFLAGS = $(common_ldflags) $(library_soname)
 libcherokee_server_la_CFLAGS = \
-$(static_validator_htpasswd_flags)
+$(static_validator_htpasswd_flags) \
+$(static_validator_mysql_flags)
+
 libcherokee_server_la_LIBADD = \
 $(TLS_LIBS) \
 $(PTHREAD_LIBS) \
 $(PTHREAD_CFLAGS) \
 $(static_validator_pam_lib) \
+$(static_validator_ldap_lib)  \
 $(static_validator_htpasswd_lib) \
+$(static_validator_mysql_lib) \
 libcherokee-base.la
 
-libcherokee_config_la_LDFLAGS = $(common_ldflags)
+libcherokee_config_la_LDFLAGS = $(common_ldflags) $(library_soname)
 libcherokee_config_la_LIBADD = \
 $(PTHREAD_LIBS) \
 $(PTHREAD_CFLAGS) \
@@ -624,13 +683,13 @@ win32_src = \
 unix4win32.h \
 unix4win32.c \
 win32_misc.h \
-win32_misc.c
+win32_misc.c \
+win32_cservice.h \
+win32_cservice.c
 endif
 
 libcherokee_base_la_SOURCES = \
-$(avl_src) \
 $(zlib_src) \
-$(dict_src) \
 $(internal_pcre_src) \
 $(internal_getopt_src) \
 $(poll_poll_src) \
@@ -641,13 +700,14 @@ $(poll_select_src) \
 $(poll_win32_src) \
 $(win32_src) \
 cherokee.h \
+avl.h \
+avl.c \
+avl_r.h \
+avl_r.c \
 http.h \
 http.c \
 list.h \
-list_merge_sort.h \
-list_merge_sort.c \
-list_ext.h \
-list_ext.c \
+list.c \
 ncpus.h \
 ncpus.c \
 crc32.h \
@@ -657,15 +717,14 @@ common.h \
 common-internal.h \
 util.h \
 util.c \
+human_strcmp.h \
+human_strcmp.c \
+trace.h \
+trace.c \
+version.h \
+version.c \
 buffer.h \
 buffer.c \
-table.h \
-table-protected.h \
-table.c \
-dict.h \
-dict.c \
-buffer_escape.h \
-buffer_escape.c \
 socket.h \
 socket.c \
 fdpoll.h \
@@ -687,21 +746,23 @@ sha1.h \
 sha1.c \
 match.h \
 match.c \
-tdate_parse.h \
-tdate_parse.c \
+dtm.h \
+dtm.c \
 header.h \
 header-protected.h \
 header.c \
-session_cache.h \
-session_cache.c \
 access.h \
 access.c \
 regex.h \
 regex.c \
 resolv_cache.h \
 resolv_cache.c \
-typed_table.h \
-typed_table.c 
+post.h \
+post.c \
+config_node.h \
+config_node.c \
+config_reader.h \
+config_reader.c 
 
 libcherokee_client_la_SOURCES = \
 url.h \
@@ -710,7 +771,9 @@ request.h \
 request.c \
 downloader.h \
 downloader-protected.h \
-downloader.c 
+downloader.c \
+downloader_async.h \
+downloader_async.c
 
 
 if STATIC_HANDLER_FCGI
@@ -735,10 +798,6 @@ endif
 
 
 libcherokee_server_la_SOURCES = \
-icons_grammar.y \
-icons_scanner.l \
-\
-$(static_module_read_config_src) \
 $(static_handler_file_src) \
 $(static_handler_admin_src) \
 $(static_handler_dirlist_src) \
@@ -751,6 +810,7 @@ $(static_handler_cgi_src) \
 $(static_handler_phpcgi_src) \
 $(static_handler_common_src) \
 $(static_handler_nn_src) \
+$(static_handler_mirror_src) \
 $(static_handler_server_info_src) \
 \
 $(static_logger_w3c_src) \
@@ -760,9 +820,13 @@ $(static_logger_combined_src) \
 $(static_encoder_gzip_src) \
 \
 $(static_validator_pam_src) \
+$(static_validator_ldap_src) \
 $(static_validator_plain_src) \
 $(static_validator_htdigest_src) \
 $(static_validator_htpasswd_src) \
+$(static_validator_mysql_src) \
+\
+$(static_balancer_round_robin_src) \
 \
 $(common_cgi) \
 \
@@ -773,6 +837,8 @@ handler.h \
 handler.c \
 config_entry.h \
 config_entry.c \
+virtual_entries.h \
+virtual_entries.c \
 dirs_table.h \
 dirs_table.c \
 exts_table.h \
@@ -784,6 +850,8 @@ reqs_list_entry.c \
 server-protected.h \
 server.h \
 server.c \
+virtual_server_names.h \
+virtual_server_names.c \
 virtual_server.h \
 virtual_server.c \
 encoder.h \
@@ -792,26 +860,29 @@ encoder_table.h \
 encoder_table.c \
 logger.h \
 logger.c \
-logger_table.h \
-logger_table.c \
+logger_writer.h \
+logger_writer.c \
 thread.h \
 thread.c \
+plugin.h \
 module.h \
 module.c \
 validator.h \
 validator.c \
-module_loader.h \
-module_loader.c \
+plugin_loader.h \
+plugin_loader.c \
 icons.h \
 icons.c \
 handler_error.c \
 handler_error.h \
 nonce.h \
 nonce.c \
-post.h \
-post.c \
-ext_source.h \
-ext_source.c
+balancer.h \
+balancer.c \
+source.h \
+source.c \
+source_interpreter.h \
+source_interpreter.c
 
 libcherokee_config_la_SOURCES = \
 $(config_common) \
@@ -828,18 +899,19 @@ cherokee.h \
 macros.h \
 common.h \
 util.h \
+version.h \
+avl.h \
+avl_r.h \
 buffer.h\
 fdpoll.h \
-table.h \
 http.h \
 mime.h \
 mime_entry.h \
 list.h \
-list_merge_sort.h \
 url.h \
 header.h \
 resolv_cache.h \
-typed_table.h \
+post.h \
 \
 server.h \
 module.h \
@@ -847,8 +919,10 @@ logger.h \
 handler.h \
 encoder.h \
 connection.h \
-module_loader.h \
+plugin.h \
+plugin_loader.h \
 nonce.h \
+config_node.h \
 \
 downloader.h \
 \
@@ -856,22 +930,11 @@ admin_client.h \
 connection_info.h
 
 
-# automake isn't too clever about "non-standard" use of lex and yacc
-# Icons:
-icons_scanner.c : icons_scanner.l
-	$(LEX) -Pyy_icons_ -i -o$@ $<
-
-icons_grammar.h : icons_grammar.c
-icons_grammar.c : icons_grammar.y
-	$(YACC) -dv -p yy_icons_ -o $@ $<
-
-
 #
 # Cherokee plugins
 #
 plugindir = "$(libdir)/cherokee"
 plugin_LTLIBRARIES = \
-$(dynamic_module_read_config_lib) \
 $(dynamic_handler_cgi_lib) \
 $(dynamic_handler_phpcgi_lib) \
 $(dynamic_handler_server_info_lib) \
@@ -882,6 +945,7 @@ $(dynamic_handler_scgi_lib) \
 $(dynamic_handler_fcgi_lib) \
 $(dynamic_handler_fastcgi_lib) \
 $(dynamic_handler_redir_lib) \
+$(dynamic_handler_mirror_lib) \
 $(dynamic_handler_error_redir_lib) \
 $(dynamic_handler_common_lib) \
 $(dynamic_handler_nn_lib) \
@@ -890,15 +954,22 @@ $(dynamic_logger_ncsa_lib) \
 $(dynamic_logger_combined_lib) \
 $(dynamic_logger_w3c_lib) \
 $(dynamic_validator_pam_lib) \
+$(dynamic_validator_ldap_lib) \
 $(dynamic_validator_plain_lib) \
 $(dynamic_validator_htdigest_lib) \
-$(dynamic_validator_htpasswd_lib)
+$(dynamic_validator_htpasswd_lib) \
+$(dynamic_validator_mysql_lib) \
+$(dynamic_balancer_round_robin_lib) 
 
 
 #
 # Main binary: Cherokee server
 #
-sbin_PROGRAMS = cherokee
+sbin_PROGRAMS = cherokee cherokee-admin
+
+if !PLATFORM_WIN32
+sbin_PROGRAMS += cherokee-guardian
+endif
 
 cherokee_SOURCES = main.c
 cherokee_LDADD   = \
@@ -909,57 +980,56 @@ libcherokee-server.la
 cherokee_LDFLAGS = -export-dynamic
 
 #
+# Cherokee guardians
+#
+cherokee_guardian_SOURCES = main_guardian.c
+
+#
+# Cherokee admin
+#
+cherokee_admin_SOURCES = main_admin.c
+cherokee_admin_LDADD   = $(cherokee_LDADD)
+cherokee_admin_LDFLAGS = $(cherokee_LDFLAGS)
+
+
+#
 # Log rotate utility
 #
-bin_PROGRAMS = cherokee_logrotate
+bin_PROGRAMS = cherokee_tweak
 
-cherokee_logrotate_SOURCES = cherokee_logrotate.c
-cherokee_logrotate_LDADD = libcherokee-base.la libcherokee-client.la libcherokee-server.la libcherokee-config.la
+cherokee_tweak_SOURCES = main_tweak.c
+cherokee_tweak_LDADD = \
+$(PTHREAD_LIBS) \
+$(PTHREAD_CFLAGS) \
+libcherokee-base.la \
+libcherokee-client.la \
+libcherokee-server.la \
+libcherokee-config.la
 
+
+
+#
+# Win32 service
+#
+if PLATFORM_WIN32
+win32_cherokeeserv = win32_cherokeeserv
+else
+win32_cherokeeserv =
+endif
+
+win32_cherokeeserv_SOURCES = win32_cherokeeserv.c
+win32_cherokeeserv_LDADD = libcherokee-config.la libcherokee-base.la libcherokee-client.la 
 
 #
 # Test programs
 #
-noinst_PROGRAMS = cherokee_admin
+noinst_PROGRAMS = $(win32_cherokeeserv)
 
-cherokee_admin_SOURCES = cherokee_admin.c 
-cherokee_admin_LDADD = libcherokee-config.la libcherokee-base.la libcherokee-client.la 
-
-##cherokee_table_test_SOURCES = cherokee_table_test.c
-##cherokee_table_test_LDADD = libcherokee.la
-
-#noinst_PROGRAMS = cherokee_modules cherokee_base64 cherokee_headers cherokee_fastcgi
-
-#cherokee_modules_SOURCES = cherokee_modules.c
-#cherokee_modules_LDADD = libcherokee.la
-
-#cherokee_base64_SOURCES = cherokee_base64.c
-#cherokee_base64_LDADD = libcherokee.la
-
-#cherokee_headers_SOURCES = cherokee_headers.c
-#cherokee_headers_LDADD = libcherokee.la
-
-#cherokee_fastcgi_SOURCES = cherokee_fastcgi.c
-#cherokee_fastcgi_LDADD = libcherokee.la 
-#cherokee_fastcgi_LDFLAGS = -lfcgi
-
-#cherokee_ip_SOURCES = cherokee_ip.c
-#cherokee_ip_LDADD = libcherokee.la
-
-#cherokee_hex_SOURCES = cherokee_hex.c
-#cherokee_hex_LDADD = libcherokee-base.la
-
-#cherokee_short_path = cherokee_short_path.c
-#cherokee_short_path_LDADD = libcherokee-base.la
+# test_SOURCES = test.c
+# test_LDADD = libcherokee-config.la libcherokee-base.la libcherokee-client.la 
 
 
 CLEANFILES = \
-read_config_grammar.h \
-read_config_grammar.c \
-read_config_scanner.c \
-icons_grammar.h \
-icons_grammar.c \
-icons_scanner.c \
 config.h
 
 WINDOWS_PORT_FILES = \
@@ -970,20 +1040,15 @@ unix4win32.c \
 win32_misc.h \
 win32_misc.c
 
-EMBEDDED_VERSION_FILES = \
-Makefile.embedded \
-read_config_embedded.h \
-read_config_embedded.c
-
 EXTRA_DIST = \
+pcre/LICENCE \
 $(pcre_src) \
 $(win32_src) \
 $(getopt_src) \
 $(bin_SCRIPTS) \
+$(validator_mysql) \
 $(cherokeedeps_DATA) \
 $(cherokeedata_DATA) \
 $(WINDOWS_PORT_FILES) \
-$(EMBEDDED_VERSION_FILES) \
-read_config_grammar.h \
 loader.autoconf.h \
 loader.autoconf.inc

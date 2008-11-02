@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2006 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2008 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -36,7 +36,7 @@ typedef struct {
 #define PAM(x) ((cherokee_validator_pam_t *)(x))
 
 
-ret_t cherokee_validator_pam_new  (cherokee_validator_pam_t **pam, cherokee_table_t *properties);
+ret_t cherokee_validator_pam_new  (cherokee_validator_pam_t **pam, cherokee_module_props_t *props);
 ret_t cherokee_validator_pam_free (cherokee_validator_pam_t  *pam);
 
 ret_t cherokee_validator_pam_check       (cherokee_validator_pam_t  *pam, cherokee_connection_t *conn);

@@ -5,6 +5,16 @@ URL    = "http://www.example.com/dir/subdir"
 DIR    = "/dir1"
 PATH   = "/file1/param"
 
+CONF = """        
+vserver!<domain>!document_root = %s
+vserver!<domain>!domain!1 = <domain>
+vserver!<domain>!directory!<dir>!handler = redir
+vserver!<domain>!directory!<dir>!handler!rewrite!1!show = 1
+vserver!<domain>!directory!<dir>!handler!rewrite!1!regex = ^(.*)$
+vserver!<domain>!directory!<dir>!handler!rewrite!1!substring = %s$1
+vserver!<domain>!directory!<dir>!priority = 10
+"""
+
 class Test (TestBase):
     def __init__ (self):
         TestBase.__init__ (self)
@@ -18,13 +28,7 @@ class Test (TestBase):
     def Prepare (self, www):
         srvr = self.Mkdir (www, "domain_%s" % (DOMAIN))
 
-        self.conf              = """Server %s {
-                                       DocumentRoot %s
-                                       Directory %s {
-                                          Handler redir {
-                                             Show Rewrite "^(.*)$" "%s$1"
-                                          }
-                                       }
-                                  }
-                                  """ % (DOMAIN, srvr, DIR, URL)
+        self.conf = CONF % (srvr, URL)
+        self.conf = self.conf.replace ('<domain>', DOMAIN)
+        self.conf = self.conf.replace ('<dir>', DIR)
 

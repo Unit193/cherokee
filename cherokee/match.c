@@ -3,9 +3,9 @@
 /* Cherokee
  *
  * Authors:
- *      Juan Cespedes <cespedes@debian.org>
+ *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2006 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2008 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -22,30 +22,49 @@
  * USA
  */
 
-int 
-match (const char *pattern, const char *filename) 
-{
-	if (!pattern[0] && !filename[0]) {
-		return 1;
-	} else if (!pattern[0]) {
-		return 0;
-	} else if (pattern[0]=='?' && filename[0]) {
-		return match(&pattern[1], &filename[1]);
-	} else if (pattern[0]!='*') {
-		if (pattern[0]==filename[0]) {
-			return match(&pattern[1], &filename[1]);
-		} else {
-			return 0;
-		}
-	}   /* Hay un '*' */
+#include "common-internal.h"
+#include "match.h"
 
-	pattern++;
-	
-	do {
-		if (match(pattern, filename)) {
-			return 1;
+
+ret_t
+cherokee_wildcard_match (const char *pattern, const char *text) 
+{
+	cint_t      ch;
+	const char *retry_text     = NULL;
+	const char *retry_pattern  = NULL;
+
+	while (*text || *pattern) {
+		ch = *pattern++;
+		
+		switch (ch) {
+		case '*':
+			retry_pattern = pattern;
+			retry_text = text;
+			break;
+
+		case '?':
+			if (*text++ == '\0')
+				return ret_not_found;
+			break;
+
+		default:
+			if (*text == ch) {
+				if (*text) text++;
+				break;
+			}
+
+			if (*text) {
+				pattern = retry_pattern;
+				text    = ++retry_text;
+				break;
+			}
+
+			return ret_not_found;
 		}
-	} while (*filename++);
-	
-	return 0;
+
+		if (pattern == NULL)
+			return ret_not_found;
+	}
+
+	return ret_ok;
 }

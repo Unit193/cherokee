@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2006 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2008 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -27,39 +27,75 @@
 
 #include "connection.h"
 #include "connection-protected.h"
-#include "module_loader.h"
+#include "plugin_loader.h"
 
 
-VALIDATOR_MODULE_INFO_INIT_EASY (plain, http_auth_basic | http_auth_digest);
+/* Plug-in initialization
+ */
+PLUGIN_INFO_VALIDATOR_EASIEST_INIT (plain, http_auth_basic | http_auth_digest);
+
+
+
+static ret_t 
+props_free (cherokee_validator_plain_props_t *props)
+{
+	cherokee_buffer_mrproper (&props->password_file);
+	return cherokee_validator_props_free_base (VALIDATOR_PROPS(props));
+}
 
 
 ret_t 
-cherokee_validator_plain_new (cherokee_validator_plain_t **plain, cherokee_table_t *properties)
+cherokee_validator_plain_configure (cherokee_config_node_t *conf, cherokee_server_t *srv, cherokee_module_props_t **_props)
+{
+	ret_t                             ret;
+	cherokee_config_node_t           *subconf;
+	cherokee_validator_plain_props_t *props;
+
+	if (*_props == NULL) {
+		CHEROKEE_NEW_STRUCT (n, validator_plain_props);
+
+		cherokee_validator_props_init_base (VALIDATOR_PROPS(n), MODULE_PROPS_FREE(props_free));
+
+		cherokee_buffer_init (&n->password_file);		
+		*_props = MODULE_PROPS(n);
+	}
+
+	props = PROP_PLAIN(*_props);
+
+	/* Read the properties
+	 */
+	ret = cherokee_config_node_get (conf, "passwdfile", &subconf);
+	if (ret == ret_ok) {
+		cherokee_buffer_add_buffer (&props->password_file, &subconf->val);
+	}
+
+	/* Check them
+	 */
+	if (cherokee_buffer_is_empty (&props->password_file)) {
+		PRINT_MSG_S ("plain validator needs a password file\n");
+		return ret_error;
+	}
+
+	return ret_ok;
+}
+
+
+ret_t 
+cherokee_validator_plain_new (cherokee_validator_plain_t **plain, cherokee_module_props_t *props)
 {	
-	ret_t ret;
 	CHEROKEE_NEW_STRUCT(n,validator_plain);
 
 	/* Init 		
 	 */
-	cherokee_validator_init_base (VALIDATOR(n));
+	cherokee_validator_init_base (VALIDATOR(n), VALIDATOR_PROPS(props), PLUGIN_INFO_VALIDATOR_PTR(plain));
 	VALIDATOR(n)->support = http_auth_basic | http_auth_digest;
 
 	MODULE(n)->free           = (module_func_free_t)           cherokee_validator_plain_free;
 	VALIDATOR(n)->check       = (validator_func_check_t)       cherokee_validator_plain_check;
 	VALIDATOR(n)->add_headers = (validator_func_add_headers_t) cherokee_validator_plain_add_headers;
-	   
-	n->file_ref = NULL;
 
-	/* Get the properties
+	/* Return obj
 	 */
-	if (properties) {
-		ret = cherokee_typed_table_get_str (properties, "file", (char **)&n->file_ref);
-		if (ret < ret_ok) {
-			PRINT_MSG_S ("plain validator needs a \"File\" property\n");
-			return ret_error;
-		}
-	}
-	   
 	*plain = n;
 	return ret_ok;
 }
@@ -73,132 +109,116 @@ cherokee_validator_plain_free (cherokee_validator_plain_t *plain)
 }
 
 
-static ret_t
-check_digest (cherokee_validator_plain_t *plain, char *passwd, cherokee_connection_t *conn)
-{			
-	ret_t                 ret;
-	cherokee_buffer_t     a1        = CHEROKEE_BUF_INIT;
-	cherokee_buffer_t     buf       = CHEROKEE_BUF_INIT;
-	cherokee_validator_t *validator = conn->validator;
-
-	/* Sanity check
-	 */
-	if (cherokee_buffer_is_empty (&validator->user) ||
-	    cherokee_buffer_is_empty (&validator->realm)) 
-		return ret_deny;
-
-	/* Build A1
-	 */
-	cherokee_buffer_add_va (&a1, "%s:%s:%s", 
-				validator->user.buf,
-				validator->realm.buf,
-				passwd);
-
-	cherokee_buffer_encode_md5_digest (&a1);
-
-	/* Build a possible response
-	 */
-	cherokee_validator_digest_response (VALIDATOR(plain), a1.buf, &buf, conn);
-
-	/* Check the response
-	 */
-	if (cherokee_buffer_is_empty (&conn->validator->response)) {
-		ret = ret_error;
-		goto go_out;
-	}
-	
-	/* Compare and return
-	 */
-	ret = (strcmp (conn->validator->response.buf, buf.buf) == 0) ? ret_ok : ret_error;
-
-go_out:
-	cherokee_buffer_mrproper (&a1);
-	cherokee_buffer_mrproper (&buf);
-	return ret;
-}
-
 ret_t 
 cherokee_validator_plain_check (cherokee_validator_plain_t *plain, cherokee_connection_t *conn)
 {
-	FILE  *f;
-	ret_t  ret;
+	int                re;
+	ret_t              ret;
+	const char        *p;
+	const char        *end;
+	cherokee_buffer_t  file  = CHEROKEE_BUF_INIT;
+	cherokee_buffer_t  buser = CHEROKEE_BUF_INIT;
+	cherokee_buffer_t  bpass = CHEROKEE_BUF_INIT;
 
-        if ((conn->validator == NULL) || cherokee_buffer_is_empty(&conn->validator->user)) {
-                return ret_error;
-        }
-
-	f = fopen (plain->file_ref, "r");
-	if (f == NULL) {
+	if (unlikely ((conn->validator == NULL) || 
+	    cherokee_buffer_is_empty(&conn->validator->user))) {
 		return ret_error;
 	}
 
-	ret = ret_error;
-	while (!feof(f)) {
-		int   len;
-		char *pass;
-		CHEROKEE_TEMP(line, 256);
+	ret = cherokee_buffer_read_file (&file, VAL_PLAIN_PROP(plain)->password_file.buf);
+	if (ret != ret_ok) {
+		ret = ret_error;
+		goto out;
+	}
 
-		if (fgets (line, line_size, f) == NULL)
-			continue;
+	if (! cherokee_buffer_is_endding(&file, '\n'))
+		cherokee_buffer_add_str (&file, "\n");
 
-		len = strlen (line);
+	p   = file.buf;
+	end = file.buf + file.len;
 
-		if (len <= 3) 
-			continue;
-			 
-		if (line[0] == '#')
-			continue;
-
-		if (line[len-1] == '\n') 
-			line[len-1] = '\0';
-			 
-		/* Split into user and encrypted password. 
+	while (p < end) {
+		char *eol;
+		char *colon;
+		
+		/* Look for the EOL
 		 */
-		pass = strchr (line, ':');
-		if (pass == NULL) continue;
-		*pass++ = '\0';
-			 
-		/* Is this the right user? 
+		eol = strchr (p, '\n');
+		if (eol == NULL) {
+			ret = ret_ok;
+			goto out;
+		}
+		*eol = '\0';
+
+		/* Skip comments
 		 */
-		if (strncmp (conn->validator->user.buf, line, 
-			     conn->validator->user.len) != 0) {
-			continue;
+		if (p[0] == '#')
+			goto next;
+
+		colon = strchr (p, ':');
+		if (colon == NULL) {
+			goto next;
 		}
 
-		/* Validate it
+		/* Is it the right user?
 		 */
+		cherokee_buffer_clean (&buser);
+		cherokee_buffer_add (&buser, p, colon - p);
+		
+		re = cherokee_buffer_cmp_buf (&buser, &conn->validator->user);
+		if (re != 0)
+			goto next;
+
+		/* Check the password
+		 */
+		cherokee_buffer_clean (&bpass);
+		cherokee_buffer_add (&bpass, colon+1, eol - (colon+1));
+
 		switch (conn->req_auth_type) {
 		case http_auth_basic:
 			/* Empty password
-			 */
-			if (conn->validator->passwd.len <= 0) {
-				if (strlen(pass) == 0) {
-					ret = ret_ok;
-					goto go_out;
-				}
-				continue;
+			 */			 
+			if (cherokee_buffer_is_empty (&bpass) &&
+			    cherokee_buffer_is_empty (&conn->validator->passwd)) {
+				ret = ret_ok;
+				goto out;
 			}
 
 			/* Check the passwd
 			 */
-			if (strcmp (conn->validator->passwd.buf, pass) == 0) {
-				ret = ret_ok;
-				goto go_out;
-			}
-			break;
+			re = cherokee_buffer_cmp_buf (&bpass, &conn->validator->passwd);
+			if (re != 0) 
+				ret = ret_deny;
+			goto out;
 
 		case http_auth_digest:
-			ret = check_digest (plain, pass, conn);
-			if (ret == ret_ok) goto go_out;
-			break;
+			ret = cherokee_validator_digest_check (VALIDATOR(plain), &bpass, conn);
+			goto out;
 
 		default:
 			SHOULDNT_HAPPEN;
 		}
+
+		/* A user entry has been tested and failed
+		 */
+		ret = ret_deny;
+		goto out;
+
+	next:
+		p = eol + 1;
+
+		/* Reached the end without success 
+		 */
+		if (p >= end) {
+			ret = ret_deny;
+			goto out;
+		}
 	}
 
-go_out:
-	fclose(f);
+out:
+ 	cherokee_buffer_mrproper (&file);
+ 	cherokee_buffer_mrproper (&buser);
+ 	cherokee_buffer_mrproper (&bpass);
 	return ret;
 }
 
@@ -207,22 +227,5 @@ ret_t
 cherokee_validator_plain_add_headers (cherokee_validator_plain_t *plain, cherokee_connection_t *conn, cherokee_buffer_t *buf)
 {
 	return ret_ok;
-}
-
-
-/*   Library init function
- */
-static cherokee_boolean_t _plain_is_init = false;
-
-void
-MODULE_INIT(plain) (cherokee_module_loader_t *loader)
-{
-	/* Init flag
-	 */
-	if (_plain_is_init == true) return;
-	_plain_is_init = true;
-
-	/* Other stuff
-	 */
 }
 

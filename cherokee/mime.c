@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2006 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2008 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -24,9 +24,13 @@
 
 #include "common-internal.h"
 
+#include <ctype.h>
+
 #include "mime.h"
 #include "mime-protected.h"
 #include "util.h"
+
+#define ENTRIES "mime"
 
 
 ret_t 
@@ -34,7 +38,7 @@ cherokee_mime_new (cherokee_mime_t **mime)
 {
 	CHEROKEE_NEW_STRUCT(n, mime);
 
-	cherokee_table_init (&n->mime_table);
+	cherokee_avl_init (&n->mime_table);
 
 	INIT_LIST_HEAD(&n->mime_list);
 	INIT_LIST_HEAD(&n->name_list);
@@ -49,12 +53,15 @@ cherokee_mime_new (cherokee_mime_t **mime)
 ret_t
 cherokee_mime_free (cherokee_mime_t *mime)
 {
-	list_t *i, *tmp;
+	cherokee_list_t *i, *tmp;
 
-	cherokee_table_clean (&mime->mime_table);
+	if (mime == NULL)
+		return ret_ok;
+
+	cherokee_avl_mrproper (&mime->mime_table, NULL);
 
 	list_for_each_safe (i, tmp, &mime->mime_list) {
-		list_del (i);
+		cherokee_list_del (i);
 		cherokee_mime_entry_free (MIME_ENTRY(i));
 	}
 
@@ -66,21 +73,21 @@ cherokee_mime_free (cherokee_mime_t *mime)
 ret_t 
 cherokee_mime_set_by_suffix (cherokee_mime_t *mime, char *suffix, cherokee_mime_entry_t *entry)
 {
-	return cherokee_table_add (&mime->mime_table, suffix, (void *)entry);
+	return cherokee_avl_add_ptr (&mime->mime_table, suffix, (void *)entry);
 }
 
 ret_t 
 cherokee_mime_get_by_suffix (cherokee_mime_t *mime, char *suffix, cherokee_mime_entry_t **entry)
 {
-	return cherokee_table_get (&mime->mime_table, suffix, (void **)entry);
+	return cherokee_avl_get_ptr (&mime->mime_table, suffix, (void **)entry);
 }
 
 
 ret_t 
 cherokee_mime_get_by_type (cherokee_mime_t *mime, char *type, cherokee_mime_entry_t **entry)
 {
-	ret_t   ret;
-	list_t *i;
+	ret_t            ret;
+	cherokee_list_t *i;
 
 	list_for_each (i, &mime->mime_list) {
 		cherokee_buffer_t *itype;
@@ -101,7 +108,7 @@ cherokee_mime_get_by_type (cherokee_mime_t *mime, char *type, cherokee_mime_entr
 ret_t 
 cherokee_mime_add_entry (cherokee_mime_t *mime, cherokee_mime_entry_t *entry)
 {
-	list_add ((list_t *)entry, &mime->mime_list);
+	cherokee_list_add (LIST(entry), &mime->mime_list);
 	return ret_ok;
 }
 
@@ -110,12 +117,14 @@ ret_t
 cherokee_mime_load_mime_types (cherokee_mime_t *mime, char *filename)
 {
 	ret_t              ret;
+	cuint_t            maxage = 0;
 	char              *p;
 	char              *end;
 	cherokee_buffer_t  file = CHEROKEE_BUF_INIT;
 	cherokee_buffer_t  ext  = CHEROKEE_BUF_INIT;
 	cherokee_buffer_t  type = CHEROKEE_BUF_INIT;
 
+	TRACE(ENTRIES, "Loading mime file: '%s'\n", filename);
 
 	ret = cherokee_buffer_read_file (&file, filename);
 	if (ret != ret_ok) goto error;
@@ -169,29 +178,64 @@ cherokee_mime_load_mime_types (cherokee_mime_t *mime, char *filename)
 
 		cherokee_mime_entry_set_type (entry, type.buf);
 			
-		/* Adds its extensions
+		/* Adds its max-age and file extensions.
 		 */
-		p = tmp;
-		while (p < nl) {
+		for (p = tmp; p < nl; p = tmp) {
 			cherokee_buffer_clean (&ext);
 			
 			/* Look for the next extension
 			 */
-			while ((*p == ' ') || (*p == '\t')) p++;
-			if (p >= nl) break;
+			while ((*p == ' ') || (*p == '\t'))
+				p++;
+			if (p >= nl)
+				break;
 
 			c1 = strchr (p, ' ');
 			c2 = strchr (p, '\t');
 
 			tmp  = cherokee_min_str (c1, c2);
-			if (tmp == NULL) tmp = nl;
+			if (tmp == NULL)
+				tmp = nl;
 
-			/* Add it to the table
+			if (*p == '.') {
+				char *p2 = p;
+
+				/* It could be a max-age value.
+				 */
+				for (++p2, len = 0; p2 < tmp; ++p2, ++len) {
+					if (!isdigit(*p2))
+						break;
+				}
+				/* If it is too short or
+				 * it is not made of digits only
+				 * then ignore this value.
+				 */
+				if (len < 1 || p2 < tmp)
+					continue;
+
+				/* Convert max-age value.
+				 */
+				if (len > 9) {
+					maxage = (cuint_t) 999999999;
+				} else {
+					maxage = (cuint_t) atoi(p + 1);
+				}
+
+				/* Set max-age value.
+				 */
+				cherokee_mime_entry_set_maxage(entry, maxage);
+
+				TRACE(ENTRIES, "Set max-age %9u, mime type '%s'\n", maxage, type.buf);
+
+				continue;
+			}
+
+			/* Add this file extension to the table.
 			 */
 			cherokee_buffer_add (&ext, p, tmp-p);
-			cherokee_table_add (&mime->mime_table, ext.buf, entry);
+			cherokee_avl_add (&mime->mime_table, &ext, entry);
 
-			p = tmp;
+			TRACE(ENTRIES, "Added mime '%s' -> '%s'\n", ext.buf, type.buf);
 		}
 
 	next_line:

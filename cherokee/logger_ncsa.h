@@ -9,7 +9,7 @@
  * 	Pablo Neira Ayuso <pneira@optimat.com>
  *      Miguel Angel Ajo Pelayo <ajo@godsmaze.org> 
  *
- * Copyright (C) 2001-2006 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2008 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -29,9 +29,11 @@
 #ifndef CHEROKEE_LOGGER_NCSA_H
 #define CHEROKEE_LOGGER_NCSA_H
 
+#include <time.h>
 #include "common-internal.h"
 #include "connection.h"
 #include "logger.h"
+#include "logger_writer.h"
 
 
 typedef struct {
@@ -39,17 +41,21 @@ typedef struct {
 
 	cherokee_boolean_t combined;
 
-	char *accesslog_filename;
-	char *errorlog_filename;
+	long               tz;
+	time_t             now_time;
 
-	FILE *accesslog_fd;
-	FILE *errorlog_fd;
+	cherokee_buffer_t  now_dtm;
+	cherokee_buffer_t  referer;
+	cherokee_buffer_t  useragent;
 
+	cherokee_logger_writer_t writer_access;
+	cherokee_logger_writer_t writer_error;
 } cherokee_logger_ncsa_t;
 
 
-ret_t cherokee_logger_ncsa_new       (cherokee_logger_t     **logger, cherokee_table_t *properties);
-ret_t cherokee_logger_ncsa_init_base (cherokee_logger_ncsa_t *logger, cherokee_table_t *properties);
+ret_t cherokee_logger_ncsa_new       (cherokee_logger_t     **logger, cherokee_config_node_t *config);
+ret_t cherokee_logger_ncsa_init_base (cherokee_logger_ncsa_t *logger, cherokee_config_node_t *config);
+ret_t cherokee_logger_ncsa_configure (cherokee_config_node_t *conf, cherokee_server_t *srv, cherokee_module_props_t **props);
 
 /* virtual methods implementation
  */

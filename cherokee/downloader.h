@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2006 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2008 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -33,43 +33,42 @@
 #include <cherokee/fdpoll.h>
 #include <cherokee/buffer.h>
 #include <cherokee/http.h>
+#include <cherokee/post.h>
 
 
 CHEROKEE_BEGIN_DECLS
 
-typedef enum {
-	downloader_event_init,
-	downloader_event_has_headers,
-	downloader_event_read_body,
-	downloader_event_finish,
-	downloader_event_NUMBER
-} cherokee_downloader_event_t;
-
-typedef ret_t (* cherokee_downloader_init_t)        (void *downloader, void *param);
-typedef ret_t (* cherokee_downloader_has_headers_t) (void *downloader, void *param);
-typedef ret_t (* cherokee_downloader_read_body_t)   (void *downloader, void *param);
-typedef ret_t (* cherokee_downloader_finish_t)      (void *downloader, void *param);
-
 typedef struct cherokee_downloader cherokee_downloader_t;
 #define DOWNLOADER(d) ((cherokee_downloader_t *)(d))
 
+typedef enum {
+	downloader_status_none             = 0x0,
+	downloader_status_headers_sent     = 0x1,
+	downloader_status_post_sent        = 0x2,
+	downloader_status_headers_received = 0x4,
+	downloader_status_data_available   = 0x8,
+	downloader_status_finished         = 0x10
+} cherokee_downloader_status_t;
 
-ret_t cherokee_downloader_new           (cherokee_downloader_t **downloader);
-ret_t cherokee_downloader_free          (cherokee_downloader_t  *downloader);
+ret_t cherokee_downloader_new             (cherokee_downloader_t **downloader);
+ret_t cherokee_downloader_free            (cherokee_downloader_t  *downloader);
 
-ret_t cherokee_downloader_set_fdpoll     (cherokee_downloader_t *downloader, cherokee_fdpoll_t *fdpoll);
-ret_t cherokee_downloader_set_url        (cherokee_downloader_t *downloader, cherokee_buffer_t *url);
-ret_t cherokee_downloader_set_keepalive  (cherokee_downloader_t *downloader, cherokee_boolean_t active);
-ret_t cherokee_downloader_get_reply_code (cherokee_downloader_t *downloader, cherokee_http_t *code);
+ret_t cherokee_downloader_set_url         (cherokee_downloader_t *downloader, cherokee_buffer_t *url);
+ret_t cherokee_downloader_set_keepalive   (cherokee_downloader_t *downloader, cherokee_boolean_t active);
+ret_t cherokee_downloader_set_proxy       (cherokee_downloader_t *downloader, cherokee_buffer_t *proxy, cuint_t port);
+ret_t cherokee_downloader_set_auth        (cherokee_downloader_t *downloader, cherokee_buffer_t *user, cherokee_buffer_t *password);
 
-ret_t cherokee_downloader_post_set      (cherokee_downloader_t *downloader, cherokee_buffer_t *post);
-ret_t cherokee_downloader_post_reset    (cherokee_downloader_t *downloader);
+ret_t cherokee_downloader_get_reply_code  (cherokee_downloader_t *downloader, cherokee_http_t *code);
 
-ret_t cherokee_downloader_step          (cherokee_downloader_t *downloader);
-ret_t cherokee_downloader_reuse         (cherokee_downloader_t *downloader);
-ret_t cherokee_downloader_connect       (cherokee_downloader_t *downloader);
-ret_t cherokee_downloader_connect_event (cherokee_downloader_t *downloader, cherokee_downloader_event_t event, void *func, void *param);
+ret_t cherokee_downloader_post_set        (cherokee_downloader_t *downloader, cherokee_post_t *post);
+ret_t cherokee_downloader_post_reset      (cherokee_downloader_t *downloader);
 
+ret_t cherokee_downloader_step            (cherokee_downloader_t *downloader, cherokee_buffer_t *tmp1, cherokee_buffer_t *tmp2);
+ret_t cherokee_downloader_reuse           (cherokee_downloader_t *downloader);
+ret_t cherokee_downloader_connect         (cherokee_downloader_t *downloader);
+
+ret_t cherokee_downloader_get_status      (cherokee_downloader_t *downloader, cherokee_downloader_status_t *status);
+ret_t cherokee_downloader_is_request_sent (cherokee_downloader_t *downloader);
 
 CHEROKEE_END_DECLS
 

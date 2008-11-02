@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2006 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2008 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -36,11 +36,13 @@
 #include "handler.h"
 #include "list.h"
 #include "handler_cgi_base.h"
-#include "module_loader.h"
+#include "plugin_loader.h"
 
 
 #define ENV_VAR_NUM 80
 
+
+typedef cherokee_handler_cgi_base_props_t cherokee_handler_cgi_props_t;
 
 typedef struct {
 	cherokee_handler_cgi_base_t base;
@@ -58,21 +60,20 @@ typedef struct {
 	int               envp_last;
 	pid_t             pid;               /* CGI pid */
 #endif
-
-
-
 } cherokee_handler_cgi_t;
 
-#define HANDLER_CGI(x)  ((cherokee_handler_cgi_t *)(x))
+#define HDL_CGI(x)           ((cherokee_handler_cgi_t *)(x))
+#define PROP_CGI(x)          ((cherokee_handler_cgi_props_t *)(x))
+#define HANDLER_CGI_PROPS(x) (PROP_CGI (MODULE(x)->props))
 
 
 /* Library init function
  */
-void MODULE_INIT(cgi) (cherokee_module_loader_t *loader);
+void  PLUGIN_INIT_NAME(cgi)            (cherokee_plugin_loader_t *loader);
 
 /* Methods
  */
-ret_t cherokee_handler_cgi_new         (cherokee_handler_t    **hdl, void *cnt, cherokee_table_t *properties);
+ret_t cherokee_handler_cgi_new         (cherokee_handler_t    **hdl, void *cnt, cherokee_module_props_t *props);
 ret_t cherokee_handler_cgi_free        (cherokee_handler_cgi_t *hdl);
 
 ret_t cherokee_handler_cgi_init        (cherokee_handler_cgi_t *hdl);
@@ -86,5 +87,8 @@ ret_t cherokee_handler_cgi_add_headers (cherokee_handler_cgi_t *hdl, cherokee_bu
 void  cherokee_handler_cgi_add_env_pair   (cherokee_handler_cgi_base_t *cgi, 
 					   char *name,    int name_len,
 					   char *content, int content_len);
+
+ret_t cherokee_handler_cgi_configure      (cherokee_config_node_t *conf, cherokee_server_t *srv, cherokee_module_props_t **props);
+ret_t cherokee_handler_cgi_props_free     (cherokee_handler_cgi_props_t *props);
 
 #endif /* CHEROKEE_HANDLER_CGI_H */

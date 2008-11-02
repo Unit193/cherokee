@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2006 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2008 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -32,16 +32,24 @@ typedef ret_t (* fdpoll_func_free_t)     (void  *fdpoll);
 typedef ret_t (* fdpoll_func_add_t)      (void  *fdpoll, int fd, int rw);
 typedef ret_t (* fdpoll_func_del_t)      (void  *fdpoll, int fd);
 typedef ret_t (* fdpoll_func_reset_t)    (void  *fdpoll, int fd);
-typedef void  (* fdpoll_func_set_mode_t) (void  *fdpoll, int fd, int rw);
+typedef ret_t (* fdpoll_func_set_mode_t) (void  *fdpoll, int fd, int rw);
 typedef int   (* fdpoll_func_check_t)    (void  *fdpoll, int fd, int rw);
 typedef int   (* fdpoll_func_watch_t)    (void  *fdpoll, int timeout_msecs);
 typedef ret_t (* fdpoll_func_is_full_t)  (void  *fdpoll);
 
-ret_t fdpoll_epoll_new  (cherokee_fdpoll_t **fdp, int sys_limit, int limit);
-ret_t fdpoll_kqueue_new (cherokee_fdpoll_t **fdp, int sys_limit, int limit);
-ret_t fdpoll_poll_new   (cherokee_fdpoll_t **fdp, int sys_limit, int limit);
-ret_t fdpoll_select_new (cherokee_fdpoll_t **fdp, int sys_limit, int limit);
-ret_t fdpoll_win32_new  (cherokee_fdpoll_t **fdp, int sys_limit, int limit);
+ret_t fdpoll_epoll_get_fdlimits  (int *sys_fd_limit, int *fd_limit);
+ret_t fdpoll_kqueue_get_fdlimits (int *sys_fd_limit, int *fd_limit);
+ret_t fdpoll_port_get_fdlimits   (int *sys_fd_limit, int *fd_limit);
+ret_t fdpoll_poll_get_fdlimits   (int *sys_fd_limit, int *fd_limit);
+ret_t fdpoll_select_get_fdlimits (int *sys_fd_limit, int *fd_limit);
+ret_t fdpoll_win32_get_fdlimits  (int *sys_fd_limit, int *fd_limit);
+
+ret_t fdpoll_epoll_new  (cherokee_fdpoll_t **fdp, int sys_fd_limit, int fd_limit);
+ret_t fdpoll_kqueue_new (cherokee_fdpoll_t **fdp, int sys_fd_limit, int fd_limit);
+ret_t fdpoll_port_new   (cherokee_fdpoll_t **fdp, int sys_fd_limit, int fd_limit);
+ret_t fdpoll_poll_new   (cherokee_fdpoll_t **fdp, int sys_fd_limit, int fd_limit);
+ret_t fdpoll_select_new (cherokee_fdpoll_t **fdp, int sys_fd_limit, int fd_limit);
+ret_t fdpoll_win32_new  (cherokee_fdpoll_t **fdp, int sys_fd_limit, int fd_limit);
 
 
 struct cherokee_fdpoll {

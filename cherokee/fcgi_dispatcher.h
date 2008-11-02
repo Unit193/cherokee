@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2006 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2008 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -36,18 +36,15 @@ typedef struct {
 	cherokee_fcgi_manager_t *manager;
 	cuint_t                  manager_num;
 
-	list_t                   queue;
+	cherokee_list_t          queue;
 	cherokee_thread_t       *thread;
-
-#ifdef HAVE_PTHREAD
-	pthread_mutex_t          lock;
-#endif
+	CHEROKEE_MUTEX_T        (lock);
 } cherokee_fcgi_dispatcher_t;
 
 #define FCGI_DISPATCHER(f) ((cherokee_fcgi_dispatcher_t *)(f))
 
 
-ret_t cherokee_fcgi_dispatcher_new        (cherokee_fcgi_dispatcher_t **fcgi, cherokee_thread_t *thd, cherokee_ext_source_t *src, cuint_t mgr_num, cuint_t nkeepalive, cuint_t pipeline);
+ret_t cherokee_fcgi_dispatcher_new        (cherokee_fcgi_dispatcher_t **fcgi, cherokee_thread_t *thd, cherokee_source_t *src, cuint_t mgr_num, cuint_t nkeepalive, cuint_t pipeline);
 ret_t cherokee_fcgi_dispatcher_free       (cherokee_fcgi_dispatcher_t  *fcgi);
 
 ret_t cherokee_fcgi_dispatcher_dispatch   (cherokee_fcgi_dispatcher_t *fcgi, cherokee_fcgi_manager_t **mgr);

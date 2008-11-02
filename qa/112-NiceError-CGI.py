@@ -10,7 +10,9 @@ ERROR_MSG = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://
 
  <body>
 
- <h1>404 File Not found</h1>
+ <!-- Poem by Thomas Thurman <thomas@thurman.org.uk> -->
+
+ <h1>403 Access Denied</h1>
 
 <p>So many years have passed since first you sought
 the lands beyond the edges of the sky,
@@ -27,9 +29,15 @@ the seconds to your final voyage of all...)
 and ashes on the swell are seen no more.
 The silence surges.
 
-<p><b>Error 404</b>.
+<p><b>Error 403</b>.
  </body>
 </html>"""
+
+CONF = """
+vserver!default!directory!/cgi_error_403_1!handler = cgi
+vserver!default!directory!/cgi_error_403_1!handler!error_handler = 1
+vserver!default!directory!/cgi_error_403_1!priority = 1120
+"""
 
 class Test (TestBase):
     def __init__ (self):
@@ -39,11 +47,7 @@ class Test (TestBase):
         self.request           = "GET /cgi_error_403_1/exec.cgi HTTP/1.0\r\n"
         self.expected_error    = ERROR
         self.expected_content  = ERROR_MSG
-        self.conf              = """Directory /cgi_error_403_1 {
-                                       Handler cgi {
-                                          ErrorHandler on
-                                       }
-                                 }"""
+        self.conf              = CONF
 
     def Prepare (self, www):
         d = self.Mkdir (www, "cgi_error_403_1")

@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2006 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2008 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -30,89 +30,58 @@
 #define CHEROKEE_MODULE_H
 
 #include <cherokee/common.h>
-#include <cherokee/http.h>
+#include <cherokee/plugin.h>
+#include <cherokee/config_node.h>
+#include <cherokee/server.h>
+
 
 CHEROKEE_BEGIN_DECLS
 
 
-typedef enum {
-	cherokee_generic   = 1,
-	cherokee_logger    = 1<<1,
-	cherokee_handler   = 1<<2,
-	cherokee_encoder   = 1<<3,
-	cherokee_validator = 1<<4
-} cherokee_module_type_t;
+/* Callback function prototipes
+ */
+typedef void   * module_func_init_t;
+typedef ret_t (* module_func_new_t)        (void *);
+typedef ret_t (* module_func_free_t)       (void *);
+typedef ret_t (* module_func_props_free_t) (void *);
+typedef ret_t (* module_func_configure_t)  (cherokee_config_node_t *conf, cherokee_server_t *srv, void **props);
 
 
-typedef ret_t (* module_func_new_t)      (void *);
-typedef ret_t (* module_func_free_t)     (void *);
-typedef void  (* module_func_get_name_t) (void  *, const char **name);
-
-
+/* Module properties
+ */
 typedef struct {
-	cherokee_module_type_t  type;
-	void                   *new_func;
-} cherokee_module_info_t;
+	module_func_props_free_t  free;
+} cherokee_module_props_t;
 
+#define MODULE_PROPS(x)      ((cherokee_module_props_t *)(x))
+#define MODULE_PROPS_FREE(f) ((module_func_props_free_t)(f))
+
+
+/* Data types for module objects
+ */
 typedef struct {
-	cherokee_module_info_t module;
-	cherokee_http_method_t valid_methods;
-} cherokee_module_info_handler_t;
-
-typedef struct {
-	cherokee_module_info_t module;
-	cherokee_http_auth_t   valid_methods;
-} cherokee_module_info_validator_t;
-
-
-typedef struct {
-	module_func_new_t       instance; /* constructor step begging */
-	module_func_free_t      free;     /* destructor               */
-	module_func_get_name_t  get_name;
-	void                   *init;     /* constructor step endding */
+	cherokee_plugin_info_t   *info;       /* ptr to info structure    */
+	cherokee_module_props_t  *props;      /* ptr to local properties  */
+	
+	module_func_new_t         instance;   /* constructor              */
+	void                     *init;       /* initializer              */
+	module_func_free_t        free;       /* destructor               */
 } cherokee_module_t;
 
-
-#define MODULE(x)              ((cherokee_module_t *) (x))
-#define MODULE_INFO_HANDLER(x) ((cherokee_module_info_handler_t *) (x))
-
-#define MODULE_INFO(name) cherokee_ ## name ## _info
-#define MODULE_INIT(name) cherokee_module_ ## name ## _init
-
-#define HANDLER_MODULE_INFO_INIT(name, type, func, methods)	\
- 	cherokee_module_info_handler_t MODULE_INFO(name) = {	\
-		{						\
-			type,					\
-			func					\
-		},						\
-		(methods)					\
- 	}				  
-
-#define VALIDATOR_MODULE_INFO_INIT(type, func, methods, name)	\
- 	cherokee_module_info_handler_t MODULE_INFO(name) = {	\
-		{						\
-			type,					\
-			func					\
-		},						\
-		(methods)					\
- 	}
+#define MODULE(x) ((cherokee_module_t *) (x))
 
 
-/* Handy definitions
+/* Methods
  */
-#define HANDLER_MODULE_INFO_INIT_EASY(name, methods)	                 \
- 	cherokee_module_info_handler_t MODULE_INFO(name) = { 	         \
-		{ cherokee_handler, cherokee_handler_ ## name ## _new }, \
-		(methods) }
+ret_t cherokee_module_init_base (cherokee_module_t *module, cherokee_module_props_t *props, cherokee_plugin_info_t *info);
+ret_t cherokee_module_get_name  (cherokee_module_t *module, const char **name);
 
-#define VALIDATOR_MODULE_INFO_INIT_EASY(name, methods)	                     \
- 	cherokee_module_info_handler_t MODULE_INFO(name) = { 	             \
-		{ cherokee_validator, cherokee_validator_ ## name ## _new }, \
-		(methods) }
+/* Property methods
+ */
+ret_t cherokee_module_props_init_base (cherokee_module_props_t *prop, module_func_props_free_t free_func);
+ret_t cherokee_module_props_free_base (cherokee_module_props_t *prop);
+ret_t cherokee_module_props_free      (cherokee_module_props_t *prop);
 
-
-ret_t cherokee_module_init_base (cherokee_module_t *module);
-void  cherokee_module_get_name  (cherokee_module_t *module, const char **name);
 
 CHEROKEE_END_DECLS
 

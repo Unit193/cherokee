@@ -1,0 +1,103 @@
+<html>
+<head>
+    <title>Handler: FastCGI</title>
+    <link href="../media/css/documentation.css" type="text/css" rel="stylesheet" />
+</head>
+
+<body>
+    
+    
+    <h1>Handler: FastCGI</h1>
+    
+    <p>The fcgi handler queries to [FastCGI] servers, such as PHP, Ruby on
+Rails or Django in order to get the request response. It is basically
+the same thing as CGI but <em>much faster</em>.</p>
+<p>This module accepts all the general <a class="reference external" href="cgi.html">CGI</a> parameters. Aside, it needs
+a balancer to be configured. It is the piece of configuration that
+points the handler where to find the FastCGI servers.</p>
+<p>For most of the cases there will be only one FastCGI server though. In
+that scenario the way is to configure the handler to use a <a class="reference external" href="../balancers/round_robin.html">Round
+Robin</a> balancer and configure a single host or interpreter (it has no
+performance penalty).</p>
+<div class="section" id="parameters">
+<h1>Parameters</h1>
+<table class="docutils">
+<colgroup>
+<col width="29%" />
+<col width="18%" />
+<col width="53%" />
+</colgroup>
+<thead valign="bottom">
+<tr><th class="head">Parameters</th>
+<th class="head">Type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr><td>Script Alias</td>
+<td>String</td>
+<td>It defines a kind of execution interpreter</td>
+</tr>
+<tr><td>Change to UID</td>
+<td>String</td>
+<td>It interprets each CGI as it owner user</td>
+</tr>
+<tr><td>Error handler</td>
+<td>Boolean</td>
+<td>Use CGI output as error message</td>
+</tr>
+<tr><td>Check file</td>
+<td>Boolean</td>
+<td>Checks whether the target exists for
+building the PATH_INFO</td>
+</tr>
+<tr><td>Pass request</td>
+<td>Boolean</td>
+<td>Pass the all the special headers of the
+client request</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="examples">
+<h1>Examples</h1>
+<p>This example shows a typical usage of FastCGI. It connects to a FastCGI server located
+in localhost in port 8002. If no server is running, the webserver will run the FastCGI
+server by issuing command defined in Interpreter sub-parameter:</p>
+<div align="center" class="align-center"><img alt="Fastcgi" class="align-center" src="../media/images/admin_handler_fastcgi1.png" /></div>
+<p>This example shows a typical usage of multiple FastCGI servers. It connects to a
+FastCGI servers located in several locations. If no server is running in the local
+computer, the webserver will run the FastCGI server by issuing command defined in
+Interpreter sub-parameter. Note that for remote FastCGI servers, you are responsible
+to run the FastCGI servers there manually:</p>
+<div align="center" class="align-center"><img alt="Fastcgi" class="align-center" src="../media/images/admin_handler_fastcgi2.png" /></div>
+</div>
+<div class="section" id="configuring-php">
+<h1>Configuring PHP</h1>
+<p>The <strong>PHP_FCGI_CHILDREN</strong> environment variable is mandatory for PHP
+FastCGI servers.  It defines how much children should serve the
+requests coming from the webserver.</p>
+<p>If you define <strong>PHP_FCGI_MAX_REQUESTS</strong>, the value should be negative
+so that PHP would take the request as much as possible. If you left it
+unset, PHP will take the default value (500) and your 500th request
+will be rejected and FCGI handler will spew Error 500 (Internal server
+error) for it.</p>
+</div>
+<div class="section" id="note-for-developers">
+<h1>Note for developers</h1>
+<p>There a are two handler implementing the FastCGI protocol: &quot;fcgi&quot; and
+&quot;fastcgi&quot;.</p>
+<p>The &quot;fastcgi&quot; module also implements the FastCGI protocol. It is a
+more complete implementation than &quot;fcgi&quot; although it is also more
+complex. Actually, fcgi become the standard choice because the PHP
+interpreter was kind of buggy when it had to demultiplex multiple
+requests from the same socket.</p>
+<p>The &quot;fastcgi&quot; handler will eventually become the default option.
+However, by the moment &quot;fcgi&quot; is a better option.</p>
+</div>
+
+    
+
+    
+</body>
+</html>

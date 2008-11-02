@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2006 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2008 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -23,10 +23,11 @@
  */
 
 #include "admin_server.h"
-#include "util.h"
 #include "server-protected.h"
 #include "connection-protected.h"
 #include "connection_info.h"
+#include "util.h"
+
 
 /* Server Port
  */
@@ -44,7 +45,7 @@ cherokee_admin_server_reply_set_port (cherokee_handler_admin_t *ahdl, cherokee_b
 {
 	cherokee_server_t *srv = HANDLER_SRV(ahdl);
 	srv = srv;
-	cherokee_buffer_add (reply, "ok\n", 3);
+	cherokee_buffer_add_str (reply, "ok\n");
 	return ret_ok;
 }
 
@@ -64,7 +65,7 @@ cherokee_admin_server_reply_set_port_tls (cherokee_handler_admin_t *ahdl, cherok
 {
 	cherokee_server_t *srv = HANDLER_SRV(ahdl);
 	srv = srv;
-	cherokee_buffer_add (reply, "ok\n", 3);
+	cherokee_buffer_add_str (reply, "ok\n");
 	return ret_ok;
 }
 
@@ -75,7 +76,7 @@ ret_t
 cherokee_admin_server_reply_get_tx (cherokee_handler_admin_t *ahdl, cherokee_buffer_t *question, cherokee_buffer_t *reply)
 {
 	size_t             rx, tx;
-	char               tmp[5];
+	char               tmp[8];
 	cherokee_server_t *srv = HANDLER_SRV(ahdl);
 
 	cherokee_server_get_total_traffic (srv, &rx, &tx);
@@ -90,7 +91,7 @@ ret_t
 cherokee_admin_server_reply_get_rx (cherokee_handler_admin_t *ahdl, cherokee_buffer_t *question, cherokee_buffer_t *reply)
 {
 	size_t             rx, tx;
-	char               tmp[5];
+	char               tmp[8];
 	cherokee_server_t *srv = HANDLER_SRV(ahdl);
 
 	cherokee_server_get_total_traffic (srv, &rx, &tx);
@@ -146,10 +147,10 @@ serialize_connection (cherokee_connection_info_t *info, cherokee_buffer_t *buf)
 ret_t
 cherokee_admin_server_reply_get_connections (cherokee_handler_admin_t *ahdl, cherokee_buffer_t *question, cherokee_buffer_t *reply)
 {
-	ret_t                       ret;
-	list_t                     *i, *tmp;
-	cherokee_server_t          *server = HANDLER_SRV(ahdl);
-	LIST_HEAD(connections);
+	ret_t               ret;
+	cherokee_list_t    *i, *tmp;
+	cherokee_list_t     connections = LIST_HEAD_INIT(connections);
+	cherokee_server_t  *server      = HANDLER_SRV(ahdl);
 
 	/* Get the connection info list
 	 */
@@ -235,9 +236,9 @@ cherokee_admin_server_reply_set_backup_mode (cherokee_handler_admin_t *ahdl, che
 
 	/* Read if the resquest if for turning it on or off
 	 */
-	if (!strncmp (question->buf, "set server.backup_mode on", 25)) {
+	if (cherokee_buffer_cmp_str (question, "set server.backup_mode on") == 0) { 
 		mode = true;
-	} else if (!strncmp (question->buf, "set server.backup_mode off", 26)) {
+	} else if (cherokee_buffer_cmp_str (question, "set server.backup_mode off") == 0) { 
 		mode = false;
 	} else {
 		return ret_error;
@@ -260,3 +261,37 @@ cherokee_admin_server_reply_set_backup_mode (cherokee_handler_admin_t *ahdl, che
 	return ret_ok;
 }
 
+
+/* Trace
+ */
+
+ret_t 
+cherokee_admin_server_reply_get_trace (cherokee_handler_admin_t *ahdl, cherokee_buffer_t *question, cherokee_buffer_t *reply)
+{
+	ret_t              ret;
+	cherokee_buffer_t *modules_ref = NULL;
+
+	ret = cherokee_trace_get_trace (&modules_ref);
+	if (ret != ret_ok) return ret;
+
+	if (cherokee_buffer_is_empty (modules_ref)) {
+		cherokee_buffer_add_str (reply, "server.trace is None\n");
+	} else {
+		cherokee_buffer_add_va (reply, "server.trace is %s\n", modules_ref->buf);
+	}
+
+	return ret_ok;
+}
+
+
+ret_t 
+cherokee_admin_server_reply_set_trace (cherokee_handler_admin_t *ahdl, cherokee_buffer_t *question, cherokee_buffer_t *reply)
+{
+	ret_t ret;
+
+	ret = cherokee_trace_set_modules (question);
+	if (ret != ret_ok) return ret;
+
+	cherokee_buffer_add_str (reply, "ok\n");
+	return ret_ok;
+}

@@ -4,5 +4,7 @@ EXTRA_DIST =          \
 cherokee.nsi          \
 cherokee.nsi.in       \
 cherokee.ico          \
-install.bat   
+cherokee_pkg.ico      \
+install.bat           \
+cherokee.reg
 

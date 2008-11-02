@@ -1,0 +1,51 @@
+<html>
+<head>
+    <title>Handler: File sending</title>
+    <link href="../media/css/documentation.css" type="text/css" rel="stylesheet" />
+</head>
+
+<body>
+    
+    
+    <h1>Handler: File sending</h1>
+    
+    <p>The <strong>file</strong> handler serves files from its document root.  No more, no less.</p>
+<div class="section" id="parameters">
+<h1>Parameters</h1>
+<table class="docutils">
+<colgroup>
+<col width="31%" />
+<col width="19%" />
+<col width="51%" />
+</colgroup>
+<thead valign="bottom">
+<tr><th class="head">Parameters</th>
+<th class="head">Type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr><td><tt class="docutils literal"><span class="pre">iocache</span></tt></td>
+<td>Boolean</td>
+<td>Optional. Default: <tt class="docutils literal"><span class="pre">Enabled</span></tt>.</td>
+</tr>
+</tbody>
+</table>
+<p>By default it will use an internal I/O cache to improve the server performance.
+If you don't want to use it with a directory just unset it using this parameter.</p>
+<p>It is a good idea to disable to I/O cache if the content of the directory changes
+often.</p>
+<div class="section" id="examples">
+<h2>Examples</h2>
+<p>Lets imagine your virtual server DocumentRoot points to /var/www.</p>
+<div align="center" class="align-center"><img alt="Handler file" class="align-center" src="../media/images/admin_handler_file.png" /></div>
+<p>This configuration will make Cherokee to serve files inside /var/www_static/images
+like files.</p>
+</div>
+</div>
+
+    
+
+    
+</body>
+</html>

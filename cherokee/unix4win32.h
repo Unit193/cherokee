@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2006 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2008 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -103,19 +103,22 @@ void closelog (void);
 
 struct passwd {
 	char *pw_name;   /* login user id  */
+	char *pw_passwd; /* login password */
 	char *pw_dir;    /* home directory */
 	char *pw_shell;  /* login shell    */
+	char *pw_gecos;
 	int   pw_gid;
 	int   pw_uid;
 };
 
 struct group {
 	char *gr_name;   /* login user id  */
+	char *gr_passwd; /* login password */
 	int  gr_gid;
 };
 
 struct passwd *getpwuid (int uid);
-struct passwd *getpwnam (char *name);
+struct passwd *getpwnam (const char *name);
 
 
 /* Structure for scatter/gather I/O.
@@ -149,8 +152,6 @@ const char *inet_ntop (int af, const void *addr, char *buf, size_t size);
 int         inet_pton (int af, const char *src, void *dst);
 int         inet_aton (const char *cp, struct in_addr *addr);
 
-#if !defined(CHEROKEE_EMBEDDED)
-
 /* <dlfcn.h> emulation
  */
 #define RTLD_NOW  0
@@ -165,9 +166,6 @@ void       *win_dlopen  (const char *dll_name, int flags);
 void       *win_dlsym   (const void *dll_handle, const char *func_name);
 int         win_dlclose (const void *dll_handle);
 const char *win_dlerror (void);
-
-#endif  /* CHEROKEE_EMBEDDED */
-
 
 /* Unix mmap() emulation
  */

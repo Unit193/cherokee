@@ -1,0 +1,104 @@
+<html>
+<head>
+    <title>Handler: Redirections</title>
+    <link href="../media/css/documentation.css" type="text/css" rel="stylesheet" />
+</head>
+
+<body>
+    
+    
+    <h1>Handler: Redirections</h1>
+    
+    <p>Redirections</p>
+<p>The main idea of a redirection is telling to the web client to go to another URL
+when the request URL matchs some rule.</p>
+<p>For example, if you have URLs like:</p>
+<pre class="literal-block">
+* http://example.com/inst/photogallery/viewphoto?photoid=1235
+* http://example.com/inst/photogallery/viewcomments?photoid=1235
+* http://example.com/inst/photogallery/admin?photoid=1235&amp;method=delete
+</pre>
+<p>You probably would prefer URLs like:</p>
+<pre class="literal-block">
+* http://example.com/photo/1235
+* http://example.com/photo/1235/cmts
+* http://example.com/photo/1235/delete
+</pre>
+<div class="section" id="parameters">
+<h1>Parameters</h1>
+<p>This directive uses PCRE (Perl Compatible Regular Expressions) to make the substitution.</p>
+<ul>
+<li><p class="first">Type: [External | Internal]</p>
+<ul>
+<li><p class="first"><strong>Internal</strong></p>
+<p>The redirection will happen internally, hence the the internal URL in which the address
+is translated will be invisible for the client.</p>
+</li>
+<li><p class="first"><strong>External</strong></p>
+<p>It works in the same way as the previous one, but in this case, it will redirect
+the connection to the new resource.</p>
+</li>
+</ul>
+</li>
+</ul>
+<p>Virtual hosts and redirections</p>
+<p>The internals redirections, using the Rewrite key word, are limited to work in
+the same virtual host. All the internal redirections will be processed in the
+original virtual host, which makes quite sense in terms of security.</p>
+<p>In the case you do need the redirect some resource to another virtual host
+and/or domain, you will have to use an explicit redirection using the external key words.</p>
+<div class="section" id="examples">
+<h2>Examples</h2>
+<p>This example will perform a internal redirection:</p>
+<table class="docutils">
+<colgroup>
+<col width="21%" />
+<col width="79%" />
+</colgroup>
+<thead valign="bottom">
+<tr><th class="head">Regular Expression</th>
+<th class="head">Substitution</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr><td>&quot;/(d+)$&quot;</td>
+<td>&quot;<a class="reference external" href="http://example.com/inst/photogallery/viewphoto?photoid=$1">http://example.com/inst/photogallery/viewphoto?photoid=$1</a>&quot;</td>
+</tr>
+<tr><td>&quot;/(d+)/cmts&quot;</td>
+<td>&quot;<a class="reference external" href="http://example.com/viewcomments?photoid=$1">http://example.com/viewcomments?photoid=$1</a>&quot;</td>
+</tr>
+<tr><td>&quot;/(d+)/delete&quot;</td>
+<td>&quot;<a class="reference external" href="http://example.com/inst/photogallery/admin?photoid=$1&amp;method=delete">http://example.com/inst/photogallery/admin?photoid=$1&amp;method=delete</a>&quot;</td>
+</tr>
+</tbody>
+</table>
+<table class="docutils">
+<colgroup>
+<col width="20%" />
+<col width="80%" />
+</colgroup>
+<thead valign="bottom">
+<tr><th class="head">Request</th>
+<th class="head">Internal translation</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr><td>/photo/123</td>
+<td><a class="reference external" href="http://example.com/inst/photogallery/viewphoto?photoid=123">http://example.com/inst/photogallery/viewphoto?photoid=123</a></td>
+</tr>
+<tr><td>/photo/213/cmts</td>
+<td><a class="reference external" href="http://example.com/viewcomments?photoid=213">http://example.com/viewcomments?photoid=213</a></td>
+</tr>
+<tr><td>/photo/501/delete</td>
+<td><a class="reference external" href="http://example.com/inst/photogallery/admin?photoid=501&amp;method=delete">http://example.com/inst/photogallery/admin?photoid=501&amp;method=delete</a></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+    
+
+    
+</body>
+</html>

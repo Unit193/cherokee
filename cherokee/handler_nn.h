@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2006 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2008 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -27,15 +27,14 @@
 
 #include "common-internal.h"
 #include "handler.h"
-#include "module_loader.h"
+#include "plugin_loader.h"
 
 
 /* Library init function
  */
-void MODULE_INIT(nn) (cherokee_module_loader_t *loader);
+void  PLUGIN_INIT_NAME(nn)     (cherokee_plugin_loader_t *loader);
 
-
-ret_t cherokee_handler_nn_new  (cherokee_handler_t **hdl, void *cnt, cherokee_table_t *properties);
+ret_t cherokee_handler_nn_new  (cherokee_handler_t **hdl, void *cnt, cherokee_module_props_t *props);
 ret_t cherokee_handler_nn_init (cherokee_handler_t  *hdl);
 
 #endif /* CHEROKEE_CONNECTION_HANDLER_NN_H */

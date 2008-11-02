@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2006 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2008 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -152,6 +152,8 @@ struct passwd *
 getpwuid (int uid)
 {
 	__pw.pw_name  = getlogin ();
+	__pw.pw_passwd = NULL;
+	__pw.pw_gecos  = NULL;
 	__pw.pw_dir   = home_dir;
 	__pw.pw_shell = login_shell;
 	__pw.pw_uid   = 0;
@@ -162,10 +164,9 @@ getpwuid (int uid)
 /* everyone is root on WIN32
  */
 struct passwd *
-getpwnam (char *name)
+getpwnam (const char *name)
 {
-        struct passwd* pw = (struct passwd*) malloc(sizeof(struct passwd));
-        memset (pw, '\0', sizeof(struct passwd));
+        struct passwd* pw = calloc(sizeof(struct passwd), 1);
         return pw;
 }
 

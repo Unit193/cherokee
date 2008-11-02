@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2006 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2008 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -33,14 +33,20 @@
 #include "http.h"
 
 typedef struct {
-	struct list_head        list_entry;
+	cherokee_list_t         list_entry;
 	cherokee_url_t          url;
-	
+
 	uint16_t                pipeline;
+	cherokee_boolean_t      proxy;
 	cherokee_boolean_t      keepalive;
 	cherokee_http_method_t  method;
 	cherokee_http_version_t version;
 	off_t                   post_len;
+	cherokee_buffer_t       extra_headers;
+
+	cherokee_http_auth_t    auth;
+	cherokee_buffer_t       user;
+	cherokee_buffer_t       password;
 } cherokee_request_header_t;
 
 
@@ -57,7 +63,11 @@ ret_t cherokee_request_header_init     (cherokee_request_header_t *request);
 ret_t cherokee_request_header_clean    (cherokee_request_header_t *request);
 ret_t cherokee_request_header_mrproper (cherokee_request_header_t *request);
 
-ret_t cherokee_request_header_set_url      (cherokee_request_header_t *request, cherokee_url_t *url);
-ret_t cherokee_request_header_build_string (cherokee_request_header_t *request, cherokee_buffer_t *buf);
+ret_t cherokee_request_header_parse_string (cherokee_request_header_t *request, cherokee_buffer_t *url_string);
+ret_t cherokee_request_header_build_string (cherokee_request_header_t *request, cherokee_buffer_t *buf, cherokee_buffer_t *tmp1, cherokee_buffer_t *tmp2);
+
+ret_t cherokee_request_header_uses_proxy   (cherokee_request_header_t *request, cherokee_boolean_t proxy);
+ret_t cherokee_request_header_add_header   (cherokee_request_header_t *request, char *ptr, cuint_t len);
+ret_t cherokee_request_header_set_auth     (cherokee_request_header_t *request, cherokee_http_auth_t auth, cherokee_buffer_t *user, cherokee_buffer_t *password);
 
 #endif /* CHEROKEE_REQUEST_H */

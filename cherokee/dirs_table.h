@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2006 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2008 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -26,22 +26,18 @@
 #define CHEROKEE_DIRS_TABLE_H
 
 #include "common.h"
-#include "table.h"
-#include "table-protected.h"
+#include "avl.h"
 #include "config_entry.h"
 
 
-typedef cherokee_table_t cherokee_dirs_table_t;  /* Web_directory -> config_entry */
+typedef cherokee_avl_t cherokee_dirs_table_t;  /* Web_directory -> config_entry */
 #define DTABLE(x) ((cherokee_dirs_table_t *)(x))
 
 
-ret_t cherokee_dirs_table_new      (cherokee_dirs_table_t **pt);
-ret_t cherokee_dirs_table_free     (cherokee_dirs_table_t  *pt);
-
 ret_t cherokee_dirs_table_init     (cherokee_dirs_table_t *pt);
-ret_t cherokee_dirs_table_clean    (cherokee_dirs_table_t *pt);
 ret_t cherokee_dirs_table_mrproper (cherokee_dirs_table_t *pt);
 
+ret_t cherokee_dirs_table_clean    (cherokee_dirs_table_t *pt);
 ret_t cherokee_dirs_table_get      (cherokee_dirs_table_t *pt, cherokee_buffer_t *requested_url, cherokee_config_entry_t *plugin_entry, cherokee_buffer_t *web_directory);
 ret_t cherokee_dirs_table_add      (cherokee_dirs_table_t *pt, char *dir, cherokee_config_entry_t  *plugin_entry);
 ret_t cherokee_dirs_table_relink   (cherokee_dirs_table_t *pt);

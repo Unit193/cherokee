@@ -3,14 +3,13 @@
 /* Cherokee
  *
  * Authors:
- * 
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
  * This piece of code by:
  * 	Pablo Neira Ayuso <pneira@optimat.com>
  *      Miguel Angel Ajo Pelayo <ajo@godsmaze.org> 
  *
- * Copyright (C) 2001-2006 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2008 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -27,8 +26,8 @@
  * USA
  */
 
-#ifndef CHEROKEE_LOGGER_W3C_COMMON_H
-#define CHEROKEE_LOGGER_W3C_COMMON_H
+#ifndef CHEROKEE_LOGGER_W3C_H
+#define CHEROKEE_LOGGER_W3C_H
 
 #include "common.h"
 
@@ -36,23 +35,23 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <time.h>
 
 #include "connection.h"
 #include "logger.h"
-
+#include "logger_writer.h"
 
 typedef struct {
-	   cherokee_logger_t logger;
-
-	   int   header_added;
-
-	   char *filename;
-	   FILE *file;
-
+	cherokee_logger_t        logger;	
+	cherokee_boolean_t       header_added;
+	time_t                   now_time;
+	cherokee_buffer_t        now_buf;
+	cherokee_logger_writer_t writer;
 } cherokee_logger_w3c_t;
 
 
-ret_t cherokee_logger_w3c_new (cherokee_logger_t **logger, cherokee_table_t *properties);
+ret_t cherokee_logger_w3c_new (cherokee_logger_t **logger, cherokee_config_node_t *config);
+ret_t cherokee_logger_w3c_init_base (cherokee_logger_w3c_t *logger, cherokee_config_node_t *config);
 
 /* virtual methods implementation
  */
@@ -66,4 +65,4 @@ ret_t cherokee_logger_w3c_write_access (cherokee_logger_w3c_t *logger, cherokee_
 ret_t cherokee_logger_w3c_write_error  (cherokee_logger_w3c_t *logger, cherokee_connection_t *conn);
 ret_t cherokee_logger_w3c_write_string (cherokee_logger_w3c_t *logger, const char *string);
 
-#endif /* CHEROKEE_LOGGER_W3C_COMMON_H */
+#endif /* CHEROKEE_LOGGER_W3C_H */

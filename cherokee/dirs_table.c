@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2006 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2008 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -33,38 +33,23 @@
 #endif
 
 #include "handler.h"
+#include "util.h"
 
 #define ENTRIES "dirs"
 
 
 ret_t 
-cherokee_dirs_table_new (cherokee_dirs_table_t **pt)
-{
-	return cherokee_table_new(pt);
-}
-
-ret_t 
-cherokee_dirs_table_free (cherokee_dirs_table_t *pt)
-{
-	return cherokee_table_free2 (
-		TABLE(pt), 
-		(cherokee_table_free_item_t) cherokee_config_entry_free);
-}
-
-
-ret_t 
 cherokee_dirs_table_init (cherokee_dirs_table_t *pt)
 {
-	return cherokee_table_init (pt);
+	return cherokee_avl_init (pt);
 }
 
 
 ret_t 
 cherokee_dirs_table_mrproper (cherokee_dirs_table_t *pt)
 {
-	return cherokee_table_mrproper2 (
-		TABLE(pt), 
-		(cherokee_table_free_item_t) cherokee_config_entry_free);
+	return cherokee_avl_mrproper (AVL(pt), 
+				      (cherokee_func_free_t) cherokee_config_entry_free);
 }
 
 
@@ -79,7 +64,7 @@ cherokee_dirs_table_get (cherokee_dirs_table_t *pt, cherokee_buffer_t *requested
 	cherokee_buffer_add_buffer (web_directory, requested_url);
 
 	do {
-		ret = cherokee_table_get (pt, web_directory->buf, (void **)&entry);
+		ret = cherokee_avl_get (AVL(pt), web_directory, (void **)&entry);
 		
 		/* Found
 		 */
@@ -139,12 +124,12 @@ cherokee_dirs_table_add (cherokee_dirs_table_t *pt, char *dir, cherokee_config_e
 
 	/* Add to "dir <-> plugin_entry" table
 	 */
-	return cherokee_table_add (TABLE(pt), dir, (void*)plugin_entry);
+	return cherokee_avl_add_ptr (AVL(pt), dir, (void*)plugin_entry);
 }
 
 
 int
-relink_func (const char *key_, void *value, void *param)
+relink_func (cherokee_buffer_t *key_, void *value, void *param)
 {
 	ret_t                        ret;
 	char                        *slash;
@@ -154,7 +139,7 @@ relink_func (const char *key_, void *value, void *param)
 
 	/* It has to look the the parent of this directory
 	 */
-	cherokee_buffer_add (&key, (char *)key_, strlen(key_));
+	cherokee_buffer_add_buffer (&key, key_);
 
 	do {
 		void *parent = NULL;
@@ -169,7 +154,7 @@ relink_func (const char *key_, void *value, void *param)
 			key.len -= ((key.buf + key.len) - slash -1);
 		}
 
-		ret = cherokee_table_get (table, key.buf, &parent);
+		ret = cherokee_avl_get (table, &key, &parent);
 		if (ret == ret_ok) {
 			entry->parent = parent;
 			goto out;
@@ -179,12 +164,12 @@ relink_func (const char *key_, void *value, void *param)
 	
 out:
 	cherokee_buffer_mrproper (&key);
-	return true;
+	return false;
 }
 
 
 ret_t 
 cherokee_dirs_table_relink (cherokee_dirs_table_t *pt)
 {
-	return cherokee_table_while (TABLE(pt), relink_func, pt, NULL, NULL);
+	return cherokee_avl_while (AVL(pt), relink_func, pt, NULL, NULL);
 }

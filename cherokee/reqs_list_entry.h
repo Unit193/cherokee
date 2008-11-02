@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2006 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2008 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -34,7 +34,7 @@
 typedef struct {
 	cherokee_config_entry_t  base_entry;
 	cherokee_buffer_t        request;
-	struct list_head         list_entry;
+	cherokee_list_t          list_node;
 	
 	int                      ovector[OVECTOR_LEN];
 	int                      ovecsize;
@@ -45,5 +45,6 @@ typedef struct {
 
 ret_t cherokee_reqs_list_entry_new  (cherokee_reqs_list_entry_t **entry);
 ret_t cherokee_reqs_list_entry_free (cherokee_reqs_list_entry_t  *entry);
+
 
 #endif /* CHEROKEE_REQS_LIST_ENTRY_H */

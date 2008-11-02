@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2006 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2008 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -44,7 +44,7 @@ typedef enum {
 
 typedef enum {
 	http_unknown      = 0,
-	http_all_methods  = 0xFFFFFFFF,
+	http_all_methods  = 0xFFFFFFF,
 
 	http_get          = 1,
 	http_post         = 1 << 1,
@@ -90,7 +90,7 @@ typedef enum {
 	http_partial_content          = 206,
 	http_moved_permanently        = 301,
 	http_moved_temporarily        = 302,
-	http_see_other                = 303,
+ 	http_see_other                = 303,
 	http_not_modified             = 304,
 	http_bad_request              = 400,
 	http_unauthorized             = 401,
@@ -98,37 +98,43 @@ typedef enum {
 	http_not_found                = 404,
 	http_method_not_allowed       = 405,
 	http_length_required          = 411,
-	http_request_entity_too_large = 413,
+ 	http_request_entity_too_large = 413,
 	http_request_uri_too_long     = 414,
 	http_range_not_satisfiable    = 416,
 	http_upgrade_required         = 426,
 	http_internal_error           = 500,
-	http_service_unavailable      = 503
+	http_not_implemented          = 501,
+	http_bad_gateway              = 502,
+	http_service_unavailable      = 503,
+	http_gateway_timeout          = 504,
+	http_version_not_supported    = 505
 } cherokee_http_t;
 
-/*                                        0         1         2         3         4         5         6         7
-					  01234567890123456789012345678901234567890123456789012345678901234567890 */
-#define http_continue_string              "100 Continue"
-#define http_switching_protocols_string   "101 Switching Protocols"
-#define http_ok_string                    "200 OK"
-#define http_accepted_string              "202 Accepted"
-#define http_partial_content_string       "206 Partial Content"
-#define http_moved_permanently_string     "301 Moved Permanently"
-#define http_moved_temporarily_string     "302 Moved Temporarily"
-#define http_see_other_string             "303 See Other"
-#define http_not_modified_string          "304 Not Modified"
-#define http_bad_request_string           "400 Bad Request"
-#define http_unauthorized_string          "401 Authorization Required"
-#define http_access_denied_string         "403 Forbidden"
-#define http_not_found_string             "404 Not Found"
-#define http_method_not_allowed_string    "405 Method Not Allowed"
-#define http_length_required_string       "411 Length Required"
+#define http_continue_string                 "100 Continue"
+#define http_switching_protocols_string      "101 Switching Protocols"
+#define http_ok_string                       "200 OK"
+#define http_accepted_string                 "202 Accepted"
+#define http_partial_content_string          "206 Partial Content"
+#define http_moved_permanently_string        "301 Moved Permanently"
+#define http_moved_temporarily_string        "302 Moved Temporarily"
+#define http_see_other_string                "303 See Other"
+#define http_not_modified_string             "304 Not Modified"
+#define http_bad_request_string              "400 Bad Request"
+#define http_unauthorized_string             "401 Authorization Required"
+#define http_access_denied_string            "403 Forbidden"
+#define http_not_found_string                "404 Not Found"
+#define http_method_not_allowed_string       "405 Method Not Allowed"
+#define http_length_required_string          "411 Length Required"
 #define http_request_entity_too_large_string "413 Request Entity too large"
-#define http_request_uri_too_long_string  "414 Request-URI too long"
-#define http_range_not_satisfiable_string "416 Requested range not satisfiable"
-#define http_upgrade_required_string      "426 Upgrade Required"
-#define http_internal_error_string        "500 Internal Server Error"
-#define http_service_unavailable_string   "503 Service Unavailable"
+#define http_request_uri_too_long_string     "414 Request-URI too long"
+#define http_range_not_satisfiable_string    "416 Requested range not satisfiable"
+#define http_upgrade_required_string         "426 Upgrade Required"
+#define http_internal_error_string           "500 Internal Server Error"
+#define http_not_implemented_string          "501 Not Implemented"
+#define http_bad_gateway_string              "502 Bad gateway"
+#define http_service_unavailable_string      "503 Service Unavailable"
+#define http_gateway_timeout_string          "504 Gatewat Timeout"
+#define http_version_not_supported_string    "505 HTTP Version Not Supported"
 
 #define http_type_200_max 206
 #define http_type_300_max 307

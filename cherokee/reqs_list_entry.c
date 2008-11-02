@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2006 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2008 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -26,21 +26,21 @@
 #include "reqs_list_entry.h"
 
 ret_t 
-cherokee_reqs_list_entry_new  (cherokee_reqs_list_entry_t **entry)
+cherokee_reqs_list_entry_new (cherokee_reqs_list_entry_t **entry)
 {
 	CHEROKEE_NEW_STRUCT (n, reqs_list_entry);
 
-	/* Init base class
+	/* Init properties
 	 */
-	cherokee_config_entry_init (&n->base_entry);
-
 	memset (n->ovector, 0, sizeof(int)*OVECTOR_LEN);
 	n->ovecsize = 0;
 
-	/* Init properties
-	 */
 	cherokee_buffer_init (&n->request);
-	INIT_LIST_HEAD (&n->list_entry);
+	INIT_LIST_HEAD (&n->list_node);
+
+	/* Init base class
+	 */
+	cherokee_config_entry_init (CONF_ENTRY(n));
 
 	*entry = n;	
 	return ret_ok;
@@ -50,9 +50,13 @@ cherokee_reqs_list_entry_new  (cherokee_reqs_list_entry_t **entry)
 ret_t 
 cherokee_reqs_list_entry_free (cherokee_reqs_list_entry_t *entry)
 {
-	   list_del ((list_t *)&entry->list_entry);
-	   cherokee_buffer_mrproper (&entry->request);
+	if (entry == NULL)
+		return ret_ok;
 
-	   return cherokee_config_entry_free (&entry->base_entry);
+	cherokee_buffer_mrproper (&entry->request);
+	cherokee_config_entry_mrproper (CONF_ENTRY(entry));
+	
+	free (entry);
+	return ret_ok;
 }
 

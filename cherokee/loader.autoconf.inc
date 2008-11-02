@@ -1,5 +1,74 @@
  
+ void PLUGIN_INIT_NAME(error_redir) (cherokee_plugin_loader_t *loader); 
+ void PLUGIN_INIT_NAME(server_info) (cherokee_plugin_loader_t *loader); 
+ void PLUGIN_INIT_NAME(file) (cherokee_plugin_loader_t *loader); 
+ void PLUGIN_INIT_NAME(admin) (cherokee_plugin_loader_t *loader); 
+ void PLUGIN_INIT_NAME(dirlist) (cherokee_plugin_loader_t *loader); 
+ void PLUGIN_INIT_NAME(fcgi) (cherokee_plugin_loader_t *loader); 
+ void PLUGIN_INIT_NAME(fastcgi) (cherokee_plugin_loader_t *loader); 
+ void PLUGIN_INIT_NAME(scgi) (cherokee_plugin_loader_t *loader); 
+ void PLUGIN_INIT_NAME(redir) (cherokee_plugin_loader_t *loader); 
+ void PLUGIN_INIT_NAME(common) (cherokee_plugin_loader_t *loader); 
+ void PLUGIN_INIT_NAME(nn) (cherokee_plugin_loader_t *loader); 
+ void PLUGIN_INIT_NAME(cgi) (cherokee_plugin_loader_t *loader); 
+ void PLUGIN_INIT_NAME(phpcgi) (cherokee_plugin_loader_t *loader); 
+ void PLUGIN_INIT_NAME(mirror) (cherokee_plugin_loader_t *loader); 
+ void PLUGIN_INIT_NAME(gzip) (cherokee_plugin_loader_t *loader); 
+ void PLUGIN_INIT_NAME(ncsa) (cherokee_plugin_loader_t *loader); 
+ void PLUGIN_INIT_NAME(combined) (cherokee_plugin_loader_t *loader); 
+ void PLUGIN_INIT_NAME(w3c) (cherokee_plugin_loader_t *loader); 
+ void PLUGIN_INIT_NAME(ldap) (cherokee_plugin_loader_t *loader); 
+ void PLUGIN_INIT_NAME(htpasswd) (cherokee_plugin_loader_t *loader); 
+ void PLUGIN_INIT_NAME(plain) (cherokee_plugin_loader_t *loader); 
+ void PLUGIN_INIT_NAME(htdigest) (cherokee_plugin_loader_t *loader); 
+ void PLUGIN_INIT_NAME(round_robin) (cherokee_plugin_loader_t *loader); 
 
   
+ add_static_entry (loader, "error_redir", PLUGIN_INFO_PTR(error_redir)); 
+ add_static_entry (loader, "server_info", PLUGIN_INFO_PTR(server_info)); 
+ add_static_entry (loader, "file", PLUGIN_INFO_PTR(file)); 
+ add_static_entry (loader, "admin", PLUGIN_INFO_PTR(admin)); 
+ add_static_entry (loader, "dirlist", PLUGIN_INFO_PTR(dirlist)); 
+ add_static_entry (loader, "fcgi", PLUGIN_INFO_PTR(fcgi)); 
+ add_static_entry (loader, "fastcgi", PLUGIN_INFO_PTR(fastcgi)); 
+ add_static_entry (loader, "scgi", PLUGIN_INFO_PTR(scgi)); 
+ add_static_entry (loader, "redir", PLUGIN_INFO_PTR(redir)); 
+ add_static_entry (loader, "common", PLUGIN_INFO_PTR(common)); 
+ add_static_entry (loader, "nn", PLUGIN_INFO_PTR(nn)); 
+ add_static_entry (loader, "cgi", PLUGIN_INFO_PTR(cgi)); 
+ add_static_entry (loader, "phpcgi", PLUGIN_INFO_PTR(phpcgi)); 
+ add_static_entry (loader, "mirror", PLUGIN_INFO_PTR(mirror)); 
+ add_static_entry (loader, "gzip", PLUGIN_INFO_PTR(gzip)); 
+ add_static_entry (loader, "ncsa", PLUGIN_INFO_PTR(ncsa)); 
+ add_static_entry (loader, "combined", PLUGIN_INFO_PTR(combined)); 
+ add_static_entry (loader, "w3c", PLUGIN_INFO_PTR(w3c)); 
+ add_static_entry (loader, "ldap", PLUGIN_INFO_PTR(ldap)); 
+ add_static_entry (loader, "htpasswd", PLUGIN_INFO_PTR(htpasswd)); 
+ add_static_entry (loader, "plain", PLUGIN_INFO_PTR(plain)); 
+ add_static_entry (loader, "htdigest", PLUGIN_INFO_PTR(htdigest)); 
+ add_static_entry (loader, "round_robin", PLUGIN_INFO_PTR(round_robin)); 
 
- 
+  
+ PLUGIN_INIT_NAME(error_redir)(loader); 
+ PLUGIN_INIT_NAME(server_info)(loader); 
+ PLUGIN_INIT_NAME(file)(loader); 
+ PLUGIN_INIT_NAME(admin)(loader); 
+ PLUGIN_INIT_NAME(dirlist)(loader); 
+ PLUGIN_INIT_NAME(fcgi)(loader); 
+ PLUGIN_INIT_NAME(fastcgi)(loader); 
+ PLUGIN_INIT_NAME(scgi)(loader); 
+ PLUGIN_INIT_NAME(redir)(loader); 
+ PLUGIN_INIT_NAME(common)(loader); 
+ PLUGIN_INIT_NAME(nn)(loader); 
+ PLUGIN_INIT_NAME(cgi)(loader); 
+ PLUGIN_INIT_NAME(phpcgi)(loader); 
+ PLUGIN_INIT_NAME(mirror)(loader); 
+ PLUGIN_INIT_NAME(gzip)(loader); 
+ PLUGIN_INIT_NAME(ncsa)(loader); 
+ PLUGIN_INIT_NAME(combined)(loader); 
+ PLUGIN_INIT_NAME(w3c)(loader); 
+ PLUGIN_INIT_NAME(ldap)(loader); 
+ PLUGIN_INIT_NAME(htpasswd)(loader); 
+ PLUGIN_INIT_NAME(plain)(loader); 
+ PLUGIN_INIT_NAME(htdigest)(loader); 
+ PLUGIN_INIT_NAME(round_robin)(loader);

@@ -1,0 +1,66 @@
+<html>
+<head>
+    <title>Handler: List &amp; Send</title>
+    <link href="../media/css/documentation.css" type="text/css" rel="stylesheet" />
+</head>
+
+<body>
+    
+    
+    <h1>Handler: List &amp; Send</h1>
+    
+    <p>The <strong>List &amp; Send</strong> (<tt class="docutils literal"><span class="pre">common</span></tt> internally) handler behaviour depends
+on whether it replies a request for a directory or a file.</p>
+<p>In case a directory is requested, it will use the <a class="reference external" href="dirlist.html">Listing Only</a>
+handler in order to list its content. And, in the case a file is
+request, it will use the <a class="reference external" href="file.html">File sending</a> handler.</p>
+<div class="section" id="parameters">
+<h1>Parameters</h1>
+<table class="docutils">
+<colgroup>
+<col width="30%" />
+<col width="18%" />
+<col width="51%" />
+</colgroup>
+<thead valign="bottom">
+<tr><th class="head">Parameters</th>
+<th class="head">Type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr><td><tt class="docutils literal"><span class="pre">pathInfo</span></tt></td>
+<td>boolean</td>
+<td>Makes the handler to stop parsing the
+pathinfo string. Default: <tt class="docutils literal"><span class="pre">Disabled</span></tt>.</td>
+</tr>
+</tbody>
+</table>
+<p>Besides, it inherits all the parameters from the _file and _dirlist handlers.</p>
+<ul>
+<li><p class="first">Note, <strong>Pathinfo</strong> explained:</p>
+<pre class="literal-block">
+$ echo &quot;This a test&quot; &gt; /tmp/1/2/test
+$ curl http://localhost:9999/1/2/test
+This a test
+$ curl http://localhost:9999/1/2/test/this/is/pathinfo
+This a test
+$ curl http://localhost:9999/1/2/test.no -D - | grep HTTP
+HTTP/1.1 404 Not Found
+</pre>
+</li>
+</ul>
+<div class="section" id="examples">
+<h2>Examples</h2>
+<p>With this configuration:</p>
+<div align="center" class="align-center"><img alt="Dirlist configuration" class="align-center" src="../media/images/admin_handler_dirlist.png" /></div>
+<p>Will return something like:</p>
+<div align="center" class="align-center"><img alt="Dirlist example" class="align-center" src="../media/images/admin_handler_dirlist_ex.png" /></div>
+</div>
+</div>
+
+    
+
+    
+</body>
+</html>

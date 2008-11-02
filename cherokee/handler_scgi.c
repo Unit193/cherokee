@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2006 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2008 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -25,7 +25,7 @@
 #include "common-internal.h"
 #include "handler_scgi.h"
 #include "connection.h"
-#include "ext_source.h"
+#include "source_interpreter.h"
 #include "thread.h"
 #include "util.h"
 
@@ -37,7 +37,74 @@
 	add_env_pair (cgi, key, sizeof(key)-1, val, len)
 
 
-HANDLER_MODULE_INFO_INIT_EASY (scgi, http_get | http_post | http_head);
+/* Plug-in initialization
+ */
+PLUGIN_INFO_HANDLER_EASIEST_INIT (scgi, http_get | http_post | http_head);
+
+
+/* Methods implementation
+ */
+static ret_t 
+props_free (cherokee_handler_scgi_props_t *props)
+{
+	if (props->balancer)
+		cherokee_balancer_free (props->balancer);
+
+	/* TODO: Free scgi_env_ref
+	 */
+
+	return cherokee_handler_cgi_base_props_free (PROP_CGI_BASE(props));
+}
+
+ret_t 
+cherokee_handler_scgi_configure (cherokee_config_node_t *conf, cherokee_server_t *srv, cherokee_module_props_t **_props)
+{
+	ret_t                          ret;
+	cherokee_list_t               *i;
+	cherokee_handler_scgi_props_t *props;
+	
+	/* Instance a new property object
+	 */
+	if (*_props == NULL) {
+		CHEROKEE_NEW_STRUCT (n, handler_scgi_props);
+
+		cherokee_handler_cgi_base_props_init_base (PROP_CGI_BASE(n), 
+							   MODULE_PROPS_FREE(props_free));
+
+		INIT_LIST_HEAD(&n->scgi_env_ref);   // TODO: finish this
+		n->balancer = NULL;
+
+		*_props = MODULE_PROPS(n);
+	}
+
+	props = PROP_SCGI(*_props);	
+
+	/* Parse the configuration tree
+	 */
+	cherokee_config_node_foreach (i, conf) {
+		cherokee_config_node_t *subconf = CONFIG_NODE(i);
+
+		if (equal_buf_str (&subconf->key, "balancer")) {
+			ret = cherokee_balancer_instance (&subconf->val, subconf, srv, &props->balancer); 
+			if (ret != ret_ok) return ret;
+		}
+	}
+
+	/* Init base class
+	 */
+	ret = cherokee_handler_cgi_base_configure (conf, srv, _props);
+	if (ret != ret_ok) return ret;
+
+	/* Final checks
+	 */
+	if (props->balancer == NULL) {
+		PRINT_ERROR_S ("ERROR: SCGI handler needs a balancer\n");
+		return ret_error;
+	}
+
+	return ret_ok;
+}
+
 
 static void 
 add_env_pair (cherokee_handler_cgi_base_t *cgi_base, 
@@ -45,13 +112,7 @@ add_env_pair (cherokee_handler_cgi_base_t *cgi_base,
 	      char *val, int val_len)
 {
 	static char              zero = '\0';
-	cherokee_handler_scgi_t *scgi = HANDLER_SCGI(cgi_base);
-
-	if (val_len == 0) {
-		return;
-	}
-
-//	printf ("****[%s]=[%s] (%d, %d)\n", key, val, key_len, val_len);
+	cherokee_handler_scgi_t *scgi = HDL_SCGI(cgi_base);
 
 	cherokee_buffer_ensure_size (&scgi->header, scgi->header.len + key_len + val_len + 3);
 
@@ -67,18 +128,18 @@ read_from_scgi (cherokee_handler_cgi_base_t *cgi_base, cherokee_buffer_t *buffer
 {
 	ret_t                    ret;
 	size_t                   read = 0;
-	cherokee_handler_scgi_t *scgi = HANDLER_SCGI(cgi_base);
+	cherokee_handler_scgi_t *scgi = HDL_SCGI(cgi_base);
 	
-	ret = cherokee_socket_read (scgi->socket, buffer, 4096, &read);
+	ret = cherokee_socket_bufread (&scgi->socket, buffer, 4096, &read);
 
 	switch (ret) {
 	case ret_eagain:
 		cherokee_thread_deactive_to_polling (HANDLER_THREAD(cgi_base), HANDLER_CONN(cgi_base), 
-						     scgi->socket->socket, 0, false);
+						     scgi->socket.socket, 0, false);
 		return ret_eagain;
 
 	case ret_ok:
-		TRACE (ENTRIES, "%d bytes readed\n", read);
+		TRACE (ENTRIES, "%d bytes read\n", read);
 		return ret_ok;
 
 	case ret_eof:
@@ -96,19 +157,22 @@ read_from_scgi (cherokee_handler_cgi_base_t *cgi_base, cherokee_buffer_t *buffer
 
 
 ret_t 
-cherokee_handler_scgi_new (cherokee_handler_t **hdl, void *cnt, cherokee_table_t *properties)
+cherokee_handler_scgi_new (cherokee_handler_t **hdl, void *cnt, cherokee_module_props_t *props)
 {
 	CHEROKEE_NEW_STRUCT (n, handler_scgi);
 	
 	/* Init the base class
 	 */
-	cherokee_handler_cgi_base_init (CGI_BASE(n), cnt, properties, 
-					add_env_pair, read_from_scgi);
+	cherokee_handler_cgi_base_init (
+			HDL_CGI_BASE(n), cnt,
+			PLUGIN_INFO_HANDLER_PTR(scgi), 
+			HANDLER_PROPS(props),
+			add_env_pair, read_from_scgi);
 
 	/* Virtual methods
 	 */
 	MODULE(n)->init         = (handler_func_init_t) cherokee_handler_scgi_init;
-	MODULE(n)->free         = (handler_func_free_t) cherokee_handler_scgi_free;
+	MODULE(n)->free         = (module_func_free_t) cherokee_handler_scgi_free;
 
 	/* Virtual methods: implemented by handler_cgi_base
 	 */
@@ -120,12 +184,7 @@ cherokee_handler_scgi_new (cherokee_handler_t **hdl, void *cnt, cherokee_table_t
 	n->post_len = 0;
 
 	cherokee_buffer_init (&n->header);
-	cherokee_socket_new  (&n->socket);
-
-	if (properties) {
-		cherokee_typed_table_get_list (properties, "servers", &n->server_list);
-		cherokee_typed_table_get_list (properties, "env", &n->scgi_env_ref);
-	}
+	cherokee_socket_init (&n->socket);
 
 	/* Return the object
 	 */
@@ -139,12 +198,12 @@ cherokee_handler_scgi_free (cherokee_handler_scgi_t *hdl)
 {
 	/* Free the rest of the handler CGI memory
 	 */
-	cherokee_handler_cgi_base_free (CGI_BASE(hdl));
+	cherokee_handler_cgi_base_free (HDL_CGI_BASE(hdl));
 
 	/* SCGI stuff
 	 */
-	cherokee_socket_close (hdl->socket);
-	cherokee_socket_free (hdl->socket);
+	cherokee_socket_close (&hdl->socket);
+	cherokee_socket_mrproper (&hdl->socket);
 
 	cherokee_buffer_mrproper (&hdl->header);
 
@@ -159,7 +218,8 @@ netstringer (cherokee_buffer_t *buf)
 	CHEROKEE_TEMP(num,16);
 
 	len = snprintf (num, num_size, "%d:", buf->len);
-	if (len < 0) return ret_error;
+	if (len < 0)
+		return ret_error;
 
 	cherokee_buffer_ensure_size (buf, buf->len + len + 2);
 	cherokee_buffer_prepend (buf, num, len);
@@ -179,12 +239,12 @@ build_header (cherokee_handler_scgi_t *hdl)
 	cuint_t len;
 	char    tmp[64];
 
-	len = snprintf (tmp, 64, "%d", hdl->post_len);
+	len = snprintf (tmp, sizeof(tmp), FMT_OFFSET, hdl->post_len);
 	
-	set_env (CGI_BASE(hdl), "CONTENT_LENGTH", tmp, len);
-	set_env (CGI_BASE(hdl), "SCGI", "1", 1);
+	set_env (HDL_CGI_BASE(hdl), "CONTENT_LENGTH", tmp, len);
+	set_env (HDL_CGI_BASE(hdl), "SCGI", "1", 1);
 
-	cherokee_handler_cgi_base_build_envp (CGI_BASE(hdl), HANDLER_CONN(hdl));       	
+	cherokee_handler_cgi_base_build_envp (HDL_CGI_BASE(hdl), HANDLER_CONN(hdl));       	
 
 	return netstringer (&hdl->header);
 }
@@ -193,46 +253,61 @@ build_header (cherokee_handler_scgi_t *hdl)
 static ret_t
 connect_to_server (cherokee_handler_scgi_t *hdl)
 {
-	ret_t                  ret;
-	cherokee_ext_source_t *src = NULL;
+	ret_t                          ret;
+	cherokee_source_t             *src   = NULL;
+	cherokee_connection_t         *conn  = HANDLER_CONN(hdl);
+	cherokee_handler_scgi_props_t *props = HDL_SCGI_PROPS(hdl);
 
-	ret = cherokee_ext_source_get_next (EXT_SOURCE_HEAD(hdl->server_list->next), hdl->server_list, &src);
-	if (unlikely (ret != ret_ok)) return ret;
+	ret = cherokee_balancer_dispatch (props->balancer, conn, &src);
+	if (ret != ret_ok) return ret;
 
-	ret = cherokee_ext_source_connect (src, hdl->socket);
-	if (ret != ret_ok) {
-		int try = 0;
+ 	ret = cherokee_source_connect (src, &hdl->socket); 
+ 	if (ret != ret_ok) { 
+ 		int                            try     = 0;
+		cherokee_source_interpreter_t *src_int = SOURCE_INT(src);
 
-		ret = cherokee_ext_source_spawn_srv (src);
+		ret = cherokee_source_interpreter_spawn (src_int);
 		if (ret != ret_ok) {
-			TRACE (ENTRIES, "Couldn't spawn: %s\n", src->host.buf ? src->host.buf : src->unix_socket.buf);
-			return ret;
+			if (src_int->interpreter.buf)
+				TRACE (ENTRIES, "Couldn't spawn: %s\n", src_int->interpreter.buf);
+			else
+				TRACE (ENTRIES, "There was no interpreter to be spawned %s", "\n");
+			return ret_error;
 		}
 		
-		for (try = 0; try < 3; try ++) {
-			ret = cherokee_ext_source_connect (src, hdl->socket);
+		while (true) {
+			ret = cherokee_source_connect (src, &hdl->socket);
 			if (ret == ret_ok) break;
 
 			TRACE (ENTRIES, "Couldn't connect: %s, try %d\n", src->host.buf ? src->host.buf : src->unix_socket.buf, try);
-			sleep (1);
+
+			if (try++ >= 3)
+				return ret;
+
+			sleep (1);			
 		}
 		
 	}
-
-	TRACE (ENTRIES, "connected fd=%d\n", hdl->socket->socket);
 	
-	return ret_ok;
+ 	TRACE (ENTRIES, "connected fd=%d\n", hdl->socket.socket); 
+
+	cherokee_fd_set_nonblocking (SOCKET_FD(&hdl->socket));
+ 	return ret_ok; 
 }
 
 
 static ret_t
 send_header (cherokee_handler_scgi_t *hdl)
 {
-	ret_t  ret;
-	size_t written = 0;
+	ret_t                  ret;
+	size_t                 written = 0;
+	cherokee_connection_t *conn    = HANDLER_CONN(hdl);
 	
-	ret = cherokee_socket_write (hdl->socket, &hdl->header, &written);
-	if (ret != ret_ok) return ret;
+	ret = cherokee_socket_bufwrite (&hdl->socket, &hdl->header, &written);
+	if (ret != ret_ok) {
+		conn->error_code = http_bad_gateway;
+		return ret;
+	}
 	
 //	cherokee_buffer_print_debug (&hdl->header, -1);
 
@@ -255,7 +330,7 @@ send_post (cherokee_handler_scgi_t *hdl)
 	int                    mode =  0;
 	cherokee_connection_t *conn = HANDLER_CONN(hdl);
 	
-	ret = cherokee_post_walk_to_fd (&conn->post, hdl->socket->socket, &e_fd, &mode);
+	ret = cherokee_post_walk_to_fd (&conn->post, hdl->socket.socket, &e_fd, &mode);
 	
 	switch (ret) {
 	case ret_ok:
@@ -265,6 +340,7 @@ send_post (cherokee_handler_scgi_t *hdl)
 			cherokee_thread_deactive_to_polling (HANDLER_THREAD(hdl), conn, e_fd, mode, false);
 		return ret_eagain;
 	default:
+		conn->error_code = http_bad_gateway;
 		return ret;
 	}
 
@@ -278,12 +354,15 @@ cherokee_handler_scgi_init (cherokee_handler_scgi_t *hdl)
 	ret_t                  ret;
 	cherokee_connection_t *conn = HANDLER_CONN(hdl);
 
-	switch (CGI_BASE(hdl)->init_phase) {
+	switch (HDL_CGI_BASE(hdl)->init_phase) {
 	case hcgi_phase_build_headers:
 		/* Extracts PATH_INFO and filename from request uri 
 		 */
-		ret = cherokee_handler_cgi_base_extract_path (CGI_BASE(hdl), false);
-		if (unlikely (ret < ret_ok)) return ret;
+		ret = cherokee_handler_cgi_base_extract_path (HDL_CGI_BASE(hdl), false);
+		if (unlikely (ret < ret_ok)) {
+			conn->error_code = http_internal_error;
+			return ret_error;
+		}
 		
 		/* Prepare Post
 		 */
@@ -295,14 +374,20 @@ cherokee_handler_scgi_init (cherokee_handler_scgi_t *hdl)
 		/* Build the headers
 		 */
 		ret = build_header (hdl);
-		if (unlikely (ret != ret_ok)) return ret;
+		if (unlikely (ret != ret_ok)) {
+			conn->error_code = http_internal_error;
+			return ret_error;
+		}
 
 		/* Connect	
 		 */
 		ret = connect_to_server (hdl);
-		if (unlikely (ret != ret_ok)) return ret;
+		if (unlikely (ret != ret_ok)) {
+			conn->error_code = http_service_unavailable;
+			return ret_error;
+		}
 		
-		CGI_BASE(hdl)->init_phase = hcgi_phase_send_headers;
+		HDL_CGI_BASE(hdl)->init_phase = hcgi_phase_send_headers;
 
 	case hcgi_phase_send_headers:
 		/* Send the header
@@ -310,7 +395,7 @@ cherokee_handler_scgi_init (cherokee_handler_scgi_t *hdl)
 		ret = send_header (hdl);
 		if (ret != ret_ok) return ret;
 
-		CGI_BASE(hdl)->init_phase = hcgi_phase_send_post;
+		HDL_CGI_BASE(hdl)->init_phase = hcgi_phase_send_post;
 
 	case hcgi_phase_send_post:
 		/* Send the Post
@@ -322,10 +407,4 @@ cherokee_handler_scgi_init (cherokee_handler_scgi_t *hdl)
 	}
 
 	return ret_ok;
-}
-
-
-void
-MODULE_INIT(scgi) (cherokee_module_loader_t *loader)
-{
 }

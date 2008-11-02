@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2006 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2008 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -26,12 +26,12 @@
 #include "mime_entry.h"
 
 struct cherokee_mime_entry {
-	struct list_head   base;
+	cherokee_list_t    base;
 
 	cuint_t            maxage;
 	cherokee_boolean_t maxage_set;
 
-	cherokee_buffer_t *mime_name;
+	cherokee_buffer_t  mime_name;
 };
 
 ret_t
@@ -44,7 +44,7 @@ cherokee_mime_entry_new (cherokee_mime_entry_t **mentry)
 	n->maxage     = -1;
 	n->maxage_set = false;
 
-	cherokee_buffer_new (&n->mime_name);
+	cherokee_buffer_init (&n->mime_name);
 
 	*mentry = n;
 	return ret_ok;
@@ -54,10 +54,7 @@ cherokee_mime_entry_new (cherokee_mime_entry_t **mentry)
 ret_t
 cherokee_mime_entry_free (cherokee_mime_entry_t *mentry)
 {
-	if (mentry->mime_name != NULL) {
-		cherokee_buffer_free (mentry->mime_name);
-		mentry->mime_name = NULL;
-	}
+	cherokee_buffer_mrproper (&mentry->mime_name);
 
 	free (mentry);
 	return ret_ok;
@@ -67,15 +64,15 @@ cherokee_mime_entry_free (cherokee_mime_entry_t *mentry)
 ret_t 
 cherokee_mime_entry_set_type (cherokee_mime_entry_t *mentry, char *type)
 {
-	cherokee_buffer_clean (mentry->mime_name);
-	return cherokee_buffer_add (mentry->mime_name, type, strlen(type));
+	cherokee_buffer_clean (&mentry->mime_name);
+	return cherokee_buffer_add (&mentry->mime_name, type, strlen(type));
 }
 
 
 ret_t 
 cherokee_mime_entry_get_type (cherokee_mime_entry_t *mentry, cherokee_buffer_t **name)
 {
-	*name = mentry->mime_name;
+	*name = &mentry->mime_name;
 	return ret_ok;
 }
 

@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2006 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2008 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -40,7 +40,7 @@
 CHEROKEE_BEGIN_DECLS
 
 typedef struct {
-	struct list_head     list_entry;
+	cherokee_list_t      list_entry;
 	cherokee_buffer_t    id;              /* ID */
 	cherokee_buffer_t    phase;           /* Current task */
 	cherokee_buffer_t    request;         /* Request string */
@@ -61,8 +61,8 @@ ret_t cherokee_connection_info_free     (cherokee_connection_info_t  *info);
 
 ret_t cherokee_connection_info_fill_up     (cherokee_connection_info_t *info, cherokee_connection_t *conn);
 
-ret_t cherokee_connection_info_list_thread (list_t *infos_list, void *thread, cherokee_handler_t *self);
-ret_t cherokee_connection_info_list_server (list_t *infos_list, cherokee_server_t *server, cherokee_handler_t *self);
+ret_t cherokee_connection_info_list_thread (cherokee_list_t *infos_list, void *thread, cherokee_handler_t *self);
+ret_t cherokee_connection_info_list_server (cherokee_list_t *infos_list, cherokee_server_t *server, cherokee_handler_t *self);
 
 CHEROKEE_END_DECLS
 

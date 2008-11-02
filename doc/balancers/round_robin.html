@@ -1,0 +1,28 @@
+<html>
+<head>
+    <title>Round Robin</title>
+    <link href="../media/css/documentation.css" type="text/css" rel="stylesheet" />
+</head>
+
+<body>
+    
+    
+    <h1>Round Robin</h1>
+    
+    <p>Each Server parameter accepts these sub-parameters:</p>
+<ul class="simple">
+<li>Interpreter: Defines the command line of the interpreter for this
+server. This sub-parameter only available for FastCGI servers which are
+running in the same computer with the webserver. The webserver will try to run
+the command line if it fails to connect to the specified address in Server
+parameter. If you run the FastCGI servers manually, this sub-parameter is not needed.</li>
+<li>Env variable:value pair: Set an environment variable for the FastCGI servers.</li>
+</ul>
+<p>If multiple Server entries defined, the requests will be round-robinly served by
+each of Server entry.</p>
+
+    
+
+    
+</body>
+</html>

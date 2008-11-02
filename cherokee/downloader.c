@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2006 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2008 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -43,29 +43,12 @@
 # include <sys/sockio.h>    /* defines SIOCATMARK */
 #endif
 
-
-ret_t 
-cherokee_downloader_new (cherokee_downloader_t **downloader)
-{
-	ret_t ret;
-	CHEROKEE_NEW_STRUCT(n, downloader);
-
-	/* Init
-	 */
-	ret = cherokee_downloader_init (n);
-	if (unlikely(ret != ret_ok)) return ret;
-
-	/* Return the object
-	 */
-	*downloader = n;
-	return ret_ok;
-}
+#define ENTRIES "downloader"
 
 
 ret_t 
 cherokee_downloader_init (cherokee_downloader_t *n)
 {
-	int   i;
 	ret_t ret;
 
 	/* Build
@@ -82,53 +65,36 @@ cherokee_downloader_init (cherokee_downloader_t *n)
 	ret = cherokee_buffer_init (&n->body);
 	if (unlikely(ret != ret_ok)) return ret;		
 
-	ret = cherokee_socket_new (&n->socket);
+	ret = cherokee_socket_init (&n->socket);
 	if (unlikely(ret != ret_ok)) return ret;	
 
-	ret = cherokee_header_new (&n->header);	
+	ret = cherokee_header_new (&n->header, header_type_response);	
 	if (unlikely(ret != ret_ok)) return ret;
 
-	/* Events
-	 */
-	n->callback.init        = NULL;
-	n->callback.has_headers = NULL;
-	n->callback.read_body   = NULL;
-	n->callback.finish      = NULL;
+	cherokee_buffer_init (&n->proxy);
+	n->proxy_port = 0;
 
-	for (i=0; i < downloader_event_NUMBER; i++) {
-		n->callback.param[i] = NULL;
-	}
-
+	cherokee_buffer_init (&n->tmp1);
+	cherokee_buffer_init (&n->tmp2);
 
 	/* Init the properties
 	 */
-	n->fdpoll   = NULL;
-	n->phase    = downloader_phase_init;
-
-	n->post_ref  = NULL;
-	n->post_sent = 0;
+	n->phase             = downloader_phase_init;
+	n->post              = NULL;
 
 	/* Lengths
 	 */
-	n->content_length = -1;
+	n->content_length    = -1;
 
 	/* Info
 	 */
-	n->info.headers_sent = 0;
+	n->info.request_sent = 0;
 	n->info.headers_recv = 0;
 	n->info.post_sent    = 0;
 	n->info.body_recv    = 0;
 
-	return ret_ok;
-}
+	n->status = downloader_status_none;
 
-
-ret_t 
-cherokee_downloader_free (cherokee_downloader_t *downloader)
-{
-	cherokee_downloader_mrproper (downloader);
-
-	free (downloader);
 	return ret_ok;
 }
 
@@ -136,47 +102,35 @@ cherokee_downloader_free (cherokee_downloader_t *downloader)
 ret_t 
 cherokee_downloader_mrproper (cherokee_downloader_t *downloader)
 {
-	/* Remove the socket from the poll
-	 */
-	cherokee_fdpoll_del (downloader->fdpoll, SOCKET_FD(downloader->socket));
-	
 	/* Free the memory
 	 */
 	cherokee_request_header_mrproper (&downloader->request);
+
 	cherokee_buffer_mrproper (&downloader->request_header);
 	cherokee_buffer_mrproper (&downloader->reply_header);
 	cherokee_buffer_mrproper (&downloader->body);
-	cherokee_socket_free (downloader->socket);
+	cherokee_buffer_mrproper (&downloader->proxy);
+
+	cherokee_buffer_mrproper (&downloader->tmp1);
+	cherokee_buffer_mrproper (&downloader->tmp2);
+
+	cherokee_socket_close (&downloader->socket);
+	cherokee_socket_mrproper (&downloader->socket);
+
 	cherokee_header_free (downloader->header);
 
 	return ret_ok;
 }
 
 
-ret_t 
-cherokee_downloader_set_fdpoll (cherokee_downloader_t *downloader, cherokee_fdpoll_t *fdpoll)
-{
-	if (downloader->fdpoll != NULL) {
-		PRINT_ERROR_S ("ERROR: fdpoll already set\n");
-	}
-
-	downloader->fdpoll = fdpoll;
-	return ret_ok;
-}
+CHEROKEE_ADD_FUNC_NEW (downloader);
+CHEROKEE_ADD_FUNC_FREE (downloader);
 
 
 ret_t 
 cherokee_downloader_set_url (cherokee_downloader_t *downloader, cherokee_buffer_t *url_string)
 {
-	ret_t                      ret;
-	cherokee_request_header_t *req = &downloader->request;
-
-	/* Parse the string in a URL object
-	 */
-	ret = cherokee_url_parse (&req->url, url_string);
-	if (unlikely(ret < ret_ok)) return ret;
-	
-	return ret_ok;
+	return cherokee_request_header_parse_string (&downloader->request, url_string);
 }
 
 
@@ -189,6 +143,38 @@ cherokee_downloader_set_keepalive (cherokee_downloader_t *downloader, cherokee_b
 
 
 ret_t 
+cherokee_downloader_set_proxy (cherokee_downloader_t *downloader, cherokee_buffer_t *proxy, cuint_t port)
+{
+	char *tmp;
+
+	/* Skip 'http(s)://'
+	 */
+	tmp = strchr (proxy->buf, '/');
+	if (tmp == NULL) 
+		tmp = proxy->buf;
+	else
+		tmp += 2;
+
+	/* Copy the values
+	 */
+	cherokee_buffer_clean (&downloader->proxy);
+	cherokee_buffer_add (&downloader->proxy, tmp, strlen(tmp));
+
+	downloader->proxy_port = port;
+	return ret_ok;
+}
+
+
+ret_t
+cherokee_downloader_set_auth (cherokee_downloader_t *downloader, 
+			      cherokee_buffer_t     *user, 
+			      cherokee_buffer_t     *password)
+{
+	return cherokee_request_header_set_auth (&downloader->request, http_auth_basic, user, password);
+}
+
+
+ret_t 
 cherokee_downloader_get_reply_code (cherokee_downloader_t *downloader, cherokee_http_t *code)
 {
 	*code = downloader->header->response;
@@ -196,13 +182,13 @@ cherokee_downloader_get_reply_code (cherokee_downloader_t *downloader, cherokee_
 }
 
 
-ret_t 
-cherokee_downloader_connect (cherokee_downloader_t *downloader)
+static ret_t 
+connect_to (cherokee_downloader_t *downloader, cherokee_buffer_t *host, cuint_t port, int protocol)
 {
-	int                 r;
 	ret_t               ret;
-	cherokee_socket_t  *sock = downloader->socket;
-	cherokee_url_t     *url  = &downloader->request.url;
+	cherokee_socket_t  *sock = &downloader->socket;
+
+	TRACE(ENTRIES, "host=%s port=%d proto=%d\n", host->buf, port, protocol);
 
 	/* Create the socket
 	 */
@@ -211,48 +197,57 @@ cherokee_downloader_connect (cherokee_downloader_t *downloader)
 	
 	/* Set the port
 	 */
-	SOCKET_SIN_PORT(sock) = htons(url->port);
+	SOCKET_SIN_PORT(sock) = htons(port);
 
-	/* Find the IP from the hostname
-	 * Maybe it is a IP..
+	/* Supposing it's an IP: convert it.
 	 */
-	ret = cherokee_socket_pton (sock, &url->host);
+	ret = cherokee_socket_pton (sock, host);
 	if (ret != ret_ok) {
 
-		/* Ops! no, it could be a hostname..
-		 * Try to resolv it!
+		/* Ops! It might be a hostname. Try to resolve it.
 		 */
- 		ret = cherokee_socket_gethostbyname (sock, &url->host);
+ 		ret = cherokee_socket_gethostbyname (sock, host);
 		if (unlikely(ret != ret_ok)) return ret_error;
 	}
 
 	/* Connect to server
 	 */
 	ret = cherokee_socket_connect (sock);
+	TRACE(ENTRIES, "socket=%p ret=%d\n", sock, ret);
 	if (unlikely(ret != ret_ok)) return ret;
-
-	/* Enables nonblocking I/O.
-	 */
-	cherokee_fd_set_nonblocking (SOCKET_FD(sock));
-
-	/* Add the socket to the file descriptors poll
-	 */
-	ret = cherokee_fdpoll_add (downloader->fdpoll, SOCKET_FD(sock), 1);
-	if (ret > ret_ok) {
-		PRINT_ERROR ("Can not add file descriptor (%d) to fdpoll\n", r);
-		return ret;
-	}
-
-	/* Maybe execute the callback
-	 */
-	if (downloader->callback.init != NULL) {
-		ret = (* downloader->callback.init) (downloader, downloader->callback.param[downloader_event_init]);
-	}
 
 	/* Is this connection TLS?
 	 */
-	if (url->protocol == https) {
+	if (protocol == https) {
 		ret = cherokee_socket_init_client_tls (sock);
+		if (ret != ret_ok) return ret;
+	}
+
+	TRACE(ENTRIES, "Exists socket=%p\n", sock);
+	return ret_ok;
+}
+
+
+ret_t 
+cherokee_downloader_connect (cherokee_downloader_t *downloader)
+{
+	ret_t               ret;
+	cherokee_boolean_t  uses_proxy;
+	cherokee_url_t     *url  = &downloader->request.url;
+
+	/* Does it use a proxy?
+	 */
+	uses_proxy = ! cherokee_buffer_is_empty (&downloader->proxy);
+	ret = cherokee_request_header_uses_proxy (&downloader->request, uses_proxy);
+	if (ret != ret_ok) return ret;
+	
+	/* Connect
+	 */
+	if (uses_proxy) {
+		ret = connect_to (downloader, &downloader->proxy, downloader->proxy_port, http);
+		if (ret != ret_ok) return ret;
+	} else {
+		ret = connect_to (downloader, &url->host, url->port, url->protocol);
 		if (ret != ret_ok) return ret;
 	}
 
@@ -263,7 +258,7 @@ cherokee_downloader_connect (cherokee_downloader_t *downloader)
 static int
 is_connected (cherokee_downloader_t *downloader)
 {
-	return (downloader->socket->socket != -1);
+	return (downloader->socket.socket != -1);
 }
 
 
@@ -271,12 +266,10 @@ static ret_t
 downloader_send_buffer (cherokee_downloader_t *downloader, cherokee_buffer_t *buf)
 {
 	ret_t              ret;
-	cherokee_socket_t *sock;
 	size_t             written = 0;
+	cherokee_socket_t *sock    = &downloader->socket;;
 
-	sock = downloader->socket;
-	
-	ret = cherokee_socket_write (sock, buf, &written);
+	ret = cherokee_socket_bufwrite (sock, buf, &written);
 	switch (ret) {
 	case ret_ok:
 		/* Drop the header that has been sent
@@ -298,15 +291,15 @@ downloader_send_buffer (cherokee_downloader_t *downloader, cherokee_buffer_t *bu
 
 
 static ret_t
-downloader_header_read (cherokee_downloader_t *downloader)
+downloader_header_read (cherokee_downloader_t *downloader, cherokee_buffer_t *tmp1, cherokee_buffer_t *tmp2)
 {
 	ret_t               ret;
-	size_t              readed = 0;
-	cherokee_socket_t  *sock;
+	cuint_t             len;
+	size_t              read_      = 0;
+	cherokee_socket_t  *sock       = &downloader->socket;
+	cherokee_http_t     error_code = http_bad_request;
 
-	sock = downloader->socket;
-	
-	ret = cherokee_socket_read (sock, &downloader->reply_header, DEFAULT_RECV_SIZE, &readed);
+	ret = cherokee_socket_bufread (sock, &downloader->reply_header, DEFAULT_RECV_SIZE, &read_);
 	switch (ret) {
 	case ret_eof:     
 		return ret_eof;
@@ -315,22 +308,13 @@ downloader_header_read (cherokee_downloader_t *downloader)
 		return ret_eagain;
 
 	case ret_ok: 
-	{
-		uint32_t len;
-
-		/* The socket seems to be closed
-		 */
-		if (readed == 0) {
-			return ret_eof;
-		}
-
 		/* Count
 		 */
-		downloader->info.headers_recv += readed;
+		downloader->info.headers_recv += read_;
 
 		/* Check the header. Is it complete? 
 		 */
-		ret = cherokee_header_has_header (downloader->header, &downloader->reply_header, readed+4);
+		ret = cherokee_header_has_header (downloader->header, &downloader->reply_header, 0);
 		switch (ret) {
 		case ret_ok:
 			break;
@@ -347,9 +331,9 @@ downloader_header_read (cherokee_downloader_t *downloader)
 		/* Parse the header
 		 */
 		ret = cherokee_header_parse (downloader->header,
-					     &downloader->reply_header,
-					     header_type_response);		
-		if (unlikely(ret != ret_ok)) return ret_error;
+		                             &downloader->reply_header,
+		                             &error_code);
+		if (unlikely (ret != ret_ok)) return ret_error;
 
 		/* Look for the length, it will need to drop out the header from the buffer
 		 */
@@ -360,6 +344,9 @@ downloader_header_read (cherokee_downloader_t *downloader)
 		if (downloader->reply_header.len > len) {
 			uint32_t body_chunk;
 			
+			/* Skip the CRLF separator and copy the body
+			 */
+			len += 2;
 			body_chunk = downloader->reply_header.len - len;
 			
 			downloader->info.body_recv += body_chunk;
@@ -368,33 +355,18 @@ downloader_header_read (cherokee_downloader_t *downloader)
 			cherokee_buffer_drop_endding (&downloader->reply_header, body_chunk);
 		}
 
-		/* Try to read the "Content-length" response header
+		/* Try to read the "Content-Length" response header
 		 */
 		ret = cherokee_header_has_known (downloader->header, header_content_length);
 		if (ret == ret_ok) {
-			cherokee_buffer_t tmp = CHEROKEE_BUF_INIT;
+			cherokee_buffer_clean (tmp1);
+			ret = cherokee_header_copy_known (downloader->header, header_content_length, tmp1);
+			downloader->content_length = atoi (tmp1->buf);
 
-			ret = cherokee_header_copy_known (downloader->header, header_content_length, &tmp);
-			downloader->content_length = atoi (tmp.buf);
-
-			cherokee_buffer_mrproper (&tmp);
-		}
-
-		/* It has the parsed header..
-		 * execute the callback function
-		 */
-		if (downloader->callback.has_headers != NULL) {
-			ret = (* downloader->callback.has_headers) (downloader, downloader->callback.param[downloader_event_has_headers]);
-		}
-
-		/* Check if it was a successful connection
-		 */
-		if (!http_type_200(downloader->header->response)) {
-			return ret_error;
+			TRACE (ENTRIES, "Known lenght: %d bytes\n", downloader->content_length);
 		}
 
 		return ret_ok;
-	}
 
 	case ret_error:
 		/* Opsss.. something has failed
@@ -415,76 +387,69 @@ static ret_t
 downloader_step (cherokee_downloader_t *downloader)
 {
 	ret_t               ret;
-	size_t              readed = 0;
-	cherokee_socket_t  *sock;
+	size_t              read_ = 0;
+	cherokee_socket_t  *sock  = &downloader->socket;
 
-	sock = downloader->socket;
-
-	ret = cherokee_socket_read (sock, &downloader->body, DEFAULT_RECV_SIZE, &readed);
+	ret = cherokee_socket_bufread (sock, &downloader->body, DEFAULT_RECV_SIZE, &read_);
 	switch (ret) {
 	case ret_eagain:
 		return ret_eagain;
 
-	case ret_eof:
-		goto finish_eof;
-
 	case ret_ok:
-		/* The connection cloud be closed
-		 */
-		if (readed == 0) goto finish_eof;
-		
 		/* Count
 		 */
-		downloader->info.body_recv += readed;
-
-		/* There are new body. Execute the callback!
-		 */
-		if (downloader->callback.read_body != NULL) {
-			ret = (* downloader->callback.read_body) (downloader, downloader->callback.param[downloader_event_read_body]);
-		}
+		downloader->info.body_recv += read_;
 
 		/* Has it finished?
 		 */
 		if (downloader->info.body_recv >= downloader->content_length) {
-			goto finish_eof;
+			return ret_eof_have_data;
 		}
 
-		break;
+		return ret_ok;
 	default:
 		return ret;
 	}
 	
 	return ret_ok;
-
-finish_eof:
-	if (downloader->callback.finish != NULL) {
-		ret = (* downloader->callback.finish) (downloader, downloader->callback.param[downloader_event_finish]);
-	}
-
-	return ret_eof;	
 }
 
 
 ret_t 
-cherokee_downloader_step (cherokee_downloader_t *downloader)
+cherokee_downloader_step (cherokee_downloader_t *downloader, cherokee_buffer_t *ext_tmp1, cherokee_buffer_t *ext_tmp2)
 {
-	ret_t ret;
+	ret_t              ret;
+	cherokee_buffer_t *tmp1;
+	cherokee_buffer_t *tmp2;
 
+	/* Set the temporary buffers
+	 */
+	tmp1 = (ext_tmp1) ? ext_tmp1 : &downloader->tmp1;
+	tmp2 = (ext_tmp2) ? ext_tmp2 : &downloader->tmp2;
+
+	TRACE (ENTRIES, "phase=%d\n", downloader->phase);
+
+	/* Process it
+	 */
 	switch (downloader->phase) {
 	case downloader_phase_init: {
 		cherokee_request_header_t *req = &downloader->request;
 
+		TRACE(ENTRIES, "Phase %s\n", "init");
+		
 		/* Maybe add the post info
 		 */
-		if (downloader->post_ref != NULL) {
-			req->method   = http_post;
-			req->post_len = downloader->post_ref->len;
+		if (downloader->post != NULL) {
+			req->method = http_post;
+			cherokee_post_walk_reset (downloader->post);
+			req->post_len = downloader->post->size;
 		}
 
 		/* Build the request header
 		 */
-		ret = cherokee_request_header_build_string (req, &downloader->request_header);
-		if (unlikely(ret < ret_ok)) return ret;
+		ret = cherokee_request_header_build_string (req, &downloader->request_header, tmp1, tmp2);
+		if (unlikely(ret < ret_ok))
+			return ret;
 
 		/* Deal with the connection
 		 */
@@ -498,101 +463,75 @@ cherokee_downloader_step (cherokee_downloader_t *downloader)
 		downloader->phase = downloader_phase_send_headers;
 	}
 	case downloader_phase_send_headers:
-		/* Can it write in the socket?
-		 */
-		if (! cherokee_fdpoll_check (downloader->fdpoll, SOCKET_FD(downloader->socket), 1)) {
-			/* Try later..
-			 */
-			return ret_eagain;
-		}
+		TRACE(ENTRIES, "Phase %s\n", "send_headers");
 
 		ret = downloader_send_buffer (downloader, &downloader->request_header);
 		if (unlikely(ret != ret_ok)) return ret;
 
-		/* Come on..
-		 */
+		downloader->status = downloader_status_headers_sent;
 		downloader->phase = downloader_phase_send_post;
 
 	case downloader_phase_send_post:
-		if (downloader->post_ref != NULL) {
-			/* Can it write in the socket?
-			 */
-			if (! cherokee_fdpoll_check (downloader->fdpoll, SOCKET_FD(downloader->socket), 1)) {
-				return ret_eagain;
-			}
+		TRACE(ENTRIES, "Phase %s\n", "send_post");
 
-			ret = downloader_send_buffer (downloader, downloader->post_ref);
+		if (downloader->post != NULL) {
+			ret = cherokee_post_walk_to_fd (downloader->post, downloader->socket.socket, NULL, NULL);
+/*			ret = send_post (downloader); */
+/* 			ret = downloader_send_buffer (downloader, downloader->post_ref); */
 			if (unlikely(ret != ret_ok)) return ret;
 		}
 
-		/* Switch the socket to read-only mode..
-		 */
-		cherokee_fdpoll_set_mode (downloader->fdpoll, SOCKET_FD(downloader->socket), 0);
-
+		downloader->status = downloader->status | downloader_status_post_sent;
 		downloader->phase = downloader_phase_read_headers;
 		break;
 
 	case downloader_phase_read_headers:
-		/* Can it read in the socket?
-		 */
-		if (! cherokee_fdpoll_check (downloader->fdpoll, SOCKET_FD(downloader->socket), 0)) {
-			/* Try later..
-			 */
-			return ret_eagain;
-		}
+		TRACE(ENTRIES, "Phase %s\n", "read_headers");
 
-		ret = downloader_header_read (downloader);
+		ret = downloader_header_read (downloader, tmp1, tmp2);
 		if (unlikely(ret != ret_ok)) return ret;
 
 		/* We have the header parsed, continue..
 		 */
+		downloader->status = downloader->status | downloader_status_headers_received;
 		downloader->phase = downloader_phase_step;
 
 		/* Does it read the full reply in the first received chunk?
 		 */
 		if (downloader->info.body_recv >= downloader->content_length) {
-			if (downloader->callback.finish != NULL) {
-				(* downloader->callback.finish) (downloader, downloader->callback.param[downloader_event_finish]);
-			}
-			return ret_eof;
+			downloader->status = downloader->status | downloader_status_data_available | downloader_status_finished;
+			return ret_eof_have_data;
 		}
 
 	case downloader_phase_step:
-		/* Can it read in the socket?
-		 */
-		if (! cherokee_fdpoll_check (downloader->fdpoll, SOCKET_FD(downloader->socket), 0)) {
-			/* Try later..
-			 */
-			return ret_eagain;
-		}
+		TRACE(ENTRIES, "Phase %s\n", "step");
 
 		ret = downloader_step (downloader);
-
 		switch (ret) {
-		case ret_ok:
-			/* It goes ok
-			 */
-			return ret_ok;
-
-		case ret_eagain:
-			/* One moment, please..
-			 */
-			return ret_eagain;
-
-		case ret_eof:
-			/* Finish!
-			 */
-			return ret_eof;
-
 		case ret_error:
-			/* Opsss..
-			 */
-			return ret_error;
-
+			break;
+		case ret_ok:
+			downloader->status = downloader->status | downloader_status_data_available;
+			break;
+		case ret_eof_have_data:
+			downloader->status = downloader->status | downloader_status_data_available | downloader_status_finished;
+			break;
+		case ret_eof:
+			downloader->status = downloader->status & (~downloader_status_data_available | downloader_status_finished);
+			break;
+		case ret_eagain:
+			downloader->status = downloader->status & ~downloader_status_data_available;
+			break;
 		default:
 			RET_UNKNOWN(ret);
-			return ret;
 		}
+		return ret;
+
+	case downloader_phase_finished:
+		TRACE(ENTRIES, "Phase %s\n", "finished");
+
+		downloader->status = downloader->status & ~downloader_status_data_available & downloader_status_finished;
+		return ret_ok;
 
 	default:
 		SHOULDNT_HAPPEN;
@@ -603,52 +542,16 @@ cherokee_downloader_step (cherokee_downloader_t *downloader)
 }
 
 
-
 ret_t 
-cherokee_downloader_connect_event (cherokee_downloader_t *downloader, cherokee_downloader_event_t event, void *func, void *param)
+cherokee_downloader_post_set (cherokee_downloader_t *downloader, cherokee_post_t *post)
 {
-	/* Set the parameter
-	 */
-	downloader->callback.param[event] = param;
-	
-	/* Set the function
-	 */
-	switch (event) {
-	case downloader_event_init:
-		downloader->callback.init = (cherokee_downloader_init_t) func;
-		break;
+	TRACE(ENTRIES, "post=%p\n", post);
 
-	case downloader_event_has_headers:
-		downloader->callback.has_headers = (cherokee_downloader_has_headers_t) func;
-		break;
-
-	case downloader_event_read_body:
-		downloader->callback.read_body = (cherokee_downloader_read_body_t) func;
-		break;
-
-	case downloader_event_finish:
-		downloader->callback.finish = (cherokee_downloader_finish_t) func;
-		break;
-
-	default:
-		SHOULDNT_HAPPEN;
-		return ret_error;
-	}
-	
-	return ret_ok;
-}
-
-
-ret_t 
-cherokee_downloader_post_set (cherokee_downloader_t *downloader, cherokee_buffer_t *post)
-{
-	if (downloader->post_ref != NULL) {
+	if (downloader->post != NULL) {
 		PRINT_ERROR_S ("WARNING: Overwriting post info\n");
 	}
 
-	downloader->post_sent = 0;
-	downloader->post_ref  = post;
-
+	downloader->post = post;
 	return ret_ok;
 }
 
@@ -656,12 +559,15 @@ cherokee_downloader_post_set (cherokee_downloader_t *downloader, cherokee_buffer
 ret_t 
 cherokee_downloader_reuse (cherokee_downloader_t *downloader)
 {
-	cherokee_fdpoll_set_mode (downloader->fdpoll, SOCKET_FD(downloader->socket), 1);
+	TRACE(ENTRIES, "%p\n", downloader);
 
 	downloader->phase = downloader_phase_init;
+	downloader->post  = NULL;
 
-	downloader->post_ref  = NULL;
-	downloader->post_sent = 0;
+	downloader->info.request_sent = 0;
+	downloader->info.headers_recv = 0;
+	downloader->info.post_sent    = 0;
+	downloader->info.body_recv    = 0;
 
 	cherokee_buffer_clean (&downloader->request_header);
 	cherokee_buffer_clean (&downloader->reply_header);
@@ -671,3 +577,46 @@ cherokee_downloader_reuse (cherokee_downloader_t *downloader)
 	return ret_ok;
 }
 
+
+ret_t 
+cherokee_downloader_is_request_sent (cherokee_downloader_t *downloader)
+{
+	if (downloader->phase > downloader_phase_send_headers) 
+		return ret_ok;
+
+	return ret_deny;
+}
+
+ret_t 
+cherokee_downloader_headers_available(cherokee_downloader_t *downloader)
+{
+	return (downloader->phase == downloader_phase_step) ? ret_ok: ret_deny;
+}
+ret_t 
+cherokee_downloader_data_available(cherokee_downloader_t *downloader)
+{
+	return (downloader->phase == downloader_phase_step) ? ret_ok: ret_deny;
+}
+
+ret_t
+cherokee_downloader_finished(cherokee_downloader_t *downloader) 
+{
+	ret_t ret = ret_deny;
+
+	if (downloader->info.body_recv >= downloader->content_length) {
+		ret = ret_ok;
+	} else 	if (downloader->phase == downloader_phase_finished) {
+		ret = ret_ok;
+	}
+	return ret;
+}
+
+ret_t
+cherokee_downloader_get_status(cherokee_downloader_t *downloader, cherokee_downloader_status_t *status)
+{
+	if (status != NULL) {
+		*status = downloader->status;
+	}
+
+	return ret_ok;
+}

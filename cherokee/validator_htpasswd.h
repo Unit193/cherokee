@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2006 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2008 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -29,15 +29,21 @@
 #include "connection.h"
 
 typedef struct {
-	   cherokee_validator_t  validator;
-	   const char           *file_ref;
+	cherokee_module_props_t  base;
+	cherokee_buffer_t        password_file;
+} cherokee_validator_htpasswd_props_t;
+
+typedef struct {
+	cherokee_validator_t       validator;
 } cherokee_validator_htpasswd_t;
 
-#define HTPASSWD(x) ((cherokee_validator_htpasswd_t *)(x))
+#define HTPASSWD(x)          ((cherokee_validator_htpasswd_t *)(x))
+#define PROP_HTPASSWD(p)     ((cherokee_validator_htpasswd_props_t *)(p))
+#define VAL_HTPASSWD_PROP(x) (PROP_HTPASSWD (MODULE(x)->props))
 
 
-ret_t cherokee_validator_htpasswd_new  (cherokee_validator_htpasswd_t **htpasswd, cherokee_table_t *properties);
-ret_t cherokee_validator_htpasswd_free (cherokee_validator_htpasswd_t  *htpasswd);
+ret_t cherokee_validator_htpasswd_new         (cherokee_validator_htpasswd_t **htpasswd, cherokee_module_props_t *props);
+ret_t cherokee_validator_htpasswd_free        (cherokee_validator_htpasswd_t  *htpasswd);
 
 ret_t cherokee_validator_htpasswd_check       (cherokee_validator_htpasswd_t  *htpasswd, cherokee_connection_t *conn);
 ret_t cherokee_validator_htpasswd_add_headers (cherokee_validator_htpasswd_t  *htpasswd, cherokee_connection_t *conn, cherokee_buffer_t *buf);

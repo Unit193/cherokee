@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2006 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2008 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -35,30 +35,26 @@
 typedef struct cherokee_iocache cherokee_iocache_t;
 
 typedef struct {
-	struct stat  state;
-	void        *mmaped;
-	size_t       mmaped_len;
+	struct stat       state;
+	void             *mmaped;
+	size_t            mmaped_len;
+
+	int cleaned;
 } cherokee_iocache_entry_t;
 
 #define IOCACHE(x)       ((cherokee_iocache_t *)(x))
 #define IOCACHE_ENTRY(x) ((cherokee_iocache_entry_t *)(x))
 
+ret_t cherokee_iocache_new_default   (cherokee_iocache_t **iocache, cherokee_server_t *srv);
+ret_t cherokee_iocache_get_default   (cherokee_iocache_t **iocache);
+ret_t cherokee_iocache_free_default  (cherokee_iocache_t  *iocache);
 
-ret_t cherokee_iocache_new          (cherokee_iocache_t **iocache, cherokee_server_t *srv);
-ret_t cherokee_iocache_free         (cherokee_iocache_t *iocache);
+ret_t cherokee_iocache_clean         (cherokee_iocache_t *iocache);
+ret_t cherokee_iocache_clean_up      (cherokee_iocache_t *iocache, cuint_t num);
 
-ret_t cherokee_iocache_new_default  (cherokee_iocache_t **iocache, cherokee_server_t *srv);
-ret_t cherokee_iocache_get_default  (cherokee_iocache_t **iocache);
-ret_t cherokee_iocache_free_default (cherokee_iocache_t  *iocache);
-
-ret_t cherokee_iocache_clean        (cherokee_iocache_t *iocache);
-ret_t cherokee_iocache_clean_up     (cherokee_iocache_t *iocache, cuint_t num);
-
-ret_t cherokee_iocache_stat_get      (cherokee_iocache_t *iocache, char *filename, cherokee_iocache_entry_t **file);
-
-ret_t cherokee_iocache_mmap_get      (cherokee_iocache_t *iocache, char *filename, cherokee_iocache_entry_t **file);
-ret_t cherokee_iocache_mmap_lookup   (cherokee_iocache_t *iocache, char *filename, cherokee_iocache_entry_t **file);
-ret_t cherokee_iocache_mmap_get_w_fd (cherokee_iocache_t *iocache, char *filename, int fd, cherokee_iocache_entry_t **file);
 ret_t cherokee_iocache_mmap_release  (cherokee_iocache_t *iocache, cherokee_iocache_entry_t *file);
+
+ret_t cherokee_iocache_get_or_create_w_mmap (cherokee_iocache_t *iocache, cherokee_buffer_t *filename, cherokee_iocache_entry_t **ret_file, int *fd);
+ret_t cherokee_iocache_get_or_create_w_stat (cherokee_iocache_t *iocache, cherokee_buffer_t *filename, cherokee_iocache_entry_t **ret_file);
 
 #endif /* CHEROKEE_IOCACHE_H */

@@ -6,7 +6,7 @@
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *      Rodrigo Fernandez-Vizarra <rfdzvizarra@yahoo.ie>
  *
- * Copyright (C) 2001-2006 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2008 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -25,8 +25,10 @@
 
 #include "common-internal.h"
 #include "fdpoll-protected.h"
+#include "util.h"
 
 #include <stdio.h>
+#include <sys/types.h>
 #include <sys/event.h>
 #include <sys/time.h>
 #include <unistd.h>
@@ -70,14 +72,22 @@ typedef struct {
 static ret_t 
 _free (cherokee_fdpoll_kqueue_t *fdp)
 {
-	close( fdp->kqueue );
+	if (fdp == NULL)
+		return ret_ok;
 
+	if (fdp->kqueue >= 0)
+		close( fdp->kqueue );
+
+	/* ANSI C required, so that free() can handle NULL pointers
+	 */
 	free( fdp->changelist );
 	free( fdp->fdevents );
 	free( fdp->fdinterest );
-	
+
+	/* Caller has to set this pointer to NULL.
+	 */
 	free( fdp );
-        return ret_ok;
+	return ret_ok;
 }
 
 
@@ -95,10 +105,10 @@ _add_change(cherokee_fdpoll_kqueue_t *fdp, int fd, int rw, int change )
 	event = &fdp->changelist[index];
 	event->ident = fd;
 	switch (rw) {
-	case 0:
+	case FDPOLL_MODE_READ:
 		event->filter = EVFILT_READ;
 		break;
-	case 1:
+	case FDPOLL_MODE_WRITE:
 		event->filter = EVFILT_WRITE;
 		break;
 	default:
@@ -107,42 +117,46 @@ _add_change(cherokee_fdpoll_kqueue_t *fdp, int fd, int rw, int change )
 	event->flags = change;
 	event->fflags = 0;
 
-	fdp->fdinterest[fd]=rw;
+	fdp->fdinterest[fd] = rw;
 	fdp->nchanges++;
+
 	return ret_ok;
 }
+
 
 static ret_t
 _add (cherokee_fdpoll_kqueue_t *fdp, int fd, int rw)
 {
 	int re;
-	
+
 	re = _add_change( fdp, fd, rw, EV_ADD);
 	if ( re == ret_ok) {
 		FDPOLL(fdp)->npollfds++;
 	}
-	
+
 	return re;
 }
+
 
 static ret_t
 _del (cherokee_fdpoll_kqueue_t *fdp, int fd)
 {
-       int re;
-	       
-       re = _add_change( fdp, fd, fdp->fdinterest[fd], EV_DELETE);
-       if ( re == ret_ok) {
-	       FDPOLL(fdp)->npollfds--;
-       }
-       
-       return re;
+	int re;
+ 
+	re = _add_change( fdp, fd, fdp->fdinterest[fd], EV_DELETE);
+	if ( re == ret_ok) {
+		FDPOLL(fdp)->npollfds--;
+	}
+
+	return re;
 }
+
 
 static int
 _watch (cherokee_fdpoll_kqueue_t *fdp, int timeout_msecs)
 {
 	struct timespec  timeout;
-	int              i, re, fd;
+	int              i;
 	int              n_events;
 
 
@@ -160,7 +174,7 @@ _watch (cherokee_fdpoll_kqueue_t *fdp, int timeout_msecs)
 			  &timeout);
 	fdp->nchanges=0;
 	if ( n_events < 0 ) {
-		PRINT_ERROR ("ERROR: kevent: %s\n", strerror(errno));
+		PRINT_ERRNO (errno, "kevent: '${errno}'");
 		return 0;
 	} else if ( n_events > 0 ) {
 		memset(fdp->fdevents, 0, FDPOLL(fdp)->system_nfiles*sizeof(int));
@@ -174,7 +188,7 @@ _watch (cherokee_fdpoll_kqueue_t *fdp, int timeout_msecs)
 			}
 		}
 	}
-	
+
 	return n_events;
 }
 
@@ -183,24 +197,25 @@ static int
 _check (cherokee_fdpoll_kqueue_t *fdp, int fd, int rw)
 {
 	uint32_t events;
-	
+
 	/* Sanity check: is it a wrong fd?
 	 */
-	if ( fd < 0 ) return -1;
-	
+	if ( fd < 0 )
+		return -1;
+
 	events = fdp->fdevents[fd];
-	
+
 	switch (rw) {
-	case 0:
+	case FDPOLL_MODE_READ:
 		events &= KQUEUE_READ_EVENT;
 		break;
-	case 1:
+	case FDPOLL_MODE_WRITE:
 		events &= KQUEUE_WRITE_EVENT;
 		break;
 	default:
 		SHOULDNT_HAPPEN;
 	}
-	
+
 	return events;
 }
 
@@ -212,35 +227,48 @@ _reset (cherokee_fdpoll_kqueue_t *fdp, int fd)
 }
 
 
-static void
+static ret_t
 _set_mode (cherokee_fdpoll_kqueue_t *fdp, int fd, int rw)
 {
 	/* If transitioning from r -> w or from w -> r
 	 * disable any active event on the fd as we are
 	 * no longer interested on it.
 	 */
-	if ( rw && (fdp->fdinterest[fd] == 0) ) {
-		_add_change(fdp, fd, 0, EV_DELETE);
-	} else if ( (rw==0 ) && (fdp->fdinterest[fd] == 1) ) {
-		_add_change(fdp, fd, 1, EV_DELETE);
+	if ( rw == FDPOLL_MODE_WRITE &&
+	    fdp->fdinterest[fd] == FDPOLL_MODE_READ ) {
+		return _add_change(fdp, fd, FDPOLL_MODE_READ, EV_DELETE);
+	}
+	if ( rw == FDPOLL_MODE_READ && fdp->fdinterest[fd] == FDPOLL_MODE_WRITE ) {
+		return _add_change(fdp, fd, FDPOLL_MODE_WRITE, EV_DELETE);
 	}
 
-	_add_change( fdp, fd, rw, EV_ADD );
+	return _add_change( fdp, fd, rw, EV_ADD );
 }
 
+
+ret_t
+fdpoll_kqueue_get_fdlimits (int *system_fd_limit, int *fd_limit)
+{
+	*system_fd_limit = 0;
+	*fd_limit = 0;
+
+	return ret_ok;
+}
+
+
 ret_t 
-fdpoll_kqueue_new (cherokee_fdpoll_t **fdp, int sys_limit, int limit)
+fdpoll_kqueue_new (cherokee_fdpoll_t **fdp, int sys_fd_limit, int fd_limit)
 {
 	cherokee_fdpoll_t *nfd;
-	CHEROKEE_NEW_STRUCT (n, fdpoll_kqueue);
+	CHEROKEE_CNEW_STRUCT (1, n, fdpoll_kqueue);
 
 	nfd = FDPOLL(n);
 
 	/* Init base class properties
 	 */
 	nfd->type          = cherokee_poll_kqueue;
-	nfd->nfiles        = limit;
-	nfd->system_nfiles = sys_limit;
+	nfd->nfiles        = fd_limit;
+	nfd->system_nfiles = sys_fd_limit;
 	nfd->npollfds      = 0;
 
 	/* Init base class virtual methods
@@ -255,18 +283,16 @@ fdpoll_kqueue_new (cherokee_fdpoll_t **fdp, int sys_limit, int limit)
 
 	/* Init kqueue specific variables
 	 */
+	n->kqueue          = -1;
 	n->nchanges        = 0;
-	n->changelist      = ( struct kevent *)malloc(sizeof(struct kevent)*2*
-						      nfd->nfiles);
-	n->fdevents        = (int *)malloc(sizeof(int) * nfd->system_nfiles);
-	n->fdinterest      = (int *)malloc(sizeof(int) * nfd->system_nfiles);
+	n->changelist      = (struct kevent *) calloc(nfd->nfiles * 2, sizeof(struct kevent));
+	n->fdevents        = (int *) calloc (nfd->system_nfiles, sizeof(int));
+	n->fdinterest      = (int *) calloc (nfd->system_nfiles, sizeof(int));
 
-	if ( (!n->fdevents) || (!n->changelist) || (!n->fdinterest) ) {
+	if (n->fdevents == NULL || n->changelist == NULL || n->fdinterest == NULL) {
 		_free( n );
 		return ret_nomem;
 	}
-
-	memset(n->fdevents, 0, sizeof(int)*nfd->system_nfiles);
 
 	if ( (n->kqueue = kqueue()) == -1 ) {
 		_free( n );

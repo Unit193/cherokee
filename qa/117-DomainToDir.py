@@ -1,8 +1,18 @@
 from base import *
 
-DOMAIN = "server_domain_to_dir"
-URL    = "http://www.example.com/dir/subdir/"
-PATH   = "dir1/file1/param"
+HOST = "server_domain_to_dir"
+URL  = "http://www.example.com/dir/subdir/"
+PATH = "dir1/file1/param"
+
+CONF = """
+vserver!<domain>!document_root = %s
+vserver!<domain>!domain!1 = <domain>
+vserver!<domain>!directory!/!handler = redir
+vserver!<domain>!directory!/!handler!rewrite!1!show = 1
+vserver!<domain>!directory!/!handler!rewrite!1!regex = ^/(.*)$
+vserver!<domain>!directory!/!handler!rewrite!1!substring = %s$1
+vserver!<domain>!directory!/!priority = 10
+"""
 
 class Test (TestBase):
     def __init__ (self):
@@ -10,20 +20,12 @@ class Test (TestBase):
         self.name = "Domain to subdir"
 
         self.request           = "GET /%s HTTP/1.1\r\n" %(PATH) +\
-                                 "Host: %s\r\n" %(DOMAIN)
+                                 "Host: %s\r\n" %(HOST)
         self.expected_error    = 301
         self.expected_content  = URL+PATH
 
     def Prepare (self, www):
-        srvr = self.Mkdir (www, "domain_%s" % (DOMAIN))
+        srvr = self.Mkdir (www, "domain_%s" % (HOST))
 
-        self.conf              = """Server %s {
-                                       DocumentRoot %s
-                                       Directory / {
-                                          Handler redir {
-                                             Show Rewrite "^/(.*)$" "%s$1"
-                                          }
-                                       }
-                                  }
-                                  """ % (DOMAIN, srvr, URL)
-
+        self.conf = CONF % (srvr, URL)
+        self.conf = self.conf.replace ('<domain>', HOST)

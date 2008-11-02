@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2006 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2008 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -27,12 +27,13 @@
 
 
 ret_t 
-cherokee_encoder_init_base (cherokee_encoder_t *enc)
+cherokee_encoder_init_base (cherokee_encoder_t *enc, cherokee_plugin_info_t *info)
 {
-	cherokee_module_init_base (MODULE(enc));
+	cherokee_module_init_base (MODULE(enc), NULL, info);
 
 	enc->encode      = NULL;
 	enc->add_headers = NULL;
+	enc->flush       = NULL;
 
 	return ret_ok;
 }
@@ -41,10 +42,13 @@ cherokee_encoder_init_base (cherokee_encoder_t *enc)
 ret_t 
 cherokee_encoder_free (cherokee_encoder_t *enc)
 {
+	ret_t ret;
+
 	if (MODULE(enc)->free == NULL) 
 		return ret_error;
 
-	return MODULE(enc)->free (enc);
+	ret = MODULE(enc)->free (enc);
+	return ret;
 }
 
 
@@ -72,6 +76,7 @@ cherokee_encoder_init (cherokee_encoder_t *enc, void *conn)
 	return init_func (enc);
 }
 
+
 ret_t 
 cherokee_encoder_encode (cherokee_encoder_t *enc, 
 			 cherokee_buffer_t  *in, 
@@ -82,7 +87,6 @@ cherokee_encoder_encode (cherokee_encoder_t *enc,
 
 	return enc->encode (enc, in, out);
 }
-
 
 
 ret_t 

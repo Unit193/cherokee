@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2006 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2008 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -27,27 +27,32 @@
 
 #include "common.h"
 #include "handler.h"
-#include "module_loader.h"
+#include "plugin_loader.h"
 #include "list.h"
 
+
+/* Data types
+ */
 typedef struct {
-	cherokee_handler_t    handler;
+	cherokee_module_props_t base;
+	cherokee_buffer_t        url;
+	cherokee_list_t          regex_list;
+} cherokee_handler_redir_props_t;
 
-	char                 *target_url;
-	int                   target_url_len;
-
-	list_t               *regex_list_ref;
-	void                 *regex_list_cre;
-
-	cherokee_boolean_t    use_previous_match;
-
+typedef struct {
+	cherokee_handler_t       handler;
+	cherokee_boolean_t       use_previous_match;
 } cherokee_handler_redir_t;
 
-#define REHANDLER(x)  ((cherokee_handler_redir_t *)(x))
+#define PROP_REDIR(x)      ((cherokee_handler_redir_props_t *)(x))
+#define HDL_REDIR(x)       ((cherokee_handler_redir_t *)(x))
+#define HDL_REDIR_PROPS(x) (PROP_REDIR(MODULE(x)->props))
 
 
-void MODULE_INIT(redir) (cherokee_module_loader_t *loader);
-ret_t cherokee_handler_redir_new (cherokee_handler_t **hdl, void *cnt, cherokee_table_t *properties);
+/* Library init function
+ */
+void  PLUGIN_INIT_NAME(redir)    (cherokee_plugin_loader_t *loader);
+ret_t cherokee_handler_redir_new (cherokee_handler_t **hdl, void *cnt, cherokee_module_props_t *props);
 
 /* virtual methods implementation
  */

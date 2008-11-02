@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2006 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2008 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -26,7 +26,7 @@
 #define CHEROKEE_ADMIN_HANDLER_H
 
 #include "handler.h"
-#include "module_loader.h"
+#include "plugin_loader.h"
 
 
 typedef enum {
@@ -39,13 +39,15 @@ typedef struct {
 	cherokee_buffer_t              reply;
 } cherokee_handler_admin_t;
 
-#define AHANDLER(x)  ((cherokee_handler_admin_t *)(x))
+#define PROP_ADMIN(x)      ((cherokee_handler_admin_props_t *)(x)) 
+#define HDL_ADMIN(x)       ((cherokee_handler_admin_t *)(x))
+#define HDL_ADMIN_PROPS(x) (PROP_ADMIN(HANDLER(x)->props))
 
 
 /* Library init function
  */
-void MODULE_INIT(admi) (cherokee_module_loader_t *loader);
-ret_t cherokee_handler_admin_new (cherokee_handler_t **hdl, void *cnt, cherokee_table_t *properties);
+void PLUGIN_INIT_NAME(admi) (cherokee_plugin_loader_t *loader);
+ret_t cherokee_handler_admin_new (cherokee_handler_t **hdl, void *cnt, cherokee_module_props_t *props);
 
 /* virtual methods implementation
  */
