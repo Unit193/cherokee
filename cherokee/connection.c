@@ -120,6 +120,7 @@ cherokee_connection_new  (cherokee_connection_t **conn)
 	n->polling_mode         = FDPOLL_MODE_NONE;
 	n->expiration           = cherokee_expiration_none;
 	n->expiration_time      = 0;
+	n->respins              = 0;
 
 	cherokee_buffer_init (&n->buffer);
 	cherokee_buffer_init (&n->header_buffer);
@@ -259,6 +260,7 @@ cherokee_connection_clean (cherokee_connection_t *conn)
 	conn->chunked_encoding     = false;
 	conn->chunked_sent         = 0;
 	conn->chunked_last_package = false;
+	conn->respins              = 0;
 
 	memset (conn->regex_ovector, OVECTOR_LEN * sizeof(int), 0);
 	conn->regex_ovecsize = 0;
@@ -429,6 +431,8 @@ out:
 static void
 build_response_header_authentication (cherokee_connection_t *conn, cherokee_buffer_t *buffer)
 {
+	ret_t ret;
+
 	/* Basic Authenticatiom
 	 * Eg: WWW-Authenticate: Basic realm=""
 	 */
@@ -452,14 +456,27 @@ build_response_header_authentication (cherokee_connection_t *conn, cherokee_buff
 		cherokee_buffer_add_buffer (buffer, conn->realm_ref);
 		cherokee_buffer_add_str (buffer, "\", ");
 
-		/* Nonce
+		/* Nonce:
+		 * "nonce=\"%s\", "
 		 */
-		cherokee_nonce_table_generate (CONN_SRV(conn)->nonces, conn, new_nonce);
-		/* "nonce=\"%s\", "
-		 */
-		cherokee_buffer_add_str    (buffer, "nonce=\"");
-		cherokee_buffer_add_buffer (buffer, new_nonce);
-		cherokee_buffer_add_str    (buffer, "\", ");
+		ret = ret_not_found;
+
+		if ((conn->validator != NULL) &&
+		    (! cherokee_buffer_is_empty (&conn->validator->nonce)))
+		{
+			ret = cherokee_nonce_table_check (CONN_SRV(conn)->nonces,
+							  &conn->validator->nonce);
+		}
+
+		cherokee_buffer_add_str (buffer, "nonce=\"");			
+		if (ret != ret_ok) {
+			cherokee_nonce_table_generate (CONN_SRV(conn)->nonces, conn, new_nonce);
+			cherokee_buffer_add_buffer (buffer, new_nonce);
+		} else {
+			cherokee_buffer_add_buffer (buffer, &conn->validator->nonce);
+		}
+		cherokee_buffer_add_str (buffer, "\", ");
+
 				
 		/* Quality of protection: auth, auth-int, auth-conf
 		 * Algorithm: MD5
@@ -818,9 +835,15 @@ cherokee_connection_reading_check (cherokee_connection_t *conn)
 
 
 ret_t 
-cherokee_connection_set_cork (cherokee_connection_t *conn, cherokee_boolean_t enable)
+cherokee_connection_set_cork (cherokee_connection_t *conn, 
+			      cherokee_boolean_t     enable)
 {
-	cherokee_socket_set_cork (&conn->socket, enable);
+	ret_t ret;
+
+	ret = cherokee_socket_set_cork (&conn->socket, enable);
+	if (unlikely (ret != ret_ok)) {
+		return ret;
+	}
 
 	if (enable)
 		BIT_SET (conn->options, conn_op_tcp_cork);
@@ -1284,12 +1307,6 @@ get_authorization (cherokee_connection_t *conn,
 		 */
 		if (cherokee_buffer_is_empty(&validator->nonce))
 			return ret_error;
-
-		/* If it returns ret_ok, it means that the nonce was on the table,
-		 * and it removed it successfuly, otherwhise ret_not_found is returned.
-		 */
-		ret = cherokee_nonce_table_remove (CONN_SRV(conn)->nonces, &validator->nonce);
-		if (ret != ret_ok) return ret;
 		
 		break;
 
@@ -2110,6 +2127,13 @@ cherokee_connection_clean_for_respin (cherokee_connection_t *conn)
 {
 	TRACE(ENTRIES, "Clean for respin: conn=%p\n", conn);
 
+	conn->respins += 1;
+	if (conn->respins > RESPINS_MAX) {
+		TRACE(ENTRIES, "Internal redirection limit (%d) excedeeded\n", RESPINS_MAX);
+		conn->error_code = http_internal_error;
+		return ret_error;
+	}
+
 	if (cherokee_connection_use_webdir(conn)) {
 		cherokee_buffer_prepend_buf (&conn->request, &conn->web_directory);
 		cherokee_buffer_clean (&conn->local_directory);
@@ -2197,18 +2221,20 @@ cherokee_connection_print (cherokee_connection_t *conn)
 #define print_add(str)	                           			\
 	cherokee_buffer_add_str (buf, str)
 
-	print_cbuf ("        Request", request);
-	print_cbuf ("  Web Directory", web_directory);
-	print_cbuf ("Local Directory", local_directory);
-	print_cbuf ("       Pathinfo", pathinfo);
-	print_cbuf ("       User Dir", userdir);
-	print_cbuf ("   Query string", query_string);
-	print_cbuf ("           Host", host);
-	print_cbuf ("       Redirect", redirect);
-	print_cint ("      Keepalive", keepalive);
-	print_str  ("          Phase", phase);
-	print_cint ("    Range start", range_start);
-	print_cint ("      Range end", range_end);
+	print_cbuf ("         Request", request);
+	print_cbuf ("Request Original", request_original);
+	print_cbuf ("   Web Directory", web_directory);
+	print_cbuf (" Local Directory", local_directory);
+	print_cbuf ("        Pathinfo", pathinfo);
+	print_cbuf ("        User Dir", userdir);
+	print_cbuf ("    Query string", query_string);
+	print_cbuf ("            Host", host);
+	print_cbuf ("        Redirect", redirect);
+	print_cint ("    Redirect num", respins);
+	print_cint ("       Keepalive", keepalive);
+	print_str  ("           Phase", phase);
+	print_cint ("     Range start", range_start);
+	print_cint ("       Range end", range_end);
 
 	/* Options bit fields
 	 */

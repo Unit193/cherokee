@@ -1,49 +1,313 @@
-2008-10-09  Alvaro Lopez Ortega  <alvaro@octality.com>
+2008-10-31  Alvaro Lopez Ortega  <alvaro@octality.com>
 
-	* 0.9.4 released
+	* 0.10.1 released
 
-2008-10-09  Taher Shihadeh  <taher@unixwars.com>
+	* cherokee/server.c (configure_server_property): Fixes a problem
+	with the I/O cache configuration.
 
-	* admin/ModuleGeoip.py, admin/ModuleDefault.py,
-	admin/ModuleErrorNn.py, admin/ModuleRequest.py,
-	admin/ModuleExtensions.py, admin/ModuleBalancer.py,
-	admin/ModuleDirectory.py, admin/ModuleErrorRedir.py: fixes and
-	prevents regressions on Option selection entries (issue
-	http://code.google.com/p/cherokee/issues/detail?id=147)
+2008-10-29  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* 0.10.0 released
+
+	* admin/ModuleAuthlist.py, admin/consts.py: A new Cherokee admin
+	module has been added to reflect the functionality of the new
+	AuthList validator.
+
+	* contrib/09to010.py, contrib/Makefile.am: Added new configuration
+	file converter: Cherokee 0.9.x to Cherokee 0.10.x.
+
+2008-10-28  Taher Shihadeh  <taher@unixwars.com>
+
+	* admin/ModuleRedir.py: fixes bug that prevented having an empty
+	Regular Expression (which should be
+	allowed). http://code.google.com/p/cherokee/issues/detail?id=168
+
+2008-10-28  Antonio Perez  <aperez@skarcha.com>
+
+	* admin/Form.py: Heights of the tabs autofit to contents. Fixes
+	Bug #164: http://code.google.com/p/cherokee/issues/detail?id=164
+
+2008-10-27  Antonio Perez  <aperez@skarcha.com>
+
+	* cherokee/handler_cgi_base.c, cherokee/handler_common.c,
+	cherokee/connection.c: REQUEST_URI cgi environment variable now
+	contains the correct value.
+
+2008-10-27  Taher Shihadeh  <taher@unixwars.com>
+
+	* admin/ModuleBalancer.py, admin/ModuleFcgi.py: fixes bug that
+	prevented balancers to be correctly configured when auto-submits
+	weren't triggered.
+
+	* doc/bundle_cherokee-admin.txt, cherokee-admin.1: documents the
+	new feature.
+
+2008-10-27  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* admin/PageAdvanced.py: Adds a new entry for the "Nonce cache
+	clean up elapse time". It allows to define the lapse between
+	nonce cache clean ups.
+
+	* cherokee/main_admin.c: Adds a new parameter -u
+	(or --unsecure).  It allows the execute cherokee-admin without
+	requiring the user to authenticate. This is a developers feature,
+	regular users are not supposed to use it.
+
+	* cherokee/macros.h, cherokee/nonce.c, cherokee/nonce.h,
+	cherokee/server-protected.h, cherokee/connection.c,
+	cherokee/server.c: Fixes nonce handling.
+
+2008-10-27  Taher Shihadeh  <taher@unixwars.com>
+
+	* admin/server.py, admin/PageInfoSource.py: cleanup following
+	http://code.google.com/p/cherokee/issues/detail?id=144
+
+	* doc/dev_debug.txt, doc/other_community.txt,
+	doc/basics_why_cherokee.txt, doc/config_general.txt,
+	doc/index.txt, doc/config_quickstart.txt,
+	doc/cookbook_optimizations.txt, doc/dev_cherokee.conf.txt,
+	doc/config_info_sources.txt: some doc changes for the upcoming
+	0.10
+
+2008-10-27  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* cherokee/main_admin.c: Implements a new security mechanism for
+	Cherokee-admin. From now on, it will require authentication to
+	access the administration interface.
+
+	* cherokee/validator_authlist.c, cherokee/validator_authlist.h,
+	configure.in, cherokee/Makefile.am: A new validator has been
+	added. It implements a fixed list of authorized users.
+
+2008-10-27  Taher Shihadeh  <taher@unixwars.com>
+
+	* admin/server.py, admin/PageInfoSource.py: cleanup following
+	http://code.google.com/p/cherokee/issues/detail?id=144
+
+2008-10-25  Antonio Perez  <aperez@skarcha.com>
+
+	* admin/ModuleFcgi.py: Bug #153 was not completely fixed in r2206
+
+2008-10-23  Antonio Perez  <aperez@skarcha.com>
+
+	* admin/ModuleBalancer.py: Fixes auto-submit error assigning
+	Information Sources. Bug #153:
+	http://code.google.com/p/cherokee/issues/detail?id=153
+
+2008-10-23  Taher Shihadeh  <taher@unixwars.com>
+
+	* admin/Page.py, admin/ModuleBalancer.py, admin/PageInfoSource.py,
+	doc/config.txt, doc/config_info_sources.txt,
+	doc/cookbook_django.txt, doc/index.txt, doc/config_quickstart.txt:
+	unify naming conventions to address issue
+	http://code.google.com/p/cherokee/issues/detail?id=152.
+
+2008-10-17  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* cherokee/thread.c (maybe_purge_closed_connection): I suppose
+	that there is no need of flushing if the connection did not use
+	tcp_cork. This is an experimental change, I might have to revert
+	it. Let's see.
+
+	* cherokee/server.c (configure_server): IO-cache must be instanced
+	even if there are no "server!" keys in the configuration file.
+
+	* admin/PageAdvanced.py: Updates the advanced page to reflect the
+	latest IO-cache configuration change.
+
+	* cherokee/server.c: Works out IO-cache configuration.
+
+2008-10-16  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* cherokee/macros.h, cherokee/iocache.c: Set better values for the
+	IOcache and sendfile limits.
+
+	* admin/static/js/common.js: Fixes an auto-submit error. Patch by
+	Antonio Perez <aperez@skarcha.com>.
+
+2008-10-14  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* cherokee/config_entry.h, cherokee/iocache.c: Fixes compilation
+	without pthreads, and therefore it fixes bug #137:
+	http://code.google.com/p/cherokee/issues/detail?id=137
+
+	* cherokee/handler_common.c (cherokee_handler_common_new): Fixes a
+	crash when I/O-cache is disabled.
+
+	* cherokee/server.c (cherokee_server_step): Do not mess with the
+	threads at this point. They will be freed in server::free().
+
+	* admin/PageAdvanced.py: The page content has been splited among
+	different tabs. There is a new entry for "I/O cache", so now its
+	configuration is also covered from the administration interface.
+
+	* cherokee/handler_server_info.c (build_cache_table_content): Adds
+	more information about the state of the IO-cache.
+
+	* cherokee/cache.h cherokee/cache.c cherokee/handler_file.c
+	cherokee/server-protected.h cherokee/iocache.h cherokee/iocache.c
+	cherokee/server.c: IO-cache gets its own configuration entry:
+	server!iocache, so fro now on, it can be tuned.
+
+	* admin/config.py (Config._parse): Better error reporting.
+
+	* cherokee/handler_server_info.c (build_cache_table_content): Adds
+	a new row showing the max. cache size.
+
+	* qa/qa/175-RedirectUrl.py, qa/Makefile.am (EXTRA_DIST): Removes
+	the QA test number 175. It was duped.
+
+	* qa/113-HeaderFile.py: It needed the allow_pathinfo flag.
+
+	* qa/176-Digest-htdigest-2.py: Fixes the test. It was using an
+	invalid priority number.
+
+	* qa/run-tests.py, qa/help.py, qa/*-*.py: Added a new -D
+	parameter. It stops right before executing a certain QA test.  All
+	the QA tests needed a small fix in order to be able to access its
+	file name.
+
+	* qa/067-PathInfo.py: This test needs pathinfo processing.
+
+2008-10-13  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* cherokee/cache.c (cherokee_cache_entry_unref): Clean references
+	in a better way. IOcache clients shouldn't keep pointers to
+	unref'ed iocache objects.
+
+	* cherokee/main.c (signals_handler): Fixes graceful restart.  It
+	was generating zombi processes. Patch by Antonio Perez
+	<aperez@skarcha.com>
+
+	* admin/CherokeeManagement.py (CherokeeManagement.save): Fixes a
+	bug while saving the configuration without restarting the server.
+	Patch by Antonio Perez <aperez@skarcha.com>.
+
+	* cherokee/handler_common.c (DEFAULT_ALLOW_PATHINFO): It should
+	not allow pathinfo by default. Patch by Antonio Perez
+	<aperez@skarcha.com>.  This patch fixes bug #149:
+	http://code.google.com/p/cherokee/issues/detail?id=149
+
+	* cherokee/util.c (cherokee_parse_query_string): Covers a corner
+	case. Patch by Antonio Perez <aperez@skarcha.com>.
+
+	* cherokee/main.c (main): It should not clean up the PID file if
+	cherokee is executed in "single time" mode. Patch by Antonio Perez
+	<aperez@skarcha.com>.
+
+	* cherokee/handler_cgi_base.c (cherokee_handler_cgi_base_init),
+	cherokee/handler_fcgi.c (build_header),
+	cherokee/handler_fastcgi.c (build_header): Neither of these
+	functions needed to call cherokee_connection_parse_args(). This
+	change is slightly speeding up response elapses. A million thanks
+	to Antonio Perez <aperez@skarcha.com> for hunting this nasty bug.
+
+	* cherokee/cache.c, cherokee/cache.h: Fixes a cache issue.
+
+	* cherokee.conf.sample.pre: Removed a few duped entries.
+
+	* cherokee/mime.c (cherokee_mime_get_by_suffix),
+	cherokee/icons.c (add_suffix): Better error management.
+
+2008-10-12  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* cherokee/balancer.c (cherokee_balancer_mrproper): Fixes a small
+	memory leak on clean up (it wasn't a leak per-se).
+
+	* cherokee/init.c (cherokee_mrproper): Added new function to clean
+	up the global cherokee_init() initialization.
+
+	* cherokee/icons.c (cherokee_icons_add_suffix): Better memory
+	management on error. Patch by Stefan de Konink <stefan@konink.de>.
+
+	* cherokee/config_entry.c (cherokee_config_entry_mrproper): There
+	was a AVL tree structure that wasn't being freed. Patch by Stefan
+	de Konink <stefan@konink.de>.
+
+	* cherokee/avl.c (cherokee_avl_add): Better error handling. Patch
+	by Stefan de Konink <stefan@konink.de>.
+
+	* cherokee/server.c (cherokee_server_free): Fixes an issue with
+	the previous patch. An invalid memory deallocation was being made.
+
+	* cherokee/server.c (cherokee_server_free): Frees the source
+	objects. Patch by Stefan de Konink <stefan@konink.de>
+
+2008-10-11  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* cherokee/logger.c (cherokee_logger_free): Frees the ->priv
+	property. (It was not a memory leak because loggers are never
+	freed, actually). Patch by Stefan de Konink <stefan@konink.de>
 
 2008-10-08  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* qa/175-RedirectUrl.py, qa/176-Digest-htdigest-2.py,
+	qa/Makefile.am: Adds a couple of new QA tests. 175 check infinite
+	redirections, and 176 ensure that bug#146 is fixed:
+	http://code.google.com/p/cherokee/issues/detail?id=146
 
 	* cherokee/validator_htdigest.c (extract_user_entry): Fixes an
 	error processing htdigest files. Reported by Eric Drechsel
 	<ericdrex@gmail.com>.
 
+2008-10-07  Taher Shihadeh  <taher@unixwars.com>
+
+	* admin/Form.py, admin/Page.py, admin/static/js/common.js:
+	usability enhancement suggested by Gunnar Wolf <gwolf@gwolf.org>
+	is implemented. Related to the previously thought to be fixed
+	http://code.google.com/p/cherokee/issues/detail?id=111.
+
 2008-10-07  Alvaro Lopez Ortega  <alvaro@octality.com>
 
-	* qa/Makefile.am (EXTRA_DIST): help.py has missing from the file
+	* qa/Makefile.am (EXTRA_DIST): help.py was missing from the file
 	distribution list. Reported by Eric Drechsel <ericdrex@gmail.com>
-
-2008-10-06  Alvaro Lopez Ortega  <alvaro@alobbs.com>
-
-	* 0.9.3 released
 
 2008-10-05  Alvaro Lopez Ortega  <alvaro@alobbs.com>
 
-	* cherokee/cache.c, cherokee/iocache.c: Fixes a stability issue.
+	* cherokee/cache.c: Add a few TRACE points within the cache policy
+	code.
+
+	* cherokee/connection.c (cherokee_connection_set_cork): Better
+	error management.
+
+	* cherokee/server.c (set_server_fd_socket_opts): Uses
+	SO_ACCEPTFILTER in case it's available.
+
+	* cherokee/socket.c: Do not suppose that TCP_CORK and TCP_NOPUSH
+	are equivalent; and apply TCP_CORK only if the system supports it.
+
+	* cherokee/socket.c (cherokee_socket_set_block_timeout,
+	cherokee_socket_flush): It ought to retry on EINTR.
 
 2008-10-04  Alvaro Lopez Ortega  <alvaro@alobbs.com>
+
+	* admin/PageAdvanced.py: Adds the cherokee-admin support for the
+	last change. It includes a new checkbox to toggle the
+	"server!use_iocache" configuration entry.
+
+	* cherokee/handler_server_info.c, cherokee/handler_common.c,
+	cherokee/server-protected.h, cherokee/iocache.c,
+	cherokee/iocache.h, cherokee/server.c: Adds a new
+	"server!use_iocache" configuration key to allow to enable or
+	disable the use of I/O cache server wide.
 
 	* cherokee/cache.c, cherokee/iocache.c, cherokee/iocache.h: Fixes
 	one more bug in the cache implementation. (sigh!)
 
 2008-10-02  Alvaro Lopez Ortega  <alvaro@alobbs.com>
 
-	* configure.in: 0.9.2 Released
-
-2008-10-02  Alvaro Lopez Ortega  <alvaro@alobbs.com>
+	* cherokee/handler_server_info.c (build_cache_table_content): Adds
+	a new row to show the total amount to memory mmaped by the IOcache
 
 	* cherokee/cache.h, cherokee/cache.c: Fixes the cache.  There were
 	a couple of bugs in the implementation that was leading the server
 	to random crashes.  The internal cache indexes work as expected.
+
+	* cherokee/buffer.h, cherokee/buffer.c: Functions
+	cherokee_buffer_add_chunked(),
+	cherokee_buffer_add_buffer_chunked() and
+	cherokee_buffer_convert_to_chunked() have been removed. They are
+	no longer needed.
 
 2008-09-30  Taher Shihadeh  <taher@unixwars.com>
 

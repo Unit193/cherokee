@@ -27,7 +27,7 @@ into your specific Cherokee build. This can be done by:</p></div>
 <div class="content">
 <pre><tt>$ cherokee -i
 Compilation
- Version: 0.9.0
+ Version: 0.10.0
 
 [...]
 
@@ -67,9 +67,9 @@ Encoding
 <p>
 As it is explained in the <a href="modules_encoders.html">Encoders'</a>
 documentation, compressing the information to be sent makes a lot of
-sense for specific file types. Not that much processing power is used
-to compress a text file, for instance, and hardware is cheaper than
-bandwidth, so you should encode files whenever it makes sense.
+sense for specific file types. It's Not that much processing power is
+used to compress a text file, for instance, and hardware is cheaper
+than bandwidth, so you should encode files whenever it makes sense.
 </p>
 </dd>
 <dt>
@@ -95,7 +95,9 @@ Handler specific
  efficient and assures that a file will be immediately served while it
  remains cached. The usage of IO cache is absolutely recommended in
  all cases except when the contents of the files are changed
- frequently.
+ frequently. Note that the global <em>IO Cache</em> setting from the
+ <em>Advanced</em> section (see bellow) must be enabled for each individual
+ handler's setting to be taken into account.
 </p>
 </li>
 </ul></div>
@@ -151,6 +153,16 @@ Advanced
   higher this limit is, the more connections Cherokee will be able to
   handle. By default Cherokee does not touch this value and it uses
   the one specified by your system.
+</p>
+</li>
+<li>
+<p>
+<strong>IO Cache</strong>: This setting allows to enable or diasable server-wide
+  the content caching. If disabled, the <em>IO Cache</em> settings of the
+  static content handlers will also be diabled, no matter what
+  behavior is desired in their specific configuration. This global
+  setting is essential if you are trying to debug a cache-related
+  bug in your server's configuration.
 </p>
 </li>
 </ul></div>

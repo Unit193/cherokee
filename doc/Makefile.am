@@ -47,6 +47,8 @@ cookbook_authentication.html \
 cookbook_ssl.html \
 cookbook_maintenance.html \
 cookbook_redirs.html \
+cookbook_embedding_cherokee.html \
+cookbook_dbslayer.html \
 modules.html \
 modules_balancers.html \
 modules_balancers_round_robin.html \
@@ -77,6 +79,7 @@ modules_validators_ldap.html \
 modules_validators_mysql.html \
 modules_validators_pam.html \
 modules_validators_plain.html \
+modules_validators_authlist.html \
 other.html \
 other_faq.html \
 other_goodies.html \
@@ -84,7 +87,8 @@ other_signals.html \
 other_community.html \
 dev.html \
 dev_debug.html \
-dev_cherokee.conf.html
+dev_cherokee.conf.html \
+dev_issues.html
 
 docmediacssdir = $(docdir)/media/css/
 docmediacss_DATA = \
@@ -92,8 +96,11 @@ media/css/cherokee_doc.css
 
 docmediaimagesdir = $(docdir)/media/images/
 docmediaimages_DATA = \
+media/images/admin_advanced0.png \
 media/images/admin_advanced1.png \
 media/images/admin_advanced2.png \
+media/images/admin_advanced3.png \
+media/images/admin_advanced4.png \
 media/images/admin_behaviour.png \
 media/images/admin_dirlist_cherokee.png \
 media/images/admin_general.png \
@@ -141,6 +148,10 @@ media/images/cookbook_maintenance_advanced_domains.png \
 media/images/cookbook_redir_behavior.png \
 media/images/cookbook_redir_domains.png \
 media/images/cookbook_redir_handler.png \
+media/images/cookbook_dbslayer1.png \
+media/images/cookbook_dbslayer2.png \
+media/images/cookbook_dbslayer3.png \
+media/images/cookbook_dbslayer4.png \
 media/images/tracelor.png
 
 EXTRA_DIST = \

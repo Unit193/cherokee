@@ -113,10 +113,6 @@ cherokee_server_new  (cherokee_server_t **srv)
 	n->ipv6             = true;
 	n->fdpoll_method    = cherokee_poll_UNSET;
 
-	/* Mime types
-	 */
-	n->mime             = NULL;
-
 	/* Exit related
 	 */
 	n->wanna_exit       = false;
@@ -128,6 +124,7 @@ cherokee_server_new  (cherokee_server_t **srv)
 	n->port_tls         = 443;
 	n->tls_enabled      = false;
 
+	n->timeout          = 5;
 	n->fdwatch_msecs    = 1000;
 
 	n->start_time       = time(NULL);
@@ -145,22 +142,20 @@ cherokee_server_new  (cherokee_server_t **srv)
 	n->group_orig       = getgid();
 	n->group            = n->group_orig;
 
-	n->timeout          = 5;
+	n->fdlimit_custom    = -1;
+	n->fdlimit_available = -1;
 
-	n->fdlimit_custom      = -1;
-	n->fdlimit_available   = -1;
+	n->conns_max        =  0;
+	n->conns_reuse_max  = -1;
+	n->conns_num_bogo   =  0;
 
-	n->conns_max           =  0;
-	n->conns_reuse_max     = -1;
-	n->conns_num_bogo      =  0;
+	n->listen_queue     = 1024;
+	n->sendfile.min     = SENDFILE_MIN_SIZE;
+	n->sendfile.max     = SENDFILE_MAX_SIZE;
 
-	n->listen_queue    = 1024;
-	n->sendfile.min    = 32768;
-	n->sendfile.max    = 2147483647;
-
-	n->icons           = NULL;
-	n->regexs          = NULL;
-	n->iocache         = NULL;
+	n->mime             = NULL;
+	n->icons            = NULL;
+	n->regexs           = NULL;
 
 	cherokee_buffer_init (&n->listen_to);
 	cherokee_buffer_init (&n->chroot);
@@ -178,8 +173,8 @@ cherokee_server_new  (cherokee_server_t **srv)
 
 	/* IO Cache cache
 	 */
-	cherokee_iocache_get_default (&n->iocache);
-	return_if_fail (n->iocache != NULL, ret_nomem);	
+	n->iocache         = NULL;
+	n->iocache_enabled = true;
 
 	/* Regexs
 	 */
@@ -211,10 +206,13 @@ cherokee_server_new  (cherokee_server_t **srv)
 	cherokee_buffer_init (&n->server_string_w_port);
 	cherokee_buffer_init (&n->server_string_w_port_tls);
 
-	/* Loggers
+	/* Programmed tasks
 	 */
-	n->log_flush_next   = 0;
-	n->log_flush_elapse = 10;
+	n->log_flush_next        = 0;
+	n->log_flush_lapse      = LOGGER_FLUSH_LAPSE;
+
+	n->nonces_cleanup_next   = 0;
+	n->nonces_cleanup_lapse = NONCE_CLEANUP_LAPSE;
 
 	/* TLS
 	 */
@@ -318,7 +316,9 @@ cherokee_server_free (cherokee_server_t *srv)
 	cherokee_mime_free (srv->mime);
 	cherokee_icons_free (srv->icons);
 	cherokee_regex_table_free (srv->regexs);
-	cherokee_iocache_free_default ();
+
+	if (srv->iocache)
+		cherokee_iocache_free (srv->iocache);
 
 	cherokee_nonce_table_free (srv->nonces);
 
@@ -338,8 +338,7 @@ cherokee_server_free (cherokee_server_t *srv)
 	cherokee_buffer_mrproper (&srv->pidfile);
 	cherokee_buffer_mrproper (&srv->panic_action);
 
-	//
-	// TODO: Free srv->sources
+	cherokee_avl_mrproper (&srv->sources, (cherokee_func_free_t)cherokee_source_free);
 
 	/* Module loader: It must be the last action to be performed
 	 * because it will close all the opened modules.
@@ -410,10 +409,13 @@ cherokee_server_set_min_latency (cherokee_server_t *srv, int msecs)
 static ret_t
 set_server_fd_socket_opts (int socket)
 {
-	ret_t         ret;
-	int           re;
-	int           on;
-        struct linger ling = {0, 0};
+	ret_t                    ret;
+	int                      re;
+	int                      on;
+        struct linger            ling = {0, 0};
+#ifdef SO_ACCEPTFILTER
+        struct accept_filter_arg afa;
+#endif
 
 	/* Set 'close-on-exec'
 	 */
@@ -471,11 +473,18 @@ set_server_fd_socket_opts (int socket)
 	on = 5;
 	setsockopt (socket, SOL_TCP, TCP_DEFER_ACCEPT, &on, sizeof(on));
 #endif
-
-	/* TODO:
-	 * It could be good to add support for the FreeBSD accept filters:
+	
+	/* SO_ACCEPTFILTER:
+	 * FreeBSD accept filter for HTTP:
+	 *
 	 * http://www.freebsd.org/cgi/man.cgi?query=accf_http
 	 */
+#ifdef SO_ACCEPTFILTER
+	memset (&afa, 0, sizeof(afa));
+	strcpy (afa.af_name, "httpready");
+
+	setsockopt (socket, SOL_SOCKET, SO_ACCEPTFILTER, &afa, sizeof(afa));
+#endif
 
 	return ret_ok;
 }
@@ -1190,11 +1199,16 @@ cherokee_server_step (cherokee_server_t *srv)
 #endif
 		cherokee_thread_step_SINGLE_THREAD (srv->main_thread);
 		
-	/* Logger flush 
+	/* Programmed tasks
 	 */
 	if (srv->log_flush_next < cherokee_bogonow_now) {
 		flush_logs (srv);
-		srv->log_flush_next = cherokee_bogonow_now + srv->log_flush_elapse;
+		srv->log_flush_next = cherokee_bogonow_now + srv->log_flush_lapse;
+	}
+	
+	if (srv->nonces_cleanup_next < cherokee_bogonow_now) {
+		cherokee_nonce_table_cleanup (srv->nonces);
+		srv->nonces_cleanup_next = cherokee_bogonow_now + srv->nonces_cleanup_lapse;
 	}
 
 #ifdef _WIN32
@@ -1208,11 +1222,6 @@ cherokee_server_step (cherokee_server_t *srv)
 	if (unlikely ((srv->wanna_reinit) &&
 		      (srv->main_thread->conns_num == 0)))
 	{
-		cherokee_list_t *i;
-
-		list_for_each (i, &srv->thread_list) {
-			cherokee_thread_wait_end (THREAD(i));
-		}
 		return ret_eof;
 	}
 
@@ -1339,6 +1348,7 @@ vservers_check_sanity (cherokee_server_t *srv)
 	return ret_ok;
 }
 
+
 static ret_t 
 configure_server_property (cherokee_config_node_t *conf, void *data)
 {
@@ -1376,8 +1386,11 @@ configure_server_property (cherokee_config_node_t *conf, void *data)
 	} else if (equal_buf_str (&conf->key, "timeout")) {
 		srv->timeout = atoi (conf->val.buf);
 
-	} else if (equal_buf_str (&conf->key, "log_flush_elapse")) {
-		srv->log_flush_elapse = atoi (conf->val.buf);
+	} else if (equal_buf_str (&conf->key, "log_flush_lapse")) {
+		srv->log_flush_lapse = atoi (conf->val.buf);
+
+	} else if (equal_buf_str (&conf->key, "nonces_cleanup_lapse")) {
+		srv->nonces_cleanup_lapse = atoi (conf->val.buf);
 
 	} else if (equal_buf_str (&conf->key, "keepalive")) {
 		srv->keepalive = !!atoi (conf->val.buf);
@@ -1484,7 +1497,8 @@ configure_server_property (cherokee_config_node_t *conf, void *data)
 		srv->group = grp->gr_gid;
 
 	} else if (equal_buf_str (&conf->key, "module_dir") ||
-		   equal_buf_str (&conf->key, "module_deps")) {
+		   equal_buf_str (&conf->key, "module_deps") ||
+		   equal_buf_str (&conf->key, "iocache")) {
 		/* Ignore it: Previously handled 
 		 */
 
@@ -1522,7 +1536,7 @@ configure_server (cherokee_server_t *srv)
 			if (ret != ret_ok) return ret;
 		}
 
-		/* Rest of the properties
+		/* Server properties
 		 */
 		ret = cherokee_config_node_while (subconf, configure_server_property, srv);
 		if (ret != ret_ok) return ret;
@@ -1559,6 +1573,22 @@ configure_server (cherokee_server_t *srv)
 	if (ret == ret_ok) {
 		ret = cherokee_config_node_while (subconf, add_source, srv);
 		if (ret != ret_ok) return ret;
+	}
+
+	/* IO-cache
+	 */
+	TRACE (ENTRIES, "Configuring %s\n", "iocache");
+	if (srv->iocache_enabled) {
+		ret = cherokee_iocache_new (&srv->iocache);
+		if (ret != ret_ok)
+			return ret;
+
+		ret = cherokee_config_node_get (&srv->config, "server!iocache", &subconf);
+		if (ret == ret_ok) {
+			ret = cherokee_iocache_configure (srv->iocache, subconf);
+			if (ret != ret_ok)
+				return ret;
+		}
 	}
 
 	/* Load the virtual servers

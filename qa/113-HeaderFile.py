@@ -10,12 +10,13 @@ vserver!1!rule!1130!match = directory
 vserver!1!rule!1130!match!directory = /header_file1
 vserver!1!rule!1130!handler = common
 vserver!1!rule!1130!handler!notice_files = header
+vserver!1!rule!1130!handler!allow_pathinfo = 1
 """
 
 
 class Test (TestBase):
     def __init__ (self):
-        TestBase.__init__ (self)
+        TestBase.__init__ (self, __file__)
         self.name = "dirlist w/ HeaderFile"
 
         self.request           = "GET /header_file1/file/ HTTP/1.0\r\n"

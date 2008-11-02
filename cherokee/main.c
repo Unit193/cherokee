@@ -295,6 +295,7 @@ signals_handler (int sig, siginfo_t *si, void *context)
 		/* Graceful restart */
 		graceful_restart = true;
 		kill (pid, SIGHUP);
+		process_wait (pid);
 		break;
 
 	case SIGTERM:
@@ -420,7 +421,7 @@ main (int argc, char *argv[])
 	 */
 	ret = check_worker_version (argv[0]);
 	if (ret != ret_ok)
-		exit(1);
+		exit (EXIT_ERROR);
 
 	set_signals();
 	single_time = is_single_execution (argc, argv);
@@ -443,7 +444,7 @@ main (int argc, char *argv[])
 		pid = process_launch (cherokee_worker, argv);
 		if (pid < 0) {
 			PRINT_MSG ("Couldn't launch '%s'\n", cherokee_worker);
-			exit (1);
+			exit (EXIT_ERROR);
 		}
 
 		ret = process_wait (pid);
@@ -455,6 +456,9 @@ main (int argc, char *argv[])
 			DELAY_ERROR);
 	}
 
-	pid_file_clean (pid_file_path);
-	return 0;
+	if (! single_time) {
+		pid_file_clean (pid_file_path);
+	}
+
+	return EXIT_OK;
 }

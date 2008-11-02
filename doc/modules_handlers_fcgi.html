@@ -51,17 +51,6 @@ good starting point.</p></div>
 <img src="media/images/admin_handler_fastcgi1.png" alt="FastCGI" title="FastCGI"/>
 </div>
 </div>
-<h3 id="_note_for_developers">Note for developers</h3><div style="clear:left"></div>
-<div class="para"><p>There a are two handlers currently  implementing the FastCGI protocol:
-"fcgi" and "fastcgi".</p></div>
-<div class="para"><p>The "fastcgi" module also implements the FastCGI protocol. It is a
-more complete implementation than "fcgi" although it is also more
-complex. Actually, fcgi became the standard choice because the PHP
-interpreter kind of buggy when it has to demultiplex multiple
-requests from the same socket.</p></div>
-<div class="para"><p>The "fastcgi" handler will eventually become the default option
-because it is faster and more standard-compliant. However, at the
-moment "fcgi" is a better option.</p></div>
 </div>
 <div id="footer">
 <div id="footer-text">

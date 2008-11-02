@@ -12,11 +12,11 @@
 # How about generating this from a ../VERSION file, like:
 # VERSION = $(shell cat ../VERSION)
 #
-VERSION = 0.9.4
-CFLAGS = -DPACKAGE_VERSION=\"0.9.4\"\
+VERSION = 0.10.1
+CFLAGS = -DPACKAGE_VERSION=\"0.10.1\"\
          -DPACKAGE_MAJOR_VERSION=\"0\" \
-         -DPACKAGE_MINOR_VERSION=\"9\" \
-         -DPACKAGE_MICRO_VERSION=\"4\" \
+         -DPACKAGE_MINOR_VERSION=\"10\" \
+         -DPACKAGE_MICRO_VERSION=\"1\" \
          -DPACKAGE_PATCH_VERSION=\"\" \
          -DCHEROKEE_COMPILATION         \
          -DOS_TYPE=\"Win32\"
