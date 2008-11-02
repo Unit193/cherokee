@@ -209,6 +209,7 @@ install-arch:
 	install $(CURDIR)/contrib/06to07.py $(LIB_CONFIG_DIR)/usr/share/cherokee/
 	install $(CURDIR)/contrib/07to08.py $(LIB_CONFIG_DIR)/usr/share/cherokee/
 	install $(CURDIR)/contrib/08to09.py $(LIB_CONFIG_DIR)/usr/share/cherokee/
+	install $(CURDIR)/contrib/09to010.py $(LIB_CONFIG_DIR)/usr/share/cherokee/
 
 # libcherokee-server0 - Runtime library
 	install -d $(LIB_SERVER_DIR)/DEBIAN

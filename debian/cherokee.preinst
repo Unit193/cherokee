@@ -147,6 +147,11 @@ EOF
         then
 	    migrate_conf_versions 0.8 0.9 08to09.py
 	fi
+
+	if ( dpkg --compare-versions "$version" lt 0.9 )
+        then
+	    migrate_conf_versions 0.9 0.10 09to010.py
+	fi
 	;;
     *)
         echo "preinst called with unknown argument \`$action'" >&2
