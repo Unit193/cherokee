@@ -6,27 +6,27 @@ from Table import *
 from Entry import *
 from consts import *
 from RuleList import *
+from CherokeeManagement import *
 
 DATA_VALIDATION = [
     ("vserver!.*?!document_root",             (validations.is_local_dir_exists, 'cfg')),
     ("vserver!.*?!ssl_certificate_file",      (validations.is_local_file_exists, 'cfg')),
     ("vserver!.*?!ssl_certificate_key_file",  (validations.is_local_file_exists, 'cfg')),
     ("vserver!.*?!ssl_ca_list_file",          (validations.is_local_file_exists, 'cfg')),
-    ("vserver!.*?!logger!access!filename",    (validations.parent_is_dir, 'cfg')),
-    ("vserver!.*?!logger!error!filename",     (validations.parent_is_dir, 'cfg')),
-    ("vserver!.*?!logger!access!command",     (validations.is_local_file_exists, 'cfg')),
-    ("vserver!.*?!logger!error!command",      (validations.is_local_file_exists, 'cfg')),
+    ("vserver!.*?!logger!.*?!filename",       (validations.parent_is_dir, 'cfg')),
+    ("vserver!.*?!logger!.*?!command",        (validations.is_local_file_exists, 'cfg')),
 ]
 
 RULE_LIST_NOTE = """
-<p>Rules are evaluated from <b>top to bottom</b>. Drap & drop them to reorder.</p>
+<p>Rules are evaluated from <b>top to bottom</b>. Drag & drop them to reorder.</p>
 """
 
+NOTE_NICKNAME        = 'Nickname for the virtual server.'
 NOTE_CERT            = 'This directive points to the PEM-encoded Certificate file for the server.'
 NOTE_CERT_KEY        = 'PEM-encoded Private Key file for the server.'
 NOTE_CA_LIST         = 'File with the certificates of Certification Authorities (CA) whose clients you deal with.'
 NOTE_ERROR_HANDLER   = 'Allows the selection of how to generate the error responses.'
-NOTE_PERSONAL_WEB    = 'Directory inside the user home directory that will be used as the root web directory.'
+NOTE_PERSONAL_WEB    = 'Directory inside the user home directory to use as root web directory. Disabled if empty.'
 NOTE_DISABLE_PW      = 'The personal web support is currently turned on.'
 NOTE_ADD_DOMAIN      = 'Adds a new domain name. Wildcards are allowed in the domain name.'
 NOTE_DOCUMENT_ROOT   = 'Virtual Server root directory.'
@@ -35,6 +35,7 @@ NOTE_DISABLE_LOG     = 'The Logging is currently enabled.'
 NOTE_LOGGERS         = 'Logging format. Apache compatible is highly recommended here.'
 NOTE_ACCESSES        = 'Back-end used to store the log accesses.'
 NOTE_ERRORS          = 'Back-end used to store the log errors.'
+NOTE_ACCESSES_ERRORS = 'Back-end used to store the log accesses and errors.'
 NOTE_WRT_FILE        = 'Full path to the file where the information will be saved.'
 NOTE_WRT_EXEC        = 'Path to the executable that will be invoked on each log entry.'
 
@@ -84,7 +85,8 @@ class PageVServer (PageMenu, FormHelper):
 
             else:
                 # It's updating properties
-                self._op_apply_changes (host, uri, post)
+                re = self._op_apply_changes (host, uri, post)
+                if re: return re
 
         elif uri.endswith('/ajax_update'):
             if post.get_val('update_prio'):
@@ -98,15 +100,17 @@ class PageVServer (PageMenu, FormHelper):
                 rules.change_prios (changes)
                 return "ok"
 
-            self._op_apply_changes (host, uri, post)
+            self.ApplyChangesDirectly (post)
             return 'ok'
 
         # Ensure the default rules are set
         if self._cfg.get_val('vserver!%s!user_dir'%(host)):
             tmp = self._cfg["vserver!%s!user_dir!rule"%(host)]
             if not tmp:
-                self._cfg["vserver!%s!user_dir!rule!1!match"   %(host)] = "default"
-                self._cfg["vserver!%s!user_dir!rule!1!handler" %(host)] = "common"
+                pre = "vserver!%s!user_dir!rule!1" %(host)
+                self._cfg["%s!match"       %(pre)] = "default"
+                self._cfg["%s!handler"     %(pre)] = "common"
+                self._cfg["%s!match!final" %(pre)] = "1"
 
         self._priorities         = RuleList(self._cfg, 'vserver!%s!rule'%(host))
         self._priorities_userdir = RuleList(self._cfg, 'vserver!%s!user_dir!rule'%(host))
@@ -155,8 +159,9 @@ class PageVServer (PageMenu, FormHelper):
 
     def _op_render_vserver_details (self, host):
         content = self._render_vserver_guts (host)
+        nick = self._cfg.get_val ('vserver!%s!nick'%(host))
 
-        self.AddMacroContent ('title', 'Virtual Server: %s' %(host))
+        self.AddMacroContent ('title', 'Virtual Server: %s' %(nick))
         self.AddMacroContent ('content', content)
 
         return Page.Render(self)
@@ -164,12 +169,15 @@ class PageVServer (PageMenu, FormHelper):
     def _render_vserver_guts (self, host):
         pre = "vserver!%s" % (host)
         cfg = self._cfg[pre]
+        name = self._cfg.get_val ('vserver!%s!nick'%(host))
         
         tabs = []
-        txt = "<h1>Virtual Server: %s</h1>" % (host)
+        txt = "<h1>Virtual Server: %s</h1>" % (name)
 
         # Basics
         table = TableProps()
+        if host != "default":
+            self.AddPropEntry (table, 'Virtual Server nickname', '%s!nick'%(pre), NOTE_NICKNAME)
         self.AddPropEntry (table, 'Document Root',     '%s!document_root'%(pre),   NOTE_DOCUMENT_ROOT)
         self.AddPropEntry (table, 'Directory Indexes', '%s!directory_index'%(pre), NOTE_DIRECTORY_INDEX)
         tabs += [('Basics', str(table))]
@@ -178,13 +186,13 @@ class PageVServer (PageMenu, FormHelper):
         tmp = self._render_hosts(host)
         tabs += [('Domain names', tmp)]
         
-        # Behaviour
+        # Behavior
         pre = 'vserver!%s!rule' %(host)
         tmp = self._render_rules_generic (cfg_key    = pre, 
                                           url_prefix = '/vserver/%s'%(host),
                                           priorities = self._priorities)
         tmp += self._render_add_rule ("tmp!new_rule")
-        tabs += [('Behaviour', tmp)]
+        tabs += [('Behavior', tmp)]
 
         # Personal Webs
         tmp  = self._render_personal_webs (host)
@@ -206,6 +214,8 @@ class PageVServer (PageMenu, FormHelper):
         tabs += [('Logging', tmp)]
 
         # Security
+        pre = 'vserver!%s' % (host)
+
         table = TableProps()
         self.AddPropEntry (table, 'Certificate',     '%s!ssl_certificate_file' % (pre),     NOTE_CERT)
         self.AddPropEntry (table, 'Certificate key', '%s!ssl_certificate_key_file' % (pre), NOTE_CERT_KEY)
@@ -214,7 +224,7 @@ class PageVServer (PageMenu, FormHelper):
 
         txt += self.InstanceTab (tabs)
 
-        form = Form (self.submit_url)
+        form = Form (self.submit_url, add_submit=False)
         return form.Render(txt)
 
     def _render_error_handler (self, host):
@@ -224,15 +234,18 @@ class PageVServer (PageMenu, FormHelper):
         table = TableProps()
         e = self.AddPropOptions_Reload (table, 'Error Handler',
                                         '%s!error_handler' % (pre), 
-                                        ERROR_HANDLERS, NOTE_ERROR_HANDLER)
+                                        modules_available(ERROR_HANDLERS), 
+                                        NOTE_ERROR_HANDLER)
         txt += str(table) + self.Indent(e)
 
         return txt
     
     def _render_add_rule (self, prefix):
+        # Render
         txt = "<h2>Add new rule</h2>"
         table = TableProps()
-        e = self.AddPropOptions_Reload (table, "Rule Type", prefix, RULES, "")
+        e = self.AddPropOptions_Reload (table, "Rule Type", prefix, 
+                                        modules_available(RULES), "")
         txt += self.Indent (str(table) + e)
         return txt
 
@@ -275,13 +288,13 @@ class PageVServer (PageMenu, FormHelper):
             if _type != 'default':
                 link     = '<a href="%s/prio/%s">%s</a>' % (url_prefix, prio, name)
                 js       = "post_del_key('%s', '%s');" % (self.submit_ajax_url, pre)
-                final    = self.InstanceCheckbox ('%s!match!final'%(pre), True)
+                final    = self.InstanceCheckbox ('%s!match!final'%(pre), True, quiet=True)
                 link_del = self.InstanceImage ("bin.png", "Delete", border="0", onClick=js)
                 extra    = ''
             else:
                 link     = '<a href="%s/prio/%s">Default</a>' % (url_prefix, prio)
                 extra    = ' NoDrag="1" NoDrop="1"'
-                final    = ''
+                final    = self.HiddenInput ('%s!match!final'%(pre), "1")
                 link_del = ''
 
             if conf.get_val('handler'):
@@ -345,6 +358,7 @@ class PageVServer (PageMenu, FormHelper):
         # Disable
         pre = 'vserver!%s!logger'%(host)
         cfg = self._cfg[pre]
+        format = self._cfg.get_val(pre)
         if cfg and cfg.has_child():
             table = TableProps()
             js = "post_del_key('%s','%s');" % (self.submit_ajax_url, pre)
@@ -356,46 +370,67 @@ class PageVServer (PageMenu, FormHelper):
         # Logger
         txt += '<h3>Logging Format</h3>'
         table = TableProps()
-        self.AddPropOptions_Ajax (table, 'Format', pre, LOGGERS, NOTE_LOGGERS)
+        self.AddPropOptions_Ajax (table, 'Format', pre, 
+                                  modules_available(LOGGERS), NOTE_LOGGERS)
         txt += self.Indent(str(table))
         
         # Writers
-        if self._cfg.get_val(pre):
+        
+        if format:
             writers = ''
 
-            # Accesses
-            cfg_key = "%s!access!type"%(pre)
-            table = TableProps()
-            self.AddPropOptions_Ajax (table, 'Accesses', cfg_key, LOGGER_WRITERS, NOTE_ACCESSES)
-            writers += str(table)
+            # Accesses & Error together
+            if format == 'w3c':
+                cfg_key = "%s!all!type"%(pre)
+                table = TableProps()
+                self.AddPropOptions_Ajax (table, 'Accesses and Errors', cfg_key, 
+                                          LOGGER_WRITERS, NOTE_ACCESSES_ERRORS)
+                writers += str(table)
 
-            access = self._cfg.get_val(cfg_key)
-            if access == 'file':
-                t1 = TableProps()
-                self.AddPropEntry (t1, 'Filename', '%s!access!filename'%(pre), NOTE_WRT_FILE)
-                writers += str(t1)
-            elif access == 'exec':
-                t1 = TableProps()
-                self.AddPropEntry (t1, 'Command', '%s!access!command'%(pre), NOTE_WRT_EXEC)
-                writers += str(t1)
+                all = self._cfg.get_val(cfg_key)
+                if not all or all == 'file':
+                    t1 = TableProps()
+                    self.AddPropEntry (t1, 'Filename', '%s!all!filename'%(pre), NOTE_WRT_FILE)
+                    writers += str(t1)
+                elif all == 'exec':
+                    t1 = TableProps()
+                    self.AddPropEntry (t1, 'Command', '%s!all!command'%(pre), NOTE_WRT_EXEC)
+                    writers += str(t1)
 
-            writers += "<hr />"
+            else:
+                # Accesses
+                cfg_key = "%s!access!type"%(pre)
+                table = TableProps()
+                self.AddPropOptions_Ajax (table, 'Accesses', cfg_key, LOGGER_WRITERS, NOTE_ACCESSES)
+                writers += str(table)
 
-            # Error
-            cfg_key = "%s!error!type"%(pre)
-            table = TableProps()
-            self.AddPropOptions_Ajax (table, 'Errors', cfg_key, LOGGER_WRITERS, NOTE_ERRORS)
-            writers += str(table)
+                access = self._cfg.get_val(cfg_key)
+                if not access or access == 'file':
+                    t1 = TableProps()
+                    self.AddPropEntry (t1, 'Filename', '%s!access!filename'%(pre), NOTE_WRT_FILE)
+                    writers += str(t1)
+                elif access == 'exec':
+                    t1 = TableProps()
+                    self.AddPropEntry (t1, 'Command', '%s!access!command'%(pre), NOTE_WRT_EXEC)
+                    writers += str(t1)
 
-            error = self._cfg.get_val(cfg_key)
-            if error == 'file':
-                t1 = TableProps()
-                self.AddPropEntry (t1, 'Filename', '%s!error!filename'%(pre), NOTE_WRT_FILE)
-                writers += str(t1)
-            elif error == 'exec':
-                t1 = TableProps()
-                self.AddPropEntry (t1, 'Command', '%s!error!command'%(pre), NOTE_WRT_EXEC)
-                writers += str(t1)
+                writers += "<hr />"
+
+                # Error
+                cfg_key = "%s!error!type"%(pre)
+                table = TableProps()
+                self.AddPropOptions_Ajax (table, 'Errors', cfg_key, LOGGER_WRITERS, NOTE_ERRORS)
+                writers += str(table)
+
+                error = self._cfg.get_val(cfg_key)
+                if not error or error == 'file':
+                    t1 = TableProps()
+                    self.AddPropEntry (t1, 'Filename', '%s!error!filename'%(pre), NOTE_WRT_FILE)
+                    writers += str(t1)
+                elif error == 'exec':
+                    t1 = TableProps()
+                    self.AddPropEntry (t1, 'Command', '%s!error!command'%(pre), NOTE_WRT_EXEC)
+                    writers += str(t1)
 
             txt += '<h3>Writers</h3>'
             txt += self.Indent(writers)

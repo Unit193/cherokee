@@ -1,5 +1,7 @@
 ## Cherokee: Makefile.am  -*- makefile -*-
 
+SUBDIRS = flags
+
 DARKGLASS_ICONS = \
 online.png \
 offline.png
@@ -20,7 +22,8 @@ dialog-warning.png \
 dialog-error.png \
 collapsed.gif \
 expanded.gif \
-bin.png
+bin.png \
+favicon.ico
 
 EXTRA_DIST = \
 $(adminstatic_DATA)

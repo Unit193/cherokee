@@ -1,0 +1,148 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+    <meta http-equiv="Content-Language" content="en-us" />
+    <meta name="ROBOTS" content="ALL" />
+    <meta http-equiv="imagetoolbar" content="no" />
+    <meta name="MSSmartTagsPreventParsing" content="true" />
+    <meta name="Keywords" content="cherokee web server httpd http" />
+    <meta name="Description" content="Cherokee is a flexible, very fast, lightweight Web server. It is implemented entirely in C, and has no dependencies beyond a standard C library. It is embeddable and extensible with plug-ins. It supports on-the-fly configuration by reading files or strings, TLS/SSL (via GNUTLS or OpenSSL), virtual hosts, authentication, cache friendly features, PHP, custom error management, and much more." />
+    <link href="media/css/cherokee_doc.css" rel="stylesheet" type="text/css" media="all" />
+    <title></title>
+  </head>
+<body>
+<h2 id="_a_href_index_html_index_a_8594_a_href_bundle_html_cherokee_bundle_a"><a href="index.html">Index</a> &#8594; <a href="bundle.html">Cherokee Bundle</a></h2>
+<div class="sectionbody">
+</div>
+<h2 id="_cherokee_bundle_cherokee">Cherokee Bundle: cherokee</h2>
+<div class="sectionbody">
+<div class="para"><p>This is the main Cherokee program. It can be launched in several ways
+as shown in the section <a href="basics_running_cherokee.txt">Running
+Cherokee</a>. Unless specified otherwise, <tt>cherokee</tt> will try to run with
+the configuration present in your default
+<a href="dev_cherokee.conf.html">cherokee.conf</a> file.</p></div>
+<div class="para"><p>This is the full information provided by the manpage:</p></div>
+<div class="sidebarblock">
+<div class="sidebar-content">
+<div class="vlist"><dl>
+<dt>
+<strong>NAME</strong>
+</dt>
+<dd>
+<p>
+       <tt>cherokee</tt> - Cherokee Web Server
+</p>
+</dd>
+<dt>
+<strong>SYNOPSIS</strong>
+</dt>
+<dd>
+<p>
+       <tt>cherokee</tt> [options]
+</p>
+</dd>
+<dt>
+<strong>DESCRIPTION</strong>
+</dt>
+<dd>
+<p>
+       <tt>cherokee</tt> is an extremely fast, flexible and embeddable web server.
+</p>
+</dd>
+<dt>
+<strong>OPTIONS</strong>
+</dt>
+<dd>
+<p>
+       This command will launch the Cherokee webserver. It accepts the following options.
+</p>
+<div class="vlist"><dl>
+<dt>
+-h, &#8212;help
+</dt>
+<dd>
+<p>
+               Prints a brief help message and terminates execution
+</p>
+</dd>
+<dt>
+-V, &#8212;version
+</dt>
+<dd>
+<p>
+               Prints Cherokee’s version and terminates execution
+</p>
+</dd>
+<dt>
+-t, &#8212;test
+</dt>
+<dd>
+<p>
+               Perform a sanity check on the configuration  file.  The  server will not run.
+</p>
+</dd>
+<dt>
+-d, &#8212;detach
+</dt>
+<dd>
+<p>
+               Launches  the server as a background process (default behaviour is to stay attached to the controlling terminal).
+</p>
+</dd>
+<dt>
+-C, &#8212;config=PATH
+</dt>
+<dd>
+<p>
+               Specifies  a  configuration  file  other   than   the   default /etc/cherokee/cherokee.conf
+</p>
+</dd>
+<dt>
+-p, &#8212;port=PORT
+</dt>
+<dd>
+<p>
+               TCP port number to which the server will listen.
+</p>
+</dd>
+<dt>
+-r, &#8212;documentroot=PATH
+</dt>
+<dd>
+<p>
+               Launches  a server exposing statically the specified directory. When launched with -r, the configuration file is  ignored, and the Cherokee instance runs with its default values.
+</p>
+</dd>
+<dt>
+-i, &#8212;print
+</dt>
+<dd>
+<p>
+               Print server technical information.
+</p>
+</dd>
+</dl></div>
+</dd>
+</dl></div>
+</div></div>
+<div class="para"><p>To illustrate the usefulness of such options take the following
+example:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>$ cherokee -p 8080 -r `pwd`</tt></pre>
+</div></div>
+<div class="para"><p>This would allow any non-privileged user to statically share the
+contents of the current directory. A great way to share files in a
+local network whenever you are in a hurry. Remember that in Unix
+systems only processes launched by the superuser have privileges to
+be hooked to the lower 1024 ports of the system.</p></div>
+</div>
+<div id="footer">
+<div id="footer-text">
+Last updated 2008-08-18 22:11:36 BST
+</div>
+</div>
+</body>
+</html>

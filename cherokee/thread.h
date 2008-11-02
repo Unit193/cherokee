@@ -74,11 +74,8 @@ typedef struct {
 	void                   *server;
 	cherokee_boolean_t      exit;
 
-	cherokee_boolean_t      is_accepting_conns; /* true=accepts new conns */
-
-	int                     conns_num;          /* open connections */
-	int                     conns_max;          /* max. connections */
-	int                     conns_accept;       /* accept limit */
+	cuint_t                 conns_num;          /* open connections */
+	cuint_t                 conns_max;          /* max opened conns */
 
 	int                     active_list_num;    /* active connections */
 	cherokee_list_t         active_list;
@@ -100,9 +97,9 @@ typedef struct {
 
 } cherokee_thread_t;
 
-#define THREAD(x)         ((cherokee_thread_t *)(x))
-#define THREAD_SRV(t)     (SRV(THREAD(t)->server))
-#define THREAD_IS_REAL(t) (THREAD(t)->real_thread)
+#define THREAD(x)          ((cherokee_thread_t *)(x))
+#define THREAD_SRV(t)      (SRV(THREAD(t)->server))
+#define THREAD_IS_REAL(t)  (THREAD(t)->real_thread)
 #define THREAD_TMP_BUF1(t) (&THREAD(t)->tmp_buf1)
 #define THREAD_TMP_BUF2(t) (&THREAD(t)->tmp_buf2)
 

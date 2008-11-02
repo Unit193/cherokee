@@ -13,8 +13,9 @@ man_MANS =           \
 cherokee.1           \
 cherokee-config.1    \
 spawn-fcgi.1         \
-cherokee_tweak.1     \
-cherokee-admin.1
+cherokee-tweak.1     \
+cherokee-admin.1     \
+cherokee-guardian.1
 
 # pkg-config
 pkgconfigdir = $(libdir)/pkgconfig
@@ -92,10 +93,6 @@ install-data-local: $(CONFS) install-data-local-config
 	@$(mkinstalldirs) $(DESTDIR)$(localstatedir)/log
 	@$(mkinstalldirs) $(DESTDIR)$(cherokeeconfdir)
 	@$(mkinstalldirs) $(DESTDIR)$(cherokeeconfdir)/ssl
-	@$(mkinstalldirs) $(DESTDIR)$(cherokeeconfdir)/mods-available
-	@$(mkinstalldirs) $(DESTDIR)$(cherokeeconfdir)/mods-enabled
-	@$(mkinstalldirs) $(DESTDIR)$(cherokeeconfdir)/sites-available
-	@$(mkinstalldirs) $(DESTDIR)$(cherokeeconfdir)/sites-enabled
 	@$(mkinstalldirs) $(DESTDIR)$(cherokeeadmindir)
 	@if test -f $(DESTDIR)$(cherokeeconfdir)/cherokee.conf ; then \
 		echo "$@ will not overwrite existing $(DESTDIR)$(cherokeeconfdir)/cherokee.conf"; \

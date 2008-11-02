@@ -1,9 +1,9 @@
 from base import *
 
 CONF = """
-vserver!default!rule!180!match = directory
-vserver!default!rule!180!match!directory = /cgi-bin4
-vserver!default!rule!180!handler = cgi
+vserver!1!rule!180!match = directory
+vserver!1!rule!180!match!directory = /cgi-bin4
+vserver!1!rule!180!handler = cgi
 """
 
 class Test (TestBase):

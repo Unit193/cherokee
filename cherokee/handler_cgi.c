@@ -72,7 +72,7 @@ static ret_t fork_and_execute_cgi_unix (cherokee_handler_cgi_t *cgi);
 
 /* Plugin initialization
  */
-PLUGIN_INFO_HANDLER_EASY_INIT (cgi, http_get | http_post | http_head);
+CGI_LIB_INIT (cgi, http_get | http_post | http_head);
 
 
 
@@ -313,6 +313,7 @@ cherokee_handler_cgi_add_env_pair (cherokee_handler_cgi_base_t *cgi_base,
 
 	memcpy (entry, name, name_len);
 	entry[name_len] = '=';
+
 	memcpy (entry + name_len + 1, content, content_len);
 
 	entry[name_len+content_len+1] = '\0';
@@ -415,6 +416,9 @@ cherokee_handler_cgi_init (cherokee_handler_cgi_t *cgi)
 		 */
 		conn->timeout = CONN_THREAD(conn)->bogo_now + CGI_TIMEOUT;
 		
+		cgi_base->init_phase = hcgi_phase_connect;
+
+	case hcgi_phase_connect:
 		/* Launch the CGI
 		 */
 		ret = fork_and_execute_cgi(cgi);
@@ -479,6 +483,15 @@ manage_child_cgi_process (cherokee_handler_cgi_t *cgi, int pipe_cgi[2], int pipe
 	cherokee_handler_cgi_base_t *cgi_base      = HDL_CGI_BASE(cgi);
 	char                        *absolute_path = cgi_base->executable.buf;
 	char                        *argv[4]       = { NULL, NULL, NULL, NULL };
+
+#ifdef TRACE_ENABLED
+	TRACE(ENTRIES, "About to execute: '%s'\n", absolute_path); 
+
+	if (! cherokee_buffer_is_empty (&conn->effective_directory))
+		TRACE(ENTRIES, "Effective directory: '%s'\n", conn->effective_directory.buf);
+	else
+		TRACE(ENTRIES, "No Effective directory %s", "\n");
+#endif
 
 	/* Close useless sides
 	 */
@@ -566,6 +579,9 @@ manage_child_cgi_process (cherokee_handler_cgi_t *cgi, int pipe_cgi[2], int pipe
 #endif
 #ifdef SIGSEGV
         signal (SIGSEGV, SIG_DFL);
+#endif
+#ifdef SIGBUS
+        signal (SIGBUS, SIG_DFL);
 #endif
 #ifdef SIGTERM
         signal (SIGTERM, SIG_DFL);
@@ -805,34 +821,3 @@ fork_and_execute_cgi_win32 (cherokee_handler_cgi_t *cgi)
 }
 
 #endif
-
-
-/* Library init function
- */
-static cherokee_boolean_t _cgi_is_init = false;
-
-#if 0
-#include <signal.h>
-
-static void 
-child_finished(int sng)
-{
-	int status;
-	while(waitpid (0, &status, WNOHANG) > 0);
-}
-#endif
-
-void  
-PLUGIN_INIT_NAME(cgi) (cherokee_plugin_loader_t *loader)
-{
-	UNUSED(loader);
-
-	if (_cgi_is_init) 
-		return;
-	_cgi_is_init = true;
-
-#if 0
-	signal(SIGCHLD, child_finished);
-#endif
-}
-

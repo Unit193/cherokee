@@ -39,7 +39,7 @@ match (cherokee_rule_directory_t *rule, cherokee_connection_t *conn)
 	/* Not the same lenght
 	 */
 	if (conn->request.len < rule->directory.len) {
-		TRACE(ENTRIES, "Match directory: rule=%s conn=%s: (shorter) ret_not_found\n",
+		TRACE(ENTRIES, "Match directory: rule=%s req=%s: (shorter) ret_not_found\n",
 		      rule->directory.buf, conn->request.buf);
 		return ret_not_found;
 	}
@@ -47,7 +47,7 @@ match (cherokee_rule_directory_t *rule, cherokee_connection_t *conn)
 	/* Does not match
 	 */
 	if (strncmp (rule->directory.buf, conn->request.buf, rule->directory.len) != 0) {
-		TRACE(ENTRIES, "Match directory: rule=%s conn=%s: (str) ret_not_found\n",
+		TRACE(ENTRIES, "Match directory: rule=%s req=%s: (str) ret_not_found\n",
 		      rule->directory.buf, conn->request.buf);
 		return ret_not_found;
 	}
@@ -66,11 +66,11 @@ match (cherokee_rule_directory_t *rule, cherokee_connection_t *conn)
 	 */
 	if ((conn->request.len > 1) &&
 	    (cherokee_buffer_end_char (&conn->request) != '/') &&
-	    (cherokee_buffer_cmp_buf (&conn->request, &conn->web_directory) == 0))
+	    (cherokee_buffer_cmp_buf (&conn->request, &rule->directory) == 0))
 	{
-		cherokee_buffer_ensure_size (&conn->redirect, conn->request.len + 4);
-		cherokee_buffer_add_buffer (&conn->redirect, &conn->request);
-		cherokee_buffer_add (&conn->redirect, "/", 1);
+		cherokee_buffer_add_str (&conn->request, "/");
+		cherokee_connection_set_redirect (conn, &conn->request);
+		cherokee_buffer_drop_ending (&conn->request, 1);
 
 		TRACE(ENTRIES, "Had to redirect to: %s\n", conn->redirect.buf);
 		conn->error_code = http_moved_permanently;
@@ -83,8 +83,8 @@ match (cherokee_rule_directory_t *rule, cherokee_connection_t *conn)
 		cherokee_buffer_add_str (&conn->web_directory, "/");
 	}
 
-	TRACE(ENTRIES, "Match! rule=%s conn=%s: ret_ok\n",
-	      rule->directory.buf, conn->request.buf);
+	TRACE(ENTRIES, "Match! rule=%s req=%s web_directory=%s: ret_ok\n",
+	      rule->directory.buf, conn->request.buf, conn->web_directory.buf);
 
 	return ret_ok;
 }
@@ -106,6 +106,7 @@ configure (cherokee_rule_directory_t *rule,
 		return ret_error;
 	}
 
+	cherokee_fix_dirpath (&rule->directory);
 	return ret_ok;
 }
 

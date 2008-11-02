@@ -13,6 +13,7 @@ import socket
 # Application modules
 #
 from config import *
+from configured import *
 from Post import *
 from PageMain import *
 from PageGeneral import *
@@ -61,9 +62,14 @@ class Handler(pyscgi.SCGIHandler):
             page = PageError (cfg, PageError.ICONS_DIR_MISSING)
 
         if page:
-            self.send ('Status: 200 OK\r\n\r\n' +
-                       page.HandleRequest (uri, Post()))
-            return
+            body = page.HandleRequest (uri, Post())
+            if body and body[0] == '/':
+                self.send ("Status: 302 Moved Temporarily\r\n" + \
+                           "Location: %s\r\n\r\n" % (body))
+                return
+            else:
+                self.send ('Status: 200 OK\r\n\r\n' + body)
+                return
 
         # Check the URL        
         if uri.startswith('/general'):
@@ -79,7 +85,8 @@ class Handler(pyscgi.SCGIHandler):
         elif uri.startswith('/feedback'):
             page = PageFeedback(cfg)
         elif uri == '/vserver' or \
-             uri == '/vserver/':
+             uri == '/vserver/' or \
+             uri == '/vserver/ajax_update':
             page = PageVServers(cfg)
         elif uri.startswith('/vserver/'):
             if "/prio/" in uri:
@@ -87,8 +94,11 @@ class Handler(pyscgi.SCGIHandler):
             else:
                 page = PageVServer(cfg)
         elif uri.startswith('/apply'):
-            manager = cherokee_management_get (cfg)
-            manager.save()
+            self.handle_post()
+            post = Post(self.post)
+ 
+            manager = cherokee_management_get (cfg)            
+            manager.save (restart = post.get_val('restart'))
             cherokee_management_reset()
             body = "/"
         elif uri.startswith('/launch'):
@@ -133,7 +143,6 @@ class Handler(pyscgi.SCGIHandler):
         # Send result
         content = 'Status: %s\r\n' % (status) + \
                   headers + '\r\n' + body
-
         return self.send (content)
 
 
@@ -149,21 +158,22 @@ def main():
         raise SystemExit
 
     # Try to avoid zombie processes 
-    signal.signal(signal.SIGCHLD, signal.SIG_IGN)
+    if hasattr(signal, "SIGCHLD"):
+        signal.signal(signal.SIGCHLD, signal.SIG_IGN)
 
     # Move to the server directory
     pathname, scriptname = os.path.split(sys.argv[0])
     os.chdir(os.path.abspath(pathname))
 
     # SCGI server
-    srv = pyscgi.ServerFactory (True, handler_class=Handler, port=scgi_port)
+    srv = pyscgi.ServerFactory (True, handler_class=Handler, host="127.0.0.1", port=scgi_port)
     srv.socket.settimeout (MODIFIED_CHECK_ELAPSE)
 
     # Read configuration file
     global cfg
     cfg = Config(cfg_file)
     
-    print ("Server running.. PID=%d" % (os.getpid()))
+    print ("Server %s running.. PID=%d Port=%d" % (VERSION, os.getpid(), scgi_port))
 
     # Iterate until the user exists
     try:

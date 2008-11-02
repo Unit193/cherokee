@@ -14,7 +14,8 @@ HANDLERS = [
 
 ERROR_HANDLERS = [
     ('',            'Default errors'),
-    ('error_redir', 'Custom redirections')
+    ('error_redir', 'Custom redirections'),
+    ('error_nn',    'Closest match')
 ]
 
 VALIDATORS = [
@@ -41,9 +42,9 @@ LOGGERS = [
 ]
 
 LOGGER_WRITERS = [
+    ('file',     'File'),
     ('syslog',   'System logger'),
     ('stderr',   'Standard Error'),
-    ('file',     'File'),
     ('exec',     'Execute program')
 ]
 
@@ -57,7 +58,8 @@ BALANCER_TYPES = [
 ]
 
 ENCODERS = [
-    ('gzip',     'GZip')
+    ('gzip',     'GZip'),
+    ('deflate',  'Deflate')
 ]
 
 THREAD_POLICY = [
@@ -102,5 +104,6 @@ RULES = [
     ('directory',  'Directory'),
     ('extensions', 'Extensions'),
     ('request',    'Regular Expression'),
-    ('header',     'Header')
+    ('header',     'Header'),
+    ('geoip',      'GeoIP')
 ]

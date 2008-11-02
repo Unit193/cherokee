@@ -74,14 +74,14 @@ cherokee_logger_ncsa_new (cherokee_logger_t **logger, cherokee_config_node_t *co
 {
 	ret_t ret;
 	CHEROKEE_NEW_STRUCT (n, logger_ncsa);
-	
+
 	/* Init the base class object
 	 */
 	cherokee_logger_init_base (LOGGER(n), PLUGIN_INFO_PTR(ncsa));
 
 	MODULE(n)->init         = (logger_func_init_t) cherokee_logger_ncsa_init;
 	MODULE(n)->free         = (logger_func_free_t) cherokee_logger_ncsa_free;
-	
+
 	LOGGER(n)->flush        = (logger_func_flush_t) cherokee_logger_ncsa_flush;
 	LOGGER(n)->reopen       = (logger_func_reopen_t) cherokee_logger_ncsa_reopen;
 	LOGGER(n)->write_error  = (logger_func_write_error_t)  cherokee_logger_ncsa_write_error;
@@ -321,15 +321,17 @@ cherokee_logger_ncsa_write_string (cherokee_logger_ncsa_t *logger, const char *s
 
 	ret = cherokee_buffer_add (log, string, strlen(string));
  	if (unlikely (ret != ret_ok)) return ret;
-  
+
+	/* Flush buffer if full
+	 */  
   	if (log->len < logger->writer_access.max_bufsize)
 		return ret_ok;
 
-	/* Buffer is full, flush it!
-	 */
 	ret = cherokee_logger_writer_flush (&logger->writer_access);
+	if (unlikely (ret != ret_ok))
+		return ret;
 
-	return ret;
+	return ret_ok;
 }
 
 
@@ -349,14 +351,16 @@ cherokee_logger_ncsa_write_access (cherokee_logger_ncsa_t *logger, cherokee_conn
 	ret = build_log_string (logger, cnt, log);
 	if (unlikely (ret != ret_ok)) return ret;
 
+	/* Flush buffer if full
+	 */  
 	if (log->len < logger->writer_access.max_bufsize)
 		return ret_ok;
 
-	/* Buffer is full, flush it!
-	 */
 	ret = cherokee_logger_writer_flush (&logger->writer_access);
+	if (unlikely (ret != ret_ok))
+		return ret;
 
-	return ret;
+	return ret_ok;
 }
 
 
@@ -379,8 +383,10 @@ cherokee_logger_ncsa_write_error (cherokee_logger_ncsa_t *logger, cherokee_conne
 	/* It's an error. Flush it!
 	 */
 	ret = cherokee_logger_writer_flush (&logger->writer_error);
+	if (unlikely (ret != ret_ok))
+		return ret;
 
-	return ret;
+	return ret_ok;
 }
 
 

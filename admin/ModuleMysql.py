@@ -3,7 +3,7 @@ from ModuleAuth import *
 
 NOTE_HOST   = 'MySQL server IP address.'
 NOTE_PORT   = 'Server port to connect to.'
-NOTE_UNIX   = 'Full path a Unix socket to communite with the data base.'
+NOTE_UNIX   = 'Full path of Unix socket to communicate with the data base.'
 NOTE_USER   = 'User name for connecting to the database.'
 NOTE_PASSWD = 'Password for connecting to the database.'
 NOTE_DB     = 'Database name containing the user/password pair list.'
@@ -42,13 +42,12 @@ class ModuleMysql (ModuleAuthBase):
 
     def _op_apply_changes (self, uri, post):
         # These values must be filled out
-        for key, msg in [('host', 'Host'),
-                         ('user', 'DB User'),
+        for key, msg in [('user', 'DB User'),
                          ('query', 'SQL query'),
                          ('database', 'Database')]:
             pre = '%s!%s' % (self._prefix, key)
             self.Validate_NotEmpty (post, pre, '%s can not be empty'%(msg))
-            
+
         # Apply TLS
         self.ApplyChangesPrefix (self._prefix, ['use_md5_passwd'], post)
         post.pop('use_md5_passwd')

@@ -102,6 +102,7 @@ CYGPATH_W = @CYGPATH_W@
 DEFS = @DEFS@
 DEPDIR = @DEPDIR@
 DLLTOOL = @DLLTOOL@
+DSYMUTIL = @DSYMUTIL@
 ECHO = @ECHO@
 ECHO_C = @ECHO_C@
 ECHO_N = @ECHO_N@
@@ -137,6 +138,7 @@ MYSQL_CFLAGS = @MYSQL_CFLAGS@
 MYSQL_CONFIG = @MYSQL_CONFIG@
 MYSQL_LDFLAGS = @MYSQL_LDFLAGS@
 MYSQL_VERSION = @MYSQL_VERSION@
+NMEDIT = @NMEDIT@
 OBJDUMP = @OBJDUMP@
 OBJEXT = @OBJEXT@
 PACKAGE = @PACKAGE@
@@ -155,6 +157,7 @@ PKG_CONFIG = @PKG_CONFIG@
 PTHREAD_CFLAGS = @PTHREAD_CFLAGS@
 PTHREAD_LIBS = @PTHREAD_LIBS@
 RANLIB = @RANLIB@
+SED = @SED@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
 STRIP = @STRIP@
@@ -212,7 +215,6 @@ sharedstatedir = @sharedstatedir@
 srcdir = @srcdir@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
-top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 SUBDIRS = static
@@ -260,6 +262,7 @@ ModuleFcgi.py \
 ModuleScgi.py \
 ModuleBalancer.py \
 ModuleMirror.py \
+ModuleErrorNn.py \
 ModuleErrorRedir.py \
 ModuleAuth.py \
 ModuleAdmin.py \
@@ -274,10 +277,12 @@ ModuleDefault.py \
 ModuleRequest.py \
 ModuleDirectory.py \
 ModuleExtensions.py \
+ModuleGeoip.py \
 config.py \
 pyscgi.py \
 validations.py \
-CherokeeManagement.py
+CherokeeManagement.py \
+flags.py
 
 adminhelpdir = "$(datadir)/cherokee/admin"
 adminhelp_DATA = \
@@ -701,7 +706,7 @@ uninstall-am: uninstall-adminhelpDATA uninstall-adminpyDATA \
 
 
 .py.pre.py:
-	sed -e "s|%sysconfdir%|${sysconfdir}|g; s|%datadir%|${datadir}|g; s|%prefix%|${prefix}|g; s|%localstatedir%|${localstatedir}|g; s|%wwwroot%|${WWW_ROOT}|g; s|%version%|${PACKAGE_VERSION}|g; s|%phpcgi%|${PHPCGI}|g" $< > $@
+	sed -e "s|%sysconfdir%|${sysconfdir}|g; s|%datadir%|${datadir}|g; s|%prefix%|${prefix}|g; s|%localstatedir%|${localstatedir}|g; s|%libdir%|${libdir}|g; s|%wwwroot%|${WWW_ROOT}|g; s|%version%|${PACKAGE_VERSION}|g; s|%phpcgi%|${PHPCGI}|g" $< > $@
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

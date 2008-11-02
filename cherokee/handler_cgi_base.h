@@ -32,7 +32,24 @@
 #include "list.h"
 #include "connection.h"
 
+#define SUPPORT_XSENDFILE
 
+/* Plug-in initialization
+ */
+#ifndef SUPPORT_XSENDFILE
+# define CGI_LIB_INIT(name, methods) \
+	PLUGIN_INFO_HANDLER_EASY_INIT (name, (methods))
+#else
+# define CGI_LIB_INIT(name, methods)                          \
+	PLUGIN_INIT_PROTOTYPE(name) {	   	              \
+		PLUGIN_INIT_ONCE_CHECK(name);                 \
+		cherokee_plugin_loader_load (loader, "file"); \
+	}                                                     \
+        PLUGIN_INFO_HANDLER_EASY_INIT (name, (methods))
+#endif
+
+/* Function types
+ */
 typedef struct cherokee_handler_cgi_base cherokee_handler_cgi_base_t;
 
 typedef void  (* cherokee_handler_cgi_base_add_env_pair_t)  (cherokee_handler_cgi_base_t *cgi,
@@ -44,10 +61,10 @@ typedef ret_t (* cherokee_handler_cgi_base_read_from_cgi_t) (cherokee_handler_cg
 
 typedef enum {
 	hcgi_phase_build_headers,
+	hcgi_phase_connect,
 	hcgi_phase_send_headers,
 	hcgi_phase_send_post
 } cherokee_handler_cgi_base_phase_t;
-
 
 /* Data structure
  */
@@ -59,9 +76,14 @@ struct cherokee_handler_cgi_base {
 	cherokee_handler_cgi_base_phase_t  init_phase;	
 	cuint_t                            got_eof;
 	char                              *extra_param;
-	size_t                             content_length;
+
+	cherokee_boolean_t                 chunked;
 	cherokee_boolean_t                 content_length_set;
-	
+	size_t                             content_length;
+
+	cherokee_buffer_t                  xsendfile;
+	void                              *file_handler;
+
 	cherokee_buffer_t                  param; 
 	cherokee_buffer_t                  param_extra;
 	cherokee_buffer_t                  executable;
@@ -84,6 +106,8 @@ typedef struct {
 	cuint_t                            change_user;
 	cherokee_buffer_t                  script_alias;
  	cherokee_boolean_t                 check_file;	
+	cherokee_boolean_t                 allow_chunked;
+	cherokee_boolean_t                 allow_xsendfile;
 	cherokee_boolean_t                 is_error_handler;
 	cherokee_boolean_t                 pass_req_headers;
 } cherokee_handler_cgi_base_props_t;

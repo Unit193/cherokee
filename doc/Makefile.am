@@ -1,103 +1,128 @@
-docdir = $(datadir)/doc/cherokee/
+ASCIIDOC=python $(top_srcdir)/doc/build/asciidoc.py --unsafe --conf-file=$(top_srcdir)/doc/build/doc.conf
+
+SUFFIXES = .txt .html
+
+.txt.html:
+	$(ASCIIDOC) -o $@ $(top_srcdir)/doc/$< 
+
+docdir = $(datadir)/doc/cherokee
 doc_DATA = \
 index.html \
-authentication.html \
-general.html \
-loggers.html \
-vserver.html \
-debug.html \
-entry.html \
-compiling_and_installing_unix.html \
-compiling_and_installing_windows.html \
-cross_compile_cherokee.html \
-internal_configuration.html \
-advanced.html \
-admin.html \
-download.html \
-How_to_generate_SSL_keys.html \
-icons.html
+basics.html \
+basics_why_cherokee.html \
+basics_requirements.html \
+basics_download.html \
+basics_installation.html \
+basics_installation_unix.html \
+basics_installation_windows.html \
+basics_installation_svn.html \
+basics_upgrade.html \
+basics_running_cherokee.html \
+bundle.html \
+bundle_cherokee.html \
+bundle_cherokee-admin.html \
+bundle_cherokee-config.html \
+bundle_cherokee-guardian.html \
+bundle_cherokee-tweak.html \
+bundle_spawn-fcgi.html \
+bundle_cget.html \
+config.html \
+config_quickstart.html \
+config_general.html \
+config_virtual_servers.html \
+config_virtual_servers_rule.html \
+config_encoding.html \
+config_icons.html \
+config_mime_types.html \
+config_advanced.html \
+cookbook.html \
+cookbook_managing_logs.html \
+cookbook_optimizations.html \
+cookbook_cross_compilation.html \
+cookbook_django.html \
+cookbook_php.html \
+cookbook_ror.html \
+cookbook_authentication.html \
+cookbook_ssl.html \
+modules.html \
+modules_balancers.html \
+modules_balancers_round_robin.html \
+modules_encoders.html \
+modules_encoders_gzip.html \
+modules_encoders_deflate.html \
+modules_handlers.html \
+modules_handlers_file.html \
+modules_handlers_dirlist.html \
+modules_handlers_common.html \
+modules_handlers_redir.html \
+modules_handlers_cgi.html \
+modules_handlers_fcgi.html \
+modules_handlers_scgi.html \
+modules_handlers_server_info.html \
+modules_handlers_mirror.html \
+modules_handlers_admin.html \
+modules_loggers.html \
+modules_loggers_combined.html \
+modules_loggers_ncsa.html \
+modules_loggers_w3c.html \
+modules_validators.html \
+modules_validators_htdigest.html \
+modules_validators_htpasswd.html \
+modules_validators_ldap.html \
+modules_validators_mysql.html \
+modules_validators_pam.html \
+modules_validators_plain.html \
+other.html \
+other_goodies.html \
+dev.html \
+dev_debug.html \
+dev_cherokee.conf.html
 
-dochandlersdir = $(docdir)handlers/
-dochandlers_DATA = \
-handlers/file.html \
-handlers/dirlist.html \
-handlers/common.html \
-handlers/redir.html \
-handlers/cgi.html \
-handlers/fastcgi.html \
-handlers/scgi.html
-
-docloggersdir = $(docdir)loggers/
-docloggers_DATA = \
-loggers/combined.html \
-loggers/ncsa.html \
-loggers/w3c.html
-
-docencodersdir = $(docdir)encoders/
-docencoders_DATA = \
-encoders/gzip.html
-
-docbalancersdir = $(docdir)balancers/
-docbalancers_DATA = \
-balancers/round_robin.html
-
-docvalidatorsdir = $(docdir)validators/
-docvalidators_DATA = \
-validators/htdigest.html \
-validators/htpasswd.html \
-validators/ldap.html \
-validators/mysql.html \
-validators/pam.html \
-validators/plain.html
-
-docmediacssdir = $(docdir)media/css/
+docmediacssdir = $(docdir)/media/css/
 docmediacss_DATA = \
-media/css/documentation.css
+media/css/cherokee_doc.css
 
-docmediaimagesdir = $(docdir)media/images/
+docmediaimagesdir = $(docdir)/media/images/
 docmediaimages_DATA = \
-media/images/admin_handler_fastcgi2.png \
-media/images/admin_index.png \
-media/images/admin_handler_fastcgi1.png \
-media/images/admin_vserver.png \
-media/images/admin_vserver_errors.png \
-media/images/admin_icons3.png \
-media/images/admin_handler_file.png \
-media/images/admin_behaviour.png \
-media/images/admin_launch.png \
-media/images/admin_vserver_loggers.png \
-media/images/admin_handler_cgi.png \
-media/images/admin_icons2.png \
-media/images/admin_general.png \
-media/images/admin_icons1.png \
-media/images/admin_encoding.png \
-media/images/admin_validators_plain.png \
-media/images/admin_validators_pam.png \
 media/images/admin_advanced.png \
-media/images/admin_handler_dirlist.png \
+media/images/admin_behaviour.png \
+media/images/admin_dirlist_cherokee.png \
+media/images/admin_encoding_gzip.png \
+media/images/admin_encoding.png \
+media/images/admin_general.png \
+media/images/admin_handler_admin.png \
+media/images/admin_handler_cgi.png \
 media/images/admin_handler_dirlist_ex.png \
+media/images/admin_handler_dirlist.png \
+media/images/admin_handler_fastcgi1.png \
+media/images/admin_handler_fastcgi2.png \
+media/images/admin_handler_file.png \
+media/images/admin_handler_onlylisting_ex.png \
 media/images/admin_handler_onlylisting.png \
-media/images/admin_handler_onlylisting_ex.png
-
-
-GENERATED_FILES = \
-$(doc_DATA) \
-$(dochandlers_DATA) \
-$(docloggers_DATA) \
-$(docvalidators_DATA) \
-$(docbalancers_DATA) \
-$(docencoders_DATA)
-
+media/images/admin_icons1.png \
+media/images/admin_icons2.png \
+media/images/admin_icons3.png \
+media/images/admin_index.png \
+media/images/admin_launch.png \
+media/images/admin_mime.png \
+media/images/admin_noconfig.png \
+media/images/admin_notrunning.png \
+media/images/admin_rule_regex.png \
+media/images/admin_validators_pam.png \
+media/images/admin_validators_plain.png \
+media/images/admin_vserver_errors.png \
+media/images/admin_vserver_loggers.png \
+media/images/admin_vserver.png \
+media/images/admin_vserver_vserver.png \
+media/images/cookbook_django_common.png \
+media/images/cookbook_django_scgi.png \
+media/images/cookbook_ror_common.png \
+media/images/cookbook_ror_fcgi.png \
+media/images/cookbook_mysql_rule.png \
+media/images/cookbook_mysql_validator.png \
+media/images/tracelor.png
 
 EXTRA_DIST = \
-$(GENERATED_FILES) \
+$(doc_DATA) \
 $(docmediacss_DATA) \
 $(docmediaimages_DATA)
-
-
-CLEANFILES = \
-$(GENERATED_FILES) 
-
-.NOTPARALLEL: $(GENERATED_FILES)
-$(GENERATED_FILES):
-	python $(top_srcdir)/doc/build_docs.py -v

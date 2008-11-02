@@ -201,6 +201,42 @@ cherokee_buffer_add_buffer (cherokee_buffer_t *buf, cherokee_buffer_t *buf2)
 
 
 ret_t
+cherokee_buffer_add_fsize (cherokee_buffer_t *buf, CST_SIZE size)
+{
+	ret_t       ret;
+	int         remain;
+	const char  ord[]  = "KMGTPE";
+	const char *o      = ord;
+
+	ret = cherokee_buffer_ensure_size (buf, buf->len + 8);
+	if (unlikely (ret != ret_ok)) 
+		return ret;
+
+	if (size < 973)
+		return cherokee_buffer_add_ulong10 (buf, (culong_t)size);
+
+	do {
+		remain = (int)(size & 1023);
+		size >>= 10;
+		if (size >= 973) {
+			++o;
+			continue;
+		}
+		if (size < 9 || (size == 9 && remain < 973)) {
+			if ((remain = ((remain * 5) + 256) / 512) >= 10)
+				++size, remain = 0;
+			return cherokee_buffer_add_va_fixed (buf, "%d.%d%c", (int) size, remain, *o);
+		}
+		if (remain >= 512)
+			++size;
+		return cherokee_buffer_add_va_fixed (buf, "%3d%c", (int) size, *o);
+	} while (1);
+	
+	return ret_ok;
+}
+
+
+ret_t
 cherokee_buffer_add_long10 (cherokee_buffer_t *buf, clong_t lNum)
 {
 	culong_t ulNum                 = (culong_t) lNum;
@@ -518,7 +554,8 @@ cherokee_buffer_add_va_list (cherokee_buffer_t *buf, char *format, va_list args)
 	/* At this point buf-size is always greater than buf-len, thus size > 0.
 	 */
 	if (len >= size) {
-		TRACE(ENTRIES, "Failed estimation=%d, needed=%d available size=%d\n", estimation, len, size);
+		PRINT_ERROR ("Failed estimation=%d, needed=%d available size=%d: %s\n", 
+			     estimation, len, size, format);
 
 		cherokee_buffer_ensure_size (buf, buf->len + len + 2);
 		size = buf->size - buf->len;
@@ -621,7 +658,7 @@ cherokee_buffer_prepend (cherokee_buffer_t *buf, char *txt, size_t size)
 
 
 int   
-cherokee_buffer_is_endding (cherokee_buffer_t *buf, char c)
+cherokee_buffer_is_ending (cherokee_buffer_t *buf, char c)
 {
 	if (cherokee_buffer_is_empty(buf))
 		return 0;
@@ -702,7 +739,7 @@ cherokee_buffer_ensure_size (cherokee_buffer_t *buf, size_t size)
 
 
 ret_t 
-cherokee_buffer_drop_endding (cherokee_buffer_t *buffer, cuint_t num_chars)
+cherokee_buffer_drop_ending (cherokee_buffer_t *buffer, cuint_t num_chars)
 {
 	int num;
 
@@ -788,10 +825,15 @@ cherokee_buffer_remove_string (cherokee_buffer_t *buf, char *string, int string_
 
 
 ret_t 
-cherokee_buffer_remove_chunk (cherokee_buffer_t *buf, int from, int len)
+cherokee_buffer_remove_chunk (cherokee_buffer_t *buf, cuint_t from, cuint_t len)
 {
 	char *end;
 	char *begin;
+
+	if (len == buf->len) {
+		cherokee_buffer_clean (buf);
+		return ret_ok;
+	}
 
 	begin = buf->buf + from;
 	end   = begin + len;
@@ -939,14 +981,18 @@ cherokee_buffer_read_from_fd (cherokee_buffer_t *buf, int fd, size_t size, size_
 		/* On error
 		 */
 		switch (errno) {
-		case EINTR:      return ret_eagain;
-		case EAGAIN:     return ret_eagain;
+		case EINTR:
+		case EAGAIN:
 #if defined(EWOULDBLOCK) && (EWOULDBLOCK != EAGAIN)
-		case EWOULDBLOCK:return ret_eagain;
+		case EWOULDBLOCK:
 #endif
-		case EPIPE:      return ret_eof;
-		case ECONNRESET: return ret_eof;
-		case EIO:        return ret_error;
+			return ret_eagain;
+		case EPIPE:
+		case EBADF:
+		case ECONNRESET:
+			return ret_eof;
+		case EIO:
+			return ret_error;
 		}
 
 		PRINT_ERRNO (errno, "read(%d, %u,..): '${errno}'", fd, size);
@@ -1250,7 +1296,7 @@ cherokee_buffer_decode_base64 (cherokee_buffer_t *buf)
 	 * "A-Za-z0-9+/".
 	 */
 
-	static const char
+	static const signed char
 		b64_decode_tab[256] = {
 			-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,  /* 00-0F */
 			-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,  /* 10-1F */
@@ -1555,19 +1601,25 @@ cherokee_buffer_add_chunked (cherokee_buffer_t *buf, char *txt, size_t size)
 {
 	ret_t ret;
 
-	ret = cherokee_buffer_add_str    (buf, "0x");
+        /* Chunk format (simplified):
+	 *
+	 * <HEX SIZE> [ chunk extension ] CRLF
+	 * <DATA> CRLF
+	 */
+
+	ret = cherokee_buffer_add_ulong16 (buf, (culong_t)size);
 	if (unlikely (ret < ret_ok))
 		return ret_ok;
 
-	ret = cherokee_buffer_add_ulong16(buf, (culong_t) size);
+	ret = cherokee_buffer_add_str (buf, CRLF);
 	if (unlikely (ret < ret_ok))
 		return ret_ok;
 
-	ret = cherokee_buffer_add_str    (buf, CRLF);
+	ret = cherokee_buffer_add (buf, txt, size);
 	if (unlikely (ret < ret_ok))
 		return ret_ok;
 
-	return cherokee_buffer_add (buf, txt, size);
+	return cherokee_buffer_add_str (buf, CRLF);
 }
 
 
@@ -1830,6 +1882,23 @@ cherokee_buffer_trim (cherokee_buffer_t *buf)
 
 	buf->len = len;
 	buf->buf[len] = '\0';
+
+	return ret_ok;
+}
+
+
+ret_t
+cherokee_buffer_to_lowcase (cherokee_buffer_t *buf)
+{
+	char    c;
+	cuint_t i;
+
+	for (i=0; i<buf->len; i++) {
+		c = buf->buf[i];
+		if ((c >= 'A') && (c <= 'Z')) {
+			buf->buf[i] = c + ('a'-'A');
+		}
+	}
 
 	return ret_ok;
 }

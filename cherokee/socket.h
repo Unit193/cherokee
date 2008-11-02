@@ -65,7 +65,7 @@
 
 #include "buffer.h"
 #include "virtual_server.h"
-
+#include "fdpoll.h"
 
 #ifdef INET6_ADDRSTRLEN
 # define CHE_INET_ADDRSTRLEN INET6_ADDRSTRLEN
@@ -81,13 +81,18 @@
 # define AF_LOCAL AF_UNIX
 #endif
 
+#ifndef SUN_LEN
+#define SUN_LEN(sa)						\
+	(strlen((sa)->sun_path) +				\
+	 (size_t)(((struct sockaddr_un*)0)->sun_path))
+#endif
 
 /* Socket status
  */
 typedef enum {
-	socket_reading = 0,
-	socket_writing,
-	socket_closed
+	socket_reading = FDPOLL_MODE_READ,
+	socket_writing = FDPOLL_MODE_WRITE,
+	socket_closed  = FDPOLL_MODE_NONE
 } cherokee_socket_status_t;
 
 
@@ -203,6 +208,7 @@ ret_t cherokee_socket_ntop              (cherokee_socket_t *socket, char *buf, s
 ret_t cherokee_socket_pton              (cherokee_socket_t *socket, cherokee_buffer_t *buf);
 ret_t cherokee_socket_gethostbyname     (cherokee_socket_t *socket, cherokee_buffer_t *hostname);
 ret_t cherokee_socket_set_status        (cherokee_socket_t *socket, cherokee_socket_status_t status);
+ret_t cherokee_socket_set_cork          (cherokee_socket_t *socket, cherokee_boolean_t enable);
 
 /* Low level functions
  */

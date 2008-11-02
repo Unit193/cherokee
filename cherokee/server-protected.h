@@ -58,28 +58,16 @@
 
 
 struct cherokee_server {
-	/* Current time
-	 */
-	time_t                       start_time;
-	time_t                       bogo_now;
-	struct tm                    bogo_now_tmloc;
-	struct tm                    bogo_now_tmgmt;
-	int                          bogo_now_tzloc_sign;
-	cuint_t                      bogo_now_tzloc_offset;
-	cherokee_buffer_t            bogo_now_strgmt;
-	CHEROKEE_RWLOCK_T           (bogo_now_mutex);
-
 	/* Exit related
 	 */
-	cherokee_buffer_t            panic_action;
-	cherokee_boolean_t           wanna_exit;
-	cherokee_boolean_t           wanna_reinit;
-	cherokee_server_reinit_cb_t  reinit_callback;
+	time_t                     start_time;
+	cherokee_buffer_t          panic_action;
+	cherokee_boolean_t         wanna_exit;
+	cherokee_boolean_t         wanna_reinit;
 	
 	/* Virtual servers
 	 */
 	cherokee_list_t            vservers;
-	cherokee_virtual_server_t *vserver_default;
 	
 	/* Threads
 	 */
@@ -97,9 +85,6 @@ struct cherokee_server {
 	 */
 	cherokee_regex_table_t    *regexs;
 	cherokee_nonce_table_t    *nonces;
-
-	cherokee_iocache_t        *iocache;
-	time_t                     iocache_clean_next;
 
 	/* Logging
 	 */
@@ -121,7 +106,6 @@ struct cherokee_server {
 	int                        fdlimit_custom;
 	int                        fdlimit_available;
 	int                        fdlimit_per_thread;
-
 	cherokee_poll_type_t       fdpoll_method;
 
 	/* Connection related
@@ -130,6 +114,9 @@ struct cherokee_server {
 	cint_t                     conns_reuse_max;
 	cuint_t                    conns_keepalive_max;
 	cuint_t                    conns_num_bogo;
+
+	cherokee_boolean_t         keepalive;
+	cuint_t                    keepalive_max;
 
 	/* Networking config
 	 */
@@ -141,7 +128,6 @@ struct cherokee_server {
 	unsigned short             port;
 	unsigned short             port_tls;
 	cherokee_boolean_t         tls_enabled;
-	cherokee_buffer_t          unix_socket;
 
 	/* Server name
 	 */
@@ -166,14 +152,12 @@ struct cherokee_server {
 	 */
 	cherokee_mime_t           *mime;
 	cherokee_icons_t          *icons;
+	cherokee_iocache_t        *iocache;
 
 	/* Time related
 	 */
 	int                        timeout;
 	cherokee_buffer_t          timeout_header;
-
-	cherokee_boolean_t         keepalive;
-	uint32_t                   keepalive_max;
 
 	struct {
 		off_t min;

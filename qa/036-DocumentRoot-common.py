@@ -3,10 +3,10 @@ from base import *
 MAGIC = "This_is_the_magic_key"
 
 CONF = """
-vserver!default!rule!360!match = directory
-vserver!default!rule!360!match!directory = /dr_common
-vserver!default!rule!360!handler = common
-vserver!default!rule!360!document_root = %s
+vserver!1!rule!360!match = directory
+vserver!1!rule!360!match!directory = /dr_common
+vserver!1!rule!360!handler = common
+vserver!1!rule!360!document_root = %s
 """
 
 class Test (TestBase):

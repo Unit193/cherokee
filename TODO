@@ -1,18 +1,15 @@
 Cherokee Web Server road map 
 ============================
 
-0.7.0
------
-[ ] Make cherokee-admin friendlier 
-[ ] New header 'entry'
-
 0.8.0
 -----
 [ ] Mime encodings separated from mime types
-[ ] Chuncked encoding
+[x] Chuncked encoding
+[x] GeoIP rule
 
 0.9.0
 -----
+[ ] Plug-in loader: plug-in inter-dependencies
 [ ] full signal handling
 [ ] flexible internal error reporting (to syslog?)
 [ ] HTTP/1.0 speed up (not high priority)
@@ -20,17 +17,15 @@ Cherokee Web Server road map
 
 Later
 -----
-[ ] X-Sendfile
+[x] X-Sendfile
 [ ] WSGI handler
 [ ] Upload progress module
 [ ] mod_evasive
-[ ] New header entry
 [ ] AJPv13 handler
 [ ] WebDAV handler
 [ ] Generic caching (HTTP-Cache)
 [ ] AIO based fdpoll
 [ ] Memcached support
-[ ] Chuncked encoding
 [ ] Dtrace hooks
 [ ] priv.h on Solaris
 [ ] Language support (handler?)
