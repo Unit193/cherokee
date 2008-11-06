@@ -6,6 +6,8 @@ Uploaders: Alvaro Lopez Ortega <alvaro@gnu.org>
 Build-Depends: bison, flex, debhelper (>= 4.0.0), libgnutls-dev, autotools-dev, sharutils, libpam0g-dev, quilt, python-support
 Standards-Version: 3.8.0
 Homepage: http://cherokee-project.org/
+Vcs-Git: git://git.debian.org/git/collab-maint/cherokee.git
+Vcs-Browser: http://git.debian.org/git/collab-maint/cherokee.git
 
 Package: cherokee
 Architecture: any

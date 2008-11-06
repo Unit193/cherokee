@@ -1,3 +1,10 @@
+cherokee (0.10.1-2) unstable; urgency=low
+
+  * Added Vcs-Git and Vcs-Browser fields - Yes, this package is now
+    maintained in a proper VCS (-:
+
+ -- Gunnar Wolf <gwolf@debian.org>  Thu, 06 Nov 2008 00:48:10 -0600
+
 cherokee (0.10.1-1) unstable; urgency=low
 
   * New Upstream Version
