@@ -29,12 +29,12 @@ PIDFILE=/var/run/cherokee.pid
 
 case "$1" in
   start)	
-	echo -n "Starting web server: $NAME "
+	printf "Starting web server: %s\t" "$NAME"
 	start-stop-daemon --start --oknodo --pidfile $PIDFILE --exec $DAEMON -b
 	;;
 
   stop)
-	echo -n "Stopping web server: $NAME "
+	printf "Stopping web server: %s\t" "$NAME"
 	start-stop-daemon --stop --oknodo --pidfile $PIDFILE --exec $DAEMON
 	rm -f $PIDFILE
 	;;
@@ -46,7 +46,7 @@ case "$1" in
 	;;
 
   reload|force-reload)
-	echo -n "Reloading web server: $NAME"
+	printf "Reloading web server: %s\t" "$NAME"
 	if [ -f $PIDFILE ]
 	    then
 	    PID=$(cat $PIDFILE)
@@ -69,23 +69,23 @@ case "$1" in
 	# http://www.freestandards.org/spec/refspecs/LSB_1.3.0/gLSB/gLSB/iniscrptact.html
 	# http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=208010
 	# ...So we just inform to the invoker and return success.
-	echo -n "$NAME web server status: "
+	printf "%s web server status:\t" "$NAME"
 	if [ -e $PIDFILE ] ; then
 	    PROCNAME=$(ps -p $(cat $PIDFILE) -o comm=)
 	    if [ "x$PROCNAME" = "x" ]; then
-		echo -n "Not running, but PID file present"
+		printf "Not running, but PID file present \t"
 	    else
 		if [ "$PROCNAME" = "$NAME" ]; then
-		    echo -n "Running"
+		    printf "Running\t"
 		else
-		    echo -n "PID file points to process '$PROCNAME', not '$NAME'"
+		    printf "PID file points to process '%s', not '%s'\t" "$PROCNAME" "$NAME"
 		fi
 	    fi
 	else
 	    if PID=$(pidofproc cherokee); then
-		echo -n "Running (PID $PID), but PIDFILE not present"
+		printf "Running (PID %s), but PIDFILE not present\t" "$PID"
 	    else
-		echo -n "Not running"
+		printf "Not running\t"
 	    fi
 	fi
 	;;

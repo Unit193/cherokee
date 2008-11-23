@@ -2,8 +2,10 @@ cherokee (0.10.1-2) unstable; urgency=low
 
   * Added Vcs-Git and Vcs-Browser fields - Yes, this package is now
     maintained in a proper VCS (-:
+  * Changing the initscript's "echo -n" calls to "printf", for better
+    shell portability (thanks to Tim Post)
 
- -- Gunnar Wolf <gwolf@debian.org>  Thu, 06 Nov 2008 00:48:10 -0600
+ -- Gunnar Wolf <gwolf@debian.org>  Sun, 23 Nov 2008 10:31:02 -0600
 
 cherokee (0.10.1-1) unstable; urgency=low
 
