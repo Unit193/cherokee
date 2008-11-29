@@ -1,3 +1,5 @@
+# Moves the default logging location to its own directory
+#
 Index: cherokee-0.9.0/cherokee.conf.sample.pre
 ===================================================================
 --- cherokee-0.9.0.orig/cherokee.conf.sample.pre	2008-09-22 11:58:34.000000000 -0500

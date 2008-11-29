@@ -1,3 +1,4 @@
+# Fixes a bug that led easily to a failed migration
 Index: cherokee-0.6.1/contrib/05to06.py
 ===================================================================
 --- cherokee-0.6.1.orig/contrib/05to06.py	2008-04-14 10:15:42.000000000 -0500

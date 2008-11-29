@@ -1,3 +1,5 @@
+# Move manpage to the right section
+#
 Index: cherokee-0.9.0/cherokee-admin.1
 ===================================================================
 --- cherokee-0.9.0.orig/cherokee-admin.1	2008-09-22 07:16:01.000000000 -0500

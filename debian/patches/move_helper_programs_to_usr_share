@@ -1,3 +1,6 @@
+# All programs meant to be called by other components of Cherokee (and
+# not by a human) should go into /usr/share/cherokee, not /usr/bin
+#
 Index: cherokee-0.9.0/performance.conf.sample.pre
 ===================================================================
 --- cherokee-0.9.0.orig/performance.conf.sample.pre	2008-09-17 08:43:21.000000000 -0500
