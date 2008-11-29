@@ -36,9 +36,9 @@ DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/etr_socket_nsl.m4 \
 	$(top_srcdir)/m4/libwww.m4 $(top_srcdir)/m4/mysql.m4 \
-	$(top_srcdir)/m4/network.m4 $(top_srcdir)/m4/pkg.m4 \
-	$(top_srcdir)/m4/pwd_grp.m4 $(top_srcdir)/m4/sendfile_samba.m4 \
-	$(top_srcdir)/acinclude.m4 $(top_srcdir)/configure.in
+	$(top_srcdir)/m4/network.m4 $(top_srcdir)/m4/pwd_grp.m4 \
+	$(top_srcdir)/m4/sendfile_samba.m4 $(top_srcdir)/acinclude.m4 \
+	$(top_srcdir)/configure.in
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(install_sh) -d
@@ -82,8 +82,6 @@ ETR_SOCKET_LIBS = @ETR_SOCKET_LIBS@
 EXEEXT = @EXEEXT@
 F77 = @F77@
 FFLAGS = @FFLAGS@
-GNUTLS_CFLAGS = @GNUTLS_CFLAGS@
-GNUTLS_LIBS = @GNUTLS_LIBS@
 GREP = @GREP@
 HaveRtldGlobal = @HaveRtldGlobal@
 HaveRtldLocal = @HaveRtldLocal@
@@ -122,14 +120,12 @@ PACKAGE_TARNAME = @PACKAGE_TARNAME@
 PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
 PHPCGI = @PHPCGI@
-PKG_CONFIG = @PKG_CONFIG@
 PTHREAD_CFLAGS = @PTHREAD_CFLAGS@
 PTHREAD_LIBS = @PTHREAD_LIBS@
 RANLIB = @RANLIB@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
 STRIP = @STRIP@
-TLS_CFLAGS = @TLS_CFLAGS@
 TLS_LIBS = @TLS_LIBS@
 VERSION = @VERSION@
 WWW_ROOT = @WWW_ROOT@
@@ -367,7 +363,23 @@ run-tests.py \
 172-Chunked-CGI.py \
 173-Chunked-SCGI.py \
 174-Respins-Limit.py \
-175-Digest-htdigest-2.py
+175-Digest-htdigest-2.py \
+176-AuthLista1.py \
+177-AuthLista2.py \
+178-AuthLista3.py \
+179-RuleExists.py \
+180-RuleExists2.py \
+181-RuleExists3.py \
+182-SSI-include-file.py \
+183-SSI-include-virtual.py \
+184-SSI-fsize-file.py \
+185-SSI-fsize-virtual.py \
+186-SSI-droot.py \
+187-Method.py \
+188-Method2.py \
+189-Redir9.py \
+190-RuleExists4.py \
+191-RuleExists5.py
 
 all: all-am
 

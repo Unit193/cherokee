@@ -55,6 +55,7 @@
 #include <errno.h>
 
 #include <cherokee/buffer.h>
+#include <cherokee/iocache.h>
 
 CHEROKEE_BEGIN_DECLS
 
@@ -75,12 +76,14 @@ CHEROKEE_BEGIN_DECLS
 # define cherokee_mkdir(path,perm) mkdir(path,perm)
 #endif
 
-/* Some global information
+/* Missing functions
  */
-
-/* System
- */
-ret_t cherokee_tls_init (void);
+#ifndef HAVE_STRNSTR
+char *strnstr (const char *s, const char *find, size_t slen);
+#endif
+#ifndef HAVE_STRCASESTR
+char *strcasestr (register char *s, register char *find);
+#endif
 
 /* String management functions
  */
@@ -92,6 +95,9 @@ size_t  cherokee_strlcat            (char *dst, const char *src, size_t siz);
 int     cherokee_estimate_va_length (char *format, va_list ap);
 long    cherokee_eval_formated_time (cherokee_buffer_t *buf);  
 ret_t   cherokee_fix_dirpath        (cherokee_buffer_t *buf);
+ret_t   cherokee_find_header_end    (cherokee_buffer_t  *buf,
+				     char              **end,
+				     cuint_t            *sep_len);
 
 /* Time management functions
  */
@@ -108,6 +114,13 @@ ret_t cherokee_getpwnam      (const char *name, struct passwd *pwbuf, char *buf,
 ret_t cherokee_getgrnam      (const char *name, struct group *pwbuf, char *buf, size_t buflen);
 ret_t cherokee_mkstemp       (cherokee_buffer_t *buffer, int *fd);
 ret_t cherokee_mkdir_p       (cherokee_buffer_t *path);
+
+ret_t cherokee_io_stat       (cherokee_iocache_t        *iocache, 
+			      cherokee_buffer_t         *path, 
+			      cherokee_boolean_t         useit, 
+			      struct stat               *info_space, 
+			      cherokee_iocache_entry_t **io_entry,
+			      struct stat              **info);
 
 /* File descriptors
  */
@@ -155,6 +168,8 @@ ret_t cherokee_split_arguments    (cherokee_buffer_t *request,
 
 ret_t cherokee_parse_query_string (cherokee_buffer_t *qstring, 
 				   cherokee_avl_t  *arguments);
+
+char *cherokee_header_get_next_line (char *line);
 
 CHEROKEE_END_DECLS
 

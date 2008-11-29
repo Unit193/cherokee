@@ -16,8 +16,10 @@ class Test (TestCollection):
     def __init__ (self):
         TestCollection.__init__ (self)
 
-        self.name = "HTTP Methods"
-        self.conf = CONF
+        self.name           = "HTTP Methods"
+        self.conf           = CONF
+        self.proxy_suitable = True
+
 
     def Prepare (self, www):
 
@@ -68,7 +70,7 @@ class Test (TestCollection):
 
         obj = self.Add (TestEntry())
         obj.request = "UNLOCK /methods_group/myfile.doc HTTP/1.1\r\n" +\
-                      "Host: www.contoso.com\r\n" +\
+                      "Host: www.example.com\r\n" +\
                       "Connection: Close\r\n" + \
                       "Lock-Token: <opaquelocktoken:e71d4fae-5dec-22df-fea5-00a0c93bd5eb1>\r\n"
 

@@ -191,7 +191,7 @@ def is_ip_or_netmask (value):
     parts = value.split('/')
     if len(parts) != 2:
         raise ValueError, 'Malformed entry (netmask)'
-    
+
     ip = is_ip (parts[0])
     nm = is_netmask (parts[1])
 
@@ -211,7 +211,7 @@ def is_not_empty (value):
 
 def debug_fail (value):
     raise ValueError, 'Forced failure'
-    
+
 def is_regex (value):
     # Can a regular expression be checked?
     return value
@@ -230,4 +230,7 @@ def is_url_or_path (value):
 
     raise ValueError, 'Not a URL, nor a path'
 
-
+def is_dev_null_or_local_dir_exists (value, cfg):
+    if value == '/dev/null':
+        return value
+    return is_local_dir_exists (value, cfg)

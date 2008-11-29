@@ -18,7 +18,7 @@
 <div class="para"><p>The <tt>Fixed list</tt> validator, also known as <tt>Authlist</tt>, uses fixed
 authentication lists of user-password pairs. As many pairs as needed
 can be provided.</p></div>
-<h4 id="_parameters">Parameters</h4>
+<h4 id="parameters">Parameters</h4>
 <div class="tableblock">
 <table rules="rows"
 frame="hsides"
@@ -41,7 +41,7 @@ cellspacing="0" cellpadding="4">
     <em>user</em>         
     </td>
     <td align="left">
-    Required. The location of the user/pass file.
+    Required. Username.
     </td>
   </tr>
   <tr>
@@ -49,13 +49,15 @@ cellspacing="0" cellpadding="4">
     <em>password</em>     
     </td>
     <td align="left">
-    Required. The location of the user/pass file.
+    Required. Password.
     </td>
   </tr>
 </tbody>
 </table>
 </div>
-<h4 id="_compatibility">Compatibility</h4>
+<div class="para"><p>The parameters can be repeated, but must be provided in user-password
+pairs.</p></div>
+<h4 id="compatibility">Compatibility</h4>
 <div class="para"><p>This validator is compatible with both <strong>basic</strong> and <strong>digest</strong> schemes.</p></div>
 </div>
 <div id="footer">

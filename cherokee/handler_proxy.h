@@ -25,49 +25,66 @@
 #ifndef CHEROKEE_HANDLER_PROXY_H
 #define CHEROKEE_HANDLER_PROXY_H
 
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
-
 #include "common-internal.h"
-#include "handler.h"
-#include "downloader.h"
-#include "downloader-protected.h"
-#include "plugin_loader.h"
 #include "buffer.h"
+#include "handler.h"
 #include "connection.h"
+#include "plugin_loader.h"
+#include "proxy_hosts.h"
 #include "balancer.h"
+#include "http.h"
+#include "header-protected.h"
 
 /* Data types
  */
+
+typedef enum {
+	proxy_init_start,
+	proxy_init_get_conn,
+	proxy_init_preconnect,
+	proxy_init_connect,
+	proxy_init_build_headers,
+	proxy_init_send_headers,
+	proxy_init_send_post,
+	proxy_init_read_header
+} cherokee_handler_proxy_init_phase_t;
+
 typedef struct {
-	cherokee_module_props_t    base;
-	cherokee_balancer_t       *balancer;
+	cherokee_module_props_t         base;
+	cherokee_balancer_t            *balancer;
+	cherokee_handler_proxy_hosts_t  hosts;
+	cuint_t                         reuse_max;
+	cherokee_avl_t                  headers_hide;
+	cherokee_list_t                 headers_add;
+	cherokee_list_t                 request_regexs;
 } cherokee_handler_proxy_props_t;
 
 typedef struct {
-	cherokee_handler_t       handler;	
-	cherokee_downloader_t    downloader;
-	cherokee_buffer_t        url;
+	cherokee_handler_t                   handler;
+	cherokee_buffer_t                    buffer;
+	cherokee_buffer_t                    request;
+	cherokee_source_t                   *src_ref;
+	cherokee_handler_proxy_conn_t       *pconn;
+	cherokee_buffer_t                    tmp;
+	cherokee_boolean_t                   respined;
+
+	cherokee_handler_proxy_init_phase_t  init_phase;
 } cherokee_handler_proxy_t;
 
-#define PROP_PROXY(x)      ((cherokee_handler_proxy_props_t *)(x))
 #define HDL_PROXY(x)       ((cherokee_handler_proxy_t *)(x))
-#define HDL_PROXY_PROPS(x) (PROP_PROXY(HANDLER(x)->props))
-#define HDL_PROXY_HANDLER(x)  ( &((x)->handler) )
+#define PROP_PROXY(x)      ((cherokee_handler_proxy_props_t *)(x))
+#define HDL_PROXY_PROPS(x) (PROP_PROXY(MODULE(x)->props))
 
 
 /* Library init function
  */
-void  PLUGIN_INIT_NAME(proxy)    (cherokee_plugin_loader_t *loader);
-ret_t cherokee_handler_proxy_new (cherokee_handler_t **hdl, cherokee_connection_t *cnt, cherokee_module_props_t *props);
+void  PLUGIN_INIT_NAME(proxy)      (cherokee_plugin_loader_t *loader);
+ret_t cherokee_handler_proxy_new   (cherokee_handler_t **hdl, cherokee_connection_t *cnt, cherokee_module_props_t *props);
 
-
-/* Virtual methods
+/* virtual methods implementation
  */
 ret_t cherokee_handler_proxy_init        (cherokee_handler_proxy_t *hdl);
 ret_t cherokee_handler_proxy_free        (cherokee_handler_proxy_t *hdl);
-void  cherokee_handler_proxy_get_name    (cherokee_handler_proxy_t *hdl, const char **name);
 ret_t cherokee_handler_proxy_step        (cherokee_handler_proxy_t *hdl, cherokee_buffer_t *buffer);
 ret_t cherokee_handler_proxy_add_headers (cherokee_handler_proxy_t *hdl, cherokee_buffer_t *buffer);
 

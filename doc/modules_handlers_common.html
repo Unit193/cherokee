@@ -23,18 +23,18 @@ on whether it replies a request for a directory or a file.</p></div>
 <a href="modules_handlers_dirlist.html">Listing Only</a> handler in order to
 list its contents. And, in case a file is request, it will use the
 <a href="modules_handlers_file.html">File Sending</a> handler.</p></div>
-<h3 id="_parameters">Parameters</h3><div style="clear:left"></div>
+<h3 id="parameters">Parameters</h3><div style="clear:left"></div>
 <div class="tableblock">
 <table rules="rows"
 frame="hsides"
 cellspacing="0" cellpadding="4">
-<col width="150" />
+<col width="200" />
 <col width="125" />
-<col width="525" />
+<col width="475" />
 <thead>
   <tr>
     <th align="left">
-    Parameters  
+    Parameters      
     </th>
     <th align="left">
     Type    
@@ -47,13 +47,24 @@ cellspacing="0" cellpadding="4">
 <tbody valign="top">
   <tr>
     <td align="left">
-    <tt>PathInfo</tt>  
+    <tt>allow_pathinfo</tt>
     </td>
     <td align="left">
     boolean 
     </td>
     <td align="left">
-    Makes the handler to stop parsing the                         pathinfo string. Default: <tt>Disabled</tt>.
+    Makes the handler to stop parsing the                             pathinfo string. Default: <tt>Disabled</tt>.
+    </td>
+  </tr>
+  <tr>
+    <td align="left">
+    <tt>allow_dirlist</tt> 
+    </td>
+    <td align="left">
+    boolean 
+    </td>
+    <td align="left">
+    Enables showing the contents of a directory.
     </td>
   </tr>
 </tbody>
@@ -79,7 +90,7 @@ This example shows the practical effect of <strong>pathinfo</strong>
 </div></div>
 </dd>
 </dl></div>
-<h3 id="_examples">Examples</h3><div style="clear:left"></div>
+<h3 id="examples">Examples</h3><div style="clear:left"></div>
 <div class="para"><p>This configuration</p></div>
 <div class="imageblock">
 <div class="content">

@@ -1,6 +1,7 @@
 body {
- font-family: helvetica, arial, sans-serif;
- font-size: small;
+ font-family: tahoma, helvetica, arial, sans-serif;
+ font-size:10pt;
+ color: #91928d;
 }
 
 /* Debug borders */
@@ -29,10 +30,12 @@ div.verseblock div.content {
 /* Workarounds for IE6's broken and incomplete CSS2. */
 
 div.sidebar-content {
-  background: #ffffee;
-  border: 1px solid silver;
+  _background: f#fffee;
+  border: 1px solid #ecede8;
   padding: 0.5em;
+  color: #205cab;
 }
+
 div.sidebar-title, div.image-title {
   font-family: sans-serif;
   font-weight: bold;
@@ -60,17 +63,17 @@ div#toc a:visited { color: blue; }
 
 a {
   text-decoration: underline;
-  color: navy;
+  color: #205cab;
 }
 
 a:visited {
   text-decoration: underline;
-  color: navy;
+  color: #205cab;
 }
 
 em {
   font-style: italic;
-  color: navy;
+  color: #205cab;
 }
 
 strong {
@@ -79,7 +82,9 @@ strong {
 }
 
 tt {
-  color: navy;
+  color: #205cab;
+  _font-size: 1.2em;
+  font-weight: bold;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -94,9 +99,6 @@ h1, h2, h3 {
   border-bottom: 1px solid silver;
 }
 
-h2 {
-  _padding-top: 0.5em;
-}
 h3 {
   float: left;
 }
@@ -159,11 +161,12 @@ div#preamble,
 div.imageblock, div.exampleblock, div.verseblock,
 div.quoteblock, div.literalblock, div.listingblock, div.sidebarblock,
 div.admonitionblock {
-//  margin-left: 10%;
-//  margin-right: 10%;
-//  margin-top: 1.5em;
+/*
+  margin-left: 10%;
+  margin-right: 10%;
+  margin-top: 1.5em;
   margin-bottom: 1.5em;
-
+*/
 }
 
 div.tableblock {
@@ -285,6 +288,12 @@ ul, ol {
 div.olist > ol {
   list-style-type: decimal;
 }
+
+.olist a {
+  text-decoration: none;
+  color: #205cab;
+}
+
 div.olist2 > ol {
   list-style-type: lower-alpha;
 }
@@ -292,6 +301,7 @@ div.olist2 > ol {
 div.tableblock > table {
   border: 1px solid #527bbd;
 }
+
 thead {
   font-family: sans-serif;
   font-weight: bold;
@@ -363,7 +373,77 @@ div.toclevel4 {
   background:#f6f6f6;
 }
 
-/*Navigation bar*/
-#nav_bar {
 
+/* Cherokee 0.11: New looks */
+.sidebar-content .vlist dl dd {
+    display: block;
+    background-color: #f3f3f3;
+    margin-top: 10px;
+    margin-right: 20px;
+    margin-left: 20px;
+    padding-top: 10px;
+    padding-right: 10px;
+    padding-left: 10px;
+    padding-bottom: 5px;
+    font-family: monospace;
+    color: #91928d;
+    font-size: 9pt;
 }
+
+.sidebar-content .vlist dd .hlist .hlist1 {
+    padding-bottom: 0px;
+}
+
+.sidebar-content .vlist dd .hlist .hlist2 {
+    padding-bottom: 0px;
+}
+
+.sidebar-content .vlist dl dd .vlist dl dd {
+    padding-top: 0px;
+    padding-bottom: 0px;
+}
+
+.sidebar-content .vlist dl dt {
+    padding-top: 5px;
+}
+
+.sidebar-content .para {
+    font-style: italic;
+    font-weight: bold;
+}
+
+.sidebar-content .para a {
+    font-style: normal;
+    text-decoration: none;
+}
+
+h2 a {
+    font-style: italic;
+}
+
+h2 {
+    color: #205cab;
+    width: 100%;
+    margin-left: -20px;
+    margin-right: auto;
+    border: 1px solid #ecede8;
+    padding-left: 20px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    color: #5e5e5c;
+    font-size: 16pt;
+    font-weight: bold;
+    letter-spacing: -1px;
+}
+
+.sectionbody .ilist li p ,
+.sectionbody .olist li p {
+    line-height:140%;
+    margin:0;
+    text-decoration: none;
+}
+
+#main {
+    font-size:10pt;
+}
+

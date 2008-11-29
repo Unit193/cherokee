@@ -62,11 +62,14 @@ ModuleCgi.py \
 ModuleFcgi.py \
 ModuleScgi.py \
 ModuleBalancer.py \
+ModuleSsi.py \
+ModuleProxy.py \
 ModuleMirror.py \
 ModuleDbslayer.py \
 ModuleErrorNn.py \
 ModuleErrorRedir.py \
 ModuleAuth.py \
+ModuleAuthlist.py \
 ModuleAdmin.py \
 ModuleHtdigest.py \
 ModuleLdap.py \
@@ -81,6 +84,8 @@ ModuleDirectory.py \
 ModuleExtensions.py \
 ModuleGeoip.py \
 ModuleHeader.py \
+ModuleExists.py \
+ModuleMethod.py \
 ModuleCustomError.py \
 config.py \
 pyscgi.py \

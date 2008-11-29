@@ -56,8 +56,7 @@
 #include <sys/stat.h>
 #include <time.h>
 
-/* Don't need unix4win32_errno.h anymore. Only these errors
- * are needed.
+/* sys/errno.h
  */
 #define EWOULDBLOCK   WSAEWOULDBLOCK
 #define EAFNOSUPPORT  WSAEAFNOSUPPORT
@@ -66,6 +65,10 @@
 #define ECONNREFUSED  WSAECONNREFUSED
 #define EHOSTUNREACH  WSAEHOSTUNREACH
 #define ENOTSOCK      WSAENOTSOCK
+#define EISCONN       WSAEISCONN
+#define EADDRNOTAVAIL WSAEADDRNOTAVAIL
+#define EALREADY      WSAEALREADY
+#define EINPROGRESS   WSAEINPROGRESS
 
 /* syslog.h
  */
@@ -175,6 +178,17 @@ void       *win_dlopen  (const char *dll_name, int flags);
 void       *win_dlsym   (const void *dll_handle, const char *func_name);
 int         win_dlclose (const void *dll_handle);
 const char *win_dlerror (void);
+
+/* Processes
+ */
+#define waitpid(pid,s,o) _cwait (statusp, pid, WAIT_CHILD)
+#define WAIT_T           int
+#define WTERMSIG(x)      ((x) & 0xff)        /* or: SIGABRT ?? */
+#define WCOREDUMP(x)     0
+#define WEXITSTATUS(x)   (((x) >> 8) & 0xff) /* or: (x) ?? */
+#define WIFSIGNALED(x)   (WTERMSIG (x) != 0) /* or: ((x) == 3) ?? */
+#define WIFEXITED(x)     (WTERMSIG (x) == 0) /* or: ((x) != 3) ?? */
+#define WIFSTOPPED(x)    0
 
 /* Unix mmap() emulation
  */

@@ -20,7 +20,7 @@ NOTE_EXPIRATION_TIME = "How long from the object can be cached.<br />" + \
                        "The <b>m</b>, <b>h</b>, <b>d</b> and <b>w</b> suffixes are allowed for minutes, hours, days, and weeks. Eg: 2d."
 
 DATA_VALIDATION = [
-    ("vserver!.*?!rule!(\d+)!document_root", (validations.is_local_dir_exists, 'cfg')),
+    ("vserver!.*?!rule!(\d+)!document_root", (validations.is_dev_null_or_local_dir_exists, 'cfg')),
     ("vserver!.*?!rule!(\d+)!allow_from",     validations.is_ip_or_netmask_list)
 ]
 
@@ -94,6 +94,11 @@ class PageEntry (PageMenu, FormHelper):
         checks = ["%s!only_secure"%(self._conf_prefix)]
         for e,e_name in modules_available(ENCODERS):
             checks.append ('%s!encoder!%s' % (self._conf_prefix, e))
+
+        _type       = self._cfg.get_val('%s!match'%(self._conf_prefix))        
+        rule_module = module_obj_factory (_type, self._cfg, self._conf_prefix, self.submit_url)
+        if 'checks' in dir(rule_module):
+            checks += rule_module.checks
 
         # Apply changes
         self.ApplyChanges (checks, post, DATA_VALIDATION)

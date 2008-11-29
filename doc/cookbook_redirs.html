@@ -36,7 +36,7 @@ example, this could manage <em>*.example.net</em> and the <em>.com</em> and
 <img src="media/images/cookbook_redir_domains.png" alt="Managed domains" title="Managed domains"/>
 </div>
 </div>
-<div class="para"><p>The official name name would then be managed by another virtual host
+<div class="para"><p>The official name would then be managed by another virtual host
 (just for <em>example.net</em>). The <tt>redir</tt> virtual host will have a
 <tt>Default</tt> managed by the <tt>Redirection</tt> handler.</p></div>
 <div class="imageblock">
@@ -44,8 +44,8 @@ example, this could manage <em>*.example.net</em> and the <em>.com</em> and
 <img src="media/images/cookbook_redir_behavior.png" alt="Unique rule" title="Unique rule"/>
 </div>
 </div>
-<div class="para"><p>This in turn would define an <strong>external redirection</strong> with a <strong>Regular
-Expression</strong> like <em>^/(.<strong>)$</em> and the apropriate *Substitution</strong>:
+<div class="para"><p>This in turn would define an <em>external redirection</em> with a <em>Regular
+Expression</em> like <em>^/(.*)$</em> and the apropriate <em>Substitution</em>:
 <a href="http://example.net/$1">http://example.net/$1</a></p></div>
 <div class="imageblock">
 <div class="content">

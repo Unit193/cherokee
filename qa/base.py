@@ -35,6 +35,7 @@ class TestBase:
         self.name                    = None    # Test 01: Basic functionality
         self.conf                    = None    # Directory /test { .. }
         self.request                 = ""      # GET / HTTP/1.0
+        self.proxy_suitable          = True
         self.post                    = None
         self.expected_error          = None
         self.expected_content        = None
@@ -62,8 +63,8 @@ class TestBase:
                     continue
             raise
 
-    def _do_request (self, port, ssl):
-        for res in socket.getaddrinfo(HOST, port, socket.AF_UNSPEC, socket.SOCK_STREAM):
+    def _do_request (self, host, port, ssl):
+        for res in socket.getaddrinfo (host, port, socket.AF_UNSPEC, socket.SOCK_STREAM):
             af, socktype, proto, canonname, sa = res
 
             try:
@@ -207,8 +208,8 @@ class TestBase:
     def CustomTest (self):
 	   return 0
 
-    def Run (self, port, ssl):
-        self._do_request(port, ssl)
+    def Run (self, host, port, ssl):
+        self._do_request(host, port, ssl)
         self._parse_output()
         return self._check_result()
 
@@ -364,9 +365,10 @@ class TestCollection:
         if (test.name == None) or len(test.name) == 0:
             test.name = self.name + ", Part %d" % (self.num)
 
-        test.tmp      = self.tmp
-        test.nobody   = self.nobody 
-        test.php_conf = self.php_conf
+        test.tmp            = self.tmp
+        test.nobody         = self.nobody 
+        test.php_conf       = self.php_conf
+        test.proxy_suitable = self.proxy_suitable
 
         self.tests.append (test)
         return test
@@ -402,19 +404,13 @@ class TestCollection:
 
         self.current_test = current
 
-    def Run (self, port, ssl):
+    def Run (self, host, port, ssl):
         for t in self.tests:
             self.current_test = t
-            r = t.Run(port, ssl)
+            r = t.Run(host, port, ssl)
 
             if r == -1: return r
         return r
 
     def __str__ (self):
         return str(self.current_test)
-
-
-    
-
-    
-    

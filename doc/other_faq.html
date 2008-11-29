@@ -19,36 +19,36 @@
 <div class="sectionbody">
 <div class="para"><p>Here is a list of the most frequently asked questions. Please refer to
 the appropiate section of the documentation for more details.</p></div>
-<h3 id="_how_to_compile_it">How to compile it</h3><div style="clear:left"></div>
+<h3 id="faq01">How to compile it</h3><div style="clear:left"></div>
 <div class="listingblock">
 <div class="content">
 <pre><tt>./configure --prefix=/usr --sysconfdir=/etc --localstatedir=/var
 make</tt></pre>
 </div></div>
-<h3 id="_how_to_create_dynamic_modules">How to create dynamic modules</h3><div style="clear:left"></div>
+<h3 id="faq02">How to create dynamic modules</h3><div style="clear:left"></div>
 <div class="para"><p>It's the default way.</p></div>
-<h3 id="_how_to_configure_the_module_xyz_to_be_linked_statically">How to configure the module xyz to be linked statically</h3><div style="clear:left"></div>
+<h3 id="faq03">How to configure the module xyz to be linked statically</h3><div style="clear:left"></div>
 <div class="listingblock">
 <div class="content">
 <pre><tt>./configure --prefix=/usr --sysconfdir=/etc \
   --localstatedir=/var                      \
   --enable-static-module=xyz</tt></pre>
 </div></div>
-<h3 id="_how_to_build_everything_statically">How to build everything statically</h3><div style="clear:left"></div>
+<h3 id="faq04">How to build everything statically</h3><div style="clear:left"></div>
 <div class="listingblock">
 <div class="content">
 <pre><tt>./configure --prefix=/usr --sysconfdir=/etc \
   --localstatedir=/var                      \
   --enable-static-module=all</tt></pre>
 </div></div>
-<h3 id="_how_to_create_a_self_signed_certificate_for_tls">How to create a self signed certificate for TLS</h3><div style="clear:left"></div>
+<h3 id="faq05">How to create a self signed certificate for TLS</h3><div style="clear:left"></div>
 <div class="listingblock">
 <div class="content">
 <pre><tt>openssl req -days 1000 -new -x509 -nodes    \
   -out /etc/cherokee/ssl/cherokee.pem       \
   -keyout /etc/cherokee/ssl/cherokee.pem</tt></pre>
 </div></div>
-<h3 id="_how_to_access_cherokee_admin_from_a_remote_machine">How to access cherokee-admin from a remote machine</h3><div style="clear:left"></div>
+<h3 id="faq06">How to access cherokee-admin from a remote machine</h3><div style="clear:left"></div>
 <div class="para"><p>cherokee-admin binds only to local loopback by default. There are some
 workarounds:</p></div>
 <div class="ilist"><ul>
@@ -79,14 +79,14 @@ Finally you could always install cherokee on your local host,
 </p>
 </li>
 </ul></div>
-<h3 id="_how_to_manually_write_configuration_files_without_cherokee_admin">How to manually write configuration files without cherokee-admin</h3><div style="clear:left"></div>
+<h3 id="faq07">How to manually write configuration files without cherokee-admin</h3><div style="clear:left"></div>
 <div class="para"><p>The configuration file is a plain text file and its syntax is well
 documented. Check the <a href="dev_cherokee.conf.html">cherokee.conf</a>
 internal format information. Notice that manually editing the
 configuration is not the recommended method, but the format will
 always be kept updated to facilitate scripting tasks, working with
 embedded devices and other similar situations.</p></div>
-<h3 id="_does_cherokee_speak_wsgi_natively_like_tt_mod_wsgi_tt_does">Does Cherokee speak WSGI natively like <tt>mod_wsgi</tt> does?</h3><div style="clear:left"></div>
+<h3 id="faq08">Does Cherokee speak WSGI natively like <tt>mod_wsgi</tt> does?</h3><div style="clear:left"></div>
 <div class="para"><p>In short: no. We believe that we should not implement anything like
 <tt>mod_wsgi</tt> for a number of reasons.</p></div>
 <div class="ilist"><ul>
@@ -116,12 +116,12 @@ give it further consideration.</p></div>
 <div class="para"><p>Give Cherokee (SCGI|FastCGI) a try with your WSGI application.  We
 believe that besides fixing both the architectural and security flaws
 you will improve performance.</p></div>
-<h3 id="_i_need_to_make_an_administration_script_what_signals_are_supported_by_cherokee">I need to make an administration script: What signals are supported by Cherokee?</h3><div style="clear:left"></div>
+<h3 id="faq09">I need to make an administration script: What signals are supported by Cherokee?</h3><div style="clear:left"></div>
 <div class="para"><p>The list is documented in the <a href="other_signals.html">Signals</a> entry.</p></div>
-<h3 id="_is_there_a_clean_way_of_switching_cherokee_to_maintenance_mode">Is there a clean way of switching Cherokee to Maintenance mode?</h3><div style="clear:left"></div>
+<h3 id="faq10">Is there a clean way of switching Cherokee to Maintenance mode?</h3><div style="clear:left"></div>
 <div class="para"><p>Check the <a href="cookbook.html">Cookbook</a>, there is a
 <a href="cookbook_maintenance.html">recipe on the subject</a>.</p></div>
-<h3 id="_what_licensing_is_used_by_the_cherokee_web_server">What licensing is used by the Cherokee web server?</h3><div style="clear:left"></div>
+<h3 id="faq11">What licensing is used by the Cherokee web server?</h3><div style="clear:left"></div>
 <div class="para"><p>Cherokee is licensed under the GNU General Public License, version 2,
 which can be found in the file <strong>COPYING</strong> distributed with the source
 code. For more details, read the
@@ -130,6 +130,12 @@ license</a> in the project's SVN repository.</p></div>
 <div class="para"><p>If for whatever reason this license does not suit your needs, other
 licensing schemes can be negotiated on a particular basis. Contact
 <a href="http://www.octality.com/">Octality</a> if this is your case.</p></div>
+<h3 id="faq12">And what about the documentation?</h3><div style="clear:left"></div>
+<div class="para"><p>The documentation is distributed under a
+<a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons
+Attribution (by)</a> license, which is the most accommodating in terms of
+what others can do with it. It lets others distribute, remix, tweak,
+and build upon the work, even commercially.</p></div>
 </div>
 <div id="footer">
 <div id="footer-text">

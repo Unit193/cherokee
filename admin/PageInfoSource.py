@@ -10,8 +10,8 @@ NOTE_NICK        = 'Source nick. It will be referenced by this name in the rest 
 NOTE_TYPE        = 'It allows to choose whether it runs the local host or a remote server.'
 NOTE_HOST        = 'Where the information source can be accessed. The host:port pair, or the Unix socket path.'
 NOTE_INTERPRETER = 'Command to spawn a new source in case it were not accessible.'
-NOTE_USAGE       = 'Sources currently in use. Beware: exhausting the information sources used in a rule will render it inoperable and Cherokee will fail to start.'
-
+NOTE_TIMEOUT     = 'How long should the server wait when spawning an interpreter before giving up (in seconds). Default: 3.'
+NOTE_USAGE       = 'Sources currently in use. Note that the last source of any rule cannot be deleted until the rule has been manually edited.'
 
 TABLE_JS = """
 <script type="text/javascript">
@@ -24,6 +24,10 @@ TABLE_JS = """
 
 HELPS = [
     ('config_info_sources', "Information Sources")
+]
+
+DATA_VALIDATION = [
+    ('tmp!new_source_timeout', validations.is_positive_int)
 ]
 
 class PageInfoSource (PageMenu, FormHelper):
@@ -77,10 +81,15 @@ class PageInfoSource (PageMenu, FormHelper):
         self._cfg['source!%s!env!%s' % (source, name)] = value
 
     def _apply_new_source (self, uri, post):
+        self.ValidateChange_SingleKey ('tmp!new_source_timeout', post, DATA_VALIDATION)
+        if self.has_errors():
+            return self._op_render()
+
         nick  = post.pop ('tmp!new_source_nick')
         type  = post.pop ('tmp!new_source_type')
         host  = post.pop ('tmp!new_source_host')
         inter = post.pop ('tmp!new_source_interpreter')
+        time  = post.pop ('tmp!new_source_timeout')
 
         tmp = [int(x) for x in self._cfg.keys('source')]
         tmp.sort()
@@ -93,6 +102,7 @@ class PageInfoSource (PageMenu, FormHelper):
         self._cfg['source!%d!type'%(prio)]        = type
         self._cfg['source!%d!host'%(prio)]        = host
         self._cfg['source!%d!interpreter'%(prio)] = inter
+        self._cfg['source!%d!timeout'%(prio)]     = time
 
         return '/%s/%d' % (self._id, prio)
 
@@ -102,6 +112,7 @@ class PageInfoSource (PageMenu, FormHelper):
         if envs:
             txt += '<h3>Environment variables</h3>'
             table = Table(3, title_left=1, style='width="90%"')
+
             for env in envs:
                 pre = 'source!%s!env!%s'%(s,env)
                 val = self.InstanceEntry(pre, 'text', size=25)
@@ -119,7 +130,7 @@ class PageInfoSource (PageMenu, FormHelper):
         name  = self.InstanceEntry('new_env_name',  'text', size=25)
         value = self.InstanceEntry('new_env_value', 'text', size=25)
 
-        table = Table(3, 1, style='width="90%%"')
+        table = Table(3, 1, style='width="90%"')
         table += ('Variable', 'Value', '')
         table += (name, value, SUBMIT_ADD)
 
@@ -141,7 +152,8 @@ class PageInfoSource (PageMenu, FormHelper):
         self.AddPropEntry   (table, 'Nick',       'source!%s!nick'%(s), NOTE_NICK,req=True)
         self.AddPropEntry   (table, 'Connection', 'source!%s!host'%(s), NOTE_HOST,req=True)
         if type == 'interpreter':
-            self.AddPropEntry (table, 'Interpreter', 'source!%s!interpreter'%(s), NOTE_INTERPRETER, req=True)
+            self.AddPropEntry (table, 'Interpreter', 'source!%s!interpreter'%(s),  NOTE_INTERPRETER, req=True)
+            self.AddPropEntry (table, 'Spawning timeout', 'source!%s!timeout'%(s), NOTE_TIMEOUT)
 
         tmp  = self.HiddenInput ('source_num', s)
         tmp += str(table)
@@ -166,6 +178,7 @@ class PageInfoSource (PageMenu, FormHelper):
         self.AddPropEntry          (table, 'Connection', 'tmp!new_source_host', NOTE_HOST, req=True)
         if type == 'interpreter' or not type:
             self.AddPropEntry (table, 'Interpreter', 'tmp!new_source_interpreter', NOTE_INTERPRETER, req=True)
+            self.AddPropEntry (table, 'Spawning timeout', 'tmp!new_source_timeout', NOTE_TIMEOUT)
 
         txt += self.Indent(table)
         return txt
@@ -177,19 +190,25 @@ class PageInfoSource (PageMenu, FormHelper):
         # List
         #
         if self._cfg.keys('source'):
-            txt += "<h2>Known sources</h2>"
+            protect = self._get_protected_list()
 
-            table  = '<table width="90%%" id="sources" class="rulestable">'
+            txt += "<h2>Known sources</h2>"
+            table  = '<table width="90%" id="sources" class="rulestable">'
             table += '<tr><th>Nick</th><th>Type</th><th>Connection</th></tr>'
+
             for s in self._cfg.keys('source'):
                 nick = self._cfg.get_val('source!%s!nick'%(s))
                 host = self._cfg.get_val('source!%s!host'%(s))
                 type = self._cfg.get_val('source!%s!type'%(s))
 
-                js = "post_del_key('/source/ajax_update', 'source!%s');"%(s)
-                link_del = self.InstanceImage ("bin.png", "Delete", border="0", onClick=js)
+                if s in protect:
+                    msg = "Deletion forbidden. Check source usage."
+                    link = self.InstanceImage ("forbidden.png", msg, border="0")
+                else:
+                    js = "post_del_key('/source/ajax_update', 'source!%s');"%(s)
+                    link = self.InstanceImage ("bin.png", "Delete", border="0", onClick=js)
 
-                table += '<tr><td><a href="/%s/%s">%s</td><td>%s</td><td>%s</td><td>%s</td></tr>' % (self._id, s, nick, type, host, link_del)
+                table += '<tr><td><a href="/%s/%s">%s</td><td>%s</td><td>%s</td><td>%s</td></tr>' % (self._id, s, nick, type, host, link)
             table += '<tr><td colspan="4" align="center"><br/><a href="/%s">Add new</a></td></tr>' % (self._id)
             table += '</table>'
             txt += self.Indent(table)
@@ -263,3 +282,20 @@ class PageInfoSource (PageMenu, FormHelper):
                     used_sources[source] = []
                 used_sources[source].append(entry)
         return used_sources
+
+    def _get_protected_list (self):
+        """List of sources to protect against deletion"""
+        rule_sources = {}
+        used_sources = self._get_used_sources()
+        for src in used_sources:
+            for r in used_sources[src]:
+                rule = r.split('!handler!balancer!')[0]
+                if not rule_sources.has_key(rule):
+                    rule_sources[rule] = []
+                rule_sources[rule].append(src)
+
+        protect = []
+        for s in rule_sources:
+            if len(rule_sources[s])==1:
+                protect.append(rule_sources[s][0])
+        return protect

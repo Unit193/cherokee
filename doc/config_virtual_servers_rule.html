@@ -53,7 +53,7 @@ Security: in this section one can configure <strong>Access Restrictions</strong>
 </p>
 </li>
 </ol></div>
-<h3 id="_encoding">Encoding</h3><div style="clear:left"></div>
+<h3 id="encoding">Encoding</h3><div style="clear:left"></div>
 <div class="para"><p>The content sent by Cherokee can be encoded or not.
 This tab is used to configure, on a per-rule basis,  what
 <a href="modules_encoders.html">encoders</a>, if any, are to be applied.</p></div>
@@ -64,7 +64,7 @@ whatever content is handled by the parent rule.</p></div>
 following file types: <tt>html</tt>, <tt>htm</tt>, <tt>txt</tt>, <tt>css</tt> and <tt>js</tt> is a good
 idea. You are encouraged to use this. Hardware is cheap. Bandwidth is
 not.</p></div>
-<h3 id="_expiration">Expiration</h3><div style="clear:left"></div>
+<h3 id="expiration">Expiration</h3><div style="clear:left"></div>
 <div class="para"><p>HTTP/1.1 defines caching methods in HTTP. Cherokee-Admin can
 automatically adjust the <tt>Cache-Control</tt> and <tt>Expire</tt> headers depending
 on the values you have configured. The available options are:</p></div>
@@ -90,14 +90,14 @@ Custom Value: set a value by hand.
 </p>
 </li>
 </ol></div>
-<h3 id="_access_restrictions">Access Restrictions</h3><div style="clear:left"></div>
+<h3 id="restrictions">Access Restrictions</h3><div style="clear:left"></div>
 <div class="ilist"><ul>
 <li>
 <p>
 Only https::
   This configuration entry determines that the directory will be
   served by the secure server (<strong>https</strong>) only.
-  If you access directory /admin or any sub-directory, throught
+  If you access directory /admin -or any sub-directory- throught a
   non-secure connection Cherokee will report a <strong>426 Upgrade Required
   error</strong>.
 </p>
@@ -105,10 +105,10 @@ Only https::
 <li>
 <p>
 Allow From::
-  This parameter lets you set up rules form allow access to the
-  directory contents to some IP or IP ranges. The remote client IP
-  will be checked with all the provided list and only if the IP
-  matches with some of the rules the access will be allowed.
+  This parameter lets you set up wich IP or IP ranges will be allowed
+  to access the directory contents . The remote client IP will be
+  checked with all the provided list and only if the IP matches with
+  some of the rules the access will be allowed.
 </p>
 <div class="literalblock">
 <div class="content">
@@ -118,7 +118,7 @@ addresses are valid entries.</tt></pre>
 </div></div>
 </li>
 </ul></div>
-<h4 id="_examples">Examples</h4>
+<h4 id="examples">Examples</h4>
 <div class="ilist"><ul>
 <li>
 <p>
@@ -159,7 +159,7 @@ addresses and networks if you want
 </div></div>
 </li>
 </ul></div>
-<h3 id="_authentication">Authentication</h3><div style="clear:left"></div>
+<h3 id="authentication">Authentication</h3><div style="clear:left"></div>
 <div class="para"><p>This parameter allows to configure user/password protected entries. A
 validator has to be used in each Auth entry in order to specify the
 validaton mechanism. The following <tt>validators</tt> are available:</p></div>
@@ -199,6 +199,12 @@ validaton mechanism. The following <tt>validators</tt> are available:</p></div>
 <a href="modules_validators_pam.html">PAM</a> - <strong>PAM Authentication</strong>
 </p>
 <div class="para"><p>Uses PAM to perform HTTP authentication.</p></div>
+</li>
+<li>
+<p>
+<a href="modules_validators_authlist.html">Fixed list</a> - <strong> Authentication lists</strong>
+</p>
+<div class="para"><p>Uses lists of users and passwords to perform HTTP authentication.</p></div>
 </li>
 </ul></div>
 <div class="para"><p>It is important to take into consideration that there are two different

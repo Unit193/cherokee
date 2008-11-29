@@ -20,21 +20,20 @@
 <div class="para"><p>Cherokee's default parameters are suitable for most cases. However,
 there are a number of things that can be tweaked in order to improve
 the behavior of Cherokee under special circumstances.</p></div>
-<h3 id="_compiled_capabilities">Compiled capabilities</h3><div style="clear:left"></div>
+<h3 id="compiled">Compiled capabilities</h3><div style="clear:left"></div>
 <div class="para"><p>First of all you should check the capabilities that have been built
 into your specific Cherokee build. This can be done by:</p></div>
 <div class="listingblock">
 <div class="content">
 <pre><tt>$ cherokee -i
 Compilation
- Version: 0.10.0
+ Version: 0.11.0
 
 [...]
 
 Support
  IPv6: yes
  OpenSSL: no
- GnuTLS: yes
  Pthreads: yes
  Tracing: yes
  sendfile(): yes
@@ -47,13 +46,14 @@ build another binary or check if something is wrong with your
 system. Note that not every single capability is present in every
 platform. For instance, <tt>epoll</tt> is a polling method specific to Linux
 platforms, and its abscence from any non-Linux system is perfectly
-normal. It is inherently more efficient than the other methods. On the
-other hand the second best choice is <tt>poll</tt> which is POSIX conformant
-and will only be available on systems that follow the POSIX
-standard. From the list above, the capabilities that have a dramatic
-impact in the speed of Cherokee are the polling methods, the existence
-of sendfile() and the Pthreads support.</p></div>
-<h3 id="_tweaks">Tweaks</h3><div style="clear:left"></div>
+normal. It is inherently more efficient than the other methods
+available on Linux. For BSD based platforms <tt>kqueue</tt> is also a great
+improvement over the most standard <tt>poll</tt>. This is the standard POSIX
+conformant system call, and will only be available on systems that
+follow the POSIX standard. From the list above, the capabilities that
+have a dramatic impact in the speed of Cherokee are the polling
+methods, the existence of sendfile() and the Pthreads support.</p></div>
+<h3 id="tweaks">Tweaks</h3><div style="clear:left"></div>
 <div class="para"><p>There is no general recomendation that is the best for everybody. In
 general Cherokee's default values try to offer a good compromise
 between resources and performance, but for specific cases you will be
@@ -159,7 +159,7 @@ Advanced
 <p>
 <strong>IO Cache</strong>: This setting allows to enable or diasable server-wide
   the content caching. If disabled, the <em>IO Cache</em> settings of the
-  static content handlers will also be diabled, no matter what
+  static content handlers will also be disabled, no matter what
   behavior is desired in their specific configuration. This global
   setting is essential if you are trying to debug a cache-related
   bug in your server's configuration.
@@ -168,7 +168,7 @@ Advanced
 </ul></div>
 </dd>
 </dl></div>
-<h3 id="_debug_disable_trace">Debug: Disable TRACE</h3><div style="clear:left"></div>
+<h3 id="trace">Debug: Disable TRACE</h3><div style="clear:left"></div>
 <div class="para"><p>When compiled with debugging support, Cherokee's performance is
 heavily penalized. Being able to trace the state of the web server at
 a very low level is quite useful when you have to fine tune your

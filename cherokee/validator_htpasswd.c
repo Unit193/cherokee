@@ -47,60 +47,52 @@ PLUGIN_INFO_VALIDATOR_EASIEST_INIT (htpasswd, http_auth_basic);
 static ret_t 
 props_free (cherokee_validator_htpasswd_props_t *props)
 {
-	cherokee_buffer_mrproper (&props->password_file);
-	return cherokee_validator_props_free_base (VALIDATOR_PROPS(props));
+	return cherokee_validator_file_props_free_base (PROP_VFILE(props));
 }
 
 
 ret_t 
-cherokee_validator_htpasswd_configure (cherokee_config_node_t *conf, cherokee_server_t *srv, cherokee_module_props_t **_props)
+cherokee_validator_htpasswd_configure (cherokee_config_node_t   *conf,
+				       cherokee_server_t        *srv,
+				       cherokee_module_props_t **_props)
 {
-	ret_t                                ret;
-	cherokee_config_node_t              *subconf;
 	cherokee_validator_htpasswd_props_t *props;
 
 	UNUSED(srv);
 
 	if (*_props == NULL) {
 		CHEROKEE_NEW_STRUCT (n, validator_htpasswd_props);
-
-		cherokee_validator_props_init_base (VALIDATOR_PROPS(n), MODULE_PROPS_FREE(props_free));
-		cherokee_buffer_init (&n->password_file);
-
+		cherokee_validator_file_props_init_base (PROP_VFILE(n),
+							 MODULE_PROPS_FREE(props_free));
 		*_props = MODULE_PROPS(n);
 	}
 
 	props = PROP_HTPASSWD(*_props);
 
-	ret = cherokee_config_node_get (conf, "passwdfile", &subconf);
-	if (ret == ret_ok) {
-		cherokee_buffer_add_buffer (&props->password_file, &subconf->val);
-	}
-
-	return ret_ok;
+	/* Call the file based validator configure
+	 */
+	return cherokee_validator_file_configure (conf, srv, _props);
 }
 
 ret_t 
-cherokee_validator_htpasswd_new (cherokee_validator_htpasswd_t **htpasswd, cherokee_module_props_t *props)
+cherokee_validator_htpasswd_new (cherokee_validator_htpasswd_t **htpasswd,
+				 cherokee_module_props_t        *props)
 {	  
 	CHEROKEE_NEW_STRUCT(n,validator_htpasswd);
 
 	/* Init 	
 	 */
-	cherokee_validator_init_base (VALIDATOR(n), VALIDATOR_PROPS(props), PLUGIN_INFO_VALIDATOR_PTR(htpasswd));
+	cherokee_validator_file_init_base (VFILE(n),
+					   PROP_VFILE(props),
+					   PLUGIN_INFO_VALIDATOR_PTR(htpasswd));
 	VALIDATOR(n)->support = http_auth_basic;
 
 	MODULE(n)->free           = (module_func_free_t)           cherokee_validator_htpasswd_free;
 	VALIDATOR(n)->check       = (validator_func_check_t)       cherokee_validator_htpasswd_check;
 	VALIDATOR(n)->add_headers = (validator_func_add_headers_t) cherokee_validator_htpasswd_add_headers;
 	   
-	/* Checks
+	/* The validator is ready
 	 */
-	if (cherokee_buffer_is_empty (&VAL_HTPASSWD_PROP(n)->password_file)) {
-		PRINT_MSG_S ("htpasswd validator needs a password file\n");
-		return ret_error;
-	}
-
 	*htpasswd = n;
 	return ret_ok;
 }
@@ -109,8 +101,7 @@ cherokee_validator_htpasswd_new (cherokee_validator_htpasswd_t **htpasswd, chero
 ret_t 
 cherokee_validator_htpasswd_free (cherokee_validator_htpasswd_t *htpasswd)
 {
-	cherokee_validator_free_base (VALIDATOR(htpasswd));
-	return ret_ok;
+	return cherokee_validator_file_free_base (VFILE(htpasswd));
 }
 
 
@@ -148,7 +139,11 @@ check_crypt (char *passwd, char *salt, const char *compared)
 #else
 # ifdef HAVE_CRYPT_R
 	char              *tmp;
+#  ifdef CRYPT_R_STRUCT_CRYPT_DATA
 	struct crypt_data  data;
+#  elif CRYPT_R_CRYPTD
+	CRYPTD             data;
+#  endif
 
 	memset (&data, 0, sizeof(data));
 	tmp = crypt_r (passwd, salt, &data);
@@ -243,50 +238,69 @@ validate_non_salted_sha (cherokee_connection_t *conn, char *crypted)
 
 
 static ret_t
-request_isnt_passwd_file (cherokee_validator_htpasswd_t *htpasswd, cherokee_connection_t *conn)
+request_isnt_passwd_file (cherokee_validator_htpasswd_t *htpasswd,
+			  cherokee_connection_t         *conn, 
+			  cherokee_buffer_t             *full_path)
 {
-	ret_t              ret;
-	cherokee_buffer_t *pfile;
+	char    *p;
+	cuint_t  re;
+	cuint_t  len;
 
-	pfile = &VAL_HTPASSWD_PROP(htpasswd)->password_file;
+	/* Sanity check */
+	if (cherokee_buffer_is_empty (full_path))
+		return ret_error;
 
-	if (conn->request.len > 0)
-		cherokee_buffer_add (&conn->local_directory, conn->request.buf+1, conn->request.len-1);  /* 1: add    */
+	/* Look for the file name */
+	p = strrchr (full_path->buf, '/');
+	if (p == NULL)
+		return ret_error;
 
-	ret = ret_ok;
+	len = (full_path->buf + full_path->len) - p;
 
-	if (pfile->len == conn->local_directory.len) {
-		ret = (strncmp (pfile->buf, 
-				conn->local_directory.buf, 
-				conn->local_directory.len) == 0) ? ret_error : ret_ok;
-	}
+	/* Check whether the request ends like that */
+	if (conn->request.len < len)
+		return ret_ok;
 
-	if (conn->request.len > 0)
-		cherokee_buffer_drop_ending (&conn->local_directory, conn->request.len-1);              /* 1: remove */
+	re = strncmp (conn->request.buf + (conn->request.len - len), p, len);
+	if (re == 0)
+		return ret_error;
 
-	return ret;
+	return ret_ok;
 }
 
 
 ret_t 
-cherokee_validator_htpasswd_check (cherokee_validator_htpasswd_t *htpasswd, cherokee_connection_t *conn)
+cherokee_validator_htpasswd_check (cherokee_validator_htpasswd_t *htpasswd,
+				   cherokee_connection_t         *conn)
 {
-	FILE *f;
-	int   len;
-	char *cryp;
-	int   cryp_len;
-	ret_t ret;
-	ret_t ret_auth;
+	FILE              *f;
+	int                len;
+	char              *cryp;
+	int                cryp_len;
+	ret_t              ret;
+	ret_t              ret_auth;
+	cherokee_buffer_t *fpass;
 	CHEROKEE_TEMP(line, 128);
 
-	/* Sanity check
+	/* Sanity checks
 	 */
-	if ((conn->validator == NULL) || cherokee_buffer_is_empty (&conn->validator->user))
+	if ((conn->validator == NULL) ||
+	    cherokee_buffer_is_empty (&conn->validator->user))
+	{
 		return ret_error;
+	}
+
+	/* Get the full path to the file
+	 */
+	ret = cherokee_validator_file_get_full_path (VFILE(htpasswd), conn, &fpass,
+						     &CONN_THREAD(conn)->tmp_buf1);
+	if (ret != ret_ok) {
+		return ret_error;
+	}
 
 	/* 1.- Check the login/passwd
 	 */	  
-	f = fopen (VAL_HTPASSWD_PROP(htpasswd)->password_file.buf, "r");
+	f = fopen (fpass->buf, "r");
 	if (f == NULL) {
 		return ret_error;
 	}
@@ -360,7 +374,7 @@ cherokee_validator_htpasswd_check (cherokee_validator_htpasswd_t *htpasswd, cher
 	/* 2.- Security check:
 	 * Is the client trying to download the passwd file?
 	 */
-	ret = request_isnt_passwd_file (htpasswd, conn);	
+	ret = request_isnt_passwd_file (htpasswd, conn, fpass);	
 	if (ret != ret_ok)
 		return ret;
 

@@ -77,7 +77,10 @@ uncheck <tt>Check file</tt>. This is to prevent possible errors with the
 <tt>INFO_PATH</tt> generation that can happen when an application, in this
 case <em>Rails</em>, manages the whole subtree. This is mentioned in the
 <a href="modules_handlers_cgi.html">Common CGI</a> section of the
-documentation.</p></div>
+documentation. It is a good idea to enable the <tt>Error handler</tt>
+checkbox since it will help you determine if an error is associated
+with your Django application or with Cherokee. This, however, is not
+required.</p></div>
 <div class="imageblock">
 <div class="content">
 <img src="media/images/cookbook_ror_common.png" alt="Common CGI options" title="Common CGI options"/>
@@ -114,7 +117,7 @@ cellspacing="0" cellpadding="4">
     localhost:8000 
     </td>
     <td align="left">
-    <tt>/home/foo/example/script/process/spawner fastcgi</tt>
+    <tt>/home/foo/example/script/process/spawner fcgi</tt>
     </td>
   </tr>
   <tr>
@@ -122,7 +125,7 @@ cellspacing="0" cellpadding="4">
     localhost:8001 
     </td>
     <td align="left">
-    <tt>/home/foo/example/script/process/spawner fastcgi</tt>
+    <tt>/home/foo/example/script/process/spawner fcgi</tt>
     </td>
   </tr>
   <tr>
@@ -130,7 +133,7 @@ cellspacing="0" cellpadding="4">
     localhost:8002 
     </td>
     <td align="left">
-    <tt>/home/foo/example/script/process/spawner fastcgi</tt>
+    <tt>/home/foo/example/script/process/spawner fcgi</tt>
     </td>
   </tr>
 </tbody>
@@ -143,6 +146,15 @@ similar using the port variation detailed above.</p></div>
 <div class="imageblock">
 <div class="content">
 <img src="media/images/cookbook_ror_fcgi.png" alt="FastCGI specifics" title="FastCGI specifics"/>
+</div>
+</div>
+<div class="para"><p>Once everything is done you can check if Rails  is really
+working. Simply navigate to the path configured by your rule,
+<a href="http://localhost/example/">http://localhost/example/</a> for instance, and you should see some notes
+about your recently created project.</p></div>
+<div class="imageblock">
+<div class="content">
+<img src="media/images/cookbook_ror.png" alt="Rails example" title="Rails example"/>
 </div>
 </div>
 </div>

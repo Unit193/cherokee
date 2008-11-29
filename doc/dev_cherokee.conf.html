@@ -17,7 +17,7 @@
 </div>
 <h2 id="_development_cherokee_conf">Development: cherokee.conf</h2>
 <div class="sectionbody">
-<h3 id="_introduction">Introduction</h3><div style="clear:left"></div>
+<h3 id="introduction">Introduction</h3><div style="clear:left"></div>
 <div class="para"><p>Cherokee's configuration system is based on an internal text file
 format that the average user should not know about. This configuration
 file is read by the server and modified by the administration
@@ -55,7 +55,7 @@ configuration file by hand, so it is a format that only developers
 should know about.</p></div>
 <div class="para"><p>The following blocks will summarize the configuration keys that the
 current Cherokee release handles:</p></div>
-<h3 id="_server">Server</h3><div style="clear:left"></div>
+<h3 id="server">Server</h3><div style="clear:left"></div>
 <div class="para"><p>The server configuration keys define some of the server-wide
 properties, such as the user under which the server ought to run if it
 is run as root or whether to use keep-alive connections.</p></div>
@@ -89,6 +89,17 @@ cellspacing="0" cellpadding="4">
     </td>
     <td align="left">
     TCP port for HTTP
+    </td>
+  </tr>
+  <tr>
+    <td align="left">
+    server!tls
+    </td>
+    <td align="left">
+    String         
+    </td>
+    <td align="left">
+    TLS/SSL backend: libssl
     </td>
   </tr>
   <tr>
@@ -400,7 +411,7 @@ cellspacing="0" cellpadding="4">
     Minor                     
     </td>
     <td align="left">
-    Cherokee/0.10
+    Cherokee/0.11
     </td>
   </tr>
   <tr>
@@ -408,7 +419,7 @@ cellspacing="0" cellpadding="4">
     Minimal                   
     </td>
     <td align="left">
-    Cherokee/0.10.0
+    Cherokee/0.11.0
     </td>
   </tr>
   <tr>
@@ -416,7 +427,7 @@ cellspacing="0" cellpadding="4">
     OS                        
     </td>
     <td align="left">
-    Cherokee/0.10.0 (UNIX)
+    Cherokee/0.11.0 (UNIX)
     </td>
   </tr>
   <tr>
@@ -424,7 +435,7 @@ cellspacing="0" cellpadding="4">
     Full                      
     </td>
     <td align="left">
-    Cherokee/0.10.0 (UNIX) Ext/0.0 Ext2/0.0
+    Cherokee/0.11.0 b2311 (UNIX)
     </td>
   </tr>
 </tbody>
@@ -475,7 +486,7 @@ cellspacing="0" cellpadding="4">
 </tbody>
 </table>
 </div>
-<h3 id="_virtual_server">Virtual Server</h3><div style="clear:left"></div>
+<h3 id="virtual_server">Virtual Server</h3><div style="clear:left"></div>
 <div class="para"><p>A virtual server contains the information related to one or more
 domains under the same configuration. In a Cherokee server there must
 be at least one virtual server named <tt>`default</tt>`, and there is no
@@ -1230,7 +1241,7 @@ cellspacing="0" cellpadding="4">
 </tbody>
 </table>
 </div>
-<div class="para"><p>Here are a few examples about how this notation works:</p></div>
+<div class="para" id="examples"><p>Here are a few examples about how this notation works:</p></div>
 <div class="ilist"><ul>
 <li>
 <p>
@@ -1346,7 +1357,7 @@ vserver!10!rule!500!only_secure = 0</tt></pre>
 </div></div>
 </li>
 </ul></div>
-<h3 id="_logs">Logs</h3><div style="clear:left"></div>
+<h3 id="logs">Logs</h3><div style="clear:left"></div>
 <div class="para"><p>The log files are defined as properties inside the Virtual Server
 hierarchy under a <tt>`logger</tt>` entry with the following properties:</p></div>
 <div class="tableblock">
@@ -1481,7 +1492,7 @@ Apache format logs to the regular files:
 </div></div>
 </li>
 </ul></div>
-<h3 id="_information_sources">Information sources</h3><div style="clear:left"></div>
+<h3 id="information_sources">Information sources</h3><div style="clear:left"></div>
 <div class="para"><p></p></div>
 <div class="tableblock">
 <table rules="rows"
@@ -1559,6 +1570,17 @@ cellspacing="0" cellpadding="4">
     <tt>host</tt> | <tt>interpreter</tt>
     </td>
   </tr>
+  <tr>
+    <td align="left">
+    timeout         
+    </td>
+    <td align="left">
+    Number  
+    </td>
+    <td align="left">
+    spawning timeout specified in seconds
+    </td>
+  </tr>
 </tbody>
 </table>
 </div>
@@ -1589,7 +1611,7 @@ source!1!type = host</tt></pre>
 </div></div>
 </li>
 </ul></div>
-<h3 id="_balancers">Balancers</h3><div style="clear:left"></div>
+<h3 id="balancers">Balancers</h3><div style="clear:left"></div>
 <div class="para"><p>The balancers must define the information sources to be used. For the
 ones defined in the examples above, using round robin from within the
 FastCGI handler, the following example would apply.</p></div>
@@ -1609,7 +1631,7 @@ vserver!10!rule!600!match!final = 1</tt></pre>
 </div></div>
 </dd>
 </dl></div>
-<h3 id="_inclusion_of_configuration">Inclusion of Configuration</h3><div style="clear:left"></div>
+<h3 id="inclusion">Inclusion of Configuration</h3><div style="clear:left"></div>
 <div class="para"><p>Sometimes it is nice to break out your configuration into several logical files
 to be more modular as well as more organized.  You can use the <tt>`include</tt>`
 configuration to accomplish this.</p></div>
@@ -1633,6 +1655,36 @@ or even, it is possible to specify a directory to include all of its files
 </div></div>
 </dd>
 </dl></div>
+<h3 id="reverse_proxy">Reverse Proxy</h3><div style="clear:left"></div>
+<div class="para"><p>The reverse proxy , like everything in Cherokee, is modular. It is
+configured as any other of the modules that use load balancers.</p></div>
+<div class="para"><p>You need to define a balancing strategy, the information source to be
+used by the balancer and, optionally, any expression matches that you
+might wish to rewrite in the headers before relaying the connection.</p></div>
+<div class="para"><p>This is a basic example:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>server!port = 1234
+
+# The proxy configuration
+vserver!1!nick = default
+vserver!1!document_root = /tmp
+vserver!1!rule!1!match = default
+vserver!1!rule!1!handler = proxy
+vserver!1!rule!1!handler!header_hide!1 = server
+vserver!1!rule!1!handler!balancer = round_robin
+vserver!1!rule!1!handler!balancer!source!1 = 1
+
+# URL rewrite
+vserver!1!rule!1!handler!rewrite_request!1!regex = ^/(.+).png$
+vserver!1!rule!1!handler!rewrite_request!1!substring = /$1.jpg
+vserver!1!rule!1!handler!rewrite_request!2!regex = ^/test/(.+)$ /$1.jpg
+vserver!1!rule!1!handler!rewrite_request!2!substring = /test.php?$1
+
+# The information source
+source!1!type = host
+source!1!host = localhost:9090</tt></pre>
+</div></div>
 </div>
 <div id="footer">
 <div id="footer-text">

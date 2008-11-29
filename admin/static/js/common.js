@@ -94,6 +94,19 @@ function options_changed (url, options_id, parent_id)
 	   );
 }
 
+function save_config()
+{
+	var post = "restart=" + $("#restart").val();
+
+	jQuery.post("/apply_ajax", post,
+		function (data, textStatus) {
+			$("#save_changes_msg").html(data);
+			$("#save_changes_msg").fadeIn("slow");
+			setTimeout('$("#save_changes_msg").fadeOut("slow")', 5000);
+		}
+	);
+}
+
 function toggle_help()
 {
     if ($("#help-contents").is(":hidden")) {
@@ -145,12 +158,12 @@ function get_cookie (key)
 
 /* Auto submission of some forms */
 function autosubmit(event) {
-  $(".auto input").change(function(event) {
-	 if (check_all_or_none('required')) {
-		setConfirmUnload(false);
-		this.form.submit();
-	 }
-  });
+	$(".auto input:not(.noautosubmit), select:not(.noautosubmit)").change(function(event) {
+		if (check_all_or_none('required')) {
+			setConfirmUnload(false);
+			this.form.submit();
+		}
+	});
 }
 
 /* Returns true either if every field of
@@ -171,6 +184,8 @@ function check_all_or_none (klass)
 /* Prevent accidentally navigating away */
 function protectChanges()
 {
+	//alert(document.location.host.toString());
+
   $('a').click(function() {
     setConfirmUnload(false);
   });
@@ -184,6 +199,10 @@ function protectChanges()
   });
 
   $('form').submit(function() {
+    setConfirmUnload(false);
+  });
+
+  $('.rulestable').bind("mouseup", function() {
     setConfirmUnload(false);
   });
 
@@ -204,8 +223,6 @@ function setConfirmUnload(on)
 
 function unloadMessage()
 {
-  return 'You have modified the settings. The changes will NOT be applied '+
-         'unless you SAVE them. The modifications will remain unapplied while '+
-         'Cherokee-Admin is still running. If you navigate away keep in mind '+
-         'you NEED to save your data or else it will be lost!';
+  return 'Settings were modified but not saved.\n'+
+         'They will be lost if you leave Cherokee-Admin.';
 }

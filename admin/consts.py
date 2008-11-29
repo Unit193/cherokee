@@ -7,6 +7,8 @@ HANDLERS = [
     ('cgi',          'CGI'),
     ('fcgi',         'FastCGI'),
     ('scgi',         'SCGI'),
+    ('proxy',        'HTTP reverse proxy'),
+    ('ssi',          'Server Side Includes'),
     ('server_info',  'Server Info'),
     ('dbslayer',     'MySQL bridge'),
     ('mirror',       'Generic balancer'),
@@ -99,7 +101,7 @@ ERROR_CODES = [
     ('501', '501 Not Implemented'),
     ('502', '502 Bad gateway'),
     ('503', '503 Service Unavailable'),
-    ('504', '504 Gatewat Timeout'),
+    ('504', '504 Gateway Timeout'),
     ('505', '505 HTTP Version Not Supported')
 ]
 
@@ -108,6 +110,8 @@ RULES = [
     ('extensions', 'Extensions'),
     ('request',    'Regular Expression'),
     ('header',     'Header'),
+    ('exists',     'File exists'),
+    ('method',     'HTTP method'),
     ('geoip',      'GeoIP')
 ]
 
@@ -116,4 +120,9 @@ EXPIRATION_TYPE = [
     ('epoch',    'Already expired on 1970'),
     ('max',      'Do not expire until 2038'),
     ('time',     'Custom value')
+]
+
+CRYPTORS = [
+    ('',         'No TLS/SSL'),
+    ('libssl',   'OpenSSL / libssl')
 ]

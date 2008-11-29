@@ -1,0 +1,400 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+    <meta http-equiv="Content-Language" content="en-us" />
+    <meta name="ROBOTS" content="ALL" />
+    <meta http-equiv="imagetoolbar" content="no" />
+    <meta name="MSSmartTagsPreventParsing" content="true" />
+    <meta name="Keywords" content="cherokee web server httpd http" />
+    <meta name="Description" content="Cherokee is a flexible, very fast, lightweight Web server. It is implemented entirely in C, and has no dependencies beyond a standard C library. It is embeddable and extensible with plug-ins. It supports on-the-fly configuration by reading files or strings, TLS/SSL (via GNUTLS or OpenSSL), virtual hosts, authentication, cache friendly features, PHP, custom error management, and much more." />
+    <link href="media/css/cherokee_doc.css" rel="stylesheet" type="text/css" media="all" />
+  </head>
+<body>
+<h2 id="_a_href_index_html_index_a_8594_a_href_cookbook_html_cookbook_a"><a href="index.html">Index</a> &#8594; <a href="cookbook.html">Cookbook</a></h2>
+<div class="sectionbody">
+</div>
+<h2 id="_cookbook_setting_up_mailman">Cookbook: Setting up Mailman</h2>
+<div class="sectionbody">
+<div class="para"><p><a href="http://www.gnu.org/software/mailman/">GNU Mailman</a> is the
+most spread software for managing mailing-lists.</p></div>
+<div class="para"><p>To install Mailman you will have to actually do several things:
+. Install the software
+. Set up your web server.
+. Set up your mail server.</p></div>
+<div class="para"><p>This recipe is meant to be used as a complement of the official
+<a href="http://www.gnu.org/software/mailman/mailman-install/">installation
+instructions</a>, not as a replacement, and as such it only covers the
+section specific to Cherokee: the configuration of the web server.</p></div>
+<div class="para"><p>Very little configuration is required by Mailman to work. Simply
+setting up a couple of paths -the location of the Mailman archive and
+the cgi-bin directory path- should be enough. However the same task
+can be performed more elegantly if you set up a subdomain just to run
+the lists. This is the approach we will be taking in the recipe.</p></div>
+<div class="para"><p>Lets assume we want to configure the domain <em>lists.example.net</em>.</p></div>
+<div class="ilist"><ul>
+<li>
+<p>
+Add a new virtual server from within the
+<a href="config_virtual_servers.html">Virtual servers</a> tab. No Document
+Root is actually needed, so simply point it to an empty
+directory.
+</p>
+<div class="tableblock">
+<table rules="rows"
+frame="hsides"
+cellspacing="0" cellpadding="4">
+<col width="300" />
+<col width="500" />
+<thead>
+  <tr>
+    <th align="left">
+    Nickname 
+    </th>
+    <th align="left">
+    Document Root
+    </th>
+  </tr>
+</thead>
+<tbody valign="top">
+  <tr>
+    <td align="left">
+    lists    
+    </td>
+    <td align="left">
+    /var/www/null
+    </td>
+  </tr>
+</tbody>
+</table>
+</div>
+</li>
+<li>
+<p>
+Set the pattern to be used by the virtual server through its <tt>Domain
+names</tt> tab:
+</p>
+<div class="tableblock">
+<table rules="rows"
+frame="hsides"
+cellspacing="0" cellpadding="4">
+<col width="800" />
+<thead>
+  <tr>
+    <th align="left">
+    Domain names
+    </th>
+  </tr>
+</thead>
+<tbody valign="top">
+  <tr>
+    <td align="left">
+    lists.example.net
+    </td>
+  </tr>
+</tbody>
+</table>
+</div>
+</li>
+</ul></div>
+<div class="para"><p>Lets proceed with the rules. First delete the ones available. As
+always, the <tt>Default</tt> rule is non-erasable. We will be creating some
+rules. Unless otherwise stated, you must assume they are all
+<tt>Final</tt>. Also create them in the specified order, since the order of
+evaluation is relevant to Cherokee and these are the conditions used
+during the tests. Creating them in this order will assign a reversed
+sort, being the last one defined the first one that gets
+evaluated. Leaving the <tt>Use I/O cache</tt> on for the <tt>Static content</tt>
+handlers makes a lot of sense.</p></div>
+<div class="ilist"><ul>
+<li>
+<p>
+Redefine the behavior of <tt>Default</tt> by selection the handler CGI. And
+make sure to have the following checkboxes enabled: <tt>Error handler</tt>,
+<tt>Check file</tt> and <tt>Pass Request</tt>.
+</p>
+<div class="tableblock">
+<table rules="rows"
+frame="hsides"
+cellspacing="0" cellpadding="4">
+<col width="800" />
+<thead>
+  <tr>
+    <th align="left">
+    Document Root
+    </th>
+  </tr>
+</thead>
+<tbody valign="top">
+  <tr>
+    <td align="left">
+    /usr/lib/cgi-bin/mailman/
+    </td>
+  </tr>
+</tbody>
+</table>
+</div>
+</li>
+<li>
+<p>
+Add a new rule, of type <tt>Extensions</tt> for the icons. Within the
+<tt>Handler</tt> tab, manage it as <tt>Static content</tt>.
+</p>
+<div class="tableblock">
+<table rules="rows"
+frame="hsides"
+cellspacing="0" cellpadding="4">
+<col width="333" />
+<col width="466" />
+<thead>
+  <tr>
+    <th align="left">
+    Rule Type 
+    </th>
+    <th align="left">
+    Extensions
+    </th>
+  </tr>
+</thead>
+<tbody valign="top">
+  <tr>
+    <td align="left">
+    Extensions
+    </td>
+    <td align="left">
+    ico
+    </td>
+  </tr>
+</tbody>
+</table>
+</div>
+</li>
+<li>
+<p>
+Add a new rule, of type <tt>Regular Expression</tt> to redirect things to <tt>/listinfo</tt>.
+</p>
+<div class="tableblock">
+<table rules="rows"
+frame="hsides"
+cellspacing="0" cellpadding="4">
+<col width="378" />
+<col width="421" />
+<thead>
+  <tr>
+    <th align="left">
+    Rule Type         
+    </th>
+    <th align="left">
+    Regular Expression
+    </th>
+  </tr>
+</thead>
+<tbody valign="top">
+  <tr>
+    <td align="left">
+    Regular Expression
+    </td>
+    <td align="left">
+    ^/$
+    </td>
+  </tr>
+</tbody>
+</table>
+</div>
+</li>
+<li>
+<p>
+Within the <tt>Handler</tt> tab of the rule, manage it with the
+<tt>Redirection</tt> handler. Specify the rule as follows:
+</p>
+<div class="tableblock">
+<table rules="rows"
+frame="hsides"
+cellspacing="0" cellpadding="4">
+<col width="167" />
+<col width="372" />
+<col width="260" />
+<thead>
+  <tr>
+    <th align="left">
+    Show     
+    </th>
+    <th align="left">
+    Regular Expression
+    </th>
+    <th align="left">
+    Substitution
+    </th>
+  </tr>
+</thead>
+<tbody valign="top">
+  <tr>
+    <td align="left">
+    External 
+    </td>
+    <td align="left">
+    .*                
+    </td>
+    <td align="left">
+    /listinfo
+    </td>
+  </tr>
+</tbody>
+</table>
+</div>
+</li>
+<li>
+<p>
+Add another rule for static content. This time for the /images
+directory.
+</p>
+<div class="tableblock">
+<table rules="rows"
+frame="hsides"
+cellspacing="0" cellpadding="4">
+<col width="242" />
+<col width="557" />
+<thead>
+  <tr>
+    <th align="left">
+    Rule Type 
+    </th>
+    <th align="left">
+    Web Directory
+    </th>
+  </tr>
+</thead>
+<tbody valign="top">
+  <tr>
+    <td align="left">
+    Directory 
+    </td>
+    <td align="left">
+    /images
+    </td>
+  </tr>
+</tbody>
+</table>
+</div>
+</li>
+<li>
+<p>
+And set the <tt>Static content</tt> handler:
+</p>
+<div class="tableblock">
+<table rules="rows"
+frame="hsides"
+cellspacing="0" cellpadding="4">
+<col width="266" />
+<col width="533" />
+<thead>
+  <tr>
+    <th align="left">
+    Handler       
+    </th>
+    <th align="left">
+    Document Root
+    </th>
+  </tr>
+</thead>
+<tbody valign="top">
+  <tr>
+    <td align="left">
+    Static content
+    </td>
+    <td align="left">
+    /usr/share/images/mailman/
+    </td>
+  </tr>
+</tbody>
+</table>
+</div>
+</li>
+<li>
+<p>
+And finally, add a rule for your Pipermail archive to be managed,
+also as a directory.
+</p>
+<div class="tableblock">
+<table rules="rows"
+frame="hsides"
+cellspacing="0" cellpadding="4">
+<col width="242" />
+<col width="557" />
+<thead>
+  <tr>
+    <th align="left">
+    Rule Type 
+    </th>
+    <th align="left">
+    Web Directory
+    </th>
+  </tr>
+</thead>
+<tbody valign="top">
+  <tr>
+    <td align="left">
+    Directory 
+    </td>
+    <td align="left">
+    /pipermail
+    </td>
+  </tr>
+</tbody>
+</table>
+</div>
+</li>
+<li>
+<p>
+This one must be managed by the <tt>List &amp; Send</tt> handler.
+</p>
+<div class="tableblock">
+<table rules="rows"
+frame="hsides"
+cellspacing="0" cellpadding="4">
+<col width="208" />
+<col width="591" />
+<thead>
+  <tr>
+    <th align="left">
+    Handler     
+    </th>
+    <th align="left">
+    Document Root
+    </th>
+  </tr>
+</thead>
+<tbody valign="top">
+  <tr>
+    <td align="left">
+    List &amp; Send 
+    </td>
+    <td align="left">
+    /var/lib/mailman/archives/public
+    </td>
+  </tr>
+</tbody>
+</table>
+</div>
+</li>
+</ul></div>
+<div class="para"><p>This is a working example of the above mentioned handler configuration.</p></div>
+<div class="imageblock">
+<div class="content">
+<img src="media/images/cookbook_mailman.png" alt="Mailman configuration" title="Mailman configuration"/>
+</div>
+</div>
+<div class="para"><p>Once you have followed the rest of the
+<a href="http://www.gnu.org/software/mailman/mailman-install/">installation
+instructions</a>, you will be able to access your instance of Mailman. If
+you want to see a live example of the above mentioned configuration,
+simply visit the <a href="http://lists.octality.com/">Cherokee Project
+Mailing Lists</a>.</p></div>
+</div>
+<div id="footer">
+<div id="footer-text">
+</div>
+</div>
+</body>
+</html>

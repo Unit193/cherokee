@@ -294,6 +294,11 @@ cherokee_handler_cgi_base_build_basic_env (
 	cherokee_socket_ntop (&conn->socket, remote_ip, sizeof(remote_ip)-1);
 	set_env (cgi, "REMOTE_ADDR", remote_ip, strlen(remote_ip));
 
+	re = snprintf (temp, temp_size, "%d", SOCKET_SIN_PORT(&conn->socket));
+	if (re > 0) {
+		set_env (cgi, "REMOTE_PORT", temp, re);
+	}
+
 	/* HTTP_HOST and SERVER_NAME. The difference between them is that
 	 * HTTP_HOST can include the «:PORT» text, and SERVER_NAME only
 	 * the name 
@@ -310,7 +315,7 @@ cherokee_handler_cgi_base_build_basic_env (
 		}
 	}
 
-	/* Content-Type and Content-Length (if available) 
+	/* Content-Type
 	 */
 	cherokee_buffer_clean (tmp);
 	ret = cherokee_header_copy_unknown (&conn->header, "Content-Type", 12, tmp);
@@ -330,11 +335,6 @@ cherokee_handler_cgi_base_build_basic_env (
 		set_env (cgi, "QUERY_STRING", conn->query_string.buf, conn->query_string.len);
 	else
 		set_env (cgi, "QUERY_STRING", "", 0);
-
-	/* Sever port
-	 */
-	re = snprintf (temp, temp_size, "%d", CONN_SRV(conn)->port);
-	set_env (cgi, "SERVER_PORT", temp, re);
 
 	/* HTTP protocol version
 	 */
@@ -373,6 +373,11 @@ cherokee_handler_cgi_base_build_basic_env (
 		cherokee_header_copy_request_w_args (&conn->header, tmp);
 	} 
 	else {
+		if (! cherokee_buffer_is_empty (&conn->userdir)) {
+			cherokee_buffer_add_str    (tmp, "/~");
+			cherokee_buffer_add_buffer (tmp, &conn->userdir);
+		}
+
 		if (! cherokee_buffer_is_empty (&conn->request_original))
 			cherokee_buffer_add_buffer (tmp, &conn->request_original);
 		else
@@ -385,13 +390,38 @@ cherokee_handler_cgi_base_build_basic_env (
 	}
 	set_env (cgi, "REQUEST_URI", tmp->buf, tmp->len);
 
-	/* Set HTTPS
+	/* Set SCRIPT_URL
 	 */
-	if (conn->socket.is_tls) 
-		set_env (cgi, "HTTPS", "on", 2);
-	else 
-		set_env (cgi, "HTTPS", "off", 3);
+	if (! cherokee_buffer_is_empty (&conn->userdir)) {
+		cherokee_buffer_clean      (tmp);
+		cherokee_buffer_add_str    (tmp, "/~");
+		cherokee_buffer_add_buffer (tmp, &conn->userdir);
+		cherokee_buffer_add_buffer (tmp, &conn->request);
+		set_env (cgi, "SCRIPT_URL", tmp->buf, tmp->len);
+	} else {
+		set_env (cgi, "SCRIPT_URL", conn->request.buf, conn->request.len);
+	}
 
+	/* Set HTTPS and SERVER_PORT
+	 */
+	if (conn->socket.is_tls) {
+		set_env (cgi, "HTTPS", "on", 2);
+		set_env (cgi, "SERVER_PORT", 
+			 HANDLER_SRV(cgi)->server_port_tls.buf,
+			 HANDLER_SRV(cgi)->server_port_tls.len);
+	} else  {
+		set_env (cgi, "HTTPS", "off", 3);
+		set_env (cgi, "SERVER_PORT", 
+			 HANDLER_SRV(cgi)->server_port.buf,
+			 HANDLER_SRV(cgi)->server_port.len);
+	}
+
+	/* Set SERVER_ADDR
+	 */
+	set_env (cgi, "SERVER_ADDR", 
+		 HANDLER_SRV(cgi)->server_address.buf,
+		 HANDLER_SRV(cgi)->server_address.len);
+	
 	/* HTTP variables
 	 */
 	ret = cherokee_header_get_known (&conn->header, header_accept, &p, &p_len);
@@ -462,6 +492,16 @@ cherokee_handler_cgi_base_build_basic_env (
 	ret = cherokee_header_get_known (&conn->header, header_user_agent, &p, &p_len);
 	if (ret == ret_ok) {
 		set_env (cgi, "HTTP_USER_AGENT", p, p_len);
+	}
+
+	ret = cherokee_header_get_known (&conn->header, header_x_forwarded_for, &p, &p_len);
+	if (ret == ret_ok) {
+		set_env (cgi, "HTTP_X_FORWARDED_FOR", p, p_len);
+	}
+
+	ret = cherokee_header_get_known (&conn->header, header_x_forwarded_host, &p, &p_len);
+	if (ret == ret_ok) {
+		set_env (cgi, "HTTP_X_FORWARDED_HOST", p, p_len);
 	}
 
 	/* TODO: Fill the others CGI environment variables
@@ -870,7 +910,7 @@ cherokee_handler_cgi_base_add_headers (cherokee_handler_cgi_base_t *cgi, cheroke
 	ret_t                  ret;
 	int                    len;
 	char                  *content;
-	int                    end_len;
+	cuint_t                end_len;
 	cherokee_buffer_t     *inbuf    = &cgi->data; 
 	cherokee_connection_t *conn     = HANDLER_CONN(cgi);
 
@@ -894,16 +934,9 @@ cherokee_handler_cgi_base_add_headers (cherokee_handler_cgi_base_t *cgi, cheroke
 
 	/* Look the end of headers
 	 */
-	content = strstr (inbuf->buf, CRLF_CRLF);
-	if (content != NULL) {
-		end_len = 4;
-	} else {
-		content = strstr (inbuf->buf, LF_LF);
-		end_len = 2;
-	}
-	
-	if (content == NULL) {
-		return (cgi->got_eof) ? ret_eof : ret_eagain;
+	ret = cherokee_find_header_end (inbuf, &content, &end_len);
+	if (ret != ret_ok) {
+		return (cgi->got_eof) ? ret_eof : ret_eagain;		
 	}
 
 	/* Copy the header

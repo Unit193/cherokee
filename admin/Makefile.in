@@ -38,9 +38,9 @@ DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/etr_socket_nsl.m4 \
 	$(top_srcdir)/m4/libwww.m4 $(top_srcdir)/m4/mysql.m4 \
-	$(top_srcdir)/m4/network.m4 $(top_srcdir)/m4/pkg.m4 \
-	$(top_srcdir)/m4/pwd_grp.m4 $(top_srcdir)/m4/sendfile_samba.m4 \
-	$(top_srcdir)/acinclude.m4 $(top_srcdir)/configure.in
+	$(top_srcdir)/m4/network.m4 $(top_srcdir)/m4/pwd_grp.m4 \
+	$(top_srcdir)/m4/sendfile_samba.m4 $(top_srcdir)/acinclude.m4 \
+	$(top_srcdir)/configure.in
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(install_sh) -d
@@ -111,8 +111,6 @@ ETR_SOCKET_LIBS = @ETR_SOCKET_LIBS@
 EXEEXT = @EXEEXT@
 F77 = @F77@
 FFLAGS = @FFLAGS@
-GNUTLS_CFLAGS = @GNUTLS_CFLAGS@
-GNUTLS_LIBS = @GNUTLS_LIBS@
 GREP = @GREP@
 HaveRtldGlobal = @HaveRtldGlobal@
 HaveRtldLocal = @HaveRtldLocal@
@@ -151,14 +149,12 @@ PACKAGE_TARNAME = @PACKAGE_TARNAME@
 PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
 PHPCGI = @PHPCGI@
-PKG_CONFIG = @PKG_CONFIG@
 PTHREAD_CFLAGS = @PTHREAD_CFLAGS@
 PTHREAD_LIBS = @PTHREAD_LIBS@
 RANLIB = @RANLIB@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
 STRIP = @STRIP@
-TLS_CFLAGS = @TLS_CFLAGS@
 TLS_LIBS = @TLS_LIBS@
 VERSION = @VERSION@
 WWW_ROOT = @WWW_ROOT@
@@ -257,11 +253,14 @@ adminpy_SCRIPTS = $(admin_scripts)
 @INSTALL_ADMIN_TRUE@ModuleFcgi.py \
 @INSTALL_ADMIN_TRUE@ModuleScgi.py \
 @INSTALL_ADMIN_TRUE@ModuleBalancer.py \
+@INSTALL_ADMIN_TRUE@ModuleSsi.py \
+@INSTALL_ADMIN_TRUE@ModuleProxy.py \
 @INSTALL_ADMIN_TRUE@ModuleMirror.py \
 @INSTALL_ADMIN_TRUE@ModuleDbslayer.py \
 @INSTALL_ADMIN_TRUE@ModuleErrorNn.py \
 @INSTALL_ADMIN_TRUE@ModuleErrorRedir.py \
 @INSTALL_ADMIN_TRUE@ModuleAuth.py \
+@INSTALL_ADMIN_TRUE@ModuleAuthlist.py \
 @INSTALL_ADMIN_TRUE@ModuleAdmin.py \
 @INSTALL_ADMIN_TRUE@ModuleHtdigest.py \
 @INSTALL_ADMIN_TRUE@ModuleLdap.py \
@@ -276,6 +275,8 @@ adminpy_SCRIPTS = $(admin_scripts)
 @INSTALL_ADMIN_TRUE@ModuleExtensions.py \
 @INSTALL_ADMIN_TRUE@ModuleGeoip.py \
 @INSTALL_ADMIN_TRUE@ModuleHeader.py \
+@INSTALL_ADMIN_TRUE@ModuleExists.py \
+@INSTALL_ADMIN_TRUE@ModuleMethod.py \
 @INSTALL_ADMIN_TRUE@ModuleCustomError.py \
 @INSTALL_ADMIN_TRUE@config.py \
 @INSTALL_ADMIN_TRUE@pyscgi.py \

@@ -54,6 +54,7 @@
 #include "mime.h"
 #include "config_node.h"
 #include "version.h"
+#include "cryptor.h"
 
 
 struct cherokee_server {
@@ -102,9 +103,8 @@ struct cherokee_server {
 	cherokee_socket_t          socket_tls;
 
 	CHEROKEE_MUTEX_T          (accept_mutex);
-#ifdef HAVE_TLS
 	CHEROKEE_MUTEX_T          (accept_tls_mutex);
-#endif
+	cherokee_cryptor_t        *cryptor;
 
 	/* System related
 	 */
@@ -141,6 +141,10 @@ struct cherokee_server {
 	cherokee_buffer_t          server_string_ext;
 	cherokee_buffer_t          server_string_w_port;
 	cherokee_buffer_t          server_string_w_port_tls;
+
+	cherokee_buffer_t          server_address;
+	cherokee_buffer_t          server_port;
+	cherokee_buffer_t          server_port_tls;
 
 	/* User/group and chroot
 	 */

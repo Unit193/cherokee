@@ -9,7 +9,7 @@ from RuleList import *
 from CherokeeManagement import *
 
 DATA_VALIDATION = [
-    ("vserver!.*?!document_root",             (validations.is_local_dir_exists, 'cfg')),
+    ("vserver!.*?!document_root",             (validations.is_dev_null_or_local_dir_exists, 'cfg')),
     ("vserver!.*?!ssl_certificate_file",      (validations.is_local_file_exists, 'cfg')),
     ("vserver!.*?!ssl_certificate_key_file",  (validations.is_local_file_exists, 'cfg')),
     ("vserver!.*?!ssl_ca_list_file",          (validations.is_local_file_exists, 'cfg')),
@@ -31,6 +31,7 @@ NOTE_DISABLE_PW      = 'The personal web support is currently turned on.'
 NOTE_ADD_DOMAIN      = 'Adds a new domain name. Wildcards are allowed in the domain name.'
 NOTE_DOCUMENT_ROOT   = 'Virtual Server root directory.'
 NOTE_DIRECTORY_INDEX = 'List of name files that will be used as directory index. Eg: <em>index.html,index.php</em>.'
+NOTE_KEEPALIVE       = 'Whether this virtual server is allowed to use Keep-alive (Default: yes)'
 NOTE_DISABLE_LOG     = 'The Logging is currently enabled.'
 NOTE_LOGGERS         = 'Logging format. Apache compatible is highly recommended here.'
 NOTE_ACCESSES        = 'Back-end used to store the log accesses.'
@@ -63,7 +64,7 @@ class PageVServer (PageMenu, FormHelper):
 
         host = uri.split('/')[1]
         self.set_submit_url ('/vserver/%s'%(host))
-        self.submit_ajax_url = "/vserver/%s/ajax_update"%(host) 
+        self.submit_ajax_url = "/vserver/%s/ajax_update"%(host)
 
         # Check whether host exists
         cfg = self._cfg['vserver!%s'%(host)]
@@ -72,7 +73,7 @@ class PageVServer (PageMenu, FormHelper):
         if not cfg.has_child():
             return '/vserver/'
 
-        default_render = False 
+        default_render = False
         if post.get_val('is_submit'):
             if post.get_val('tmp!new_rule!value'):
                 re = self._op_add_new_entry (post       = post,
@@ -187,6 +188,7 @@ class PageVServer (PageMenu, FormHelper):
             self.AddPropEntry (table, 'Virtual Server nickname', '%s!nick'%(pre), NOTE_NICKNAME)
         self.AddPropEntry (table, 'Document Root',     '%s!document_root'%(pre),   NOTE_DOCUMENT_ROOT)
         self.AddPropEntry (table, 'Directory Indexes', '%s!directory_index'%(pre), NOTE_DIRECTORY_INDEX)
+        self.AddPropCheck (table, 'Keep-alive', '%s!keepalive'%(pre), True, NOTE_KEEPALIVE)
         tabs += [('Basics', str(table))]
 
         # Domains
@@ -237,7 +239,7 @@ class PageVServer (PageMenu, FormHelper):
     def _render_error_handler (self, host):
         txt = ''
         pre = 'vserver!%s' % (host)
-        
+
         table = TableProps()
         e = self.AddPropOptions_Reload (table, 'Error Handler',
                                         '%s!error_handler' % (pre), 
@@ -246,7 +248,7 @@ class PageVServer (PageMenu, FormHelper):
         txt += str(table) + self.Indent(e)
 
         return txt
-    
+
     def _render_add_rule (self, prefix):
         # Render
         txt = "<h2>Add new rule</h2>"
@@ -341,7 +343,7 @@ class PageVServer (PageMenu, FormHelper):
                               }
                               jQuery.post ('%(url)s', post,
                                   function (data, textStatus) {
-                                      window.location.reload();
+                                      window.location = window.location;
                                   }
                               );
                           }
@@ -379,18 +381,8 @@ class PageVServer (PageMenu, FormHelper):
 
     def _render_logger (self, host):
         txt   = ""
-
-        # Disable
         pre = 'vserver!%s!logger'%(host)
-        cfg = self._cfg[pre]
         format = self._cfg.get_val(pre)
-        if cfg and cfg.has_child():
-            table = TableProps()
-            js = "post_del_key('%s','%s');" % (self.submit_ajax_url, pre)
-            button = self.InstanceButton ("Disable", onClick=js)
-            self.AddProp (table, 'Status', '', button, NOTE_DISABLE_LOG)
-            txt += str(table)
-        txt += "<hr />"
 
         # Logger
         txt += '<h3>Logging Format</h3>'
@@ -508,11 +500,17 @@ class PageVServer (PageMenu, FormHelper):
         self.ApplyChanges_OptionModule ('%s!error_handler'%(pre), uri, post)
 
         # Look for the checkboxes
-        checkboxes = []
+        checkboxes = ['%s!keepalive'%(pre)]
         tmp = self._cfg['%s!rule'%(pre)]
         if tmp and tmp.has_child():
             for p in tmp:
                 checkboxes.append('%s!rule!%s!match!final'%(pre,p))
+
+        # Special case for loggers
+        keys = self._cfg.keys('%s!logger'%pre)
+        for key in keys:
+            cfg_key = '%s!logger!%s!filename' % (pre,key)
+            self.Validate_NotEmpty (post, cfg_key, "Filename must be set")
 
         # Apply changes
         self.ApplyChanges (checkboxes, post, DATA_VALIDATION)
@@ -526,6 +524,13 @@ class PageVServer (PageMenu, FormHelper):
         if not logger:
             del(self._cfg[cfg_key])
             return
+
+        to_be_deleted = []
+        if logger == 'w3c':
+            to_be_deleted.append('%s!access' % cfg_key)
+            to_be_deleted.append('%s!error' % cfg_key)
+        else:
+            to_be_deleted.append('%s!all' % cfg_key)
 
         to_be_deleted = []
         for entry in self._cfg[cfg_key]:

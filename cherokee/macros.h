@@ -102,7 +102,7 @@
 #define LOGGER_FLUSH_LAPSE            10
 #define RESPINS_MAX                   16
 #define SENDFILE_MIN_SIZE             (128 * 1024)   /* 128Kb */
-#define SENDFILE_MAX_SIZE             ((2 << 30) -1) /*   2Gb */
+#define SENDFILE_MAX_SIZE             2147483647     /* 2Gb -1*/
 #define NONCE_CLEANUP_LAPSE           60
 #define NONCE_EXPIRATION              60
 
@@ -141,8 +141,8 @@
 #define CRLF      "\r\n"        /* EOH (End Of Header Line) */
 #define LWS       " \t\r\n"     /* HTTP linear white space */
 #define LBS       " \t"         /* HTTP linear blank space */
-#define CHR_CR    '\r'          /* Carriage return */
-#define CHR_LF    '\n'          /* Line feed (new line) */
+#define CHR_CR    '\r'          /* 0x0D: Carriage return */
+#define CHR_LF    '\n'          /* 0x0A: Line feed (new line) */
 #define CHR_SP    ' '           /* Space */
 #define CHR_HT    '\t'          /* Horizontal tab */
 
@@ -359,20 +359,6 @@
 # define CST_SIZE unsigned long long
 #else
 # error Unknown size of size_t 
-#endif
-
-#ifndef O_NOFOLLOW
-# define O_NOFOLLOW 0
-#endif
-
-#ifndef O_LARGEFILE
-# define O_LARGEFILE 0
-#endif
-
-#ifdef O_NOATIME
-# define CHE_O_READ O_RDONLY | O_BINARY | O_NOATIME
-#else
-# define CHE_O_READ O_RDONLY | O_BINARY
 #endif
 
 

@@ -9,6 +9,12 @@
 /* L2 cache line size */
 #undef CPU_CACHE_LINE
 
+/* Define if crypt_r has uses CRYPTD */
+#undef CRYPT_R_CRYPTD
+
+/* Define if crypt_r uses struct crypt_data */
+#undef CRYPT_R_STRUCT_CRYPT_DATA
+
 /* Whether the Darwin sendfile() API is available */
 #undef DARWIN_SENDFILE_API
 
@@ -139,9 +145,6 @@
 
 /* Define to 1 if you have the `gmtime_r' function. */
 #undef HAVE_GMTIME_R
-
-/* Have libgnutls */
-#undef HAVE_GNUTLS
 
 /* Define to 1 if you have the <grp.h> header file. */
 #undef HAVE_GRP_H
@@ -358,6 +361,9 @@
 /* Define to 1 if you have the `strlcat' function. */
 #undef HAVE_STRLCAT
 
+/* Define to 1 if you have the `strnstr' function. */
+#undef HAVE_STRNSTR
+
 /* Define to 1 if you have the `strsep' function. */
 #undef HAVE_STRSEP
 
@@ -403,6 +409,9 @@
    */
 #undef HAVE_SYS_NDIR_H
 
+/* Define to 1 if you have the <sys/ofcntl.h> header file. */
+#undef HAVE_SYS_OFCNTL_H
+
 /* Define to 1 if you have the <sys/poll.h> header file. */
 #undef HAVE_SYS_POLL_H
 
@@ -444,9 +453,6 @@
 
 /* TCP_NOPUSH was found and will be used */
 #undef HAVE_TCP_NOPUSH
-
-/* Have TLS support */
-#undef HAVE_TLS
 
 /* Define to 1 if your `struct tm' has `tm_zone'. Deprecated, use
    `HAVE_STRUCT_TM_TM_ZONE' instead. */
@@ -536,9 +542,6 @@
 
 /* Package version */
 #undef PACKAGE_VERSION
-
-/* Define as the return type of signal handlers (`int' or `void'). */
-#undef RETSIGTYPE
 
 /* setenv function is thread safe */
 #undef SETENV_IS_THREADSAFE

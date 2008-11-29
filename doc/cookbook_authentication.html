@@ -53,6 +53,11 @@ Cherokee:</p></div>
 <a href="modules_validators_plain.html">Plain</a>
 </p>
 </li>
+<li>
+<p>
+<a href="modules_validators_authlist.html">Fixed List</a>
+</p>
+</li>
 </ul></div>
 <div class="para"><p>You will also find interesting information in the
 <a href="modules_validators_plain.html">"Validator Modules Overview"</a> and
@@ -84,7 +89,7 @@ step by step examples for Plain and PAM mechanisms in the
 <div class="para"><p>The details to set up the <tt>htdigest</tt> and <tt>htpasswd</tt> are exactly the
 same as for <tt>plain</tt> validation. The only difference is the tools used
 to create the passwords' file.</p></div>
-<h3 id="_htdigest">htdigest</h3><div style="clear:left"></div>
+<h3 id="htdigest">htdigest</h3><div style="clear:left"></div>
 <div class="para"><p>To use this handler you will need a file created by the <tt>htdigest</tt>
 command. It is a tool to manage user files for digest (and basic)
 authentication.</p></div>
@@ -115,7 +120,7 @@ Re-type new password:
 $ cat pass
 testuser:secret:f24f76261bcd65780b33edde00855897</tt></pre>
 </div></div>
-<h3 id="_htpasswd">htpasswd</h3><div style="clear:left"></div>
+<h3 id="htpasswd">htpasswd</h3><div style="clear:left"></div>
 <div class="para"><p>For this handle, the tool <tt>htpasswd</tt> is needed to create the
 files. The basic usage information is this:</p></div>
 <div class="sidebarblock">
@@ -159,7 +164,7 @@ testuser:iqLGh2g/7bX7M</tt></pre>
 passwords in a location fetchable from the webserver. This is true for
 plain validation, htdigest, htpasswd and whatever file based system
 you cross paths with.</p></div>
-<h3 id="_mysql">MySQL</h3><div style="clear:left"></div>
+<h3 id="mysql">MySQL</h3><div style="clear:left"></div>
 <div class="para"><p>Lets set up a simple server requiring authentication against a MySQL
 database to fetch any content.</p></div>
 <div class="para"><p>First, lets define a unique rule in our virtual server managed by the
@@ -210,6 +215,43 @@ mysql&gt; quit</tt></pre>
 </div>
 <div class="para"><p>And any content requested to Cherokee will require prior
 authentication against the database.</p></div>
+<h3 id="example">Another usage example</h3><div style="clear:left"></div>
+<div class="para"><p>As you can see, getting the hang of how authentication works is pretty
+easy. Let's ilustrate another easy example. How to serve PHP files,
+both from a protected location and an unprotected one?</p></div>
+<div class="para"><p>Let's assume our locations are targets are:
+- /unprotected/<strong>.php
+- /protected/</strong>.php</p></div>
+<div class="para"><p>Well&#8230; this would be really easy. You just have to remember that
+rules are evaluated from top to bottom, and the evaluation proceeds
+until a final rule is matched.</p></div>
+<div class="para"><p>This means that we would only have to be careful with the order of our
+rules, and it would be as simple as setting a couple of rules:</p></div>
+<div class="ilist"><ul>
+<li>
+<p>
+The first one, of type <tt>Directory</tt> applied to the path
+  <tt>/protected</tt>. This would be the top rule, should use one of the
+  authentication mechanisms mentioned above and should not be set as
+  <em>FINAL</em>.
+</p>
+</li>
+<li>
+<p>
+The second one, of type <tt>Extension</tt> would apply to <tt>php</tt> files and
+  should be configured as according to the <a href="cookbook_php.html">PHP
+  recipe</a>. This one should be a <em>FINAL</em> rule.
+</p>
+</li>
+</ul></div>
+<div class="para"><p>And this would be more than enough. The files from the secure location
+would match the first rule and the authentication would be
+required. In case it was successful, not being a final rule, the
+request would proceed to the second rule. Once there, the regular
+processing of PHP files would take palce. This one is a <em>FINAL</em> rule,
+so the rule evaluation would stop.</p></div>
+<div class="para"><p>In case the PHP files were not being requested from the secured
+directory, just the second rule would apply.</p></div>
 </div>
 <div id="footer">
 <div id="footer-text">

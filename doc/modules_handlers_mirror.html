@@ -18,14 +18,21 @@
 <h2 id="_handler_generic_balancer">Handler: Generic Balancer</h2>
 <div class="sectionbody">
 <div class="para"><p>This is the generic handler that provides the specific balancing
-strategy provided by the balancer modules. Check the documentation for
-<a href="modules_balancers.html">Balancers</a> for information about the
+strategy implemented by the balancer modules. Check the documentation
+for <a href="modules_balancers.html">Balancers</a> for information about the
 necessary parameters for any of these.</p></div>
 <div class="para"><p>Other handlers provide balancing mechanisms. Those are the
 <a href="modules_handlers_fcgi.html">FastCGI</a> and the
 <a href="modules_handlers_scgi.html">SCGI</a> handler. If you are not using
 any of those but want to distribute the load among several servers,
 this is the handler you should be using.</p></div>
+<div class="para"><p>Currently it supports connection forwarding and balancing, so you can
+configure it to forward the connection to a series of intranet servers
+for example. The generic balancer will forward the whole request,
+totally preserving its integrity: same URL, same headers, same
+eveything. If you would require a more complex behavior you should
+probably be using the <a href="modules_handlers_proxy.html">Rreverse Proxy</a>
+handler.</p></div>
 </div>
 <div id="footer">
 <div id="footer-text">

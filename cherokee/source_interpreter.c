@@ -31,9 +31,11 @@
 
 #include <sys/types.h>
 #include <unistd.h>
-
+#include <signal.h>
 
 #define ENTRIES "source,src,interpreter"
+#define DEFAULT_TIMEOUT 10
+
 
 static void interpreter_free (void *src);
 
@@ -49,6 +51,9 @@ cherokee_source_interpreter_new  (cherokee_source_interpreter_t **src)
 	n->custom_env     = NULL;
 	n->custom_env_len = 0;
 	n->debug          = false;
+	n->pid            = 0;
+	n->change_user    = 0;
+	n->timeout        = DEFAULT_TIMEOUT;
 
 	SOURCE(n)->type   = source_interpreter;
 	SOURCE(n)->free   = (cherokee_func_free_t)interpreter_free;
@@ -85,6 +90,10 @@ interpreter_free (void *ptr)
 	 */
 	cherokee_buffer_mrproper (&src->interpreter);
 
+	if (src->pid > 0) {
+		kill (src->pid, SIGTERM);
+	}
+
 	if (src->custom_env)
 		free_custom_env (src);
 
@@ -115,6 +124,22 @@ cherokee_source_interpreter_configure (cherokee_source_interpreter_t *src, chero
 
 		} else if (equal_buf_str (&child->key, "debug")) {
 			src->debug = !! atoi (child->val.buf);
+
+		} else if (equal_buf_str (&child->key, "timeout")) {
+			src->timeout = atoi (child->val.buf);
+
+		} else if (equal_buf_str (&child->key, "change_user")) {
+			struct passwd pwd;
+			char          tmp[1024];
+
+			ret = cherokee_getpwnam (child->val.buf, &pwd, tmp, sizeof(tmp));
+			if ((ret != ret_ok) || (pwd.pw_dir == NULL)) {
+				PRINT_MSG ("ERROR: User '%s' not found in the system\n",
+					   child->val.buf);
+				return ret_error;
+			}
+
+			src->change_user = pwd.pw_uid;
 
 		} else if (equal_buf_str (&child->key, "env")) {			
 			cherokee_config_node_foreach (j, child) {
@@ -167,7 +192,8 @@ cherokee_source_interpreter_add_env (cherokee_source_interpreter_t *src, char *e
 
 
 ret_t 
-cherokee_source_interpreter_spawn (cherokee_source_interpreter_t *src)
+cherokee_source_interpreter_spawn (cherokee_source_interpreter_t *src,
+				   cherokee_logger_t             *logger)
 {
 	int                re;
 	char             **envp;
@@ -179,6 +205,7 @@ cherokee_source_interpreter_spawn (cherokee_source_interpreter_t *src)
 #if 0
 	int s;
 	cherokee_sockaddr_t addr;
+	struct linger       linger;
 
 	/* This code is meant to, in some way, signal the FastCGI that
 	 * it is certainly a FastCGI.  The fcgi client will execute
@@ -193,6 +220,13 @@ cherokee_source_interpreter_spawn (cherokee_source_interpreter_t *src)
 	re = 1;
 	setsockopt (s, SOL_SOCKET, SO_REUSEADDR, &re, sizeof(re));
 
+	re = 1;
+	setsockopt (s, SOL_SOCKET, SO_KEEPALIVE, &re, sizeof(re));
+
+	linger.l_onoff  = 1;
+	linger.l_linger = 0;
+	setsockopt (s, SOL_SOCKET, SO_LINGER, &linger, sizeof(linger));
+
 	re = bind (s, (struct sockaddr *) &addr, sizeof(cherokee_sockaddr_t));
 	if (re == -1) return ret_error;
 
@@ -204,6 +238,13 @@ cherokee_source_interpreter_spawn (cherokee_source_interpreter_t *src)
 	 */
 	if (cherokee_buffer_is_empty (&src->interpreter)) 
 		return ret_not_found;
+
+	/* If there is a previous instance running, kill it
+	 */
+	if (src->pid > 0) {
+		kill (src->pid, SIGTERM);
+		src->pid = 0;
+	}
 
 	/* Maybe set a custom enviroment variable set 
 	 */
@@ -235,12 +276,22 @@ cherokee_source_interpreter_spawn (cherokee_source_interpreter_t *src)
 		close (STDERR_FILENO);
 #endif
 
-		/* Doesn't care about it's output either.  It can fill
-		 * out the system buffers and free the interpreter.
+		/* Change user if requested
+		 */
+		if (src->change_user > 0) {
+			setuid (src->change_user);
+		}
+
+		/* Redirect/Close stderr and stdout
 		 */
 		if (! src->debug) {
-			close (STDOUT_FILENO);
-			close (STDERR_FILENO);
+			if (logger != NULL) {
+				cherokee_logger_write_error_fd (logger, STDOUT_FILENO);
+				cherokee_logger_write_error_fd (logger, STDERR_FILENO);
+			} else {
+				close (STDOUT_FILENO);
+				close (STDERR_FILENO);
+			}			
 		}
 
 		argv[2] = (char *)tmp.buf;
@@ -255,6 +306,8 @@ cherokee_source_interpreter_spawn (cherokee_source_interpreter_t *src)
 		goto error;
 		
 	default:
+		src->pid = child;
+
 		sleep (1);
 		break;
 		
@@ -319,7 +372,7 @@ cherokee_source_interpreter_connect_polling (cherokee_source_interpreter_t *src,
 
 		src->launching = true;
 
-		ret = cherokee_source_interpreter_spawn (src);
+		ret = cherokee_source_interpreter_spawn (src, CONN_VSRV(conn)->logger);
 		if (ret != ret_ok) {
 			if (src->interpreter.buf)
 				TRACE (ENTRIES, "Couldn't spawn: %s\n",
@@ -336,9 +389,9 @@ cherokee_source_interpreter_connect_polling (cherokee_source_interpreter_t *src,
 		/* Reset the internal socket */
 		cherokee_socket_close (socket);
 
-	} else if (cherokee_bogonow_now > *spawned + 3) {	
-		TRACE (ENTRIES, "Giving up; spawned 3 secs ago: %s\n",
-		       src->interpreter.buf);
+	} else if (cherokee_bogonow_now > *spawned + src->timeout) {	
+		TRACE (ENTRIES, "Giving up; spawned %d secs ago: %s\n",
+		       src->timeout, src->interpreter.buf);
 
 		ret = ret_error;
 		goto out;

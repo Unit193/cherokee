@@ -22,13 +22,12 @@
 <img src="media/images/admin_general.png" alt="General" title="General"/>
 </div>
 </div>
-<h3 id="_networking">Networking</h3><div style="clear:left"></div>
+<h3 id="networking">Networking</h3><div style="clear:left"></div>
 <h4 id="_binding">Binding:</h4>
 <div class="para"><p>When the server is initiated it opens a port and starts listening to
 incoming requests. By default this is port 80 and it will use all the
 network interfaces of the machine, which is usually the desired
-behavior. The <strong>Port TLS</strong> specifies the port to be used for secure
-connections.</p></div>
+behavior.</p></div>
 <h4 id="_ipv6_support">IPv6 support</h4>
 <div class="para"><p>The IPv6 configuration key brings the possibility of activating or
 deactivating the IPv6 support at the server. If Cherokee has been
@@ -37,7 +36,7 @@ will be fully functional, otherwise it will be ignored.</p></div>
 <h4 id="_listen">Listen</h4>
 <div class="para"><p>This specifies the IP of the network interface to use. It can be left
 empty.</p></div>
-<h3 id="_basic_behavior">Basic Behavior</h3><div style="clear:left"></div>
+<h3 id="basic_behavior">Basic Behavior</h3><div style="clear:left"></div>
 <h4 id="_timeout">Timeout</h4>
 <div class="para"><p>Sets the number of seconds that Cherokee will wait before closing the
 connection.</p></div>
@@ -74,7 +73,7 @@ cellspacing="0" cellpadding="4">
     Minor                    
     </td>
     <td align="left">
-    Cherokee/0.10
+    Cherokee/0.11
     </td>
   </tr>
   <tr>
@@ -82,7 +81,7 @@ cellspacing="0" cellpadding="4">
     Minimal                  
     </td>
     <td align="left">
-    Cherokee/0.10.0
+    Cherokee/0.11.0
     </td>
   </tr>
   <tr>
@@ -90,7 +89,7 @@ cellspacing="0" cellpadding="4">
     OS                       
     </td>
     <td align="left">
-    Cherokee/0.10.0 (UNIX)
+    Cherokee/0.11.0 (UNIX)
     </td>
   </tr>
   <tr>
@@ -98,14 +97,14 @@ cellspacing="0" cellpadding="4">
     Full                     
     </td>
     <td align="left">
-    Cherokee/0.10.0 b2211 (UNIX)
+    Cherokee/0.11.0 b2321 (UNIX)
     </td>
   </tr>
 </tbody>
 </table>
 </div>
 <div class="para"><p>By default, Cherokee will use <strong>Full</strong>.</p></div>
-<h3 id="_server_permissions">Server Permissions</h3><div style="clear:left"></div>
+<h3 id="server_permissions">Server Permissions</h3><div style="clear:left"></div>
 <h4 id="_user_amp_group">User &amp; Group</h4>
 <div class="para"><p>The User directive configures which user the Cherokee daemon will
 normally run as. By default, Cherokee runs as root which is considered
@@ -118,6 +117,12 @@ the system ID.</p></div>
 <h4 id="_chroot">Chroot</h4>
 <div class="para"><p>Cherokee can be jailed inside a directory. Note that this should not
 be used as the sole security measure.</p></div>
+<h3 id="secure_http">Secure HTTP</h3><div style="clear:left"></div>
+<h4 id="_port_tls">Port TLS</h4>
+<div class="para"><p>The <strong>Port TLS</strong> specifies the port to be used for secure connections.</p></div>
+<h4 id="_back_end">Back-end</h4>
+<div class="para"><p>Specifies the TLS/SSL backend to be used, if any. The current option
+is OpenSSL.</p></div>
 </div>
 <div id="footer">
 <div id="footer-text">

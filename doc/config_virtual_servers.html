@@ -99,8 +99,20 @@ servers, and allows to configure in detail every possible setting.</p></div>
 </div>
 </div>
 <div class="para"><p>A detailed explanation of every tab follows.</p></div>
-<h3 id="_basics">Basics</h3><div style="clear:left"></div>
+<h3 id="basics">Basics</h3><div style="clear:left"></div>
 <div class="ilist"><ul>
+<li>
+<p>
+<strong>Virtual Server nickname</strong>
+</p>
+<div class="para"><p>The name that will be used to identify the virtual server.</p></div>
+</li>
+<li>
+<p>
+<strong>Document Root</strong>
+</p>
+<div class="para"><p>Path to use as root directory for the virtual server.</p></div>
+</li>
 <li>
 <p>
 <strong>Directory Indexes</strong>
@@ -124,8 +136,18 @@ as the object accessible under that public address of the same virtual
 server, so it will take care about the possible configuration of the
 /cgi-bin/ directory and/or the pl extension.</p></div>
 </li>
+<li>
+<p>
+<strong>Keep-alive</strong>
+</p>
+<div class="para"><p>This flag is enabled by default. It is used to enable or disable
+Keep-alive connections on a per-virtual-server basis. Keeping
+persisting connections has dramatic effects both in speed, but very
+high traffic loads can suffer because less connections are available
+for any given moment.</p></div>
+</li>
 </ul></div>
-<h3 id="_domain_names">Domain names</h3><div style="clear:left"></div>
+<h3 id="domain_names">Domain names</h3><div style="clear:left"></div>
 <div class="para"><p>This section allows to define the list of domains that the virtual
 server implements.</p></div>
 <div class="para"><p>It can accept either FQDN (Fully Qualified Domain Names) or wild
@@ -154,7 +176,7 @@ of virtual hosts trying to match the request against the <tt>Nicknames</tt>,
 also using the priorities defined by the virtual host order.</p></div>
 <div class="para"><p>Only after failing both with the domain names and the nicknames will
 Cherokee issue the failure.</p></div>
-<h3 id="_behavior">Behavior</h3><div style="clear:left"></div>
+<h3 id="behavior">Behavior</h3><div style="clear:left"></div>
 <div class="para"><p>This sections allows to define a set of rules to define how the server
 should handle the different requests. A summary of the existing rules is
 presented, containig several fields of information:</p></div>
@@ -166,7 +188,7 @@ presented, containig several fields of information:</p></div>
 </li>
 <li>
 <p>
-<strong>Type</strong>: Rule type. The will be explained in the following
+<strong>Type</strong>: Rule type. These will be explained in the following
     paragraphs.
 </p>
 </li>
@@ -181,6 +203,16 @@ presented, containig several fields of information:</p></div>
 <strong>Auth</strong>: Indicates if authentication is used for this rule. This
     can be set up through the <a href="config_virtual_servers_rule.html">Rule
     Entry</a> menu.
+</p>
+</li>
+<li>
+<p>
+<strong>Enc</strong>: Indicates if any encoding is applied to the rule.
+</p>
+</li>
+<li>
+<p>
+<strong>Exp</strong>: Indicates if expiration headers are configured for the rule.
 </p>
 </li>
 <li>
@@ -239,6 +271,29 @@ These entries are able to use the connection parameters (both pathinfo
       example, it can check if the HTTP referrer header refferences
       specific domains to allow or deny the delivery of the requested
       information.
+</p>
+</li>
+<li>
+<p>
+<strong>File Exists</strong>: This type of rule will only be applied if a
+      certain file (or a file among a list of provided file names) is
+      present. An I/O cache specific setting for the rule can be
+      configured in the <tt>Rule</tt> tab. If enabled, it will speed up the
+      file detection during the rule evaluation. This improves
+      performance but is not recommended when the directory contents
+      change dynamically. This type of rule can also be used to match
+      any file. For example, it can be configured to serve static
+      files and fall through to another rule if the HTTP request is
+      for a resource of dynamic nature.
+</p>
+</li>
+<li>
+<p>
+<strong>HTTP method</strong>: These rules are applied whenever the selected HTTP
+      method is used. You can configure these to respond to a request
+      of type GET, POST, HEAD, PUT, OPTIONS, DELETE, TRACE, CONNECT,
+      COPY, LOCK, MKCOL, MOVE, NOTIFY, POLL, PROPFIND, PROPPATCH,
+      SEARCH, SUBSCRIBE, UNLOCK or UNSUBSCRIBE.
 </p>
 </li>
 <li>
@@ -378,13 +433,13 @@ time the request would end in <tt>.php</tt> and thus it would match the
 <tt>Extension</tt> rule meant to handle PHP files.</td>
 </tr></table>
 </div>
-<h3 id="_personal_webs">Personal Webs</h3><div style="clear:left"></div>
+<h3 id="personal_webs">Personal Webs</h3><div style="clear:left"></div>
 <div class="para"><p>This options allows to setup the name of a subdirectory inside the
 users' home directory that will be used as document root for personal
 web content. For instance, if <tt>/foo</tt> was specified, a user <tt>bar</tt> could
 publish the content of <sub>/foo at the relative URL /</sub>bar
 This option is disabled if the <em>Directory name</em> field is empty.</p></div>
-<h3 id="_error_handler">Error Handler</h3><div style="clear:left"></div>
+<h3 id="error_handler">Error Handler</h3><div style="clear:left"></div>
 <div class="para"><p>Several mechanisms exist to handle errors.</p></div>
 <div class="olist"><ol>
 <li>
@@ -414,7 +469,7 @@ errors to a custom path or website.</p></div>
 something. If a requested resource is not available, the closest match
 will be sent. The only exception to this is when nothing at all is at
 Cherokee's disposal, in which case a standard http error is sent.</p></div>
-<h3 id="_logging">Logging</h3><div style="clear:left"></div>
+<h3 id="logging">Logging</h3><div style="clear:left"></div>
 <div class="para"><p>The <a href="modules_loggers.html">loggers</a> are a type of Cherokee modules
 to write the server log information using different destinations
 and/or formats:</p></div>
@@ -458,14 +513,39 @@ w3c - <a href="modules_loggers_w3c.html">W3C Log Format</a>
 <div class="para"><p>Logging using the W3C log format.</p></div>
 </li>
 </ul></div>
-<h3 id="_security">Security</h3><div style="clear:left"></div>
+<h3 id="security">Security</h3><div style="clear:left"></div>
 <div class="para"><p>The virtual server must be configured with the path to the certificate
 before using secure connections (https). There is a document which
 might help to generate SSL <a href="cookbook_ssl.html">keys</a></p></div>
 <div class="para"><p>Cherokee fully supports the usage of different certificates for each
 virtual server in a given host, be it using SNI as defined in
 <a href="http://www.rfc-archive.org/getrfc.php?rfc=3546">RFC 3546</a> or by
-elegantly respinning the secure handshake.</p></div>
+elegantly respinning the secure handshake. Check the
+<a href="other_goodies.html#ssl-vhosts">SSL Virtual Hosts</a> information for
+more details.</p></div>
+<div class="para"><p>If you want HTTPS to work, you must remember this:</p></div>
+<div class="olist"><ol>
+<li>
+<p>
+Providing the PEM-encoded files is mandatory for both <tt>Certificate</tt>
+  and <tt>Certificate key</tt> fields. Providing the <tt>CA List</tt> is optional.
+</p>
+</li>
+<li>
+<p>
+If you have several virtual servers, the <tt>Security</tt> section must be
+  configured for every one of them. At the moment you cannot have some
+  with HTTPS and some without. This makes sense, since by enabling the
+  feature in any one of them you are opening the HTTPS port in your
+  host, and receiving HTTPS requests for a virtual server that does
+  not provide the service would not be handled in a coherente
+  manner. None of the alternatives is very elegant in design: falling
+  back to HTTP, issuing an error that is likely to restart the HTTPS
+  hanshake, etc. This behavior, however, might change in the future
+  depending on the popularity of any proposed mechanisms.
+</p>
+</li>
+</ol></div>
 </div>
 <div id="footer">
 <div id="footer-text">

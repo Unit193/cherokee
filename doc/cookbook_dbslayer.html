@@ -17,7 +17,7 @@
 </div>
 <h2 id="_cookbook_how_to_set_up_dbslayer_mysql_balancing">Cookbook: How to set up DBSlayer MySQL balancing</h2>
 <div class="sectionbody">
-<h3 id="_introduction">Introduction:</h3><div style="clear:left"></div>
+<h3 id="introduction">Introduction:</h3><div style="clear:left"></div>
 <div class="para"><p>This recipe is meant to help in the task of setting up and
 understanding DBSlayer. This is a handler used to balance the load
 among several MySQL databases acting as a convenient front end that
@@ -25,11 +25,14 @@ simultaneously offers great scalability advantages. Refer to the
 <a href="modules_handlers_dbslayer.html">MySQL Bridge handler</a>
 documentation for the basic information about this subject.</p></div>
 <div class="para"><p>After reading this document you should be able to properly configure
-and understand this handler. It acts as a proxy for the back end MySQL
-server. This proxy can then be queried via JSON over HTTP, and the
-responses can be given in either one of the following supported
-consuming languages: JSON, Ruby, PHP and Python.</p></div>
-<h3 id="_independence">Independence:</h3><div style="clear:left"></div>
+and understand this handler. It acts as a proxy for a back end MySQL
+server (or cluster of server). This proxy can then be queried via JSON
+over HTTP, and the responses can be given in either one of the
+following supported consuming languages: JSON, Ruby, PHP and Python,
+which makes processing the database results almost trivial.</p></div>
+<div class="para"><p>As more than one SQL request can be issued at once -a transaction, for
+instance-, the responses are returned as a list of results.</p></div>
+<h3 id="independence">Independence:</h3><div style="clear:left"></div>
 <div class="para"><p>It is generally a good idea to separate the database balancer from
 your production web server, both for efficiency and security reasons.
 The DBSlayer handler can be configured to run under a directory in
@@ -69,7 +72,7 @@ when locking tables or performing transactions. In these cases you
 query, either using semicolon separators or within a stored
 procedure. Never dispatch them as separate queries, since your
 databases will rapidly become unstable.</p></div>
-<h3 id="_security">Security:</h3><div style="clear:left"></div>
+<h3 id="security">Security:</h3><div style="clear:left"></div>
 <div class="para"><p>As for security concerns, you must keep in mind that the hanlder is
 designed for internal secure networks. If you have concerns about
 exposing your database to the public you will have to properly secure
@@ -84,7 +87,7 @@ allowed to run selects and/or some stored procedures. This is totally
 unrelated to Cherokee and the Database Bridge handler. Using the
 mechanisms provided by MySQL to enforce the integrity of the database
 makes sense.</p></div>
-<h3 id="_modularity">Modularity:</h3><div style="clear:left"></div>
+<h3 id="modularity">Modularity:</h3><div style="clear:left"></div>
 <div class="para"><p>The  MySQL bridge does not work alone. It is an integral part of the
 Cherokee web server infrastructure and, like any Cherokee module, it
 can make use of the rest of the features provided by the web server.</p></div>
@@ -95,7 +98,7 @@ bridge to use any balancing mechanism provided by Cherokee, etc.</p></div>
 thus Keep-Alive should always remain enabled in the Cherokee instance
 running the MySQL bridge. Persistence will be correctly handled, and
 the performance will be optimal.</p></div>
-<h3 id="_replication">Replication:</h3><div style="clear:left"></div>
+<h3 id="replication">Replication:</h3><div style="clear:left"></div>
 <div class="para"><p>Odds are you want to use a M-M set-up, although that's entirely
 related to your database architecture and is something you'll have to
 study carefully.</p></div>
@@ -103,7 +106,7 @@ study carefully.</p></div>
 manage the replication among each one of you MySQL servers. These
 arrangements must be made independently using mechanisms suitable for
 the task.</p></div>
-<h3 id="_configuration">Configuration:</h3><div style="clear:left"></div>
+<h3 id="configuration">Configuration:</h3><div style="clear:left"></div>
 <div class="para"><p>We will configure a simple setup and show a very basic usage example
 so that you can go on from there.  This example will use a dedicated
 box running the Cherokee server with the MySQL bridge handler, and
@@ -161,7 +164,7 @@ in most programming languages. Using Python in this case will simply
 allow us to directly evaluate the results offered by the database,
 creating a native object that can be managed more comfortably.</p></div>
 <div class="para"><p>And these were all the steps required. You are ready to go!</p></div>
-<h3 id="_example_python_script">Example Python script:</h3><div style="clear:left"></div>
+<h3 id="example_python">Example Python script:</h3><div style="clear:left"></div>
 <div class="para"><p>The following script is provided to show how you can use the database
 balancing. It is as simple as it gets. You will only have to change
 the server name and prepare a database accessible with the parameters
@@ -171,13 +174,13 @@ detailed above (database name, user parameters and so on).</p></div>
 <pre><tt>#!/usr/bin/env python
 import urllib
 
-sql="select * from my_table;"
+sql="SELECT * FROM my_table;"
 query = urllib.quote(sql)
 
 print 'Original:', sql
 print 'Encoded:',  query
 
-url      = 'http://cherokee_server/%s'%(query)
+url      = 'http://localhost/%s'%(query)
 response = urllib.urlopen(url)
 
 print 'RESPONSE:', response
@@ -195,8 +198,32 @@ print 'DATA    :'
 print '---------'
 
 obj  = eval(data)
-print obj['RESULT'].keys()</tt></pre>
+print obj</tt></pre>
 </div></div>
+<h3 id="example_php">Example PHP script:</h3><div style="clear:left"></div>
+<div class="para"><p>This is a simple fetch using cURL:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>&lt;?php
+  $query = "SELECT * FROM my_table;";
+  $host  = "http://localhost";
+  $url   = $host ."/". rawurlencode($query);
+
+  $curl = curl_init();
+  curl_setopt ($curl, CURLOPT_URL, $url);
+  curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+  $result = curl_exec ($curl);
+  curl_close ($curl);
+
+  eval("\$obj = $result;");
+  var_dump($obj);
+?&gt;</tt></pre>
+</div></div>
+<div class="para"><p>Please note the variable must be set in the evaluation string, and
+that a semicolon is needed in order for the string to be correctly
+converted. This behavior -not adding the semicolon in the generated
+string automatically- is a design decision taken to make the
+underlying infrastructure more flexible.</p></div>
 </div>
 <div id="footer">
 <div id="footer-text">
