@@ -1,11 +1,17 @@
-cherokee (0.10.1-2) unstable; urgency=low
+cherokee (0.11.1-1) unstable; urgency=low
 
+  TO DO: Cannot be yet uploaded, waiting for upstream to add licensing
+  exemption (as Cherokee now uses OpenSSL). It will be in for the next
+  minor release.
+
+  * New Upstream Version
   * Added Vcs-Git and Vcs-Browser fields - Yes, this package is now
     maintained in a proper VCS (-:
   * Changing the initscript's "echo -n" calls to "printf", for better
     shell portability (thanks to Tim Post)
+  * Dropping build-dependency on gnutls, as it has been removed upstream    
 
- -- Gunnar Wolf <gwolf@debian.org>  Sun, 23 Nov 2008 10:31:02 -0600
+ -- Gunnar Wolf <gwolf@debian.org>  Sat, 29 Nov 2008 13:50:19 -0600
 
 cherokee (0.10.1-1) unstable; urgency=low
 

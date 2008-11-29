@@ -54,7 +54,6 @@ config.status: configure
 			   --build=$(DEB_BUILD_GNU_TYPE)         \
 			   --enable-os-string="Debian GNU/Linux" \
 	 		   --enable-pthreads                     \
-			   --enable-tls=gnu			 \
 			   --prefix=/usr                         \
 			   --localstatedir=/var                  \
 			   --mandir=\$${prefix}/share/man        \
