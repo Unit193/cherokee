@@ -24,13 +24,14 @@ AC_PREREQ(2.56)
 
 dnl Version
 m4_define([cherokee_major_version], [0])
-m4_define([cherokee_minor_version], [10])
+m4_define([cherokee_minor_version], [11])
 m4_define([cherokee_micro_version], [1])
 m4_define([cherokee_version], m4_format('%s.%s.%s', cherokee_major_version, cherokee_minor_version, cherokee_micro_version))
 
 dnl Init autoconf and automake
 AC_INIT([cherokee], [cherokee_version], [http://bugs.cherokee-project.com], [cherokee])
 AC_CONFIG_SRCDIR([cherokee/server.c])
+AC_CONFIG_MACRO_DIR([m4])
 AM_INIT_AUTOMAKE([no-define])
 
 dnl Define version
@@ -111,6 +112,9 @@ AC_MSG_CHECKING([host platform characteristics])
 	*-*-hpux*)
           libdl="-ldl"
           ;;
+	*-*-aix*)
+          libdl="-ldl"
+	     ;;
      *-*-irix6*)
           AC_DEFINE(IRIX, 1, [It is SGI Irix])
           setenv_is_threadsafe="yes"
@@ -206,7 +210,7 @@ AC_SUBST(VERSION)
 
 dnl Initialize Libtool
 m4_ifdef([LT_INIT],
-  [LT_INIT([dlopen C shared static win32-dll])],
+  [LT_INIT([dlopen shared static win32-dll])],
   [AC_LIBTOOL_DLOPEN
    AC_LIBTOOL_WIN32_DLL
    ])
@@ -241,7 +245,7 @@ AC_HEADER_TIME
 AC_HEADER_SYS_WAIT
 
 AC_CHECK_HEADERS(endian.h machine/endian.h sys/endian.h sys/isa_defs.h sys/utsname.h sys/poll.h poll.h )
-AC_CHECK_HEADERS(sys/socket.h sys/un.h netinet/in.h arpa/inet.h netinet/tcp.h sys/ioctl.h fcntl.h sys/time.h)
+AC_CHECK_HEADERS(sys/socket.h sys/un.h netinet/in.h arpa/inet.h netinet/tcp.h sys/ioctl.h fcntl.h sys/ofcntl.h sys/time.h)
 AC_CHECK_HEADERS(sys/resource.h resource.h unistd.h syslog.h stdint.h inttypes.h error.h pwd.h sys/uio.h)
 AC_CHECK_HEADERS(pthread.h netdb.h stdarg.h sys/filio.h sys/varargs.h sys/select.h sys/mman.h grp.h winsock.h)
 AC_CHECK_HEADERS(winsock.h winsock2.h)
@@ -249,7 +253,6 @@ AC_CHECK_HEADERS(winsock.h winsock2.h)
 AC_SYS_LARGEFILE
 
 AC_SIZE_T
-AC_TYPE_SIGNAL
 AC_TYPE_UID_T
 AC_TYPE_MODE_T
 AC_TYPE_OFF_T
@@ -282,7 +285,7 @@ AC_FUNC_MEMCMP
 AC_FUNC_MMAP
 AC_FUNC_FORK
 
-AC_CHECK_FUNCS(gmtime gmtime_r localtime localtime_r getrlimit getdtablesize readdir readdir_r flockfile funlockfile)
+AC_CHECK_FUNCS(gmtime gmtime_r localtime localtime_r getrlimit getdtablesize readdir readdir_r flockfile funlockfile strnstr)
 
 FW_CHECK_PWD
 FW_CHECK_GRP
@@ -947,106 +950,67 @@ dnl
 dnl crypt_r and pthread 
 dnl
 if test "$use_crypt_r" = "yes"; then
-	dnl
-	dnl struct crypt_data
-	dnl
-	oldcflags="$CFLAGS"
-	CFLAGS="$CFLAGS -D_GNU_SOURCE"
+   dnl
+   dnl crypt_r style
+   dnl 
+   AC_MSG_CHECKING([crypt_r style])
+   crypt_r_style=none
 
-	AC_MSG_CHECKING([for struct crypt_data])
-	AC_TRY_COMPILE([#include <crypt.h>], 
-				[struct crypt_data data;]
-			    ,
-				AC_MSG_RESULT([-D_GNU_SOURCE])
-				CRYPT_CFLAGS="-D_GNU_SOURCE"
-				AC_SUBST(CRYPT_CFLAGS)
-			    ,
-				AC_MSG_ERROR([struct crypt_data is not known]))
+   # pthread.h is needed on AIX
+   AC_TRY_COMPILE([#include <pthread.h>
+                   #include <crypt.h>],
+   			   [CRYPTD buffer;],
+			   crypt_r_style=cryptd)
 
-	CFLAGS="$oldcflags"
+   if test "$crypt_r_style" = "none"; then
+      AC_TRY_COMPILE([#include <crypt.h>],
+				 [struct crypt_data buffer;],
+				 crypt_r_style=struct_crypt_data)
+   fi
+
+   if test "$crypt_r_style" = "none"; then
+      AC_TRY_COMPILE([#define _GNU_SOURCE
+	 			  #include <crypt.h>],
+				 [struct crypt_data buffer;],
+				 [crypt_r_style=struct_crypt_data
+			       CRYPT_CFLAGS="-D_GNU_SOURCE"
+				  AC_SUBST(CRYPT_CFLAGS)])
+   fi   			      
+   
+   AC_MSG_RESULT([$crypt_r_style])
+
+   if test "$crypt_r_style" = "cryptd"; then
+     AC_DEFINE(CRYPT_R_CRYPTD, 1, [Define if crypt_r has uses CRYPTD])   
+   fi
+
+   if test "$crypt_r_style" = "struct_crypt_data"; then
+     AC_DEFINE(CRYPT_R_STRUCT_CRYPT_DATA, 1, [Define if crypt_r uses struct crypt_data])
+   fi
+
+   if test "$crypt_r_style" = "none"; then
+     AC_MSG_ERROR([Unable to detect data struct is used by crypt_r])
+   fi
 fi
 
 AM_CONDITIONAL(USE_CRYPT, test "x$use_crypt x$use_crypt_r" != "xno xno")
 
 
 dnl
-dnl SSL and TLS
+dnl OpenSSL
 dnl
-AC_ARG_ENABLE([tls], 
-[AC_HELP_STRING([--disable-tls],[Disable TLS/SSL support])
-AC_HELP_STRING([--enable-tls=[gnutls|openssl]])],
-		    enable_tls="$enableval", enable_tls="undef")
+AC_CHECK_LIB(crypto, BN_init)
 
-case "$enable_tls" in
-	no)
-		check_gnutls=no
-		check_openssl=no
-		;;
-	undef|yes)
-		check_gnutls=yes
-		check_openssl=yes
-		;;
-	gnu*)
-		check_gnutls=yes
-		check_openssl=no
-		;;
-	open*)
-		check_gnutls=no
-		check_openssl=yes
-		;;	
-	*)
-		AC_MSG_ERROR([Incorrect TLS library])
-		;;
-esac
-
-have_tls="no"
-
-if test "$check_gnutls" = "yes"  && test "$have_tls" = "no"
+AC_CHECK_HEADERS([openssl/engine.h])
+AC_CHECK_LIB(ssl, SSL_accept, [have_openssl=yes], [have_openssl=no])
+if test "$have_openssl" = "yes"
 then
-		dnl
-		dnl GNUTLS
-		dnl
-		PKG_CHECK_MODULES(GNUTLS, gnutls >= "1.0.4", [have_gnutls=yes], [have_gnutls=no])
-		if test "$have_gnutls" = "yes"
-		then
-			   TLS_LIBS="$GNUTLS_LIBS"
-			   TLS_CFLAGS="$GNUTLS_CFLAGS"
-
-			   AC_CHECK_LIB(gcrypt, gcry_control, [TLS_LIBS="$TLS_LIBS -lgcrypt"])
-			   AC_CHECK_LIB(gpg-error, gpg_strerror, [TLS_LIBS="$TLS_LIBS -lgpg-error"])
-
-			   AC_SUBST(TLS_LIBS)
-			   AC_SUBST(TLS_CFLAGS)
-
-			   AC_DEFINE(HAVE_TLS, 1, [Have TLS support])
-			   AC_DEFINE(HAVE_GNUTLS, 1, [Have libgnutls])
-			   have_tls="gnutls"
-		else
-			   enable_tls=no
-		fi
+	   TLS_LIBS="-lssl"
+	   AC_SUBST(TLS_LIBS)
+	   AC_DEFINE(HAVE_OPENSSL, 1, [Have OpenSSL library])
 fi
 
-if test "$check_openssl" = "yes" && test "$have_tls" = "no"
-then
-		dnl
-		dnl OpenSSL
-		dnl
-		AC_CHECK_LIB(crypto, BN_init)
+AM_CONDITIONAL(USE_OPENSSL, test "x$have_openssl" = "xyes")
 
-		AC_CHECK_HEADERS([openssl/engine.h])
-		AC_CHECK_LIB(ssl, SSL_accept, [have_openssl=yes], [have_openssl=no])
-		if test "$have_openssl" = "yes"
-		then
-			TLS_LIBS="-lssl"
-			AC_SUBST(TLS_LIBS)
-
-			AC_DEFINE(HAVE_TLS, 1, [Have TLS support])
-			AC_DEFINE(HAVE_OPENSSL, 1, [Have OpenSSL library])
-			have_tls="openssl"
-		else
-			enable_tls=no
-		fi
-fi
 
 dnl
 dnl LDAP
@@ -1089,9 +1053,10 @@ AM_CONDITIONAL(HAVE_LDAP, test $have_ldap = "yes")
 
 
 dnl
-dnl Check for MySQL 4.0.0 support
+dnl Check for MySQL: Execution of a string containing multiple
+dnl statements was introduced in the MySQL release 5.0.0
 dnl
-AX_LIB_MYSQL(4.0.0)
+AX_LIB_MYSQL(5.0.0)
 
 dnl
 dnl GeoIP library
@@ -1202,7 +1167,7 @@ AC_ARG_ENABLE(static-module,
 	   AC_HELP_STRING([--enable-static-module=MODULE][]),
 	   [use_static_module="$use_static_module $enableval "],[])
 
-modules="error_redir error_nn server_info file admin dirlist fcgi fastcgi scgi redir common cgi phpcgi proxy mirror custom_error dbslayer gzip deflate ncsa combined w3c pam ldap mysql htpasswd plain htdigest authlist round_robin directory extensions request header geoip not and or"
+modules="error_redir error_nn server_info file admin dirlist fcgi fastcgi scgi redir common cgi phpcgi proxy mirror ssi custom_error dbslayer gzip deflate ncsa combined w3c pam ldap mysql htpasswd plain htdigest authlist round_robin directory extensions request header exists method geoip libssl not and or"
 
 # Remove modules that will not be compiles
 #
@@ -1221,6 +1186,9 @@ if test "x$have_geoip" != "xyes"; then
 fi
 if test "$use_crypt" != "yes"; then
 	modules=`echo $modules | sed s/htpasswd//`
+fi
+if test "$have_openssl" != "yes"; then
+	modules=`echo $modules | sed s/libssl//`
 fi
 
 add_calls=""
@@ -1269,6 +1237,7 @@ AM_CONDITIONAL(STATIC_HANDLER_CGI,            grep cgi            $conf_h >/dev/
 AM_CONDITIONAL(STATIC_HANDLER_PHPCGI,         grep phpcgi         $conf_h >/dev/null)
 AM_CONDITIONAL(STATIC_HANDLER_PROXY,          grep proxy          $conf_h >/dev/null)
 AM_CONDITIONAL(STATIC_HANDLER_MIRROR,         grep mirror         $conf_h >/dev/null)
+AM_CONDITIONAL(STATIC_HANDLER_SSI,            grep ssi            $conf_h >/dev/null)
 AM_CONDITIONAL(STATIC_HANDLER_CUSTOM_ERROR,   grep custom_error   $conf_h >/dev/null)
 AM_CONDITIONAL(STATIC_HANDLER_DBSLAYER,       grep dbslayer       $conf_h >/dev/null)
 AM_CONDITIONAL(STATIC_ENCODER_GZIP,           grep gzip           $conf_h >/dev/null)
@@ -1284,10 +1253,13 @@ AM_CONDITIONAL(STATIC_VALIDATOR_PLAIN,        grep plain          $conf_h >/dev/
 AM_CONDITIONAL(STATIC_VALIDATOR_HTDIGEST,     grep htdigest       $conf_h >/dev/null)
 AM_CONDITIONAL(STATIC_VALIDATOR_AUTHLIST,     grep authlist       $conf_h >/dev/null)
 AM_CONDITIONAL(STATIC_BALANCER_ROUND_ROBIN,   grep round_robin    $conf_h >/dev/null)
+AM_CONDITIONAL(STATIC_CRYPTOR_LIBSSL,         grep libssl         $conf_h >/dev/null)
 AM_CONDITIONAL(STATIC_RULE_DIRECTORY,         grep directory      $conf_h >/dev/null)
 AM_CONDITIONAL(STATIC_RULE_EXTENSIONS,        grep extensions     $conf_h >/dev/null)
 AM_CONDITIONAL(STATIC_RULE_REQUEST,           grep request        $conf_h >/dev/null)
 AM_CONDITIONAL(STATIC_RULE_HEADER,            grep header         $conf_h >/dev/null)
+AM_CONDITIONAL(STATIC_RULE_EXISTS,        	 grep exists         $conf_h >/dev/null)
+AM_CONDITIONAL(STATIC_RULE_METHOD,        	 grep method         $conf_h >/dev/null)
 AM_CONDITIONAL(STATIC_RULE_GEOIP,             grep geoip          $conf_h >/dev/null)
 # These must be at the end
 AM_CONDITIONAL(STATIC_RULE_NOT,               grep _not_          $conf_h >/dev/null)
@@ -1301,7 +1273,6 @@ cherokee-config
 cherokee.pc
 cherokee.spec
 cherokee/Makefile 
-cherokee/Makefile.MingW 
 contrib/Makefile 
 icons/Makefile
 m4/Makefile 
@@ -1351,7 +1322,7 @@ for m in $methods; do
 	i=`expr $i + 1`
 done
 echo "Threading support     $have_pthread"
-echo "TLS support           $have_tls"
+echo "OpenSSL support       $have_openssl"
 echo "PCRE library          $have_pcre"
 echo "Compatible PAM        $have_pam"
 echo "LDAP                  $have_ldap"

@@ -1,0 +1,135 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+    <meta http-equiv="Content-Language" content="en-us" />
+    <meta name="ROBOTS" content="ALL" />
+    <meta http-equiv="imagetoolbar" content="no" />
+    <meta name="MSSmartTagsPreventParsing" content="true" />
+    <meta name="Keywords" content="cherokee web server httpd http" />
+    <meta name="Description" content="Cherokee is a flexible, very fast, lightweight Web server. It is implemented entirely in C, and has no dependencies beyond a standard C library. It is embeddable and extensible with plug-ins. It supports on-the-fly configuration by reading files or strings, TLS/SSL (via GNUTLS or OpenSSL), virtual hosts, authentication, cache friendly features, PHP, custom error management, and much more." />
+    <link href="media/css/cherokee_doc.css" rel="stylesheet" type="text/css" media="all" />
+  </head>
+<body>
+<h2 id="_a_href_index_html_index_a_8594_a_href_cookbook_html_cookbook_a"><a href="index.html">Index</a> &#8594; <a href="cookbook.html">Cookbook</a></h2>
+<div class="sectionbody">
+</div>
+<h2 id="_cookbook_setting_up_zend_framework">Cookbook: Setting up Zend Framework</h2>
+<div class="sectionbody">
+<div class="para"><p>The <a href="http://framework.zend.com/">Zend Framework</a> is a PHP framework
+focused on building more secure, reliable, and modern Web 2.0
+applications &amp; web services.</p></div>
+<div class="para"><p>It is essential that Cherokee supports PHP before starting with this
+recipe. That should not be a problem since it comes preconfigured by
+default. However, you can follow the <a href="cookbook_php.html">setting up
+PHP</a> recipe for further hints on fine tuning this feature.</p></div>
+<div class="para"><p>To make sure the recipe works, we'll be using the demo provided by the
+<a href="http://framework.zend.com/docs/quickstart">Zend Framework
+Quickstart</a>. At the time of writing, it was
+<a href="http://framework.zend.com/demos/ZendFrameworkQuickstart-20080915.tar.gz">demo
+20080915</a>.</p></div>
+<div class="para"><p>Uncompress its contents to a directory and set up the <tt>public</tt>
+subdirectory as your web document root. In our example, it will be
+<tt>/var/www/demo/public</tt>.</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>user@cherokee:/var/www/demo$ ls
+application  data  library  public  scripts</tt></pre>
+</div></div>
+<div class="para"><p>The <tt>library</tt> directory is empty and should contain the Zend Framework
+files. Download it from the
+<a href="http://framework.zend.com/download">official page</a> and copy it to
+the appropriate location. Follow the Quickstart for more details on
+setting up the framework. We will concentrate on the Cherokee side.</p></div>
+<div class="para"><p>So now that we have the files in place, we'll just create the needed
+rules for the web server. Specially important will be the rewrite
+rules. From the Zend Framework</p></div>
+<div class="sidebarblock">
+<div class="sidebar-content">
+<div class="para"><p>This set of rewrite rules specify that if the file exists under the
+document root directory, it should simply be served as a static
+resource. Otherwise, the request is for dynamic content and should be
+rewritten to our index.php script. Since all requests for non-static
+content will be rewritten to it, the index.php script serves as the
+entry point to our application.</p></div>
+</div></div>
+<div class="para"><p>Launch cherokee-admin, and proceed to the
+<a href="config_virtual_servers.html">Virtual servers</a> section. Select the
+virtual server that you will be configuring and go to the <tt>Behavior</tt>
+tab to set up the rules.</p></div>
+<div class="olist"><div class="title">Steps</div><ol>
+<li>
+<p>
+You will need to keep the rule for the <tt>php</tt> extension.
+</p>
+</li>
+<li>
+<p>
+Next, configure a rule with the handler <tt>File Exists</tt> that should be
+  set to a priority lower than that of the <tt>php</tt> rule.  This one can
+  be set to match whatever files you like, but the important thing is
+  to check the <tt>Match any file</tt> checkbox. Let this rule be handled by
+  the <a href="modules_handlers_file.html">Static Content</a> handler.
+</p>
+</li>
+<li>
+<p>
+And last, modify your <tt>Default</tt> rule by configuring the
+  <a href="modules_handlers_redir.html">redirection handler</a>, through the
+  <tt>Handler</tt> tab.
+</p>
+<div class="tableblock">
+<table rules="none"
+frame="hsides"
+cellspacing="0" cellpadding="4">
+<col width="163" />
+<col width="363" />
+<col width="272" />
+<thead>
+  <tr>
+    <th align="left">
+    Type     
+    </th>
+    <th align="left">
+    Regular Expression
+    </th>
+    <th align="left">
+    Substitution
+    </th>
+  </tr>
+</thead>
+<tbody valign="top">
+  <tr>
+    <td align="left">
+    Internal 
+    </td>
+    <td align="left">
+    ^.*$              
+    </td>
+    <td align="left">
+    /index.php
+    </td>
+  </tr>
+</tbody>
+</table>
+</div>
+</li>
+</ol></div>
+<div class="para"><p>This will take care of redirecting the requests to Zend.</p></div>
+<div class="para"><p>You are done with the configuration! You can now access your
+application. The demo provided by Zend will look like this:</p></div>
+<div class="imageblock">
+<div class="content">
+<img src="media/images/cookbook_zend1.png" alt="Demo" title="Demo"/>
+</div>
+</div>
+<div class="para"><p>Of course, you'll have to follow the complete tutorial if you expect
+it to work as intended.</p></div>
+</div>
+<div id="footer">
+<div id="footer-text">
+</div>
+</div>
+</body>
+</html>

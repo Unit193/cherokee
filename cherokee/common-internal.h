@@ -57,6 +57,14 @@
 # include <sys/varargs.h>
 #endif
 
+#ifdef HAVE_FCNTL_H
+# include <fcntl.h>
+#endif
+
+#ifdef HAVE_SYS_FCNTL_H
+# include <sys/fcntl.h>
+#endif
+
 #ifdef HAVE_DLFCN_H
 # include <dlfcn.h>
 #endif
@@ -179,6 +187,20 @@ char *strcasestr(char *s, char *find);
 # else
 #  error "Can't define INT_MAX"
 # endif
+#endif
+
+/* Depend on fcntl.h
+ */
+#ifndef O_NOFOLLOW
+# define O_NOFOLLOW 0
+#endif
+
+#ifndef O_LARGEFILE
+# define O_LARGEFILE 0
+#endif
+
+#ifndef S_ISLNK
+# define S_ISLNK(i) (0)
 #endif
 
 #endif /* CHEROKEE_COMMON_INTERNAL_H */

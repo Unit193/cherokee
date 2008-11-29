@@ -17,7 +17,7 @@
 </div>
 <h2 id="_requirements">Requirements</h2>
 <div class="sectionbody">
-<h3 id="_hardware">Hardware</h3><div style="clear:left"></div>
+<h3 id="hw">Hardware</h3><div style="clear:left"></div>
 <div class="para"><p>Cherokee is very light, completely modular and it can be tailored to
 your specific needs. As such, disk requirements will vary depending on
 the options selected for the building process. A static build for
@@ -25,7 +25,7 @@ embedded devices can occupy as little as 200KB, give or take.</p></div>
 <div class="para"><p>In terms of processing power, it has been known to work with as
 little as 133Mhz ARM processors. It could very well work on something
 smaller, but we haven't really had the chance to try it out.</p></div>
-<h3 id="_software">Software</h3><div style="clear:left"></div>
+<h3 id="sw">Software</h3><div style="clear:left"></div>
 <div class="para"><p>Cherokee has no dependencies besides a standard libc. Everything else
 is optional. Obviously anything beyond mere static content serving
 must be available for Cherokee to correctly execute the task. This
@@ -70,12 +70,11 @@ If you are building Cherokee in a non-POSIX compliant platform such
 <li>
 <p>
 If you want to make a build that serves secure content, you will
-  need TLS libraries. Cherokee supports two different SSL/TLS
-  libraries: OpenSSL and GNUTLS. You need to have the development
-  files of one of these in order to build a package that suits your
-  needs. Additionally, if you are going to use GNUTLS, you will need
-  <a href="http://pkg-config.freedesktop.org/wiki/">pkg-config</a> to
-  correctly detect it during the <tt>configure</tt> stage.
+  need TLS libraries. Cherokee ships with support for the OpenSSL
+  backend, but the architecture is completly modular and any other
+  backend can be implemented. You need to have the development files
+  of the chosen backend libraries in order to build a package that
+  suits your needs.
 </p>
 </li>
 </ul></div>

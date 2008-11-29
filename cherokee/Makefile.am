@@ -2,7 +2,6 @@
 
 INCLUDES = \
 -I${top_srcdir} \
-$(TLS_CFLAGS) \
 $(PTHREAD_CFLAGS)
 
 #
@@ -163,6 +162,40 @@ if STATIC_RULE_HEADER
 static_rule_header_src = $(rule_header)
 else
 dynamic_rule_header_lib = libplugin_header.la
+endif
+
+
+#
+# Rule exists
+#
+rule_exists = \
+rule_exists.c \
+rule_exists.h
+
+libplugin_exists_la_LDFLAGS = $(module_ldflags)  
+libplugin_exists_la_SOURCES = $(rule_exists)
+
+if STATIC_RULE_EXISTS
+static_rule_exists_src = $(rule_exists)
+else
+dynamic_rule_exists_lib = libplugin_exists.la
+endif
+
+
+#
+# Rule exists
+#
+rule_method = \
+rule_method.c \
+rule_method.h
+
+libplugin_method_la_LDFLAGS = $(module_ldflags)  
+libplugin_method_la_SOURCES = $(rule_method)
+
+if STATIC_RULE_METHOD
+static_rule_method_src = $(rule_method)
+else
+dynamic_rule_method_lib = libplugin_method.la
 endif
 
 
@@ -494,11 +527,12 @@ endif
 #
 handler_proxy = \
 handler_proxy.c \
-handler_proxy.h
+handler_proxy.h \
+proxy_hosts.h \
+proxy_hosts.c
 
 libplugin_proxy_la_LDFLAGS = $(module_ldflags)  
 libplugin_proxy_la_SOURCES = $(handler_proxy)
-libplugin_proxy_la_LIBADD  = libcherokee-client.la
 
 if STATIC_HANDLER_PROXY
 static_handler_proxy_src = $(handler_proxy)
@@ -523,6 +557,23 @@ if STATIC_HANDLER_MIRROR
 static_handler_mirror_src = $(handler_mirror)
 else
 dynamic_handler_mirror_lib = libplugin_mirror.la
+endif
+
+
+#
+# Handler ssi
+#
+handler_ssi = \
+handler_ssi.c \
+handler_ssi.h
+
+libplugin_ssi_la_LDFLAGS = $(module_ldflags)  
+libplugin_ssi_la_SOURCES = $(handler_ssi)
+
+if STATIC_HANDLER_SSI
+static_handler_ssi_src = $(handler_ssi)
+else
+dynamic_handler_ssi_lib = libplugin_ssi.la
 endif
 
 
@@ -571,10 +622,6 @@ endif
 #
 # Handler admin
 #
-config_common = \
-connection_info.h \
-connection_info.c
-
 handler_admin = \
 handler_admin.c \
 handler_admin.h \
@@ -586,7 +633,7 @@ libplugin_admin_la_SOURCES = $(handler_admin)
 libplugin_admin_la_LIBADD  = libcherokee-config.la libcherokee-client.la  
 
 if STATIC_HANDLER_ADMIN
-static_handler_admin_src = $(handler_admin) $(config_common)
+static_handler_admin_src = $(handler_admin)
 else
 dynamic_handler_admin_lib = libplugin_admin.la
 endif
@@ -726,8 +773,13 @@ endif
 #
 # Validator htpasswd
 #
+if !STATIC_VALIDATOR_HTPASSWD
+validator_file_file = validator_file.h validator_file.c
+endif
+
 if USE_CRYPT
 validator_htpasswd = \
+$(validator_file_file) \
 validator_htpasswd.c \
 validator_htpasswd.h
 
@@ -748,7 +800,12 @@ endif
 #
 # Validator plain text
 #
+if !STATIC_VALIDATOR_PLAIN
+validator_file_file = validator_file.h validator_file.c
+endif
+
 validator_plain = \
+$(validator_file_file) \
 validator_plain.c \
 validator_plain.h
 
@@ -765,8 +822,13 @@ endif
 #
 # Validator htdigest
 #
-validator_htdigest = \
-validator_htdigest.c \
+if !STATIC_VALIDATOR_HTDIGEST
+validator_file_file = validator_file.h validator_file.c
+endif
+
+validator_htdigest =   \
+$(validator_file_file) \
+validator_htdigest.c   \
 validator_htdigest.h
 
 libplugin_htdigest_la_LDFLAGS = $(module_ldflags) 
@@ -819,6 +881,28 @@ endif
 
 
 #
+# Cryptor libssl
+#
+cryptor_libssl = \
+cryptor_libssl.c \
+cryptor_libssl.h
+
+libplugin_libssl_la_LDFLAGS = $(module_ldflags) $(TLS_LIBS)
+libplugin_libssl_la_SOURCES = $(cryptor_libssl)
+libplugin_libssl_la_CFLAGS  = $(TLS_CFLAGS)
+
+if USE_OPENSSL
+if STATIC_CRYPTOR_LIBSSL
+static_cryptor_libssl_src   = $(cryptor_libssl)
+static_cryptor_libssl_lib   = $(TLS_LIBS)
+static_cryptor_libssl_flags = $(TLS_CFLAGS)
+else
+dynamic_cryptor_libssl_lib = libplugin_libssl.la
+endif
+endif
+
+
+#
 # Balancer Round Robin
 #
 balancer_round_robin = \
@@ -848,14 +932,12 @@ libcherokee-config.la
 # extra cflags at link time can't hurt
 libcherokee_base_la_LDFLAGS = $(common_ldflags) $(library_soname)
 libcherokee_base_la_LIBADD = \
-$(TLS_LIBS) \
 $(PTHREAD_LIBS) \
 $(PTHREAD_CFLAGS) \
 $(external_pcre_lib)
 
 libcherokee_client_la_LDFLAGS = $(common_ldflags) $(library_soname)
 libcherokee_client_la_LIBADD = \
-$(TLS_LIBS) \
 $(PTHREAD_LIBS) \
 $(PTHREAD_CFLAGS) \
 libcherokee-base.la
@@ -864,10 +946,10 @@ libcherokee_server_la_LDFLAGS = $(common_ldflags) $(library_soname)
 libcherokee_server_la_CFLAGS = \
 $(static_validator_htpasswd_flags) \
 $(static_validator_mysql_flags) \
+$(static_cryptor_libssl_flags) \
 $(static_handler_dbslayer_flags)
 
 libcherokee_server_la_LIBADD = \
-$(TLS_LIBS) \
 $(PTHREAD_LIBS) \
 $(PTHREAD_CFLAGS) \
 $(static_validator_pam_lib) \
@@ -877,6 +959,7 @@ $(static_validator_htpasswd_lib) \
 $(static_validator_mysql_lib) \
 $(static_handler_proxy_lib) \
 $(static_handler_dbslayer_lib) \
+$(static_cryptor_libssl_lib) \
 libcherokee-base.la
 
 libcherokee_config_la_LDFLAGS = $(common_ldflags) $(library_soname)
@@ -919,7 +1002,7 @@ unix4win32.c \
 win32_misc.h \
 win32_misc.c \
 win32_cservice.h \
-win32_cservice.c
+win32_cservice.c 
 endif
 
 libcherokee_base_la_SOURCES = \
@@ -963,6 +1046,10 @@ version.h \
 version.c \
 buffer.h \
 buffer.c \
+module.h \
+module.c \
+cryptor.h \
+cryptor.c \
 socket.h \
 socket.c \
 fdpoll.h \
@@ -1033,12 +1120,28 @@ if STATIC_HANDLER_SCGI
 	     	 handler_cgi_base.c
 endif
 
+if STATIC_VALIDATOR_PLAIN
+   common_val_file = validator_file.h \
+				 validator_file.c
+endif
+
+if STATIC_VALIDATOR_HTPASSWD
+   common_val_file = validator_file.h \
+				 validator_file.c
+endif
+
+if STATIC_VALIDATOR_HTDIGEST
+   common_val_file = validator_file.h \
+				 validator_file.c
+endif
 
 libcherokee_server_la_SOURCES = \
 $(static_rule_directory_src) \
 $(static_rule_extensions_src) \
 $(static_rule_request_src) \
 $(static_rule_header_src) \
+$(static_rule_exists_src) \
+$(static_rule_method_src) \
 $(static_rule_geoip_src) \
 $(static_rule_not_src) \
 $(static_rule_and_src) \
@@ -1058,6 +1161,7 @@ $(static_handler_phpcgi_src) \
 $(static_handler_common_src) \
 $(static_handler_proxy_src) \
 $(static_handler_mirror_src) \
+$(static_handler_ssi_src) \
 $(static_handler_custom_error_src) \
 $(static_handler_server_info_src) \
 $(static_handler_dbslayer_src) \
@@ -1077,9 +1181,12 @@ $(static_validator_htpasswd_src) \
 $(static_validator_authlist_src) \
 $(static_validator_mysql_src) \
 \
+$(static_cryptor_libssl_src) \
+\
 $(static_balancer_round_robin_src) \
 \
 $(common_cgi) \
+$(common_val_file) \
 \
 connection.h \
 connection-protected.h \
@@ -1110,8 +1217,6 @@ logger_writer.c \
 thread.h \
 thread.c \
 plugin.h \
-module.h \
-module.c \
 validator.h \
 validator.c \
 plugin_loader.h \
@@ -1129,13 +1234,13 @@ source.c \
 source_interpreter.h \
 source_interpreter.c \
 info.h \
-info.c
+info.c \
+connection_info.h \
+connection_info.c
 
 libcherokee_config_la_SOURCES = \
-$(config_common) \
 admin_client.h \
 admin_client.c 
-
 
 #
 # Header files
@@ -1162,11 +1267,13 @@ post.h \
 trace.h \
 avl.h \
 cache.h \
+iocache.h \
+module.h \
+cryptor.h \
 \
 config_node.h \
 config_entry.h \
 server.h \
-module.h \
 logger.h \
 handler.h \
 encoder.h \
@@ -1195,6 +1302,8 @@ $(dynamic_rule_directory_lib) \
 $(dynamic_rule_extensions_lib) \
 $(dynamic_rule_request_lib) \
 $(dynamic_rule_header_lib) \
+$(dynamic_rule_exists_lib) \
+$(dynamic_rule_method_lib) \
 $(dynamic_rule_geoip_lib) \
 $(dynamic_rule_not_lib) \
 $(dynamic_rule_and_lib) \
@@ -1211,6 +1320,7 @@ $(dynamic_handler_fastcgi_lib) \
 $(dynamic_handler_redir_lib) \
 $(dynamic_handler_proxy_lib) \
 $(dynamic_handler_mirror_lib) \
+$(dynamic_handler_ssi_lib) \
 $(dynamic_handler_custom_error_lib) \
 $(dynamic_handler_error_redir_lib) \
 $(dynamic_handler_error_nn_lib) \
@@ -1228,6 +1338,7 @@ $(dynamic_validator_htdigest_lib) \
 $(dynamic_validator_htpasswd_lib) \
 $(dynamic_validator_authlist_lib) \
 $(dynamic_validator_mysql_lib) \
+$(dynamic_cryptor_libssl_lib) \
 $(dynamic_balancer_round_robin_lib) 
 
 
@@ -1302,8 +1413,6 @@ CLEANFILES = \
 config.h
 
 WINDOWS_PORT_FILES = \
-Makefile.MingW \
-Makefile.MingW.in \
 unix4win32.h \
 unix4win32.c \
 win32_misc.h \

@@ -20,8 +20,14 @@ import random
 import tempfile
 
 from base import *
-from conf import *
 from help import *
+
+try:
+    # Try to load a local configuration
+    from conf_local import *
+except ImportError:
+    # Use default settings
+    from conf import *
 
 # Configuration parameters
 num       = 1
@@ -43,6 +49,7 @@ log       = False
 help      = False
 memproc   = False
 randomize = False
+proxy     = None
 
 server    = CHEROKEE_PATH
 delay     = SERVER_DELAY
@@ -95,6 +102,7 @@ for p in param:
     elif p[:2] == '-m': method    = p[2:]
     elif p[:2] == '-e': server    = p[2:]
     elif p[:2] == '-v': valgrind  = p[2:]
+    elif p[:2] == '-P': proxy     = p[2:]
     else:
         help = True
 
@@ -130,6 +138,55 @@ panic = CHEROKEE_PANIC
 if panic[0] != '/':
     panic = os.path.normpath (os.path.join (os.getcwd(), CHEROKEE_PANIC))
 
+# Proxy
+if not proxy:
+    if ssl:
+        client_port = PORT_TLS
+    else:
+        client_port = PORT
+
+    client_host    = HOST
+    listen         = '127.0.0.1'
+    proxy_cfg_file = None
+else:
+    pieces = proxy.split(':')
+    if len(pieces) == 2:
+        client_host, client_port = pieces
+        public_ip = figure_public_ip()
+    else:
+        client_host, client_port, public_ip = pieces
+
+    listen = ''
+
+    PROXY_CONF = """
+server!chunked_encoding = 1
+server!keepalive_max_requests = 500
+server!log_flush_lapse = 0
+server!panic_action = /usr/bin/cherokee-panic
+server!port = %(client_port)s
+
+vserver!10!nick = default
+vserver!10!document_root = /dev/null
+vserver!10!logger = combined
+vserver!10!logger!access!type = stderr
+vserver!10!logger!error!type = stderr
+
+vserver!10!rule!100!match = default
+vserver!10!rule!100!match!final = 1
+vserver!10!rule!100!handler = proxy
+vserver!10!rule!100!handler!balancer = round_robin
+vserver!10!rule!100!handler!balancer!source!1 = 1
+
+source!1!host = %(public_ip)s:%(PORT)s
+source!1!nick = QA
+source!1!type = host
+""" % (locals())
+
+    proxy_cfg_file = tempfile.mktemp("cherokee_proxy_cfg")
+    f = open (proxy_cfg_file, 'w')
+    f.write (PROXY_CONF)
+    f.close()
+
 # Configuration file base
 next_source = get_next_source()
 
@@ -140,7 +197,7 @@ CONF_BASE = """
 server!port = %(PORT)d
 server!port_tls = %(PORT_TLS)d
 server!keepalive = 1 
-server!listen = 127.0.0.1
+server!listen = %(listen)s
 server!panic_action = %(panic)s
 server!pid_file = %(pid)s
 server!module_dir = %(CHEROKEE_MODS)s
@@ -176,6 +233,7 @@ if method:
 
 if ssl:
     CONF_BASE += """
+server!tls = libssl
 vserver!1!ssl_certificate_file = %s
 vserver!1!ssl_certificate_key_file = %s
 vserver!1!ssl_ca_list_file = %s
@@ -264,6 +322,8 @@ if port is None:
         print_key ('Mods',  CHEROKEE_MODS)
         print_key ('Deps',  CHEROKEE_DEPS)
         print_key ('Panic', CHEROKEE_PANIC)
+        if proxy_cfg_file:
+            print_key ('Proxy conf', proxy_cfg_file)
         print
 
         if memproc:
@@ -337,6 +397,9 @@ def mainloop_iterator(objs, main_thread=True):
         for obj in objs:
             go_ahead = obj.Precondition()
 
+            if proxy and not obj.proxy_suitable:
+                go_ahead = False
+
             if go_ahead and main_thread:
                 if pause > 0:
                     do_pause()
@@ -354,13 +417,10 @@ def mainloop_iterator(objs, main_thread=True):
                     if not obj in skipped:
                         skipped.append(obj)
                 continue
-    
-            if port is None:
-                port = PORT
 
             try:
                 obj.JustBefore(www)
-                ret = obj.Run(port, ssl)
+                ret = obj.Run (client_host, client_port, ssl)
                 obj.JustAfter(www)
             except Exception, e:
                 if not its_clean:
@@ -385,9 +445,6 @@ def mainloop_iterator(objs, main_thread=True):
                     sys.stdout.flush()
                 time.sleep (tpause)
 
-
-if ssl:
-    port = PORT_TLS
 
 # If we want to pause once do it before launching the threads
 if pause == 1:

@@ -180,7 +180,23 @@ run-tests.py \
 172-Chunked-CGI.py \
 173-Chunked-SCGI.py \
 174-Respins-Limit.py \
-175-Digest-htdigest-2.py
+175-Digest-htdigest-2.py \
+176-AuthLista1.py \
+177-AuthLista2.py \
+178-AuthLista3.py \
+179-RuleExists.py \
+180-RuleExists2.py \
+181-RuleExists3.py \
+182-SSI-include-file.py \
+183-SSI-include-virtual.py \
+184-SSI-fsize-file.py \
+185-SSI-fsize-virtual.py \
+186-SSI-droot.py \
+187-Method.py \
+188-Method2.py \
+189-Redir9.py \
+190-RuleExists4.py \
+191-RuleExists5.py
 
 test:
 	./run-tests.py

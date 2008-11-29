@@ -19,7 +19,7 @@ class ModuleErrorRedir (Module, FormHelper):
 
     def _op_render (self):
         txt = ''
-        
+
         # Render error list
         errors = self._cfg[self._prefix]
         if errors and errors.has_child():
@@ -37,9 +37,9 @@ class ModuleErrorRedir (Module, FormHelper):
         table = Table(3,1)
         table += ('Error', 'URL', '')
 
-        options = EntryOptions ('new_error_code', ERROR_CODES)
+        options = EntryOptions ('new_error_code', ERROR_CODES, noautosubmit=True)
         entry = self.InstanceEntry('new_error_url', 'text', size=30)
-        table += (options, entry, SUBMIT_BUTTON)
+        table += (options, entry, SUBMIT_ADD)
 
         txt += str(table)
         return txt

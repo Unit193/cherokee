@@ -1,0 +1,171 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+    <meta http-equiv="Content-Language" content="en-us" />
+    <meta name="ROBOTS" content="ALL" />
+    <meta http-equiv="imagetoolbar" content="no" />
+    <meta name="MSSmartTagsPreventParsing" content="true" />
+    <meta name="Keywords" content="cherokee web server httpd http" />
+    <meta name="Description" content="Cherokee is a flexible, very fast, lightweight Web server. It is implemented entirely in C, and has no dependencies beyond a standard C library. It is embeddable and extensible with plug-ins. It supports on-the-fly configuration by reading files or strings, TLS/SSL (via GNUTLS or OpenSSL), virtual hosts, authentication, cache friendly features, PHP, custom error management, and much more." />
+    <link href="media/css/cherokee_doc.css" rel="stylesheet" type="text/css" media="all" />
+  </head>
+<body>
+<h2 id="_a_href_index_html_index_a_8594_a_href_cookbook_html_cookbook_a"><a href="index.html">Index</a> &#8594; <a href="cookbook.html">Cookbook</a></h2>
+<div class="sectionbody">
+</div>
+<h2 id="_cookbook_setting_up_joomla">Cookbook: Setting up Joomla</h2>
+<div class="sectionbody">
+<div class="para"><p>Setting up <a href="http://www.joomla.org/">Joomla</a> with Cherokee is really
+easy. We will assume that our <tt>Document Root</tt> directory is <tt>/var/www</tt>
+and that we want to install the software on a subdirectory called
+<tt>joomla</tt> of the server we are working on.</p></div>
+<div class="para"><p>You will need PHP support correctly configured in Cherokee, and PHP
+with the MySQL module installed. The default configuration already
+provides a valid PHP configuration for Cherokee if you have php-cgi
+installed, but you can follow the appropriate recipe about
+<a href="cookbook_php.html">setting up PHP</a> in case you don't have it
+available for any reason. You will also need an FTP server if the
+Joomla files are owned by a user other than the one running the web
+server.</p></div>
+<div class="para"><p>Under these conditions, you could start Joomla's installation and you
+would already be able to have your site up and running.</p></div>
+<div class="para"><p>However, we can add several refinements. In this recipe we will be
+dedicating a virtual server entirely to Joomla, so either create a new
+one or adjust <tt>default</tt> accodringly. Of course, you can also set it up
+under a directory in an existing virtual server, but we will take the
+first approach for clarity and simplicity. And we will make the
+modifications in our <tt>default</tt> virtual server. This will only affect
+the URLs we'll be accessing to log in to Joomla. First download and
+uncompress the distributed Joomla release into <tt>/var/www/joomla</tt>, and
+set that path as the <tt>Document Root</tt> in your virtual host's <tt>Basics</tt>
+tab.</p></div>
+<div class="para"><p>We will also be making changes in the <tt>Error Handler</tt> tab, selecting
+the <tt>Custom redirections</tt> option and adding an option to send errors
+to Joomla.</p></div>
+<div class="tableblock">
+<table rules="rows"
+frame="hsides"
+cellspacing="0" cellpadding="4">
+<col width="416" />
+<col width="384" />
+<thead>
+  <tr>
+    <th align="left">
+    Error        
+    </th>
+    <th align="left">
+    URL
+    </th>
+  </tr>
+</thead>
+<tbody valign="top">
+  <tr>
+    <td align="left">
+    403 Forbidden
+    </td>
+    <td align="left">
+    /index.php
+    </td>
+  </tr>
+  <tr>
+    <td align="left">
+    404 Not Found
+    </td>
+    <td align="left">
+    /index.php
+    </td>
+  </tr>
+</tbody>
+</table>
+</div>
+<div class="para"><p>Now only the database issue remains. Log in to MySQL:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>mysql -u root -p</tt></pre>
+</div></div>
+<div class="para"><p>And create the database for Joomla. We will be using the name
+<em>joomla</em>, the user <em>joomlauser</em> and the password <em>joomlapassword</em>, but
+you should set up your own.</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>CREATE DATABASE joomla;
+GRANT ALL PRIVILEGES ON joomla.* TO joomlauser@localhost IDENTIFIED BY 'joomlapassword';
+GRANT ALL PRIVILEGES ON joomla.* TO joomlauser@localhost.localdomain IDENTIFIED BY joomla'password';
+FLUSH PRIVILEGES;
+quit;</tt></pre>
+</div></div>
+<div class="para"><p>Then point your web browser to <tt>http://localhost/joomla</tt> and follow
+the instructions provided by the Joomla installer.</p></div>
+<div class="para"><p>There is not much else you must do for Cherokee to work with
+Joomla. If you follow the Joomla installer's instructions -providing
+valid database information in most cases will suffice-, you will go
+thorough every step swiftly. Once you are done you will have to
+eliminate the <tt>installation</tt> subdirectory, as Joomla does not allow
+going any further until you do so as a security precaution. It is also
+a good idea to make the <tt>cache</tt> directory world writable.</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>rm -rf /var/www/joomla/installation
+chmod 777 /var/www/joomla/cache</tt></pre>
+</div></div>
+<div class="imageblock">
+<div class="content">
+<img src="media/images/cookbook_joomla.png" alt="Joomla Demo" title="Joomla Demo"/>
+</div>
+</div>
+<div class="para"><p>Now to set up Joomla. Visit
+<a href="http://localhost/administration">http://localhost/administration</a>
+and log in. Go to the <tt>Global Configuration</tt> option and enable all the
+<strong>SEO Settings</strong>, including the ones for Apache mod_rewrite.</p></div>
+<div class="para"><p>Finally, set up the rewrite rules recommended by Joomla to block out
+the most common type of exploit attempts. To do so, simply create
+<tt>Regular Expression</tt> rules for the following expressions:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>mosConfig_[a-zA-Z_]{1,21}(=|\%3D)
+base64_encode.*\(.*\)
+(\&lt;|%3C).*script.*(\&gt;|%3E)
+GLOBALS(=|\[|\%[0-9A-Z]{0,2})
+_REQUEST(=|\[|\%[0-9A-Z]{0,2})</tt></pre>
+</div></div>
+<div class="para"><p>Each should be managed by a handler that returns an error:</p></div>
+<div class="tableblock">
+<table rules="rows"
+frame="hsides"
+cellspacing="0" cellpadding="4">
+<col width="320" />
+<col width="480" />
+<thead>
+  <tr>
+    <th align="left">
+    Handler   
+    </th>
+    <th align="left">
+    Error
+    </th>
+  </tr>
+</thead>
+<tbody valign="top">
+  <tr>
+    <td align="left">
+    HTTP error
+    </td>
+    <td align="left">
+    403 Forbidden
+    </td>
+  </tr>
+</tbody>
+</table>
+</div>
+<div class="para"><p>After this you are done! Remember that all these settings are
+refinements not really needed by Joomla to perform its basic
+functions.</p></div>
+</div>
+<div id="footer">
+<div id="footer-text">
+</div>
+</div>
+</body>
+</html>

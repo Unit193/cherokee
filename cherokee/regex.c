@@ -25,8 +25,9 @@
 #include "common-internal.h"
 #include "regex.h"
 #include "avl.h"
-#include "pcre/pcre.h"
+#include "util.h"
 
+#define ENTRIES "regex"
 
 struct cherokee_regex_table {
 	cherokee_avl_t      cache;
@@ -127,4 +128,142 @@ ret_t
 cherokee_regex_table_add (cherokee_regex_table_t *table, char *pattern)
 {
 	return _add (table, pattern, NULL);
+}
+
+
+/* RegEx lists
+ */
+
+static ret_t
+configure_rewrite_entry (cherokee_list_t        *list,
+			 cherokee_config_node_t *conf,
+			 cherokee_regex_table_t *regexs)
+{
+	ret_t                   ret;
+	cint_t                  hidden;
+	cherokee_regex_entry_t *n;
+	cherokee_buffer_t      *substring;
+	pcre                   *re         = NULL;
+	cherokee_buffer_t      *regex      = NULL;
+
+	TRACE(ENTRIES, "Converting rewrite rule '%s'\n", conf->key.buf);
+
+	/* Query conf
+	 */
+	cherokee_config_node_read_int (conf, "show", &hidden);
+	hidden = !hidden;
+
+	ret = cherokee_config_node_read (conf, "regex", &regex);
+	if (ret == ret_ok) {
+		ret = cherokee_regex_table_get (regexs, regex->buf, (void **)&re);
+		if (ret != ret_ok)
+			return ret;
+	} 
+
+	ret = cherokee_config_node_read (conf, "substring", &substring);
+	if (ret != ret_ok)
+		return ret;
+
+	/* New RegEx
+	 */
+	n = (cherokee_regex_entry_t *) malloc(sizeof(cherokee_regex_entry_t));
+	if (unlikely (n == NULL))
+		return ret_nomem;
+
+	INIT_LIST_HEAD (&n->listed);
+	n->re         = re;
+	n->hidden     = hidden;
+	
+	cherokee_buffer_init (&n->subs);
+	cherokee_buffer_add_buffer (&n->subs, substring);
+
+	/* Add the list
+	 */
+	cherokee_list_add_tail (&n->listed, list);
+	return ret_ok;
+}
+
+
+ret_t
+cherokee_regex_list_configure (cherokee_list_t        *list,
+			       cherokee_config_node_t *conf,
+			       cherokee_regex_table_t *regexs)
+{
+	ret_t            ret;
+	cherokee_list_t *i;
+
+	cherokee_config_node_foreach (i, conf) {
+		ret = configure_rewrite_entry (list, CONFIG_NODE(i), regexs);
+		if (ret != ret_ok)
+			return ret;
+	}
+
+	return ret_ok;
+}
+
+
+ret_t
+cherokee_regex_list_mrproper (cherokee_list_t *list)
+{
+	cherokee_list_t *i, *tmp;
+
+	list_for_each_safe (i, tmp, list) {
+		cherokee_regex_entry_t *n = REGEX_ENTRY(i);
+
+		cherokee_buffer_mrproper (&n->subs);
+		free (i);
+	}
+
+	return ret_ok;
+}
+
+
+ret_t
+cherokee_regex_substitute (cherokee_buffer_t *regex_str,
+			   cherokee_buffer_t *source,
+			   cherokee_buffer_t *target,
+			   cint_t             ovector[],
+			   cint_t             stringcount)
+{
+	cint_t              re;
+	char               *s;
+	char                num;
+	cherokee_boolean_t  dollar    = false;
+	const char         *substring = NULL;
+
+	for (s = regex_str->buf; *s != '\0'; s++) {
+		if (! dollar) {
+			if (*s == '$')
+				dollar = true;
+			else 
+				cherokee_buffer_add_char (target, *s);
+			continue;
+		}
+
+		num = *s - '0';
+
+		/* Add the characters if it wasn't a number */
+		if ((num < 0) || (num > 9)) {
+			cherokee_buffer_add_str  (target, "$");
+			cherokee_buffer_add_char (target, *s);
+
+			dollar = false;
+			continue;
+		}
+
+		/* Perform the actually substitution */
+		substring = NULL;
+
+		re = pcre_get_substring (source->buf, ovector, stringcount, num, &substring);
+		if ((re < 0) || (substring == NULL)) {
+			dollar = false;
+			continue;
+		}
+
+		cherokee_buffer_add (target, substring, strlen(substring));
+		pcre_free_substring (substring);
+		dollar = false;
+	}
+
+	return ret_ok;
 }

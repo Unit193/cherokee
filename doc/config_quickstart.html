@@ -26,7 +26,7 @@ specification.</p></div>
 <div class="para"><p>We will first show a quick overview of the available options, followed
 by a simple walkthrough. You can learn more about the options in their
 specific documentation entries.</p></div>
-<h3 id="_overview">Overview</h3><div style="clear:left"></div>
+<h3 id="overview">Overview</h3><div style="clear:left"></div>
 <div class="ilist"><ul>
 <li>
 <p>
@@ -83,7 +83,7 @@ specific documentation entries.</p></div>
 </p>
 </li>
 </ul></div>
-<h3 id="_walkthrough">Walkthrough</h3><div style="clear:left"></div>
+<h3 id="walkthrough">Walkthrough</h3><div style="clear:left"></div>
 <div class="para"><p>There is very little set up you must do to have a perfectly functional
 web server out of the box. Cherokee's default configuration can be
 used to serve any typical PHP-driven dynamic website.</p></div>
@@ -102,12 +102,21 @@ administration tool, so you will need system administrator rights.</p></div>
 <div class="listingblock">
 <div class="content">
 <pre><tt># cherokee-admin
-Cherokee Web Server 0.10.0 (Oct 27 2008): Listening on port 9090, TLS disabled,
+
+Login:
+  User:              admin
+  One-time Password: 72O3GRxZfTrE2zHx
+
+Cherokee Web Server 0.11.0 (Nov 13 2008):: Listening on port 9090, TLS disabled,
 IPv6 disabled, using epoll, 1024 fds system limit, max. 505 connections,
 single thread</tt></pre>
 </div></div>
 <div class="para"><p>Now you can access the administration interface simply by opening your
 web browser and visiting <a href="http://localhost:9090">http://localhost:9090</a></p></div>
+<div class="para"><p>The User and One-time Password will be required initially. This is to
+prevent other users of the local host from being able to configure the
+server unless they have access to the password. This is also very
+useful to allow temporary access to a remote administrator.</p></div>
 <div class="para"><p>If your user doesn't have enough privileges you will be notified. Also
 if no configuration file exists you will be prompted to create one
 with the default settings.</p></div>

@@ -64,11 +64,6 @@
 # include <sys/wait.h>
 #endif
 
-#ifdef HAVE_GNUTLS
-# include <gnutls/gnutls.h>	
-# include <gcrypt.h>
-#endif
-
 #include <signal.h>
 #include <dirent.h>
 #include <unistd.h>
@@ -123,7 +118,8 @@ cherokee_server_new  (cherokee_server_t **srv)
 	n->port             = 80;
 	n->port_tls         = 443;
 	n->tls_enabled      = false;
-
+	n->cryptor          = NULL;
+	
 	n->timeout          = 5;
 	n->fdwatch_msecs    = 1000;
 
@@ -166,9 +162,7 @@ cherokee_server_new  (cherokee_server_t **srv)
 
 	/* Accepting mutexes
 	 */
-#ifdef HAVE_TLS
 	CHEROKEE_MUTEX_INIT (&n->accept_tls_mutex, NULL);
-#endif
 	CHEROKEE_MUTEX_INIT (&n->accept_mutex, NULL);
 
 	/* IO Cache cache
@@ -206,6 +200,10 @@ cherokee_server_new  (cherokee_server_t **srv)
 	cherokee_buffer_init (&n->server_string_w_port);
 	cherokee_buffer_init (&n->server_string_w_port_tls);
 
+	cherokee_buffer_init (&n->server_address);
+	cherokee_buffer_init (&n->server_port);
+	cherokee_buffer_init (&n->server_port_tls);
+
 	/* Programmed tasks
 	 */
 	n->log_flush_next        = 0;
@@ -213,13 +211,6 @@ cherokee_server_new  (cherokee_server_t **srv)
 
 	n->nonces_cleanup_next   = 0;
 	n->nonces_cleanup_lapse = NONCE_CLEANUP_LAPSE;
-
-	/* TLS
-	 */
-	ret = cherokee_tls_init();
-	if (ret < ret_ok) {
-		return ret;
-	}
 
 	/* PID
 	 */
@@ -272,9 +263,7 @@ destroy_all_threads (cherokee_server_t *srv)
 	list_for_each_safe (i, tmp, &srv->thread_list) {
 		THREAD(i)->exit = true;
 		CHEROKEE_MUTEX_UNLOCK (&srv->accept_mutex);
-#ifdef HAVE_TLS
 		CHEROKEE_MUTEX_UNLOCK (&srv->accept_tls_mutex);
-#endif
 	}
 
 	/* Destroy the thread object
@@ -301,12 +290,10 @@ cherokee_server_free (cherokee_server_t *srv)
 	cherokee_socket_close (&srv->socket);
 	cherokee_socket_mrproper (&srv->socket);
 
-#ifdef HAVE_TLS
 	cherokee_socket_close (&srv->socket_tls);
 	cherokee_socket_mrproper (&srv->socket_tls);
 
 	CHEROKEE_MUTEX_DESTROY (&srv->accept_tls_mutex);
-#endif
 	CHEROKEE_MUTEX_DESTROY (&srv->accept_mutex);
 
 	/* Attached objects
@@ -333,6 +320,10 @@ cherokee_server_free (cherokee_server_t *srv)
 	cherokee_buffer_mrproper (&srv->server_string_w_port);
 	cherokee_buffer_mrproper (&srv->server_string_w_port_tls);
 
+	cherokee_buffer_mrproper (&srv->server_address);
+	cherokee_buffer_mrproper (&srv->server_port);
+	cherokee_buffer_mrproper (&srv->server_port_tls);
+
 	cherokee_buffer_mrproper (&srv->listen_to);
 	cherokee_buffer_mrproper (&srv->chroot);
 	cherokee_buffer_mrproper (&srv->pidfile);
@@ -354,16 +345,6 @@ static ret_t
 change_execution_user (cherokee_server_t *srv, struct passwd *ent)
 {
 	int error;
-
-#if 0
-	/* Get user information
-	*/
-	ent = getpwuid (srv->user);
-	if (ent == NULL) {
-		PRINT_ERROR ("Can't get username for UID %d\n", srv->user);
-		return ret_error;
-	}
-#endif
 
 	/* Reset `groups' attributes.
 	 */
@@ -565,11 +546,8 @@ print_banner (cherokee_server_t *srv)
 	/* TLS / SSL
 	 */
 	if (srv->tls_enabled) {
-#ifdef HAVE_GNUTLS
-		cherokee_buffer_add_str (&n, ", with TLS support via GNUTLS");
-#elif HAVE_OPENSSL
-		cherokee_buffer_add_str (&n, ", with TLS support via OpenSSL");
-#endif
+		cherokee_module_get_name (MODULE(srv->cryptor), (const char **)&method);
+		cherokee_buffer_add_va (&n, ", with TLS support via %s", method);
 	} else {
 		cherokee_buffer_add_str (&n, ", TLS disabled");
 	}
@@ -626,7 +604,9 @@ print_banner (cherokee_server_t *srv)
 
 
 static ret_t
-initialize_server_socket (cherokee_server_t *srv, cherokee_socket_t *socket, unsigned short port)
+initialize_server_socket (cherokee_server_t *srv,
+			  cherokee_socket_t *socket,
+			  unsigned short     port)
 {
 	ret_t ret;
 
@@ -832,30 +812,33 @@ initialize_loggers (cherokee_server_t *srv)
 	return ret_ok;
 }
 
-static ret_t
+static int
 vservers_check_tls (cherokee_server_t *srv)
 {
 	ret_t            ret;
 	cherokee_list_t *i;
+	cuint_t          num = 0;
+
+	if (srv->cryptor == NULL)
+		return 0;
 
 	list_for_each (i, &srv->vservers) {
 		ret = cherokee_virtual_server_has_tls (VSERVER(i));
-		if (ret != ret_ok) {
-			TRACE (ENTRIES, "Virtual Server %s: TLS disabled\n", VSERVER(i)->name.buf);
-			return ret_not_found;
+		if (ret == ret_ok) {
+			TRACE (ENTRIES, "Virtual Server %s: TLS enabled\n", VSERVER(i)->name.buf);		
+			return 1;
 		}
-
-		TRACE (ENTRIES, "Virtual Server %s: TLS enabled\n", VSERVER(i)->name.buf);
+		num += 1;
 	}
 
-	return ret_ok;
+	TRACE (ENTRIES, "None of the %d virtual servers use TLS\n", num);
+	return 0;
 }
 
 
 static ret_t
 init_vservers_tls (cherokee_server_t *srv)
 {
-#ifdef HAVE_TLS
 	ret_t               ret;
 	cherokee_list_t    *i;
 	cherokee_boolean_t  error = false;
@@ -882,10 +865,6 @@ init_vservers_tls (cherokee_server_t *srv)
 
 	if (error)
 		return ret_error;
-
-#else
-	UNUSED (srv);
-#endif
 
 	return ret_ok;	
 }
@@ -963,6 +942,7 @@ cherokee_server_initialize (cherokee_server_t *srv)
 	ret_t               ret;
 	struct passwd      *ent;
 	cherokee_boolean_t  loggers_done = false;
+	char                server_ip[CHE_INET_ADDRSTRLEN+1];
 
 	/* Build the server string
 	 */
@@ -1009,9 +989,17 @@ cherokee_server_initialize (cherokee_server_t *srv)
 			return ret;
 	}
 
+	/* Build the server address string
+	 */
+	cherokee_socket_ntop (&srv->socket, server_ip, sizeof(server_ip)-1);
+	cherokee_buffer_add (&srv->server_address, server_ip, strlen(server_ip));
+
+	cherokee_buffer_add_va (&srv->server_port, "%d", srv->port);
+	cherokee_buffer_add_va (&srv->server_port_tls, "%d", srv->port_tls);
+
 	/* Init the SSL/TLS support
 	 */
-	srv->tls_enabled = (vservers_check_tls (srv) == ret_ok);
+	srv->tls_enabled = vservers_check_tls(srv);
 
 	if (srv->tls_enabled) {
 		ret = init_vservers_tls (srv);
@@ -1049,10 +1037,14 @@ cherokee_server_initialize (cherokee_server_t *srv)
 
 	/* Get the passwd file entry before chroot
 	 */
-	ent = getpwuid (srv->user);
-	if (ent == NULL) {
-		PRINT_ERROR ("Can't get username for UID %d\n", srv->user);
-		return ret_error;
+	if ((srv->user != srv->user_orig) ||
+	    (srv->group != srv->group_orig))
+	{
+		ent = getpwuid (srv->user);
+		if (ent == NULL) {
+			PRINT_ERROR ("Can't get username for UID %d\n", srv->user);
+			return ret_error;
+		}
 	}
 
 	/* Chroot
@@ -1076,9 +1068,13 @@ cherokee_server_initialize (cherokee_server_t *srv)
 
 	/* Change the user
 	 */
-	ret = change_execution_user (srv, ent);
-	if (ret != ret_ok) {
-		return ret;
+	if ((srv->user != srv->user_orig) ||
+	    (srv->group != srv->group_orig))
+	{
+		ret = change_execution_user (srv, ent);
+		if (ret != ret_ok) {
+			return ret;
+		}
 	}
 
 	/* Change current directory
@@ -1333,7 +1329,7 @@ vservers_check_sanity (cherokee_server_t *srv)
 	 */
 	cherokee_list_get_len (&srv->vservers, &len);
 	if (len == 0) {
-		PRINT_ERROR ("No virtual hosts have been added.\n");
+		PRINT_ERROR_S ("No virtual hosts have been added.\n");
 		return ret_error;
 	}
 
@@ -1341,7 +1337,7 @@ vservers_check_sanity (cherokee_server_t *srv)
 	 */
 	vsrv = VSERVER(srv->vservers.prev);
 	if (! equal_buf_str (&vsrv->name, "default")) {
-		PRINT_ERROR ("Lowest priority virtual server must be 'default'.\n");
+		PRINT_ERROR_S ("Lowest priority virtual server must be 'default'.\n");
 		return ret_error;
 	}
 
@@ -1477,14 +1473,16 @@ configure_server_property (cherokee_config_node_t *conf, void *data)
 #endif
 
 	} else if (equal_buf_str (&conf->key, "user")) {
-		struct passwd *pwd;
-	   
-		pwd = (struct passwd *) getpwnam (conf->val.buf);
-		if (pwd == NULL) {
+		struct passwd pwd;
+		char          tmp[1024];
+
+		ret = cherokee_getpwnam (conf->val.buf, &pwd, tmp, sizeof(tmp));
+		if ((ret != ret_ok) || (pwd.pw_dir == NULL)) {
 			 PRINT_MSG ("ERROR: User '%s' not found in the system\n", conf->val.buf);
 			 return ret_error;
 		}
-		srv->user = pwd->pw_uid;		
+
+		srv->user = pwd.pw_uid;
 
 	} else if (equal_buf_str (&conf->key, "group")) {
 		struct group *grp;
@@ -1495,6 +1493,23 @@ configure_server_property (cherokee_config_node_t *conf, void *data)
 			return ret_error;
 		}		
 		srv->group = grp->gr_gid;
+
+	} else if (equal_buf_str (&conf->key, "tls")) {
+		cryptor_func_new_t      instance;
+		cherokee_plugin_info_t *info      = NULL;
+
+		ret = cherokee_plugin_loader_get (&srv->loader, conf->val.buf, &info);
+		if ((ret != ret_ok) || (info == NULL))
+			return ret;
+
+		instance = (cryptor_func_new_t) info->instance;
+		ret = instance ((void **) &srv->cryptor);
+		if (ret != ret_ok)
+			return ret;
+
+		ret = cherokee_cryptor_configure (srv->cryptor, conf, srv);
+		if (ret != ret_ok)
+			return ret;
 
 	} else if (equal_buf_str (&conf->key, "module_dir") ||
 		   equal_buf_str (&conf->key, "module_deps") ||

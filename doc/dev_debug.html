@@ -17,6 +17,11 @@
 </div>
 <h2 id="_development_debugging_cherokee">Development: Debugging Cherokee</h2>
 <div class="sectionbody">
+<h3 id="cherokee-admin">cherokee-admin</h3><div style="clear:left"></div>
+<div class="para"><p>Cherokee Admin is written in Python. While making changes, you can use
+the <tt>-x</tt> or <tt>&#8212;debug</tt> parameter to see the Python back traces in the
+active console.</p></div>
+<h3 id="cherokee">cherokee</h3><div style="clear:left"></div>
 <div class="para"><p>If you need to debug the behavior of the web server (or an
 application), there are some helpful tools available for you.</p></div>
 <div class="ilist"><ul>
@@ -61,7 +66,7 @@ CHEROKEE_TRACE variable, with the desired options:</p></div>
 <div class="sidebarblock">
 <div class="sidebar-content">
 <div class="para"><p>cherokee# CHEROKEE_TRACE="common" cherokee</p></div>
-<div class="para"><p>Cherokee Web Server 0.10.0 (Oct 27 2008): Listening on port 80, TLS disabled,</p></div>
+<div class="para"><p>Cherokee Web Server 0.11.0 (Nov 13 2008): Listening on port 80, TLS disabled,</p></div>
 <div class="para"><p>IPv6 enabled, using epoll, 1024 fds system limit, max. 505 connections, 10</p></div>
 <div class="para"><p>threads, 50 connections per thread, standard scheduling policy</p></div>
 <div class="para"><p>handler_common.c:0143 (                     stat_file): /var/www//images/powered_by_cherokee.png, use_iocache=0 re=0</p></div>

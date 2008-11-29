@@ -56,7 +56,7 @@ connect_to_database (cherokee_handler_dbslayer_t *hdl)
 				   props->db.buf,
 				   hdl->src_ref->port,
 				   hdl->src_ref->unix_socket.buf,
-				   0);
+				   CLIENT_MULTI_STATEMENTS | CLIENT_MULTI_RESULTS);
 	if (conn == NULL) {
 		return ret_error;
 	}
@@ -82,7 +82,7 @@ send_query (cherokee_handler_dbslayer_t *hdl)
 
 	/* Send the query
 	 */
-	re = mysql_query (hdl->conn, tmp->buf);
+	re = mysql_real_query (hdl->conn, tmp->buf, tmp->len);
 	if (re != 0)
 		return ret_error;
 
@@ -386,24 +386,37 @@ dbslayer_step (cherokee_handler_dbslayer_t *hdl,
 
 	cherokee_dwriter_set_buffer (&hdl->writer, buffer);
 
+	/* Open the result list */
+	cherokee_dwriter_list_open (&hdl->writer);
+
+	/* Iterate through the results
+	 */
 	do {
 		result = mysql_store_result (hdl->conn);
-		if (mysql_errno (hdl->conn)) {
-			handle_error (hdl);
-		} else {
-			if (result == NULL) {
-				render_empty_result (hdl);
+		if (result == NULL) {
+			/* ERROR:
+			 * - Statement didn't return a result set. Eg: Insert
+			 * - Reading of the result set failed
+			 */
+			if (mysql_errno (hdl->conn)) {
+				handle_error (hdl);
 			} else {
-				render_result (hdl, result);
+				render_empty_result (hdl);
 			}
 		}
+		else {
+			render_result (hdl, result);
+			mysql_free_result (result);
+		}
 		
-		mysql_free_result(result);
-
 		re = mysql_next_result (hdl->conn);
-		if (re != 0)
-			break;
-	} while (true);
+		if (re > 0) {
+			handle_error (hdl);
+		}
+	} while (re == 0);
+
+	/* Close results list */
+	cherokee_dwriter_list_close (&hdl->writer);
 
 	return ret_eof_have_data;
 }
@@ -441,7 +454,8 @@ cherokee_handler_dbslayer_new (cherokee_handler_t     **hdl,
 	
 	/* Properties
 	 */
-	n->src_ref = NULL;
+	n->src_ref  = NULL;
+	n->rollback = false;
 
 	/* MySQL */
 	n->conn = mysql_init (NULL);
@@ -530,7 +544,7 @@ cherokee_handler_dbslayer_configure (cherokee_config_node_t  *conf,
 				props->lang = dwriter_ruby;
 
 			} else {
-				PRINT_ERROR ("ERROR: DBSlayer: unrecognize language '%s'\n",
+				PRINT_ERROR ("ERROR: DBSlayer: unrecognized language '%s'\n",
 					     subconf->val.buf);
 				return ret_error;
 			}

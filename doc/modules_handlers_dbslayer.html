@@ -33,7 +33,7 @@ Python, Ruby and PHP.</p></div>
 <div class="para"><p>It also makes use of a <a href="modules_balancers.html">balancing strategy</a>
 to manage <strong>at least one</strong> <a href="config_info_sources.html">information
 source</a>: the MySQL server being bridged.</p></div>
-<h4 id="_parameters">Parameters</h4>
+<h4 id="parameters">Parameters</h4>
 <div class="tableblock">
 <table rules="rows"
 frame="hsides"
@@ -97,8 +97,22 @@ whether it succeeded or not, the number of rows affected, a rollback
 flag, etc. It will not, however, replicate the operation among each
 one of you MySQL servers. These arrangements must be made
 independently using MySQL's specific mechanisms.</p></div>
+<div class="para"><p>Since the handler can manage multiple SQL requests in the same
+instruction, a list of responses is delivered containing as many as
+commands were issued.</p></div>
+<div class="para"><p>Warning: When performing multiple operations in a single call to the
+handler, you need to keep one <strong>very important</strong> thing in mind.  Because
+of MySQL's design, when an error is returned no other statements are
+executed. Check MySQL's mysql_next_result() function for more details
+about this limitation. This is not just limited to transactions. This
+means you should make atomic calls to the handler if you want to
+determine precisely what SQL commands where performed. A multiple
+operation can be executed with no further issue, but if one of the
+group fails the rest will not be run. You will receive at least one
+error among the results, which is probably all what you need in case
+you were in the middle of a transaction or that sort of situation.</p></div>
 <div class="para"><p>Further information about this hanlder can be found in the
-<a href="cookbook.html">cookbook</a>, specifically in the recipe about
+<a href="cookbook.html">cookbook</a> section, specifically in the recipe about
 <a href="cookbook_dbslayer.html">setting up the MySQL balancing</a>.</p></div>
 </div>
 <div id="footer">

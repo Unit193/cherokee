@@ -20,11 +20,14 @@
 <div class="para"><p>There are several important features of Cherokee that really do make a
 difference in real-world production environments.</p></div>
 <h3 id="cherokee-admin">Cherokee-Admin</h3><div style="clear:left"></div>
-<div class="para"><p>Cherokee bundles a one of a kind UI to set up every available feature
+<div class="para"><p>Cherokee bundles a one of a kind GUI to set up every available feature
 without the need of editing any configuration files by hand. It is a
-modern and easy to manage application that allows to set up the server
-with speed and ease. The interface is thoroughly documented trhoughout
-Cherokee's documentation.</p></div>
+modern and easy to manage web application that allows to set up the
+server with speed and ease. The interface is thoroughly documented
+throughout Cherokee's documentation. Several security measures prevent
+non authorized personnel from accessing the application, and one-time
+passwords are generated each time the program is launched. This can be
+used to give temporary access to a remote administrator.</p></div>
 <h3 id="cherokee-tweak">Cherokee-Tweak</h3><div style="clear:left"></div>
 <div class="para"><p>The swiss-army knife of the Cherokee bundle. This little tool enables
 you, among other things, to rotate the logs with absolutely no
@@ -103,7 +106,10 @@ supported by your SSL/TLS library, the SSL layer does not need to be
 restarted. Since the host info can be put in the SSL handshake, things
 will simply work as long as there is a web browser with SNI support at
 the other side. Currently every modern web browser supports this, and
-Cherokee has TLS SNI support for both the GNUTLS and OpenSSL backends.</p></div>
+Cherokee has TLS SNI support for the OpenSSL backends.</p></div>
+<div class="para"><p>Note that for SNI to work, client support is required. Web browsers
+known to support it are Mozilla Firefox 2.0+, Opera 8.0+, Internet
+Explorer 7 (Vista, not XP) or later and Google Chrome.</p></div>
 <h3 id="dbslayer">Database load balancing</h3><div style="clear:left"></div>
 <div class="para"><p>Ever heard of the <strong>DB Access Layer</strong>, AKA
 <a href="http://code.nytimes.com/projects/dbslayer/">DBSlayer</a>?</p></div>
@@ -122,6 +128,12 @@ slave database failures, or replication failures.</p></div>
 <div class="para"><p>This feature delivers connection pooling, database abstraction to
 enable easier migrations and administration, load balancing and
 automatic failover.</p></div>
+<h3 id="reverse_proxy">Reverse Proxy</h3><div style="clear:left"></div>
+<div class="para"><p>Yes, that too! Cherokee also provides a state of the art
+<a href="modules_handlers_proxy.html">HTTP reverse proxy</a> module. Check the
+documentation for more details and give it a try.</p></div>
+<div class="para"><p>And if that is not enough, you can always take a look at the rest of
+the <a href="modules.html">modules</a> bundled with Cherokee.</p></div>
 </div>
 <div id="footer">
 <div id="footer-text">

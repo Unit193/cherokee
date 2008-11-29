@@ -544,11 +544,6 @@ build_response_header (cherokee_connection_t *conn, cherokee_buffer_t *buffer)
 	cherokee_http_code_copy (conn->error_code, buffer);
 	cherokee_buffer_add_str (buffer, CRLF);
 
-	/* Exit now if the handler already added all the headers
-	 */
-	if (HANDLER_SUPPORTS (conn->handler, hsupport_full_headers)) 
-		return;
-
 	/* Add the "Connection:" header
 	 */
 	if (conn->upgrade != http_upgrade_nothing) {
@@ -566,6 +561,11 @@ build_response_header (cherokee_connection_t *conn, cherokee_buffer_t *buffer)
 	if (conn->chunked_encoding) {
 		cherokee_buffer_add_str (buffer, "Transfer-Encoding: chunked" CRLF);
 	}
+
+	/* Exit now if the handler already added all the headers
+	 */
+	if (HANDLER_SUPPORTS (conn->handler, hsupport_full_headers)) 
+		return;
 
 	/* Date
 	 */
@@ -603,13 +603,6 @@ build_response_header (cherokee_connection_t *conn, cherokee_buffer_t *buffer)
 	 */
 	if (conn->encoder) {
 		cherokee_encoder_add_headers (conn->encoder, buffer);
-		
-		/* Keep-alive is not possible w/o a file cache
-		 */
-		conn->keepalive = 0;
-		if (conn->handler->support & hsupport_length) {
-			conn->handler->support ^= hsupport_length;
-		}
 	}
 
 	/* Unusual methods
@@ -623,8 +616,9 @@ build_response_header (cherokee_connection_t *conn, cherokee_buffer_t *buffer)
 ret_t 
 cherokee_connection_build_header (cherokee_connection_t *conn)
 {
-	ret_t ret;
-
+	ret_t              ret;
+	cherokee_boolean_t try_chunked = false;
+	
 	/* If the handler requires not to add headers, exit.
 	 */
 	if (HANDLER_SUPPORTS (conn->handler, hsupport_skip_headers)) 
@@ -651,11 +645,18 @@ cherokee_connection_build_header (cherokee_connection_t *conn)
 	 */
 	if ((conn->keepalive != 0) &&
 	    (http_method_with_body (conn->error_code)))	
-	{
-		if ((! HANDLER_SUPPORTS (conn->handler, hsupport_length)) ||
-		    ((HANDLER_SUPPORTS (conn->handler, hsupport_maybe_length)) &&
-		     (! strcasestr (conn->header_buffer.buf, "Content-Length: "))))
-		{
+	{		
+		if (HANDLER_SUPPORTS (conn->handler, hsupport_maybe_length)) {
+			if (! strcasestr (conn->header_buffer.buf, "Content-Length: ")) {
+				try_chunked = true;
+			}
+		} else if (! HANDLER_SUPPORTS (conn->handler, hsupport_length)) {
+			try_chunked = true;
+		} 		
+
+		if (try_chunked) {
+			/* Turn chunked encoding on, if possible
+			 */
 			conn->chunked_encoding = ((CONN_SRV(conn)->chunked_encoding) &&
 						  (conn->header.version == http_version_11));
 
@@ -795,7 +796,6 @@ cherokee_connection_recv (cherokee_connection_t *conn, cherokee_buffer_t *buffer
 	size_t cnt_read = 0;
 	
 	ret = cherokee_socket_bufread (&conn->socket, buffer, DEFAULT_RECV_SIZE, &cnt_read);
-
 	switch (ret) {
 	case ret_ok:
 		cherokee_connection_rx_add (conn, cnt_read);
@@ -1905,6 +1905,11 @@ cherokee_connection_set_keepalive (cherokee_connection_t *conn)
 	if (thread->conns_num >= thread->conns_keepalive_max)
 		goto denied;
 
+	/* Does the virtual server support Keep-Alive?
+	 */
+	if (CONN_VSRV(conn)->keepalive == false)
+		goto denied;
+
 	/* Set Keep-alive according with the 'Connection' header
 	 * HTTP 1.1 uses Keep-Alive by default: rfc2616 sec8.1.2
 	 */
@@ -1980,6 +1985,15 @@ cherokee_connection_create_encoder (cherokee_connection_t *conn,
 	if ((encoders_accepted == NULL) ||
 	    (encoders_accepted->root == NULL))
 		return ret_ok;
+
+	/* Keepalive (Content-Length) connections cannot use encoders.
+	 * The transferred information length would change.
+	 */
+	if ((conn->keepalive) &&
+	    (! conn->chunked_encoding))
+	{
+		return ret_ok;
+	}
 
 	/* Process the "Accept-Encoding" header
 	 */
@@ -2303,13 +2317,6 @@ cherokee_connection_set_redirect (cherokee_connection_t *conn, cherokee_buffer_t
 		sizeof("https://") + 4;
 	
 	cherokee_buffer_ensure_size (&conn->redirect, len);
-
-	/* In case the connection has a custom Document Root directory,
-	 * it must add the web equivalent directory to the path (web_directory).
-	 */
-	if (cherokee_connection_use_webdir (conn)) {
-		cherokee_buffer_add_buffer (&conn->redirect, &conn->web_directory);
-	}
 		
 	if (! cherokee_buffer_is_empty (&conn->host)) {
 		if (conn->socket.is_tls == TLS)
@@ -2328,6 +2335,13 @@ cherokee_connection_set_redirect (cherokee_connection_t *conn, cherokee_buffer_t
 	if (! cherokee_buffer_is_empty (&conn->userdir)) {
 		cherokee_buffer_add_str (&conn->redirect, "/~");
 		cherokee_buffer_add_buffer (&conn->redirect, &conn->userdir);
+	}
+
+	/* In case the connection has a custom Document Root directory,
+	 * it must add the web equivalent directory to the path (web_directory).
+	 */
+	if (cherokee_connection_use_webdir (conn)) {
+		cherokee_buffer_add_buffer (&conn->redirect, &conn->web_directory);
 	}
 	
 	cherokee_buffer_add_buffer (&conn->redirect, address);

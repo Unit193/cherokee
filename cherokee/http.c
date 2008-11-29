@@ -44,7 +44,7 @@ cherokee_http_method_to_string (cherokee_http_method_t method, const char **str,
 		entry (http_post, "POST");
 		entry (http_head, "HEAD");
 		entry (http_put, "PUT");
-		entry (http_options, "PUT");
+		entry (http_options, "OPTIONS");
 		entry (http_delete, "DELETE");
 		entry (http_trace, "TRACE");
 		entry (http_connect, "CONNECT");
@@ -71,6 +71,59 @@ cherokee_http_method_to_string (cherokee_http_method_t method, const char **str,
 	if (len) *len = 7;
 	*str = "UNKNOWN";
 	return ret_error;
+}
+
+
+ret_t
+cherokee_http_string_to_method (cherokee_buffer_t      *string,
+				cherokee_http_method_t *method)
+{
+	if (cherokee_buffer_case_cmp_str (string, "get") == 0) 
+		*method = http_get;
+	else if (cherokee_buffer_case_cmp_str (string, "post") == 0) 
+		*method = http_post;
+	else if (cherokee_buffer_case_cmp_str (string, "head") == 0) 
+		*method = http_head;
+	else if (cherokee_buffer_case_cmp_str (string, "put") == 0) 
+		*method = http_put;
+	else if (cherokee_buffer_case_cmp_str (string, "options") == 0) 
+		*method = http_options;
+	else if (cherokee_buffer_case_cmp_str (string, "delete") == 0) 
+		*method = http_delete;
+	else if (cherokee_buffer_case_cmp_str (string, "trace") == 0) 
+		*method = http_trace;
+	else if (cherokee_buffer_case_cmp_str (string, "connect") == 0) 
+		*method = http_connect;
+	else if (cherokee_buffer_case_cmp_str (string, "copy") == 0) 
+		*method = http_copy;
+	else if (cherokee_buffer_case_cmp_str (string, "lock") == 0) 
+		*method = http_lock;
+	else if (cherokee_buffer_case_cmp_str (string, "mkcol") == 0) 
+		*method = http_mkcol;
+	else if (cherokee_buffer_case_cmp_str (string, "move") == 0) 
+		*method = http_move;
+	else if (cherokee_buffer_case_cmp_str (string, "notify") == 0) 
+		*method = http_notify;
+	else if (cherokee_buffer_case_cmp_str (string, "poll") == 0) 
+		*method = http_poll;
+	else if (cherokee_buffer_case_cmp_str (string, "propfind") == 0) 
+		*method = http_propfind;
+	else if (cherokee_buffer_case_cmp_str (string, "proppatch") == 0) 
+		*method = http_proppatch;
+	else if (cherokee_buffer_case_cmp_str (string, "search") == 0) 
+		*method = http_search;
+	else if (cherokee_buffer_case_cmp_str (string, "subscribe") == 0) 
+		*method = http_subscribe;
+	else if (cherokee_buffer_case_cmp_str (string, "unlock") == 0) 
+		*method = http_unlock;
+	else if (cherokee_buffer_case_cmp_str (string, "unsubscribe") == 0) 
+		*method = http_unsubscribe;
+	else {
+		*method = http_unknown;
+		return ret_not_found;
+	}
+
+	return ret_ok;
 }
 
 

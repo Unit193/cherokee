@@ -28,18 +28,7 @@
 #include "common-internal.h"
 #include <unistd.h>
 
-#ifdef HAVE_GNUTLS
-# include <gnutls/extra.h>
-# include <gnutls/gnutls.h>
-# include <gnutls/x509.h>
-#endif
-
-#ifdef HAVE_OPENSSL
-# include <openssl/ssl.h>
-#endif
-
 #include "avl.h"
-#include "avl_r.h"
 #include "list.h"
 #include "handler.h"
 #include "config_entry.h"
@@ -47,6 +36,7 @@
 #include "config_node.h"
 #include "virtual_server_names.h"
 #include "rule_list.h"
+#include "cryptor.h"
 
 typedef struct {
 	cherokee_list_t              list_node;
@@ -56,6 +46,7 @@ typedef struct {
 	cuint_t                      priority;        /* Evaluation priority         */
 	cherokee_vserver_names_t     domains;         /* Domains. Eg: www.alobbs.com */
 	cherokee_rule_list_t         rules;           /* Rule list: vserver behavior */
+	cherokee_boolean_t           keepalive;       /* Keep-alive support          */
 
 	cherokee_config_entry_t     *default_handler; /* Default handler             */
 	cherokee_config_entry_t     *error_handler;   /* Default error handler       */
@@ -79,22 +70,7 @@ typedef struct {
 	cherokee_buffer_t            server_cert;
 	cherokee_buffer_t            server_key;
 	cherokee_buffer_t            ca_cert;
-
-#ifdef HAVE_TLS
-	cherokee_avl_r_t             session_cache;
-
-# ifdef HAVE_GNUTLS   
-	gnutls_certificate_server_credentials credentials;
-	gnutls_x509_privkey_t                 privkey_x509;
-	gnutls_x509_crt_t                     certs_x509;
-
-	gnutls_dh_params             dh_params;
-	gnutls_rsa_params            rsa_params;
-# endif
-# ifdef HAVE_OPENSSL
-	SSL_CTX                     *context;
-# endif
-#endif
+	cherokee_cryptor_vserver_t  *cryptor;
 
 } cherokee_virtual_server_t;
 

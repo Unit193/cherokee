@@ -74,20 +74,6 @@
 # include <syslog.h>
 #endif
 
-
-#if defined(HAVE_GNUTLS)
-# include <gcrypt.h>
-# include <gnutls/gnutls.h>
-#elif defined(HAVE_OPENSSL)
-# include <openssl/lhash.h>
-# include <openssl/ssl.h>
-# include <openssl/err.h>
-# include <openssl/rand.h>
-#if HAVE_OPENSSL_ENGINE_H
-# include <openssl/engine.h>
-#endif
-#endif
-
 #define ENTRIES "util"
 
 const char *cherokee_version    = PACKAGE_VERSION;
@@ -760,79 +746,6 @@ cherokee_gethostbyname (const char *hostname, void *_addr)
 }
 
 
-#if defined(HAVE_GNUTLS) && defined (HAVE_PTHREAD)
-# ifdef GCRY_THREAD_OPTION_PTHREAD_IMPL
-GCRY_THREAD_OPTION_PTHREAD_IMPL;
-# endif
-#endif
-
-ret_t
-cherokee_tls_init (void)
-{
-#if HAVE_OPENSSL_ENGINE_H
-	ENGINE *e;
-#endif
-#ifdef HAVE_GNUTLS
-	int rc;
-
-# ifdef HAVE_PTHREAD
-#  ifdef GCRY_THREAD_OPTION_PTHREAD_IMPL
-	/* Although the GnuTLS library is thread safe by design, some
-	 * parts of the crypto backend, such as the random generator,
-	 * are not; hence, it needs to initialize some semaphores.
-	 */
-	gcry_control (GCRYCTL_SET_THREAD_CBS, &gcry_threads_pthread); 
-#  endif
-# endif
-
-	/* Try to speed up random number generation. On Linux, it
-	 * takes ages for GNUTLS to get the random numbers it needs.
-	 */
-	gcry_control (GCRYCTL_ENABLE_QUICK_RANDOM, 0);
- 
-	/* Gnutls library-width initialization
-	 */
-	rc = gnutls_global_init();
-	if (rc < 0) {
-		PRINT_ERROR_S ("Global GNUTLS state initialisation failed.\n");
-		return ret_error;
-	}
-#endif
-
-#ifdef HAVE_OPENSSL
-# if HAVE_OPENSSL_ENGINE_H
-#  if OPENSSL_VERSION_NUMBER >= 0x00907000L
-	ENGINE_load_builtin_engines();
-#  endif
-	e = ENGINE_by_id("pkcs11");
-	if (e != NULL) {
-		if(!ENGINE_init(e)) {
-			ENGINE_free(e);
-			PRINT_ERROR_S ("could not init pkcs11 engine");
-			return ret_error;
-		}
-		
-		if(!ENGINE_set_default(e, ENGINE_METHOD_ALL)) {
-			ENGINE_free(e);
-			PRINT_ERROR_S ("could not set all defaults");
-			return ret_error;
-		}
-		
-		ENGINE_finish(e);
-		ENGINE_free(e);
-	}
-# endif
-
-	SSL_load_error_strings();
-	SSL_library_init();
-	
-	SSLeay_add_all_algorithms ();
-	SSLeay_add_ssl_algorithms ();
-#endif
-	return ret_ok;
-}
-
-
 ret_t
 cherokee_fd_set_nodelay (int fd, cherokee_boolean_t enable)
 {
@@ -1499,4 +1412,163 @@ cherokee_iovec_was_sent (struct iovec *orig, uint16_t orig_len, size_t sent)
 	}
 	
 	return ret_ok;
+}
+
+
+ret_t
+cherokee_io_stat (cherokee_iocache_t        *iocache, 
+		  cherokee_buffer_t         *path, 
+		  cherokee_boolean_t         useit, 
+		  struct stat               *nocache_info, 
+		  cherokee_iocache_entry_t **io_entry,
+		  struct stat              **info)
+{
+	ret_t ret;
+	int   re  = -1;
+
+	/* I/O cache
+	 */
+	if ((useit) &&
+	    (iocache != NULL))
+	{
+		ret = cherokee_iocache_autoget (iocache, path, iocache_stat, io_entry);
+		TRACE (ENTRIES, "%s, use_iocache=1 ret=%d\n", path->buf, ret);
+
+		switch (ret) {
+		case ret_ok:
+		case ret_ok_and_sent:
+			*info = &(*io_entry)->state;
+			return ret_ok;
+
+		case ret_no_sys:
+			goto without;
+
+		case ret_deny:
+		case ret_not_found:
+			return ret;
+		default:
+			return ret_error;
+		}
+	}
+
+	/* Without cache
+	 */
+without:
+	re = cherokee_stat (path->buf, nocache_info);
+	TRACE (ENTRIES, "%s, use_iocache=0 re=%d\n", path->buf, re);
+
+	if (re >= 0) {
+		*info = nocache_info;
+		return ret_ok;
+	}
+	
+	switch (errno) {
+	case ENOENT: 
+	case ENOTDIR:
+		return ret_not_found;
+	case EACCES: 
+		return ret_deny;
+	default:
+		return ret_error;
+	}
+
+	return ret_error;
+}
+
+
+char *
+cherokee_header_get_next_line (char *string)
+{
+	char *end1;
+	char *end2 = string;
+
+	/* RFC states that EOL should be made by CRLF only, but some
+	 * old clients (HTTP 0.9 and a few HTTP/1.0 robots) may send
+	 * LF only as EOL, so try to catch that case too (of course CR
+	 * only is ignored); anyway leading spaces after a LF or CRLF
+	 * means that the new line is the continuation of previous
+	 * line (first line excluded).
+	 */
+	do {
+		end1 = end2;
+		end2 = strchr (end1, CHR_LF);
+
+		if (unlikely (end2 == NULL))
+			return NULL;
+
+		end1 = end2;
+		if (likely (end2 != string && *(end1 - 1) == CHR_CR))
+			--end1;
+
+		++end2;
+	} while (*end2 == CHR_SP || *end2 == CHR_HT);
+
+	return end1;
+}
+
+
+#ifndef HAVE_STRNSTR
+char *
+strnstr (const char *s, const char *find, size_t slen)
+{
+	char c, sc;
+	size_t len;
+	
+	if ((c = *find++) != '\0') {
+		len = strlen(find);
+		do {
+			do {
+				if (slen-- < 1 || (sc = *s++) == '\0')
+					return (NULL);
+			} while (sc != c);
+			if (len > slen)
+				return (NULL);
+		} while (strncmp(s, find, len) != 0);
+		s--;
+	}
+	return ((char *)s);
+}
+#endif
+
+
+ret_t
+cherokee_find_header_end (cherokee_buffer_t  *buf,
+			  char              **end,
+			  cuint_t            *sep_len)
+{
+	char *p;
+	char *fin;
+	char *begin;
+	int   len;
+
+	if (cherokee_buffer_is_empty (buf))
+		return ret_not_found;
+
+	p   = buf->buf;
+	fin = buf->buf + buf->len;
+
+	while (p < fin) {
+		if ((*p == CHR_CR) || (*p == CHR_LF)) {
+			len   = 0;
+			begin = p;
+			while ((*p == CHR_CR) || (*p == CHR_LF)) {
+				if (*p == CHR_LF) {
+					len += 1;
+					if (len == 2) {
+						*end     = begin;
+						*sep_len = (p - begin) + 1;
+						return ret_ok;
+					}
+				} else if (*p == CHR_CR) {
+					;
+				} else {
+					break;
+				}
+				p += 1;
+			}
+		}
+		p += 1;
+	}
+
+	return ret_not_found;
 }

@@ -49,6 +49,15 @@ cookbook_maintenance.html \
 cookbook_redirs.html \
 cookbook_embedding_cherokee.html \
 cookbook_dbslayer.html \
+cookbook_mono.html \
+cookbook_mailman.html \
+cookbook_joomla.html \
+cookbook_glassfish.html \
+cookbook_wordpress.html \
+cookbook_drupal.html \
+cookbook_zend.html \
+cookbook_kumbia.html \
+cookbook_nagios.html \
 modules.html \
 modules_balancers.html \
 modules_balancers_round_robin.html \
@@ -66,8 +75,10 @@ modules_handlers_cgi.html \
 modules_handlers_fcgi.html \
 modules_handlers_scgi.html \
 modules_handlers_server_info.html \
+modules_handlers_ssi.html \
 modules_handlers_mirror.html \
 modules_handlers_admin.html \
+modules_handlers_proxy.html \
 modules_loggers.html \
 modules_loggers_combined.html \
 modules_loggers_ncsa.html \
@@ -131,6 +142,7 @@ media/images/admin_vserver_errors.png \
 media/images/admin_vserver_loggers.png \
 media/images/admin_vserver.png \
 media/images/admin_vserver_vserver.png \
+media/images/admin_handler_proxy.png \
 media/images/cookbook_django_common.png \
 media/images/cookbook_django_infosources.png \
 media/images/cookbook_ror_common.png \
@@ -152,6 +164,34 @@ media/images/cookbook_dbslayer1.png \
 media/images/cookbook_dbslayer2.png \
 media/images/cookbook_dbslayer3.png \
 media/images/cookbook_dbslayer4.png \
+media/images/cookbook_mono_demo.png \
+media/images/cookbook_mono_handler.png \
+media/images/cookbook_django.png \
+media/images/cookbook_ror.png \
+media/images/cookbook_mailman.png \
+media/images/cookbook_glassfish.png \
+media/images/cookbook_drupal.png \
+media/images/cookbook_drupal_default1.png \
+media/images/cookbook_drupal_default2.png \
+media/images/cookbook_drupal_default3.png \
+media/images/cookbook_drupal_example1.png \
+media/images/cookbook_drupal_example2.png \
+media/images/cookbook_drupal_example3.png \
+media/images/cookbook_drupal_example4.png \
+media/images/cookbook_drupal_example5.png \
+media/images/cookbook_wp1.png \
+media/images/cookbook_wp2.png \
+media/images/cookbook_wp3.png \
+media/images/cookbook_wp4.png \
+media/images/cookbook_wp5.png \
+media/images/cookbook_wp_default1.png \
+media/images/cookbook_wp_example1.png \
+media/images/cookbook_wp_example2.png \
+media/images/cookbook_wp_example3.png \
+media/images/cookbook_nagios1.png \
+media/images/cookbook_nagios2.png \
+media/images/cookbook_nagios3.png \
+media/images/cookbook_nagios4.png \
 media/images/tracelor.png
 
 EXTRA_DIST = \

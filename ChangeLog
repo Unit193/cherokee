@@ -1,11 +1,626 @@
+2008-11-26  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* 0.11.1 released
+
+	* admin/ModuleExists.py (ModuleExists.get_name): Fixes a execution
+	problem when the !match_any key wasn't present in the configuration.
+
+	* cherokee/connection.c (cherokee_connection_create_encoder):
+	Keepalive connections with Content-Length header should go
+	through a encoder.
+
+	* 0.11.0 released
+
+	* admin/ModuleExists.py: The !iocache and !match_any properties
+	were being misplaced.
+
+	* qa/112-NiceError-CGI.py, qa/187-Method.py, qa/188-Method2.py,
+	qa/170-Error-ContentLength.py, qa/180-RuleExists2.py,
+	qa/179-RuleExists.py, qa/181-RuleExists3.py: The sh based CGIs
+	code should not be indented.
+
+	* qa/190-RuleExists4.py, qa/191-RuleExists5.py: Adds a couple of
+	new QA test. They test whether or not the rule exists' !match_any
+	flag works.
+
+	* cherokee/rule_exists.c: The !exists property shouldn't be
+	required when !match_any is set.
+
+2008-11-26  Taher Shihadeh  <taher@unixwars.com>
+
+	* admin/PageVServer.py: fix by Skarcha for issue 239
+	http://code.google.com/p/cherokee/issues/detail?id=239
+	
+2008-11-25  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* cherokee/handler_dirlist.c, cherokee/common-internal.h: S_ISLNK
+	clean up.
+
+	* cherokee/handler_cgi_base.c, cherokee/header.c,
+	cherokee/header.h: A couple of missing (reverse proxy related)
+	headers have been added.
+
+	* cherokee/http.c, cherokee/handler_cgi_base.c,
+	cherokee/handler_proxy.c, cherokee/connection.c: A few small (but
+	quite visible) bugs have been fixed.
+
+	* qa/154-DirRedirection., qa/155-DirRedirection2.py,
+	qa/123-ImplicitRedit.py, qa/173-Chunked-SCGI.py: These QA tests
+	have been slightly adapted so they can be run thru a proxy.
+
+	* cherokee/Makefile.MingW.in: Removed.
+
+2008-11-25  Taher Shihadeh  <taher@unixwars.com>
+
+	* doc/*: added anchors throughout the documentation to ease
+	navigation.
+
+2008-11-25  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* cherokee/handler_cgi_base.c: It has been adapted to use the new
+	cherokee_find_header_end() function.
+
+2008-11-24  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* cherokee/macros.h, cherokee/common-internal.h: fcntl.h related
+	macros has been moved from macros.h to common-internal.h.
+
+	* qa/run-tests.py, qa/base.py,, qa/076-AccessRange2.py,
+	qa/075-AccessRange.py, qa/074-Access2.py: There are QA tests not
+	suitable of being run through a proxy.
+
+	* configure.in, cherokee/validator_htpasswd.c: Rework the
+	crypt_r() detection. The final target is to fix the compilation on
+	AIX.
+
+	* cherokee/handler_proxy.c (build_request): Use the source IP
+	address as Host: header if the client didn't send it.
+
+	* cherokee/handler_proxy.c (cherokee_handler_proxy_init): Resend
+	POST information whenever the internal connection has to be
+	respined.
+
+2008-11-23  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* cherokee/handler_proxy.c (do_connect): Improves the connection
+	event handling. It's slightly more efficient now.
+
+	* cherokee/socket.c, cherokee/socket.h: Removes a few functions
+	that was not needed any longer.
+
+2008-11-22  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* cherokee/logger_writer.c, cherokee/socket.c,
+	cherokee/cryptor_libssl.c, cherokee/server.c: Fixes a number of
+	PRINT_ERROR calls. The patch fixes Cherokee, so it can be compiled
+	with Sun CC again. Patch by Michal Pryc <Michal.Pryc@Sun.COM>.
+
+2008-11-21  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* admin/ModuleExists.py, cherokee/rule_exists.h,
+	cherokee/rule_exists.c: Adds a new flag to match any file.
+
+	* cherokee/thread.c: Tries to fix a FIN_WAIT2 state related issue.
+
+	* cherokee/handler_proxy.c (build_request): Fixes the Host
+	header. It was sending a wrong header in the request.
+
+	* qa/run-tests.py, qa/util.py, qa/base.py, qa/help.py,
+	qa/091-Digest2.py, qa/092-Digest3.py, qa/100-Digest-htdigest.py,
+	qa/122-Methods.py, qa/130-Digest-EmptyPasswd.py,
+	qa/175-Digest-htdigest-2.py: Adds a new -P option to allow the QA
+	bench to be run through a proxy.
+	
+	* qa/run-tests.py: Read conf_local.py rather than conf.py whenever
+	it's present.
+
+2008-11-20  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* cherokee/util.h, cherokee/main.c: Exports the strcasestr()
+	prototype in case it isn't supported by the system. This patch
+	should fix a Solaris compilation issue:
+	http://code.google.com/p/cherokee/issues/detail?id=139
+
+	* cherokee/handler_dbslayer.c (dbslayer_step): Multi-Statement
+	queries need to be enclosed within a list object. Bis.
+
+2008-11-20  Taher Shihadeh  <taher@unixwars.com>
+
+	* cherokee/handler_dbslayer.c (dbslayer_step): Spurious warning
+	removed from proccessing of Multi-Statement queries.
+
+	* admin/PageEntry.py, admin/PageVServers.py, admin/PageVServer.py,
+	admin/validations.py: allows /dev/null as path. No need for
+	/var/www/fake from now on.
+
+2008-11-20  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* cherokee/handler_dbslayer.c (dbslayer_step): Multi-Statement
+	queries need to be enclosed within a list object. Bis.
+
+2008-11-19  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* cherokee/handler_dbslayer.c: Fixes the Multi-Statement query
+	support.
+
+	* configure.in: MySQL 5.0.0 is required for the dbslayer handler
+	(MySQL 4.0 does not support some required API).
+
+2008-11-18  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* cherokee/handler_cgi_base.c: Fixes REQUEST_URI and SCRIPT_URL.
+	They were not correct on the user directory (/~user) requests. It
+	should fix: http://code.google.com/p/cherokee/issues/detail?id=226
+
+2008-11-17  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* configure.in: Fixes a compilation issue (when libssl was not
+	present). Fixes bug #227:
+	http://code.google.com/p/cherokee/issues/detail?id=227
+
+	* cherokee/Makefile.am: connection_info.{c,h} are now part of
+	lincherokee_server. It fixes bug #228:
+	http://code.google.com/p/cherokee/issues/detail?id=228
+
+2008-11-17  Taher Shihadeh  <taher@unixwars.com>
+
+	* doc/*: bunch of new screenshots, and some more recipes and
+	fixes.
+
+2008-11-17  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* cherokee/server.c (cherokee_server_initialize): getpwuid() fail
+	is only a fatal if a user or group change was scheduled. It should
+	fix bug: http://code.google.com/p/cherokee/issues/detail?id=224
+
+	* cherokee/Makefile.am, cherokee/module.h: module.{h,c} are now
+	part of libcherokee base.
+
+2008-11-17  Taher Shihadeh  <taher@unixwars.com>
+
+	* doc/media/images/admin_general.png,
+	doc/basics_installation_windows.txt, doc/config_general.txt,
+	doc/cookbook_optimizations.txt, doc/dev_cherokee.conf.txt,
+	doc/basics_requirements.txt, doc/basics_installation_unix.txt,
+	doc/other_goodies.txt: documentation adjustments to the new
+	reimplementation of the TSL/SSL support.
+
+2008-11-17  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* cherokee/cryptor.c, cherokee/cryptor_libssl.c: Fixes a
+	double-free bug. Now both cherokee-worker and cherokee-tweak exit
+	cleanly.
+
+	* cherokee/downloader.c, cherokee/post.c, cherokee/post.h,
+	cherokee/main_tweak.c: Fixes a problem with Cherokee-tweak, the
+	new TLS/SSL layer and the POST mechanism.
+
+	* admin/PageGeneral.py, admin/consts.py: Adds a new option for
+	setting the TLS backend.
+
+	* m4/libgnutls.m4, cherokee/virtual_server.c,
+	cherokee/virtual_server.h, cherokee/module.c,
+	cherokee/Makefile.am, cherokee/info.c, cherokee/admin_client.c,
+	cherokee/admin_client.h, cherokee/cherokee.h, cherokee/socket.c,
+	cherokee/socket.h, cherokee/cryptor.c, cherokee/cryptor.h,
+	cherokee/downloader.c, cherokee/downloader.h, cherokee/plugin.h,
+	cherokee/thread.c, cherokee/util.c, cherokee/util.h,
+	cherokee/cryptor_libssl.c, cherokee/cryptor_libssl.h,
+	cherokee/server-protected.h, cherokee/main_tweak.c,
+	cherokee/connection.c, cherokee/server.c, configure.in,
+	qa/run-tests.py: This patch reimplements the TLS/SSL support. It
+	adds a new plugin type for the crypt related support. It
+	implements the OpenSSL (libssl) backend, and removes any trace of
+	GnuTLS. Based on this plugin type it could be reimplemented,
+	although it isn't part of my short/medium-term plans. This patch
+	also removed the TLS/SSL library dependency form libcherokee-base.
+
+2008-11-17  Taher Shihadeh  <taher@unixwars.com>
+
+	* cherokee/handler_fcgi.c: gets rid of a warning that shouldn't be
+	there.
+
+2008-11-16  Antonio Perez  <aperez@skarcha.com>
+
+	* cherokee/connection.c: Keep-alive was been disabled ALWAYS when
+	encoders was used. It should fix bug #143:
+	http://code.google.com/p/cherokee/issues/detail?id=143
+
+2008-11-14  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* cherokee/source_interpreter.c (DEFAULT_TIMEOUT),
+	cherokee/main_admin.c: The default timeout has been increased to
+	10 seconds; 15 in the case of cherokee-admin. There were times
+	when cherokee-admin returned 503 errorsq because python took more
+	than 3 seconds to be ready.
+
+2008-11-13  Antonio Perez  <aperez@skarcha.com>
+
+	* cherokee/rule_extensions.c: Better extension checking.
+
+2008-11-13  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* configure.in: Adds AC_CONFIG_MACRO_DIR(). It should have been
+	using it since I moved the m4 macro files to the m4/ directory.
+
+2008-11-13  Taher Shihadeh  <taher@unixwars.com>
+
+	* admin/ModuleProxy.py: fixes a cross-browser bug for the
+	submissions.
+
+2008-11-13  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* cherokee/source_interpreter.h, cherokee/source_interpreter.c: :
+	The standard error output of the interpreters is redirected to the
+	error log file now. (It applies to FastCGI and SCGI). It should
+	fix bug http://code.google.com/p/cherokee/issues/detail?id=161
+
+2008-11-12  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* cherokee/logger.c, cherokee/logger.h, cherokee/logger_w3c.c,
+	cherokee/logger_w3c.h, cherokee/logger_ncsa.c,
+	cherokee/logger_ncsa.h, cherokee/handler_cgi.c,
+	cherokee/logger_combined.c: Redirects the stderr output of CGIs to
+	the error log. It fixes the bug #217:
+	http://code.google.com/p/cherokee/issues/detail?id=217
+
+	* admin/ModuleProxy.py: Adds support of the new "Arbitrary header
+	addition" feature.
+
+	* cherokee/handler_proxy.c, cherokee/handler_proxy.h: The proxy
+	can now add arbitrary headers to the relied request.
+
+	* admin/ModuleProxy.py (ModuleProxy._op_render): Adds "Hidden
+	returned headers" support.
+
+2008-11-11  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* admin/ModuleProxy.py, admin/consts.py, admin/Makefile.am: Adds
+	the Cherokee-admi module for the Proxy handler.
+
+2008-11-11  Taher Shihadeh  <taher@unixwars.com>
+
+	* static/js/common.js: fixes superfluous 'going away' warning. It
+	was issue http://code.google.com/p/cherokee/issues/detail?id=215
+
+	* doc/*: some more docs.
+
+2008-11-11  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* cherokee/handler_proxy.c, cherokee/handler_proxy.h: Adds URL
+	rewriting support (based on regular expressions).
+
+	* cherokee/handler_redir.c cherokee/regex.h cherokee/regex.c: More
+	code re-factoring. Adds the new cherokee_regex_substitute()
+	function.
+
+	* cherokee/handler_redir.c cherokee/regex.h cherokee/regex.c: Some
+	code has been re-factorized. Now the regex list class is available
+	outside the redir handler. It will allow the proxy handler to use
+	it as well.
+
+	* cherokee/rule_extensions.c (match): This patch fixes a bizarre
+	issue. If an error is detected during the match, return a 500
+	internal error on error instead of a "200 ok".
+
+2008-11-11  Taher Shihadeh  <taher@unixwars.com>
+
+	* admin/ModuleErrorRedir.py: Fixes problem where error handler
+	could not be set.
+
+2008-11-11  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* cherokee/handler_proxy.c: Adds X-Forwarded-For and
+	X-Forwarded-Host support.
+
+2008-11-10  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* qa/189-Redir9.py: Adds a new QA test to ensure that the regular
+	expression management code at handler_redir can match and rewrite
+	at least nine chunks.
+
+	* cherokee/regex.h: Fixes an issue with regular expressions.
+	Reported by Stefan de Konink <stefan@konink.de>.
+
+2008-11-08  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* configure.in, cherokee/util.h, cherokee/util.c,
+	cherokee/win32_misc.h, cherokee/win32_misc.c: Fixes a compilation
+	issue (the strnstr() function is not always available).
+
+	* configure.in: Removes AC_TYPE_SIGNAL call. Patch by Tim Post
+	<echo@echoreply.us>.
+
+2008-11-07  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* cherokee/handler_proxy.c, cherokee/handler_proxy.h: Implement
+	the "header_hide" configuration entry. It allow to hide (remove)
+	header entries from the internal server response.
+
+	* cherokee/handler_server_info.c (build_server_table_content):
+	TLS port was not reported propertly.
+
+2008-11-06  Taher Shihadeh  <taher@unixwars.com>
+
+	* admin/consts.py, admin/PageVServer.py: re-sets 'file' as the
+	default logging output and fixes another remaining cleanup.
+
+2008-11-06  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* cherokee/Makefile.am, cherokee/http.c, cherokee/rule_method.c: A
+	couple of fix issues have been fixed.
+
+	* qa/187-Method.py, qa/188-Method2.py, qa/Makefile.am: Adds a
+	couple of new QA tests for checking the Rule 'method'.
+
+	* cherokee/Makefile.am (win32_src): Adds the win32_cherokeeserv.c
+	file to the Windows compilation stack.
+
+	* cherokee/win32_misc.h, cherokee/win32_misc.c: Believe it or not,
+	Windows does not implemetn strnstr. This patch adds a home-made
+	implementation of the function so the server code can compile.
+
+2008-11-06  Taher Shihadeh  <taher@unixwars.com>
+
+	* admin/PageVServer.py: adds new validation. Should fix
+	http://code.google.com/p/cherokee/issues/detail?id=167
+
+2008-11-06  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* cherokee/unix4win32.h: Adds a few more Windows mapping entries.
+	Original patch by Patch by Stefan de Konink <stefan@konink.de>.
+
+	* cherokee/validator_htpasswd.c, cherokee/validator_plain.c,
+	cherokee/validator_file.c, cherokee/validator_file.h,
+	cherokee/validator_htdigest.c: Adds support for relative paths (in
+	addition to the full paths previously supported) to the file based
+	validators.
+
+	* cherokee/validator_htpasswd.c, cherokee/validator_htpasswd.h,
+	cherokee/Makefile.am, cherokee/validator_plain.c,
+	cherokee/validator_plain.h, cherokee/validator_file.c,
+	cherokee/validator_file.h, cherokee/validator_htdigest.c,
+	cherokee/validator_htdigest.h: Re-factored the file based
+	validators. A new common parent class cherokee_validator_file_t
+	has been added.
+
+	* cherokee/win32_misc.h, cherokee/win32_misc.c: Implements kill()
+	on Windows. Patch by Stefan de Konink <stefan@konink.de>.
+
+2008-11-05  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* cherokee/socket.c (cherokee_socket_close): Fixes a Win32
+	compilation issue. Patch by Stefan de Konink <stefan@konink.de>
+
+2008-11-05  Taher Shihadeh  <taher@unixwars.com>
+
+	* admin/ModuleMethod.py, admin/Form.py: allow Ajax reloads of
+	option lists. They were compeltely resubmitting the forms on
+	change instead.
+
+	* admin/ModuleScgi.py, admin/ModuleFcgi.py: deleted overzealous
+	check that prevented checkfile to work with directories. Now it is
+	enabled by default for extension-type rules. Also document_root is
+	configurable again from within FastCGI and SCGI handlers.
+
+2008-11-04  Antonio Perez  <aperez@skarcha.com>
+
+	* admin/ModuleRedir.py, admin/static/js/common.js, admin/Entry.py:
+	Now it is possible to modify redirection rules. Fixes Bug #191:
+	http://code.google.com/p/cherokee/issues/detail?id=191
+
+	* admin/ModuleMethod.py: Fixes an autosubmit issue adding a
+	HTTP Method Rule.
+
+2008-11-04  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* configure.in, m4/libgnutls.m4: Fixes a GNUTLS compilation issue.
+
+2008-11-04  Taher Shihadeh  <taher@unixwars.com>
+
+	* admin/PageVServer.py: small cleanup. Removed a superfluous
+	option that was repeating functionality, related to
+	http://code.google.com/p/cherokee/issues/detail?id=192
+
+2008-11-03  Taher Shihadeh  <taher@unixwars.com>
+
+	* admin/ModuleMethod.py: Fixes glitch in the submission of the
+	"HTTP method"-rules that prevented them from being configured.
+
+2008-11-03  Antonio Perez  <aperez@skarcha.com>
+
+	* admin/ModuleCgi.py, admin/static/js/common.js, admin/Entry.py:
+	Adds support for Custom Environment Variables. Bug #188:
+	http://code.google.com/p/cherokee/issues/detail?id=188
+
+2008-11-03  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* cherokee/handler_ssi.c (cherokee_handler_ssi_add_headers): Fixes
+	a little problem with the SSI MIME type handling.
+
+	* qa/186-SSI-droot.py, qa/Makefile.am: Adds a new QA. It checks
+	whether the document root security feature actually works.
+
+	* cherokee/handler_ssi.c (parse): Adds a security check to ensure
+	that the SSI target file is inside the document root. If the file
+	is outsize, the handler does just ignore the SSI entry.
+
+	* admin/ModuleMethod.py, admin/consts.py, admin/Makefile.am:
+	Adds a new method to implement the new HTTP method rule.
+
+	* cherokee/rule_method.h, cherokee/rule_method.c, configure.in,
+	cherokee/Makefile.am: Integrates a new rule type. It tries to
+	match the HTTP method.
+
+	* cherokee/http.h, cherokee/http.c: Adds the new
+	cherokee_http_string_to_method() function for converting a HTTP
+	method string to its enum.
+
+	* cherokee/rule_exists.c (match): The I/O entry must be unrefed.
+
+	* qa/182-SSI-include-file.py, qa/183-SSI-include-virtual.py,
+	qa/184-SSI-fsize-file.py, qa/185-SSI-fsize-virtual.py,
+	qa/Makefile.am: Adds a few of new QA tests for checkin the SSI
+	file inclusion and file size replacement.
+
+	* cherokee/handler_ssi.c: Fixes a couple of issues with the new
+	SSI handler.
+
+2008-11-02  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* admin/ModuleSsi.py, admin/constants.py, admin/Makefile.am: Added
+	the a new module for the SSI handler.
+
+	* cherokee/handler_ssi.c: Implements SSI virtual fsize, and
+	flastmod (with both 'file' and 'virtual' files).
+
+	* cherokee/handler_ssi.c (parse): Implements SSI virtual
+	inclusions.
+
+	* cherokee/handler.h (HANDLER_VSRV): Adds a new macro to access
+	a virtual server object from one of its connection handlers.
+
+	* cherokee/handler_ssi.h, cherokee/handler_ssi.c, configure.in,
+	cherokee/Makefile.am: Initial import of the upcoming SSI handler.
+
+2008-11-01  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* configure.in, m4/libgnutls.m4: The GnuTLS detection code has
+	been reimplemented. From now on, it won't use pkg-config. It was
+	an error to suppose that most of the systems would have it
+	installed. Be aware of this patch, it may introduce regressions.
+
+	* admin/PageInfoSource.py: Adds a new field for the interpreter
+	spawning timeout.
+
+	* cherokee/source_interpreter.c, cherokee/source_interpreter.h:
+	Adds a new "timeout" configuration key. The spawning timeout is
+	not longer hardcoded.
+
+	* admin/ModuleBalancer.py (ModuleBalancerGeneric._op_render):
+	Fixes a linking issue. The source names pointed to invalid
+	source pages.
+
+2008-11-01  Antonio Perez  <aperez@skarcha.com>
+
+	* admin/ModuleErrorRedir.py: Changed submit button. Fixes
+	bug #190: http://code.google.com/p/cherokee/issues/detail?id=190
+
+2008-11-01  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* admin/ModuleCommon.py (ModuleCommon._op_render): Reflects the
+	latest change on the configuration interface.
+
+	* cherokee/handler_common.c, cherokee/handler_common.h: Implements
+	a new property to define whether or not the use of dirlist is
+	allow. It implements the RFE #186:
+	http://code.google.com/p/cherokee/issues/detail?id=186
+
+	* cherokee/handler_dirlist.c: Fixes the symbolic links to
+	directories support. Original patch by Stefan de Konink
+	<stefan@konink.de>; a few additions my me.
+
+	* cherokee/connection.c (cherokee_connection_set_redirect): Fixes
+	a problem with the redirections. Patch by Stefan de Konink
+	<stefan@konink.de>.
+
 2008-10-31  Alvaro Lopez Ortega  <alvaro@octality.com>
 
-	* 0.10.1 released
+	* cherokee/handler_cgi_base.c, cherokee/server-protected.h,
+	cherokee/server.c: Implements the "SERVER_PORT" and "REMOTE_PORT"
+	variables for *CGIs.
 
-	* cherokee/server.c (configure_server_property): Fixes a problem
-	with the I/O cache configuration.
+	* cherokee/server.c, cherokee/server-protected.h,
+	cherokee/handler_cgi_base.c: Adds support for the "SERVER_ADDR"
+	variable. Original patch by Patch by Stefan de Konink
+	<stefan@konink.de>; I've reworked it in order to make it more
+	efficient.
+
+	* cherokee/source_interpreter.h, cherokee/source_interpreter.c:
+	Adds support for changing the user right before spawning the new
+	source.  Patch by Stefan de Konink <stefan@konink.de>.
+
+	* cherokee/server.c (configure_server_property): Fixed to use
+	cherokee_getpwnam() instead of getpwnam()
+
+	* admin/PageEntry.py, admin/ModuleExists.py: Adds a check button
+	select whether or not the rule should use I/O cache for the
+	evaluation.
+
+	* admin/PageVServer.py (PageVServer._op_apply_changes): Reflects
+	the latest change in the administration interface. It adds a new
+	checkbox to allow whether a virtual server should keep connections
+	alive between requests.
+
+	* cherokee/virtual_server.c, cherokee/virtual_server.h,
+	cherokee/connection.c: Added a new option to enable/disable
+	keep-alive per virtual server. By default it's enabled.  It
+	implement the RFE #181:
+	http://code.google.com/p/cherokee/issues/detail?id=181
+
+	* cherokee/handler_cgi_base.c
+	(cherokee_handler_cgi_base_build_basic_env): Adds support for
+	SCRIPT_URL. It contains the request *after* the internal
+	redirections. It's important to remember the REQUEST_URI contains
+	the original request.
+
+	* cherokee/macros.h (SENDFILE_MAX_SIZE): Fixes a 'integer overflow
+	in expression' compilation warning. Fixes bug #185:
+	http://code.google.com/p/cherokee/issues/detail?id=185
+
+	* cherokee/source_interpreter.c: From now on, Cherokee will kill
+	all the sources that are lauched during its life time. Original
+	patch by Stefan de Konink <stefan@konink.de> (thanks! Great
+	job). I have also added a new check to ensure that, in case a
+	interpreter is re-launched, the old source is killed as well.
+
+2008-10-31  Taher Shihadeh  <taher@unixwars.com>
+
+	* admin/PageInfoSource.py: The last source in a rule cannot be
+	deleted now to prevent appearence of broken rules. Addresses
+	http://code.google.com/p/cherokee/issues/detail?id=144
+
+	* admin/PageIcon.py: There was a problem updating the existing
+	lists of extensions. It was issue 184:
+	http://code.google.com/p/cherokee/issues/detail?id=184
+
+2008-10-30  Antonio Perez  <aperez@skarcha.com>
+
+	* admin/server.py, admin/Page.py, admin/static/css/cherokee.css,
+	admin/static/js/common.js: Config changes now use AJAX.
+	http://code.google.com/p/cherokee/issues/detail?id=162
+
+2008-10-30  Taher Shihadeh  <taher@unixwars.com>
+
+	* admin/Makefile.am: we missed installing a file for the new
+	Authlist handler. Credit to Antonio Perez <aperez@skarcha.com>.
+	http://code.google.com/p/cherokee/issues/detail?id=176
 
 2008-10-29  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* admin/consts.py, admin/ModuleExists.py, admin/Makefile.am: Adds
+	support for the new rule type: "If file exists".
+
+	* cherokee/rule_exists.h, cherokee/rule_exists.c, configure.in,
+	cherokee/Makefile.am: A new rule for checking whether a file
+	exists or not has been adeed.
+
+	* qa/179-RuleExists.py, qa/180-RuleExists2.py,
+	qa/181-RuleExists3.py, qa/Makefile.am (EXTRA_DIST): Added three
+	new QA tests to check the Exists rule.
+
+	* qa/176-AuthLista1.py, qa/177-AuthLista2.py,
+	qa/178-AuthLista3.py: Added three new QA tests that test the new
+	AuthList validator.
+
+	* cherokee/handler_common.c: Converted to use the new
+	cherokee_io_stat() function.
+
+	* cherokee/util.c (cherokee_io_stat), cherokee/util.h: Adds a new
+	commodity function.
+
+	* cherokee/cherokee.h, cherokee/iocache.h, cherokee/Makefile.am:
+	Adds the I/O-cache API to the public interface.
 
 	* 0.10.0 released
 
@@ -898,7 +1513,7 @@
 	<rgl@ruilopes.com>
 
 	* cherokee/http.h (http_method_with_input): PUT has also
-	input. Reported/Patched by Stefan de Konink <skinkie@xs4all.nl>
+	input. Reported/Patched by Stefan de Konink <stefan@konink.de>
 
 2008-08-21  Alvaro Lopez Ortega  <alvaro@alobbs.com>
 
@@ -3573,7 +4188,7 @@
 	compiling on OS X without using a custom LIBTOOL environment
 	variable.
 
-2007-09-27  Stefan de Konink <skinkie@xs4all.nl>, A.D.F  <adefacc@tin.it>
+2007-09-27  Stefan de Konink <stefan@konink.de>, A.D.F  <adefacc@tin.it>
 
 	* cherokee/header.c
 	  - parse_method(), fixed macro detect_method()
@@ -3590,7 +4205,7 @@
 
 	* cherokee/header.c (detect_method): Fixed method detection on
 	64bit machines. Issue explanation and patch from Stefan de Konink
-	<skinkie@xs4all.nl>.
+	<stefan@konink.de>.
 
 2007-09-19  Alvaro Lopez Ortega  <alvaro@alobbs.com>
 
