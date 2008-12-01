@@ -1,3 +1,27 @@
+2008-11-30  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* 0.11.2 released
+
+	* cherokee/cryptor_libssl.c, cherokee/cryptor_libssl.h: Adds a
+	license exemption for OpenSSL. In case the cryptor-libssl plug-in
+	is linked with OpenSSL a license exemption is needed because the
+	GPL (Cherokee) and X11 (OpenSSL) licenses incompatibility. It is
+	important to note that these are only two source files where this
+	exemption applies. Thus, the cryptor_libssl plugin in the only
+	plug-in where the license exemption applies.
+
+2008-11-28  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* cherokee/handler_dirlist.c, themes/firefox3/footer.html,
+	themes/firefox3/entry.html, themes/firefox3/header.html: Fixes a
+	couple of UTF-8 related issues. Patch by: Emil Renner Berthing
+	<esmil@mailme.dk>
+
+2008-11-27  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* cherokee/buffer.h: Fixes the 'Long-File-Support' in dirlist and
+	server_info handlers.
+
 2008-11-26  Alvaro Lopez Ortega  <alvaro@octality.com>
 
 	* 0.11.1 released
