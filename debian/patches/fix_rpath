@@ -5,26 +5,17 @@
 # This patch was created by running this over the upstream configure
 # script:
 #
-# sed -i -r 's/(hardcode_into_libs=).*$/\1=no/' configure
+# sed -i -r 's/(hardcode_into_libs)=.*$/\1=no/' configure
 Index: cherokee/configure
 ===================================================================
---- cherokee.orig/configure	2008-12-02 14:33:46.000000000 -0600
-+++ cherokee/configure	2008-12-02 14:34:01.000000000 -0600
-@@ -10091,7 +10091,7 @@
-   sys_lib_search_path_spec="/lib /usr/lib /usr/local/lib"
- fi
- need_lib_prefix=unknown
--hardcode_into_libs=no
-+hardcode_into_libs==no
- 
- # when you set need_version to no, make sure it does not cause -set_version
- # flags to be left without arguments
+--- cherokee.orig/configure	2008-12-02 16:25:24.000000000 -0600
++++ cherokee/configure	2008-12-02 16:29:30.000000000 -0600
 @@ -10111,7 +10111,7 @@
    version_type=linux
    need_lib_prefix=no
    need_version=no
 -  hardcode_into_libs=yes
-+  hardcode_into_libs==no
++  hardcode_into_libs=no
    if test "$host_cpu" = ia64; then
      # AIX 5 supports IA64
      library_names_spec='${libname}${release}${shared_ext}$major ${libname}${release}${shared_ext}$versuffix $libname${shared_ext}'
@@ -33,7 +24,7 @@ Index: cherokee/configure
    shlibpath_var=LD_LIBRARY_PATH
    shlibpath_overrides_runpath=no
 -  hardcode_into_libs=yes
-+  hardcode_into_libs==no
++  hardcode_into_libs=no
    dynamic_linker='GNU ld.so'
    ;;
  
@@ -42,18 +33,18 @@ Index: cherokee/configure
    freebsd3.[01]* | freebsdelf3.[01]*)
      shlibpath_overrides_runpath=yes
 -    hardcode_into_libs=yes
-+    hardcode_into_libs==no
++    hardcode_into_libs=no
      ;;
    freebsd3.[2-9]* | freebsdelf3.[2-9]* | \
    freebsd4.[0-5] | freebsdelf4.[0-5] | freebsd4.1.1 | freebsdelf4.1.1)
      shlibpath_overrides_runpath=no
 -    hardcode_into_libs=yes
-+    hardcode_into_libs==no
++    hardcode_into_libs=no
      ;;
    freebsd*) # from 4.6 on
      shlibpath_overrides_runpath=yes
 -    hardcode_into_libs=yes
-+    hardcode_into_libs==no
++    hardcode_into_libs=no
      ;;
    esac
    ;;
@@ -62,7 +53,7 @@ Index: cherokee/configure
    soname_spec='${libname}${release}${shared_ext}$major'
    shlibpath_var=LD_LIBRARY_PATH
 -  hardcode_into_libs=yes
-+  hardcode_into_libs==no
++  hardcode_into_libs=no
    ;;
  
  hpux9* | hpux10* | hpux11*)
@@ -71,7 +62,7 @@ Index: cherokee/configure
    ia64*)
      shrext_cmds='.so'
 -    hardcode_into_libs=yes
-+    hardcode_into_libs==no
++    hardcode_into_libs=no
      dynamic_linker="$host_os dld.so"
      shlibpath_var=LD_LIBRARY_PATH
      shlibpath_overrides_runpath=yes # Unless +noenvvar is specified.
@@ -80,7 +71,7 @@ Index: cherokee/configure
     hppa*64*)
       shrext_cmds='.sl'
 -     hardcode_into_libs=yes
-+     hardcode_into_libs==no
++     hardcode_into_libs=no
       dynamic_linker="$host_os dld.sl"
       shlibpath_var=LD_LIBRARY_PATH # How should we handle SHLIB_PATH
       shlibpath_overrides_runpath=yes # Unless +noenvvar is specified.
@@ -89,7 +80,7 @@ Index: cherokee/configure
    shlibpath_var=LD_LIBRARY_PATH
    shlibpath_overrides_runpath=no
 -  hardcode_into_libs=yes
-+  hardcode_into_libs==no
++  hardcode_into_libs=no
    ;;
  
  irix5* | irix6* | nonstopux*)
@@ -98,7 +89,7 @@ Index: cherokee/configure
    sys_lib_search_path_spec="/usr/lib${libsuff} /lib${libsuff} /usr/local/lib${libsuff}"
    sys_lib_dlsearch_path_spec="/usr/lib${libsuff} /lib${libsuff}"
 -  hardcode_into_libs=yes
-+  hardcode_into_libs==no
++  hardcode_into_libs=no
    ;;
  
  # No shared lib support for Linux oldld, aout, or coff.
@@ -107,7 +98,7 @@ Index: cherokee/configure
    # Some rework will be needed to allow for fast_install
    # before this can be enabled.
 -  hardcode_into_libs=yes
-+  hardcode_into_libs==no
++  hardcode_into_libs=no
  
    # Append ld.so.conf contents to the search path
    if test -f /etc/ld.so.conf; then
@@ -116,7 +107,7 @@ Index: cherokee/configure
    shlibpath_var=LD_LIBRARY_PATH
    shlibpath_overrides_runpath=no
 -  hardcode_into_libs=yes
-+  hardcode_into_libs==no
++  hardcode_into_libs=no
    dynamic_linker='GNU ld.so'
    ;;
  
@@ -125,7 +116,7 @@ Index: cherokee/configure
    shlibpath_var=LD_LIBRARY_PATH
    shlibpath_overrides_runpath=yes
 -  hardcode_into_libs=yes
-+  hardcode_into_libs==no
++  hardcode_into_libs=no
    ;;
  
  newsos6)
@@ -134,7 +125,7 @@ Index: cherokee/configure
    shlibpath_var=LD_LIBRARY_PATH
    shlibpath_overrides_runpath=yes
 -  hardcode_into_libs=yes
-+  hardcode_into_libs==no
++  hardcode_into_libs=no
    # ldd complains unless libraries are executable
    postinstall_cmds='chmod +x $lib'
    ;;
@@ -143,7 +134,7 @@ Index: cherokee/configure
    soname_spec='${libname}${release}${shared_ext}$major'
    shlibpath_var=LD_LIBRARY_PATH
 -  hardcode_into_libs=yes
-+  hardcode_into_libs==no
++  hardcode_into_libs=no
    if test "$with_gnu_ld" = yes; then
      sys_lib_search_path_spec='/usr/local/lib /usr/gnu/lib /usr/ccs/lib /usr/lib /lib'
      shlibpath_overrides_runpath=no
@@ -152,25 +143,16 @@ Index: cherokee/configure
  
  # Whether we should hardcode library paths into libraries.
 -hardcode_into_libs=$hardcode_into_libs
-+hardcode_into_libs==no
++hardcode_into_libs=no
  
  # Flag to hardcode \$libdir into a binary during linking.
  # This must work even if \$libdir does not exist.
-@@ -14010,7 +14010,7 @@
-   sys_lib_search_path_spec="/lib /usr/lib /usr/local/lib"
- fi
- need_lib_prefix=unknown
--hardcode_into_libs=no
-+hardcode_into_libs==no
- 
- # when you set need_version to no, make sure it does not cause -set_version
- # flags to be left without arguments
 @@ -14030,7 +14030,7 @@
    version_type=linux
    need_lib_prefix=no
    need_version=no
 -  hardcode_into_libs=yes
-+  hardcode_into_libs==no
++  hardcode_into_libs=no
    if test "$host_cpu" = ia64; then
      # AIX 5 supports IA64
      library_names_spec='${libname}${release}${shared_ext}$major ${libname}${release}${shared_ext}$versuffix $libname${shared_ext}'
@@ -179,7 +161,7 @@ Index: cherokee/configure
    shlibpath_var=LD_LIBRARY_PATH
    shlibpath_overrides_runpath=no
 -  hardcode_into_libs=yes
-+  hardcode_into_libs==no
++  hardcode_into_libs=no
    dynamic_linker='GNU ld.so'
    ;;
  
@@ -188,18 +170,18 @@ Index: cherokee/configure
    freebsd3.[01]* | freebsdelf3.[01]*)
      shlibpath_overrides_runpath=yes
 -    hardcode_into_libs=yes
-+    hardcode_into_libs==no
++    hardcode_into_libs=no
      ;;
    freebsd3.[2-9]* | freebsdelf3.[2-9]* | \
    freebsd4.[0-5] | freebsdelf4.[0-5] | freebsd4.1.1 | freebsdelf4.1.1)
      shlibpath_overrides_runpath=no
 -    hardcode_into_libs=yes
-+    hardcode_into_libs==no
++    hardcode_into_libs=no
      ;;
    freebsd*) # from 4.6 on
      shlibpath_overrides_runpath=yes
 -    hardcode_into_libs=yes
-+    hardcode_into_libs==no
++    hardcode_into_libs=no
      ;;
    esac
    ;;
@@ -208,7 +190,7 @@ Index: cherokee/configure
    soname_spec='${libname}${release}${shared_ext}$major'
    shlibpath_var=LD_LIBRARY_PATH
 -  hardcode_into_libs=yes
-+  hardcode_into_libs==no
++  hardcode_into_libs=no
    ;;
  
  hpux9* | hpux10* | hpux11*)
@@ -217,7 +199,7 @@ Index: cherokee/configure
    ia64*)
      shrext_cmds='.so'
 -    hardcode_into_libs=yes
-+    hardcode_into_libs==no
++    hardcode_into_libs=no
      dynamic_linker="$host_os dld.so"
      shlibpath_var=LD_LIBRARY_PATH
      shlibpath_overrides_runpath=yes # Unless +noenvvar is specified.
@@ -226,7 +208,7 @@ Index: cherokee/configure
     hppa*64*)
       shrext_cmds='.sl'
 -     hardcode_into_libs=yes
-+     hardcode_into_libs==no
++     hardcode_into_libs=no
       dynamic_linker="$host_os dld.sl"
       shlibpath_var=LD_LIBRARY_PATH # How should we handle SHLIB_PATH
       shlibpath_overrides_runpath=yes # Unless +noenvvar is specified.
@@ -235,7 +217,7 @@ Index: cherokee/configure
    shlibpath_var=LD_LIBRARY_PATH
    shlibpath_overrides_runpath=no
 -  hardcode_into_libs=yes
-+  hardcode_into_libs==no
++  hardcode_into_libs=no
    ;;
  
  irix5* | irix6* | nonstopux*)
@@ -244,7 +226,7 @@ Index: cherokee/configure
    sys_lib_search_path_spec="/usr/lib${libsuff} /lib${libsuff} /usr/local/lib${libsuff}"
    sys_lib_dlsearch_path_spec="/usr/lib${libsuff} /lib${libsuff}"
 -  hardcode_into_libs=yes
-+  hardcode_into_libs==no
++  hardcode_into_libs=no
    ;;
  
  # No shared lib support for Linux oldld, aout, or coff.
@@ -253,7 +235,7 @@ Index: cherokee/configure
    # Some rework will be needed to allow for fast_install
    # before this can be enabled.
 -  hardcode_into_libs=yes
-+  hardcode_into_libs==no
++  hardcode_into_libs=no
  
    # Append ld.so.conf contents to the search path
    if test -f /etc/ld.so.conf; then
@@ -262,7 +244,7 @@ Index: cherokee/configure
    shlibpath_var=LD_LIBRARY_PATH
    shlibpath_overrides_runpath=no
 -  hardcode_into_libs=yes
-+  hardcode_into_libs==no
++  hardcode_into_libs=no
    dynamic_linker='GNU ld.so'
    ;;
  
@@ -271,7 +253,7 @@ Index: cherokee/configure
    shlibpath_var=LD_LIBRARY_PATH
    shlibpath_overrides_runpath=yes
 -  hardcode_into_libs=yes
-+  hardcode_into_libs==no
++  hardcode_into_libs=no
    ;;
  
  newsos6)
@@ -280,7 +262,7 @@ Index: cherokee/configure
    shlibpath_var=LD_LIBRARY_PATH
    shlibpath_overrides_runpath=yes
 -  hardcode_into_libs=yes
-+  hardcode_into_libs==no
++  hardcode_into_libs=no
    # ldd complains unless libraries are executable
    postinstall_cmds='chmod +x $lib'
    ;;
@@ -289,7 +271,7 @@ Index: cherokee/configure
    soname_spec='${libname}${release}${shared_ext}$major'
    shlibpath_var=LD_LIBRARY_PATH
 -  hardcode_into_libs=yes
-+  hardcode_into_libs==no
++  hardcode_into_libs=no
    if test "$with_gnu_ld" = yes; then
      sys_lib_search_path_spec='/usr/local/lib /usr/gnu/lib /usr/ccs/lib /usr/lib /lib'
      shlibpath_overrides_runpath=no
@@ -298,25 +280,16 @@ Index: cherokee/configure
  
  # Whether we should hardcode library paths into libraries.
 -hardcode_into_libs=$hardcode_into_libs
-+hardcode_into_libs==no
++hardcode_into_libs=no
  
  # Flag to hardcode \$libdir into a binary during linking.
  # This must work even if \$libdir does not exist.
-@@ -16593,7 +16593,7 @@
-   sys_lib_search_path_spec="/lib /usr/lib /usr/local/lib"
- fi
- need_lib_prefix=unknown
--hardcode_into_libs=no
-+hardcode_into_libs==no
- 
- # when you set need_version to no, make sure it does not cause -set_version
- # flags to be left without arguments
 @@ -16613,7 +16613,7 @@
    version_type=linux
    need_lib_prefix=no
    need_version=no
 -  hardcode_into_libs=yes
-+  hardcode_into_libs==no
++  hardcode_into_libs=no
    if test "$host_cpu" = ia64; then
      # AIX 5 supports IA64
      library_names_spec='${libname}${release}${shared_ext}$major ${libname}${release}${shared_ext}$versuffix $libname${shared_ext}'
@@ -325,7 +298,7 @@ Index: cherokee/configure
    shlibpath_var=LD_LIBRARY_PATH
    shlibpath_overrides_runpath=no
 -  hardcode_into_libs=yes
-+  hardcode_into_libs==no
++  hardcode_into_libs=no
    dynamic_linker='GNU ld.so'
    ;;
  
@@ -334,18 +307,18 @@ Index: cherokee/configure
    freebsd3.[01]* | freebsdelf3.[01]*)
      shlibpath_overrides_runpath=yes
 -    hardcode_into_libs=yes
-+    hardcode_into_libs==no
++    hardcode_into_libs=no
      ;;
    freebsd3.[2-9]* | freebsdelf3.[2-9]* | \
    freebsd4.[0-5] | freebsdelf4.[0-5] | freebsd4.1.1 | freebsdelf4.1.1)
      shlibpath_overrides_runpath=no
 -    hardcode_into_libs=yes
-+    hardcode_into_libs==no
++    hardcode_into_libs=no
      ;;
    freebsd*) # from 4.6 on
      shlibpath_overrides_runpath=yes
 -    hardcode_into_libs=yes
-+    hardcode_into_libs==no
++    hardcode_into_libs=no
      ;;
    esac
    ;;
@@ -354,7 +327,7 @@ Index: cherokee/configure
    soname_spec='${libname}${release}${shared_ext}$major'
    shlibpath_var=LD_LIBRARY_PATH
 -  hardcode_into_libs=yes
-+  hardcode_into_libs==no
++  hardcode_into_libs=no
    ;;
  
  hpux9* | hpux10* | hpux11*)
@@ -363,7 +336,7 @@ Index: cherokee/configure
    ia64*)
      shrext_cmds='.so'
 -    hardcode_into_libs=yes
-+    hardcode_into_libs==no
++    hardcode_into_libs=no
      dynamic_linker="$host_os dld.so"
      shlibpath_var=LD_LIBRARY_PATH
      shlibpath_overrides_runpath=yes # Unless +noenvvar is specified.
@@ -372,7 +345,7 @@ Index: cherokee/configure
     hppa*64*)
       shrext_cmds='.sl'
 -     hardcode_into_libs=yes
-+     hardcode_into_libs==no
++     hardcode_into_libs=no
       dynamic_linker="$host_os dld.sl"
       shlibpath_var=LD_LIBRARY_PATH # How should we handle SHLIB_PATH
       shlibpath_overrides_runpath=yes # Unless +noenvvar is specified.
@@ -381,7 +354,7 @@ Index: cherokee/configure
    shlibpath_var=LD_LIBRARY_PATH
    shlibpath_overrides_runpath=no
 -  hardcode_into_libs=yes
-+  hardcode_into_libs==no
++  hardcode_into_libs=no
    ;;
  
  irix5* | irix6* | nonstopux*)
@@ -390,7 +363,7 @@ Index: cherokee/configure
    sys_lib_search_path_spec="/usr/lib${libsuff} /lib${libsuff} /usr/local/lib${libsuff}"
    sys_lib_dlsearch_path_spec="/usr/lib${libsuff} /lib${libsuff}"
 -  hardcode_into_libs=yes
-+  hardcode_into_libs==no
++  hardcode_into_libs=no
    ;;
  
  # No shared lib support for Linux oldld, aout, or coff.
@@ -399,7 +372,7 @@ Index: cherokee/configure
    # Some rework will be needed to allow for fast_install
    # before this can be enabled.
 -  hardcode_into_libs=yes
-+  hardcode_into_libs==no
++  hardcode_into_libs=no
  
    # Append ld.so.conf contents to the search path
    if test -f /etc/ld.so.conf; then
@@ -408,7 +381,7 @@ Index: cherokee/configure
    shlibpath_var=LD_LIBRARY_PATH
    shlibpath_overrides_runpath=no
 -  hardcode_into_libs=yes
-+  hardcode_into_libs==no
++  hardcode_into_libs=no
    dynamic_linker='GNU ld.so'
    ;;
  
@@ -417,7 +390,7 @@ Index: cherokee/configure
    shlibpath_var=LD_LIBRARY_PATH
    shlibpath_overrides_runpath=yes
 -  hardcode_into_libs=yes
-+  hardcode_into_libs==no
++  hardcode_into_libs=no
    ;;
  
  newsos6)
@@ -426,7 +399,7 @@ Index: cherokee/configure
    shlibpath_var=LD_LIBRARY_PATH
    shlibpath_overrides_runpath=yes
 -  hardcode_into_libs=yes
-+  hardcode_into_libs==no
++  hardcode_into_libs=no
    # ldd complains unless libraries are executable
    postinstall_cmds='chmod +x $lib'
    ;;
@@ -435,7 +408,7 @@ Index: cherokee/configure
    soname_spec='${libname}${release}${shared_ext}$major'
    shlibpath_var=LD_LIBRARY_PATH
 -  hardcode_into_libs=yes
-+  hardcode_into_libs==no
++  hardcode_into_libs=no
    if test "$with_gnu_ld" = yes; then
      sys_lib_search_path_spec='/usr/local/lib /usr/gnu/lib /usr/ccs/lib /usr/lib /lib'
      shlibpath_overrides_runpath=no
@@ -444,25 +417,16 @@ Index: cherokee/configure
  
  # Whether we should hardcode library paths into libraries.
 -hardcode_into_libs=$hardcode_into_libs
-+hardcode_into_libs==no
++hardcode_into_libs=no
  
  # Flag to hardcode \$libdir into a binary during linking.
  # This must work even if \$libdir does not exist.
-@@ -19183,7 +19183,7 @@
-   sys_lib_search_path_spec="/lib /usr/lib /usr/local/lib"
- fi
- need_lib_prefix=unknown
--hardcode_into_libs=no
-+hardcode_into_libs==no
- 
- # when you set need_version to no, make sure it does not cause -set_version
- # flags to be left without arguments
 @@ -19203,7 +19203,7 @@
    version_type=linux
    need_lib_prefix=no
    need_version=no
 -  hardcode_into_libs=yes
-+  hardcode_into_libs==no
++  hardcode_into_libs=no
    if test "$host_cpu" = ia64; then
      # AIX 5 supports IA64
      library_names_spec='${libname}${release}${shared_ext}$major ${libname}${release}${shared_ext}$versuffix $libname${shared_ext}'
@@ -471,7 +435,7 @@ Index: cherokee/configure
    shlibpath_var=LD_LIBRARY_PATH
    shlibpath_overrides_runpath=no
 -  hardcode_into_libs=yes
-+  hardcode_into_libs==no
++  hardcode_into_libs=no
    dynamic_linker='GNU ld.so'
    ;;
  
@@ -480,18 +444,18 @@ Index: cherokee/configure
    freebsd3.[01]* | freebsdelf3.[01]*)
      shlibpath_overrides_runpath=yes
 -    hardcode_into_libs=yes
-+    hardcode_into_libs==no
++    hardcode_into_libs=no
      ;;
    freebsd3.[2-9]* | freebsdelf3.[2-9]* | \
    freebsd4.[0-5] | freebsdelf4.[0-5] | freebsd4.1.1 | freebsdelf4.1.1)
      shlibpath_overrides_runpath=no
 -    hardcode_into_libs=yes
-+    hardcode_into_libs==no
++    hardcode_into_libs=no
      ;;
    freebsd*) # from 4.6 on
      shlibpath_overrides_runpath=yes
 -    hardcode_into_libs=yes
-+    hardcode_into_libs==no
++    hardcode_into_libs=no
      ;;
    esac
    ;;
@@ -500,7 +464,7 @@ Index: cherokee/configure
    soname_spec='${libname}${release}${shared_ext}$major'
    shlibpath_var=LD_LIBRARY_PATH
 -  hardcode_into_libs=yes
-+  hardcode_into_libs==no
++  hardcode_into_libs=no
    ;;
  
  hpux9* | hpux10* | hpux11*)
@@ -509,7 +473,7 @@ Index: cherokee/configure
    ia64*)
      shrext_cmds='.so'
 -    hardcode_into_libs=yes
-+    hardcode_into_libs==no
++    hardcode_into_libs=no
      dynamic_linker="$host_os dld.so"
      shlibpath_var=LD_LIBRARY_PATH
      shlibpath_overrides_runpath=yes # Unless +noenvvar is specified.
@@ -518,7 +482,7 @@ Index: cherokee/configure
     hppa*64*)
       shrext_cmds='.sl'
 -     hardcode_into_libs=yes
-+     hardcode_into_libs==no
++     hardcode_into_libs=no
       dynamic_linker="$host_os dld.sl"
       shlibpath_var=LD_LIBRARY_PATH # How should we handle SHLIB_PATH
       shlibpath_overrides_runpath=yes # Unless +noenvvar is specified.
@@ -527,7 +491,7 @@ Index: cherokee/configure
    shlibpath_var=LD_LIBRARY_PATH
    shlibpath_overrides_runpath=no
 -  hardcode_into_libs=yes
-+  hardcode_into_libs==no
++  hardcode_into_libs=no
    ;;
  
  irix5* | irix6* | nonstopux*)
@@ -536,7 +500,7 @@ Index: cherokee/configure
    sys_lib_search_path_spec="/usr/lib${libsuff} /lib${libsuff} /usr/local/lib${libsuff}"
    sys_lib_dlsearch_path_spec="/usr/lib${libsuff} /lib${libsuff}"
 -  hardcode_into_libs=yes
-+  hardcode_into_libs==no
++  hardcode_into_libs=no
    ;;
  
  # No shared lib support for Linux oldld, aout, or coff.
@@ -545,7 +509,7 @@ Index: cherokee/configure
    # Some rework will be needed to allow for fast_install
    # before this can be enabled.
 -  hardcode_into_libs=yes
-+  hardcode_into_libs==no
++  hardcode_into_libs=no
  
    # Append ld.so.conf contents to the search path
    if test -f /etc/ld.so.conf; then
@@ -554,7 +518,7 @@ Index: cherokee/configure
    shlibpath_var=LD_LIBRARY_PATH
    shlibpath_overrides_runpath=no
 -  hardcode_into_libs=yes
-+  hardcode_into_libs==no
++  hardcode_into_libs=no
    dynamic_linker='GNU ld.so'
    ;;
  
@@ -563,7 +527,7 @@ Index: cherokee/configure
    shlibpath_var=LD_LIBRARY_PATH
    shlibpath_overrides_runpath=yes
 -  hardcode_into_libs=yes
-+  hardcode_into_libs==no
++  hardcode_into_libs=no
    ;;
  
  newsos6)
@@ -572,7 +536,7 @@ Index: cherokee/configure
    shlibpath_var=LD_LIBRARY_PATH
    shlibpath_overrides_runpath=yes
 -  hardcode_into_libs=yes
-+  hardcode_into_libs==no
++  hardcode_into_libs=no
    # ldd complains unless libraries are executable
    postinstall_cmds='chmod +x $lib'
    ;;
@@ -581,7 +545,7 @@ Index: cherokee/configure
    soname_spec='${libname}${release}${shared_ext}$major'
    shlibpath_var=LD_LIBRARY_PATH
 -  hardcode_into_libs=yes
-+  hardcode_into_libs==no
++  hardcode_into_libs=no
    if test "$with_gnu_ld" = yes; then
      sys_lib_search_path_spec='/usr/local/lib /usr/gnu/lib /usr/ccs/lib /usr/lib /lib'
      shlibpath_overrides_runpath=no
@@ -590,7 +554,7 @@ Index: cherokee/configure
  
  # Whether we should hardcode library paths into libraries.
 -hardcode_into_libs=$hardcode_into_libs
-+hardcode_into_libs==no
++hardcode_into_libs=no
  
  # Flag to hardcode \$libdir into a binary during linking.
  # This must work even if \$libdir does not exist.
@@ -599,7 +563,7 @@ Index: cherokee/configure
  
  # Whether we should hardcode library paths into libraries.
 -hardcode_into_libs=$hardcode_into_libs
-+hardcode_into_libs==no
++hardcode_into_libs=no
  
  # Flag to hardcode \$libdir into a binary during linking.
  # This must work even if \$libdir does not exist.
