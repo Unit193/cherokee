@@ -1,3 +1,11 @@
+cherokee (0.11.2-2) unstable; urgency=low
+
+  * NOT RELEASED YET
+  * No longer defines rpaths - patched ./configure
+    (debian/patches/fix_rpath)
+
+ -- Gunnar Wolf <gwolf@debian.org>  Tue, 02 Dec 2008 14:37:44 -0600
+
 cherokee (0.11.2-1) unstable; urgency=low
 
   * New Upstream Version
