@@ -3,6 +3,8 @@ cherokee (0.11.3-1) unstable; urgency=low
   * New Upstream Version
   * No longer defines rpaths - patched ./configure
     (debian/patches/fix_rpath)
+  * Added a basic git-buildpackage configuration and a README.source, to
+    facilitate others to understand the build process for this package
 
  -- Gunnar Wolf <gwolf@debian.org>  Thu, 04 Dec 2008 08:52:06 -0600
 
