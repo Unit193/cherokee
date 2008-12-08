@@ -3,7 +3,7 @@ Section: web
 Priority: optional
 Maintainer: Gunnar Wolf <gwolf@debian.org>
 Uploaders: Alvaro Lopez Ortega <alvaro@gnu.org>
-Build-Depends: bison, flex, debhelper (>= 4.0.0), autotools-dev, sharutils, libpam0g-dev, quilt, python-support, libssl-dev
+Build-Depends: bison, flex, debhelper (>= 4.0.0), autotools-dev, sharutils, libpam0g-dev, quilt, python-support, libssl-dev, libldap-dev, libmysql-dev
 Standards-Version: 3.8.0
 Homepage: http://cherokee-project.org/
 Vcs-Git: git://git.debian.org/git/collab-maint/cherokee.git
@@ -12,7 +12,9 @@ Vcs-Browser: http://git.debian.org/git/collab-maint/cherokee.git
 Package: cherokee
 Architecture: any
 Pre-Depends: libcherokee-config0 (= ${binary:Version})
-Depends: ${shlibs:Depends}, logrotate, mime-support, libcherokee-base0 (= ${binary:Version}), libcherokee-server0 (= ${binary:Version}), 
+Depends: ${shlibs:Depends}, logrotate, libcherokee-base0 (= ${binary:Version}), libcherokee-server0 (= ${binary:Version}), libcherokee-mod-server-info
+Recommends: libcherokee-mod-admin
+Suggests: libcherokee-mod-libssl
 Provides: httpd, httpd-cgi
 Description: extremely fast and flexible web server
  Cherokee is an extremely flexible and fast web server. It's
@@ -26,7 +28,7 @@ Package: libcherokee-base0
 Section: libs
 Architecture: any
 Depends: ${shlibs:Depends}
-Description: extremely fast and flexible web server - libraries
+Description: extremely fast and flexible web server - Base libraries
  Cherokee is an extremely fast and flexible web server. It's
  embedable, extensible with plug-ins. It has handler-to-path,
  virtual servers, gzip encoding, modular loggers, CGI support,
@@ -50,7 +52,7 @@ Package: libcherokee-client0
 Section: libs
 Architecture: any
 Depends: ${shlibs:Depends}
-Description: extremely fast and flexible web server - libraries
+Description: extremely fast and flexible web server - Client libraries
  Cherokee is an extremely fast and flexible web server. It's
  embedable, extensible with plug-ins. It has handler-to-path,
  virtual servers, gzip encoding, modular loggers, CGI support,
@@ -75,7 +77,7 @@ Package: libcherokee-config0
 Section: libs
 Architecture: any
 Depends: ${shlibs:Depends}, python
-Description: extremely fast and flexible web server - libraries
+Description: extremely fast and flexible web server - Configuration libraries
  Cherokee is an extremely fast and flexible web server. It's
  embedable, extensible with plug-ins. It has handler-to-path,
  virtual servers, gzip encoding, modular loggers, CGI support,
@@ -100,7 +102,7 @@ Package: libcherokee-server0
 Section: libs
 Architecture: any
 Depends: ${shlibs:Depends}
-Description: extremely fast and flexible web server - libraries
+Description: extremely fast and flexible web server - Server libraries
  Cherokee is an extremely fast and flexible web server. It's
  embedable, extensible with plug-ins. It has handler-to-path,
  virtual servers, gzip encoding, modular loggers, CGI support,
@@ -121,6 +123,72 @@ Description: extremely fast and flexible web server - development files
  This package contains the server development files - headers, .so 
  and .a files.
 
+Package: libcherokee-mod-admin
+Section: web
+Architecture: any
+Depends: libcherokee-server, libcherokee-config
+Description:
+ Cherokee is an extremely fast and flexible web server. It's
+ embedable, extensible with plug-ins. It has handler-to-path,
+ virtual servers, gzip encoding, modular loggers, CGI support,
+ and can run in a chroot environment, among other features.
+ .
+ This plugin provides the needed infrastructure to perform
+ administrative tasks on the server itself; it also provides the
+ cherokee-tweak binary, which can optimally perform log rotations or
+ retreive server information from the command line.
+ 
+Package: libcherokee-mod-server-info
+Section: web
+Architecture: any
+Depends: libcherokee-server, libcherokee-config
+Enhances: cherokee
+Description:
+ Cherokee is an extremely fast and flexible web server. It's
+ embedable, extensible with plug-ins. It has handler-to-path,
+ virtual servers, gzip encoding, modular loggers, CGI support,
+ and can run in a chroot environment, among other features.
+ .
+ This plugin provides the server information plugin.
+ 
+Package: libcherokee-mod-mysql
+Section: web
+Architecture: any
+Depends: libcherokee-server, libmysql-client
+Enhances: cherokee
+Description:
+ Cherokee is an extremely fast and flexible web server. It's
+ embedable, extensible with plug-ins. It has handler-to-path,
+ virtual servers, gzip encoding, modular loggers, CGI support,
+ and can run in a chroot environment, among other features.
+ .
+ This plugin provides the MySQL user validator.
+ 
+Package: libcherokee-mod-ldap
+Section: web
+Architecture: any
+Depends: libcherokee-server, libldap
+Enhances: cherokee
+Description:
+ Cherokee is an extremely fast and flexible web server. It's
+ embedable, extensible with plug-ins. It has handler-to-path,
+ virtual servers, gzip encoding, modular loggers, CGI support,
+ and can run in a chroot environment, among other features.
+ .
+ This plugin provides the LDAP user validator.
+
+Package: libcherokee-mod-libssl
+Section: web
+Architecture: any
+Depends: libcherokee-server, libssl
+Description:
+ Cherokee is an extremely fast and flexible web server. It's
+ embedable, extensible with plug-ins. It has handler-to-path,
+ virtual servers, gzip encoding, modular loggers, CGI support,
+ and can run in a chroot environment, among other features.
+ .
+ This plugin provides the SSL crypto functions.
+ 
 Package: cget
 Architecture: any
 Depends: ${shlibs:Depends}, libcherokee-client0 (= ${binary:Version})

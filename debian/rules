@@ -17,16 +17,21 @@ export DH_OPTIONS
 INSTALL_PROGRAM = /usr/bin/install
 BUILD_DIR = $(CURDIR)/debian/tmp
 
-LIB_BASE_DIR   = $(CURDIR)/debian/libcherokee-base0
-DEV_BASE_DIR   = $(CURDIR)/debian/libcherokee-base0-dev
-LIB_CLIENT_DIR = $(CURDIR)/debian/libcherokee-client0
-DEV_CLIENT_DIR = $(CURDIR)/debian/libcherokee-client0-dev
-LIB_SERVER_DIR = $(CURDIR)/debian/libcherokee-server0
-DEV_SERVER_DIR = $(CURDIR)/debian/libcherokee-server0-dev
-LIB_CONFIG_DIR = $(CURDIR)/debian/libcherokee-config0
-DEV_CONFIG_DIR = $(CURDIR)/debian/libcherokee-config0-dev
-SERVER_DIR = $(CURDIR)/debian/cherokee
-CGET_DIR  = $(CURDIR)/debian/cget
+LIB_BASE_DIR     = $(CURDIR)/debian/libcherokee-base0
+DEV_BASE_DIR     = $(CURDIR)/debian/libcherokee-base0-dev
+LIB_CLIENT_DIR   = $(CURDIR)/debian/libcherokee-client0
+DEV_CLIENT_DIR   = $(CURDIR)/debian/libcherokee-client0-dev
+LIB_SERVER_DIR   = $(CURDIR)/debian/libcherokee-server0
+DEV_SERVER_DIR   = $(CURDIR)/debian/libcherokee-server0-dev
+LIB_CONFIG_DIR   = $(CURDIR)/debian/libcherokee-config0
+DEV_CONFIG_DIR   = $(CURDIR)/debian/libcherokee-config0-dev
+MOD_ADMIN_DIR    = $(CURDIR)/debian/libcherokee-mod-admin
+MOD_SRV_INFO_DIR = $(CURDIR)/debian/libcherokee-mod-server-info
+MOD_MYSQL_DIR    = $(CURDIR)/debian/libcherokee-mod-mysql
+MOD_LDAP_DIR     = $(CURDIR)/debian/libcherokee-mod-ldap
+MOD_LIBSSL_DIR   = $(CURDIR)/debian/libcherokee-mod-libssl
+SERVER_DIR       = $(CURDIR)/debian/cherokee
+CGET_DIR         = $(CURDIR)/debian/cget
 
 # These are used for cross-compiling and for saving the configure script
 # from having to guess our platform (since we know it already)
@@ -223,6 +228,35 @@ install-arch:
 	mv $(BUILD_DIR)/usr/lib/cherokee/*                   $(LIB_SERVER_DIR)/usr/lib/cherokee/
 	# Just leave the webroot back in its place :-/
 	mv $(LIB_SERVER_DIR)/usr/share/cherokee/default-site $(BUILD_DIR)/usr/share/cherokee/
+
+# libcherokee-mod-admin - Administrative interface
+	install -d $(MOD_ADMIN_DIR)/DEBIAN
+	install -d $(MOD_ADMIN_DIR)/usr/lib/cherokee
+	install -d $(MOD_ADMIN_DIR)/usr/bin/cherokee
+	install -d $(MOD_ADMIN_DIR)/usr/share/man/man1/
+	mv $(BUILD_DIR)/usr/lib/cherokee/libplugin_admin.*   $(MOD_ADMIN_DIR)/usr/lib/cherokee/
+	mv $(BUILD_DIR)/usr/bin/cherokee-tweak               $(MOD_ADMIN_DIR)/usr/bin/
+	mv $(BUILD_DIR)/usr/share/man/man1/cherokee-tweak.1  $(MOD_ADMIN_DIR)/usr/share/man/man1/
+
+# libcherokee-mod-server-info - Server information plugin
+	install -d $(MOD_SRV_INFO_DIR)/DEBIAN
+	install -d $(MOD_SRV_INFO_DIR)/usr/lib/cherokee
+	mv $(BUILD_DIR)/usr/lib/cherokee/libplugin_server_info.*   $(MOD_SRV_INFO_DIR)/usr/lib/cherokee
+
+# libcherokee-mod-mysql - MySQL user validator
+	install -d $(MOD_MYSQL_DIR)/DEBIAN
+	install -d $(MOD_MYSQL_DIR)/usr/lib/cherokee
+	mv $(BUILD_DIR)/usr/lib/cherokee/libplugin_mysql.*   $(MOD_MYSQL_DIR)/usr/lib/cherokee
+
+# libcherokee-mod-ldap - LDAP user validator
+	install -d $(MOD_LDAP_DIR)/DEBIAN
+	install -d $(MOD_LDAP_DIR)/usr/lib/cherokee
+	mv $(BUILD_DIR)/usr/lib/cherokee/libplugin_ldap.*   $(MOD_LDAP_DIR)/usr/lib/cherokee
+
+# libcherokee-mod-libssl - SSL crypto functions
+	install -d $(MOD_LIBSSL_DIR)/DEBIAN
+	install -d $(MOD_LIBSSL_DIR)/usr/lib/cherokee
+	mv $(BUILD_DIR)/usr/lib/cherokee/libplugin_ssl.*   $(MOD_LIBSSL_DIR)/usr/lib/cherokee
 
 # cget - Downloader utility
 	install -d $(CGET_DIR)/DEBIAN
