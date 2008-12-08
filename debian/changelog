@@ -2,7 +2,7 @@ cherokee (0.11.3-2) unstable; urgency=low
 
   * Dropped dependency on mime-support (built into the configuration
     file)
-  * Added missing build-dependencies on libldap-dev and libmysql-dev
+  * Added missing build-dependencies on libldap-dev and libmysqlclient-dev
   * Now creates five new binary packages: libcherokee-mod-admin,
     libcherokee-mod-server-info, libcherokee-mod-mysql,
     libcherokee-mod-ldap, libcherokee-mod-libssl. This was made to break
