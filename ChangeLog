@@ -1,4 +1,18 @@
+2008-12-18  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* 0.11.5 released
+
+2008-12-10  Antonio Perez  <aperez@skarcha.com>
+
+	* cherokee/cryptor_libssl.c: Fixes problem where OpenSSL expected
+	to read a CA cert appended to the server cert. Bug #264:
+	http://code.google.com/p/cherokee/issues/detail?id=264
+
 2008-12-17  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* admin/validations.py (is_ip_or_netmask): Fixes IPv6 addresses
+	validation. Fixes bug #266:
+	http://code.google.com/p/cherokee/issues/detail?id=266
 
 	* 0.11.4 released
 
