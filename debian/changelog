@@ -1,3 +1,11 @@
+cherokee (0.11.6-1) unstable; urgency=low
+
+  * New Upstream Version
+  * Added ldap-deprecated patch, fixing reliability (and FTBFS) problems
+    in 64 bit platforms (Closes: #509698)
+
+ -- Gunnar Wolf <gwolf@debian.org>  Fri, 26 Dec 2008 10:55:21 -0600
+
 cherokee (0.11.3-2) unstable; urgency=low
 
   * Dropped dependency on mime-support (built into the configuration

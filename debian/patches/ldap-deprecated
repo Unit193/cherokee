@@ -1,0 +1,15 @@
+# Includes support for deprecated LDAP features, fixing a reliability
+# (and sometimes, build-related) problem. See bug #509698. This is
+# expected to be merged upstream soon.
+Index: cherokee/cherokee/validator_ldap.h
+===================================================================
+--- cherokee.orig/cherokee/validator_ldap.h	2008-12-26 10:53:12.000000000 -0600
++++ cherokee/cherokee/validator_ldap.h	2008-12-26 10:54:08.000000000 -0600
+@@ -27,6 +27,7 @@
+ 
+ #include "common.h"
+ 
++#define LDAP_DEPRECATED 1
+ #include "ldap.h"
+ 
+ #include "validator.h"
