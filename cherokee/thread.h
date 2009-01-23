@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2008 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2009 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -18,9 +18,9 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
- * USA
- */
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
+ */ 
 
 #ifndef CHEROKEE_THREAD_H
 #define CHEROKEE_THREAD_H
@@ -44,11 +44,6 @@ typedef enum {
 	thread_async
 } cherokee_thread_type_t;
 
-typedef enum {
-	thread_tls_normal,
-	thread_normal_tls
-} cherokee_thread_pref_t;
-
 
 typedef struct {
 	cherokee_list_t         base;
@@ -61,7 +56,6 @@ typedef struct {
 
 	cherokee_fdpoll_t      *fdpoll;
 	cherokee_thread_type_t  thread_type;
-	cherokee_thread_pref_t  thread_pref;
 
 	time_t                  bogo_now;
 	struct tm               bogo_now_tmgmt;
@@ -88,12 +82,6 @@ typedef struct {
 	int                     pending_conns_num;   /* Waiting pipelining connections */
 	int                     pending_read_num;    /* Conns with SSL deping read */
 	
-	struct {
-		uint32_t        continuous;
-		uint32_t        continuous_max;
-		uint32_t        recalculate;		
-	} accept;
-
 	cherokee_avl_t         *fastcgi_servers;
 	cherokee_func_free_t    fastcgi_free_func;
 

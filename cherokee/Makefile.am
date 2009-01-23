@@ -23,9 +23,6 @@ fcgi.deps \
 fastcgi.deps \
 cgi.deps
 
-cherokeedatadir = "$(datadir)/cherokee"
-cherokeedata_DATA = mime_types.txt
-
 #
 # External sources
 #
@@ -581,8 +578,6 @@ endif
 # Handler DB Slayer
 #
 handler_dbslayer = \
-dwriter.c \
-dwriter.h \
 handler_dbslayer.h \
 handler_dbslayer.c
 
@@ -920,6 +915,23 @@ endif
 
 
 
+#
+# Balancer IP Hash
+#
+balancer_ip_hash = \
+balancer_ip_hash.c \
+balancer_ip_hash.h
+
+libplugin_ip_hash_la_LDFLAGS = $(module_ldflags) 
+libplugin_ip_hash_la_SOURCES = $(balancer_ip_hash)
+
+if STATIC_BALANCER_IP_HASH
+static_balancer_ip_hash_src = $(balancer_ip_hash)
+else
+dynamic_balancer_ip_hash_lib = libplugin_ip_hash.la
+endif
+
+
 lib_LTLIBRARIES = \
 libcherokee-base.la \
 libcherokee-client.la \
@@ -1019,6 +1031,8 @@ $(win32_src) \
 cherokee.h \
 init.h \
 init.c \
+threading.h \
+threading.c \
 avl.h \
 avl.c \
 avl_r.h \
@@ -1184,6 +1198,7 @@ $(static_validator_mysql_src) \
 $(static_cryptor_libssl_src) \
 \
 $(static_balancer_round_robin_src) \
+$(static_balancer_ip_hash_src) \
 \
 $(common_cgi) \
 $(common_val_file) \
@@ -1204,6 +1219,8 @@ config_entry.c \
 server-protected.h \
 server.h \
 server.c \
+bind.h \
+bind.c \
 virtual_server_names.h \
 virtual_server_names.c \
 virtual_server.h \
@@ -1236,7 +1253,9 @@ source_interpreter.c \
 info.h \
 info.c \
 connection_info.h \
-connection_info.c
+connection_info.c \
+dwriter.h \
+dwriter.c
 
 libcherokee_config_la_SOURCES = \
 admin_client.h \
@@ -1339,7 +1358,8 @@ $(dynamic_validator_htpasswd_lib) \
 $(dynamic_validator_authlist_lib) \
 $(dynamic_validator_mysql_lib) \
 $(dynamic_cryptor_libssl_lib) \
-$(dynamic_balancer_round_robin_lib) 
+$(dynamic_balancer_round_robin_lib) \
+$(dynamic_balancer_ip_hash_lib) 
 
 
 #
@@ -1352,12 +1372,12 @@ sbin_PROGRAMS += cherokee
 endif
 
 cherokee_worker_SOURCES = main_worker.c
+cherokee_worker_LDFLAGS = -export-dynamic
 cherokee_worker_LDADD   = \
 $(PTHREAD_LIBS) \
 $(PTHREAD_CFLAGS) \
 libcherokee-base.la \
 libcherokee-server.la
-cherokee_LDFLAGS = -export-dynamic
 
 #
 # Cherokee
@@ -1427,7 +1447,6 @@ $(bin_SCRIPTS) \
 $(validator_mysql) \
 $(handler_dbslayer) \
 $(cherokeedeps_DATA) \
-$(cherokeedata_DATA) \
 $(WINDOWS_PORT_FILES) \
 loader.autoconf.h \
 loader.autoconf.inc

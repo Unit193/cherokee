@@ -1,9 +1,641 @@
-2008-12-25  Alvaro Lopez Ortega  <alvaro@octality.com>
+2009-01-23  Alvaro Lopez Ortega  <alvaro@octality.com>
 
-	* 0.11.6 released
+	* Cherokee 0.98.0 released.
+
+	* doc/other_community.txt: Adds links to the bug tracker, the IRC
+	channel, and Ohloh project page.
+
+	* cherokee/cryptor_libssl.c (_socket_init_tls): Do not report so
+	many errors when a SSL connection cannot be accepted.
+
+2009-01-23 Taher Shihadeh  <taher@unixwars.com>
+
+	* admin/Form.py: polish the non-persistent tabs fix if issue 311.
+
+2009-01-23  Stefan de Konink  <stefan@konink.de>
+
+	* cherokee/balancer_ip_hash.c: Fixes a memory management issue.
+	http://code.google.com/p/cherokee/issues/detail?id=332
+
+2009-01-23  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* cherokee/handler_error.c (build_hardcoded_response_page): Fixes
+	a malformed URL reporting. Bug #318:
+	http://code.google.com/p/cherokee/issues/detail?id=318
+
+2009-01-22 Taher Shihadeh  <taher@unixwars.com>
+
+	* doc/media/images/admin_handler_cgi.png,
+	doc/modules_handlers_cgi.txt: Reflect the previous change.
+
+2009-01-22  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* cherokee/bogotime.c (cherokee_bogotime_try_update): Replaces a
+	call to CHEROKEE_RWLOCK_TRYREADER() by CHEROKEE_RWLOCK_TRYWRITER()
+	It must have been a copy&paste issue, actually. Thanks a million
+	to Shi Yao <shiyao@gmail.com> for discovering the problem (and
+	sending a great report/analysis about it). Kudos to Shi!!
+
+	* cherokee/handler_cgi_base.c: Fixes the client headers forwarding
+	(HTTP_* headers). From now on, the forwarding mechanism is enabled
+	by default.
+
+	* admin/ModuleCgi.py: Reflect the previous change: client headers
+	forwarding is enabled by default.
+
+	* qa/142-SCGI-ExtraVars.py, qa/util.py: This small change fixes a
+	wrong postcondition. The test was expecting a raw headers instead
+	of the HTTP_*-encoded header.
+
+	* cherokee/buffer.c (cherokee_buffer_prepend), cherokee/buffer.h:
+	Fixes a trivial compilation warning.
+
+	* qa/197-SOAPAction.py: Adds a new QA test in order to reproduce
+	(and protect again future regressions) for the bug #325:
+	http://code.google.com/p/cherokee/issues/detail?id=325
+
+	* cherokee/init.h, cherokee/init.c, cherokee/post.c: Removes a
+	"/tmp" directory hardcoded path. From now on a global
+	cherokee_tmp_dir buffer is available with the temporal directory
+	path.
+
+	* cherokee/util.c (cherokee_tmp_dir_copy): A new utility function
+	has been added. It figures the temporal directory that Cherokee
+	ought to use. The first choice is the directory pointed by the
+	CHEROKEE_TMPDIR environment variable. In case it were empty it'd
+	try to read the TMPDIR environment variable (or TEMP on Windows).
+	Finally, if it failed as well, a hardcoded "/tmp" value would be
+	used.
+
+2009-01-21 Taher Shihadeh  <taher@unixwars.com>
+
+	* doc/modules_handlers_cgi.txt: added example as requested in
+	issue 298.
+
+2009-01-21  Antonio Perez  <aperez@skarcha.com>
+
+	* admin/Page.py, admin/static/css/cherokee.css: Fixes a CSS
+	problem: http://code.google.com/p/cherokee/issues/detail?id=324
+
+2009-01-21 Taher Shihadeh  <taher@unixwars.com>
+
+	* doc/media/images/cookbook_phpbb_rules.png,
+	doc/media/images/cookbook_maintenance_domain.png,
+	doc/media/images/cookbook_managing_logs_security.png,
+	doc/media/images/cookbook_nagios1.png,
+	doc/media/images/cookbook_nagios3.png,
+	doc/media/images/cookbook_maintenance_rule.png,
+	doc/media/images/cookbook_phpmyadmin_denied.png,
+	doc/media/images/cookbook_redir_domains.png,
+	doc/media/images/cookbook_nagios2.png,
+	doc/media/images/cookbook_managing_logs_handler.png: last outdated
+	screenshots.
+
+	* admin/Form.py: fixes problem with non-persistent tabs, issue
+	http://code.google.com/p/cherokee/issues/detail?id=311
+
+2009-01-20  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* admin/PageStatus.py, admin/status.template.html: Adds
+	a (cheesy?) notice thanking beta testers.
+
+2009-01-19 Taher Shihadeh  <taher@unixwars.com>
+
+	* doc/media/images/admin_handler_fastcgi2.png,
+	doc/media/images/admin_launch.png,
+	doc/media/images/admin_vserver_loggers.png,
+	doc/media/images/admin_vserver_errors.png,
+	doc/media/images/admin_handler_onlylisting.png,
+	doc/media/images/admin_validators_authlist.png,
+	doc/media/images/cookbook_django_common.png,
+	doc/media/images/cookbook_dbslayer4.png,
+	doc/media/images/admin_validators_ldap.png,
+	doc/media/images/admin_handler_proxy.png,
+	doc/media/images/admin_validators_plain.png,
+	doc/media/images/admin_rule_regex.png,
+	doc/media/images/admin_general_ports.png,
+	doc/media/images/admin_handler_file.png,
+	doc/media/images/admin_notrunning.png,
+	doc/media/images/cookbook_dbslayer3.png,
+	doc/media/images/admin_index.png,
+	doc/media/images/admin_vserver_security.png,
+	doc/media/images/admin_info_sources.png,
+	doc/media/images/cookbook_django_infosources.png,
+	doc/media/images/admin_validators_pam.png,
+	doc/media/images/admin_vserver_vserver.png: Screenshots were
+	outdated.
+
+	* doc/cookbook_drupal.txt: improved recipe. Thanks to Eric
+	Drechsel <ericdrex@gmail.com>.
+
+	* doc/media/images/cookbook_drupal_example1.png,
+	doc/media/images/cookbook_drupal_example3.png,
+	doc/media/images/cookbook_drupal_example5.png,
+	doc/media/images/cookbook_drupal_default3.png
+	doc/media/images/cookbook_drupal_rules1.png,
+	doc/media/images/cookbook_drupal_example2.png
+	doc/media/images/cookbook_drupal_example4.png,
+	doc/media/images/cookbook_drupal_rules.png,
+	doc/media/images/cookbook_drupal_default2.png: Updated
+	screenshots.
+
+	* doc/media/images/cookbook_ror_common.png,
+	doc/media/images/cookbook_maintenance_advanced_domains.png,
+	doc/media/images/cookbook_redir_behavior.png,
+	doc/media/images/cookbook_mysql_validator.png,
+	doc/media/images/cookbook_wp_example1.png,
+	doc/media/images/cookbook_wp_example3.png,
+	doc/media/images/cookbook_maintenance_error.png,
+	doc/media/images/cookbook_maintenance_advanced_redir.png,
+	doc/media/images/cookbook_managing_logs_security.png,
+	doc/media/images/cookbook_maintenance_advanced_rules.png,
+	doc/media/images/cookbook_trac_rules.png,
+	doc/media/images/cookbook_mono_handler.png,
+	doc/media/images/cookbook_wp_default1.png,
+	doc/media/images/cookbook_moodle_document_root.png,
+	doc/media/images/cookbook_mailman.png,
+	doc/media/images/cookbook_managing_logs_rules.png,
+	doc/media/images/cookbook_redir_handler.png,
+	doc/media/images/cookbook_wp_example2.png,
+	doc/media/images/cookbook_trac_scgi.png,
+	doc/media/images/cookbook_managing_logs_handler.png,
+	doc/media/images/cookbook_mysql_rule.png,
+	doc/media/images/cookbook_trac_static.png,
+	doc/cookbook_managing_logs.txt: Updated screenshots.
+
+2009-01-19  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* admin/PageGeneral.py, admin/validations.py: Fixes port entries
+	validation. It also changes the look a little bit.
+
+2009-01-19 Taher Shihadeh  <taher@unixwars.com>
+
+	* doc/media/images/admin_handler_dbslayer.png,
+	doc/media/images/admin_handler_dirlist.png,
+	doc/media/images/README.txt, doc/media/images/admin_advanced2.png,
+	doc/media/images/admin_advanced4.png,
+	doc/media/images/cookbook_drupal_rules1.png,
+	doc/media/images/admin_behaviour.png,
+	doc/media/images/admin_handler_fastcgi1.png,
+	doc/media/images/admin_handler_admin.png,
+	doc/media/images/admin_advanced1.png,
+	doc/media/images/admin_advanced3.png,
+	doc/media/images/admin_handler_cgi.png,
+	doc/media/images/cookbook_drupal_rules2.png,
+	doc/media/images/admin_handler_custom_error.png: Screenshots were
+	outdated.
+
+2009-01-19  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* qa/196-Mime3.py, qa/Makefile.am: Adds a new QA to cover
+	changeset: http://svn.cherokee-project.com/changeset/2721
+
+	* doc/config_icons.txt, doc/media/images/admin_icons2.png,
+	doc/media/images/admin_icons1.png,
+	doc/media/images/admin_icons3.png: Reflects the last change in the
+	documentation. Screenshots were outdated.
+
+	* admin/static/css/cherokee.css, admin/PageIcon.py: Updates the
+	Icons page to the new page width (1024px).
+
+2009-01-19 Taher Shihadeh  <taher@unixwars.com>
+
+	* doc/dev_debug.txt, doc/basics_why_cherokee.txt,
+	doc/config_general.txt, doc/index.txt, doc/config_quickstart.txt,
+	doc/modules_handlers_file.txt, doc/cookbook_optimizations.txt,
+	doc/bundle_cherokee-admin.txt, doc/dev_cherokee.conf.txt,
+	doc/modules.txt, doc/modules_balancers_ip_hash.txt: documentation
+	updates for the upcomming 0.98
+
+2009-01-19  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* cherokee/main_admin.c (config_server): Adds a few basic MIME
+	types. Cherokee-admin should have been returning content-type
+	information.
+
+	* cherokee/handler_file.c (cherokee_handler_file_custom_init):
+	Improved to support MIME types associated with complex extensions.
+	Eg, "css.default" (used in Gallery).
+
+2009-01-18  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* admin/PageMime.py, admin/static/css/cherokee.css,
+	admin/validations.py: Rework the MIME page. Now it fits better in
+	the new layout. Value validation has been foxed as well.
+
+2009-01-16  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* cherokee/handler_server_info.c (AJAX_JS): Removes a hard-coded
+	path.
+
+	* admin/PageStatus.py, admin/static/images/web_proud.jpg,
+	admin/static/images/Makefile.am, admin/status.template.html: Adds
+	a new image linking to our "Proud Cherokee Users" program.
+
+	* doc/modules_balancers.txt, doc/modules_balancers_ip_hash.txt,
+	doc/Makefile.am: Adds some basic documentation about the IP Hash
+	load balancer.
+
+	* cherokee/handler_server_info.c (AJAX_JS): Fixes a Javascript
+	parsing error. 'default' is a reserved work, so it cannot be used
+	as a dict index without quotes.
+
+	* cherokee/handler_server_info.c, cherokee/logo.inc: The embedded
+	Cherokee of the server_info handler have been updated. It is a PNG
+	now (instead of a GIF file). Even though it's slightly bigger, it
+	alpha channel improves the L&F quite a lot.
+
+	* contrib/bin2buffer.py: Call cherokee_buffer_ensure_size() in
+	order to avoid memory reallocations.
+
+	* cherokee/connection.c (cherokee_connection_build_header),
+	cherokee/http.h: Rework the 304 issue. It was adding the chunked
+	connection header in replies with no body.
+
+	* cherokee/server.c (cherokee_server_read_config_file),
+	cherokee/server.h: Fixes a trivial compilation warning.
+
+	* cherokee/connection-protected.h, cherokee/util.h, configure.in:
+	Fixes a compilation problem on OpenBSD current:
+	http://code.google.com/p/cherokee/issues/detail?id=316
+	Thanks to bradla8@yahoo.com for the patch.
+
+2009-01-15  Jonathan Hernandez  <ion@suavizado.com>
+
+	* cherokee/handler_server_info.c: Enhacements to CSS, Use
+	Javascript DOM to generate the info page instead innerHTML.
+
+2009-01-15  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* cherokee/balancer_ip_hash.c (dispatch): Fixes a problem with the
+	IP Hash balancer. The reactivation mechanism (triggered on
+	exhaustion) was not working properly.
+
+	* cherokee/connection.c (cherokee_connection_build_header),
+	cherokee/http.h: Reimplements the previous patch. 1xx, 204 and 304
+	don't have a body, and therefore should not use chunked encoding.
+
+	* cherokee/handler_error.c (cherokee_handler_error_add_headers),
+	cherokee/handler_file.c (cherokee_handler_file_add_headers): Fixes
+	a problem with 304 "Not modified" responses and Keep-Alive
+	connections.
+
+2009-01-14  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* doc/media/images/admin_general.png,
+	doc/media/images/admin_general_networking.png,
+	doc/media/images/admin_general_permissions.png,
+	doc/media/images/admin_general_ports.png, doc/config_general.txt:
+	Updated the 'General' configuration page. It reflects the last
+	changes about port binding.
+
+	* cherokee/fdpoll.c, cherokee/fdpoll.h,
+	cherokee/encoder_deflate.c, cherokee/main_worker.c,
+	cherokee/handler_ssi.c, cherokee/validator_htpasswd.c,
+	cherokee/header.c, cherokee/header.h, cherokee/encoder_gzip.c,
+	cherokee/handler_custom_error., cherokee/source_interpreter.c,
+	cherokee/rule_method.c, cherokee/admin_client.c,
+	cherokee/validator_mysql.c, cherokee/cache.c, cherokee/dwriter.c,
+	cherokee/dwriter.h, cherokee/socket.c, cherokee/logger_w3c.c,
+	cherokee/handler_server_info.c, cherokee/plugin_loader.c,
+	cherokee/plugin_loader.h, cherokee/handler_cgi_base.c,
+	cherokee/handler_cgi_base.h, cherokee/handler_dirlist.c,
+	cherokee/source.c, cherokee/validator_file.c,
+	cherokee/main_admin.c, cherokee/buffer.c, cherokee/handler_file.c,
+	cherokee/buffer.h, cherokee/main.c, cherokee/handler_fcgi.c,
+	cherokee/util.c, cherokee/handler_fastcgi.c, cherokee/util.h,
+	cherokee/cryptor_libssl.c, cherokee/handler_scgi.c,
+	cherokee/logger_ncsa.c, cherokee/post.c, cherokee/handler_error.c,
+	cherokee/post.h, cherokee/handler_cgi.c, cherokee/handler_cgi.h,
+	cherokee/main_tweak.c, cherokee/connection.c,
+	cherokee/connection.h, cherokee/server.c, cherokee/server.h: Fixes
+	a whole bunch of compilation issues.
+
+2009-01-14  Antonio Perez  <aperez@skarcha.com>
+
+	* cherokee/handler_server_info.c: Page refresh using Ajax.
+
+2009-01-13  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* cherokee/util.c (cherokee_ntop): The inet_ntoa() implementation
+	has been moved to cherokee_ntop().
+
+	* cherokee/util.h, cherokee/util.c, cherokee/handler_cgi_base.c,
+	cherokee/socket.h, cherokee/socket.c: Fixes a ntop issue:
+	http://code.google.com/p/cherokee/issues/detail?id=309
+
+	* cherokee/handler_server_info.c (AJAX_JS): Removes a hardcoded
+	path: http://code.google.com/p/cherokee/issues/detail?id=312
+
+2009-01-12  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* cherokee/handler_server_info.c: Adds a notice about how to
+	access the dwriter interfaces.
+
+	* cherokee/handler_server_info.c (server_info_build_info): Now it
+	requests the server information with Ajax. The server_info handler
+	will reply to thar request as well, and will send a JSON encoded
+	reply.  This (javascript) code reads it and renders the tables for
+	the page. This is the very first implementation, this stuff must
+	be improved before the next release (at least tables are shown).
+
+	* cherokee/handler_cgi_base.c: Fixes the SERVER_ADDR variable
+	generation. It also fixes its relative QA test in order to work
+	with boht IPv6 and IPv4.
+
+	* qa/base.py: Adds a new type of checking: expected_one_of_these.
+	It allows QA tests to require the match of at least one of the
+	strings of the list.
+
+2009-01-11  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* qa/195-ServerAddr.py, qa/Makefile.am: Tests wether the
+	SEVER_ADDR is actually containing the right value.
+
+	* qa/015-CGI-simple.py, qa/017-CGI-pathinfo2.py,
+	qa/016-CGI-pathinfo.py, qa/018-CGI-pathinfo3.py: Reformats CGI
+	code.
+
+2009-01-10  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* cherokee/zlib/deflate.c: Fixes a compilation warning.
+
+2009-01-10  Antonio Perez  <aperez@skarcha.com>
+
+	* cherokee/handler_error.c (build_hardcoded_response_page):
+	404 Not Found page was returning the final target on redirections
+	instead the original request.
+
+	* cherokee/connection.c (cherokee_connection_log_or_delay):
+	Every request must be logged in access log.
+
+2009-01-09  Jonathan Hernandez  <ion@suavizado.com>
+
+	* admin/*: Redesign of Cherokee Admin UI to fit 960px wide,
+	Fixes bug: http://code.google.com/p/cherokee/issues/detail?id=272
+	Change accordion ui to tabs Move help links to header
+	Update jquery to 1.2.6 and UI widgets.
+
+2009-01-08  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* cherokee/pcre/pcre_compile.c, cherokee/pcre/pcre_internal.h:
+	Fixes a couple of compilation warnings on the PCRE library.
+
+	* cherokee/zlib/defutil.h (bi_reverse, bi_windup, bi_flush):
+	Removes three duplicated function prototypes.
+
+	* admin/status.template.html: Adds a link to the "Proud Cherokee
+	Users" program:
+	http://www.cherokee-project.com/cherokee-domain-list.html
+
+2009-01-07  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* cherokee/Makefile.am (libcherokee_server_la_SOURCES):
+	cherokee_dwriter_t is now part of libcherokee-server.
+
+2009-01-07  Antonio Perez  <aperez@skarcha.com>
+
+	* admin/PageInfoSource.py: Links to virtual servers were wrong.
+	Fixes bug: http://code.google.com/p/cherokee/issues/detail?id=305
+	Patch by Stefan de Konink <stefan@konink.de>.
+
+2009-01-05  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* cherokee/handler_server_info.c, cherokee/handler_server_info.h:
+	The Server Info handler has been rewritten. Now it uses the
+	cherokee_dwriter_t class, so raw data can be obtained from it.
+
+2009-01-05  Antonio Perez  <aperez@skarcha.com>
+
+	* cherokee/virtual_server.c, cherokee/connection.c: A "/" at the
+	end of userdir is not needed, and request_original should be
+	changed only if empty.
+
+2009-01-05  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* cherokee/dwriter.c (cherokee_dwriter_bool): Fixes a bug. Boolean
+	values were not printed right.
+
+2009-01-04  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* cherokee/Makefile.am, cherokee/balancer_round_robin.c,
+	cherokee/balancer_ip_hash.c, cherokee/balancer_ip_hash.h,
+	configure.in, admin/consts.py, admin/Makefile.am,
+	admin/ModuleIpHash.py: Adds a new load balancer. It implements a
+	new balancing strategy by which load is balanced among the
+	back-end server based on the client IP. All the request coming
+	from the same IP will be delivered to the same back-end server.
+
+2009-01-03  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* cherokee/validator_ldap.h: Fixes an ia64 and amd64 compilation
+	issue: http://code.google.com/p/cherokee/issues/detail?id=293
+	Thanks to Dann Frazier <dannf@debian.org> for the patch.
+
+2009-01-02  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* admin/PageGeneral.py: Implements the new port management.
+
+	* cherokee/cache.c, cherokee/handler_cgi_base.c,
+	cherokee/iocache.h: cherokee/handler_file.c, cherokee/util.c,
+	cherokee/iocache.c: This patch addresses a concurrency problem
+	that was making the I/O cache to fail on high loads.
+
+	* cherokee/handler_redir.c, cherokee/fcgi_manager.c,
+	cherokee/rule_list.c, cherokee/handler_redir.h,
+	cherokee/fcgi_manager.h, cherokee/rule_list.h,
+	cherokee/rule_header.c, cherokee/fdpoll.c, cherokee/rule_header.h,
+	cherokee/handler_admin.c, cherokee/fdpoll.h,
+	cherokee/handler_admin.h, cherokee/resolv_cache.c,
+	cherokee/access.c, cherokee/resolv_cache.h,
+	cherokee/encoder_deflate.c, cherokee/access.h,
+	cherokee/handler_mirror.c, cherokee/encoder_deflate.h,
+	cherokee/list.c, cherokee/handler_mirror.h,
+	cherokee/virtual_server.c, cherokee/list.h,
+	cherokee/virtual_server.h, cherokee/module.c,
+	cherokee/win32_cservice.c, cherokee/rule_not.c,
+	cherokee/request.c, cherokee/macros.h, cherokee/win32_cservice.h,
+	cherokee/module.h, cherokee/rule_not.h, cherokee/sha1.c,
+	cherokee/request.h, cherokee/sha1.h, cherokee/rule_exists.c,
+	cherokee/rule_exists.h, cherokee/main_worker.c, cherokee/dtm.c,
+	cherokee/validator.c, cherokee/dtm.h, cherokee/rule_geoip.c,
+	cherokee/validator.h, cherokee/handler_ssi.c,
+	cherokee/rule_geoip.h, cherokee/handler_ssi.h,
+	cherokee/validator_htpasswd.c, cherokee/validator_htpasswd.h,
+	cherokee/regex.c, cherokee/logger_writer.c,
+	cherokee/fdpoll-protected.h, cherokee/encoder.c, cherokee/regex.h,
+	cherokee/logger_writer.h, cherokee/encoder.h, cherokee/header.c,
+	cherokee/common.h, cherokee/header.h, cherokee/encoder_gzip.c,
+	cherokee/icons.c, cherokee/crc32.c, cherokee/encoder_gzip.h,
+	cherokee/http.c, cherokee/icons.h,
+	cherokee/handler_custom_error.c, cherokee/crc32.h,
+	cherokee/source_interpreter.c, cherokee/http.h, cherokee/md5.c,
+	cherokee/handler_custom_error.h, cherokee/source_interpreter.h,
+	cherokee/md5.h, cherokee/info.c, cherokee/levenshtein_distance.c,
+	cherokee/info.h, cherokee/levenshtein_distance.h,
+	cherokee/rule_method.c, cherokee/balancer.c,
+	cherokee/rule_method.h, cherokee/balancer.h,
+	cherokee/rule_request.c, cherokee/rule_request.h,
+	cherokee/version.c, cherokee/admin_client.c, cherokee/table.c,
+	cherokee/mime.c, cherokee/version.h, cherokee/admin_client.h,
+	cherokee/table.h, cherokee/mime.h, cherokee/validator_mysql.c,
+	cherokee/logger.c, cherokee/validator_mysql.h, cherokee/logger.h,
+	cherokee/header-protected.h, cherokee/cherokee.h,
+	cherokee/cherokee-panic, cherokee/proxy_hosts.c, cherokee/cache.c,
+	cherokee/proxy_hosts.h, cherokee/win32_cherokeeserv.c,
+	cherokee/cache.h, cherokee/dwriter.c, cherokee/dwriter.h,
+	cherokee/socket.c, cherokee/logger_w3c.c,
+	cherokee/connection-protected.h, cherokee/socket.h,
+	cherokee/logger_w3c.h, cherokee/human_strcmp.c,
+	cherokee/cryptor.c, cherokee/init.c, cherokee/avl_r.c,
+	cherokee/human_strcmp.h, cherokee/cryptor.h, cherokee/init.h,
+	cherokee/avl_r.h, cherokee/cacheline.c,
+	cherokee/handler_error_redir.c, cherokee/handler_server_info.c,
+	cherokee/handler_error_redir.h, cherokee/cacheline.h,
+	cherokee/handler_server_info.h, cherokee/plugin_loader.c,
+	cherokee/config_reader.c, cherokee/handler_cgi_base.c,
+	cherokee/plugin_loader.h, cherokee/rule_directory.c,
+	cherokee/config_reader.h, cherokee/fdpoll-select.c,
+	cherokee/handler_cgi_base.h, cherokee/admin_request.c,
+	cherokee/rule_directory.h, cherokee/admin_request.h,
+	cherokee/threading.c, cherokee/handler_dirlist.c,
+	cherokee/threading.h, cherokee/rule_default.c,
+	cherokee/handler_dirlist.h, cherokee/win32_misc.c,
+	cherokee/rule_default.h, cherokee/win32_misc.h,
+	cherokee/validator_ldap.c, cherokee/handler_common.c,
+	cherokee/fastcgi.h, cherokee/cherokee_show.c,
+	cherokee/config_entry.c, cherokee/fdpoll-epoll.c,
+	cherokee/rule_and.c, cherokee/validator_ldap.h,
+	cherokee/handler_common.h, cherokee/downloader-protected.h,
+	cherokee/config_entry.h, cherokee/rule_and.h, cherokee/source.c,
+	cherokee/handler_dbslayer.c, cherokee/source.h,
+	cherokee/handler_dbslayer.h, cherokee/validator_plain.c,
+	cherokee/validator_plain.h, cherokee/avl.c,
+	cherokee/fdpoll-poll.c, cherokee/validator_file.c, cherokee/avl.h,
+	cherokee/validator_file.h, cherokee/downloader_async.c,
+	cherokee/main_admin.c, cherokee/downloader.c,
+	cherokee/downloader_async.h, cherokee/validator_authlist.c,
+	cherokee/downloader.h, cherokee/plugin.h, cherokee/bogotime.c,
+	cherokee/common-internal.h, cherokee/rule_or.c, cherokee/thread.c,
+	cherokee/validator_authlist.h, cherokee/buffer.c,
+	cherokee/bogotime.h, cherokee/handler_file.c, cherokee/rule_or.h,
+	cherokee/thread.h, cherokee/handler.c, cherokee/buffer.h,
+	cherokee/handler_file.h, cherokee/handler.h, cherokee/main.c,
+	cherokee/ncpus.c, cherokee/unix4win32.c, cherokee/ncpus.h,
+	cherokee/trace.c, cherokee/unix4win32.h, cherokee/trace.h,
+	cherokee/handler_fcgi.c, cherokee/balancer_round_robin.c,
+	cherokee/md5crypt.c, cherokee/rule.c, cherokee/handler_fcgi.h,
+	cherokee/config_node.c, cherokee/balancer_round_robin.h,
+	cherokee/md5crypt.h, cherokee/rule.h, cherokee/handler_fastcgi.c,
+	cherokee/util.c, cherokee/config_node.h, cherokee/fdpoll-win32.c,
+	cherokee/handler_fastcgi.h, cherokee/util.h,
+	cherokee/fdpoll-port.c, cherokee/nonce.c, cherokee/nonce.h,
+	cherokee/cryptor_libssl.c, cherokee/handler_proxy.c,
+	cherokee/fcgi_dispatcher.c, cherokee/cryptor_libssl.h,
+	cherokee/handler_scgi.c, cherokee/handler_proxy.h,
+	cherokee/fcgi_dispatcher.h, cherokee/logger_ncsa.c,
+	cherokee/post.c, cherokee/handler_error.c,
+	cherokee/rule_extensions.c, cherokee/handler_scgi.h,
+	cherokee/logger_ncsa.h, cherokee/post.h, cherokee/handler_error.h,
+	cherokee/rule_extensions.h, cherokee/virtual_server_names.c,
+	cherokee/handler_cgi.c, cherokee/server-protected.h,
+	cherokee/virtual_server_names.h, cherokee/handler_cgi.h,
+	cherokee/connection_info.c, cherokee/fdpoll-kqueue.c,
+	cherokee/admin_server.c, cherokee/connection_info.h,
+	cherokee/main_tweak.c, cherokee/validator_htdigest.c,
+	cherokee/handler_error_nn.c, cherokee/admin_server.h,
+	cherokee/mime-protected.h, cherokee/validator_htdigest.h,
+	cherokee/handler_error_nn.h, cherokee/iocache.c, cherokee/match.c,
+	cherokee/connection.c, cherokee/iocache.h, cherokee/match.h,
+	cherokee/url.c, cherokee/connection.h, cherokee/server.c,
+	cherokee/url.h, cherokee/handler_phpcgi.c, cherokee/mime_entry.c,
+	cherokee/server.h, cherokee/logger-protected.h, cherokee/bind.c,
+	cherokee/handler_phpcgi.h, cherokee/mime_entry.h,
+	cherokee/logger_combined.c, cherokee/bind.h,
+	cherokee/validator_pam.c, cherokee/logger_combined.h,
+	cherokee/logo.inc, cherokee/validator_pam.h, doc/build/web.conf,
+	cget/proxy.c, cget/main.c, cget/proxy.h, configure.in,
+	admin/pyscgi.py, qa/pyscgi.py, qa/run-tests.py, qa/base.py,
+	dbslayer/mysql_wrap.php: Updates the copyright notices.
+
+2008-12-30  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* cherokee/server.c: Print more information as part of the banner:
+	The bound ports, tracing, and I/O cache support are now included.
+
+	* cherokee/trace.c: Adds a shorter path for CHEROKEE_TRACE=all.
+
+2008-12-29  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* cherokee/server-protected.h, cherokee/bind.c, cherokee/bind.h,
+	cherokee/thread.h, cherokee/server.c, cherokee/thread.c: This
+	patch tries to address a performance regression introducced on Dec
+	27th.
+
+	* cherokee/iocache.c: Tries to fix a I/O-cache bug.  This patch is
+	based on Antonio's original fix:
+	http://code.google.com/p/cherokee/issues/detail?id=294
+
+2008-12-27  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* cherokee/main_worker.c, cherokee/Makefile.am,
+	cherokee/socket.c, cherokee/connection-protected.h,
+	cherokee/socket.h, cherokee/handler_server_info.c,
+	cherokee/handler_cgi_base.c, cherokee/handler_dirlist.c,
+	cherokee/handler_dirlist.h, cherokee/main_admin.c,
+	cherokee/thread.c, cherokee/thread.h, cherokee/handler_error.c,
+	cherokee/server-protected.h, cherokee/admin_server.c,
+	cherokee/connection.c, cherokee/server.c, cherokee/bind.c,
+	cherokee/bind.h, performance.conf.sample.pre,
+	cherokee.conf.sample.pre, configure.in, contrib/Makefile.am,
+	contrib/011to098.py, qa/run-tests.py: This patch rework the server
+	core. Now the server can listen as many ports/binds as
+	needed (instead of one for http and another for https). This is a
+	really disruptive change: the configuration file has changed - a
+	conversion script has been included.  As far as my tests have
+	concluded, there is no negative performance impact, but it is
+	something we should investigate further. Beware: The
+	administration interface still needs to be updated to the new
+	format.
+
+2008-12-25  Alvaro Lopez Ortega  <alvaro@octality.com>
 
 	* cherokee/handler_dbslayer.c (send_query): Fixes a parsing
 	problem: http://code.google.com/p/cherokee/issues/detail?id=292
+
+2008-12-25  Antonio Perez  <aperez@skarcha.com>
+
+	* cherokee/handler_admin.c, cherokee/handler_ssi.c,
+	cherokee/handler_server_info.c, cherokee/handler_cgi_base.c,
+	cherokee/handler_cgi_base.h, cherokee/thread.c,
+	cherokee/handler_file.c, cherokee/handler_error.c,
+	cherokee/connection.c: Enhancement to the fix for bug #284.
+
+	* cherokee/connection.c, cherokee/thread.c: Encoder should be
+	created after handler creation.
+
+2008-12-23  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* cherokee/server.c, cherokee/server-protected.h: Cleans up some
+	unneeded code.
+
+	* cherokee/admin_client.c (internal_step): Rough fix for:
+	http://code.google.com/p/cherokee/issues/detail?id=283
+	There is more work to do in order to fix cherokee-tweak.
+
+2008-12-23  Antonio Perez  <aperez@skarcha.com>
+
+	* cherokee/connection-protected.h, cherokee/thread.c,
+	cherokee/handler_file.c, cherokee/connection.c:
+	Fixes a problem with the use of encoders and enable their use
+	with handlers that supports content-length.
+	Bug: http://code.google.com/p/cherokee/issues/detail?id=284
+
+2008-12-23  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* cherokee/handler_server_info.c (build_modules_table_content):
+	Adds a new table row for the cryptors. It fixes the bug:
+	http://code.google.com/p/cherokee/issues/detail?id=287
 
 2008-12-22  Alvaro Lopez Ortega  <alvaro@octality.com>
 
@@ -12,21 +644,41 @@
 	previos Stefan's patch: Stefan de Konink <stefan@konink.de>.
 	Fixes: http://code.google.com/p/cherokee/issues/detail?id=282
 
+2008-12-22 Taher Shihadeh  <taher@unixwars.com>
+
+	* doc/config_virtual_servers.txt: typos
+
+2008-12-19 Taher Shihadeh  <taher@unixwars.com>
+
+	* admin/Entry.py: toggle checkboxes by clicking on the
+	description.
+
+2008-12-18 Taher Shihadeh  <taher@unixwars.com>
+
+	* doc/cookbook_phpbb.txt, doc/cookbook_phpmyadmin.txt,
+	doc/media/images/*: more docs and recompressed the whole image
+	gallery to save some more package-space. Sorry for the big
+	commit guys!
+
+	* doc/cookbook_managing_logs.txt,
+	doc/media/images/cookbook_managin_logs*: and more.
+
+	* cherokee/main_tweak.c, cherokee-tweak.1: fixed misspleings.
+
 2008-12-18  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* cherokee/nonce.c (cherokee_nonce_table_free): Fixes a memory
+	leak (72 bytes in total) on server quit.
+
+	* cherokee/Makefile.am, cherokee/proxy_hosts.c, cherokee/cache.c,
+	cherokee/init.c, cherokee/threading.c, cherokee/threading.h,
+	cherokee/common-internal.h, cherokee/thread.c,
+	cherokee/fcgi_dispatcher.c, cherokee/iocache.c, cherokee/server.c:
+	Adds PTHREAD_ADAPTIVE_MUTEX_INITIALIZER_NP support.
 
 	* admin/PageInfoSource.py: Fixes a administration interface
 	issue. The Information Sources was failing when a source was being
 	used inside a User Directory rule.
-
-2008-12-18  Alvaro Lopez Ortega  <alvaro@octality.com>
-
-	* 0.11.5 released
-
-2008-12-10  Antonio Perez  <aperez@skarcha.com>
-
-	* cherokee/cryptor_libssl.c: Fixes problem where OpenSSL expected
-	to read a CA cert appended to the server cert. Bug #264:
-	http://code.google.com/p/cherokee/issues/detail?id=264
 
 2008-12-17  Alvaro Lopez Ortega  <alvaro@octality.com>
 
@@ -34,24 +686,164 @@
 	validation. Fixes bug #266:
 	http://code.google.com/p/cherokee/issues/detail?id=266
 
-	* 0.11.4 released
+	* cherokee/source.c (cherokee_source_connect): Fixes bug #269:
+	http://code.google.com/p/cherokee/issues/detail?id=269
+	Cherokee didn't check the type of the IP when connecting to a data
+	source. Now, AF_UNIX, AF_INET6 and AF_INET are supported.
 
 	* cherokee/main.c, cherokee/server.c: This patch should fix the
 	graceful restart functionality.
+
+2008-12-16  Taher Shihadeh  <taher@unixwars.com>
+
+	* cherokee/cherokee-tweak.c: fixes incorrect parameter help.
+
+2008-12-16  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* cherokee/socket.c (cherokee_socket_ntop): Convert IPv4 mapped
+	IPs (over IPv6) to IPv4 before using them. For instance, in the
+	log files.
+
+2008-12-15  Taher Shihadeh  <taher@unixwars.com>
+	* doc/cookbook_trac.txt: documentation for Trac.
+
+2008-12-11  Taher Shihadeh  <taher@unixwars.com>
+	* doc/cookbook_moodle.txt, doc/cookbook_liferay.txt,
+	doc/cookbook_alfresco.txt, doc/modules_handlers_dbslayer.txt,
+	doc/other_community.txt,
+	doc/media/images/cookbook_(moodle|alfresco|liferay).*: some additions.
+
+2008-12-10  Antonio Perez  <aperez@skarcha.com>
+
+	* cherokee/cryptor_libssl.c: Fixes problem where OpenSSL expected
+	to read a CA cert appended to the server cert. Bug #264:
+	http://code.google.com/p/cherokee/issues/detail?id=264
+
+2008-12-09  Taher Shihadeh  <taher@octality.com>
+
+	* dbslayer/mysql_wrap.php: minor change to the init funtion.
+
+	* doc/modules_handlers_proxy.txt, doc/cookbook_dbslayer.txt,
+	doc/media/images/proxy_phase1.png,
+	doc/media/images/proxy_phase2.png: updated some docs.
+
+2008-12-09  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* dbslayer/mysql_wrap.php, configure.in, dbslayer/Makefile.am,
+	Makefile.am: Pushes the PHP dbslayer wrapper upstream. It is
+	reimplements the PHP-MySQL API so PHP applications can use
+	DBSlayer without modifications. Kudos to Taher for this hack.
+
+2008-12-09  Taher Shihadeh  <taher@octality.com>
+
+	* doc/config_virtual_servers.txt,
+	doc/media/images/admin_vserver_security.png: syncs with r2574.
+
+2008-12-08  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* cherokee/virtual_server.c, cherokee/virtual_server.h,
+	cherokee/cryptor_libssl.c, admin/PageVServer.py: Adds TLS/SSL
+	client certificate checking.
+
+	* cherokee.conf.sample.pre: The new "Ogg Media Types" have been
+	added: http://www.ietf.org/rfc/rfc5334.txt. It implements RFE:
+	http://code.google.com/p/cherokee/issues/detail?id=262
+
+	* cherokee/handler_mirror.c, cherokee/handler_fcgi.c,
+	cherokee/handler_scgi.c: Integrates the FastCGI, SCGI and TCP
+	balancer with the latest cherokee_balancer_t modifications.
+
+	* cherokee/balancer_round_robin.c (reactivate_entry): In case all
+	the sources are off-line, it's smarter to try to connect with one
+	instead of waiting the off-line timeout. It it's luckly the source
+	will be up and running. If not, it doesn't harm much.
+
+2008-12-07  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* cherokee/balancer.c, cherokee/balancer.h, cherokee/source.c,
+	cherokee/source.h, cherokee/balancer_round_robin.c,
+	cherokee/balancer_round_robin.h, cherokee/handler_proxy.c:
+	Balancer behavior has been greatly improved. From now on, when a
+	source isn't working it's put off-line for a period of time.
 
 2008-12-06  Alvaro Lopez Ortega  <alvaro@octality.com>
 
 	* cherokee/cryptor_libssl.c, admin/PageVServer.py: Fixes SSL CA
 	file support. It also adds a few SSL context options.
 
-2008-12-03  Alvaro Lopez Ortega  <alvaro@octality.com>
+2008-12-05  Alvaro Lopez Ortega  <alvaro@octality.com>
 
-	* 0.11.3 released
+	* cherokee/mime_types.txt, cherokee/Makefile.am: Removed.
+
+	* configure.in, doc/Makefile.am: Tries to deal with a autoconf +
+	automake issue related to the document installation.
+
+2008-12-05  Taher Shihadeh  <taher@octality.com>
+
+	* doc/cookbook_symfony.txt, doc/media/images/cookbook_symfony.png: 
+	Recipe for the Symfony PHP Framework contributed by Fanen Ahua
+	<afanen01@gmail.com>.
+
+2008-12-05  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* cherokee/util.h, cherokee/util.c (rpl_malloc): Deals with the
+	autoconf's AC_FUNC_MALLOC macro. It adds a rpl_malloc() function
+	that re-implements malloc() on broken systems (AFAIK, it's used on
+	Windows, AIX): http://wiki.buici.com/wiki/Autoconf_and_RPL_MALLOC
+
+	* cherokee/Makefile.am: Fixes a compilation issue (on AIX). Patch
+	by Antonio Perez <aperez@skarcha.com>.
+
+	* qa/194-PHP-zero-len-post.py, qa/Makefile.am: Adds a new QA test.
+	It checks whether zero length POSTs work with PHP (FastCGI).
+
+	* cherokee/main_admin.c: Fixes getopt.h inclusion issue (on AIX).
+
+2008-12-03  Alvaro Lopez Ortega  <alvaro@octality.com>
 
 	* cherokee/socket.c, cherokee/cryptor_libssl.c, cherokee/server.c:
 	Fixes a couple of issues with the new cryptor plug-in support. Now
 	it reports errors when something unexpected happens during the TLS
 	support initialization process.
+
+2008-12-02  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* admin/static/css/cherokee.css: The border of the "saved" message
+	box should be green. The previous red border didn't look nice.
+
+	* cherokee.conf.sample.pre: It's safe again to use a Unix socket
+	for the Cherokee-PHP communication.
+
+	* themes/plain/footer.html, themes/plain/entry.html,
+	themes/plain/Makefile.am, themes/plain/theme.css,
+	themes/plain/header.html, themes/Makefile.am, configure.in: A new
+	dirlist theme has been added. It uses fixed fonts, and has a
+	really clean and simple look.
+
+2008-12-01  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* cherokee/common-internal.h: Includes sys/machine.h in case it is
+	available. It helps to fix AIX compilation. Patch by Antonio Perez
+	<aperez@skarcha.com>.
+
+	* cherokee/cryptor.c (cherokee_cryptor_socket_pending): Fixes this
+	function prototype (and implementation due to the fix).
+
+	* cherokee/fdpoll.c: Fixes the cherokee_fdpoll_is_empty() function
+	prototype.
+
+	* Makefile.am: Added a new cert (make cert) target. It isn't used
+	by default, but it is quite handy for generating SSL/TLS certs by
+	hand.
+
+	* admin/PageVServer.py, admin/Form.py, admin/validations.py: Log
+	files are opened before the server is jailed. Cherokee-admin was
+	not taking at into account; this patch fixes the issue.
+
+	* admin/Form.py: Changes the tab title color whenever and error
+	message if found in its content. This will help to ease of problem
+	hidden problems (as in the bug report #254):
+	http://code.google.com/p/cherokee/issues/detail?id=254
 
 2008-11-30  Antonio Perez  <aperez@skarcha.com>
 
@@ -60,7 +852,9 @@
 
 2008-11-30  Alvaro Lopez Ortega  <alvaro@octality.com>
 
-	* 0.11.2 released
+	* qa/193-PHP-documentroot.py: Adds a new QA test. It checks
+	whether an PHP application directory can be mapped in a web
+	directory by setting a custom document_root.
 
 	* cherokee/cryptor_libssl.c, cherokee/cryptor_libssl.h: Adds a
 	license exemption for OpenSSL. In case the cryptor-libssl plug-in
@@ -69,6 +863,18 @@
 	important to note that these are only two source files where this
 	exemption applies. Thus, the cryptor_libssl plugin in the only
 	plug-in where the license exemption applies.
+
+2008-11-28  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* qa/192-RedirDocumentRoot.py, qa/Makefile.am: Added a new QA test
+	to ensure that the bug #241 is fixed.  Original version submitted
+	by Antonio Perez.
+
+2008-11-28  Antonio Perez  <aperez@skarcha.com>
+
+* cherokee/handler_redir.c: document_root was ignored on
+	internal redirections. Fixes bug #241:
+	http://code.google.com/p/cherokee/issues/detail?id=241
 
 2008-11-28  Alvaro Lopez Ortega  <alvaro@octality.com>
 
@@ -83,8 +889,6 @@
 	server_info handlers.
 
 2008-11-26  Alvaro Lopez Ortega  <alvaro@octality.com>
-
-	* 0.11.1 released
 
 	* admin/ModuleExists.py (ModuleExists.get_name): Fixes a execution
 	problem when the !match_any key wasn't present in the configuration.
@@ -1366,16 +2170,16 @@
 	configuration file converter. It reads Cherokee 0.8.x files and
 	translates them to the new Cherokee 0.9 format.
 
-	* qa/007-Missing-Host.py , qa/020-VirtualHost.py ,
-	qa/021-VirtualHost2.py , qa/022-NoHost.py , qa/023-Host.py ,
-	qa/024-Host+Port.py , qa/026-Host-Broken-Dot.py ,
-	qa/031-Post+urlencoded2.py , qa/042-Pipelining.py ,
-	qa/043-Pipelining2.py , qa/044-Home.py , qa/048-NN.py ,
-	qa/049-NN-broken.py , qa/094-URL-request.py , qa/105-If-Range.py ,
-	qa/106-If-Range2.py , qa/116-RequestTiny.py ,
-	qa/117-DomainToDir.py , qa/121-NoUserDir.py , qa/122-Methods.py ,
-	qa/124-DomainToDir2.py , qa/125-domain-redir1.py ,
-	qa/135-RedirParams.py , qa/139-domain-wildcards1.py,
+	* qa/007-Missing-Host.py, qa/020-VirtualHost.py,
+	qa/021-VirtualHost2.py, qa/022-NoHost.py, qa/023-Host.py,
+	qa/024-Host+Port.py, qa/026-Host-Broken-Dot.py,
+	qa/031-Post+urlencoded2.py, qa/042-Pipelining.py,
+	qa/043-Pipelining2.py, qa/044-Home.py, qa/048-NN.py,
+	qa/049-NN-broken.py, qa/094-URL-request.py, qa/105-If-Range.py,
+	qa/106-If-Range2.py, qa/116-RequestTiny.py,
+	qa/117-DomainToDir.py, qa/121-NoUserDir.py, qa/122-Methods.py,
+	qa/124-DomainToDir2.py, qa/125-domain-redir1.py,
+	qa/135-RedirParams.py, qa/139-domain-wildcards1.py,
 	qa/153-SCGI-vars-root.py, qa/160-RuleNot1.py, qa/161-RuleNot2.py,
 	qa/166-xsendfile1.py, qa/171-SCGI-Keepalive.py,
 	qa/172-Chunked-CGI.py, qa/173-Chunked-SCGI.py: QA tests using
@@ -1738,7 +2542,7 @@
 	doc/basics_installation_unix.txt,
 	doc/basics_installation_windows.txt, doc/basics_requirements.txt,
 	doc/basics_running_cherokee.txt, doc/basics.txt,
-	doc/basics_upgrade.txt, doc/basics_why_cherokee.txt ,
+	doc/basics_upgrade.txt, doc/basics_why_cherokee.txt,
 	doc/build/build_web.sh, doc/build/doc.conf, doc/build/web.conf,
 	doc/bundle_cget.txt, doc/bundle_cherokee-config.txt,
 	doc/bundle_cherokee-guardian.txt, doc/bundle_cherokee-tweak.txt,
@@ -2082,7 +2886,7 @@
 	cherokee/connection.c, cherokee/handler_cgi.c,
 	cherokee/handler_cgi_base.c, cherokee/main.c,
 	cherokee/main_admin.c, cherokee/server-protected.h,
-	cherokee/server.c, cherokee/thread.c, cherokee/virtual_server.c ,
+	cherokee/server.c, cherokee/thread.c, cherokee/virtual_server.c,
 	cherokee/virtual_server.h, performance.conf.sample.pre,
 	qa/015-CGI-simple.py, qa/016-CGI-pathinfo.py,
 	qa/017-CGI-pathinfo2.py, qa/018-CGI-pathinfo3.py,
@@ -2105,7 +2909,7 @@
 	qa/084-RedirParamShow.py, qa/085-AuthUsers.py,
 	qa/086-AuthUsers2.py, qa/088-CGI-envs.py, qa/089-gzip-encoding.py,
 	qa/090-Digest.py, qa/091-Digest2.py, qa/092-Digest3.py,
-	qa/093-InvalidLinks.py, qa/094-URL-request.py ,
+	qa/093-InvalidLinks.py, qa/094-URL-request.py,
 	qa/095-htpasswd-apache-md5.py, qa/096-htpasswd-md5.py,
 	qa/097-htpasswd-sha1.py, qa/098-htpasswd-crypt.py,
 	qa/099-htpasswd-plain.py, qa/100-Digest-htdigest.py,
@@ -4297,7 +5101,7 @@
 	to use cherokee_http_* methods instead of local switches for
 	converting the http method into a string.
 
-	* cget/proxy.h, cget/proxy.c, cherokee/request.h, , cget/main.c,
+	* cget/proxy.h, cget/proxy.c, cherokee/request.h, cget/main.c,
 	cherokee/request.c (cherokee_request_header_build_string),
 	cherokee/downloader.h, cherokee/downloader.c: Added proxy
 	support. Cget inherits this feature of the cherokee-client
@@ -8512,7 +9316,7 @@
 	* cherokee/fastcgi-common.c (cherokee_fcgi_server_add_env): Added
 	new function.
 
-	* cherokee/handler_fastcgi.c, cherokee/fcgi_manager.c, ,
+	* cherokee/handler_fastcgi.c, cherokee/fcgi_manager.c,
 	cherokee/fcgi_manager.h: Some FastCGI fixes by Mohammad DAMT.
 
 	* cherokee/handler_fastcgi.h,

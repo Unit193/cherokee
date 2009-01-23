@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2008 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2009 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -18,9 +18,9 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
- * USA
- */
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
+ */ 
 
 #include "common-internal.h"
 #include <signal.h>
@@ -28,8 +28,10 @@
 #include "server.h"
 #include "socket.h"
 
-#ifdef HAVE_GETOPT_H
+#ifdef HAVE_GETOPT_LONG
 # include <getopt.h>
+#else 
+# include "getopt/getopt.h"
 #endif
 
 #define APP_NAME        \
@@ -37,7 +39,7 @@
 
 #define APP_COPY_NOTICE \
 	"Written by Alvaro Lopez Ortega <alvaro@gnu.org>\n\n"                          \
-	"Copyright (C) 2001-2008 Alvaro Lopez Ortega.\n"                               \
+	"Copyright (C) 2001-2009 Alvaro Lopez Ortega.\n"                               \
 	"This is free software; see the source for copying conditions.  There is NO\n" \
 	"warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n"
 
@@ -48,13 +50,13 @@
 #define DEFAULT_CONFIG_FILE  CHEROKEE_CONFDIR "/cherokee.conf"
 #define DEFAULT_BIND         "127.0.0.1"
 #define RULE_PRE             "vserver!1!rule!"
- 
-static int   port          = DEFAULT_PORT;
-static char *document_root = DEFAULT_DOCUMENTROOT;
-static char *config_file   = DEFAULT_CONFIG_FILE;
-static char *bind_to       = DEFAULT_BIND;
-static int   debug         = 0;
-static int   unsecure      = 0;
+
+static int         port          = DEFAULT_PORT;
+static const char *document_root = DEFAULT_DOCUMENTROOT;
+static const char *config_file   = DEFAULT_CONFIG_FILE;
+static const char *bind_to       = DEFAULT_BIND;
+static int         debug         = 0;
+static int         unsecure      = 0;
 
 static ret_t
 find_empty_port (int starting, int *port)
@@ -124,13 +126,13 @@ config_server (cherokee_server_t *srv)
 	if (ret != ret_ok) 
 		return ret;
 
-	cherokee_buffer_add_va  (&buf, "server!port = %d\n", port);
+	cherokee_buffer_add_va  (&buf, "server!bind!1!port = %d\n", port);
 	cherokee_buffer_add_str (&buf, "server!thread_number = 1\n");
 	cherokee_buffer_add_str (&buf, "server!ipv6 = 0\n");
 	cherokee_buffer_add_str (&buf, "server!max_connection_reuse = 0\n");
 
 	if (bind_to)
-		cherokee_buffer_add_va (&buf, "server!listen = %s\n", bind_to);
+		cherokee_buffer_add_va (&buf, "server!bind!1!interface = %s\n", bind_to);
 
 	cherokee_buffer_add_str (&buf, "vserver!1!nick = default\n");
 	cherokee_buffer_add_va  (&buf, "vserver!1!document_root = %s\n", document_root);
@@ -194,6 +196,14 @@ config_server (cherokee_server_t *srv)
 				 RULE_PRE "6!handler = file\n"
 				 RULE_PRE "6!handler!iocache = 0\n"
 				 RULE_PRE "6!document_root = %s\n", CHEROKEE_DOCDIR);
+
+	cherokee_buffer_add_str (&buf,
+				 "mime!text/javascript!extensions = js\n"
+				 "mime!text/css!extensions = css\n"
+				 "mime!image/png!extensions = png\n"
+				 "mime!image/jpeg!extensions = jpeg,jpg\n"
+				 "mime!image/svg+xml!extensions = svg,svgz\n"
+				 "mime!image/gif!extensions = gif\n");
 
 	ret = cherokee_server_read_config_string (srv, &buf);
 	if (ret != ret_ok) {

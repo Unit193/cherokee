@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2008 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2009 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -18,9 +18,9 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
- * USA
- */
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
+ */ 
 
 #ifndef CHEROKEE_HANDLER_CGI_BASE_H
 #define CHEROKEE_HANDLER_CGI_BASE_H
@@ -53,8 +53,8 @@
 typedef struct cherokee_handler_cgi_base cherokee_handler_cgi_base_t;
 
 typedef void  (* cherokee_handler_cgi_base_add_env_pair_t)  (cherokee_handler_cgi_base_t *cgi,
-							     char *name,    int name_len,
-							     char *content, int content_len);
+							     const char *name,    int name_len,
+							     const char *content, int content_len);
 
 typedef ret_t (* cherokee_handler_cgi_base_read_from_cgi_t) (cherokee_handler_cgi_base_t *cgi, 
 							     cherokee_buffer_t *buffer);
@@ -77,7 +77,6 @@ struct cherokee_handler_cgi_base {
 	cuint_t                            got_eof;
 	char                              *extra_param;
 
-	cherokee_boolean_t                 content_length_set;
 	size_t                             content_length;
 
 	cherokee_buffer_t                  xsendfile;

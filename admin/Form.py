@@ -131,34 +131,40 @@ class FormHelper (WebComponent):
 
     def InstanceTab (self, entries):
         # HTML
-        txt = '<dl class="tab" id="tab_%s">' % (self._id)
+        txt = '<div class="tab" id="tab_%s">\n' % (self._id)
         num = 0
+        tabsheader = '<ul class="ui-tabs-nav">\n'
+        tabscontent = ''
         for title, content in entries:
-            txt += '<dt num="%d">%s</dt>\n' % (num, title)
-            txt += '<dd>%s</dd>\n' % (content)
+            error_inside = 'class="error"' in content
+            if error_inside:
+                tabsheader += '<li><a href="#tabs_%s-%d"><span class="error">%s</span></a></li>\n' % (self._id, num, title)
+            else:
+                tabsheader += '<li><a href="#tabs_%s-%d"><span>%s</span></a></li>\n' % (self._id, num, title)
+            tabscontent += '<div id="tabs_%s-%d" class="ui-tabs-panel">\n%s\n</div>\n' % (self._id, num, content)
             num += 1
-        txt += '</dl>'
+        tabsheader += '</ul>\n'
+        txt += tabsheader
+        txt += tabscontent
+        txt += '</div>\n'
 
         # Javascript
         txt += '''
         <script type="text/javascript">
-          var settings = {
-             alwaysOpen: true,
-             animated:   false
-          };
+          $(function() {
+              $("#tab_%s").tabs().bind('tabsselect', function(event, ui) {
+                  document.cookie = "open_tab="  + ui.index;
+                  document.cookie = "rule_path=" + location.pathname;
+              });
 
-          open_tab = get_cookie('open_tab');
-          if (open_tab) {
-            settings['active'] = parseInt(open_tab);
-          }
-
-          jQuery("#tab_%s").Accordion(settings).change(
-            function (event, newHeader, oldHeader) {
-              if (! newHeader) return;
-              document.cookie = "open_tab=" + newHeader.attr("num");
+              open_tab  = get_cookie('open_tab');
+              rule_path = get_cookie('rule_path');
+              if (open_tab && rule_path==location.pathname) {
+                  $("#tab_%s").tabs("select", open_tab);
+              }
           });
         </script>
-        ''' % (self._id)
+        ''' % (self._id, self._id)
         return txt
 
     def AddTableEntry (self, table, title, cfg_key, extra_cols=None):
@@ -334,6 +340,7 @@ class FormHelper (WebComponent):
     def ValidateChange_SingleKey (self, key, post, validation):
         for regex, tmp in validation:
             pass_cfg = False
+            nochroot = False
 
             if type(tmp) == types.FunctionType:
                 validation_func = tmp
@@ -343,6 +350,8 @@ class FormHelper (WebComponent):
                 for k in tmp[1:]:
                     if k == 'cfg':
                         pass_cfg = True
+                    elif k == 'nochroot':
+                        nochroot = True
                     else:
                         print "UNKNOWN validation option:", k
 
@@ -353,7 +362,7 @@ class FormHelper (WebComponent):
                     continue
                 try:
                     if pass_cfg:
-                        tmp = validation_func (value, self._cfg)
+                        tmp = validation_func (value, self._cfg, nochroot)
                     else:
                         tmp = validation_func (value)
                     post[key] = [tmp]

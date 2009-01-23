@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2008 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2009 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -18,9 +18,9 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
- * USA
- */
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
+ */ 
 
 #include "common-internal.h"
 
@@ -45,8 +45,8 @@
 
 
 static void set_env_pair (cherokee_handler_cgi_base_t *cgi_base, 
-			  char *key, int key_len, 
-			  char *val, int val_len);
+			  const char *key, int key_len, 
+			  const char *val, int val_len);
 
 /* Plug-in initialization
  */
@@ -348,8 +348,8 @@ fcgi_build_request_body (FCGI_BeginRequestRecord *request)
 
 static void 
 set_env_pair (cherokee_handler_cgi_base_t *cgi_base, 
-	      char *key, int key_len, 
-	      char *val, int val_len)
+	      const char *key, int key_len, 
+	      const char *val, int val_len)
 {
 	int                       len;
 	FCGI_BeginRequestRecord   request;
@@ -511,12 +511,19 @@ connect_to_server (cherokee_handler_fcgi_t *hdl)
 
 	/* Try to connect
 	 */
-	if (hdl->src_ref->type == source_host)
-		return cherokee_source_connect_polling (hdl->src_ref, &hdl->socket, conn);		
+	if (hdl->src_ref->type == source_host) {
+		ret = cherokee_source_connect_polling (hdl->src_ref, &hdl->socket, conn);		
+		if ((ret == ret_deny) || (ret == ret_error))
+		{
+			cherokee_balancer_report_fail (props->balancer, conn, hdl->src_ref);
+		}
+	} else {
+		ret = cherokee_source_interpreter_connect_polling (SOURCE_INT(hdl->src_ref),
+								   &hdl->socket, conn, 
+								   &hdl->spawned);
+	}
 
-	return cherokee_source_interpreter_connect_polling (SOURCE_INT(hdl->src_ref),
-							    &hdl->socket, conn, 
-							    &hdl->spawned);
+	return ret;
 }
 
 

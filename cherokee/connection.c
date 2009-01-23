@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2008 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2009 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -18,9 +18,9 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
- * USA
- */
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
+ */ 
 
 #include "common-internal.h"
 #include "connection.h"
@@ -404,7 +404,7 @@ out:
 	/* Only 3xx errors can keep the connection alive
 	 */
 	if ((! (http_type_300 (conn->error_code))) ||
-	    (! (conn->handler->support & hsupport_length)))
+	    (! (HANDLER_SUPPORTS (conn->handler, hsupport_length))))
 	{
 		conn->keepalive = 0;
 	}
@@ -576,7 +576,7 @@ build_response_header (cherokee_connection_t *conn, cherokee_buffer_t *buffer)
 	/* Add the Server header
 	 */
 	cherokee_buffer_add_str (buffer, "Server: ");
-	cherokee_buffer_add_buffer (buffer, &CONN_SRV(conn)->server_string);
+	cherokee_buffer_add_buffer (buffer, &CONN_BIND(conn)->server_string);
 	cherokee_buffer_add_str (buffer, CRLF);
 
 	/* Authentication
@@ -617,8 +617,7 @@ ret_t
 cherokee_connection_build_header (cherokee_connection_t *conn)
 {
 	ret_t              ret;
-	cherokee_boolean_t try_chunked = false;
-	
+
 	/* If the handler requires not to add headers, exit.
 	 */
 	if (HANDLER_SUPPORTS (conn->handler, hsupport_skip_headers)) 
@@ -639,29 +638,26 @@ cherokee_connection_build_header (cherokee_connection_t *conn)
 		}
 	}
 
-	/* If the connection is using Kee-Alive, it must either know
+	/* Replies with no body cannot use chunked encoding
+	 */
+	if ((! http_code_with_body (conn->error_code)) ||
+	    (! http_method_with_body (conn->header.method)))
+	{
+		conn->chunked_encoding = false;
+	}
+
+	/* If the connection is using Keep-Alive, it must either know
 	 * the length or use chunked encoding. Otherwise, Keep-Alive
 	 * has to be turned off.
 	 */
-	if ((conn->keepalive != 0) &&
-	    (http_method_with_body (conn->error_code)))	
-	{		
-		if (HANDLER_SUPPORTS (conn->handler, hsupport_maybe_length)) {
-			if (! strcasestr (conn->header_buffer.buf, "Content-Length: ")) {
-				try_chunked = true;
-			}
-		} else if (! HANDLER_SUPPORTS (conn->handler, hsupport_length)) {
-			try_chunked = true;
-		} 		
-
-		if (try_chunked) {
-			/* Turn chunked encoding on, if possible
-			 */
-			conn->chunked_encoding = ((CONN_SRV(conn)->chunked_encoding) &&
-						  (conn->header.version == http_version_11));
-
-			if (! conn->chunked_encoding)
+	if (conn->keepalive != 0) {
+		if (! HANDLER_SUPPORTS (conn->handler, hsupport_length)) {
+			if (! conn->chunked_encoding) {
 				conn->keepalive = 0;
+			}
+
+		} else {
+			conn->chunked_encoding = false;
 		}
 	}
 
@@ -985,6 +981,15 @@ out:
 	return ret;
 }
 
+cherokee_boolean_t
+cherokee_connection_should_include_length (cherokee_connection_t *conn)
+{
+	if (conn->encoder) {
+		return false;
+	}
+
+	return true;
+}
 
 ret_t 
 cherokee_connection_shutdown_wr (cherokee_connection_t *conn)
@@ -1356,10 +1361,13 @@ cherokee_connection_build_local_directory (cherokee_connection_t *conn, cherokee
 		 * on petition: http://server/thing/cherokee	
 		 * should read: /usr/share/this/rocks/cherokee	
 		 */
-		cherokee_buffer_add_buffer (&conn->request_original, &conn->request);
+		if (cherokee_buffer_is_empty(&conn->request_original)) {
+			cherokee_buffer_add_buffer (&conn->request_original, &conn->request);
+		}
 
-		if (conn->web_directory.len > 1)
+		if (conn->web_directory.len > 1) {
 			cherokee_buffer_move_to_begin (&conn->request, conn->web_directory.len);
+		}
 
 		if ((conn->request.len >= 2) && (strncmp(conn->request.buf, "//", 2) == 0)) {
 			cherokee_buffer_move_to_begin (&conn->request, 1);
@@ -1391,8 +1399,13 @@ cherokee_connection_build_local_directory_userdir (cherokee_connection_t *conn, 
 
 		cherokee_buffer_add_buffer (&conn->local_directory, entry->document_root);
 
-		cherokee_buffer_add_buffer (&conn->request_original, &conn->request);
-		cherokee_buffer_move_to_begin (&conn->request, conn->web_directory.len);
+		if (cherokee_buffer_is_empty(&conn->request_original)) {
+			cherokee_buffer_add_buffer (&conn->request_original, &conn->request);
+		}
+
+		if (conn->web_directory.len > 1) {
+			cherokee_buffer_move_to_begin (&conn->request, conn->web_directory.len);
+		}
 
 		if ((conn->request.len >= 2) && (strncmp(conn->request.buf, "//", 2) == 0)) {
 			cherokee_buffer_move_to_begin (&conn->request, 1);
@@ -1951,6 +1964,12 @@ granted:
 	TRACE (ENTRIES, "Keep-alive %d\n", conn->keepalive);
 }
 
+void
+cherokee_connection_set_chunked_encoding (cherokee_connection_t *conn)
+{
+	conn->chunked_encoding = ((CONN_SRV(conn)->chunked_encoding) &&
+				  (conn->header.version == http_version_11));
+}
 
 ret_t
 cherokee_connection_parse_range (cherokee_connection_t *conn)
@@ -2060,7 +2079,6 @@ cherokee_connection_open_request (cherokee_connection_t *conn)
 ret_t
 cherokee_connection_log_or_delay (cherokee_connection_t *conn)
 {
-	ret_t              ret;
 	cherokee_boolean_t at_end;
 
 	/* Check whether it should log at end or not..
@@ -2086,22 +2104,13 @@ cherokee_connection_log_or_delay (cherokee_connection_t *conn)
 
 	/* Log it
 	 */
-	if (http_type_400(conn->error_code) ||
-	    http_type_500(conn->error_code)) {
-		ret = cherokee_logger_write_error (conn->logger_ref, conn);
-	} else {
-		ret = cherokee_logger_write_access (conn->logger_ref, conn);
-	}
-
-	return ret;
+	return cherokee_logger_write_access (conn->logger_ref, conn);
 }
 
 
 ret_t 
 cherokee_connection_log_delayed (cherokee_connection_t *conn)
 {
-	ret_t ret;
-
 	/* Check whether if needs to log now of not
 	 */
 	if (conn->logger_ref == NULL)
@@ -2113,11 +2122,7 @@ cherokee_connection_log_delayed (cherokee_connection_t *conn)
 	 */
 	BIT_UNSET (conn->options, conn_op_log_at_end);
 
-	ret = cherokee_logger_write_access (conn->logger_ref, conn);
-	if (unlikely (ret != ret_ok))
-		return ret;
-
-	return ret_ok;
+	return cherokee_logger_write_access (conn->logger_ref, conn);
 }
 
 
@@ -2149,7 +2154,7 @@ cherokee_connection_clean_for_respin (cherokee_connection_t *conn)
 
 	conn->respins += 1;
 	if (conn->respins > RESPINS_MAX) {
-		TRACE(ENTRIES, "Internal redirection limit (%d) excedeeded\n", RESPINS_MAX);
+		TRACE(ENTRIES, "Internal redirection limit (%d) exceeded\n", RESPINS_MAX);
 		conn->error_code = http_internal_error;
 		return ret_error;
 	}
@@ -2161,7 +2166,6 @@ cherokee_connection_clean_for_respin (cherokee_connection_t *conn)
 	} 
 
 	cherokee_buffer_clean (&conn->web_directory);
-	conn->chunked_encoding = false;
 
 	TRACE_CONN(conn);
 	return ret_ok;
@@ -2281,7 +2285,7 @@ cherokee_connection_print (cherokee_connection_t *conn)
 #endif
 
 #ifdef TRACE_ENABLED
-char *
+const char *
 cherokee_connection_get_phase_str (cherokee_connection_t *conn)
 {
 	switch (conn->phase) {
@@ -2331,10 +2335,10 @@ cherokee_connection_set_redirect (cherokee_connection_t *conn, cherokee_buffer_t
 			cherokee_buffer_add_str (&conn->redirect, "http://");
 		
 		cherokee_buffer_add_buffer (&conn->redirect, &conn->host);
-		
-		if (CONN_SRV(conn)->port != 80) {
+
+		if (CONN_BIND(conn)->port != 80) {
 			cherokee_buffer_add_str (&conn->redirect, ":");
-			cherokee_buffer_add_long10 (&conn->redirect, CONN_SRV(conn)->port);
+			cherokee_buffer_add_long10 (&conn->redirect, CONN_BIND(conn)->port);
 		}
 	}
 	

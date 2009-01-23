@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2008 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2009 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -18,9 +18,9 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
- * USA
- */
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
+ */ 
 
 #include "common-internal.h"
 #include "dwriter.h"
@@ -115,6 +115,7 @@ cherokee_dwriter_init (cherokee_dwriter_t *writer,
 ret_t
 cherokee_dwriter_mrproper (cherokee_dwriter_t *writer)
 {
+	UNUSED (writer);
 	return ret_ok;
 }
 
@@ -128,7 +129,7 @@ cherokee_dwriter_set_buffer (cherokee_dwriter_t *writer,
 
 static ret_t
 escape_string (cherokee_buffer_t *buffer, 
-	       char              *s,
+	       const char        *s,
 	       cuint_t            len)
 {
 	char    c;
@@ -214,7 +215,7 @@ cherokee_dwriter_double (cherokee_dwriter_t *w, double d)
 }
 
 ret_t
-cherokee_dwriter_number (cherokee_dwriter_t *w, char *s, int len)
+cherokee_dwriter_number (cherokee_dwriter_t *w, const char *s, int len)
 {
 	ENSURE_VALID_STATE; ENSURE_NOT_KEY;
 	ADD_SEP; ADD_WHITE;
@@ -226,7 +227,7 @@ cherokee_dwriter_number (cherokee_dwriter_t *w, char *s, int len)
 }
 
 ret_t
-cherokee_dwriter_string (cherokee_dwriter_t *w, char *s, int len)
+cherokee_dwriter_string (cherokee_dwriter_t *w, const char *s, int len)
 {
 	ENSURE_VALID_STATE;
 	ADD_SEP; ADD_WHITE;
@@ -280,13 +281,22 @@ cherokee_dwriter_bool (cherokee_dwriter_t *w, cherokee_boolean_t b)
 	switch (w->lang) {
 	case dwriter_json:
 	case dwriter_ruby:
-		cherokee_buffer_add_str (OUT, b ? "true" : "false");
+		if (b)
+			cherokee_buffer_add_str (OUT, "true");
+		else
+			cherokee_buffer_add_str (OUT, "false");
 		break;
 	case dwriter_python:
-		cherokee_buffer_add_str (OUT, b ? "True" : "False");
+		if (b)
+			cherokee_buffer_add_str (OUT, "True");
+		else 
+			cherokee_buffer_add_str (OUT, "False");
 		break;
 	case dwriter_php:
-		cherokee_buffer_add_str (OUT, b ? "TRUE" : "FALSE");
+		if (b) 
+			cherokee_buffer_add_str (OUT, "TRUE");
+		else
+			cherokee_buffer_add_str (OUT, "FALSE");
 		break;
 	default:
 		SHOULDNT_HAPPEN;

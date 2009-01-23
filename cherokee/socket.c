@@ -5,10 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Some patches by:
- *      Ricardo Cardenes Medina <ricardo@conysis.com>
- *
- * Copyright (C) 2001-2008 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2009 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -21,9 +18,9 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
- * USA
- */
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
+ */ 
 
 #include "common-internal.h"
 #include "socket.h"
@@ -243,48 +240,13 @@ cherokee_socket_shutdown (cherokee_socket_t *socket, int how)
 ret_t
 cherokee_socket_ntop (cherokee_socket_t *socket, char *dst, size_t cnt)
 {
-	const char *str = NULL;
-
-	errno = EAFNOSUPPORT;
-
-	if (SOCKET_FD(socket) < 0) {
+	if (unlikely (SOCKET_FD(socket) < 0)) {
 		return ret_error;
 	}
 
-	/* Only old systems without inet_ntop() function
-	 */
-#ifndef HAVE_INET_NTOP
-	{
-		struct sockaddr_in *addr = (struct sockaddr_in *) &SOCKET_ADDR(socket);
-		
-		str = inet_ntoa (addr->sin_addr);
-		memcpy(dst, str, strlen(str));
-
-		return ret_ok;
-	}
-#endif
-
-
-#ifdef HAVE_IPV6
-	if (SOCKET_AF(socket) == AF_INET6) {
-		struct sockaddr_in6 *addr = (struct sockaddr_in6 *) &SOCKET_ADDR(socket);
-
-		str = (char *) inet_ntop (AF_INET6, &addr->sin6_addr, dst, cnt);
-		if (str == NULL) {
-			return ret_error;
-		}
-	} else
-#endif
-	{
-		struct sockaddr_in *addr = (struct sockaddr_in *) &SOCKET_ADDR(socket);
-		
-		str = inet_ntop (AF_INET, &addr->sin_addr, dst, cnt);
-		if (str == NULL) {
-			return ret_error;
-		}
-	}
-
-	return ret_ok;
+	return cherokee_ntop (SOCKET_AF(socket),
+			      (struct sockaddr *) &SOCKET_ADDR(socket),
+			      dst, cnt);
 }
 
 
@@ -319,7 +281,7 @@ cherokee_socket_pton (cherokee_socket_t *socket, cherokee_buffer_t *host)
 
 
 ret_t 
-cherokee_socket_accept (cherokee_socket_t *socket, int server_socket)
+cherokee_socket_accept (cherokee_socket_t *socket, cherokee_socket_t *server_socket)
 {
 	ret_t               ret;
 	int                 fd;
@@ -371,7 +333,7 @@ cherokee_socket_set_sockaddr (cherokee_socket_t *socket, int fd, cherokee_sockad
 
 
 ret_t
-cherokee_socket_accept_fd (int server_socket, int *new_fd, cherokee_sockaddr_t *sa)
+cherokee_socket_accept_fd (cherokee_socket_t *server_socket, int *new_fd, cherokee_sockaddr_t *sa)
 {
 	int           re;
 	ret_t         ret;
@@ -383,7 +345,7 @@ cherokee_socket_accept_fd (int server_socket, int *new_fd, cherokee_sockaddr_t *
 	 */
 	len = sizeof (cherokee_sockaddr_t);
 
-	new_socket = accept (server_socket, &sa->sa, &len);
+	new_socket = accept (server_socket->socket, &sa->sa, &len);
 	if (new_socket < 0) {
 		int err = SOCK_ERRNO();
 		/* Caller has to retry the call on ret_deny.
@@ -1025,6 +987,8 @@ cherokee_socket_sendfile (cherokee_socket_t *socket,
 			  off_t   *offset, 
 			  ssize_t *sent)
 {
+	int                       re;
+	off_t                     _sent  = size;
 	static cherokee_boolean_t no_sys = false;
 
 	/* Exit if there is no sendfile() function in the system
@@ -1036,7 +1000,7 @@ cherokee_socket_sendfile (cherokee_socket_t *socket,
  	 * needed in some systems (i.e. *BSD) because value 0 may have
  	 * special meanings or trigger occasional hidden bugs.
  	 */
-	if (size == 0)
+	if (unlikely (size == 0))
 		return ret_ok;
 
 	/* Limit size of data that has to be sent.
@@ -1096,8 +1060,6 @@ cherokee_socket_sendfile (cherokee_socket_t *socket,
 	}
 
 #elif DARWIN_SENDFILE_API
-	int   re;
-	off_t _sent = size;
 
 	/* MacOS X: BSD-like System Call
 	 *

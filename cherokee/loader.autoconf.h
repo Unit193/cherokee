@@ -29,6 +29,7 @@
  extern cherokee_plugin_info_t cherokee_htdigest_info; 
  extern cherokee_plugin_info_t cherokee_authlist_info; 
  extern cherokee_plugin_info_t cherokee_round_robin_info; 
+ extern cherokee_plugin_info_t cherokee_ip_hash_info; 
  extern cherokee_plugin_info_t cherokee_directory_info; 
  extern cherokee_plugin_info_t cherokee_extensions_info; 
  extern cherokee_plugin_info_t cherokee_request_info; 

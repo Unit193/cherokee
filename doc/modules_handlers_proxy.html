@@ -29,10 +29,46 @@ request or pass it (with or without modifications) to the other web
 servers.</p></div>
 <div class="para"><p>The reverse proxy can do several interesting things besides simply
 load balancing. It can rewrite headers, and it can try to establish
-keep-alive connections with every system interfacing with it.</p></div>
-<div class="para"><p>To use it you simply have to specify several parameters. First define
-a series of <a href="config_info_sources.html">information sources</a>. Those
-will be the ones handling the requests in the end.</p></div>
+keep-alive connections with every system interfacing with it. That is,
+it doesn't matter if all the clients requesting contents from our
+publicly available Reverse Proxy do not support this feature: the
+Keep-Alive connections can still be kept within the local pool,
+greatly improving performance.</p></div>
+<div class="para"><p>The task of the reverse proxy can be summarized in the following
+steps.</p></div>
+<div class="ilist"><ul>
+<li>
+<p>
+Phase 1: The proxy receives a request, adds the necessary HTTP
+  headers and rewrites the existing ones according to the specified
+  rules. It then dispatches the request to one of the machines in the
+  pool of specified <tt>information sources</tt>.
+</p>
+</li>
+</ul></div>
+<div class="imageblock">
+<div class="content">
+<img src="media/images/proxy_phase1.png" alt="Phase 1" title="Phase 1"/>
+</div>
+</div>
+<div class="ilist"><ul>
+<li>
+<p>
+Phase 2: Once the server that has received the request sends back the
+  response, the reverse proxy deletes the unnecesary return HTTP
+  headers and sends the response  back to the requesting client.
+</p>
+</li>
+</ul></div>
+<div class="imageblock">
+<div class="content">
+<img src="media/images/proxy_phase2.png" alt="Phase 2" title="Phase 2"/>
+</div>
+</div>
+<div class="para"><p>To use the HTTP reverse proxy handler you simply have to specify
+several parameters. First define a series of
+<a href="config_info_sources.html">information sources</a>. Those will be the
+ones handling the requests in the end.</p></div>
 <div class="imageblock">
 <div class="content">
 <img src="media/images/admin_handler_proxy.png" alt="Reverse Proxy" title="Reverse Proxy"/>

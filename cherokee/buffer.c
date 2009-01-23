@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2008 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2009 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -18,9 +18,9 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
- * USA
- */
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
+ */ 
 
 #include "common-internal.h"
 #include "buffer.h"
@@ -474,7 +474,7 @@ cherokee_buffer_add_ullong16 (cherokee_buffer_t *buf, cullong_t ulNum)
 
 
 ret_t 
-cherokee_buffer_add_va_fixed (cherokee_buffer_t *buf, char *format, ...)
+cherokee_buffer_add_va_fixed (cherokee_buffer_t *buf, const char *format, ...)
 {
 	int len;
 	int size = buf->size - buf->len;	/* final '\0' is always available */
@@ -506,7 +506,7 @@ cherokee_buffer_add_va_fixed (cherokee_buffer_t *buf, char *format, ...)
 
 
 ret_t 
-cherokee_buffer_add_va_list (cherokee_buffer_t *buf, char *format, va_list args)
+cherokee_buffer_add_va_list (cherokee_buffer_t *buf, const char *format, va_list args)
 {
 	int len;
 	int estimation;
@@ -574,7 +574,7 @@ cherokee_buffer_add_va_list (cherokee_buffer_t *buf, char *format, va_list args)
 
 
 ret_t 
-cherokee_buffer_add_va (cherokee_buffer_t *buf, char *format, ...)
+cherokee_buffer_add_va (cherokee_buffer_t *buf, const char *format, ...)
 {
 	ret_t   ret;
 	va_list ap;
@@ -636,7 +636,7 @@ cherokee_buffer_add_char_n (cherokee_buffer_t *buf, char c, int num)
 
 
 ret_t
-cherokee_buffer_prepend (cherokee_buffer_t *buf, char *txt, size_t size)
+cherokee_buffer_prepend (cherokee_buffer_t *buf, const char *txt, size_t size)
 {
 	int free = buf->size - buf->len;
 
@@ -886,7 +886,7 @@ cherokee_buffer_case_cmp (cherokee_buffer_t *buf, char *txt, cuint_t txt_len)
 
 
 size_t
-cherokee_buffer_cnt_spn (cherokee_buffer_t *buf, cuint_t offset, char *str) 
+cherokee_buffer_cnt_spn (cherokee_buffer_t *buf, cuint_t offset, const char *str) 
 {
 	if (unlikely ((buf->buf == NULL) || (buf->len <= offset)))
 		return 0;
@@ -896,7 +896,7 @@ cherokee_buffer_cnt_spn (cherokee_buffer_t *buf, cuint_t offset, char *str)
 
 
 size_t 
-cherokee_buffer_cnt_cspn (cherokee_buffer_t *buf, cuint_t offset, char *str) 
+cherokee_buffer_cnt_cspn (cherokee_buffer_t *buf, cuint_t offset, const char *str) 
 {
 	if (unlikely ((buf->buf == NULL) || (buf->len <= offset)))
 		return 0;
@@ -1610,8 +1610,8 @@ cherokee_buffer_end_char (cherokee_buffer_t *buf)
 
 ret_t 
 cherokee_buffer_replace_string (cherokee_buffer_t *buf, 
-				char *substring,   int substring_length, 
-				char *replacement, int replacement_length)
+				const char *substring,   int substring_length, 
+				const char *replacement, int replacement_length)
 {
 	int         remaining_length;
 	int         result_length;

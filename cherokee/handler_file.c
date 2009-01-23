@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2008 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2009 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -18,9 +18,9 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
- * USA
- */
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
+ */ 
 
 #include "common-internal.h"
 
@@ -111,7 +111,7 @@ cherokee_handler_file_new  (cherokee_handler_t **hdl, cherokee_connection_t *cnt
 
 	/* Supported features
 	 */
-	HANDLER(n)->support     = hsupport_length | hsupport_range;
+	HANDLER(n)->support     = hsupport_range;
 
 	/* Init
 	 */
@@ -334,7 +334,7 @@ stat_local_directory (cherokee_handler_file_t   *fhdl,
 		case ret_ok:
 		case ret_ok_and_sent:
 			*info = &(*io_entry)->state;
-			return ret_ok;
+			return (*io_entry)->state_ret;
 
 		case ret_no_sys:
 			goto without;
@@ -414,9 +414,14 @@ cherokee_handler_file_custom_init (cherokee_handler_file_t *fhdl, cherokee_buffe
 	/* Look for the mime type
 	 */
 	if (srv->mime != NULL) {
-		ext = strrchr (conn->request.buf, '.');
-		if (ext != NULL) {
-			cherokee_mime_get_by_suffix (srv->mime, ext+1, &fhdl->mime);
+		ext = (conn->request.buf + conn->request.len) - 1;
+		while (ext > conn->request.buf) {
+			if (*ext == '.') {
+				ret = cherokee_mime_get_by_suffix (srv->mime, ext+1, &fhdl->mime);
+				if (ret == ret_ok)
+					break;
+			}
+			ext--;
 		}
 	}
 
@@ -522,7 +527,7 @@ cherokee_handler_file_custom_init (cherokee_handler_file_t *fhdl, cherokee_buffe
 		 */
 		conn->io_entry_ref = io_entry;
 
-		conn->mmaped     = io_entry->mmaped + conn->range_start;
+		conn->mmaped     = ((char *)io_entry->mmaped) + conn->range_start;
 		conn->mmaped_len = io_entry->mmaped_len -
 			(conn->range_start +
 			 (io_entry->mmaped_len - conn->range_end));
@@ -664,13 +669,17 @@ cherokee_handler_file_add_headers (cherokee_handler_file_t *fhdl,
 		return ret_ok;
 	}
 
-	/* We stat()'ed the file in the handler constructor
-	 */
-	content_length = conn->range_end - conn->range_start;		
-	if (unlikely (content_length < 0))
-		content_length = 0;
 
-	if (conn->encoder == NULL) {
+	if (cherokee_connection_should_include_length(conn)) {
+
+		HANDLER(fhdl)->support |= hsupport_length;
+
+		/* We stat()'ed the file in the handler constructor
+		*/
+		content_length = conn->range_end - conn->range_start;
+		if (unlikely (content_length < 0))
+			content_length = 0;
+
 		if (conn->error_code == http_partial_content) {
 			/*
 			 * "Content-Range: bytes " FMT_OFFSET "-" FMT_OFFSET
@@ -691,11 +700,6 @@ cherokee_handler_file_add_headers (cherokee_handler_file_t *fhdl,
 		cherokee_buffer_add_str     (buffer, "Content-Length: ");
 		cherokee_buffer_add_ullong10(buffer, (cullong_t) content_length);
 		cherokee_buffer_add_str     (buffer, CRLF);
-
-	} else {
-		/* Can't use Keep-alive w/o "Content-Length:", so disable it.
-		 */
-		conn->keepalive = 0;
 	}
 
 	return ret_ok;

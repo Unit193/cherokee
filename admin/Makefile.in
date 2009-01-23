@@ -269,6 +269,7 @@ adminpy_SCRIPTS = $(admin_scripts)
 @INSTALL_ADMIN_TRUE@ModuleMysql.py \
 @INSTALL_ADMIN_TRUE@ModulePam.py \
 @INSTALL_ADMIN_TRUE@ModuleRoundRobin.py \
+@INSTALL_ADMIN_TRUE@ModuleIpHash.py \
 @INSTALL_ADMIN_TRUE@ModuleDefault.py \
 @INSTALL_ADMIN_TRUE@ModuleRequest.py \
 @INSTALL_ADMIN_TRUE@ModuleDirectory.py \

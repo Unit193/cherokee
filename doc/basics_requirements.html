@@ -27,7 +27,7 @@ little as 133Mhz ARM processors. It could very well work on something
 smaller, but we haven't really had the chance to try it out.</p></div>
 <h3 id="sw">Software</h3><div style="clear:left"></div>
 <div class="para"><p>Cherokee has no dependencies besides a standard libc. Everything else
-is optional. Obviously anything beyond mere static content serving
+is optional. Obviously anything beyond serving mere static content
 must be available for Cherokee to correctly execute the task. This
 means you will need PHP if you want Cherokee to serve PHP dynamic
 content, MySQL or LDAP development libraries if you want built-in
@@ -62,9 +62,9 @@ Python: Cherokee has an administrative web interface written in
 <li>
 <p>
 If you are building Cherokee in a non-POSIX compliant platform such
-  as Windows, you will need a POSIX threads implementation. You can
-  disable the usage at compilation time and do without this, though,
-  but this has a dramatic impact in scalability.
+  as Windows, you will need a POSIX threads implementation. Albeit you can
+  disable the usage at compilation time and do without this, it will
+  have a dramatic impact in scalability.
 </p>
 </li>
 <li>

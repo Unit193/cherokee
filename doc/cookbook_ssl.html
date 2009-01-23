@@ -80,13 +80,24 @@ Certificate: contains your RSA public key and name, the name of the
 </p>
 </li>
 </ol></div>
-<div class="para"><div class="title">Does the startup between a non-SSL-aware and an SSL-aware web server</div><p>differ?</p></div>
-<div class="para"><p>Yes. Although in essence it is exactly the same, if you have a
+<div class="para"><div class="title">Does the startup between a non-SSL and an SSL-aware web server differ?</div><p>Yes. Although in essence it is exactly the same, if you have a
 passphrase on your SSL private key file, a startup dialog will asks
 you to enter it. This can be problematic if the web server needs to be
 started automatically. In this case, the <a href="#passphrase">passphrase</a>
 can be removed from your private key at the cost of erasing a security
 layer, wich brings additional security risks.</p></div>
+<div class="para"><div class="title">Does Cherokee offer any help for Certificate Generation?</div><p>Yes. A script is provided to assit you with Certificate Generation.</p></div>
+<div class="para"><p>Just locate the <tt>contrib</tt> subdirectory and type:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>make-cert.sh</tt></pre>
+</div></div>
+<div class="para"><p>And follow the instructions. It will generate the required files, but
+you will have to install them manually.</p></div>
+<div class="para"><p>It has been tested and has worked fine every time, but if you don't find
+the script or it doesn't work for you can always follow the rest of
+the procedure described in this recipe to manually generate the
+certificates.</p></div>
 <h3 id="locate">Locate CA.pl or CA.sh</h3><div style="clear:left"></div>
 <div class="ilist"><ul>
 <li>

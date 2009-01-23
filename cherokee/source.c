@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2008 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2009 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -18,9 +18,9 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
- * USA
- */
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
+ */ 
 
 #include "common-internal.h"
 #include "source.h"
@@ -68,6 +68,24 @@ cherokee_source_mrproper (cherokee_source_t *src)
 }
 
 
+static int
+is_ipv6 (cherokee_buffer_t *ip)
+{
+	cuint_t i;
+	cuint_t colons = 0;
+
+	for (i=0; i<ip->len; i++) {
+		if (ip->buf[i] == ':') {
+			colons += 1;
+			if (colons == 2)
+				return 1;
+		}
+	}
+
+	return 0;
+}
+
+
 ret_t 
 cherokee_source_connect (cherokee_source_t *src, cherokee_socket_t *sock)
 {
@@ -109,8 +127,14 @@ cherokee_source_connect (cherokee_source_t *src, cherokee_socket_t *sock)
 
 	/* INET socket
 	 */
-	ret = cherokee_socket_set_client (sock, AF_INET);
-	if (ret != ret_ok) return ret;
+	if (is_ipv6 (&src->host)) {
+		ret = cherokee_socket_set_client (sock, AF_INET6);
+	} else {
+		ret = cherokee_socket_set_client (sock, AF_INET);
+	}
+
+	if (ret != ret_ok)
+		return ret;
 	
 	/* Query the host */
 	ret = cherokee_resolv_cache_get_host (resolv, src->host.buf, sock);
@@ -224,3 +248,21 @@ cherokee_source_configure (cherokee_source_t *src, cherokee_config_node_t *conf)
 
 	return ret_ok;
 }
+
+
+ret_t
+cherokee_source_copy_name (cherokee_source_t *src,
+			   cherokee_buffer_t *buf)
+{
+	if (! cherokee_buffer_is_empty (&src->unix_socket)) {
+		cherokee_buffer_add_buffer (buf, &src->unix_socket);
+		return ret_ok;
+	}
+
+	cherokee_buffer_add_buffer  (buf, &src->host);
+	cherokee_buffer_add_char    (buf, ':');
+	cherokee_buffer_add_ulong10 (buf, src->port);
+
+	return ret_ok;
+}
+

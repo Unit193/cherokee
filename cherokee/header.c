@@ -4,9 +4,8 @@
  *
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
- *      Christopher Pruden <pruden@dyndns.org>
  *
- * Copyright (C) 2001-2008 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2009 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -19,9 +18,9 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
- * USA
- */
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
+ */ 
 
 
 #include "common-internal.h"
@@ -41,7 +40,9 @@
 #include <ctype.h>
 
 
-// #define HEADER_INTERNAL_DEBUG
+#if 0
+# define HEADER_INTERNAL_DEBUG
+#endif
 
 #ifdef HEADER_INTERNAL_DEBUG
 # define HEADER_INTERNAL_CHECK(h)       	                                                   \
@@ -516,7 +517,9 @@ cherokee_header_get_length (cherokee_header_t *hdr, cuint_t *len)
 
 
 ret_t 
-cherokee_header_get_unknown (cherokee_header_t *hdr, char *name, int name_len, char **header, cuint_t *header_len)
+cherokee_header_get_unknown (cherokee_header_t *hdr, 
+			     const char        *name,   cuint_t name_len,
+			     char             **header, cuint_t *header_len)
 {
 	int i;
 
@@ -538,7 +541,10 @@ cherokee_header_get_unknown (cherokee_header_t *hdr, char *name, int name_len, c
 
 
 ret_t
-cherokee_header_copy_unknown (cherokee_header_t *hdr, char *name, int name_len, cherokee_buffer_t *buf)
+cherokee_header_copy_unknown (cherokee_header_t *hdr,
+			      const char        *name,
+			      cuint_t            name_len,
+			      cherokee_buffer_t *buf)
 {
 	ret_t    ret;
 	char    *info;

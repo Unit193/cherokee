@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2008 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2009 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -18,9 +18,9 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
- * USA
- */
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
+ */ 
 
 #include "common-internal.h"
 #include "handler_admin.h"
@@ -66,8 +66,8 @@ cherokee_handler_admin_new (cherokee_handler_t **hdl, void *cnt, cherokee_module
 	HANDLER(n)->add_headers = (handler_func_add_headers_t) cherokee_handler_admin_add_headers; 
 
 	/* Supported features
-	 */
-	HANDLER(n)->support     = hsupport_length;
+	*/
+	HANDLER(n)->support     = hsupport_nothing;
 
 	cherokee_buffer_init (&n->reply);
 
@@ -196,6 +196,12 @@ cherokee_handler_admin_step (cherokee_handler_admin_t *ahdl, cherokee_buffer_t *
 ret_t 
 cherokee_handler_admin_add_headers (cherokee_handler_admin_t *ahdl, cherokee_buffer_t *buffer)
 {
-	cherokee_buffer_add_va (buffer, "Content-Length: %lu" CRLF, ahdl->reply.len);
+	cherokee_connection_t *conn = HANDLER_CONN(ahdl);
+
+	if (cherokee_connection_should_include_length(conn)) {
+		HANDLER(ahdl)->support = hsupport_length;
+		cherokee_buffer_add_va (buffer, "Content-Length: %lu" CRLF, ahdl->reply.len);
+	}
+
 	return ret_ok;
 }

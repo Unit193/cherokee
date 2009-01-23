@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2008 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2009 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -18,9 +18,9 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
- * USA
- */
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
+ */ 
 
 #if !defined (CHEROKEE_INSIDE_CHEROKEE_H) && !defined (CHEROKEE_COMPILATION)
 # error "Only <cherokee/cherokee.h> can be included directly, this file may disappear or change contents."
@@ -59,7 +59,7 @@ ret_t cherokee_fdpoll_best_new   (cherokee_fdpoll_t **fdp, int sys_limit, int li
 ret_t cherokee_fdpoll_free       (cherokee_fdpoll_t  *fdp);
 
 ret_t cherokee_fdpoll_get_method (cherokee_fdpoll_t *fdp, cherokee_poll_type_t *poll_type);
-ret_t cherokee_fdpoll_get_method_str (cherokee_fdpoll_t *fdp, char **str_method);
+ret_t cherokee_fdpoll_get_method_str (cherokee_fdpoll_t *fdp, const char **str_method);
 ret_t cherokee_fdpoll_str_to_method  (char *str_method, cherokee_poll_type_t *poll_method);
 
 ret_t cherokee_fdpoll_add        (cherokee_fdpoll_t *fdp, int fd, int rw);
