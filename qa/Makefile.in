@@ -379,7 +379,13 @@ run-tests.py \
 188-Method2.py \
 189-Redir9.py \
 190-RuleExists4.py \
-191-RuleExists5.py
+191-RuleExists5.py \
+192-RedirDocumentRoot.py \
+193-PHP-documentroot.py \
+194-PHP-zero-len-post.py \
+195-ServerAddr.py \
+196-Mime3.py \
+197-SOAPAction.py
 
 all: all-am
 

@@ -1,6 +1,6 @@
 ## Cherokee: Makefile.am  -*- makefile -*-
 
-SUBDIRS = m4 www icons themes qa doc . admin contrib cherokee cget windows
+SUBDIRS = m4 www icons themes qa doc . admin contrib cherokee cget windows dbslayer
 SUFFIXES = .sample.pre .sample .h.pre .h
 ACLOCAL_AMFLAGS = -I m4
 
@@ -63,7 +63,6 @@ debian_testing_chroot.sh
 
 
 EXTRA_DIST =          \
-TODO                  \
 http-cherokee.xml     \
 cherokee.spec         \
 cherokee.spec.in      \

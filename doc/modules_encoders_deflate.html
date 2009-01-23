@@ -21,15 +21,16 @@
 <a href="modules_encoders_gzip.html">gzip</a> encoder. The <tt>gzip</tt> compression
 is technically superior to <tt>deflate</tt>, thus this one is not set up as a
 default for new virtual servers.</p></div>
-<div class="para"><p>Just as with <tt>gzip</tt>, the encoding support is based on modules, so the configuration
-file must tell the server to load a module or it won't be supported.</p></div>
+<div class="para"><p>Just as with <tt>gzip</tt>, the encoding support is based on modules. The
+configuration file must tell the server to load a module or it won't
+be supported.</p></div>
 <div class="para"><p>Also, as with <tt>gzip</tt>, it is possible to specify which files can be
 encoded and which ones cannot.</p></div>
 <div class="para"><p>The only reason to offer <tt>deflate</tt> encoding is for the rare cases in
 which it is supported by clients that do not support <tt>gzip</tt>. No modern
-web browser will lack this, but since more than one encoder can be
-offered simultaneously by Cherokee you have the choice to add or not
-the support for <tt>deflate</tt>.</p></div>
+web browser will lack this. However more than one encoder can be
+offered simultaneously by Cherokee, so you have the choice to add or
+not the support for <tt>deflate</tt>.</p></div>
 </div>
 <div id="footer">
 <div id="footer-text">

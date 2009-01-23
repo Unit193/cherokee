@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2008 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2009 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -18,9 +18,9 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
- * USA
- */
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
+ */ 
 
 #include "common-internal.h"
 #include "source_interpreter.h"
@@ -197,7 +197,7 @@ cherokee_source_interpreter_spawn (cherokee_source_interpreter_t *src,
 {
 	int                re;
 	char             **envp;
-	char              *argv[]       = {"sh", "-c", NULL, NULL};
+	const char        *argv[]       = {"sh", "-c", NULL, NULL};
 	int                child        = -1;
 	char              *empty_envp[] = {NULL};
 	cherokee_buffer_t  tmp          = CHEROKEE_BUF_INIT;
@@ -254,7 +254,7 @@ cherokee_source_interpreter_spawn (cherokee_source_interpreter_t *src,
 	 */
 	cherokee_buffer_add_va (&tmp, "exec %s", src->interpreter.buf);
 
-	TRACE (ENTRIES, "Spawn \"/bin/sh %s\"\n", src->interpreter.buf);
+	TRACE (ENTRIES, "Spawn \"/bin/sh -c %s\"\n", src->interpreter.buf);
 
 #ifndef _WIN32
 	child = fork();
@@ -295,7 +295,7 @@ cherokee_source_interpreter_spawn (cherokee_source_interpreter_t *src,
 		}
 
 		argv[2] = (char *)tmp.buf;
-		re = execve ("/bin/sh", argv, envp);
+		re = execve ("/bin/sh", (char **)argv, envp);
 		if (re < 0) {
 			PRINT_ERROR ("ERROR: Could spawn %s\n", tmp.buf);
 			exit (1);

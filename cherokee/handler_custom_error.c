@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2008 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2009 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -18,9 +18,9 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
- * USA
- */
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
+ */ 
 
 #include "common-internal.h"
 #include "handler_custom_error.h"
@@ -45,6 +45,8 @@ cherokee_handler_custom_error_configure (cherokee_config_node_t   *conf,
 	cherokee_config_node_t                *subconf;
 	cherokee_handler_custom_error_props_t *props;
 	
+	UNUSED(srv);
+
 	if (*_props == NULL) {
 		CHEROKEE_NEW_STRUCT (n, handler_custom_error_props);
 		
@@ -80,6 +82,8 @@ cherokee_handler_custom_error_new  (cherokee_handler_t     **hdl,
 				    void                    *cnt,
 				    cherokee_module_props_t *props)
 {
+	UNUSED(hdl);
+
 	CONN(cnt)->error_code = PROP_CUSTOM_ERROR(props)->error_code;
 	return ret_error;
 }

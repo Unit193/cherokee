@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2008 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2009 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -18,9 +18,9 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
- * USA
- */
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
+ */ 
 
 #include "common-internal.h"
 #include "fdpoll-protected.h"
@@ -42,7 +42,7 @@ cherokee_fdpoll_get_fdlimits (cherokee_poll_type_t type, cuint_t *sys_fd_limit, 
 	 */
 	switch (type) {
 	case cherokee_poll_epoll:
-#if HAVE_EPOLL	
+#ifdef HAVE_EPOLL	
 		return fdpoll_epoll_get_fdlimits (sys_fd_limit, fd_limit);
 #else			
 		return ret_no_sys;
@@ -56,7 +56,7 @@ cherokee_fdpoll_get_fdlimits (cherokee_poll_type_t type, cuint_t *sys_fd_limit, 
 #endif	
 
 	case cherokee_poll_port:
-#if HAVE_PORT
+#ifdef HAVE_PORT
 		return fdpoll_port_get_fdlimits(sys_fd_limit, fd_limit);
 #else			
 		return ret_no_sys;
@@ -70,7 +70,7 @@ cherokee_fdpoll_get_fdlimits (cherokee_poll_type_t type, cuint_t *sys_fd_limit, 
 #endif	
 
 	case cherokee_poll_win32:
-#if HAVE_WIN32_SELECT
+#ifdef HAVE_WIN32_SELECT
 		return fdpoll_win32_get_fdlimits (sys_fd_limit, fd_limit);
 #else			
 		return ret_no_sys;
@@ -100,7 +100,7 @@ cherokee_fdpoll_new (cherokee_fdpoll_t **fdp, cherokee_poll_type_t type, int sys
 
 	switch (type) {
 	case cherokee_poll_epoll:
-#if HAVE_EPOLL	
+#ifdef HAVE_EPOLL	
 		return fdpoll_epoll_new (fdp, sys_fd_limit, fd_limit);
 #else			
 		return ret_no_sys;
@@ -114,7 +114,7 @@ cherokee_fdpoll_new (cherokee_fdpoll_t **fdp, cherokee_poll_type_t type, int sys
 #endif	
 
 	case cherokee_poll_port:
-#if HAVE_PORT
+#ifdef HAVE_PORT
 		return fdpoll_port_new (fdp, sys_fd_limit, fd_limit);
 #else			
 		return ret_no_sys;
@@ -128,7 +128,7 @@ cherokee_fdpoll_new (cherokee_fdpoll_t **fdp, cherokee_poll_type_t type, int sys
 #endif	
 
 	case cherokee_poll_win32:
-#if HAVE_WIN32_SELECT
+#ifdef HAVE_WIN32_SELECT
 		return fdpoll_win32_new (fdp, sys_fd_limit, fd_limit);
 #else			
 		return ret_no_sys;
@@ -186,7 +186,7 @@ cherokee_fdpoll_get_method (cherokee_fdpoll_t *fdp, cherokee_poll_type_t *type)
 
 
 ret_t 
-cherokee_fdpoll_get_method_str (cherokee_fdpoll_t *fdp, char **str)
+cherokee_fdpoll_get_method_str (cherokee_fdpoll_t *fdp, const char **str)
 {
 	switch (fdp->type) {
 	case cherokee_poll_epoll:
@@ -258,7 +258,7 @@ cherokee_fdpoll_str_to_method (char *str, cherokee_poll_type_t *poll_type)
 }
 
 
-ret_t
+int
 cherokee_fdpoll_is_empty (cherokee_fdpoll_t *fdp)
 {
 	return (fdp->npollfds <= 0);

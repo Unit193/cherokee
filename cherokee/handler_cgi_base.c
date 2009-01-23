@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2008 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2009 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -18,9 +18,9 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
- * USA
- */
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
+ */ 
 
 #include "common-internal.h"
 #include "handler_cgi_base.h"
@@ -52,15 +52,10 @@ cherokee_handler_cgi_base_init (cherokee_handler_cgi_base_t              *cgi,
 	 */
 	cherokee_handler_init_base (HANDLER(cgi), conn, props, info);
 
-	/* Supported features
-	 */
-	HANDLER(cgi)->support = hsupport_maybe_length;
-
 	/* Init to default values
 	 */
 	cgi->init_phase          = hcgi_phase_build_headers;
 	cgi->content_length      = 0;
-	cgi->content_length_set  = false;
 	cgi->got_eof             = false;
 	cgi->file_handler        = NULL;
 
@@ -80,7 +75,10 @@ cherokee_handler_cgi_base_init (cherokee_handler_cgi_base_t              *cgi,
 	/* Read the properties
 	 */
 	if (HANDLER_CGI_BASE_PROPS(cgi)->is_error_handler) {
-		HANDLER(cgi)->support |= hsupport_error;		
+		HANDLER(cgi)->support = hsupport_error;
+	}
+	else {
+		HANDLER(cgi)->support = hsupport_nothing;
 	}
 	
 	return ret_ok;
@@ -168,7 +166,7 @@ cherokee_handler_cgi_base_configure (cherokee_config_node_t *conf, cherokee_serv
 	props->change_user      = false;
 	props->check_file       = true;
 	props->allow_xsendfile  = false;
-	props->pass_req_headers = false;
+	props->pass_req_headers = true;
 
 	/* Parse the configuration tree
 	 */
@@ -255,15 +253,16 @@ add_win32_systemroot_env (cherokee_handler_cgi_base_t              *cgi,
 
 ret_t 
 cherokee_handler_cgi_base_build_basic_env (
-			cherokee_handler_cgi_base_t              *cgi, 
-			cherokee_handler_cgi_base_add_env_pair_t  set_env_pair,
-			cherokee_connection_t                    *conn,
-			cherokee_buffer_t                        *tmp)
+	cherokee_handler_cgi_base_t              *cgi, 
+	cherokee_handler_cgi_base_add_env_pair_t  set_env_pair,
+	cherokee_connection_t                    *conn,
+	cherokee_buffer_t                        *tmp)
 {
-	int      re;
-	ret_t    ret;
-	char    *p;
-	cuint_t  p_len;
+	int              re;
+	ret_t            ret;
+	char            *p;
+	cuint_t          p_len;
+	cherokee_bind_t *bind = CONN_BIND(HANDLER_CONN(cgi));
 
 	char remote_ip[CHE_INET_ADDRSTRLEN+1];
 	CHEROKEE_TEMP(temp, 32);
@@ -271,8 +270,8 @@ cherokee_handler_cgi_base_build_basic_env (
 	/* Set the basic variables
 	 */
 	set_env (cgi, "SERVER_SOFTWARE",
-		 HANDLER_SRV(cgi)->server_string.buf, 
-		 HANDLER_SRV(cgi)->server_string.len); 
+		 bind->server_string.buf,
+		 bind->server_string.len);
 
 	set_env (cgi, "SERVER_NAME",       "Cherokee", 8);
 	set_env (cgi, "SERVER_SIGNATURE",  "<address>Cherokee web server</address>", 38);
@@ -406,21 +405,37 @@ cherokee_handler_cgi_base_build_basic_env (
 	 */
 	if (conn->socket.is_tls) {
 		set_env (cgi, "HTTPS", "on", 2);
-		set_env (cgi, "SERVER_PORT", 
-			 HANDLER_SRV(cgi)->server_port_tls.buf,
-			 HANDLER_SRV(cgi)->server_port_tls.len);
 	} else  {
 		set_env (cgi, "HTTPS", "off", 3);
-		set_env (cgi, "SERVER_PORT", 
-			 HANDLER_SRV(cgi)->server_port.buf,
-			 HANDLER_SRV(cgi)->server_port.len);
 	}
+
+	set_env (cgi, "SERVER_PORT", 
+		 bind->server_port.buf,
+		 bind->server_port.len);
 
 	/* Set SERVER_ADDR
 	 */
-	set_env (cgi, "SERVER_ADDR", 
-		 HANDLER_SRV(cgi)->server_address.buf,
-		 HANDLER_SRV(cgi)->server_address.len);
+	if (cherokee_buffer_is_empty (&bind->ip)) {	
+		cherokee_sockaddr_t my_address;
+		cuint_t             my_address_len = 0;
+		char                ip_str[CHE_INET_ADDRSTRLEN+1];
+
+		my_address_len = sizeof(my_address);
+		getsockname (SOCKET_FD(&conn->socket), 
+			     (struct sockaddr *)&my_address,
+			     &my_address_len);
+
+		cherokee_ntop (my_address.sa_in.sin_family,
+			       (struct sockaddr *) &my_address,
+			       ip_str, sizeof(ip_str)-1);
+
+		set_env (cgi, "SERVER_ADDR",
+			 ip_str, strlen(ip_str));
+	} else {
+		set_env (cgi, "SERVER_ADDR",
+			 bind->server_address.buf,
+			 bind->server_address.len);
+	}
 	
 	/* HTTP variables
 	 */
@@ -515,10 +530,30 @@ cherokee_handler_cgi_base_build_basic_env (
 
 
 static ret_t
-foreach_header_add_unknown_variable (cherokee_buffer_t *header, cherokee_buffer_t *content, void *data)
+foreach_header_add_unknown_variable (cherokee_buffer_t *header,
+				     cherokee_buffer_t *content,
+				     void              *data)
 {
+	cuint_t                      i;
 	cherokee_handler_cgi_base_t *cgi = HDL_CGI_BASE(data);
-	
+
+	/* Transfor 'Headers' to HTTP_HEADERS
+	 * NOTE: header is a copy, it can be modified
+	 */
+	for (i=0; i<header->len; i++) {
+		if ((header->buf[i] >= 'a') &&
+		    (header->buf[i] <= 'z'))
+		{
+			header->buf[i] -= ('a' - 'A');
+		} else if (header->buf[i] == '-') {
+			header->buf[i] = '_';
+		}
+	}
+
+	cherokee_buffer_prepend_str (header, "HTTP_");
+
+	/* Add it to the *CGI environment
+	 */
 	cgi->add_env_pair (cgi, 
 			   header->buf, header->len, 
 			   content->buf, content->len);
@@ -529,11 +564,11 @@ foreach_header_add_unknown_variable (cherokee_buffer_t *header, cherokee_buffer_
 ret_t 
 cherokee_handler_cgi_base_build_envp (cherokee_handler_cgi_base_t *cgi, cherokee_connection_t *conn)
 {
-	ret_t                               ret;
-	cherokee_list_t                    *i;
-	cherokee_buffer_t                  *name;
-	cuint_t                             len      = 0;
-	char                               *p        = "";
+	ret_t                              ret;
+	cherokee_list_t                   *i;
+	cherokee_buffer_t                 *name;
+	cuint_t                            len       = 0;
+	const char                        *p         = "";
 	cherokee_buffer_t                  tmp       = CHEROKEE_BUF_INIT;
 	cherokee_handler_cgi_base_props_t *cgi_props = HANDLER_CGI_BASE_PROPS(cgi); 
 
@@ -774,6 +809,7 @@ xsendfile_add_headers (cherokee_handler_cgi_base_t *cgi, cherokee_buffer_t *buff
 	switch (ret) {
 	case ret_ok:
 	case ret_ok_and_sent:
+		ret = cached->state_ret;
 		break;
 	case ret_deny:
 		conn->error_code = http_access_denied;
@@ -796,13 +832,20 @@ xsendfile_add_headers (cherokee_handler_cgi_base_t *cgi, cherokee_buffer_t *buff
 
 	/* Add Content-Length
 	 */
-	cherokee_buffer_add_str (buffer, "Content-Length: ");
-	if (cached) {
-		cherokee_buffer_add_ullong10 (buffer, (cullong_t) cached->state.st_size);
-	} else {
-		cherokee_buffer_add_ullong10 (buffer, (cullong_t) l_stat.st_size);
+	if (cherokee_connection_should_include_length(conn)) {
+		HANDLER(cgi)->support |= hsupport_length;
+
+		cherokee_buffer_add_str (buffer, "Content-Length: ");
+
+		if (cached) {
+			cherokee_buffer_add_ullong10 (buffer, (cullong_t) cached->state.st_size);
+		} else {
+			cherokee_buffer_add_ullong10 (buffer, (cullong_t) l_stat.st_size);
+		}
+
+		cherokee_buffer_add_str (buffer, CRLF);
 	}
-	cherokee_buffer_add_str (buffer, CRLF);
+
 	ret = ret_ok;
 
 out:
@@ -869,12 +912,16 @@ parse_header (cherokee_handler_cgi_base_t *cgi, cherokee_buffer_t *buffer)
 		}
 
 		else if (strncasecmp ("Content-Length: ", begin, 16) == 0) {
-			char saved = *end;
 
-			*end = '\0';
-			cgi->content_length = strtoll (begin+16, (char **)NULL, 10);
-			cgi->content_length_set = true;
-			*end = saved;
+			if (cherokee_connection_should_include_length(conn)) {
+				char saved = *end;
+
+				*end = '\0';
+				cgi->content_length = strtoll (begin+16, (char **)NULL, 10);
+				*end = saved;
+
+				HANDLER(cgi)->support |= hsupport_length;
+			}
 
 			cherokee_buffer_remove_chunk (buffer, begin - buffer->buf, end2 - begin);
 			end2 = begin;
@@ -986,11 +1033,11 @@ cherokee_handler_cgi_base_add_headers (cherokee_handler_cgi_base_t *cgi, cheroke
 
 	/* Content-Length response header
 	 */
-	if (cgi->content_length_set) {
+	if (HANDLER_SUPPORTS (cgi, hsupport_length))
+	{
 		cherokee_buffer_add_str      (outbuf, "Content-Length: ");
 		cherokee_buffer_add_ullong10 (outbuf, (cullong_t) cgi->content_length);
-		cherokee_buffer_add_str      (outbuf, CRLF);		
-
+		cherokee_buffer_add_str      (outbuf, CRLF);
 	}
 
 	return ret_ok;

@@ -1,6 +1,12 @@
 import string
 import os.path
 
+def is_number (value):
+    try:
+        return str(int(value))
+    except:
+        raise ValueError, 'Malformed number'
+
 def is_boolean (value):
     if value.lower() in ['on', '1', 'true']:
         return '1'
@@ -13,6 +19,10 @@ def is_tcp_port (value):
         raise ValueError, 'Port must be a number'
     if tmp < 0 or tmp > 0xFFFF:
         raise ValueError, 'Out of the range (1 to 65535)'
+    return value
+
+def is_extension (value):
+    is_not_empty(value)
     return value
 
 def is_path (value):
@@ -42,6 +52,12 @@ def is_dir_formated (value):
         value = tmp
 
     return value
+
+def is_extension_list (value):
+    re = []
+    for p in value.split(','):
+        re.append(is_extension(p))
+    return reduce(lambda x,y: x+','+y, re)
 
 def is_path_list (value):
     re = []
@@ -86,11 +102,11 @@ def is_ipv6 (value):
         raise ValueError, 'Malformed IPv6'
     return value
     
-def is_local_dir_exists (value, cfg):
+def is_local_dir_exists (value, cfg, nochroot=False):
     value = is_path (value)
 
     chroot = cfg.get_val('server!chroot')
-    if chroot:
+    if chroot and not nochroot:
         path = os.path.normpath (chroot + os.path.sep + value)
     else:
         path = value
@@ -103,11 +119,11 @@ def is_local_dir_exists (value, cfg):
 
     return value
 
-def is_local_file_exists (value, cfg):
+def is_local_file_exists (value, cfg, nochroot=False):
     value = is_path (value)
 
     chroot = cfg.get_val('server!chroot')
-    if chroot:
+    if chroot and not nochroot:
         path = os.path.normpath (chroot + os.path.sep + value)
     else:
         path = value
@@ -120,11 +136,11 @@ def is_local_file_exists (value, cfg):
 
     return value
 
-def parent_is_dir (value, cfg):
+def parent_is_dir (value, cfg, nochroot=False):
     value = is_path (value)
 
     dirname, filename = os.path.split(value)
-    is_local_dir_exists (dirname, cfg)
+    is_local_dir_exists (dirname, cfg, nochroot)
 
     return value
 
@@ -201,6 +217,13 @@ def is_ip_or_netmask (value):
 
     return "%s/%s" % (ip, nm)
 
+def is_ip_list (value):
+    re = []
+    for entry in value.split(','):
+        e = entry.strip()
+        re.append(is_ip(e))
+    return ','.join(re)
+
 def is_ip_or_netmask_list (value):
     re = []
     for entry in value.split(','):
@@ -234,7 +257,7 @@ def is_url_or_path (value):
 
     raise ValueError, 'Not a URL, nor a path'
 
-def is_dev_null_or_local_dir_exists (value, cfg):
+def is_dev_null_or_local_dir_exists (value, cfg, nochroot=False):
     if value == '/dev/null':
         return value
-    return is_local_dir_exists (value, cfg)
+    return is_local_dir_exists (value, cfg, nochroot)

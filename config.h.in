@@ -402,6 +402,9 @@
 /* Define to 1 if you have the <sys/isa_defs.h> header file. */
 #undef HAVE_SYS_ISA_DEFS_H
 
+/* Define to 1 if you have the <sys/machine.h> header file. */
+#undef HAVE_SYS_MACHINE_H
+
 /* Define to 1 if you have the <sys/mman.h> header file. */
 #undef HAVE_SYS_MMAN_H
 

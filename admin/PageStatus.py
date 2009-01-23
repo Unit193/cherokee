@@ -35,6 +35,12 @@ SERVER_NOT_RUNNING = """
 </div>
 """
 
+BETA_TESTER_NOTICE = "<h3>Beta testing</h3>" +\
+                     "<p>Individuals like yourself who download and test the "  + \
+                     "latest developer snapshots of Cherokee Web Server help us " + \
+                     "to create the highest quality product.</p>" + \
+                     "<p>For that, we thank you.</p>"
+
 HELPS = [
     ('config_status', "Status")
 ]
@@ -47,6 +53,12 @@ class PageStatus (PageMenu, FormHelper):
     def _op_render (self):
         self.AddMacroContent ('title', 'Welcome to Cherokee Admin')
         self.AddMacroContent ('content', self.Read('status.template'))
+
+        if 'b' in VERSION:
+            notice = self.Dialog(BETA_TESTER_NOTICE)
+            self.AddMacroContent ('beta_tester', notice)
+        else:
+            self.AddMacroContent ('beta_tester', '')
 
         manager = cherokee_management_get (self._cfg)
         if manager.is_alive():
@@ -66,10 +78,10 @@ class PageStatus (PageMenu, FormHelper):
         txt = ""
 
         # Server
-        table = Table(2, title_left=1, header_style='width="200px"')
-        table += ("Server version", VERSION)
-        table += ("Server prefix",  PREFIX)
-        table += ("Server default path",  WWWROOT)
+        table = Table(2, title_left=1, header_style='width="130px"')
+        table += ("Version", VERSION)
+        table += ("Prefix",  PREFIX)
+        table += ("WWW Root",  WWWROOT)
 
         manager = cherokee_management_get (self._cfg)
         if manager.is_alive():
@@ -77,24 +89,24 @@ class PageStatus (PageMenu, FormHelper):
         else:
             current_pid = "Not running"
 
-        table += ("Server PID",  current_pid)
+        table += ("PID file",  current_pid)
 
         txt += '<h3>Server</h3>'
         txt += self.Indent(table)
 
         # Configuraion
-        table = Table(2, title_left=1, header_style='width="200px"')
+        table = Table(2, title_left=1, header_style='width="130px"')
 
         file = self._cfg.file
         if file:
             info = os.stat(file)
             file_status = time.ctime(info.st_ctime)
-            table += ("Configuration file", file)
-            table += ("Configuration modified", file_status)
+            table += ("Path", file)
+            table += ("Modified", file_status)
         else:
             table += ("Configuration file", 'Not Found')
 
-        txt += '<h3>Configuration</h3>'
+        txt += '<h3>Configuration File</h3>'
         txt += self.Indent(table)
 
         return txt

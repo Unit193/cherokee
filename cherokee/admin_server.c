@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2008 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2009 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -18,9 +18,9 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
- * USA
- */
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
+ */ 
 
 #include "common-internal.h"
 #include "admin_server.h"
@@ -36,11 +36,33 @@
 ret_t 
 cherokee_admin_server_reply_get_port (cherokee_handler_admin_t *ahdl, cherokee_buffer_t *question, cherokee_buffer_t *reply)
 {
+	cherokee_list_t   *i;
+	cuint_t            n   = 0;
 	cherokee_server_t *srv = HANDLER_SRV(ahdl);
 
 	UNUSED(question);
 
-	cherokee_buffer_add_va (reply, "server.port is %d\n", srv->port);
+	list_for_each (i, &srv->listeners) {
+		if (! BIND_IS_TLS(i))
+			n += 1;
+	}
+
+	cherokee_buffer_add_str (reply, "server.port is ");
+	list_for_each (i, &srv->listeners) {
+		if (! BIND_IS_TLS(i)) {
+			n -= 1;
+			if (! cherokee_buffer_is_empty (&BIND(i)->ip)) {
+				cherokee_buffer_add_buffer (reply, &BIND(i)->ip);
+				cherokee_buffer_add_char (reply, ':');
+			}
+			cherokee_buffer_add_ulong10 (reply, BIND(i)->port);
+			if (n > 0) {
+				cherokee_buffer_add_char (reply, ',');
+			}
+		}
+	}
+	cherokee_buffer_add_char (reply, '\n');
+
 	return ret_ok;
 }
 
@@ -63,11 +85,33 @@ cherokee_admin_server_reply_set_port (cherokee_handler_admin_t *ahdl, cherokee_b
 ret_t 
 cherokee_admin_server_reply_get_port_tls (cherokee_handler_admin_t *ahdl, cherokee_buffer_t *question, cherokee_buffer_t *reply)
 {
+	cherokee_list_t   *i;
+	cuint_t            n   = 0;
 	cherokee_server_t *srv = HANDLER_SRV(ahdl);
 
 	UNUSED(question);
 
-	cherokee_buffer_add_va (reply, "server.port_tls is %d\n", srv->port_tls);
+	list_for_each (i, &srv->listeners) {
+		if (BIND_IS_TLS(i))
+			n += 1;
+	}
+
+	cherokee_buffer_add_str (reply, "server.port_tls is ");
+	list_for_each (i, &srv->listeners) {
+		if (BIND_IS_TLS(i)) {
+			n -= 1;
+			if (! cherokee_buffer_is_empty (&BIND(i)->ip)) {
+				cherokee_buffer_add_buffer (reply, &BIND(i)->ip);
+				cherokee_buffer_add_char (reply, ':');
+			}
+			cherokee_buffer_add_ulong10 (reply, BIND(i)->port);
+			if (n > 0) {
+				cherokee_buffer_add_char (reply, ',');
+			}
+		}
+	}
+	cherokee_buffer_add_char (reply, '\n');
+
 	return ret_ok;
 }
 

@@ -3,10 +3,9 @@
 /* Cherokee
  *
  * Authors:
- *      Brian Rosner <brosner@gmail.com>
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2008 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2009 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -19,9 +18,9 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
- * USA
- */
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
+ */ 
 
 #include "common-internal.h"
 #include "validator_mysql.h"
@@ -59,6 +58,8 @@ cherokee_validator_mysql_configure (cherokee_config_node_t *conf, cherokee_serve
 {
 	cherokee_list_t			 *i;
 	cherokee_validator_mysql_props_t *props;
+
+	UNUSED(srv);
 	
 	if(*_props == NULL) {
 		CHEROKEE_NEW_STRUCT (n, validator_mysql_props);
@@ -325,8 +326,14 @@ error:
 
 
 ret_t 
-cherokee_validator_mysql_add_headers (cherokee_validator_mysql_t *mysql, cherokee_connection_t *conn, cherokee_buffer_t *buf)
+cherokee_validator_mysql_add_headers (cherokee_validator_mysql_t *mysql,
+				      cherokee_connection_t      *conn, 
+				      cherokee_buffer_t          *buf)
 {
+	UNUSED (mysql);
+	UNUSED (conn);
+	UNUSED (buf);
+
 	return ret_ok;
 }
 

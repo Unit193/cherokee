@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2008 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2009 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -18,9 +18,9 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
- * USA
- */
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
+ */ 
 
 #ifdef HAVE_CONFIG_H
 # include <config.h>
@@ -42,7 +42,7 @@
 
 #define APP_COPY_NOTICE \
 	"Written by Alvaro Lopez Ortega <alvaro@gnu.org>\n\n"                          \
-	"Copyright (C) 2001-2008 Alvaro Lopez Ortega.\n"                               \
+	"Copyright (C) 2001-2009 Alvaro Lopez Ortega.\n"                               \
 	"This is free software; see the source for copying conditions.  There is NO\n" \
 	"warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n"
 
@@ -71,13 +71,13 @@ static void
 print_help (void)
 {
 	printf (APP_NAME "\n"
-		"Usage: cherokee-tweak -c command -u url [options]\n\n"
+		"Usage: cherokee-tweak -c command -a url [options]\n\n"
 		"  -h,  --help                   Print this help\n"
 		"  -V,  --version                Print version and exit\n\n"
 		" Required:\n"
 		"  -c,  --command=STRING         Command: logrotate, trace, info\n"
 		"  -a,  --url=URL                URL to the admin interface\n\n"
-		" Secutiry:\n"
+		" Security:\n"
 		"  -u,  --user=STRING            User name\n"
 		"  -p,  --password=STRING        Password\n\n"
 		" Logrotate:\n"
@@ -91,13 +91,13 @@ static void
 print_usage (void)
 {
 	printf (APP_NAME "\n"
-		"Usage: cherokee-tweak -c command -u url [options]\n\n"
+		"Usage: cherokee-tweak -c command -a url [options]\n\n"
 		"Try `cherokee-tweak --help' for more options.\n");
 }
 
 static ret_t
-client_new (cherokee_admin_client_t **client_ret, 
-	    cherokee_fdpoll_t       **fdpoll_ret, 
+client_new (cherokee_admin_client_t **client_ret,
+	    cherokee_fdpoll_t       **fdpoll_ret,
 	    cherokee_buffer_t        *url,
 	    cherokee_buffer_t        *user,
 	    cherokee_buffer_t        *password,
@@ -111,11 +111,11 @@ client_new (cherokee_admin_client_t **client_ret,
 	cherokee_sys_fdlimit_get (&fds_num);
 
 	ret = cherokee_fdpoll_best_new (&fdpoll, fds_num, fds_num);
-	if (ret != ret_ok) 
+	if (ret != ret_ok)
 		return ret;
-	   
+
 	ret = cherokee_admin_client_new (&client);
-	if (ret != ret_ok) 
+	if (ret != ret_ok)
 		return ret;
 
 	ret = cherokee_admin_client_prepare (client, fdpoll, url, user, password, cryptor);
@@ -275,7 +275,7 @@ do_logrotate (cherokee_buffer_t  *url,
 }
 
 static void
-print_entry (const char *str, char *format, ...)
+print_entry (const char *str, const char *format, ...)
 {
 	cuint_t i;
 	va_list ap;
@@ -357,7 +357,7 @@ do_print_info (cherokee_buffer_t  *url,
 }
 
 static ret_t
-init_tls (char *plugin, cherokee_cryptor_t **cryptor)
+init_tls (const char *plugin, cherokee_cryptor_t **cryptor)
 {
 	ret_t                     ret;
 	cherokee_plugin_loader_t  loader;
@@ -456,7 +456,7 @@ main (int argc, char *argv[])
 		print_usage();
 		exit (EXIT_ERROR);
 	}
-	
+
 	/* Init crypt engine
 	 */
 	if (! strncmp (url.buf, "https://", 8))
@@ -478,7 +478,7 @@ main (int argc, char *argv[])
 
 	} else if (cherokee_buffer_cmp_str (&command, "logrotate") == 0) {
 		if (log.len <= 0) {
-			PRINT_MSG_S ("ERROR: Logrotate needs -u and -l options\n\n");
+			PRINT_MSG_S ("ERROR: Logrotate needs -a and -l options\n\n");
 			print_usage();
 			exit (EXIT_ERROR);
 		}
@@ -490,7 +490,7 @@ main (int argc, char *argv[])
 	} else {
 		PRINT_MSG_S ("ERROR: Command not recognized\n\n");
 		print_help();
-		exit (EXIT_ERROR);		
+		exit (EXIT_ERROR);
 	}
 
 	cherokee_mrproper();

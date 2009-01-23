@@ -107,6 +107,17 @@ cellspacing="0" cellpadding="4">
     Use the non-standard X-Sendfile header.
     </td>
   </tr>
+  <tr>
+    <td align="left">
+    Pass Request Headers  
+    </td>
+    <td align="left">
+    Boolean 
+    </td>
+    <td align="left">
+    Forward all the headers to the CGI as HTTP_*
+    </td>
+  </tr>
 </tbody>
 </table>
 </div>
@@ -129,6 +140,17 @@ CGI programs are located.</p></div>
 <img src="media/images/admin_handler_cgi.png" alt="CGI" title="CGI"/>
 </div>
 </div>
+<div class="para"><div class="title">Script Alias</div><p>Another example could be the case where you wanted your default
+requests to be managed by a specific script.</p></div>
+<div class="para"><p>A real life example could be running
+<a href="http://trac.edgewall.org">Trac</a> as a CGI script. In that case you
+would want to map a URL to the trac.cgi script.</p></div>
+<div class="para"><p>For this you only need to set up the Script Alias option. Assuming you
+are using a <tt>Directory</tt>-type rule for the path <tt>/trac</tt> managed by the
+<tt>CGI</tt> handler, you could set <tt>/usr/share/trac/cgi-bin/trac.cgi</tt> as
+Script Alias.</p></div>
+<div class="para"><p>After this, every request that matched the <tt>/trac</tt> path would be
+managed by the <tt>trac.cgi</tt> script.</p></div>
 </div>
 <div id="footer">
 <div id="footer-text">

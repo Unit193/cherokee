@@ -5,7 +5,7 @@
 # Authors:
 #      Alvaro Lopez Ortega <alvaro@alobbs.com>
 #
-# Copyright (C) 2001-2008 Alvaro Lopez Ortega
+# Copyright (C) 2001-2009 Alvaro Lopez Ortega
 # This file is distributed under the GPL license.
 
 import os
@@ -163,7 +163,7 @@ server!chunked_encoding = 1
 server!keepalive_max_requests = 500
 server!log_flush_lapse = 0
 server!panic_action = /usr/bin/cherokee-panic
-server!port = %(client_port)s
+server!bind!1!port = %(client_port)s
 
 vserver!10!nick = default
 vserver!10!document_root = /dev/null
@@ -194,10 +194,12 @@ CONF_BASE = """
 #
 # Cherokee QA tests
 #
-server!port = %(PORT)d
-server!port_tls = %(PORT_TLS)d
+server!bind!1!port = %(PORT)d
+server!bind!1!interface = %(listen)s
+server!bind!2!port = %(PORT_TLS)d
+server!bind!2!tls = 1
+server!bind!2!interface = %(listen)s
 server!keepalive = 1 
-server!listen = %(listen)s
 server!panic_action = %(panic)s
 server!pid_file = %(pid)s
 server!module_dir = %(CHEROKEE_MODS)s

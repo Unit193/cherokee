@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2008 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2009 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -18,9 +18,9 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
- * USA
- */
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
+ */ 
 
 #ifndef CHEROKEE_CONNECTION_PROTECTED_H
 #define CHEROKEE_CONNECTION_PROTECTED_H
@@ -49,6 +49,10 @@
 # include <arpa/inet.h>
 #endif
 
+#ifdef HAVE_SYS_UIO_H
+# include <sys/uio.h>
+#endif
+
 #include "http.h"
 #include "list.h"
 #include "avl.h"
@@ -61,6 +65,7 @@
 #include "post.h"
 #include "header-protected.h"
 #include "regex.h"
+#include "bind.h"
 
 typedef enum {
 	phase_nothing,
@@ -97,6 +102,7 @@ struct cherokee_connection {
 	void                         *server;
 	void                         *vserver;
 	void                         *thread;
+	cherokee_bind_t              *bind;
 
 	/* ID
 	 */
@@ -213,6 +219,7 @@ struct cherokee_connection {
 #define CONN_SOCK(c)   (SOCKET(CONN(c)->socket))
 #define CONN_VSRV(c)   (VSERVER(CONN(c)->vserver))
 #define CONN_THREAD(c) (THREAD(CONN(c)->thread))
+#define CONN_BIND(c)   (BIND(CONN(c)->bind))
 
 #define TRACE_CONN(c)  TRACE("conn", "%s", cherokee_connection_print(c));
 
@@ -246,6 +253,8 @@ ret_t cherokee_connection_check_ip_validation    (cherokee_connection_t *conn, c
 ret_t cherokee_connection_check_only_secure      (cherokee_connection_t *conn, cherokee_config_entry_t *config_entry);
 ret_t cherokee_connection_check_http_method      (cherokee_connection_t *conn, cherokee_config_entry_t *config_entry);
 void  cherokee_connection_set_keepalive          (cherokee_connection_t *conn);
+void  cherokee_connection_set_chunked_encoding   (cherokee_connection_t *conn);
+cherokee_boolean_t cherokee_connection_should_include_length(cherokee_connection_t *conn);
 
 /* Iteration
  */

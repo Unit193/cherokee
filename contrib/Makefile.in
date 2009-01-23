@@ -216,7 +216,16 @@ bin2buffer.py \
 07to08.py \
 08to09.py \
 09to010.py \
-tracelor.py
+011to098.py \
+tracelor.py \
+make-cert.sh
+
+CLEANFILES = \
+server.pem \
+rand.dat \
+cakey.key \
+cakey.csr \
+cakey.pem
 
 all: all-am
 
@@ -416,6 +425,7 @@ install-strip:
 mostlyclean-generic:
 
 clean-generic:
+	-test -z "$(CLEANFILES)" || rm -f $(CLEANFILES)
 
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)

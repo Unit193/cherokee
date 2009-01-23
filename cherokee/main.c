@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2008 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2009 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -18,9 +18,9 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
- * USA
- */
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
+ */ 
 
 #include "common-internal.h"
 #include <signal.h>
@@ -54,7 +54,7 @@ figure_worker_path (const char *arg0)
 	char        tmp[512];
 	int         len, re, i;
 	const char *d;
-	char       *unix_paths[] = {"/proc/%d/exe",        /* Linux   */
+	const char *unix_paths[] = {"/proc/%d/exe",        /* Linux   */
 				    "/proc/%d/path/a.out", /* Solaris */
 				    "/proc/%d/file",       /* BSD     */
 				    NULL};
@@ -354,7 +354,7 @@ may_daemonize (int argc, char *argv[])
 		    (strcmp(argv[i], "--detach") == 0))
 		{
 			daemonize = 1;
-			argv[i]   = "";
+			argv[i]   = (char *)"";
 		}
 	}
 

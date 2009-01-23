@@ -127,6 +127,32 @@ about your recently created project.</p></div>
 <img src="media/images/cookbook_django.png" alt="Django example" title="Django example"/>
 </div>
 </div>
+<div class="sidebarblock">
+<div class="sidebar-content">
+<div class="para"><p>Should you wish to deploy your Django application directly instead of
+through <tt>manage.py</tt> this could be easily achieved. Just remember to
+daemonize the script used to launch the interpreter in the relevant
+<tt>information source</tt>.</p></div>
+<div class="para"><p>This is done adding the appropriate parameter to the <tt>runfastcgi</tt>
+method of <tt>django.core.servers.fastcgi</tt> in your script.</p></div>
+<div class="listingblock">
+<div class="title">Example: Using a unix socket:</div>
+<div class="content">
+<pre><tt>from django.core.servers.fastcgi import runfastcgi
+
+runfastcgi(method="threaded", daemonize="true", maxrequests=5,
+           protocol="scgi", socket="/tmp/cherokee-django.socket",
+           pidfile="/tmp/cherokee-django.pid")</tt></pre>
+</div></div>
+<div class="listingblock">
+<div class="title">Example: Using a host:port configuration:</div>
+<div class="content">
+<pre><tt>from django.core.servers.fastcgi import runfastcgi
+
+runfastcgi(method="threaded", daemonize="true", maxrequests=5,
+           protocol="scgi", host="127.0.0.1", port=3033)</tt></pre>
+</div></div>
+</div></div>
 </div>
 <div id="footer">
 <div id="footer-text">

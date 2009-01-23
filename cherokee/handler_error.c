@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2008 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2009 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -18,9 +18,9 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
- * USA
- */
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
+ */ 
 
 #include "common-internal.h"
 #include "handler_error.h"
@@ -52,11 +52,14 @@ cherokee_handler_error_new (cherokee_handler_t **hdl, cherokee_connection_t *cnt
 {
 	ret_t ret;
 	CHEROKEE_NEW_STRUCT (n, handler_error);
-	   
+
 	/* Init the base class object
 	 */
 	cherokee_handler_init_base (HANDLER(n), cnt, HANDLER_PROPS(props), PLUGIN_INFO_HANDLER_PTR(error));
-	HANDLER(n)->support = hsupport_error | hsupport_length;
+
+	/* Supported features
+	*/
+	HANDLER(n)->support = hsupport_error;
 
 	MODULE(n)->init         = (handler_func_init_t) cherokee_handler_error_init;
 	MODULE(n)->free         = (module_func_free_t) cherokee_handler_error_free;
@@ -111,7 +114,10 @@ build_hardcoded_response_page (cherokee_connection_t *conn, cherokee_buffer_t *b
 	switch (conn->error_code) {
 	case http_not_found:
 		cherokee_buffer_add_str (buffer, "The requested URL ");
-		if (! cherokee_buffer_is_empty (&conn->request)) {
+		if (! cherokee_buffer_is_empty (&conn->request_original)) {
+			cherokee_buffer_add_escape_html (buffer, &conn->request_original);
+		}
+		else if (! cherokee_buffer_is_empty (&conn->request)) {
 			if (cherokee_connection_use_webdir (conn)) {
 				cherokee_buffer_add_buffer (buffer, &conn->web_directory);
 			}
@@ -170,6 +176,10 @@ build_hardcoded_response_page (cherokee_connection_t *conn, cherokee_buffer_t *b
 			"using https://");
 		break;
 
+	case http_unset:
+		SHOULDNT_HAPPEN;
+		break;
+
 	default:
 		break;
 	}
@@ -177,12 +187,7 @@ build_hardcoded_response_page (cherokee_connection_t *conn, cherokee_buffer_t *b
 	/* Add page footer
 	 */
 	cherokee_buffer_add_str (buffer, CRLF "<p><hr>" CRLF);
-
-	if (conn->socket.is_tls == non_TLS)
-		cherokee_buffer_add_buffer (buffer, &CONN_SRV(conn)->server_string_w_port);
-	else 
-		cherokee_buffer_add_buffer (buffer, &CONN_SRV(conn)->server_string_w_port_tls);
-
+	cherokee_buffer_add_buffer (buffer, &CONN_BIND(conn)->server_string_w_port);
 	cherokee_buffer_add_str (buffer, CRLF "</body>" CRLF "</html>" CRLF);
 
 	return ret_ok;
@@ -236,31 +241,36 @@ cherokee_handler_error_add_headers (cherokee_handler_error_t *hdl, cherokee_buff
 	 * 304 responses should only include the
 	 * Last-Modified, ETag, Expires and Cache-Control headers.
 	 */
-	if (!http_code_with_body (conn->error_code))
+	if (!http_code_with_body (conn->error_code)) {
 		return ret_ok;
+	}
 
-	if (conn->error_code == http_range_not_satisfiable) {
-		/* The handler that attended the request has put the content 
-		 * length in conn->range_end in order to allow it to send the
-		 * right length to the client.
-		 *
-		 * "Content-Range: bytes *" "/" FMT_OFFSET CRLF
-		 */
-		cherokee_buffer_add_str     (buffer, "Content-Range: bytes */");
-		cherokee_buffer_add_ullong10(buffer, (cullong_t)conn->range_end);
+	if (cherokee_connection_should_include_length(conn)) {
+
+		HANDLER(hdl)->support |= hsupport_length;
+
+		if (conn->error_code == http_range_not_satisfiable) {
+			/* The handler that attended the request has put the content 
+			* length in conn->range_end in order to allow it to send the
+			* right length to the client.
+			*
+			* "Content-Range: bytes *" "/" FMT_OFFSET CRLF
+			*/
+			cherokee_buffer_add_str     (buffer, "Content-Range: bytes */");
+			cherokee_buffer_add_ullong10(buffer, (cullong_t)conn->range_end);
+			cherokee_buffer_add_str     (buffer, CRLF);
+		}
+
+		cherokee_buffer_add_str     (buffer, "Content-Length: ");
+		cherokee_buffer_add_ulong10 (buffer, (culong_t) hdl->content.len);
 		cherokee_buffer_add_str     (buffer, CRLF);
 	}
 
 	/* Usual headers
 	 */
-	cherokee_buffer_add_str     (buffer, "Content-Type: text/html"CRLF);
-
-	cherokee_buffer_add_str     (buffer, "Content-Length: ");
-	cherokee_buffer_add_ulong10 (buffer, (culong_t) hdl->content.len);
-	cherokee_buffer_add_str     (buffer, CRLF);
-
-	cherokee_buffer_add_str     (buffer, "Cache-Control: no-cache"CRLF);
-	cherokee_buffer_add_str     (buffer, "Pragma: no-cache"CRLF);		
+	cherokee_buffer_add_str (buffer, "Content-Type: text/html"CRLF);
+	cherokee_buffer_add_str (buffer, "Cache-Control: no-cache"CRLF);
+	cherokee_buffer_add_str (buffer, "Pragma: no-cache"CRLF);
 
 	return ret_ok;
 }

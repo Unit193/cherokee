@@ -81,28 +81,38 @@ This example shows the practical effect of <strong>pathinfo</strong>
 <div class="listingblock">
 <div class="content">
 <pre><tt>    $ echo "This is a test" &gt; /tmp/1/2/test
-    $ curl http://localhost:9999/1/2/test
+    $ curl http://localhost/1/2/test
     This is a test
-    $ curl http://localhost:9999/1/2/test/this/is/pathinfo
+    $ curl http://localhost/1/2/test/this/is/pathinfo
     This is a test
-    $ curl http://localhost:9999/1/2/test.no -D - | grep HTTP
+    $ curl -D - http://localhost/1/2/test.no | grep HTTP
     HTTP/1.1 404 Not Found</tt></pre>
 </div></div>
 </dd>
 </dl></div>
 <h3 id="examples">Examples</h3><div style="clear:left"></div>
-<div class="para"><p>This configuration</p></div>
+<div class="para"><p>Here is a basic example.</p></div>
 <div class="imageblock">
 <div class="content">
 <img src="media/images/admin_handler_dirlist.png" alt="Dirlist configuration" title="Dirlist configuration"/>
 </div>
+<div class="image-title">Figure: Configuration</div>
 </div>
-<div class="para"><p>will return something like</p></div>
 <div class="imageblock">
 <div class="content">
 <img src="media/images/admin_handler_dirlist_ex.png" alt="Dirlist example" title="Dirlist example"/>
 </div>
+<div class="image-title">Figure: Actual output</div>
 </div>
+<h3 id="indexes">Indexes</h3><div style="clear:left"></div>
+<div class="para"><p>This is the behavior inherited from the
+<a href="modules_handlers_dirlist.html">dirlist/Only listing</a> handler.</p></div>
+<div class="para"><p>Simply enable the desired file attributes to be shown under <tt>Listing</tt>,
+and choose the HTML template to use (<tt>default</tt> -with the Cherokee logo-,
+<tt>plain</tt> -a fixed width theme- and <tt>firefox3</tt>).</p></div>
+<div class="para"><p>You can also include a <tt>Notice file</tt> to show its contents on top of
+every automatically generated list.</p></div>
+<div class="para"><p>Of course, the lists are sortable by any of the displayed attributes.</p></div>
 </div>
 <div id="footer">
 <div id="footer-text">

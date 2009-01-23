@@ -29,6 +29,7 @@
  void PLUGIN_INIT_NAME(htdigest) (cherokee_plugin_loader_t *loader); 
  void PLUGIN_INIT_NAME(authlist) (cherokee_plugin_loader_t *loader); 
  void PLUGIN_INIT_NAME(round_robin) (cherokee_plugin_loader_t *loader); 
+ void PLUGIN_INIT_NAME(ip_hash) (cherokee_plugin_loader_t *loader); 
  void PLUGIN_INIT_NAME(directory) (cherokee_plugin_loader_t *loader); 
  void PLUGIN_INIT_NAME(extensions) (cherokee_plugin_loader_t *loader); 
  void PLUGIN_INIT_NAME(request) (cherokee_plugin_loader_t *loader); 
@@ -71,6 +72,7 @@
  add_static_entry (loader, "htdigest", PLUGIN_INFO_PTR(htdigest)); 
  add_static_entry (loader, "authlist", PLUGIN_INFO_PTR(authlist)); 
  add_static_entry (loader, "round_robin", PLUGIN_INFO_PTR(round_robin)); 
+ add_static_entry (loader, "ip_hash", PLUGIN_INFO_PTR(ip_hash)); 
  add_static_entry (loader, "directory", PLUGIN_INFO_PTR(directory)); 
  add_static_entry (loader, "extensions", PLUGIN_INFO_PTR(extensions)); 
  add_static_entry (loader, "request", PLUGIN_INFO_PTR(request)); 
@@ -113,6 +115,7 @@
  PLUGIN_INIT_NAME(htdigest)(loader); 
  PLUGIN_INIT_NAME(authlist)(loader); 
  PLUGIN_INIT_NAME(round_robin)(loader); 
+ PLUGIN_INIT_NAME(ip_hash)(loader); 
  PLUGIN_INIT_NAME(directory)(loader); 
  PLUGIN_INIT_NAME(extensions)(loader); 
  PLUGIN_INIT_NAME(request)(loader); 

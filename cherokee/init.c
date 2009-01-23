@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2008 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2009 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -18,9 +18,9 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
- * USA
- */
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
+ */ 
 
 #include "common-internal.h"
 #include "init.h"
@@ -30,10 +30,14 @@
 #include "util.h"
 #include "bogotime.h"
 
+#ifdef HAVE_PTHREAD_H
+# include "threading.h"
+#endif
 
-cuint_t cherokee_cacheline_size;
-cint_t  cherokee_cpu_number;
-cuint_t cherokee_fdlimit;
+cuint_t           cherokee_cacheline_size;
+cint_t            cherokee_cpu_number;
+cuint_t           cherokee_fdlimit;
+cherokee_buffer_t cherokee_tmp_dir;
 
 static cherokee_boolean_t _cherokee_init = false;
 
@@ -57,6 +61,11 @@ cherokee_init (void)
 	 */
 	cherokee_bogotime_init();
 
+	/* Init threading stuff
+	 */
+#ifdef HAVE_PTHREAD_H
+	cherokee_threading_init();
+#endif
 	/* Get the CPU number
 	 */
 	dcc_ncpus (&cherokee_cpu_number);
@@ -77,6 +86,11 @@ cherokee_init (void)
 		return ret;
 	}
 
+	/* Temp directory
+	 */
+	cherokee_buffer_init (&cherokee_tmp_dir);
+	cherokee_tmp_dir_copy (&cherokee_tmp_dir);
+
 	_cherokee_init = true;
 	return ret_ok;
 }
@@ -84,6 +98,10 @@ cherokee_init (void)
 ret_t
 cherokee_mrproper (void)
 {
+	cherokee_buffer_mrproper (&cherokee_tmp_dir);
+
 	cherokee_bogotime_free();
+	cherokee_threading_free();
+
 	return ret_ok;
 }

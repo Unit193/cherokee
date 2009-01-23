@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2008 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2009 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -18,9 +18,9 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
- * USA
- */
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
+ */ 
 
 #if !defined (CHEROKEE_INSIDE_CHEROKEE_H) && !defined (CHEROKEE_COMPILATION)
 # error "Only <cherokee/cherokee.h> can be included directly, this file may disappear or change contents."
@@ -96,10 +96,13 @@ ret_t cherokee_header_get_request_w_args  (cherokee_header_t *hdr, char **req, i
 
 ret_t cherokee_header_has_known           (cherokee_header_t *hdr, cherokee_common_header_t header);
 ret_t cherokee_header_get_known           (cherokee_header_t *hdr, cherokee_common_header_t header, char **info, cuint_t *info_len);
-ret_t cherokee_header_get_unknown         (cherokee_header_t *hdr, char *name, int name_len, char **header, cuint_t *header_len);
+ret_t cherokee_header_get_unknown         (cherokee_header_t *hdr, const char *name, cuint_t name_len, char **header, cuint_t *header_len);
 
 ret_t cherokee_header_copy_known          (cherokee_header_t *hdr, cherokee_common_header_t header, cherokee_buffer_t *buf);
-ret_t cherokee_header_copy_unknown        (cherokee_header_t *hdr, char *name, int name_len, cherokee_buffer_t *buf);
+ret_t cherokee_header_copy_unknown        (cherokee_header_t *hdr, const char *name, cuint_t name_len, cherokee_buffer_t *buf);
+
+ret_t cherokee_header_copy_method         (cherokee_header_t *hdr, cherokee_buffer_t *buf);
+ret_t cherokee_header_copy_version        (cherokee_header_t *hdr, cherokee_buffer_t *buf);
 
 
 CHEROKEE_END_DECLS

@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2008 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2009 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -18,9 +18,9 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
- * USA
- */
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
+ */ 
 
 #include "common-internal.h"
 #include "virtual_server.h"
@@ -77,7 +77,8 @@ cherokee_virtual_server_new (cherokee_virtual_server_t **vserver, void *server)
 	 */
 	cherokee_buffer_init (&n->server_cert);
 	cherokee_buffer_init (&n->server_key);
-	cherokee_buffer_init (&n->ca_cert);
+	cherokee_buffer_init (&n->certs_ca);
+	cherokee_buffer_init (&n->certs_client);
 
 	ret = cherokee_buffer_init (&n->root);
 	if (unlikely(ret < ret_ok))
@@ -105,7 +106,8 @@ cherokee_virtual_server_free (cherokee_virtual_server_t *vserver)
 {
 	cherokee_buffer_mrproper (&vserver->server_cert);
 	cherokee_buffer_mrproper (&vserver->server_key);
-	cherokee_buffer_mrproper (&vserver->ca_cert);
+	cherokee_buffer_mrproper (&vserver->certs_ca);
+	cherokee_buffer_mrproper (&vserver->certs_client);
 
 	if (vserver->error_handler != NULL) {
 		cherokee_config_entry_free (vserver->error_handler);
@@ -132,7 +134,7 @@ cherokee_virtual_server_free (cherokee_virtual_server_t *vserver)
 		vserver->logger = NULL;
 	}
 	if (vserver->logger_props != NULL) {
-		cherokee_avl_free (vserver->logger_props, NULL); // FIXIT
+		cherokee_avl_free (vserver->logger_props, NULL); /* FIXIT */
 		vserver->logger_props = NULL;
 	}
 
@@ -159,8 +161,6 @@ cherokee_virtual_server_has_tls (cherokee_virtual_server_t *vserver)
 		return ret_ok;
 	if (! cherokee_buffer_is_empty (&vserver->server_key))
 		return ret_ok;
-	if (! cherokee_buffer_is_empty (&vserver->ca_cert))
-		return ret_ok;
 
 	return ret_not_found;
 }
@@ -174,9 +174,8 @@ cherokee_virtual_server_init_tls (cherokee_virtual_server_t *vsrv)
 
 	/* Check if all of them are empty
 	 */
-	if (cherokee_buffer_is_empty (&vsrv->ca_cert)    &&
-	    cherokee_buffer_is_empty (&vsrv->server_key) &&
-	    cherokee_buffer_is_empty (&vsrv->server_cert))
+	if (cherokee_buffer_is_empty (&vsrv->server_cert) &&
+	    cherokee_buffer_is_empty (&vsrv->server_key))
 		return ret_not_found;
 
 	/* Check one or more are empty
@@ -595,9 +594,9 @@ configure_rules (cherokee_config_node_t    *config,
 		 cherokee_rule_list_t      *rule_list)
 {
 	ret_t                   ret;
-	cherokee_list_t        *i; //, *j;
+	cherokee_list_t        *i; 
 	cherokee_config_node_t *subconf;
-//	cherokee_boolean_t      did_default = false;
+/*	cherokee_boolean_t      did_default = false; */
 
 	cherokee_config_node_foreach (i, config) {
 		subconf = CONFIG_NODE(i);
@@ -610,7 +609,7 @@ configure_rules (cherokee_config_node_t    *config,
 	 */
 	cherokee_rule_list_sort (rule_list);
 
-// TODO:
+/* TODO: */
 /* 	if (! did_default) { */
 /* 		PRINT_ERROR ("ERROR: vserver '%s': A default rule is needed\n", vserver->name.buf); */
 /* 		return ret_error; */
@@ -628,9 +627,6 @@ configure_user_dir (cherokee_config_node_t *config, cherokee_virtual_server_t *v
 	/* Set the user_dir directory. It must end by slash.
 	 */
 	cherokee_buffer_add_buffer (&vserver->userdir, &config->val);
-
-	if (cherokee_buffer_end_char (&vserver->userdir) != '/')
-		cherokee_buffer_add_str (&vserver->userdir, "/");
 
 	/* Configure the rest of the entries
 	 */
@@ -705,8 +701,12 @@ configure_virtual_server_property (cherokee_config_node_t *conf, void *data)
 		cherokee_buffer_add_buffer (&vserver->server_key, &conf->val);
 
 	} else if (equal_buf_str (&conf->key, "ssl_ca_list_file")) {
-		cherokee_buffer_init (&vserver->ca_cert);
-		cherokee_buffer_add_buffer (&vserver->ca_cert, &conf->val);
+		cherokee_buffer_init (&vserver->certs_ca);
+		cherokee_buffer_add_buffer (&vserver->certs_ca, &conf->val);
+
+	} else if (equal_buf_str (&conf->key, "ssl_client_list_file")) {
+		cherokee_buffer_init (&vserver->certs_client);
+		cherokee_buffer_add_buffer (&vserver->certs_client, &conf->val);
 
 	} else {
 		PRINT_MSG ("ERROR: Virtual Server: Unknown key '%s'\n", conf->key.buf);

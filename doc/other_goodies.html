@@ -93,11 +93,8 @@ by using SSL/TLS. The user entered host part of the URI must match the
 Common Name (CN) provided by the certificate. Since virtual hosts are in
 use, the CN of the first available certificate may or may not match
 the one specified in the early stages of TLS negotiation.</p></div>
-<div class="para"><p>However, nothing is forever.. and that applies to SSL/TLS connections
-as well. Cherokee elegantly respins the SSL layer once it knows the
-virtual server, and the magic occurs: SSL supporting several
-certificates on the same IP address and port.</p></div>
-<div class="para"><p>Besides this there is a cleaner, more standard aproach called
+<div class="para"><p>Cherokee supports the clean and standard method of dealing with this
+issue called
 <a href="http://en.wikipedia.org/wiki/Server_Name_Indication">Server Name
 Indication</a> (SNI) that sends the name of the virtual host during the
 TLS negotiation.</p></div>
