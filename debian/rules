@@ -214,6 +214,7 @@ install-arch:
 	install $(CURDIR)/contrib/07to08.py $(LIB_CONFIG_DIR)/usr/share/cherokee/
 	install $(CURDIR)/contrib/08to09.py $(LIB_CONFIG_DIR)/usr/share/cherokee/
 	install $(CURDIR)/contrib/09to010.py $(LIB_CONFIG_DIR)/usr/share/cherokee/
+	install $(CURDIR)/contrib/011to098.py $(LIB_CONFIG_DIR)/usr/share/cherokee/
 
 # libcherokee-mod-admin - Administrative interface
 	install -d $(MOD_ADMIN_DIR)/DEBIAN

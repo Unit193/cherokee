@@ -16,11 +16,16 @@ Depends: ${shlibs:Depends}, logrotate, libcherokee-base0 (= ${binary:Version}), 
 Recommends: libcherokee-mod-admin
 Suggests: libcherokee-mod-libssl
 Provides: httpd, httpd-cgi
-Description: extremely fast and flexible web server
- Cherokee is an extremely flexible and fast web server. It's
- embedable, extensible with plug-ins. It has handler-to-path,
- virtual servers, gzip encoding, modular loggers, CGI support,
- and can run in a chroot environment, among other features.
+Description: Very fast, flexible and easy to configure web server
+ Cherokee is a very fast, flexible and easy to configure Web Server.
+ It supports the widespread technologies nowadays: FastCGI, SCGI, PHP,
+ CGI, TLS and SSL encrypted connections, Virtual hosts, Authentication,
+ on the fly encoding, Apache compatible log files, HTTP Load Balancing,
+ Data Base Balancing, SSI, Reverse HTTP Proxy and much more.
+ .
+ Cherokee also provides an easy to use configuration interface that
+ allows to configure the server from top to bottom without having to
+ edit a text configuration file.
  .
  This package contains the server and essential handlers.
 
@@ -29,10 +34,15 @@ Section: libs
 Architecture: any
 Depends: ${shlibs:Depends}
 Description: Cherokee web server - Base libraries
- Cherokee is an extremely fast and flexible web server. It's
- embedable, extensible with plug-ins. It has handler-to-path,
- virtual servers, gzip encoding, modular loggers, CGI support,
- and can run in a chroot environment, among other features.
+ Cherokee is a very fast, flexible and easy to configure Web Server.
+ It supports the widespread technologies nowadays: FastCGI, SCGI, PHP,
+ CGI, TLS and SSL encrypted connections, Virtual hosts, Authentication,
+ on the fly encoding, Apache compatible log files, HTTP Load Balancing,
+ Data Base Balancing, SSI, Reverse HTTP Proxy and much more.
+ .
+ Cherokee also provides an easy to use configuration interface that
+ allows to configure the server from top to bottom without having to
+ edit a text configuration file.
  .
  This is the runtime library
 
@@ -41,10 +51,15 @@ Section: libdevel
 Architecture: any
 Depends: libcherokee-base0 (= ${binary:Version})
 Description: Cherokee web server - base libraries' development files
- Cherokee is an extremely fast and flexible web server. It's
- embedable, extensible with plug-ins. It has handler-to-path,
- virtual servers, gzip encoding, modular loggers, CGI support,
- and can run in a chroot environment, among other features.
+ Cherokee is a very fast, flexible and easy to configure Web Server.
+ It supports the widespread technologies nowadays: FastCGI, SCGI, PHP,
+ CGI, TLS and SSL encrypted connections, Virtual hosts, Authentication,
+ on the fly encoding, Apache compatible log files, HTTP Load Balancing,
+ Data Base Balancing, SSI, Reverse HTTP Proxy and much more.
+ .
+ Cherokee also provides an easy to use configuration interface that
+ allows to configure the server from top to bottom without having to
+ edit a text configuration file.
  .
  This package contains the development files - headers, .so and .a files.
 
@@ -53,10 +68,15 @@ Section: libs
 Architecture: any
 Depends: ${shlibs:Depends}
 Description: Cherokee web server - Client libraries
- Cherokee is an extremely fast and flexible web server. It's
- embedable, extensible with plug-ins. It has handler-to-path,
- virtual servers, gzip encoding, modular loggers, CGI support,
- and can run in a chroot environment, among other features.
+ Cherokee is a very fast, flexible and easy to configure Web Server.
+ It supports the widespread technologies nowadays: FastCGI, SCGI, PHP,
+ CGI, TLS and SSL encrypted connections, Virtual hosts, Authentication,
+ on the fly encoding, Apache compatible log files, HTTP Load Balancing,
+ Data Base Balancing, SSI, Reverse HTTP Proxy and much more.
+ .
+ Cherokee also provides an easy to use configuration interface that
+ allows to configure the server from top to bottom without having to
+ edit a text configuration file.
  .
  This is the client runtime library
 
@@ -65,10 +85,15 @@ Section: libdevel
 Architecture: any
 Depends: libcherokee-client0 (= ${binary:Version}), libcherokee-base0-dev (= ${binary:Version})
 Description: Cherokee web server - Client libraries' development files
- Cherokee is an extremely fast and flexible web server. It's
- embedable, extensible with plug-ins. It has handler-to-path,
- virtual servers, gzip encoding, modular loggers, CGI support,
- and can run in a chroot environment, among other features.
+ Cherokee is a very fast, flexible and easy to configure Web Server.
+ It supports the widespread technologies nowadays: FastCGI, SCGI, PHP,
+ CGI, TLS and SSL encrypted connections, Virtual hosts, Authentication,
+ on the fly encoding, Apache compatible log files, HTTP Load Balancing,
+ Data Base Balancing, SSI, Reverse HTTP Proxy and much more.
+ .
+ Cherokee also provides an easy to use configuration interface that
+ allows to configure the server from top to bottom without having to
+ edit a text configuration file.
  .
  This package contains the client development files - headers, .so 
  and .a files.
@@ -79,10 +104,15 @@ Architecture: any
 Depends: ${shlibs:Depends}, python
 Replaces: libcherokee-server0 (<< 0.8.1-1)
 Description: Cherokee web server - Configuration libraries
- Cherokee is an extremely fast and flexible web server. It's
- embedable, extensible with plug-ins. It has handler-to-path,
- virtual servers, gzip encoding, modular loggers, CGI support,
- and can run in a chroot environment, among other features.
+ Cherokee is a very fast, flexible and easy to configure Web Server.
+ It supports the widespread technologies nowadays: FastCGI, SCGI, PHP,
+ CGI, TLS and SSL encrypted connections, Virtual hosts, Authentication,
+ on the fly encoding, Apache compatible log files, HTTP Load Balancing,
+ Data Base Balancing, SSI, Reverse HTTP Proxy and much more.
+ .
+ Cherokee also provides an easy to use configuration interface that
+ allows to configure the server from top to bottom without having to
+ edit a text configuration file.
  .
  This is the configuration handler's runtime library
 
@@ -91,10 +121,15 @@ Section: libdevel
 Architecture: any
 Depends: libcherokee-config0 (= ${binary:Version}), libcherokee-base0-dev (= ${binary:Version})
 Description: Cherokee web server - Configuration libraries' development files
- Cherokee is an extremely fast and flexible web server. It's
- embedable, extensible with plug-ins. It has handler-to-path,
- virtual servers, gzip encoding, modular loggers, CGI support,
- and can run in a chroot environment, among other features.
+ Cherokee is a very fast, flexible and easy to configure Web Server.
+ It supports the widespread technologies nowadays: FastCGI, SCGI, PHP,
+ CGI, TLS and SSL encrypted connections, Virtual hosts, Authentication,
+ on the fly encoding, Apache compatible log files, HTTP Load Balancing,
+ Data Base Balancing, SSI, Reverse HTTP Proxy and much more.
+ .
+ Cherokee also provides an easy to use configuration interface that
+ allows to configure the server from top to bottom without having to
+ edit a text configuration file.
  .
  This package contains the development files for the configuration
  handler - headers, .so and .a files.
@@ -104,10 +139,15 @@ Section: libs
 Architecture: any
 Depends: ${shlibs:Depends}
 Description: Cherokee web server - Server libraries
- Cherokee is an extremely fast and flexible web server. It's
- embedable, extensible with plug-ins. It has handler-to-path,
- virtual servers, gzip encoding, modular loggers, CGI support,
- and can run in a chroot environment, among other features.
+ Cherokee is a very fast, flexible and easy to configure Web Server.
+ It supports the widespread technologies nowadays: FastCGI, SCGI, PHP,
+ CGI, TLS and SSL encrypted connections, Virtual hosts, Authentication,
+ on the fly encoding, Apache compatible log files, HTTP Load Balancing,
+ Data Base Balancing, SSI, Reverse HTTP Proxy and much more.
+ .
+ Cherokee also provides an easy to use configuration interface that
+ allows to configure the server from top to bottom without having to
+ edit a text configuration file.
  .
  This is the server runtime library
 
@@ -116,10 +156,15 @@ Section: libdevel
 Architecture: any
 Depends: libcherokee-server0 (= ${binary:Version}), libcherokee-base0-dev (= ${binary:Version})
 Description: Cherokee web server - Server librardevelopment files
- Cherokee is an extremely fast and flexible web server. It's
- embedable, extensible with plug-ins. It has handler-to-path,
- virtual servers, gzip encoding, modular loggers, CGI support,
- and can run in a chroot environment, among other features.
+ Cherokee is a very fast, flexible and easy to configure Web Server.
+ It supports the widespread technologies nowadays: FastCGI, SCGI, PHP,
+ CGI, TLS and SSL encrypted connections, Virtual hosts, Authentication,
+ on the fly encoding, Apache compatible log files, HTTP Load Balancing,
+ Data Base Balancing, SSI, Reverse HTTP Proxy and much more.
+ .
+ Cherokee also provides an easy to use configuration interface that
+ allows to configure the server from top to bottom without having to
+ edit a text configuration file.
  .
  This package contains the server development files - headers, .so 
  and .a files.
@@ -129,10 +174,15 @@ Section: web
 Architecture: any
 Depends: ${shlibs:Depends}, libcherokee-server0 (= ${binary:Version})
 Description: Cherokee web server - Administrative plugin
- Cherokee is an extremely fast and flexible web server. It's
- embedable, extensible with plug-ins. It has handler-to-path,
- virtual servers, gzip encoding, modular loggers, CGI support,
- and can run in a chroot environment, among other features.
+ Cherokee is a very fast, flexible and easy to configure Web Server.
+ It supports the widespread technologies nowadays: FastCGI, SCGI, PHP,
+ CGI, TLS and SSL encrypted connections, Virtual hosts, Authentication,
+ on the fly encoding, Apache compatible log files, HTTP Load Balancing,
+ Data Base Balancing, SSI, Reverse HTTP Proxy and much more.
+ .
+ Cherokee also provides an easy to use configuration interface that
+ allows to configure the server from top to bottom without having to
+ edit a text configuration file.
  .
  This plugin provides the needed infrastructure to perform
  administrative tasks on the server itself; it also provides the
@@ -145,10 +195,15 @@ Architecture: any
 Depends: ${shlibs:Depends}, libcherokee-server0 (= ${binary:Version})
 Enhances: cherokee
 Description: Cherokee web server - Server information plugin
- Cherokee is an extremely fast and flexible web server. It's
- embedable, extensible with plug-ins. It has handler-to-path,
- virtual servers, gzip encoding, modular loggers, CGI support,
- and can run in a chroot environment, among other features.
+ Cherokee is a very fast, flexible and easy to configure Web Server.
+ It supports the widespread technologies nowadays: FastCGI, SCGI, PHP,
+ CGI, TLS and SSL encrypted connections, Virtual hosts, Authentication,
+ on the fly encoding, Apache compatible log files, HTTP Load Balancing,
+ Data Base Balancing, SSI, Reverse HTTP Proxy and much more.
+ .
+ Cherokee also provides an easy to use configuration interface that
+ allows to configure the server from top to bottom without having to
+ edit a text configuration file.
  .
  This plugin provides the server information plugin.
  
@@ -158,10 +213,15 @@ Architecture: any
 Depends: ${shlibs:Depends}, libcherokee-server0 (= ${binary:Version})
 Enhances: cherokee
 Description: Cherokee web server - MySQL user validator plugin
- Cherokee is an extremely fast and flexible web server. It's
- embedable, extensible with plug-ins. It has handler-to-path,
- virtual servers, gzip encoding, modular loggers, CGI support,
- and can run in a chroot environment, among other features.
+ Cherokee is a very fast, flexible and easy to configure Web Server.
+ It supports the widespread technologies nowadays: FastCGI, SCGI, PHP,
+ CGI, TLS and SSL encrypted connections, Virtual hosts, Authentication,
+ on the fly encoding, Apache compatible log files, HTTP Load Balancing,
+ Data Base Balancing, SSI, Reverse HTTP Proxy and much more.
+ .
+ Cherokee also provides an easy to use configuration interface that
+ allows to configure the server from top to bottom without having to
+ edit a text configuration file.
  .
  This plugin provides the MySQL user validator.
  
@@ -171,10 +231,15 @@ Architecture: any
 Depends: ${shlibs:Depends}, libcherokee-server0 (= ${binary:Version})
 Enhances: cherokee
 Description: Cherokee web server - LDAP user validator plugin
- Cherokee is an extremely fast and flexible web server. It's
- embedable, extensible with plug-ins. It has handler-to-path,
- virtual servers, gzip encoding, modular loggers, CGI support,
- and can run in a chroot environment, among other features.
+ Cherokee is a very fast, flexible and easy to configure Web Server.
+ It supports the widespread technologies nowadays: FastCGI, SCGI, PHP,
+ CGI, TLS and SSL encrypted connections, Virtual hosts, Authentication,
+ on the fly encoding, Apache compatible log files, HTTP Load Balancing,
+ Data Base Balancing, SSI, Reverse HTTP Proxy and much more.
+ .
+ Cherokee also provides an easy to use configuration interface that
+ allows to configure the server from top to bottom without having to
+ edit a text configuration file.
  .
  This plugin provides the LDAP user validator.
 
@@ -183,10 +248,15 @@ Section: web
 Architecture: any
 Depends: ${shlibs:Depends}, libcherokee-server0 (= ${binary:Version})
 Description: Cherokee web server - SSL crypto functions plugin
- Cherokee is an extremely fast and flexible web server. It's
- embedable, extensible with plug-ins. It has handler-to-path,
- virtual servers, gzip encoding, modular loggers, CGI support,
- and can run in a chroot environment, among other features.
+ Cherokee is a very fast, flexible and easy to configure Web Server.
+ It supports the widespread technologies nowadays: FastCGI, SCGI, PHP,
+ CGI, TLS and SSL encrypted connections, Virtual hosts, Authentication,
+ on the fly encoding, Apache compatible log files, HTTP Load Balancing,
+ Data Base Balancing, SSI, Reverse HTTP Proxy and much more.
+ .
+ Cherokee also provides an easy to use configuration interface that
+ allows to configure the server from top to bottom without having to
+ edit a text configuration file.
  .
  This plugin provides the SSL crypto functions.
  
