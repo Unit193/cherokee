@@ -1,9 +1,9 @@
 # Moves the Web root directory to more Debian-friendly locations
 #
-Index: cherokee-0.9.0/www/Makefile.am
+Index: cherokee/www/Makefile.am
 ===================================================================
---- cherokee-0.9.0.orig/www/Makefile.am	2008-09-17 08:43:22.000000000 -0500
-+++ cherokee-0.9.0/www/Makefile.am	2008-09-26 12:39:24.000000000 -0500
+--- cherokee.orig/www/Makefile.am	2008-12-09 15:54:44.000000000 -0600
++++ cherokee/www/Makefile.am	2009-01-23 15:25:42.000000000 -0600
 @@ -2,7 +2,7 @@
  
  cherokeewwwdir = "@WWW_ROOT@"
@@ -13,11 +13,11 @@ Index: cherokee-0.9.0/www/Makefile.am
  cherokeewwwimages_DATA = \
  default-bg.png \
  cherokee-logo.png \
-Index: cherokee-0.9.0/www/Makefile.in
+Index: cherokee/www/Makefile.in
 ===================================================================
---- cherokee-0.9.0.orig/www/Makefile.in	2008-09-26 12:08:28.000000000 -0500
-+++ cherokee-0.9.0/www/Makefile.in	2008-09-26 12:39:24.000000000 -0500
-@@ -196,7 +196,7 @@
+--- cherokee.orig/www/Makefile.in	2009-01-23 13:07:07.000000000 -0600
++++ cherokee/www/Makefile.in	2009-01-23 15:25:42.000000000 -0600
+@@ -192,7 +192,7 @@
  top_builddir = @top_builddir@
  top_srcdir = @top_srcdir@
  cherokeewwwdir = "@WWW_ROOT@"
@@ -26,10 +26,10 @@ Index: cherokee-0.9.0/www/Makefile.in
  cherokeewwwimages_DATA = \
  default-bg.png \
  cherokee-logo.png \
-Index: cherokee-0.9.0/www/index.html
+Index: cherokee/www/index.html
 ===================================================================
---- cherokee-0.9.0.orig/www/index.html	2008-09-17 08:43:22.000000000 -0500
-+++ cherokee-0.9.0/www/index.html	2008-09-26 12:39:24.000000000 -0500
+--- cherokee.orig/www/index.html	2008-12-09 15:54:44.000000000 -0600
++++ cherokee/www/index.html	2009-01-23 15:25:42.000000000 -0600
 @@ -2,15 +2,14 @@
  <html>
  <head>

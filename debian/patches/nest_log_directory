@@ -1,10 +1,10 @@
 # Moves the default logging location to its own directory
 #
-Index: cherokee-0.9.0/cherokee.conf.sample.pre
+Index: cherokee/cherokee.conf.sample.pre
 ===================================================================
---- cherokee-0.9.0.orig/cherokee.conf.sample.pre	2008-09-22 11:58:34.000000000 -0500
-+++ cherokee-0.9.0/cherokee.conf.sample.pre	2008-09-26 12:41:41.000000000 -0500
-@@ -25,10 +25,10 @@
+--- cherokee.orig/cherokee.conf.sample.pre	2009-01-23 15:18:15.000000000 -0600
++++ cherokee/cherokee.conf.sample.pre	2009-01-23 15:25:48.000000000 -0600
+@@ -26,10 +26,10 @@
  
  vserver!1!logger = combined
  vserver!1!logger!access!type = file

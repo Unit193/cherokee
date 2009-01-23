@@ -1,10 +1,10 @@
 # Sets the daemon's default user/group to www-data
 #
-Index: cherokee-0.9.0/cherokee.conf.sample.pre
+Index: cherokee/cherokee.conf.sample.pre
 ===================================================================
---- cherokee-0.9.0.orig/cherokee.conf.sample.pre	2008-09-26 12:41:07.000000000 -0500
-+++ cherokee-0.9.0/cherokee.conf.sample.pre	2008-09-26 12:41:15.000000000 -0500
-@@ -16,6 +16,8 @@
+--- cherokee.orig/cherokee.conf.sample.pre	2009-01-23 15:25:55.000000000 -0600
++++ cherokee/cherokee.conf.sample.pre	2009-01-23 15:26:01.000000000 -0600
+@@ -17,6 +17,8 @@
  server!server_tokens = full
  server!panic_action = %prefix%/share/cherokee/cherokee-panic
  server!pid_file = %localstatedir%/run/cherokee.pid

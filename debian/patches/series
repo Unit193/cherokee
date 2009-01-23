@@ -1,4 +1,3 @@
-ldap-deprecated
 fix_rpath
 default_webroot_in_usr_share
 nest_log_directory
