@@ -2,7 +2,7 @@ Source: cherokee
 Section: web
 Priority: optional
 Maintainer: Gunnar Wolf <gwolf@debian.org>
-Uploaders: Alvaro Lopez Ortega <alvaro@gnu.org>
+Uploaders: Alvaro Lopez Ortega <alvaro@gnu.org>, Leonel Núñez <leonel@enelserver.com>
 Build-Depends: bison, flex, debhelper (>= 4.0.0), autotools-dev, sharutils, libpam0g-dev, quilt, python-support, libssl-dev, libldap-dev, libmysqlclient-dev,  libavformat-dev, libavcodec-dev, libavutil-dev,libgeoip-dev
 Standards-Version: 3.8.0
 Homepage: http://cherokee-project.org/

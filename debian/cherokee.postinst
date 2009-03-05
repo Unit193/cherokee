@@ -22,12 +22,6 @@ CONF=/etc/cherokee/cherokee.conf
 
 case "$1" in
     configure)
-	# Alternatives handling for spawn-fcgi and its manpage
-	update-alternatives --install /usr/bin/spawn-fcgi \
-	    spawn-fcgi /usr/bin/spawn-fcgi.cherokee 15 --slave \
-	    /usr/share/man/man1/spawn-fcgi.1.gz spawn-fcgi.1.gz \
-	    /usr/share/man/man1/spawn-fcgi.cherokee.1.gz
-
 	# If there is no index.html, link ours to /var/www
 	if [ ! -e /var/www/index.html  -a \
 	     ! -e /var/www/index.cgi   -a \

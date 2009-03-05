@@ -40,7 +40,11 @@ case "$action" in
     ;;
 esac
 
-if [ "$1" != "upgrade" ]; then
+# We used to ship spawn-fcgi until 0.99, where it was removed by
+# upstream - Remove it if it is still present in the user's
+# alternatives database
+if update-alternatives --list spawn-fcgi | grep -q cherokee
+    then
     update-alternatives --remove spawn-fcgi /usr/bin/spawn-fcgi.cherokee
 fi
 
