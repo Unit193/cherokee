@@ -268,7 +268,7 @@ with Drupal. For this we will use an internal <tt>Regular
 expression</tt>-type rule matching the following expression:</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>\.(engine|inc|info|install|module|profile|po|sh|.*sql|theme|tpl(\.php)?|xtmpl)(\?.*)?$|^(code-style\.pl|Entries.*|Repository|Root|Tag|Template)$</tt></pre>
+<pre><tt>(\.(engine|inc|info|install|module|profile|po|sh|.*sql|theme|tpl(\.php)?|xtmpl)|^(code-style\.pl|Entries.*|Repository|Root|Tag|Template))(\?.*)?$</tt></pre>
 </div></div>
 <div class="para"><p>Handle this with the <tt>HTTP error</tt> handler:</p></div>
 <div class="tableblock">

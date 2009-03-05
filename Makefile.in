@@ -129,6 +129,8 @@ ETR_SOCKET_LIBS = @ETR_SOCKET_LIBS@
 EXEEXT = @EXEEXT@
 F77 = @F77@
 FFLAGS = @FFLAGS@
+FFMPEG_CFLAGS = @FFMPEG_CFLAGS@
+FFMPEG_LIBS = @FFMPEG_LIBS@
 GREP = @GREP@
 HaveRtldGlobal = @HaveRtldGlobal@
 HaveRtldLocal = @HaveRtldLocal@
@@ -241,7 +243,6 @@ m4data_DATA = cherokee.m4
 man_MANS = \
 cherokee.1           \
 cherokee-config.1    \
-spawn-fcgi.1         \
 cherokee-tweak.1     \
 cherokee-admin.1     \
 cherokee-worker.1

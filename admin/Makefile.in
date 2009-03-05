@@ -111,6 +111,8 @@ ETR_SOCKET_LIBS = @ETR_SOCKET_LIBS@
 EXEEXT = @EXEEXT@
 F77 = @F77@
 FFLAGS = @FFLAGS@
+FFMPEG_CFLAGS = @FFMPEG_CFLAGS@
+FFMPEG_LIBS = @FFMPEG_LIBS@
 GREP = @GREP@
 HaveRtldGlobal = @HaveRtldGlobal@
 HaveRtldLocal = @HaveRtldLocal@
@@ -257,6 +259,7 @@ adminpy_SCRIPTS = $(admin_scripts)
 @INSTALL_ADMIN_TRUE@ModuleProxy.py \
 @INSTALL_ADMIN_TRUE@ModuleMirror.py \
 @INSTALL_ADMIN_TRUE@ModuleDbslayer.py \
+@INSTALL_ADMIN_TRUE@ModuleStreaming.py \
 @INSTALL_ADMIN_TRUE@ModuleErrorNn.py \
 @INSTALL_ADMIN_TRUE@ModuleErrorRedir.py \
 @INSTALL_ADMIN_TRUE@ModuleAuth.py \
@@ -278,6 +281,7 @@ adminpy_SCRIPTS = $(admin_scripts)
 @INSTALL_ADMIN_TRUE@ModuleHeader.py \
 @INSTALL_ADMIN_TRUE@ModuleExists.py \
 @INSTALL_ADMIN_TRUE@ModuleMethod.py \
+@INSTALL_ADMIN_TRUE@ModuleBind.py \
 @INSTALL_ADMIN_TRUE@ModuleCustomError.py \
 @INSTALL_ADMIN_TRUE@config.py \
 @INSTALL_ADMIN_TRUE@pyscgi.py \

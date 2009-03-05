@@ -8,6 +8,7 @@ from Entry import *
 DATA_VALIDATION = [
     ("new_vserver_name",   validations.is_safe_id),
     ("new_vserver_droot", (validations.is_dev_null_or_local_dir_exists, 'cfg')),
+    ("vserver_clone_trg",  validations.is_safe_id),
 ]
 
 COMMENT = """
@@ -111,8 +112,11 @@ class PageVServers (PageMenu, FormHelper):
         vservers = self._cfg['vserver']
         table_name = 'vserver_sortable_table'
 
+        def sort_vservers(x,y):
+            return cmp(int(x), int(y))
+
         sorted_vservers = self._cfg['vserver'].keys()
-        sorted_vservers.sort(reverse=True)
+        sorted_vservers.sort(sort_vservers, reverse=True)
 
         txt += '<table id="%s" class="rulestable">' % (table_name)
         txt += '<tr NoDrag="1" NoDrop="1"><th>Nickname</th><th>Root</th><th>Domains</th><th>Logging</th><th></th></tr>'
@@ -185,7 +189,7 @@ class PageVServers (PageMenu, FormHelper):
                       'url' :   '/vserver/ajax_update'}
 
         # Add new Virtual Server
-        table = Table(3,1)
+        table = Table(3, 1, header_style='width="200px"')
         table += ('Nickname', 'Document Root')
         fo1 = Form ("/vserver", add_submit=False, auto=False)
         en1 = self.InstanceEntry ("new_vserver_name",  "text", size=20)
@@ -193,10 +197,10 @@ class PageVServers (PageMenu, FormHelper):
         table += (en1, en2, SUBMIT_ADD)
 
         txt += "<h2>Add new Virtual Server</h2>"
-        txt += fo1.Render(str(table))
+        txt += self.Indent(fo1.Render(str(table)))
 
         # Clone Virtual Server
-        table = Table(3,1, header_style='width="250px"')
+        table = Table(3, 1, header_style='width="200px"')
         table += ('Virtual Server', 'Clone as..')
         fo1 = Form ("/vserver", add_submit=False, auto=False)
 
@@ -210,7 +214,7 @@ class PageVServers (PageMenu, FormHelper):
         table += (op1[0], en1, SUBMIT_CLONE)
 
         txt += "<h2>Clone Virtual Server</h2>"
-        txt += fo1.Render(str(table))
+        txt += self.Indent(fo1.Render(str(table)))
 
         return txt
 
@@ -229,6 +233,11 @@ class PageVServers (PageMenu, FormHelper):
         return str(n+10)
 
     def _op_clone_vserver (self, post):
+        # Validate entries
+        self._ValidateChanges (post, DATA_VALIDATION)
+        if self.has_errors():
+            return
+
         # Fetch data
         prio_source = post.pop('vserver_clone_src')
         nick_target = post.pop('vserver_clone_trg')

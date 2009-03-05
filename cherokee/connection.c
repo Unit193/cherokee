@@ -121,6 +121,9 @@ cherokee_connection_new  (cherokee_connection_t **conn)
 	n->expiration           = cherokee_expiration_none;
 	n->expiration_time      = 0;
 	n->respins              = 0;
+	n->limit_rate           = false;
+	n->limit_bps            = 0;
+	n->limit_blocked_until  = 0;
 
 	cherokee_buffer_init (&n->buffer);
 	cherokee_buffer_init (&n->header_buffer);
@@ -136,6 +139,9 @@ cherokee_connection_new  (cherokee_connection_t **conn)
 	cherokee_buffer_init (&n->redirect);
 	cherokee_buffer_init (&n->host);
 	cherokee_buffer_init (&n->self_trace);
+
+	cherokee_buffer_init (&n->error_internal_url);
+	cherokee_buffer_init (&n->error_internal_qs);
 
 	cherokee_buffer_init (&n->query_string);
 	cherokee_buffer_init (&n->request_original);
@@ -193,6 +199,9 @@ cherokee_connection_free (cherokee_connection_t  *conn)
 	cherokee_buffer_mrproper (&conn->host);
 	cherokee_buffer_mrproper (&conn->self_trace);
 	cherokee_buffer_mrproper (&conn->chunked_len);
+
+	cherokee_buffer_mrproper (&conn->error_internal_url);
+	cherokee_buffer_mrproper (&conn->error_internal_qs);
 
 	if (conn->validator != NULL) {
 		cherokee_validator_free (conn->validator);
@@ -261,6 +270,9 @@ cherokee_connection_clean (cherokee_connection_t *conn)
 	conn->chunked_sent         = 0;
 	conn->chunked_last_package = false;
 	conn->respins              = 0;
+	conn->limit_rate           = false;
+	conn->limit_bps            = 0;
+	conn->limit_blocked_until  = 0;
 
 	memset (conn->regex_ovector, OVECTOR_LEN * sizeof(int), 0);
 	conn->regex_ovecsize = 0;
@@ -296,6 +308,9 @@ cherokee_connection_clean (cherokee_connection_t *conn)
 	cherokee_buffer_clean (&conn->query_string);
 	cherokee_buffer_clean (&conn->self_trace);
 	cherokee_buffer_clean (&conn->chunked_len);
+
+	cherokee_buffer_clean (&conn->error_internal_url);
+	cherokee_buffer_clean (&conn->error_internal_qs);
 	
 	if (conn->validator != NULL) {
 		cherokee_validator_free (conn->validator);
@@ -368,9 +383,17 @@ cherokee_connection_setup_error_handler (cherokee_connection_t *conn)
 	cherokee_virtual_server_t  *vsrv;
 	cherokee_config_entry_t    *entry;	
 
+	/* NOTE ABOUT THIS FUNCTION: It ought to be call only from
+	 * cherokee/thread.c. Right after calling the function it must
+	 * call continue (becase conn->error_code might have changed).
+	 */
+
 	srv   = CONN_SRV(conn);
 	vsrv  = CONN_VSRV(conn);
 	entry = vsrv->error_handler;
+
+	TRACE(ENTRIES, "Setting up error handler: %d (respins=%d)\n",
+	      conn->error_code, conn->respins);
 
 	/* It has a common handler. It has to be freed.
 	 */
@@ -379,17 +402,56 @@ cherokee_connection_setup_error_handler (cherokee_connection_t *conn)
 		conn->handler = NULL;
 	}
 
+	/* Loop detection: Set the default error handler and exit.
+	 */
+	conn->respins += 1;
+	if (conn->respins > RESPINS_MAX) {
+		goto safe;
+	}
+
 	/* Create a new error handler
 	 */
 	if ((entry != NULL) && (entry->handler_new_func != NULL)) {
 		ret = entry->handler_new_func ((void **) &conn->handler, conn, entry->handler_properties);
-		if (ret == ret_ok) 
+		switch (ret) {
+		case ret_ok:
+			/* At this point, two different things might happen:
+			 * - It has got a common handler like handler_redir
+			 * - It has got an error handler like handler_error
+			 */
+			conn->phase = phase_init;
+
+			TRACE(ENTRIES, "Error handler set. Phase is '%s' now.\n", "init");
 			goto out;
+
+		case ret_eagain:
+			/* It's an internal error redirection
+			 */
+ 			cherokee_buffer_clean (&conn->pathinfo);
+ 			cherokee_buffer_clean (&conn->query_string);
+			cherokee_buffer_clean (&conn->web_directory);
+			cherokee_buffer_clean (&conn->local_directory);
+
+			conn->error_code = http_ok;
+			conn->phase = phase_setup_connection;
+			
+			TRACE(ENTRIES, "Error handler not set. Re-evaluating. Phase is 'setup_connection', respins=%d  now.\n", conn->respins);
+			goto clean;
+
+		default:
+			break;
+		}
 	} 
 
+safe:
 	/* If something was wrong, try with the default error handler
 	 */
 	ret = cherokee_handler_error_new (&conn->handler, conn, NULL);
+	if (unlikely (ret != ret_ok))
+		return ret_error;
+
+	TRACE(ENTRIES, "Default Error handler set. Phase is '%s' now.\n", "init");
+	conn->phase = phase_init;
 
 out:
 #ifdef TRACE_ENABLED
@@ -409,6 +471,9 @@ out:
 		conn->keepalive = 0;
 	}
 
+	ret = ret_ok;
+
+clean:
 	/* Nothing should be mmaped any longer
 	 */
 	if (conn->io_entry_ref != NULL) {
@@ -424,7 +489,7 @@ out:
 	 */
 	conn->chunked_encoding = false;
 
-	return ret_ok;
+	return ret;
 }
 
 
@@ -512,7 +577,7 @@ build_response_header_expiration (cherokee_connection_t *conn, cherokee_buffer_t
 		cherokee_buffer_add (buffer, bufstr, szlen);
 		cherokee_buffer_add_str (buffer, CRLF);
 
-		cherokee_buffer_add_str (buffer, "Cache-Contro: max-age=");
+		cherokee_buffer_add_str (buffer, "Cache-Control: max-age=");
 		cherokee_buffer_add_long10 (buffer, conn->expiration_time);
 		cherokee_buffer_add_str (buffer, CRLF);
 		break;
@@ -651,7 +716,8 @@ cherokee_connection_build_header (cherokee_connection_t *conn)
 	 * has to be turned off.
 	 */
 	if (conn->keepalive != 0) {
-		if (! HANDLER_SUPPORTS (conn->handler, hsupport_length)) {
+		if ((! http_type_300 (conn->error_code)) &&
+		    (! HANDLER_SUPPORTS (conn->handler, hsupport_length))) {
 			if (! conn->chunked_encoding) {
 				conn->keepalive = 0;
 			}
@@ -780,8 +846,21 @@ cherokee_connection_rx_add (cherokee_connection_t *conn, ssize_t rx)
 void
 cherokee_connection_tx_add (cherokee_connection_t *conn, ssize_t tx)
 {
+	cuint_t to_sleep;
+
+	/* Count it
+	 */
 	conn->tx += tx;
 	conn->tx_partial += tx;
+
+	/* Traffic shaping
+	 */
+	if (conn->limit_rate) {
+		to_sleep = (tx * 1000) / conn->limit_bps;
+		
+		/* It's meant to sleep for a while */
+		conn->limit_blocked_until = cherokee_bogonow_msec + to_sleep;
+	}
 }
 
 
@@ -892,7 +971,8 @@ ret_t
 cherokee_connection_send (cherokee_connection_t *conn)
 {
 	ret_t  ret;
-	size_t sent = 0;
+	size_t to_send; 
+	size_t sent     = 0;
 
 	/* Use writev to send the chunk-begin mark
 	 */
@@ -900,11 +980,20 @@ cherokee_connection_send (cherokee_connection_t *conn)
 	{
 		struct iovec tmp[3];
 
+		/* Build the data vector */
 		tmp[0].iov_base = conn->chunked_len.buf;
 		tmp[0].iov_len  = conn->chunked_len.len;
 		tmp[1].iov_base = conn->buffer.buf;
 		tmp[1].iov_len  = conn->buffer.len;
 
+		/* Traffic shaping */
+		if ((conn->limit_bps > 0) &&
+		    (conn->limit_bps < conn->buffer.len))
+		{
+			tmp[1].iov_len = conn->limit_bps;
+		}
+
+		/* Trailer */
 		if (conn->chunked_last_package) {
 			tmp[2].iov_base = CRLF "0" CRLF CRLF;
 			tmp[2].iov_len  = 7;
@@ -953,8 +1042,16 @@ cherokee_connection_send (cherokee_connection_t *conn)
 
 	/* Send the buffer content
 	 */
-	ret = cherokee_socket_bufwrite (&conn->socket, &conn->buffer, &sent);
-	if (unlikely(ret != ret_ok)) return ret;
+	to_send = conn->buffer.len;
+	if ((conn->limit_bps > 0) &&
+	    (conn->limit_bps < to_send))
+	{
+		to_send = conn->limit_bps;
+	}
+
+	ret = cherokee_socket_write (&conn->socket, conn->buffer.buf, to_send, &sent);
+	if (unlikely(ret != ret_ok))
+		return ret;
 
 	/* Drop out the sent info
 	 */
@@ -1189,7 +1286,6 @@ get_host (cherokee_connection_t *conn,
 static ret_t
 get_encoding (cherokee_connection_t *conn,
 	      char                  *ptr,
-	      cherokee_avl_t        *encoders,
 	      cherokee_avl_t        *encoders_accepted)
 {
 	ret_t ret;
@@ -1520,6 +1616,8 @@ post_init (cherokee_connection_t *conn)
 	memcpy (buf, info, info_len);
 	buf[info_len] = '\0';
 
+	/* Check: Post length > 0
+	 */
 	post_len = (off_t) atol(buf);
 	if (post_len < 0) {
 		conn->error_code = http_bad_request;
@@ -1581,10 +1679,10 @@ parse_userdir (cherokee_connection_t *conn)
 ret_t 
 cherokee_connection_get_request (cherokee_connection_t *conn)
 {
-	ret_t    ret;
-	cherokee_http_t error_code = http_bad_request;
-	char    *host, *upgrade, *cnt;
-	cuint_t  host_len, upgrade_len, cnt_len;
+	ret_t            ret;
+	cherokee_http_t  error_code = http_bad_request;
+	char            *host, *upgrade, *cnt;
+	cuint_t          host_len, upgrade_len, cnt_len;
 
 	/* Header parsing
 	 */
@@ -1597,14 +1695,19 @@ cherokee_connection_get_request (cherokee_connection_t *conn)
 	if (http_method_with_input (conn->header.method)) {
 		uint32_t header_len;
 		uint32_t post_len;
-
+		
+		/* Init the post info
+		 */
 		ret = post_init (conn);
 		if (unlikely (ret != ret_ok)) {
 			return ret;
 		}
 
+		/* Split header and post
+		 */
 		ret = cherokee_header_get_length (&conn->header, &header_len);
-		if (unlikely(ret != ret_ok)) return ret;
+		if (unlikely(ret != ret_ok))
+			return ret;
 
 		post_len = conn->incoming_header.len - header_len;
 
@@ -1615,10 +1718,12 @@ cherokee_connection_get_request (cherokee_connection_t *conn)
 	/* Copy the request and query string
 	 */
 	ret = cherokee_header_copy_request (&conn->header, &conn->request);
-	if (unlikely (ret < ret_ok)) goto error;
+	if (unlikely (ret < ret_ok))
+		goto error;
 
 	ret = cherokee_header_copy_query_string (&conn->header, &conn->query_string);
-	if (unlikely (ret < ret_ok)) goto error;	
+	if (unlikely (ret < ret_ok))
+		goto error;	
 
 	/* Look for starting '/' in the request
 	 */
@@ -1678,7 +1783,8 @@ cherokee_connection_get_request (cherokee_connection_t *conn)
 	/* Userdir requests
 	 */
 	if ((!cherokee_buffer_is_empty (&CONN_VSRV(conn)->userdir)) && 
-	    cherokee_connection_is_userdir (conn)) {
+	    (cherokee_connection_is_userdir (conn)))
+	{
 		ret = parse_userdir (conn);
 		if (ret != ret_ok) return ret;
 	}
@@ -1707,6 +1813,15 @@ cherokee_connection_get_request (cherokee_connection_t *conn)
 				}
 			}
 		}
+	}
+
+	/* Check Upload limit
+	 */
+	if ((CONN_VSRV(conn)->post_max_len > 0) && 
+	    (conn->post.size > CONN_VSRV(conn)->post_max_len))
+	{
+		conn->error_code = http_request_entity_too_large;
+		return ret_error;
 	}
 
 	conn->error_code = http_ok;
@@ -1964,10 +2079,31 @@ granted:
 	TRACE (ENTRIES, "Keep-alive %d\n", conn->keepalive);
 }
 
+
+ret_t
+cherokee_connection_set_rate (cherokee_connection_t   *conn,
+			      cherokee_config_entry_t *entry)
+{
+	if (entry->limit_bps <= 0)
+		return ret_ok;
+
+	conn->limit_rate = true;
+	conn->limit_bps  = entry->limit_bps;
+
+	return ret_ok;
+}
+
+
 void
 cherokee_connection_set_chunked_encoding (cherokee_connection_t *conn)
 {
+	/* Conditions to activate Chunked-Encodiog:
+	 *  - The server configuration allows to use it
+	 *  - It's a keep-alive connection
+	 *  - It's a HTTP/1.1 connection
+	 */
 	conn->chunked_encoding = ((CONN_SRV(conn)->chunked_encoding) &&
+				  (conn->keepalive > 0) &&
 				  (conn->header.version == http_version_11));
 }
 
@@ -1998,7 +2134,6 @@ cherokee_connection_parse_range (cherokee_connection_t *conn)
 
 ret_t
 cherokee_connection_create_encoder (cherokee_connection_t *conn,
-				    cherokee_avl_t        *encoders,
 				    cherokee_avl_t        *encoders_accepted)
 {
 	ret_t    ret;
@@ -2024,7 +2159,7 @@ cherokee_connection_create_encoder (cherokee_connection_t *conn,
 	 */
 	ret = cherokee_header_get_known (&conn->header, header_accept_encoding, &ptr, &ptr_len);
 	if (ret == ret_ok) {
-		ret = get_encoding (conn, ptr, encoders, encoders_accepted);
+		ret = get_encoding (conn, ptr, encoders_accepted);
 		if (ret < ret_ok) {
 			return ret;
 		}
@@ -2046,12 +2181,14 @@ cherokee_connection_parse_args (cherokee_connection_t *conn)
 	/* Build a new table 
 	 */
 	ret = cherokee_avl_new (&conn->arguments);
-	if (unlikely(ret < ret_ok)) return ret;
+	if (unlikely(ret < ret_ok))
+		return ret;
 
 	/* Parse the header
 	 */
 	ret = cherokee_parse_query_string (&conn->query_string, conn->arguments);
-	if (unlikely(ret < ret_ok)) return ret;
+	if (unlikely(ret < ret_ok))
+		return ret;
 
 	return ret_ok;
 }
@@ -2256,9 +2393,15 @@ cherokee_connection_print (cherokee_connection_t *conn)
 	print_cbuf ("        Redirect", redirect);
 	print_cint ("    Redirect num", respins);
 	print_cint ("       Keepalive", keepalive);
+	print_cint ("Chunked-Encoding", chunked_encoding);
 	print_str  ("           Phase", phase);
 	print_cint ("     Range start", range_start);
 	print_cint ("       Range end", range_end);
+	print_cint ("            Rate", limit_rate);
+	if (conn->limit_rate) {
+		print_cint ("        Rate BPS", limit_rate);
+	}
+	
 
 	/* Options bit fields
 	 */

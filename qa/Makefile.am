@@ -136,7 +136,7 @@ run-tests.py \
 128-ValidMethod-common.py \
 129-Basic-EmptyPasswd.py \
 130-Digest-EmptyPasswd.py \
-131-ChangeUser-phpcgi.py \
+131-PHP-zero-len-post+Redir.py \
 132-file-ContentType.py \
 133-If-None-Match.py \
 134-HTTP_headers.py \
@@ -202,7 +202,11 @@ run-tests.py \
 194-PHP-zero-len-post.py \
 195-ServerAddr.py \
 196-Mime3.py \
-197-SOAPAction.py
+197-SOAPAction.py \
+198-HTTPresponse.py \
+199-ErrorRedir.py \
+200-ErrorRedir2.py \
+201-PostLimit.py
 
 test:
 	./run-tests.py

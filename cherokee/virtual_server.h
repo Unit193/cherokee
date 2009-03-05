@@ -47,6 +47,7 @@ typedef struct {
 	cherokee_vserver_names_t     domains;         /* Domains. Eg: www.alobbs.com */
 	cherokee_rule_list_t         rules;           /* Rule list: vserver behavior */
 	cherokee_boolean_t           keepalive;       /* Keep-alive support          */
+	ssize_t                      post_max_len;    /* Max post length             */
 
 	cherokee_config_entry_t     *default_handler; /* Default handler             */
 	cherokee_config_entry_t     *error_handler;   /* Default error handler       */
@@ -67,10 +68,11 @@ typedef struct {
 		CHEROKEE_MUTEX_T    (rx_mutex);
 	} data;
 
+	cuint_t                      verify_depth;
 	cherokee_buffer_t            server_cert;
 	cherokee_buffer_t            server_key;
 	cherokee_buffer_t            certs_ca;
-	cherokee_buffer_t            certs_client;
+	cherokee_buffer_t            req_client_certs;
 	cherokee_cryptor_vserver_t  *cryptor;
 
 } cherokee_virtual_server_t;

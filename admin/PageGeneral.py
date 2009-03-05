@@ -16,6 +16,7 @@ PRODUCT_TOKENS = [
 
 DATA_VALIDATION = [
     ("server!ipv6",              validations.is_boolean),
+    ("server!timeout",           validations.is_number),
     ("server!bind!.*!port",      validations.is_tcp_port),
     ("server!bind!.*!interface", validations.is_ip),
     ("server!bind!.*!tls",       validations.is_boolean),
@@ -60,7 +61,7 @@ class PageGeneral (PageMenu, FormHelper):
         return form.Render(txt, DEFAULT_SUBMIT_VALUE)
 
     def _render_permissions (self):
-        txt = "<h3>Execution Permissions</h3>"
+        txt = "<h2>Execution Permissions</h2>"
         table = TableProps()
         self.AddPropEntry (table, 'User',   'server!user',   NOTE_USER)
         self.AddPropEntry (table, 'Group',  'server!group',  NOTE_GROUP)
@@ -69,22 +70,25 @@ class PageGeneral (PageMenu, FormHelper):
         return txt
 
     def _render_network (self):
-        txt = "<h3>Support</h3>"
+        txt = "<h2>Support</h2>"
         table = TableProps()
         self.AddPropCheck (table, 'IPv6',     'server!ipv6', True, NOTE_IPV6)
         self.AddPropOptions_Reload (table, 'SSL/TLS back-end','server!tls',modules_available(CRYPTORS), NOTE_TLS)
         txt += self.Indent(table)
 
-        txt += "<h3>Network behavior</h3>"
+        txt += "<h2>Network behavior</h2>"
         table = TableProps()
         self.AddPropEntry (table,  'Timeout (<i>secs</i>)', 'server!timeout',       NOTE_TIMEOUT)
         self.AddPropOptions_Reload (table, 'Server Tokens', 'server!server_tokens', PRODUCT_TOKENS, NOTE_TOKENS)
         txt += self.Indent(table)
         return txt
-	
+
     def _op_apply_changes (self, uri, post):
-        self.ApplyChanges (['server!ipv6'], post, validation = DATA_VALIDATION)
-                           
+        checkboxes = ['server!ipv6']
+        # TLS checkboxes
+        checkboxes += ['server!bind!%s!tls' % (cb) for cb in self._cfg.keys('server!bind')]
+        self.ApplyChanges (checkboxes, post, validation = DATA_VALIDATION)
+
     def _render_ports (self):
         txt = ''
 
@@ -97,22 +101,25 @@ class PageGeneral (PageMenu, FormHelper):
         else:
             next = str(binds[-1] + 1)
 
+        has_tls = self._cfg.get_val('server!tls')
+
         # List ports
         table = Table(4, 1, style='width="90%"')
         table += ('Port', 'Bind to', 'TLS', '')
+
         for k in self._cfg.keys('server!bind'):
             pre = 'server!bind!%s'%(k)
 
             port   = self.InstanceEntry ("%s!port"%(pre),      'text', size=8)
             listen = self.InstanceEntry ("%s!interface"%(pre), 'text', size=45)
-            tls    = self.InstanceCheckbox ('%s!tls'%(pre), False, quiet=True)
+            tls    = self.InstanceCheckbox ('%s!tls'%(pre), False, quiet=True, disabled=not has_tls)
 
             js = "post_del_key('/ajax/update', '%s');"%(pre)
             link_del = self.InstanceImage ("bin.png", "Delete", border="0", onClick=js)
                 
             table += (port, listen, tls, link_del)
 
-        txt = "<h3>Listenig to ports</h3>"
+        txt = "<h2>Listening to ports</h2>"
         txt += self.Indent(table)
         
         # Add new port

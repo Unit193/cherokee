@@ -4,10 +4,11 @@ HANDLERS = [
     ('file',         'Static content'),
     ('dirlist',      'Only listing'),
     ('redir',        'Redirection'),
-    ('cgi',          'CGI'),
     ('fcgi',         'FastCGI'),
     ('scgi',         'SCGI'),
     ('proxy',        'HTTP reverse proxy'),
+    ('streaming',    'Audio/Video streaming'),
+    ('cgi',          'CGI'),
     ('ssi',          'Server Side Includes'),
     ('server_info',  'Server Info'),
     ('dbslayer',     'MySQL bridge'),
@@ -95,6 +96,7 @@ ERROR_CODES = [
     ('403', '403 Forbidden'),
     ('404', '404 Not Found'),
     ('405', '405 Method Not Allowed'),
+    ('410', '410 Gone'),
     ('413', '413 Request Entity too large'),
     ('414', '414 Request-URI too long'),
     ('416', '416 Requested range not satisfiable'),
@@ -111,8 +113,9 @@ RULES = [
     ('extensions', 'Extensions'),
     ('request',    'Regular Expression'),
     ('header',     'Header'),
-    ('exists',     'File exists'),
-    ('method',     'HTTP method'),
+    ('exists',     'File Exists'),
+    ('method',     'HTTP Method'),
+    ('bind',       'Incoming Port'),
     ('geoip',      'GeoIP')
 ]
 
@@ -126,4 +129,10 @@ EXPIRATION_TYPE = [
 CRYPTORS = [
     ('',         'No TLS/SSL'),
     ('libssl',   'OpenSSL / libssl')
+]
+
+CLIENT_CERTS = [
+    ('',         'Skip'),
+    ('accept',   'Accept'),
+    ('required', 'Require')
 ]

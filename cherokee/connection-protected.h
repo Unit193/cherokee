@@ -66,6 +66,7 @@
 #include "header-protected.h"
 #include "regex.h"
 #include "bind.h"
+#include "bogotime.h"
 
 typedef enum {
 	phase_nothing,
@@ -128,7 +129,9 @@ struct cherokee_connection {
 	 */
 	cherokee_connection_phase_t   phase;
 	cherokee_http_t               error_code;
-	
+	cherokee_buffer_t             error_internal_url;
+	cherokee_buffer_t             error_internal_qs;
+
 	/* Headers
 	 */
 	cherokee_header_t             header;
@@ -212,6 +215,12 @@ struct cherokee_connection {
 	 */
 	cherokee_buffer_t             redirect;
 	cuint_t                       respins;
+
+	/* Traffic-shaping
+	 */
+	cherokee_boolean_t            limit_rate;
+	cuint_t                       limit_bps;
+	cherokee_msec_t               limit_blocked_until;
 };
 
 #define CONN_SRV(c)    (SRV(CONN(c)->server))
@@ -246,12 +255,13 @@ ret_t cherokee_connection_recv                   (cherokee_connection_t *conn, c
 /* Internal
  */
 ret_t cherokee_connection_create_handler         (cherokee_connection_t *conn, cherokee_config_entry_t *config_entry);
-ret_t cherokee_connection_create_encoder         (cherokee_connection_t *conn, cherokee_avl_t *encoders, cherokee_avl_t *accept_enc);
+ret_t cherokee_connection_create_encoder         (cherokee_connection_t *conn, cherokee_avl_t *accept_enc);
 ret_t cherokee_connection_setup_error_handler    (cherokee_connection_t *conn);
 ret_t cherokee_connection_check_authentication   (cherokee_connection_t *conn, cherokee_config_entry_t *config_entry);
 ret_t cherokee_connection_check_ip_validation    (cherokee_connection_t *conn, cherokee_config_entry_t *config_entry);
 ret_t cherokee_connection_check_only_secure      (cherokee_connection_t *conn, cherokee_config_entry_t *config_entry);
 ret_t cherokee_connection_check_http_method      (cherokee_connection_t *conn, cherokee_config_entry_t *config_entry);
+ret_t cherokee_connection_set_rate               (cherokee_connection_t *conn, cherokee_config_entry_t *config_entry);
 void  cherokee_connection_set_keepalive          (cherokee_connection_t *conn);
 void  cherokee_connection_set_chunked_encoding   (cherokee_connection_t *conn);
 cherokee_boolean_t cherokee_connection_should_include_length(cherokee_connection_t *conn);

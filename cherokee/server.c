@@ -221,42 +221,31 @@ destroy_thread (cherokee_thread_t *thread)
 }
 
 
-static ret_t
-destroy_all_threads (cherokee_server_t *srv)
-{
-	cherokee_list_t *i, *tmp;
-
-	/* Set the exit flag, and try to ensure the threads are not
-	 * locked on a semaphore
-	 */
-	list_for_each_safe (i, tmp, &srv->thread_list) {
-		THREAD(i)->exit = true;
-	}
-
-	/* Unlock bind objects
-	 */
-	CHEROKEE_MUTEX_UNLOCK (&srv->listeners_mutex);		
-
-	/* Destroy the thread object
-	 */
-	list_for_each_safe (i, tmp, &srv->thread_list) {
-		destroy_thread (THREAD(i));
-	}
-
-	/* Main thread
-	 */
-	return cherokee_thread_free (srv->main_thread);
-}
-
-
 ret_t
 cherokee_server_free (cherokee_server_t *srv)
 {
 	cherokee_list_t *i, *j;
 
+	/* Flag the threads: server is exiting
+	 */
+	list_for_each (i, &srv->thread_list) {
+		THREAD(i)->exit = true;
+		CHEROKEE_MUTEX_UNLOCK (&srv->listeners_mutex);		
+	}
+
+	/* Kill the child processes
+	 */
+	cherokee_avl_mrproper (&srv->sources, (cherokee_func_free_t)cherokee_source_free);
+
 	/* Threads
 	 */
-	destroy_all_threads (srv);
+	list_for_each_safe (i, j, &srv->thread_list) {
+		TRACE(ENTRIES, "Destroying thread %p\n", i);
+		destroy_thread (THREAD(i));
+	}
+
+	TRACE(ENTRIES, "Destroying main_thread %p\n", srv->main_thread);
+	cherokee_thread_free (srv->main_thread);
 
 	/* File descriptors
 	 */
@@ -278,6 +267,9 @@ cherokee_server_free (cherokee_server_t *srv)
 	if (srv->iocache)
 		cherokee_iocache_free (srv->iocache);
 
+	if (srv->cryptor)
+		cherokee_cryptor_free (srv->cryptor);
+
 	cherokee_nonce_table_free (srv->nonces);
 
 	/* Virtual servers
@@ -292,14 +284,14 @@ cherokee_server_free (cherokee_server_t *srv)
 	cherokee_buffer_mrproper (&srv->pidfile);
 	cherokee_buffer_mrproper (&srv->panic_action);
 
-	cherokee_avl_mrproper (&srv->sources, (cherokee_func_free_t)cherokee_source_free);
-
 	/* Module loader: It must be the last action to be performed
 	 * because it will close all the opened modules.
 	 */
 	cherokee_plugin_loader_mrproper (&srv->loader);
 
+	TRACE(ENTRIES, "The server %p has been freed\n", srv);
 	free (srv);	
+
 	return ret_ok;
 }
 
@@ -749,8 +741,8 @@ cherokee_server_initialize (cherokee_server_t *srv)
 {   
 	int                 re;
 	ret_t               ret;
-	struct passwd      *ent;
-	cherokee_list_t    *i;
+	cherokee_list_t    *i, *tmp;
+	struct passwd      *ent          = NULL;
 	cherokee_boolean_t  loggers_done = false;
 
 	/* Build the server string
@@ -787,6 +779,49 @@ cherokee_server_initialize (cherokee_server_t *srv)
 		return ret_error;
 	}
 
+	/* Init the SSL/TLS support
+	*/
+	ret = vservers_check_tls(srv);
+	switch (ret) {
+		case ret_ok:
+			srv->tls_enabled = true;
+			break;
+		case ret_not_found:
+			srv->tls_enabled = false;
+			break;		
+		case ret_error:
+			return ret_error;
+		default:
+			RET_UNKNOWN(ret);
+			return ret_error;
+	}
+
+	if (srv->tls_enabled) {
+		/* Init TLS
+		 */
+		ret = init_vservers_tls (srv);
+		if (ret != ret_ok) 
+			return ret;
+	} else {
+		/* Ensure no TLS ports are bound
+		 */
+		list_for_each_safe (i, tmp, &srv->listeners) {
+			if (! BIND_IS_TLS(i))
+				continue;
+			
+			PRINT_MSG ("WARNING: Ignoring TLS port %d\n", BIND(i)->port);
+			cherokee_list_del (i);
+			cherokee_bind_free (BIND(i));
+		}
+	}
+
+	/* Ensure there is at least one listener
+	*/
+	if (cherokee_list_empty (&srv->listeners)) {
+		PRINT_MSG_S("ERROR: No listening on any port\n");
+		return ret_error;
+	}
+
 	/* Initialize the incoming sockets
 	 */
 	list_for_each (i, &srv->listeners) {
@@ -795,29 +830,6 @@ cherokee_server_initialize (cherokee_server_t *srv)
 					       srv->ipv6,
 					       srv->server_token);
 		if (ret != ret_ok)
-			return ret;
-	}
-
-	/* Init the SSL/TLS support
-	 */
-	ret = vservers_check_tls(srv);
-	switch (ret) {
-	case ret_ok:
-		srv->tls_enabled = true;
-		break;
-	case ret_not_found:
-		srv->tls_enabled = false;
-		break;		
-	case ret_error:
-		return ret_error;
-	default:
-		RET_UNKNOWN(ret);
-		return ret_error;
-	}
-
-	if (srv->tls_enabled) {
-		ret = init_vservers_tls (srv);
-		if (ret != ret_ok) 
 			return ret;
 	}
 
@@ -1454,12 +1466,14 @@ configure_server (cherokee_server_t *srv)
 
 	cherokee_list_sort (&srv->vservers, vserver_cmp);
 
-	/* Sanity checks
+	/* Sanity check: virtual servers
 	 */
 	ret = vservers_check_sanity (srv);
 	if (ret != ret_ok)
 		return ret;
 
+	/* Sanity check: Port Binds
+	 */
 	if (cherokee_list_empty (&srv->listeners)) {
 		cherokee_bind_t *listener;
 

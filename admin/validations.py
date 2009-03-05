@@ -7,6 +7,18 @@ def is_number (value):
     except:
         raise ValueError, 'Malformed number'
 
+def is_float (value):
+    try:
+        return str(float(value))
+    except:
+        raise ValueError, 'Malformed float number'
+
+def is_number_gt_0 (value):
+    value = is_number(value)
+    if int(value) <= 0:
+        raise ValueError, 'Must be greater than zero'
+    return value
+
 def is_boolean (value):
     if value.lower() in ['on', '1', 'true']:
         return '1'
@@ -112,7 +124,7 @@ def is_local_dir_exists (value, cfg, nochroot=False):
         path = value
 
     if not os.path.exists(path):
-        raise ValueError, 'Path does not exit'
+        raise ValueError, 'Path does not exist'
 
     if not os.path.isdir(path):
         raise ValueError, 'Path is not a directory'
@@ -129,7 +141,7 @@ def is_local_file_exists (value, cfg, nochroot=False):
         path = value
 
     if not os.path.exists(path):
-        raise ValueError, 'Path does not exit'
+        raise ValueError, 'Path does not exist'
 
     if not os.path.isfile(path):
         raise ValueError, 'Path is not a regular file'
@@ -261,3 +273,32 @@ def is_dev_null_or_local_dir_exists (value, cfg, nochroot=False):
     if value == '/dev/null':
         return value
     return is_local_dir_exists (value, cfg, nochroot)
+
+def is_information_source (value):
+    # /unix/path
+    if value[0] == '/':
+        return value
+
+    # http://host/path -> host/path
+    if "://" in value:
+        value = value.split("://")[1]
+
+    # host/path -> host
+    if '/' in value:
+        return value.split('/')[0]
+
+    return value
+
+def is_time (value):
+    # The m, h, d and w suffixes are allowed for minutes, hours, days,
+    # and weeks. Eg: 2d.
+    for c in value:
+        if c not in ".0123456789mhdw":
+            raise ValueError, 'Time value contain invalid values'
+    for c in ".mhdw":
+        if value.count(c) > 1:
+            raise ValueError, 'Malformed time'
+    
+    return value
+
+    
