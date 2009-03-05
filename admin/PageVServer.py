@@ -9,11 +9,13 @@ from RuleList import *
 from CherokeeManagement import *
 
 DATA_VALIDATION = [
+    ("vserver!.*?!user_dir",                   validations.is_safe_id),
     ("vserver!.*?!document_root",             (validations.is_dev_null_or_local_dir_exists, 'cfg')),
-    ("vserver!.*?!ssl_certificate_file",      (validations.is_local_file_exists, 'cfg')),
-    ("vserver!.*?!ssl_certificate_key_file",  (validations.is_local_file_exists, 'cfg')),
-    ("vserver!.*?!ssl_ca_list_file",          (validations.is_local_file_exists, 'cfg')),
-    ("vserver!.*?!ssl_client_list_file",      (validations.is_local_file_exists, 'cfg')),
+    ("vserver!.*?!post_max_len",              (validations.is_positive_int)),
+    ("vserver!.*?!ssl_certificate_file",      (validations.is_local_file_exists, 'cfg', 'nochroot')),
+    ("vserver!.*?!ssl_certificate_key_file",  (validations.is_local_file_exists, 'cfg', 'nochroot')),
+    ("vserver!.*?!ssl_ca_list_file",          (validations.is_local_file_exists, 'cfg', 'nochroot')),
+    ("vserver!.*?!ssl_verify_depth",          (validations.is_positive_int)),
     ("vserver!.*?!logger!.*?!filename",       (validations.parent_is_dir, 'cfg', 'nochroot')),
     ("vserver!.*?!logger!.*?!command",        (validations.is_local_file_exists, 'cfg')),
 ]
@@ -23,16 +25,18 @@ RULE_LIST_NOTE = """
 """
 
 NOTE_NICKNAME        = 'Nickname for the virtual server.'
-NOTE_CERT            = 'This directive points to the PEM-encoded Certificate file for the server.'
-NOTE_CERT_KEY        = 'PEM-encoded Private Key file for the server.'
-NOTE_CA_LIST         = 'Optional: File containing the trusted CA certificates.'
-NOTE_CLIENT_LIST     = 'Optional: File with certificates CA in PEM format, utilized for checking the client certificates.'
+NOTE_CERT            = 'This directive points to the PEM-encoded Certificate file for the server (Full path to the file)'
+NOTE_CERT_KEY        = 'PEM-encoded Private Key file for the server (Full path to the file)'
+NOTE_CA_LIST         = 'Optional: File containing the trusted CA certificates, utilized for checking the client certificates (Full path to the file)'
+NOTE_CLIENT_CERTS    = 'Optional: Skip, Accept or Require client certificates.'
+NOTE_VERIFY_DEPTH    = 'Limit up to which depth certificates in a chain are used during the verification procedure (Default: 1)'
 NOTE_ERROR_HANDLER   = 'Allows the selection of how to generate the error responses.'
 NOTE_PERSONAL_WEB    = 'Directory inside the user home directory to use as root web directory. Disabled if empty.'
 NOTE_DISABLE_PW      = 'The personal web support is currently turned on.'
 NOTE_ADD_DOMAIN      = 'Adds a new domain name. Wildcards are allowed in the domain name.'
 NOTE_DOCUMENT_ROOT   = 'Virtual Server root directory.'
 NOTE_DIRECTORY_INDEX = 'List of name files that will be used as directory index. Eg: <em>index.html,index.php</em>.'
+NOTE_MAX_UPLOAD_SIZE = 'The maximum size, in bytes, for POST uploads. (Default: unlimited)'
 NOTE_KEEPALIVE       = 'Whether this virtual server is allowed to use Keep-alive (Default: yes)'
 NOTE_DISABLE_LOG     = 'The Logging is currently enabled.'
 NOTE_LOGGERS         = 'Logging format. Apache compatible is highly recommended here.'
@@ -185,13 +189,8 @@ class PageVServer (PageMenu, FormHelper):
         txt = "<h1>Virtual Server: %s</h1>" % (name)
 
         # Basics
-        table = TableProps()
-        if host != "default":
-            self.AddPropEntry (table, 'Virtual Server nickname', '%s!nick'%(pre), NOTE_NICKNAME)
-        self.AddPropEntry (table, 'Document Root',     '%s!document_root'%(pre),   NOTE_DOCUMENT_ROOT)
-        self.AddPropEntry (table, 'Directory Indexes', '%s!directory_index'%(pre), NOTE_DIRECTORY_INDEX)
-        self.AddPropCheck (table, 'Keep-alive', '%s!keepalive'%(pre), True, NOTE_KEEPALIVE)
-        tabs += [('Basics', str(table))]
+        tmp = self._render_basics(host)
+        tabs += [('Basics', tmp)]
 
         # Domains
         tmp = self._render_hosts(host)
@@ -208,7 +207,7 @@ class PageVServer (PageMenu, FormHelper):
         # Personal Webs
         tmp  = self._render_personal_webs (host)
         if self._cfg.get_val('vserver!%s!user_dir'%(host)):
-            tmp += "<p><hr /></p>"
+            tmp += "<br/><hr />"
             pre = 'vserver!%s!user_dir!rule'%(host)
             tmp += self._render_rules_generic (cfg_key    = pre, 
                                                url_prefix = '/vserver/%s/userdir'%(host),
@@ -237,29 +236,39 @@ class PageVServer (PageMenu, FormHelper):
 
         txt = '<h2>Required SSL/TLS values</h2>'
         table = TableProps()
-        self.AddPropEntry (table, 'Certificate',     '%s!ssl_certificate_file' % (pre),     NOTE_CERT)
-        self.AddPropEntry (table, 'Certificate key', '%s!ssl_certificate_key_file' % (pre), NOTE_CERT_KEY)
+        self.AddPropEntry (table, 'Certificate',      '%s!ssl_certificate_file' % (pre),       NOTE_CERT)
+        self.AddPropEntry (table, 'Certificate key',  '%s!ssl_certificate_key_file' % (pre),   NOTE_CERT_KEY)
         txt += self.Indent(table)
 
         txt += '<h2>Advanced options</h2>'
         table = TableProps()
-        self.AddPropEntry (table, 'CA List',         '%s!ssl_ca_list_file' % (pre),         NOTE_CA_LIST)
-        self.AddPropEntry (table, 'Client Certs',    '%s!ssl_client_list_file' % (pre),     NOTE_CLIENT_LIST)
+        self.AddPropOptions_Ajax (table, 'Client Certs. Request',
+                                         '%s!ssl_client_certs' % (pre),
+                                         CLIENT_CERTS, 
+                                         NOTE_CLIENT_CERTS)
+
+        req_cc = self._cfg.get_val('%s!ssl_client_certs' % (pre))
+        if req_cc:
+            self.AddPropEntry (table, 'CA List',     '%s!ssl_ca_list_file' % (pre),        NOTE_CA_LIST)
+
+            calist = self._cfg.get_val('%s!ssl_ca_list_file' % (pre))
+            if calist:
+                self.AddPropEntry (table, 'Verify Depth',  '%s!ssl_verify_depth' % (pre),  NOTE_VERIFY_DEPTH, size=4)
+
         txt += self.Indent(table)
 
         return txt
 
     def _render_error_handler (self, host):
-        txt = ''
         pre = 'vserver!%s' % (host)
 
+        txt = '<h2>Error Handling hook</h2>'
         table = TableProps()
         e = self.AddPropOptions_Reload (table, 'Error Handler',
                                         '%s!error_handler' % (pre), 
                                         modules_available(ERROR_HANDLERS), 
                                         NOTE_ERROR_HANDLER)
-        txt += str(table) + self.Indent(e)
-
+        txt += self.Indent(table) + e
         return txt
 
     def _render_add_rule (self, prefix):
@@ -378,7 +387,7 @@ class PageVServer (PageMenu, FormHelper):
         return txt
 
     def _render_personal_webs (self, host):
-        txt = ''
+        txt = '<h2>/~user directories</h2>'
 
         table = TableProps()
         cfg_key = 'vserver!%s!user_dir'%(host)
@@ -388,7 +397,31 @@ class PageVServer (PageMenu, FormHelper):
             self.AddProp (table, 'Status', '', button, NOTE_DISABLE_PW)
 
         self.AddPropEntry (table, 'Directory name', cfg_key, NOTE_PERSONAL_WEB)
-        txt += str(table)
+        txt += self.Indent(table)
+
+        return txt
+
+    def _render_basics (self, host):
+        pre = "vserver!%s" % (host)
+
+        txt = ''
+        if host != "default":
+            txt += '<h2>Server ID</h2>'
+            table = TableProps()
+            self.AddPropEntry (table, 'Virtual Server nickname', '%s!nick'%(pre), NOTE_NICKNAME)
+            txt += self.Indent(table)
+
+        txt += '<h2>Paths</h2>'
+        table = TableProps()
+        self.AddPropEntry (table, 'Document Root',     '%s!document_root'%(pre),   NOTE_DOCUMENT_ROOT)
+        self.AddPropEntry (table, 'Directory Indexes', '%s!directory_index'%(pre), NOTE_DIRECTORY_INDEX)
+        txt += self.Indent(table)
+
+        txt += '<h2>Network</h2>'
+        table = TableProps()
+        self.AddPropCheck (table, 'Keep-alive',      '%s!keepalive'%(pre), True, NOTE_KEEPALIVE)
+        self.AddPropEntry (table, 'Max Upload Size', '%s!post_max_len' % (pre),  NOTE_MAX_UPLOAD_SIZE)
+        txt += self.Indent(table)
 
         return txt
 
@@ -398,7 +431,7 @@ class PageVServer (PageMenu, FormHelper):
         format = self._cfg.get_val(pre)
 
         # Logger
-        txt += '<h3>Logging Format</h3>'
+        txt += '<h2>Logging Format</h2>'
         table = TableProps()
         self.AddPropOptions_Ajax (table, 'Format', pre, 
                                   modules_available(LOGGERS), NOTE_LOGGERS)
@@ -462,15 +495,16 @@ class PageVServer (PageMenu, FormHelper):
                     self.AddPropEntry (t1, 'Command', '%s!error!command'%(pre), NOTE_WRT_EXEC)
                     writers += str(t1)
 
-            txt += '<h3>Writers</h3>'
+            txt += '<h2>Writers</h2>'
             txt += self.Indent(writers)
 
         return txt
 
     def _render_hosts (self, host):
+        txt  = ""
+
         cfg_domains = self._cfg["vserver!%s!domain"%(host)]
 
-        txt       = ""
         available = "1"
 
         if cfg_domains and \
@@ -486,9 +520,10 @@ class PageVServer (PageMenu, FormHelper):
                 js = "post_del_key('%s','%s');" % (self.submit_ajax_url, cfg_key)
                 link_del = self.InstanceImage ("bin.png", "Delete", border="0", onClick=js)
                 table += (en, link_del)
-
-            txt += str(table)
-            txt += "<hr />"
+                
+            txt += "<h2>Accepted domains</h2>"
+            txt += self.Indent(table)
+            txt += "<br />"
 
         # Look for firs available
         i = 1
@@ -499,10 +534,12 @@ class PageVServer (PageMenu, FormHelper):
             i += 1
 
         # Add new domain
+        txt += "<h2>Add new domains</h2>"
+
         table = TableProps()
         cfg_key = "vserver!%s!domain!%s" % (host, available)
-        self.AddPropEntry (table, 'Add new domain name', cfg_key, NOTE_ADD_DOMAIN)
-        txt += str(table)
+        self.AddPropEntry (table, 'New Domain Name', cfg_key, NOTE_ADD_DOMAIN)
+        txt += self.Indent(table)
 
         return txt
 

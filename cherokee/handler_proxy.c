@@ -827,6 +827,9 @@ cherokee_handler_proxy_add_headers (cherokee_handler_proxy_t *hdl,
 {
 	ret_t ret;
 
+	if (unlikely (hdl->pconn == NULL))
+		return ret_error;
+
 	/* Parse the incoming header
 	 */
 	ret = parse_server_header (hdl, &hdl->pconn->header_in_raw, buf);
@@ -845,6 +848,8 @@ check_chunked (cherokee_handler_proxy_t *hdl,
 	       ssize_t                  *size)
 {
 	char *p = begin;
+
+	UNUSED(hdl);
 
 	/* Iterate through the number */
 	while (((*p >= '0') && (*p <= '9')) ||

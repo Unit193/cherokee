@@ -88,11 +88,12 @@ interpreter_free (void *ptr)
 	/* Only frees its stuff, the rest will be freed by
 	 * cherokee_source_t.
 	 */
-	cherokee_buffer_mrproper (&src->interpreter);
-
 	if (src->pid > 0) {
+		TRACE(ENTRIES, "Killing %s, pid=%d\n", src->interpreter.buf, src->pid);
 		kill (src->pid, SIGTERM);
 	}
+
+	cherokee_buffer_mrproper (&src->interpreter);
 
 	if (src->custom_env)
 		free_custom_env (src);
@@ -100,6 +101,132 @@ interpreter_free (void *ptr)
 	CHEROKEE_MUTEX_DESTROY (&src->launching_mutex);
 }
 
+static char *
+find_next_stop (char *p)
+{
+	char *s;
+	char *w;
+
+	s = strchr (p, '/');
+	w = strchr (p, ' ');
+
+	if ((s == NULL) && (w == NULL))
+		return NULL;
+
+	if (w == NULL)
+		return s;
+	if (s == NULL)
+		return w;
+
+	return (w > s) ? s : w;
+}
+
+static ret_t
+check_interpreter_full (cherokee_buffer_t *fullpath)
+{
+	int          re;
+	struct stat  inter;
+	char        *p;
+	char         tmp;
+	const char  *end    = fullpath->buf + fullpath->len;
+
+	p = find_next_stop (fullpath->buf + 1);
+	if (p == NULL)
+		return ret_error;
+
+	while (p <= end) {
+		/* Set a temporal end */
+		tmp = *p;
+		*p  = '\0';
+
+		/* Does the file exist? */
+		re = cherokee_stat (fullpath->buf, &inter);
+		if ((re == 0) &&
+		    (! S_ISDIR(inter.st_mode))) 
+		{
+			*p = tmp;
+			return ret_ok;
+		}
+		
+		*p = tmp;
+
+		/* Exit if already reached the end */		
+		if (p >= end)
+			break;
+
+		/* Find the next position */
+		p = find_next_stop (p+1);
+		if (p == NULL)
+			p = (char *)end;
+	}
+
+	return ret_error;
+}
+
+
+static ret_t
+check_interpreter_path (cherokee_buffer_t *partial_path)
+{
+	ret_t              ret;
+	char              *p;
+	char              *colon;
+	char              *path;
+	cherokee_buffer_t  fullpath = CHEROKEE_BUF_INIT;
+
+	p = getenv("PATH");
+	if (p == NULL)
+		return ret_error;
+
+	path = strdup (p);
+	if (path == NULL)
+		return ret_error;
+
+	p = path;
+	do {
+		colon = strchr(p, ':');
+		if (colon != NULL)
+			*colon = '\0';
+
+		cherokee_buffer_clean      (&fullpath);
+		cherokee_buffer_add        (&fullpath, p, strlen(p));
+		cherokee_buffer_add_char   (&fullpath, '/');
+		cherokee_buffer_add_buffer (&fullpath, partial_path);
+
+		ret = check_interpreter_full (&fullpath);
+		if (ret == ret_ok)
+			goto done;
+
+		if (colon == NULL)
+			break;
+
+		p = colon + 1;
+	} while (true);
+
+	ret = ret_not_found;
+
+done:
+	cherokee_buffer_mrproper (&fullpath);
+	free (path);
+
+	return ret;
+}
+
+static ret_t
+check_interpreter (cherokee_source_interpreter_t *src)
+{
+	ret_t ret;
+
+	if (src->interpreter.buf[0] == '/') {
+		ret = check_interpreter_full (&src->interpreter);
+		if (ret == ret_ok) 
+			return ret_ok;
+
+		PRINT_ERROR ("ERROR: Could find interpreter '%s'\n", src->interpreter.buf);
+		return ret_error;
+	}
+	
+	return check_interpreter_path (&src->interpreter);
+}
 
 ret_t 
 cherokee_source_interpreter_configure (cherokee_source_interpreter_t *src, cherokee_config_node_t *conf)
@@ -111,7 +238,8 @@ cherokee_source_interpreter_configure (cherokee_source_interpreter_t *src, chero
 	/* Configure the base class
 	 */
 	ret = cherokee_source_configure (SOURCE(src), conf);
-	if (ret != ret_ok) return ret;
+	if (ret != ret_ok)
+		return ret;
 
 	/* Interpreter parameters
 	 */
@@ -119,7 +247,6 @@ cherokee_source_interpreter_configure (cherokee_source_interpreter_t *src, chero
 		child = CONFIG_NODE(i);
 
 		if (equal_buf_str (&child->key, "interpreter")) {
-			/* TODO: fix win32 path */
 			cherokee_buffer_add_buffer (&src->interpreter, &child->val);
 
 		} else if (equal_buf_str (&child->key, "debug")) {
@@ -128,7 +255,7 @@ cherokee_source_interpreter_configure (cherokee_source_interpreter_t *src, chero
 		} else if (equal_buf_str (&child->key, "timeout")) {
 			src->timeout = atoi (child->val.buf);
 
-		} else if (equal_buf_str (&child->key, "change_user")) {
+		} else if (equal_buf_str (&child->key, "user")) {
 			struct passwd pwd;
 			char          tmp[1024];
 
@@ -149,6 +276,19 @@ cherokee_source_interpreter_configure (cherokee_source_interpreter_t *src, chero
 				if (ret != ret_ok) return ret;
 			}
 		}	
+	}
+
+	/* Sanity check
+	 */
+	if (cherokee_buffer_is_empty (&src->interpreter)) {
+		PRINT_ERROR_S ("ERROR: 'Source interpreter' with no interpreter\n");
+		return ret_error;
+	}
+
+	ret = check_interpreter (src);
+	if (ret != ret_ok) {
+		PRINT_ERROR ("ERROR: Couldn't find interpreter '%s'\n", src->interpreter.buf);
+		return ret_error;
 	}
 
 	return ret_ok;
@@ -338,6 +478,11 @@ cherokee_source_interpreter_connect_polling (cherokee_source_interpreter_t *src,
 		TRACE (ENTRIES, "Connected successfully fd=%d\n", socket->socket);
 		goto out;
 	case ret_deny:
+		/* The connection has been refused:
+		 * Close the socket and try again.
+		 */
+		TRACE (ENTRIES, "Connection refused (closing fd=%d)\n", socket->socket);
+		cherokee_socket_close (socket);
 		break;
 	case ret_eagain:
 		ret = cherokee_thread_deactive_to_polling (CONN_THREAD(conn),

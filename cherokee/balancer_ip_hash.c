@@ -80,11 +80,20 @@ static ret_t
 reactivate_entry (cherokee_balancer_ip_hash_t *balancer,
 		  cherokee_balancer_entry_t   *entry)
 {
+	/* balancer->mutex is LOCKED
+	 */
 	cherokee_buffer_t tmp = CHEROKEE_BUF_INIT;
+
+	/* Disable
+	 */
+	if (entry->disabled == false)
+		return ret_ok;
 
 	balancer->n_active += 1;
 	entry->disabled = false;
 
+	/* Notify
+	 */
 	cherokee_source_copy_name (entry->source, &tmp);
 	PRINT_MSG ("NOTICE: Taking source='%s' back on-line: %d active\n",
 		   tmp.buf, balancer->n_active);
@@ -99,31 +108,52 @@ report_fail (cherokee_balancer_ip_hash_t *balancer,
 	     cherokee_connection_t       *conn, 
 	     cherokee_source_t           *src)
 {
+	ret_t                      ret;
 	cherokee_list_t           *i;
 	cherokee_balancer_entry_t *entry;
 	cherokee_buffer_t          tmp    = CHEROKEE_BUF_INIT;
 
 	UNUSED(conn);
 
+	CHEROKEE_MUTEX_LOCK (&balancer->mutex);
+
 	list_for_each (i, &BAL(balancer)->entries) {
 		entry = BAL_ENTRY(i);
-		if (entry->source == src) {
-			balancer->n_active -= 1;
 
-			entry->disabled       = true;
-			entry->disabled_until = cherokee_bogonow_now + BAL_DISABLE_TIMEOUT;
+		/* Find the right source
+		 */
+		if (entry->source != src)
+			continue;
 
-			cherokee_source_copy_name (entry->source, &tmp);
-			PRINT_MSG ("NOTICE: Taking source='%s' off-line. Active %d\n", 
-				   tmp.buf, balancer->n_active);
-			cherokee_buffer_mrproper (&tmp);
-
-			return ret_ok;
+		if (entry->disabled) {
+			ret = ret_ok;
+			goto out;
 		}
+
+		/* Disable the source
+		 */
+		balancer->n_active -= 1;
+
+		entry->disabled       = true;
+		entry->disabled_until = cherokee_bogonow_now + BAL_DISABLE_TIMEOUT;
+
+		/* Notify what has happened
+		 */
+		cherokee_source_copy_name (entry->source, &tmp);
+		PRINT_MSG ("NOTICE: Taking source='%s' off-line. Active %d\n", 
+			   tmp.buf, balancer->n_active);
+		cherokee_buffer_mrproper (&tmp);
+
+		CHEROKEE_MUTEX_UNLOCK (&balancer->mutex);
+		return ret_ok;
 	}
 
+	ret = ret_error;
 	SHOULDNT_HAPPEN;
-	return ret_error;
+
+out:
+	CHEROKEE_MUTEX_UNLOCK (&balancer->mutex);
+	return ret;
 }
 
 
@@ -132,15 +162,15 @@ dispatch (cherokee_balancer_ip_hash_t  *balancer,
 	  cherokee_connection_t        *conn, 
 	  cherokee_source_t           **src)
 {
-	cherokee_balancer_entry_t *entry;
 	cint_t                     n;
 	cint_t                     ip_len;
 	char                      *ip;
 	cherokee_list_t           *i;
+	cherokee_balancer_entry_t *entry  = NULL;
 	culong_t                   hash   = 0;
 	cherokee_socket_t         *socket = &conn->socket;
 	
-	CHEROKEE_MUTEX_LOCK (&balancer->last_one_mutex);
+	CHEROKEE_MUTEX_LOCK (&balancer->mutex);
 	
 	/* Hash(ip)
 	 */
@@ -164,7 +194,7 @@ dispatch (cherokee_balancer_ip_hash_t  *balancer,
 
 	/* Select a back-end
 	 */
-	if (unlikely (balancer->n_active == 0)) {
+	if (unlikely (balancer->n_active <= 0)) {
 		PRINT_MSG_S ("ERROR: Sources exhausted: re-enabling one.\n");
 		reactivate_entry (balancer, BAL_ENTRY(balancer->last_one));
 
@@ -173,7 +203,6 @@ dispatch (cherokee_balancer_ip_hash_t  *balancer,
 	}
 
 	n = (hash % balancer->n_active);
-
 	TRACE(ENTRIES, "Chosen active server number %d\n", n);
 	
 	/* Pick the entry
@@ -195,10 +224,17 @@ dispatch (cherokee_balancer_ip_hash_t  *balancer,
 	}
 	
 	/* Found */ 
-	*src = entry->source;
+	if (unlikely (entry == NULL))
+		goto error;
 
-	CHEROKEE_MUTEX_UNLOCK (&balancer->last_one_mutex);
+	*src = entry->source;
+	CHEROKEE_MUTEX_UNLOCK (&balancer->mutex);
 	return ret_ok;
+
+error:
+	*src = NULL;
+	CHEROKEE_MUTEX_UNLOCK (&balancer->mutex);
+	return ret_error;
 }
 
 
@@ -221,7 +257,7 @@ cherokee_balancer_ip_hash_new (cherokee_balancer_t **bal)
 	n->last_one = NULL;
 	n->n_active = 0;
 
-	CHEROKEE_MUTEX_INIT (&n->last_one_mutex, CHEROKEE_MUTEX_FAST);
+	CHEROKEE_MUTEX_INIT (&n->mutex, CHEROKEE_MUTEX_FAST);
 
 	/* Return obj
 	 */
@@ -233,6 +269,6 @@ cherokee_balancer_ip_hash_new (cherokee_balancer_t **bal)
 ret_t      
 cherokee_balancer_ip_hash_free (cherokee_balancer_ip_hash_t *balancer)
 {
-	CHEROKEE_MUTEX_DESTROY (&balancer->last_one_mutex);
+	CHEROKEE_MUTEX_DESTROY (&balancer->mutex);
 	return ret_ok;
 }

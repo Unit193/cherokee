@@ -66,6 +66,7 @@ ModuleSsi.py \
 ModuleProxy.py \
 ModuleMirror.py \
 ModuleDbslayer.py \
+ModuleStreaming.py \
 ModuleErrorNn.py \
 ModuleErrorRedir.py \
 ModuleAuth.py \
@@ -87,6 +88,7 @@ ModuleGeoip.py \
 ModuleHeader.py \
 ModuleExists.py \
 ModuleMethod.py \
+ModuleBind.py \
 ModuleCustomError.py \
 config.py \
 pyscgi.py \

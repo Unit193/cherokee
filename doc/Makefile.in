@@ -95,6 +95,8 @@ ETR_SOCKET_LIBS = @ETR_SOCKET_LIBS@
 EXEEXT = @EXEEXT@
 F77 = @F77@
 FFLAGS = @FFLAGS@
+FFMPEG_CFLAGS = @FFMPEG_CFLAGS@
+FFMPEG_LIBS = @FFMPEG_LIBS@
 GREP = @GREP@
 HaveRtldGlobal = @HaveRtldGlobal@
 HaveRtldLocal = @HaveRtldLocal@
@@ -276,6 +278,7 @@ modules_handlers_fcgi.html \
 modules_handlers_scgi.html \
 modules_handlers_server_info.html \
 modules_handlers_ssi.html \
+modules_handlers_streaming.html \
 modules_handlers_mirror.html \
 modules_handlers_admin.html \
 modules_handlers_proxy.html \
@@ -674,6 +677,9 @@ uninstall-am: uninstall-docDATA uninstall-docmediacssDATA \
 
 .txt.html:
 	$(ASCIIDOC) -o $@ $(top_srcdir)/doc/$< 
+
+serve:
+	../cherokee/cherokee -r .
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

@@ -9,8 +9,6 @@
 # Server
 #
 server!bind!1!port = 80
-server!bind!2!port = 443
-server!bind!2!tls = 1
 server!timeout = 15
 server!keepalive = 1
 server!keepalive_max_requests = 500
@@ -38,16 +36,16 @@ vserver!1!rule!1!handler!iocache = 0
 vserver!1!rule!2!match = directory
 vserver!1!rule!2!match!directory = /icons
 vserver!1!rule!2!handler = file
-vserver!1!rule!2!document_root = %prefix%/share/cherokee/icons/
+vserver!1!rule!2!document_root = %prefix%/share/cherokee/icons
 
 vserver!1!rule!3!match = directory
 vserver!1!rule!3!match!directory = /cherokee_themes
-vserver!1!rule!3!document_root = %prefix%/share/cherokee/themes/
+vserver!1!rule!3!document_root = %prefix%/share/cherokee/themes
 vserver!1!rule!3!handler = file
 
 vserver!1!rule!4!match = directory
 vserver!1!rule!4!match!directory = /cgi-bin
-vserver!1!rule!4!document_root = %prefix%/lib/cgi-bin/
+vserver!1!rule!4!document_root = %prefix%/lib/cgi-bin
 vserver!1!rule!4!handler = cgi
 
 vserver!1!rule!5!match = directory
@@ -65,7 +63,7 @@ vserver!1!rule!99999!handler!balancer!source!1 = 1
 
 # Sources 
 #
-source!1!nick = php
+source!1!nick = PHP Local
 source!1!type = interpreter
 source!1!host = /tmp/cherokee-php.socket
 source!1!env!PHP_FCGI_CHILDREN = 5
@@ -91,7 +89,7 @@ icons!suffix!page_white_text.png = txt,text,rtf,sdw
 icons!suffix!font.png = ttf
 icons!suffix!music.png = au,snd,mid,midi,kar,mpga,mpega,mp2,mp3,sid,wav,aif,aiff,aifc,gsm,m3u,wma,wax,ra,rm,ram,pls,sd2,ogg
 icons!suffix!package.png = tar,gz,bz2,zip,rar,ace,lha,Z,z,7z
-icons!suffix!film.png = avi,mpeg,mpe,mpg,mpeg3,dl,fli,qt,mov,movie
+icons!suffix!film.png = avi,mpeg,mpe,mpg,mpeg3,dl,fli,qt,mov,movie,flv
 icons!suffix!cup.png = java,class,jar
 icons!suffix!cd.png = iso,ngr,cue
 icons!suffix!camera.png = jpg,jpeg,jpe
@@ -231,7 +229,6 @@ mime!application/x-redhat-package-manager!extensions = rpm
 mime!application/x-sh!extensions = sh
 mime!application/x-shar!extensions = shar
 mime!application/x-shockwave-flash!extensions = swf,swfl
-mime!application/x-stuffit!extensions = sit
 mime!application/x-stuffit!extensions = sit,sea
 mime!application/x-sv4cpio!extensions = sv4cpio
 mime!application/x-sv4crc!extensions = sv4crc
@@ -371,6 +368,7 @@ mime!video/x-ms-wmv!extensions = wmv
 mime!video/x-ms-wmx!extensions = wmx
 mime!video/x-ms-wvx!extensions = wvx
 mime!video/x-msvideo!extensions = avi
+mime!video/x-flv!extensions = flv
 mime!video/x-sgi-movie!extensions = movie
 mime!x-conference/x-cooltalk!extensions = ice
 mime!x-world/x-vrml!extensions = vrm,vrml,wrl

@@ -92,6 +92,8 @@ ETR_SOCKET_LIBS = @ETR_SOCKET_LIBS@
 EXEEXT = @EXEEXT@
 F77 = @F77@
 FFLAGS = @FFLAGS@
+FFMPEG_CFLAGS = @FFMPEG_CFLAGS@
+FFMPEG_LIBS = @FFMPEG_LIBS@
 GREP = @GREP@
 HaveRtldGlobal = @HaveRtldGlobal@
 HaveRtldLocal = @HaveRtldLocal@
@@ -194,6 +196,7 @@ top_srcdir = @top_srcdir@
 cherokeewwwdir = "@WWW_ROOT@"
 cherokeewwwimagesdir = "@WWW_ROOT@/images"
 cherokeewwwimages_DATA = \
+favicon.ico \
 default-bg.png \
 cherokee-logo.png \
 powered_by_cherokee.png

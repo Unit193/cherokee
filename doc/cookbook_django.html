@@ -45,7 +45,13 @@ $ django-admin startproject example</tt></pre>
 <tt>example</tt>. Now you are ready to configure Cherokee. You only need to
 know how to spawn the FastCGI or SCGI, which is done with a script
 provided by your project called <tt>manage.py</tt>.</p></div>
-<div class="para"><p>It can be run on a TCP port or on a Unix socket. In our example we
+<div class="para"><p>It is important to ensure that <tt>manage.py</tt> has execution permissions.
+If it had not, you would only have to set them by running:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>chmod a+rx manage.py</tt></pre>
+</div></div>
+<div class="para"><p>Django can be run on a TCP port or on a Unix socket. In our example we
 will be launching it as threaded server on a TCP port with SCGI
 protocol. This is acomplished with the following command, which is
 what we will have to set up in <tt>cherokee-admin</tt>.</p></div>

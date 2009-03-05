@@ -74,11 +74,10 @@ cherokee_handler_cgi_base_init (cherokee_handler_cgi_base_t              *cgi,
 
 	/* Read the properties
 	 */
+	HANDLER(cgi)->support = hsupport_nothing;
+
 	if (HANDLER_CGI_BASE_PROPS(cgi)->is_error_handler) {
-		HANDLER(cgi)->support = hsupport_error;
-	}
-	else {
-		HANDLER(cgi)->support = hsupport_nothing;
+		HANDLER(cgi)->support |= hsupport_error;
 	}
 	
 	return ret_ok;
@@ -436,7 +435,20 @@ cherokee_handler_cgi_base_build_basic_env (
 			 bind->server_address.buf,
 			 bind->server_address.len);
 	}
-	
+
+	/* Internal error redirection:
+	 * It is okay if the QS is empty.
+	 */
+	if (! cherokee_buffer_is_empty (&conn->error_internal_url)) {
+		set_env (cgi, "REDIRECT_URL", 
+			 conn->error_internal_url.buf,
+			 conn->error_internal_url.len);
+
+		set_env (cgi, "REDIRECT_QUERY_STRING", 
+			 conn->error_internal_qs.buf,
+			 conn->error_internal_qs.len);
+	}
+
 	/* HTTP variables
 	 */
 	ret = cherokee_header_get_known (&conn->header, header_accept, &p, &p_len);
@@ -899,11 +911,31 @@ parse_header (cherokee_handler_cgi_base_t *cgi, cherokee_buffer_t *buffer)
 			status[3] = '\0';
 		
 			code = atoi (status);
-			if (code <= 0) {
+			if (code < 100) {
 				conn->error_code = http_internal_error;
 				return ret_error;
 			}
 
+			cherokee_buffer_remove_chunk (buffer, begin - buffer->buf, end2 - begin);
+			end2 = begin;
+
+			conn->error_code = code;			
+			continue;
+		}
+
+		else if (strncasecmp ("HTTP/", begin, 5) == 0) {
+			int  code;
+			char status[4];
+
+			memcpy (status, begin+9, 3);
+			status[3] = '\0';
+
+			code = atoi (status);
+			if (code < 100) {
+				conn->error_code = http_internal_error;
+				return ret_error;
+			}
+		
 			cherokee_buffer_remove_chunk (buffer, begin - buffer->buf, end2 - begin);
 			end2 = begin;
 

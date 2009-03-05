@@ -68,24 +68,6 @@ cherokee_source_mrproper (cherokee_source_t *src)
 }
 
 
-static int
-is_ipv6 (cherokee_buffer_t *ip)
-{
-	cuint_t i;
-	cuint_t colons = 0;
-
-	for (i=0; i<ip->len; i++) {
-		if (ip->buf[i] == ':') {
-			colons += 1;
-			if (colons == 2)
-				return 1;
-		}
-	}
-
-	return 0;
-}
-
-
 ret_t 
 cherokee_source_connect (cherokee_source_t *src, cherokee_socket_t *sock)
 {
@@ -107,17 +89,17 @@ cherokee_source_connect (cherokee_source_t *src, cherokee_socket_t *sock)
 	 */
 	if (! cherokee_buffer_is_empty (&src->unix_socket)) {
 		ret = cherokee_socket_set_client (sock, AF_UNIX);
-		if (ret != ret_ok) 
+		if (unlikely (ret != ret_ok))
 			return ret;
 
 		/* Copy the unix socket path */
 		ret = cherokee_socket_gethostbyname (sock, &src->unix_socket);
-		if (ret != ret_ok)
+		if (unlikely (ret != ret_ok))
 			return ret;
 
 		/* Set non-blocking */
 		ret = cherokee_fd_set_nonblocking (sock->socket, true);
-		if (ret != ret_ok) {
+		if (unlikely (ret != ret_ok)) {
 			PRINT_ERRNO (errno, "Failed to set nonblocking (fd=%d): ${errno}\n",
 				     sock->socket);
 		}
@@ -127,24 +109,25 @@ cherokee_source_connect (cherokee_source_t *src, cherokee_socket_t *sock)
 
 	/* INET socket
 	 */
-	if (is_ipv6 (&src->host)) {
+	if (cherokee_string_is_ipv6 (&src->host)) {
 		ret = cherokee_socket_set_client (sock, AF_INET6);
 	} else {
 		ret = cherokee_socket_set_client (sock, AF_INET);
 	}
 
-	if (ret != ret_ok)
+	if (unlikely (ret != ret_ok))
 		return ret;
 	
 	/* Query the host */
 	ret = cherokee_resolv_cache_get_host (resolv, src->host.buf, sock);
-	if (ret != ret_ok) return ret;
+	if (unlikely (ret != ret_ok))
+		return ret;
 	
 	SOCKET_ADDR_IPv4(sock)->sin_port = htons(src->port);
 
 	/* Set non-blocking */
 	ret = cherokee_fd_set_nonblocking (sock->socket, true);
-	if (ret != ret_ok) {
+	if (unlikely (ret != ret_ok)) {
 		PRINT_ERRNO (errno, "Failed to set nonblocking (fd=%d): ${errno}\n",
 			     sock->socket);
 	}
@@ -192,7 +175,7 @@ cherokee_source_connect_polling (cherokee_source_t     *src,
 static ret_t
 set_host (cherokee_source_t *src, cherokee_buffer_t *host)
 {
-	char *p;
+	ret_t ret;
 
 	if (cherokee_buffer_is_empty (host))
 		return ret_error;
@@ -212,18 +195,9 @@ set_host (cherokee_source_t *src, cherokee_buffer_t *host)
 	
 	/* Host name
 	 */
-	p = strchr (host->buf, ':');
-	if (p == NULL) {
-		cherokee_buffer_add_buffer (&src->host, host);
-		return ret_ok;
-	} 
-	
-	/* Host name + port
-	 */
-	*p = '\0';
-	src->port = atoi (p+1);
-	cherokee_buffer_add (&src->host, host->buf, p - host->buf);
-	*p = ':';
+	ret = cherokee_parse_host (host, &src->host, &src->port);
+	if (unlikely (ret != ret_ok))
+		return ret_error;
 	
 	return ret_ok;
 }
