@@ -7,8 +7,12 @@ cherokee (0.99.3-1) unstable; urgency=low
   * Added Leonel Núñez as an uploader
   * Removed the spawn-fcgi alternative handling code, as it was removed
     upstream
+  * Moved all packages to section "httpd" (see msg
+    877i3d9d2w.fsf@vorlon.ganneff.de at debian-devel, 26/02/2009)
+  * Specific GPL version used noted in debian/copyright, avoiding
+    lintian warnings
 
- -- Gunnar Wolf <gwolf@debian.org>  Thu, 05 Mar 2009 11:56:28 -0600
+ -- Gunnar Wolf <gwolf@debian.org>  Sun, 08 Mar 2009 23:17:08 -0600
 
 cherokee (0.98.1-1) unstable; urgency=low
 
