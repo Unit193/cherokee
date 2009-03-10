@@ -14,7 +14,7 @@ Architecture: any
 Pre-Depends: libcherokee-config0 (= ${binary:Version})
 Depends: ${shlibs:Depends}, logrotate, libcherokee-base0 (= ${binary:Version}), libcherokee-server0 (= ${binary:Version}), libcherokee-mod-server-info
 Recommends: libcherokee-mod-admin
-Suggests: libcherokee-mod-libssl, libcherokee-mod-streaming
+Suggests: libcherokee-mod-libssl, libcherokee-mod-streaming, libcherokee-mod-geoip
 Provides: httpd, httpd-cgi
 Description: Very fast, flexible and easy to configure web server
  Cherokee is a very fast, flexible and easy to configure Web Server.
@@ -47,7 +47,7 @@ Description: Cherokee web server - Base libraries
  This is the runtime library
 
 Package: libcherokee-base0-dev
-Section: httpd
+Section: libdevel
 Architecture: any
 Depends: libcherokee-base0 (= ${binary:Version})
 Description: Cherokee web server - base libraries' development files
@@ -81,7 +81,7 @@ Description: Cherokee web server - Client libraries
  This is the client runtime library
 
 Package: libcherokee-client0-dev
-Section: httpd
+Section: libdevel
 Architecture: any
 Depends: libcherokee-client0 (= ${binary:Version}), libcherokee-base0-dev (= ${binary:Version})
 Description: Cherokee web server - Client libraries' development files
@@ -117,7 +117,7 @@ Description: Cherokee web server - Configuration libraries
  This is the configuration handler's runtime library
 
 Package: libcherokee-config0-dev
-Section: httpd
+Section: libdevel
 Architecture: any
 Depends: libcherokee-config0 (= ${binary:Version}), libcherokee-base0-dev (= ${binary:Version})
 Description: Cherokee web server - Configuration libraries' development files
@@ -152,7 +152,7 @@ Description: Cherokee web server - Server libraries
  This is the server runtime library
 
 Package: libcherokee-server0-dev
-Section: httpd
+Section: libdevel
 Architecture: any
 Depends: libcherokee-server0 (= ${binary:Version}), libcherokee-base0-dev (= ${binary:Version})
 Description: Cherokee web server - Server librardevelopment files
@@ -264,7 +264,7 @@ Description: Cherokee web server - SSL crypto functions plugin
 Package: libcherokee-mod-streaming
 Section: httpd
 Architecture: any
-Depends: ${shlib:Depends}, libcherokee-server0 (= ${binary:Version})
+Depends: ${shlibs:Depends}, libcherokee-server0 (= ${binary:Version})
 Enhances: cherokee
 Description: Cherokee web server - Media streaming functions plugin
  Cherokee is a very fast, flexible and easy to configure Web Server.
@@ -285,7 +285,7 @@ Description: Cherokee web server - Media streaming functions plugin
 Package: libcherokee-mod-geoip
 Section: httpd
 Architecture: any
-Depends: ${shlib:Depends}, libcherokee-server0 (= ${binary:Version})
+Depends: ${shlibs:Depends}, libcherokee-server0 (= ${binary:Version})
 Enhances: cherokee
 Description: Cherokee web server - Media streaming functions plugin
  Cherokee is a very fast, flexible and easy to configure Web Server.
