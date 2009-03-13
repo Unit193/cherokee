@@ -33,6 +33,7 @@ MOD_LIBSSL_DIR   = $(CURDIR)/debian/libcherokee-mod-libssl
 MOD_STREAM_DIR   = $(CURDIR)/debian/libcherokee-mod-streaming
 MOD_GEOIP_DIR    = $(CURDIR)/debian/libcherokee-mod-geoip
 SERVER_DIR       = $(CURDIR)/debian/cherokee
+DOC_DIR          = $(CURDIR)/debian/cherokee-doc
 CGET_DIR         = $(CURDIR)/debian/cget
 
 # These are used for cross-compiling and for saving the configure script
@@ -106,7 +107,7 @@ clean: unpatch
 
 install: install-indep install-arch
 
-install-indep:
+install-indep: 
 	# debian/<package>-doc
 	#INSTALLDOC#
 
@@ -282,6 +283,12 @@ install-arch:
 
 	mv $(BUILD_DIR)/usr/bin/cget                         $(CGET_DIR)/usr/bin/
 	mv $(BUILD_DIR)/usr/share/man/man1/cget.1            $(CGET_DIR)/usr/share/man/man1/
+
+# cherokee-doc - Documentation
+	install -d $(DOC_DIR)/DEBIAN
+	install -d $(DOC_DIR)/usr/share/doc/cherokee-doc
+
+	mv $(BUILD_DIR)/usr/share/doc/cherokee/* $(DOC_DIR)/usr/share/doc/cherokee-doc/
 
 # cherokee - Main binary package
 	# Whatever we still have in $(BUILD_DIR) will become the main Cherokee

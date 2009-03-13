@@ -14,7 +14,7 @@ Architecture: any
 Pre-Depends: libcherokee-config0 (= ${binary:Version})
 Depends: ${shlibs:Depends}, logrotate, libcherokee-base0 (= ${binary:Version}), libcherokee-server0 (= ${binary:Version}), libcherokee-mod-server-info
 Recommends: libcherokee-mod-admin
-Suggests: libcherokee-mod-libssl, libcherokee-mod-streaming, libcherokee-mod-geoip
+Suggests: libcherokee-mod-libssl, libcherokee-mod-streaming, libcherokee-mod-geoip, cherokee-doc
 Provides: httpd, httpd-cgi
 Description: Very fast, flexible and easy to configure web server
  Cherokee is a very fast, flexible and easy to configure Web Server.
@@ -303,7 +303,28 @@ Description: Cherokee web server - Media streaming functions plugin
  minimal dependency footprint.
 
 Package: cget
+Section: web
 Architecture: any
 Depends: ${shlibs:Depends}, libcherokee-client0 (= ${binary:Version})
 Description: web page downloader
  CGet is a small downloader based in the Cherokee client library
+
+Package: cherokee-doc
+Section: doc
+Architecture: all
+Depends: ${shlibs:Depends}
+Recommends: cherokee
+Description: Very fast, flexible and easy to configure web server
+ Cherokee is a very fast, flexible and easy to configure Web Server.
+ It supports the widespread technologies nowadays: FastCGI, SCGI, PHP,
+ CGI, TLS and SSL encrypted connections, Virtual hosts, Authentication,
+ on the fly encoding, Apache compatible log files, HTTP Load Balancing,
+ Data Base Balancing, SSI, Reverse HTTP Proxy and much more.
+ .
+ Cherokee also provides an easy to use configuration interface that
+ allows to configure the server from top to bottom without having to
+ edit a text configuration file.
+ .
+ This package includes the full server documentation - Operation and
+ administration tips, cookbook-like recipes for configuring common
+ webapps and frameworks, and programmer-oriented documentation .

@@ -1,8 +1,14 @@
 cherokee (0.99.4-1) unstable; urgency=low
 
+  [ Leonel Nunez ]
   * New Upstream Version
 
- -- Leonel Nunez <leonel@enelserver.com>  Fri, 13 Mar 2009 08:58:40 -0600
+  [ Gunnar Wolf ]
+  * Upstream version fixed incorrectly set environment variables
+    (Closes: #517362)
+  * Split documentation into its own package (Closes: #509595)
+
+ -- Gunnar Wolf <gwolf@debian.org>  Fri, 13 Mar 2009 12:54:35 -0600
 
 cherokee (0.99.3-1) unstable; urgency=low
 
