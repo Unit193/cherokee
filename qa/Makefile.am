@@ -206,7 +206,22 @@ run-tests.py \
 198-HTTPresponse.py \
 199-ErrorRedir.py \
 200-ErrorRedir2.py \
-201-PostLimit.py
+201-PostLimit.py \
+202-xsendfile2.py \
+203-secdownload1.py \
+204-secdownload2.py \
+205-secdownload3.py \
+206-AuthType.py \
+207-RuleExists4.py \
+208-Userdir_Pathinfo.py \
+209-ScriptAlias_DRoot.py \
+210-Userdir_ScriptName.py \
+211-EmptyGif.py \
+212-DirList-Hidden.py \
+213-Post-Chunked1.py \
+214-Post-Chunked2.py \
+215-Post-Chunked3.py
+
 
 test:
 	./run-tests.py

@@ -115,6 +115,20 @@
 "   }"                                                                                              CRLF\
 "} /* END: ajaxObject */"                                                                           CRLF\
 "var info = {"                                                                                      CRLF\
+"  uptime: {"                                                                                       CRLF\
+"    title: 'Uptime',"                                                                              CRLF\
+"    items: {"                                                                                      CRLF\
+"      formatted: 'Uptime'"                                                                         CRLF\
+"    }"                                                                                             CRLF\
+"  },"                                                                                              CRLF\
+"  connections: {"                                                                                  CRLF\
+"    title: 'Current Connections',"                                                                 CRLF\
+"    items: {"                                                                                      CRLF\
+"      number: 'Number',"                                                                           CRLF\
+"      active: 'Active', "                                                                          CRLF\
+"      reusable: 'Reusable'"                                                                        CRLF\
+"    }"                                                                                             CRLF\
+"  },"                                                                                              CRLF\
 "  config: {"                                                                                       CRLF\
 "    title: 'Configuration',"                                                                       CRLF\
 "    items: { "                                                                                     CRLF\
@@ -125,14 +139,6 @@
 "      UID: 'UID',"                                                                                 CRLF\
 "      GID: 'GID',"                                                                                 CRLF\
 "      OS: 'Operating System'"                                                                      CRLF\
-"    }"                                                                                             CRLF\
-"  },"                                                                                              CRLF\
-"  connections: {"                                                                                  CRLF\
-"    title: 'Current Connections',"                                                                 CRLF\
-"    items: {"                                                                                      CRLF\
-"      number: 'Number',"                                                                           CRLF\
-"      active: 'Active', "                                                                          CRLF\
-"      reusable: 'Reusable'"                                                                        CRLF\
 "    }"                                                                                             CRLF\
 "  },"                                                                                              CRLF\
 "  modules: {"                                                                                      CRLF\
@@ -281,11 +287,7 @@ cherokee_handler_server_info_configure (cherokee_config_node_t *conf, cherokee_s
 			} else if (equal_buf_str (&subconf->val, "connection_details")) {
 				props->connection_details = true;
 
-			} else {
-				PRINT_MSG ("ERROR: Handler server_info: Unknown key value: '%s'\n", 
-					   subconf->val.buf);
-				return ret_error;
-			}
+			} 
 		}
 	}
 

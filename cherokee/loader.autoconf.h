@@ -15,6 +15,8 @@
  extern cherokee_plugin_info_t cherokee_proxy_info; 
  extern cherokee_plugin_info_t cherokee_mirror_info; 
  extern cherokee_plugin_info_t cherokee_ssi_info; 
+ extern cherokee_plugin_info_t cherokee_secdownload_info; 
+ extern cherokee_plugin_info_t cherokee_empty_gif_info; 
  extern cherokee_plugin_info_t cherokee_custom_error_info; 
  extern cherokee_plugin_info_t cherokee_dbslayer_info; 
  extern cherokee_plugin_info_t cherokee_streaming_info; 
@@ -38,6 +40,7 @@
  extern cherokee_plugin_info_t cherokee_exists_info; 
  extern cherokee_plugin_info_t cherokee_method_info; 
  extern cherokee_plugin_info_t cherokee_bind_info; 
+ extern cherokee_plugin_info_t cherokee_geoip_info; 
  extern cherokee_plugin_info_t cherokee_libssl_info; 
  extern cherokee_plugin_info_t cherokee_not_info; 
  extern cherokee_plugin_info_t cherokee_and_info; 

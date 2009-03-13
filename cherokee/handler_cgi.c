@@ -215,8 +215,8 @@ cherokee_handler_cgi_free (cherokee_handler_cgi_t *cgi)
 	 */
 #ifndef _WIN32
 	if (cgi->pid > 0) {
-		pid_t   pid;
-		cuint_t tries = 3;
+		pid_t  pid;
+		cint_t tries = 2;
 
 		while (true) {
 			do {
@@ -234,11 +234,9 @@ cherokee_handler_cgi_free (cherokee_handler_cgi_t *cgi)
 			/* Failed */
 			kill (cgi->pid, SIGTERM);
 
-			tries -= 1;
-			if (tries < 0) {
-				PRINT_ERROR ("Could not kill PID %d\n", cgi->pid);
+			tries--;
+			if (tries < 0)
 				break;
-			}
 		}
 	}
 #else
@@ -349,12 +347,13 @@ cherokee_handler_cgi_add_env_pair (cherokee_handler_cgi_base_t *cgi_base,
 }
 
 static ret_t
-add_environment (cherokee_handler_cgi_t *cgi, cherokee_connection_t *conn)
+add_environment (cherokee_handler_cgi_t *cgi,
+		 cherokee_connection_t  *conn)
 {
 	ret_t                        ret;
-	char                        *length;
-	cuint_t                      length_len;
+	off_t                        post_len;
 	cherokee_handler_cgi_base_t *cgi_base = HDL_CGI_BASE(cgi);
+	cherokee_buffer_t           *tmp      = THREAD_TMP_BUF2(CONN_THREAD(conn));
 
 	ret = cherokee_handler_cgi_base_build_envp (HDL_CGI_BASE(cgi), conn);
 	if (unlikely (ret != ret_ok))
@@ -362,9 +361,13 @@ add_environment (cherokee_handler_cgi_t *cgi, cherokee_connection_t *conn)
 
 	/* CONTENT_LENGTH
 	 */
-	ret = cherokee_header_get_known (&conn->header, header_content_length, &length, &length_len);
-	if (ret == ret_ok)
-		set_env (cgi_base, "CONTENT_LENGTH", length, length_len);
+	if (http_method_with_input (conn->header.method)) {
+		cherokee_post_get_len (&conn->post, &post_len);
+
+		cherokee_buffer_clean (tmp);
+		cherokee_buffer_add_ullong10 (tmp, post_len);
+		set_env (cgi_base, "CONTENT_LENGTH", tmp->buf, tmp->len);
+	}
 
 	/* SCRIPT_FILENAME
 	 */
@@ -372,7 +375,9 @@ add_environment (cherokee_handler_cgi_t *cgi, cherokee_connection_t *conn)
 		return ret_error;
 
 	set_env (cgi_base, "SCRIPT_FILENAME",
-		 cgi_base->executable.buf, cgi_base->executable.len);
+		 cgi_base->executable.buf,
+		 cgi_base->executable.len);
+
 	return ret_ok;
 }
 

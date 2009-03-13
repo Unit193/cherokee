@@ -10,11 +10,13 @@ HANDLERS = [
     ('streaming',    'Audio/Video streaming'),
     ('cgi',          'CGI'),
     ('ssi',          'Server Side Includes'),
+    ('secdownload',  'Hidden Downloads'),
     ('server_info',  'Server Info'),
     ('dbslayer',     'MySQL bridge'),
     ('mirror',       'Generic balancer'),
     ('custom_error', 'HTTP error'),
-    ('admin',        'Remote Administration')
+    ('admin',        'Remote Administration'),
+    ('empty_gif',    '1x1 Transparent GIF')
 ]
 
 ERROR_HANDLERS = [

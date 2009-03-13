@@ -174,7 +174,9 @@ am__libcherokee_server_la_SOURCES_DIST = rule_directory.c \
 	handler_common.c handler_common.h handler_proxy.c \
 	handler_proxy.h proxy_hosts.h proxy_hosts.c handler_mirror.c \
 	handler_mirror.h handler_ssi.c handler_ssi.h \
-	handler_streaming.c handler_streaming.h handler_custom_error.c \
+	handler_secdownload.c handler_secdownload.h \
+	handler_empty_gif.c handler_empty_gif.h handler_streaming.c \
+	handler_streaming.h handler_custom_error.c \
 	handler_custom_error.h handler_server_info.c \
 	handler_server_info.h logo.inc handler_dbslayer.h \
 	handler_dbslayer.c logger_w3c.h logger_w3c.c logger_ncsa.h \
@@ -266,62 +268,66 @@ am__objects_65 = libcherokee_server_la-handler_mirror.lo
 @STATIC_HANDLER_MIRROR_TRUE@am__objects_66 = $(am__objects_65)
 am__objects_67 = libcherokee_server_la-handler_ssi.lo
 @STATIC_HANDLER_SSI_TRUE@am__objects_68 = $(am__objects_67)
-am__objects_69 = libcherokee_server_la-handler_streaming.lo
-@STATIC_HANDLER_STREAMING_TRUE@am__objects_70 = $(am__objects_69)
-am__objects_71 = libcherokee_server_la-handler_custom_error.lo
-@STATIC_HANDLER_CUSTOM_ERROR_TRUE@am__objects_72 = $(am__objects_71)
-am__objects_73 = libcherokee_server_la-handler_server_info.lo
-@STATIC_HANDLER_SERVER_INFO_TRUE@am__objects_74 = $(am__objects_73)
-am__objects_75 = libcherokee_server_la-handler_dbslayer.lo
-@HAVE_MYSQL_TRUE@@STATIC_HANDLER_DBSLAYER_TRUE@am__objects_76 = $(am__objects_75)
-am__objects_77 = libcherokee_server_la-logger_w3c.lo
-@STATIC_LOGGER_W3C_TRUE@am__objects_78 = $(am__objects_77)
-am__objects_79 = libcherokee_server_la-logger_ncsa.lo
-@STATIC_LOGGER_NCSA_TRUE@am__objects_80 = $(am__objects_79)
-am__objects_81 = libcherokee_server_la-logger_combined.lo
-@STATIC_LOGGER_COMBINED_TRUE@am__objects_82 = $(am__objects_81)
-am__objects_83 = libcherokee_server_la-encoder_gzip.lo
-@STATIC_ENCODER_GZIP_TRUE@am__objects_84 = $(am__objects_83)
-am__objects_85 = libcherokee_server_la-encoder_deflate.lo
-@STATIC_ENCODER_DEFLATE_TRUE@am__objects_86 = $(am__objects_85)
-@HAVE_PAM_TRUE@am__objects_87 =  \
+am__objects_69 = libcherokee_server_la-handler_secdownload.lo
+@STATIC_HANDLER_SECDOWNLOAD_TRUE@am__objects_70 = $(am__objects_69)
+am__objects_71 = libcherokee_server_la-handler_empty_gif.lo
+@STATIC_HANDLER_EMPTY_GIF_TRUE@am__objects_72 = $(am__objects_71)
+am__objects_73 = libcherokee_server_la-handler_streaming.lo
+@STATIC_HANDLER_STREAMING_TRUE@am__objects_74 = $(am__objects_73)
+am__objects_75 = libcherokee_server_la-handler_custom_error.lo
+@STATIC_HANDLER_CUSTOM_ERROR_TRUE@am__objects_76 = $(am__objects_75)
+am__objects_77 = libcherokee_server_la-handler_server_info.lo
+@STATIC_HANDLER_SERVER_INFO_TRUE@am__objects_78 = $(am__objects_77)
+am__objects_79 = libcherokee_server_la-handler_dbslayer.lo
+@HAVE_MYSQL_TRUE@@STATIC_HANDLER_DBSLAYER_TRUE@am__objects_80 = $(am__objects_79)
+am__objects_81 = libcherokee_server_la-logger_w3c.lo
+@STATIC_LOGGER_W3C_TRUE@am__objects_82 = $(am__objects_81)
+am__objects_83 = libcherokee_server_la-logger_ncsa.lo
+@STATIC_LOGGER_NCSA_TRUE@am__objects_84 = $(am__objects_83)
+am__objects_85 = libcherokee_server_la-logger_combined.lo
+@STATIC_LOGGER_COMBINED_TRUE@am__objects_86 = $(am__objects_85)
+am__objects_87 = libcherokee_server_la-encoder_gzip.lo
+@STATIC_ENCODER_GZIP_TRUE@am__objects_88 = $(am__objects_87)
+am__objects_89 = libcherokee_server_la-encoder_deflate.lo
+@STATIC_ENCODER_DEFLATE_TRUE@am__objects_90 = $(am__objects_89)
+@HAVE_PAM_TRUE@am__objects_91 =  \
 @HAVE_PAM_TRUE@	libcherokee_server_la-validator_pam.lo
-@HAVE_PAM_TRUE@@STATIC_VALIDATOR_PAM_TRUE@am__objects_88 =  \
-@HAVE_PAM_TRUE@@STATIC_VALIDATOR_PAM_TRUE@	$(am__objects_87)
-@HAVE_LDAP_TRUE@am__objects_89 =  \
+@HAVE_PAM_TRUE@@STATIC_VALIDATOR_PAM_TRUE@am__objects_92 =  \
+@HAVE_PAM_TRUE@@STATIC_VALIDATOR_PAM_TRUE@	$(am__objects_91)
+@HAVE_LDAP_TRUE@am__objects_93 =  \
 @HAVE_LDAP_TRUE@	libcherokee_server_la-validator_ldap.lo
-@HAVE_LDAP_TRUE@@STATIC_VALIDATOR_LDAP_TRUE@am__objects_90 =  \
-@HAVE_LDAP_TRUE@@STATIC_VALIDATOR_LDAP_TRUE@	$(am__objects_89)
-@STATIC_VALIDATOR_HTDIGEST_FALSE@am__objects_91 = libcherokee_server_la-validator_file.lo
-@STATIC_VALIDATOR_HTDIGEST_TRUE@@STATIC_VALIDATOR_HTPASSWD_FALSE@am__objects_91 = libcherokee_server_la-validator_file.lo
-@STATIC_VALIDATOR_HTDIGEST_TRUE@@STATIC_VALIDATOR_HTPASSWD_TRUE@@STATIC_VALIDATOR_PLAIN_FALSE@am__objects_91 = libcherokee_server_la-validator_file.lo
-am__objects_92 = $(am__objects_91) \
+@HAVE_LDAP_TRUE@@STATIC_VALIDATOR_LDAP_TRUE@am__objects_94 =  \
+@HAVE_LDAP_TRUE@@STATIC_VALIDATOR_LDAP_TRUE@	$(am__objects_93)
+@STATIC_VALIDATOR_HTDIGEST_FALSE@am__objects_95 = libcherokee_server_la-validator_file.lo
+@STATIC_VALIDATOR_HTDIGEST_TRUE@@STATIC_VALIDATOR_HTPASSWD_FALSE@am__objects_95 = libcherokee_server_la-validator_file.lo
+@STATIC_VALIDATOR_HTDIGEST_TRUE@@STATIC_VALIDATOR_HTPASSWD_TRUE@@STATIC_VALIDATOR_PLAIN_FALSE@am__objects_95 = libcherokee_server_la-validator_file.lo
+am__objects_96 = $(am__objects_95) \
 	libcherokee_server_la-validator_plain.lo
-@STATIC_VALIDATOR_PLAIN_TRUE@am__objects_93 = $(am__objects_92)
-am__objects_94 = $(am__objects_91) \
+@STATIC_VALIDATOR_PLAIN_TRUE@am__objects_97 = $(am__objects_96)
+am__objects_98 = $(am__objects_95) \
 	libcherokee_server_la-validator_htdigest.lo
-@STATIC_VALIDATOR_HTDIGEST_TRUE@am__objects_95 = $(am__objects_94)
-@USE_CRYPT_TRUE@am__objects_96 = $(am__objects_91) \
+@STATIC_VALIDATOR_HTDIGEST_TRUE@am__objects_99 = $(am__objects_98)
+@USE_CRYPT_TRUE@am__objects_100 = $(am__objects_95) \
 @USE_CRYPT_TRUE@	libcherokee_server_la-validator_htpasswd.lo
-@STATIC_VALIDATOR_HTPASSWD_TRUE@@USE_CRYPT_TRUE@am__objects_97 = $(am__objects_96)
-am__objects_98 = libcherokee_server_la-validator_authlist.lo
-@STATIC_VALIDATOR_AUTHLIST_TRUE@am__objects_99 = $(am__objects_98)
-am__objects_100 = libcherokee_server_la-validator_mysql.lo
-@HAVE_MYSQL_TRUE@@STATIC_VALIDATOR_MYSQL_TRUE@am__objects_101 = $(am__objects_100)
-am__objects_102 = libcherokee_server_la-cryptor_libssl.lo
-@STATIC_CRYPTOR_LIBSSL_TRUE@@USE_OPENSSL_TRUE@am__objects_103 = $(am__objects_102)
-am__objects_104 = libcherokee_server_la-balancer_round_robin.lo
-@STATIC_BALANCER_ROUND_ROBIN_TRUE@am__objects_105 =  \
-@STATIC_BALANCER_ROUND_ROBIN_TRUE@	$(am__objects_104)
-am__objects_106 = libcherokee_server_la-balancer_ip_hash.lo
-@STATIC_BALANCER_IP_HASH_TRUE@am__objects_107 = $(am__objects_106)
-@STATIC_HANDLER_CGI_FALSE@@STATIC_HANDLER_FASTCGI_FALSE@@STATIC_HANDLER_FCGI_FALSE@@STATIC_HANDLER_SCGI_TRUE@am__objects_108 = libcherokee_server_la-handler_cgi_base.lo
-@STATIC_HANDLER_CGI_FALSE@@STATIC_HANDLER_FASTCGI_FALSE@@STATIC_HANDLER_FCGI_TRUE@am__objects_108 = libcherokee_server_la-handler_cgi_base.lo
-@STATIC_HANDLER_CGI_FALSE@@STATIC_HANDLER_FASTCGI_TRUE@am__objects_108 = libcherokee_server_la-handler_cgi_base.lo
-@STATIC_HANDLER_CGI_TRUE@am__objects_108 = libcherokee_server_la-handler_cgi_base.lo
-@STATIC_VALIDATOR_HTDIGEST_FALSE@@STATIC_VALIDATOR_HTPASSWD_FALSE@@STATIC_VALIDATOR_PLAIN_TRUE@am__objects_109 = libcherokee_server_la-validator_file.lo
-@STATIC_VALIDATOR_HTDIGEST_FALSE@@STATIC_VALIDATOR_HTPASSWD_TRUE@am__objects_109 = libcherokee_server_la-validator_file.lo
-@STATIC_VALIDATOR_HTDIGEST_TRUE@am__objects_109 = libcherokee_server_la-validator_file.lo
+@STATIC_VALIDATOR_HTPASSWD_TRUE@@USE_CRYPT_TRUE@am__objects_101 = $(am__objects_100)
+am__objects_102 = libcherokee_server_la-validator_authlist.lo
+@STATIC_VALIDATOR_AUTHLIST_TRUE@am__objects_103 = $(am__objects_102)
+am__objects_104 = libcherokee_server_la-validator_mysql.lo
+@HAVE_MYSQL_TRUE@@STATIC_VALIDATOR_MYSQL_TRUE@am__objects_105 = $(am__objects_104)
+am__objects_106 = libcherokee_server_la-cryptor_libssl.lo
+@STATIC_CRYPTOR_LIBSSL_TRUE@@USE_OPENSSL_TRUE@am__objects_107 = $(am__objects_106)
+am__objects_108 = libcherokee_server_la-balancer_round_robin.lo
+@STATIC_BALANCER_ROUND_ROBIN_TRUE@am__objects_109 =  \
+@STATIC_BALANCER_ROUND_ROBIN_TRUE@	$(am__objects_108)
+am__objects_110 = libcherokee_server_la-balancer_ip_hash.lo
+@STATIC_BALANCER_IP_HASH_TRUE@am__objects_111 = $(am__objects_110)
+@STATIC_HANDLER_CGI_FALSE@@STATIC_HANDLER_FASTCGI_FALSE@@STATIC_HANDLER_FCGI_FALSE@@STATIC_HANDLER_SCGI_TRUE@am__objects_112 = libcherokee_server_la-handler_cgi_base.lo
+@STATIC_HANDLER_CGI_FALSE@@STATIC_HANDLER_FASTCGI_FALSE@@STATIC_HANDLER_FCGI_TRUE@am__objects_112 = libcherokee_server_la-handler_cgi_base.lo
+@STATIC_HANDLER_CGI_FALSE@@STATIC_HANDLER_FASTCGI_TRUE@am__objects_112 = libcherokee_server_la-handler_cgi_base.lo
+@STATIC_HANDLER_CGI_TRUE@am__objects_112 = libcherokee_server_la-handler_cgi_base.lo
+@STATIC_VALIDATOR_HTDIGEST_FALSE@@STATIC_VALIDATOR_HTPASSWD_FALSE@@STATIC_VALIDATOR_PLAIN_TRUE@am__objects_113 = libcherokee_server_la-validator_file.lo
+@STATIC_VALIDATOR_HTDIGEST_FALSE@@STATIC_VALIDATOR_HTPASSWD_TRUE@am__objects_113 = libcherokee_server_la-validator_file.lo
+@STATIC_VALIDATOR_HTDIGEST_TRUE@am__objects_113 = libcherokee_server_la-validator_file.lo
 am_libcherokee_server_la_OBJECTS = $(am__objects_14) $(am__objects_16) \
 	$(am__objects_18) $(am__objects_20) $(am__objects_22) \
 	$(am__objects_24) $(am__objects_26) $(am__objects_28) \
@@ -334,10 +340,11 @@ am_libcherokee_server_la_OBJECTS = $(am__objects_14) $(am__objects_16) \
 	$(am__objects_70) $(am__objects_72) $(am__objects_74) \
 	$(am__objects_76) $(am__objects_78) $(am__objects_80) \
 	$(am__objects_82) $(am__objects_84) $(am__objects_86) \
-	$(am__objects_88) $(am__objects_90) $(am__objects_93) \
-	$(am__objects_95) $(am__objects_97) $(am__objects_99) \
+	$(am__objects_88) $(am__objects_90) $(am__objects_92) \
+	$(am__objects_94) $(am__objects_97) $(am__objects_99) \
 	$(am__objects_101) $(am__objects_103) $(am__objects_105) \
-	$(am__objects_107) $(am__objects_108) $(am__objects_109) \
+	$(am__objects_107) $(am__objects_109) $(am__objects_111) \
+	$(am__objects_112) $(am__objects_113) \
 	libcherokee_server_la-connection.lo \
 	libcherokee_server_la-handler.lo libcherokee_server_la-rule.lo \
 	libcherokee_server_la-rule_list.lo \
@@ -369,8 +376,8 @@ libcherokee_server_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(libcherokee_server_la_LDFLAGS) $(LDFLAGS) -o $@
 libplugin_admin_la_DEPENDENCIES = libcherokee-config.la \
 	libcherokee-client.la
-am__objects_110 = handler_admin.lo admin_server.lo
-am_libplugin_admin_la_OBJECTS = $(am__objects_110)
+am__objects_114 = handler_admin.lo admin_server.lo
+am_libplugin_admin_la_OBJECTS = $(am__objects_114)
 libplugin_admin_la_OBJECTS = $(am_libplugin_admin_la_OBJECTS)
 libplugin_admin_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
@@ -378,16 +385,16 @@ libplugin_admin_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 @STATIC_HANDLER_ADMIN_FALSE@am_libplugin_admin_la_rpath = -rpath \
 @STATIC_HANDLER_ADMIN_FALSE@	$(plugindir)
 libplugin_and_la_LIBADD =
-am__objects_111 = rule_and.lo
-am_libplugin_and_la_OBJECTS = $(am__objects_111)
+am__objects_115 = rule_and.lo
+am_libplugin_and_la_OBJECTS = $(am__objects_115)
 libplugin_and_la_OBJECTS = $(am_libplugin_and_la_OBJECTS)
 libplugin_and_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(libplugin_and_la_LDFLAGS) $(LDFLAGS) -o $@
 @STATIC_RULE_AND_FALSE@am_libplugin_and_la_rpath = -rpath $(plugindir)
 libplugin_authlist_la_LIBADD =
-am__objects_112 = validator_authlist.lo
-am_libplugin_authlist_la_OBJECTS = $(am__objects_112)
+am__objects_116 = validator_authlist.lo
+am_libplugin_authlist_la_OBJECTS = $(am__objects_116)
 libplugin_authlist_la_OBJECTS = $(am_libplugin_authlist_la_OBJECTS)
 libplugin_authlist_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
@@ -395,8 +402,8 @@ libplugin_authlist_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 @STATIC_VALIDATOR_AUTHLIST_FALSE@am_libplugin_authlist_la_rpath =  \
 @STATIC_VALIDATOR_AUTHLIST_FALSE@	-rpath $(plugindir)
 libplugin_bind_la_LIBADD =
-am__objects_113 = rule_bind.lo
-am_libplugin_bind_la_OBJECTS = $(am__objects_113)
+am__objects_117 = rule_bind.lo
+am_libplugin_bind_la_OBJECTS = $(am__objects_117)
 libplugin_bind_la_OBJECTS = $(am_libplugin_bind_la_OBJECTS)
 libplugin_bind_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
@@ -406,9 +413,9 @@ libplugin_bind_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 libplugin_cgi_la_DEPENDENCIES = $(dynamic_handler_file_lib)
 am__libplugin_cgi_la_SOURCES_DIST = handler_cgi_base.h \
 	handler_cgi_base.c handler_cgi.c handler_cgi.h
-@STATIC_HANDLER_CGI_FALSE@am__objects_114 = handler_cgi_base.lo
-am__objects_115 = $(am__objects_114) handler_cgi.lo
-am_libplugin_cgi_la_OBJECTS = $(am__objects_115)
+@STATIC_HANDLER_CGI_FALSE@am__objects_118 = handler_cgi_base.lo
+am__objects_119 = $(am__objects_118) handler_cgi.lo
+am_libplugin_cgi_la_OBJECTS = $(am__objects_119)
 libplugin_cgi_la_OBJECTS = $(am_libplugin_cgi_la_OBJECTS)
 libplugin_cgi_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
@@ -416,8 +423,8 @@ libplugin_cgi_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 @STATIC_HANDLER_CGI_FALSE@am_libplugin_cgi_la_rpath = -rpath \
 @STATIC_HANDLER_CGI_FALSE@	$(plugindir)
 libplugin_combined_la_LIBADD =
-am__objects_116 = logger_combined.lo
-am_libplugin_combined_la_OBJECTS = $(am__objects_116)
+am__objects_120 = logger_combined.lo
+am_libplugin_combined_la_OBJECTS = $(am__objects_120)
 libplugin_combined_la_OBJECTS = $(am_libplugin_combined_la_OBJECTS)
 libplugin_combined_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
@@ -425,8 +432,8 @@ libplugin_combined_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 @STATIC_LOGGER_COMBINED_FALSE@am_libplugin_combined_la_rpath = -rpath \
 @STATIC_LOGGER_COMBINED_FALSE@	$(plugindir)
 libplugin_common_la_LIBADD =
-am__objects_117 = handler_common.lo
-am_libplugin_common_la_OBJECTS = $(am__objects_117)
+am__objects_121 = handler_common.lo
+am_libplugin_common_la_OBJECTS = $(am__objects_121)
 libplugin_common_la_OBJECTS = $(am_libplugin_common_la_OBJECTS)
 libplugin_common_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
@@ -434,8 +441,8 @@ libplugin_common_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 @STATIC_HANDLER_COMMON_FALSE@am_libplugin_common_la_rpath = -rpath \
 @STATIC_HANDLER_COMMON_FALSE@	$(plugindir)
 libplugin_custom_error_la_DEPENDENCIES = libcherokee-client.la
-am__objects_118 = handler_custom_error.lo
-am_libplugin_custom_error_la_OBJECTS = $(am__objects_118)
+am__objects_122 = handler_custom_error.lo
+am_libplugin_custom_error_la_OBJECTS = $(am__objects_122)
 libplugin_custom_error_la_OBJECTS =  \
 	$(am_libplugin_custom_error_la_OBJECTS)
 libplugin_custom_error_la_LINK = $(LIBTOOL) --tag=CC \
@@ -445,8 +452,8 @@ libplugin_custom_error_la_LINK = $(LIBTOOL) --tag=CC \
 @STATIC_HANDLER_CUSTOM_ERROR_FALSE@am_libplugin_custom_error_la_rpath =  \
 @STATIC_HANDLER_CUSTOM_ERROR_FALSE@	-rpath $(plugindir)
 libplugin_dbslayer_la_LIBADD =
-am__objects_119 = libplugin_dbslayer_la-handler_dbslayer.lo
-am_libplugin_dbslayer_la_OBJECTS = $(am__objects_119)
+am__objects_123 = libplugin_dbslayer_la-handler_dbslayer.lo
+am_libplugin_dbslayer_la_OBJECTS = $(am__objects_123)
 libplugin_dbslayer_la_OBJECTS = $(am_libplugin_dbslayer_la_OBJECTS)
 libplugin_dbslayer_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) \
@@ -456,8 +463,8 @@ libplugin_dbslayer_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 @HAVE_MYSQL_TRUE@@STATIC_HANDLER_DBSLAYER_FALSE@	-rpath \
 @HAVE_MYSQL_TRUE@@STATIC_HANDLER_DBSLAYER_FALSE@	$(plugindir)
 libplugin_deflate_la_LIBADD =
-am__objects_120 = encoder_deflate.lo
-am_libplugin_deflate_la_OBJECTS = $(am__objects_120)
+am__objects_124 = encoder_deflate.lo
+am_libplugin_deflate_la_OBJECTS = $(am__objects_124)
 libplugin_deflate_la_OBJECTS = $(am_libplugin_deflate_la_OBJECTS)
 libplugin_deflate_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
@@ -465,8 +472,8 @@ libplugin_deflate_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 @STATIC_ENCODER_DEFLATE_FALSE@am_libplugin_deflate_la_rpath = -rpath \
 @STATIC_ENCODER_DEFLATE_FALSE@	$(plugindir)
 libplugin_directory_la_LIBADD =
-am__objects_121 = rule_directory.lo
-am_libplugin_directory_la_OBJECTS = $(am__objects_121)
+am__objects_125 = rule_directory.lo
+am_libplugin_directory_la_OBJECTS = $(am__objects_125)
 libplugin_directory_la_OBJECTS = $(am_libplugin_directory_la_OBJECTS)
 libplugin_directory_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
@@ -474,17 +481,26 @@ libplugin_directory_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 @STATIC_RULE_DIRECTORY_FALSE@am_libplugin_directory_la_rpath = -rpath \
 @STATIC_RULE_DIRECTORY_FALSE@	$(plugindir)
 libplugin_dirlist_la_LIBADD =
-am__objects_122 = handler_dirlist.lo
-am_libplugin_dirlist_la_OBJECTS = $(am__objects_122)
+am__objects_126 = handler_dirlist.lo
+am_libplugin_dirlist_la_OBJECTS = $(am__objects_126)
 libplugin_dirlist_la_OBJECTS = $(am_libplugin_dirlist_la_OBJECTS)
 libplugin_dirlist_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(libplugin_dirlist_la_LDFLAGS) $(LDFLAGS) -o $@
 @STATIC_HANDLER_DIRLIST_FALSE@am_libplugin_dirlist_la_rpath = -rpath \
 @STATIC_HANDLER_DIRLIST_FALSE@	$(plugindir)
+libplugin_empty_gif_la_LIBADD =
+am__objects_127 = handler_empty_gif.lo
+am_libplugin_empty_gif_la_OBJECTS = $(am__objects_127)
+libplugin_empty_gif_la_OBJECTS = $(am_libplugin_empty_gif_la_OBJECTS)
+libplugin_empty_gif_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
+	$(libplugin_empty_gif_la_LDFLAGS) $(LDFLAGS) -o $@
+@STATIC_HANDLER_EMPTY_GIF_FALSE@am_libplugin_empty_gif_la_rpath =  \
+@STATIC_HANDLER_EMPTY_GIF_FALSE@	-rpath $(plugindir)
 libplugin_error_nn_la_LIBADD =
-am__objects_123 = levenshtein_distance.lo handler_error_nn.lo
-am_libplugin_error_nn_la_OBJECTS = $(am__objects_123)
+am__objects_128 = levenshtein_distance.lo handler_error_nn.lo
+am_libplugin_error_nn_la_OBJECTS = $(am__objects_128)
 libplugin_error_nn_la_OBJECTS = $(am_libplugin_error_nn_la_OBJECTS)
 libplugin_error_nn_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
@@ -492,8 +508,8 @@ libplugin_error_nn_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 @STATIC_HANDLER_ERROR_NN_FALSE@am_libplugin_error_nn_la_rpath =  \
 @STATIC_HANDLER_ERROR_NN_FALSE@	-rpath $(plugindir)
 libplugin_error_redir_la_LIBADD =
-am__objects_124 = handler_error_redir.lo
-am_libplugin_error_redir_la_OBJECTS = $(am__objects_124)
+am__objects_129 = handler_error_redir.lo
+am_libplugin_error_redir_la_OBJECTS = $(am__objects_129)
 libplugin_error_redir_la_OBJECTS =  \
 	$(am_libplugin_error_redir_la_OBJECTS)
 libplugin_error_redir_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
@@ -502,8 +518,8 @@ libplugin_error_redir_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 @STATIC_HANDLER_ERROR_REDIR_FALSE@am_libplugin_error_redir_la_rpath =  \
 @STATIC_HANDLER_ERROR_REDIR_FALSE@	-rpath $(plugindir)
 libplugin_exists_la_LIBADD =
-am__objects_125 = rule_exists.lo
-am_libplugin_exists_la_OBJECTS = $(am__objects_125)
+am__objects_130 = rule_exists.lo
+am_libplugin_exists_la_OBJECTS = $(am__objects_130)
 libplugin_exists_la_OBJECTS = $(am_libplugin_exists_la_OBJECTS)
 libplugin_exists_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
@@ -511,8 +527,8 @@ libplugin_exists_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 @STATIC_RULE_EXISTS_FALSE@am_libplugin_exists_la_rpath = -rpath \
 @STATIC_RULE_EXISTS_FALSE@	$(plugindir)
 libplugin_extensions_la_LIBADD =
-am__objects_126 = rule_extensions.lo
-am_libplugin_extensions_la_OBJECTS = $(am__objects_126)
+am__objects_131 = rule_extensions.lo
+am_libplugin_extensions_la_OBJECTS = $(am__objects_131)
 libplugin_extensions_la_OBJECTS =  \
 	$(am_libplugin_extensions_la_OBJECTS)
 libplugin_extensions_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
@@ -525,10 +541,10 @@ am__libplugin_fastcgi_la_SOURCES_DIST = handler_cgi_base.h \
 	handler_cgi_base.c fastcgi.h fcgi_dispatcher.h \
 	fcgi_dispatcher.c fcgi_manager.h fcgi_manager.c \
 	handler_fastcgi.c handler_fastcgi.h
-@STATIC_HANDLER_FASTCGI_FALSE@am__objects_127 = handler_cgi_base.lo
-am__objects_128 = $(am__objects_127) fcgi_dispatcher.lo \
+@STATIC_HANDLER_FASTCGI_FALSE@am__objects_132 = handler_cgi_base.lo
+am__objects_133 = $(am__objects_132) fcgi_dispatcher.lo \
 	fcgi_manager.lo handler_fastcgi.lo
-am_libplugin_fastcgi_la_OBJECTS = $(am__objects_128)
+am_libplugin_fastcgi_la_OBJECTS = $(am__objects_133)
 libplugin_fastcgi_la_OBJECTS = $(am_libplugin_fastcgi_la_OBJECTS)
 libplugin_fastcgi_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
@@ -538,9 +554,9 @@ libplugin_fastcgi_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 libplugin_fcgi_la_DEPENDENCIES = $(dynamic_handler_file_lib)
 am__libplugin_fcgi_la_SOURCES_DIST = handler_cgi_base.h \
 	handler_cgi_base.c fastcgi.h handler_fcgi.h handler_fcgi.c
-@STATIC_HANDLER_FCGI_FALSE@am__objects_129 = handler_cgi_base.lo
-am__objects_130 = $(am__objects_129) handler_fcgi.lo
-am_libplugin_fcgi_la_OBJECTS = $(am__objects_130)
+@STATIC_HANDLER_FCGI_FALSE@am__objects_134 = handler_cgi_base.lo
+am__objects_135 = $(am__objects_134) handler_fcgi.lo
+am_libplugin_fcgi_la_OBJECTS = $(am__objects_135)
 libplugin_fcgi_la_OBJECTS = $(am_libplugin_fcgi_la_OBJECTS)
 libplugin_fcgi_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
@@ -548,8 +564,8 @@ libplugin_fcgi_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 @STATIC_HANDLER_FCGI_FALSE@am_libplugin_fcgi_la_rpath = -rpath \
 @STATIC_HANDLER_FCGI_FALSE@	$(plugindir)
 libplugin_file_la_LIBADD =
-am__objects_131 = handler_file.lo
-am_libplugin_file_la_OBJECTS = $(am__objects_131)
+am__objects_136 = handler_file.lo
+am_libplugin_file_la_OBJECTS = $(am__objects_136)
 libplugin_file_la_OBJECTS = $(am_libplugin_file_la_OBJECTS)
 libplugin_file_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
@@ -558,8 +574,8 @@ libplugin_file_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 @STATIC_HANDLER_FILE_FALSE@	$(plugindir)
 libplugin_geoip_la_DEPENDENCIES =
 am__libplugin_geoip_la_SOURCES_DIST = rule_geoip.c rule_geoip.h
-@HAVE_GEOIP_TRUE@am__objects_132 = rule_geoip.lo
-@HAVE_GEOIP_TRUE@am_libplugin_geoip_la_OBJECTS = $(am__objects_132)
+@HAVE_GEOIP_TRUE@am__objects_137 = rule_geoip.lo
+@HAVE_GEOIP_TRUE@am_libplugin_geoip_la_OBJECTS = $(am__objects_137)
 libplugin_geoip_la_OBJECTS = $(am_libplugin_geoip_la_OBJECTS)
 libplugin_geoip_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
@@ -567,8 +583,8 @@ libplugin_geoip_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 @HAVE_GEOIP_TRUE@@STATIC_RULE_HEADER_FALSE@am_libplugin_geoip_la_rpath =  \
 @HAVE_GEOIP_TRUE@@STATIC_RULE_HEADER_FALSE@	-rpath $(plugindir)
 libplugin_gzip_la_LIBADD =
-am__objects_133 = encoder_gzip.lo
-am_libplugin_gzip_la_OBJECTS = $(am__objects_133)
+am__objects_138 = encoder_gzip.lo
+am_libplugin_gzip_la_OBJECTS = $(am__objects_138)
 libplugin_gzip_la_OBJECTS = $(am_libplugin_gzip_la_OBJECTS)
 libplugin_gzip_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
@@ -576,8 +592,8 @@ libplugin_gzip_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 @STATIC_ENCODER_GZIP_FALSE@am_libplugin_gzip_la_rpath = -rpath \
 @STATIC_ENCODER_GZIP_FALSE@	$(plugindir)
 libplugin_header_la_LIBADD =
-am__objects_134 = rule_header.lo
-am_libplugin_header_la_OBJECTS = $(am__objects_134)
+am__objects_139 = rule_header.lo
+am_libplugin_header_la_OBJECTS = $(am__objects_139)
 libplugin_header_la_OBJECTS = $(am_libplugin_header_la_OBJECTS)
 libplugin_header_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
@@ -587,11 +603,11 @@ libplugin_header_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 libplugin_htdigest_la_LIBADD =
 am__libplugin_htdigest_la_SOURCES_DIST = validator_file.h \
 	validator_file.c validator_htdigest.c validator_htdigest.h
-@STATIC_VALIDATOR_HTDIGEST_FALSE@am__objects_135 = validator_file.lo
-@STATIC_VALIDATOR_HTDIGEST_TRUE@@STATIC_VALIDATOR_HTPASSWD_FALSE@am__objects_135 = validator_file.lo
-@STATIC_VALIDATOR_HTDIGEST_TRUE@@STATIC_VALIDATOR_HTPASSWD_TRUE@@STATIC_VALIDATOR_PLAIN_FALSE@am__objects_135 = validator_file.lo
-am__objects_136 = $(am__objects_135) validator_htdigest.lo
-am_libplugin_htdigest_la_OBJECTS = $(am__objects_136)
+@STATIC_VALIDATOR_HTDIGEST_FALSE@am__objects_140 = validator_file.lo
+@STATIC_VALIDATOR_HTDIGEST_TRUE@@STATIC_VALIDATOR_HTPASSWD_FALSE@am__objects_140 = validator_file.lo
+@STATIC_VALIDATOR_HTDIGEST_TRUE@@STATIC_VALIDATOR_HTPASSWD_TRUE@@STATIC_VALIDATOR_PLAIN_FALSE@am__objects_140 = validator_file.lo
+am__objects_141 = $(am__objects_140) validator_htdigest.lo
+am_libplugin_htdigest_la_OBJECTS = $(am__objects_141)
 libplugin_htdigest_la_OBJECTS = $(am_libplugin_htdigest_la_OBJECTS)
 libplugin_htdigest_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
@@ -602,12 +618,12 @@ libplugin_htdigest_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 @USE_CRYPT_TRUE@	$(am__DEPENDENCIES_1)
 am__libplugin_htpasswd_la_SOURCES_DIST = validator_file.h \
 	validator_file.c validator_htpasswd.c validator_htpasswd.h
-@STATIC_VALIDATOR_HTDIGEST_FALSE@am__objects_137 = libplugin_htpasswd_la-validator_file.lo
-@STATIC_VALIDATOR_HTDIGEST_TRUE@@STATIC_VALIDATOR_HTPASSWD_FALSE@am__objects_137 = libplugin_htpasswd_la-validator_file.lo
-@STATIC_VALIDATOR_HTDIGEST_TRUE@@STATIC_VALIDATOR_HTPASSWD_TRUE@@STATIC_VALIDATOR_PLAIN_FALSE@am__objects_137 = libplugin_htpasswd_la-validator_file.lo
-@USE_CRYPT_TRUE@am__objects_138 = $(am__objects_137) \
+@STATIC_VALIDATOR_HTDIGEST_FALSE@am__objects_142 = libplugin_htpasswd_la-validator_file.lo
+@STATIC_VALIDATOR_HTDIGEST_TRUE@@STATIC_VALIDATOR_HTPASSWD_FALSE@am__objects_142 = libplugin_htpasswd_la-validator_file.lo
+@STATIC_VALIDATOR_HTDIGEST_TRUE@@STATIC_VALIDATOR_HTPASSWD_TRUE@@STATIC_VALIDATOR_PLAIN_FALSE@am__objects_142 = libplugin_htpasswd_la-validator_file.lo
+@USE_CRYPT_TRUE@am__objects_143 = $(am__objects_142) \
 @USE_CRYPT_TRUE@	libplugin_htpasswd_la-validator_htpasswd.lo
-@USE_CRYPT_TRUE@am_libplugin_htpasswd_la_OBJECTS = $(am__objects_138)
+@USE_CRYPT_TRUE@am_libplugin_htpasswd_la_OBJECTS = $(am__objects_143)
 libplugin_htpasswd_la_OBJECTS = $(am_libplugin_htpasswd_la_OBJECTS)
 libplugin_htpasswd_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) \
@@ -617,8 +633,8 @@ libplugin_htpasswd_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 @STATIC_VALIDATOR_HTPASSWD_FALSE@@USE_CRYPT_TRUE@	-rpath \
 @STATIC_VALIDATOR_HTPASSWD_FALSE@@USE_CRYPT_TRUE@	$(plugindir)
 libplugin_ip_hash_la_LIBADD =
-am__objects_139 = balancer_ip_hash.lo
-am_libplugin_ip_hash_la_OBJECTS = $(am__objects_139)
+am__objects_144 = balancer_ip_hash.lo
+am_libplugin_ip_hash_la_OBJECTS = $(am__objects_144)
 libplugin_ip_hash_la_OBJECTS = $(am_libplugin_ip_hash_la_OBJECTS)
 libplugin_ip_hash_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
@@ -627,8 +643,8 @@ libplugin_ip_hash_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 @STATIC_BALANCER_IP_HASH_FALSE@	$(plugindir)
 libplugin_ldap_la_DEPENDENCIES =
 am__libplugin_ldap_la_SOURCES_DIST = validator_ldap.c validator_ldap.h
-@HAVE_LDAP_TRUE@am__objects_140 = validator_ldap.lo
-@HAVE_LDAP_TRUE@am_libplugin_ldap_la_OBJECTS = $(am__objects_140)
+@HAVE_LDAP_TRUE@am__objects_145 = validator_ldap.lo
+@HAVE_LDAP_TRUE@am_libplugin_ldap_la_OBJECTS = $(am__objects_145)
 libplugin_ldap_la_OBJECTS = $(am_libplugin_ldap_la_OBJECTS)
 libplugin_ldap_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
@@ -637,8 +653,8 @@ libplugin_ldap_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 @HAVE_LDAP_TRUE@@STATIC_VALIDATOR_LDAP_FALSE@	-rpath \
 @HAVE_LDAP_TRUE@@STATIC_VALIDATOR_LDAP_FALSE@	$(plugindir)
 libplugin_libssl_la_LIBADD =
-am__objects_141 = libplugin_libssl_la-cryptor_libssl.lo
-am_libplugin_libssl_la_OBJECTS = $(am__objects_141)
+am__objects_146 = libplugin_libssl_la-cryptor_libssl.lo
+am_libplugin_libssl_la_OBJECTS = $(am__objects_146)
 libplugin_libssl_la_OBJECTS = $(am_libplugin_libssl_la_OBJECTS)
 libplugin_libssl_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) \
@@ -648,8 +664,8 @@ libplugin_libssl_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 @STATIC_CRYPTOR_LIBSSL_FALSE@@USE_OPENSSL_TRUE@	-rpath \
 @STATIC_CRYPTOR_LIBSSL_FALSE@@USE_OPENSSL_TRUE@	$(plugindir)
 libplugin_method_la_LIBADD =
-am__objects_142 = rule_method.lo
-am_libplugin_method_la_OBJECTS = $(am__objects_142)
+am__objects_147 = rule_method.lo
+am_libplugin_method_la_OBJECTS = $(am__objects_147)
 libplugin_method_la_OBJECTS = $(am_libplugin_method_la_OBJECTS)
 libplugin_method_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
@@ -657,8 +673,8 @@ libplugin_method_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 @STATIC_RULE_METHOD_FALSE@am_libplugin_method_la_rpath = -rpath \
 @STATIC_RULE_METHOD_FALSE@	$(plugindir)
 libplugin_mirror_la_DEPENDENCIES = libcherokee-client.la
-am__objects_143 = handler_mirror.lo
-am_libplugin_mirror_la_OBJECTS = $(am__objects_143)
+am__objects_148 = handler_mirror.lo
+am_libplugin_mirror_la_OBJECTS = $(am__objects_148)
 libplugin_mirror_la_OBJECTS = $(am_libplugin_mirror_la_OBJECTS)
 libplugin_mirror_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
@@ -666,8 +682,8 @@ libplugin_mirror_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 @STATIC_HANDLER_MIRROR_FALSE@am_libplugin_mirror_la_rpath = -rpath \
 @STATIC_HANDLER_MIRROR_FALSE@	$(plugindir)
 libplugin_mysql_la_LIBADD =
-am__objects_144 = libplugin_mysql_la-validator_mysql.lo
-am_libplugin_mysql_la_OBJECTS = $(am__objects_144)
+am__objects_149 = libplugin_mysql_la-validator_mysql.lo
+am_libplugin_mysql_la_OBJECTS = $(am__objects_149)
 libplugin_mysql_la_OBJECTS = $(am_libplugin_mysql_la_OBJECTS)
 libplugin_mysql_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) \
@@ -677,8 +693,8 @@ libplugin_mysql_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 @HAVE_MYSQL_TRUE@@STATIC_VALIDATOR_MYSQL_FALSE@	-rpath \
 @HAVE_MYSQL_TRUE@@STATIC_VALIDATOR_MYSQL_FALSE@	$(plugindir)
 libplugin_ncsa_la_LIBADD =
-am__objects_145 = logger_ncsa.lo
-am_libplugin_ncsa_la_OBJECTS = $(am__objects_145)
+am__objects_150 = logger_ncsa.lo
+am_libplugin_ncsa_la_OBJECTS = $(am__objects_150)
 libplugin_ncsa_la_OBJECTS = $(am_libplugin_ncsa_la_OBJECTS)
 libplugin_ncsa_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
@@ -686,16 +702,16 @@ libplugin_ncsa_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 @STATIC_LOGGER_NCSA_FALSE@am_libplugin_ncsa_la_rpath = -rpath \
 @STATIC_LOGGER_NCSA_FALSE@	$(plugindir)
 libplugin_not_la_LIBADD =
-am__objects_146 = rule_not.lo
-am_libplugin_not_la_OBJECTS = $(am__objects_146)
+am__objects_151 = rule_not.lo
+am_libplugin_not_la_OBJECTS = $(am__objects_151)
 libplugin_not_la_OBJECTS = $(am_libplugin_not_la_OBJECTS)
 libplugin_not_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(libplugin_not_la_LDFLAGS) $(LDFLAGS) -o $@
 @STATIC_RULE_NOT_FALSE@am_libplugin_not_la_rpath = -rpath $(plugindir)
 libplugin_or_la_LIBADD =
-am__objects_147 = rule_or.lo
-am_libplugin_or_la_OBJECTS = $(am__objects_147)
+am__objects_152 = rule_or.lo
+am_libplugin_or_la_OBJECTS = $(am__objects_152)
 libplugin_or_la_OBJECTS = $(am_libplugin_or_la_OBJECTS)
 libplugin_or_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
@@ -703,8 +719,8 @@ libplugin_or_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 @STATIC_RULE_OR_FALSE@am_libplugin_or_la_rpath = -rpath $(plugindir)
 libplugin_pam_la_DEPENDENCIES =
 am__libplugin_pam_la_SOURCES_DIST = validator_pam.c validator_pam.h
-@HAVE_PAM_TRUE@am__objects_148 = validator_pam.lo
-@HAVE_PAM_TRUE@am_libplugin_pam_la_OBJECTS = $(am__objects_148)
+@HAVE_PAM_TRUE@am__objects_153 = validator_pam.lo
+@HAVE_PAM_TRUE@am_libplugin_pam_la_OBJECTS = $(am__objects_153)
 libplugin_pam_la_OBJECTS = $(am_libplugin_pam_la_OBJECTS)
 libplugin_pam_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
@@ -712,8 +728,8 @@ libplugin_pam_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 @HAVE_PAM_TRUE@@STATIC_VALIDATOR_PAM_FALSE@am_libplugin_pam_la_rpath =  \
 @HAVE_PAM_TRUE@@STATIC_VALIDATOR_PAM_FALSE@	-rpath $(plugindir)
 libplugin_phpcgi_la_DEPENDENCIES = $(dynamic_handler_file_lib)
-am__objects_149 = handler_phpcgi.lo
-am_libplugin_phpcgi_la_OBJECTS = $(am__objects_149)
+am__objects_154 = handler_phpcgi.lo
+am_libplugin_phpcgi_la_OBJECTS = $(am__objects_154)
 libplugin_phpcgi_la_OBJECTS = $(am_libplugin_phpcgi_la_OBJECTS)
 libplugin_phpcgi_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
@@ -723,8 +739,8 @@ libplugin_phpcgi_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 libplugin_plain_la_LIBADD =
 am__libplugin_plain_la_SOURCES_DIST = validator_file.h \
 	validator_file.c validator_plain.c validator_plain.h
-am__objects_150 = $(am__objects_135) validator_plain.lo
-am_libplugin_plain_la_OBJECTS = $(am__objects_150)
+am__objects_155 = $(am__objects_140) validator_plain.lo
+am_libplugin_plain_la_OBJECTS = $(am__objects_155)
 libplugin_plain_la_OBJECTS = $(am_libplugin_plain_la_OBJECTS)
 libplugin_plain_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
@@ -732,8 +748,8 @@ libplugin_plain_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 @STATIC_VALIDATOR_PLAIN_FALSE@am_libplugin_plain_la_rpath = -rpath \
 @STATIC_VALIDATOR_PLAIN_FALSE@	$(plugindir)
 libplugin_proxy_la_LIBADD =
-am__objects_151 = handler_proxy.lo proxy_hosts.lo
-am_libplugin_proxy_la_OBJECTS = $(am__objects_151)
+am__objects_156 = handler_proxy.lo proxy_hosts.lo
+am_libplugin_proxy_la_OBJECTS = $(am__objects_156)
 libplugin_proxy_la_OBJECTS = $(am_libplugin_proxy_la_OBJECTS)
 libplugin_proxy_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
@@ -741,8 +757,8 @@ libplugin_proxy_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 @STATIC_HANDLER_PROXY_FALSE@am_libplugin_proxy_la_rpath = -rpath \
 @STATIC_HANDLER_PROXY_FALSE@	$(plugindir)
 libplugin_redir_la_LIBADD =
-am__objects_152 = handler_redir.lo
-am_libplugin_redir_la_OBJECTS = $(am__objects_152)
+am__objects_157 = handler_redir.lo
+am_libplugin_redir_la_OBJECTS = $(am__objects_157)
 libplugin_redir_la_OBJECTS = $(am_libplugin_redir_la_OBJECTS)
 libplugin_redir_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
@@ -750,8 +766,8 @@ libplugin_redir_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 @STATIC_HANDLER_REDIR_FALSE@am_libplugin_redir_la_rpath = -rpath \
 @STATIC_HANDLER_REDIR_FALSE@	$(plugindir)
 libplugin_request_la_LIBADD =
-am__objects_153 = rule_request.lo
-am_libplugin_request_la_OBJECTS = $(am__objects_153)
+am__objects_158 = rule_request.lo
+am_libplugin_request_la_OBJECTS = $(am__objects_158)
 libplugin_request_la_OBJECTS = $(am_libplugin_request_la_OBJECTS)
 libplugin_request_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
@@ -759,8 +775,8 @@ libplugin_request_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 @STATIC_RULE_REQUEST_FALSE@am_libplugin_request_la_rpath = -rpath \
 @STATIC_RULE_REQUEST_FALSE@	$(plugindir)
 libplugin_round_robin_la_LIBADD =
-am__objects_154 = balancer_round_robin.lo
-am_libplugin_round_robin_la_OBJECTS = $(am__objects_154)
+am__objects_159 = balancer_round_robin.lo
+am_libplugin_round_robin_la_OBJECTS = $(am__objects_159)
 libplugin_round_robin_la_OBJECTS =  \
 	$(am_libplugin_round_robin_la_OBJECTS)
 libplugin_round_robin_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
@@ -771,18 +787,28 @@ libplugin_round_robin_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 libplugin_scgi_la_DEPENDENCIES = $(dynamic_handler_file_lib)
 am__libplugin_scgi_la_SOURCES_DIST = handler_cgi_base.h \
 	handler_cgi_base.c handler_scgi.h handler_scgi.c
-@STATIC_HANDLER_SCGI_FALSE@am__objects_155 = handler_cgi_base.lo
-am__objects_156 = $(am__objects_155) handler_scgi.lo
-am_libplugin_scgi_la_OBJECTS = $(am__objects_156)
+@STATIC_HANDLER_SCGI_FALSE@am__objects_160 = handler_cgi_base.lo
+am__objects_161 = $(am__objects_160) handler_scgi.lo
+am_libplugin_scgi_la_OBJECTS = $(am__objects_161)
 libplugin_scgi_la_OBJECTS = $(am_libplugin_scgi_la_OBJECTS)
 libplugin_scgi_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(libplugin_scgi_la_LDFLAGS) $(LDFLAGS) -o $@
 @STATIC_HANDLER_SCGI_FALSE@am_libplugin_scgi_la_rpath = -rpath \
 @STATIC_HANDLER_SCGI_FALSE@	$(plugindir)
+libplugin_secdownload_la_LIBADD =
+am__objects_162 = handler_secdownload.lo
+am_libplugin_secdownload_la_OBJECTS = $(am__objects_162)
+libplugin_secdownload_la_OBJECTS =  \
+	$(am_libplugin_secdownload_la_OBJECTS)
+libplugin_secdownload_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
+	$(libplugin_secdownload_la_LDFLAGS) $(LDFLAGS) -o $@
+@STATIC_HANDLER_SECDOWNLOAD_FALSE@am_libplugin_secdownload_la_rpath =  \
+@STATIC_HANDLER_SECDOWNLOAD_FALSE@	-rpath $(plugindir)
 libplugin_server_info_la_DEPENDENCIES = libcherokee-config.la
-am__objects_157 = handler_server_info.lo
-am_libplugin_server_info_la_OBJECTS = $(am__objects_157)
+am__objects_163 = handler_server_info.lo
+am_libplugin_server_info_la_OBJECTS = $(am__objects_163)
 libplugin_server_info_la_OBJECTS =  \
 	$(am_libplugin_server_info_la_OBJECTS)
 libplugin_server_info_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
@@ -791,8 +817,8 @@ libplugin_server_info_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 @STATIC_HANDLER_SERVER_INFO_FALSE@am_libplugin_server_info_la_rpath =  \
 @STATIC_HANDLER_SERVER_INFO_FALSE@	-rpath $(plugindir)
 libplugin_ssi_la_LIBADD =
-am__objects_158 = handler_ssi.lo
-am_libplugin_ssi_la_OBJECTS = $(am__objects_158)
+am__objects_164 = handler_ssi.lo
+am_libplugin_ssi_la_OBJECTS = $(am__objects_164)
 libplugin_ssi_la_OBJECTS = $(am_libplugin_ssi_la_OBJECTS)
 libplugin_ssi_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
@@ -800,8 +826,8 @@ libplugin_ssi_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 @STATIC_HANDLER_SSI_FALSE@am_libplugin_ssi_la_rpath = -rpath \
 @STATIC_HANDLER_SSI_FALSE@	$(plugindir)
 libplugin_streaming_la_DEPENDENCIES = $(am__DEPENDENCIES_1)
-am__objects_159 = libplugin_streaming_la-handler_streaming.lo
-am_libplugin_streaming_la_OBJECTS = $(am__objects_159)
+am__objects_165 = libplugin_streaming_la-handler_streaming.lo
+am_libplugin_streaming_la_OBJECTS = $(am__objects_165)
 libplugin_streaming_la_OBJECTS = $(am_libplugin_streaming_la_OBJECTS)
 libplugin_streaming_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) \
@@ -810,8 +836,8 @@ libplugin_streaming_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 @STATIC_HANDLER_STREAMING_FALSE@am_libplugin_streaming_la_rpath =  \
 @STATIC_HANDLER_STREAMING_FALSE@	-rpath $(plugindir)
 libplugin_w3c_la_LIBADD =
-am__objects_160 = logger_w3c.lo
-am_libplugin_w3c_la_OBJECTS = $(am__objects_160)
+am__objects_166 = logger_w3c.lo
+am_libplugin_w3c_la_OBJECTS = $(am__objects_166)
 libplugin_w3c_la_OBJECTS = $(am_libplugin_w3c_la_OBJECTS)
 libplugin_w3c_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
@@ -883,6 +909,7 @@ SOURCES = $(libcherokee_base_la_SOURCES) \
 	$(libplugin_deflate_la_SOURCES) \
 	$(libplugin_directory_la_SOURCES) \
 	$(libplugin_dirlist_la_SOURCES) \
+	$(libplugin_empty_gif_la_SOURCES) \
 	$(libplugin_error_nn_la_SOURCES) \
 	$(libplugin_error_redir_la_SOURCES) \
 	$(libplugin_exists_la_SOURCES) \
@@ -902,6 +929,7 @@ SOURCES = $(libcherokee_base_la_SOURCES) \
 	$(libplugin_request_la_SOURCES) \
 	$(libplugin_round_robin_la_SOURCES) \
 	$(libplugin_scgi_la_SOURCES) \
+	$(libplugin_secdownload_la_SOURCES) \
 	$(libplugin_server_info_la_SOURCES) \
 	$(libplugin_ssi_la_SOURCES) $(libplugin_streaming_la_SOURCES) \
 	$(libplugin_w3c_la_SOURCES) $(cherokee_SOURCES) \
@@ -921,6 +949,7 @@ DIST_SOURCES = $(am__libcherokee_base_la_SOURCES_DIST) \
 	$(libplugin_deflate_la_SOURCES) \
 	$(libplugin_directory_la_SOURCES) \
 	$(libplugin_dirlist_la_SOURCES) \
+	$(libplugin_empty_gif_la_SOURCES) \
 	$(libplugin_error_nn_la_SOURCES) \
 	$(libplugin_error_redir_la_SOURCES) \
 	$(libplugin_exists_la_SOURCES) \
@@ -945,6 +974,7 @@ DIST_SOURCES = $(am__libcherokee_base_la_SOURCES_DIST) \
 	$(libplugin_request_la_SOURCES) \
 	$(libplugin_round_robin_la_SOURCES) \
 	$(am__libplugin_scgi_la_SOURCES_DIST) \
+	$(libplugin_secdownload_la_SOURCES) \
 	$(libplugin_server_info_la_SOURCES) \
 	$(libplugin_ssi_la_SOURCES) $(libplugin_streaming_la_SOURCES) \
 	$(libplugin_w3c_la_SOURCES) $(cherokee_SOURCES) \
@@ -1116,7 +1146,8 @@ scgi.deps \
 fcgi.deps \
 fastcgi.deps \
 cgi.deps \
-streaming.deps
+streaming.deps \
+secdownload.deps
 
 
 #
@@ -1526,6 +1557,30 @@ libplugin_ssi_la_LDFLAGS = $(module_ldflags)
 libplugin_ssi_la_SOURCES = $(handler_ssi)
 @STATIC_HANDLER_SSI_TRUE@static_handler_ssi_src = $(handler_ssi)
 @STATIC_HANDLER_SSI_FALSE@dynamic_handler_ssi_lib = libplugin_ssi.la
+
+#
+# Handler secdownload
+#
+handler_secdownload = \
+handler_secdownload.c \
+handler_secdownload.h
+
+libplugin_secdownload_la_LDFLAGS = $(module_ldflags)  
+libplugin_secdownload_la_SOURCES = $(handler_secdownload)
+@STATIC_HANDLER_SECDOWNLOAD_TRUE@static_handler_secdownload_src = $(handler_secdownload)
+@STATIC_HANDLER_SECDOWNLOAD_FALSE@dynamic_handler_secdownload_lib = libplugin_secdownload.la
+
+#
+# Handler empty_gif
+#
+handler_empty_gif = \
+handler_empty_gif.c \
+handler_empty_gif.h
+
+libplugin_empty_gif_la_LDFLAGS = $(module_ldflags)  
+libplugin_empty_gif_la_SOURCES = $(handler_empty_gif)
+@STATIC_HANDLER_EMPTY_GIF_TRUE@static_handler_empty_gif_src = $(handler_empty_gif)
+@STATIC_HANDLER_EMPTY_GIF_FALSE@dynamic_handler_empty_gif_lib = libplugin_empty_gif.la
 
 #
 # Handler streaming
@@ -2000,6 +2055,8 @@ $(static_handler_common_src) \
 $(static_handler_proxy_src) \
 $(static_handler_mirror_src) \
 $(static_handler_ssi_src) \
+$(static_handler_secdownload_src) \
+$(static_handler_empty_gif_src) \
 $(static_handler_streaming_src) \
 $(static_handler_custom_error_src) \
 $(static_handler_server_info_src) \
@@ -2169,6 +2226,8 @@ $(dynamic_handler_redir_lib) \
 $(dynamic_handler_proxy_lib) \
 $(dynamic_handler_mirror_lib) \
 $(dynamic_handler_ssi_lib) \
+$(dynamic_handler_secdownload_lib) \
+$(dynamic_handler_empty_gif_lib) \
 $(dynamic_handler_streaming_lib) \
 $(dynamic_handler_custom_error_lib) \
 $(dynamic_handler_error_redir_lib) \
@@ -2370,6 +2429,8 @@ libplugin_directory.la: $(libplugin_directory_la_OBJECTS) $(libplugin_directory_
 	$(libplugin_directory_la_LINK) $(am_libplugin_directory_la_rpath) $(libplugin_directory_la_OBJECTS) $(libplugin_directory_la_LIBADD) $(LIBS)
 libplugin_dirlist.la: $(libplugin_dirlist_la_OBJECTS) $(libplugin_dirlist_la_DEPENDENCIES) 
 	$(libplugin_dirlist_la_LINK) $(am_libplugin_dirlist_la_rpath) $(libplugin_dirlist_la_OBJECTS) $(libplugin_dirlist_la_LIBADD) $(LIBS)
+libplugin_empty_gif.la: $(libplugin_empty_gif_la_OBJECTS) $(libplugin_empty_gif_la_DEPENDENCIES) 
+	$(libplugin_empty_gif_la_LINK) $(am_libplugin_empty_gif_la_rpath) $(libplugin_empty_gif_la_OBJECTS) $(libplugin_empty_gif_la_LIBADD) $(LIBS)
 libplugin_error_nn.la: $(libplugin_error_nn_la_OBJECTS) $(libplugin_error_nn_la_DEPENDENCIES) 
 	$(libplugin_error_nn_la_LINK) $(am_libplugin_error_nn_la_rpath) $(libplugin_error_nn_la_OBJECTS) $(libplugin_error_nn_la_LIBADD) $(LIBS)
 libplugin_error_redir.la: $(libplugin_error_redir_la_OBJECTS) $(libplugin_error_redir_la_DEPENDENCIES) 
@@ -2428,6 +2489,8 @@ libplugin_round_robin.la: $(libplugin_round_robin_la_OBJECTS) $(libplugin_round_
 	$(libplugin_round_robin_la_LINK) $(am_libplugin_round_robin_la_rpath) $(libplugin_round_robin_la_OBJECTS) $(libplugin_round_robin_la_LIBADD) $(LIBS)
 libplugin_scgi.la: $(libplugin_scgi_la_OBJECTS) $(libplugin_scgi_la_DEPENDENCIES) 
 	$(libplugin_scgi_la_LINK) $(am_libplugin_scgi_la_rpath) $(libplugin_scgi_la_OBJECTS) $(libplugin_scgi_la_LIBADD) $(LIBS)
+libplugin_secdownload.la: $(libplugin_secdownload_la_OBJECTS) $(libplugin_secdownload_la_DEPENDENCIES) 
+	$(libplugin_secdownload_la_LINK) $(am_libplugin_secdownload_la_rpath) $(libplugin_secdownload_la_OBJECTS) $(libplugin_secdownload_la_LIBADD) $(LIBS)
 libplugin_server_info.la: $(libplugin_server_info_la_OBJECTS) $(libplugin_server_info_la_DEPENDENCIES) 
 	$(libplugin_server_info_la_LINK) $(am_libplugin_server_info_la_rpath) $(libplugin_server_info_la_OBJECTS) $(libplugin_server_info_la_LIBADD) $(LIBS)
 libplugin_ssi.la: $(libplugin_ssi_la_OBJECTS) $(libplugin_ssi_la_DEPENDENCIES) 
@@ -2579,6 +2642,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/handler_common.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/handler_custom_error.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/handler_dirlist.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/handler_empty_gif.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/handler_error_nn.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/handler_error_redir.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/handler_fastcgi.Plo@am__quote@
@@ -2589,6 +2653,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/handler_proxy.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/handler_redir.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/handler_scgi.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/handler_secdownload.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/handler_server_info.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/handler_ssi.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/header.Plo@am__quote@
@@ -2620,6 +2685,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libcherokee_server_la-handler_custom_error.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libcherokee_server_la-handler_dbslayer.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libcherokee_server_la-handler_dirlist.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libcherokee_server_la-handler_empty_gif.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libcherokee_server_la-handler_error.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libcherokee_server_la-handler_error_nn.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libcherokee_server_la-handler_error_redir.Plo@am__quote@
@@ -2631,6 +2697,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libcherokee_server_la-handler_proxy.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libcherokee_server_la-handler_redir.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libcherokee_server_la-handler_scgi.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libcherokee_server_la-handler_secdownload.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libcherokee_server_la-handler_server_info.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libcherokee_server_la-handler_ssi.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libcherokee_server_la-handler_streaming.Plo@am__quote@
@@ -3074,6 +3141,20 @@ libcherokee_server_la-handler_ssi.lo: handler_ssi.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='handler_ssi.c' object='libcherokee_server_la-handler_ssi.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcherokee_server_la_CFLAGS) $(CFLAGS) -c -o libcherokee_server_la-handler_ssi.lo `test -f 'handler_ssi.c' || echo '$(srcdir)/'`handler_ssi.c
+
+libcherokee_server_la-handler_secdownload.lo: handler_secdownload.c
+@am__fastdepCC_TRUE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcherokee_server_la_CFLAGS) $(CFLAGS) -MT libcherokee_server_la-handler_secdownload.lo -MD -MP -MF $(DEPDIR)/libcherokee_server_la-handler_secdownload.Tpo -c -o libcherokee_server_la-handler_secdownload.lo `test -f 'handler_secdownload.c' || echo '$(srcdir)/'`handler_secdownload.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/libcherokee_server_la-handler_secdownload.Tpo $(DEPDIR)/libcherokee_server_la-handler_secdownload.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='handler_secdownload.c' object='libcherokee_server_la-handler_secdownload.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcherokee_server_la_CFLAGS) $(CFLAGS) -c -o libcherokee_server_la-handler_secdownload.lo `test -f 'handler_secdownload.c' || echo '$(srcdir)/'`handler_secdownload.c
+
+libcherokee_server_la-handler_empty_gif.lo: handler_empty_gif.c
+@am__fastdepCC_TRUE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcherokee_server_la_CFLAGS) $(CFLAGS) -MT libcherokee_server_la-handler_empty_gif.lo -MD -MP -MF $(DEPDIR)/libcherokee_server_la-handler_empty_gif.Tpo -c -o libcherokee_server_la-handler_empty_gif.lo `test -f 'handler_empty_gif.c' || echo '$(srcdir)/'`handler_empty_gif.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/libcherokee_server_la-handler_empty_gif.Tpo $(DEPDIR)/libcherokee_server_la-handler_empty_gif.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='handler_empty_gif.c' object='libcherokee_server_la-handler_empty_gif.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcherokee_server_la_CFLAGS) $(CFLAGS) -c -o libcherokee_server_la-handler_empty_gif.lo `test -f 'handler_empty_gif.c' || echo '$(srcdir)/'`handler_empty_gif.c
 
 libcherokee_server_la-handler_streaming.lo: handler_streaming.c
 @am__fastdepCC_TRUE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcherokee_server_la_CFLAGS) $(CFLAGS) -MT libcherokee_server_la-handler_streaming.lo -MD -MP -MF $(DEPDIR)/libcherokee_server_la-handler_streaming.Tpo -c -o libcherokee_server_la-handler_streaming.lo `test -f 'handler_streaming.c' || echo '$(srcdir)/'`handler_streaming.c

@@ -15,6 +15,8 @@
  void PLUGIN_INIT_NAME(proxy) (cherokee_plugin_loader_t *loader); 
  void PLUGIN_INIT_NAME(mirror) (cherokee_plugin_loader_t *loader); 
  void PLUGIN_INIT_NAME(ssi) (cherokee_plugin_loader_t *loader); 
+ void PLUGIN_INIT_NAME(secdownload) (cherokee_plugin_loader_t *loader); 
+ void PLUGIN_INIT_NAME(empty_gif) (cherokee_plugin_loader_t *loader); 
  void PLUGIN_INIT_NAME(custom_error) (cherokee_plugin_loader_t *loader); 
  void PLUGIN_INIT_NAME(dbslayer) (cherokee_plugin_loader_t *loader); 
  void PLUGIN_INIT_NAME(streaming) (cherokee_plugin_loader_t *loader); 
@@ -38,6 +40,7 @@
  void PLUGIN_INIT_NAME(exists) (cherokee_plugin_loader_t *loader); 
  void PLUGIN_INIT_NAME(method) (cherokee_plugin_loader_t *loader); 
  void PLUGIN_INIT_NAME(bind) (cherokee_plugin_loader_t *loader); 
+ void PLUGIN_INIT_NAME(geoip) (cherokee_plugin_loader_t *loader); 
  void PLUGIN_INIT_NAME(libssl) (cherokee_plugin_loader_t *loader); 
  void PLUGIN_INIT_NAME(not) (cherokee_plugin_loader_t *loader); 
  void PLUGIN_INIT_NAME(and) (cherokee_plugin_loader_t *loader); 
@@ -60,6 +63,8 @@
  add_static_entry (loader, "proxy", PLUGIN_INFO_PTR(proxy)); 
  add_static_entry (loader, "mirror", PLUGIN_INFO_PTR(mirror)); 
  add_static_entry (loader, "ssi", PLUGIN_INFO_PTR(ssi)); 
+ add_static_entry (loader, "secdownload", PLUGIN_INFO_PTR(secdownload)); 
+ add_static_entry (loader, "empty_gif", PLUGIN_INFO_PTR(empty_gif)); 
  add_static_entry (loader, "custom_error", PLUGIN_INFO_PTR(custom_error)); 
  add_static_entry (loader, "dbslayer", PLUGIN_INFO_PTR(dbslayer)); 
  add_static_entry (loader, "streaming", PLUGIN_INFO_PTR(streaming)); 
@@ -83,6 +88,7 @@
  add_static_entry (loader, "exists", PLUGIN_INFO_PTR(exists)); 
  add_static_entry (loader, "method", PLUGIN_INFO_PTR(method)); 
  add_static_entry (loader, "bind", PLUGIN_INFO_PTR(bind)); 
+ add_static_entry (loader, "geoip", PLUGIN_INFO_PTR(geoip)); 
  add_static_entry (loader, "libssl", PLUGIN_INFO_PTR(libssl)); 
  add_static_entry (loader, "not", PLUGIN_INFO_PTR(not)); 
  add_static_entry (loader, "and", PLUGIN_INFO_PTR(and)); 
@@ -105,6 +111,8 @@
  PLUGIN_INIT_NAME(proxy)(loader); 
  PLUGIN_INIT_NAME(mirror)(loader); 
  PLUGIN_INIT_NAME(ssi)(loader); 
+ PLUGIN_INIT_NAME(secdownload)(loader); 
+ PLUGIN_INIT_NAME(empty_gif)(loader); 
  PLUGIN_INIT_NAME(custom_error)(loader); 
  PLUGIN_INIT_NAME(dbslayer)(loader); 
  PLUGIN_INIT_NAME(streaming)(loader); 
@@ -128,6 +136,7 @@
  PLUGIN_INIT_NAME(exists)(loader); 
  PLUGIN_INIT_NAME(method)(loader); 
  PLUGIN_INIT_NAME(bind)(loader); 
+ PLUGIN_INIT_NAME(geoip)(loader); 
  PLUGIN_INIT_NAME(libssl)(loader); 
  PLUGIN_INIT_NAME(not)(loader); 
  PLUGIN_INIT_NAME(and)(loader); 
