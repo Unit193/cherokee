@@ -21,8 +21,8 @@
 provided by <a href="bundle_cherokee-admin.html">cherokee-admin</a>. This is
 the only recommended way of configuring Cherokee. If you are looking
 for development information, you should refer to the appropriate
-section, especially <a href="dev_cherokee.conf.html">cherokee.conf</a> file
-specification.</p></div>
+section, especially the <a href="dev_cherokee.conf.html">cherokee.conf</a>
+file specification.</p></div>
 <div class="para"><p>We will first show a quick overview of the available options, followed
 by a simple walkthrough. You can learn more about the options in their
 specific documentation entries.</p></div>
@@ -107,9 +107,10 @@ Login:
   User:              admin
   One-time Password: yp7F1pMhtmD58DbB
 
-Cherokee Web Server 0.98.0b2721 (Jan 19 2009): Listening on port 127.0.0.1:9090,
-TLS disabled, IPv6 disabled, using epoll, 1024 fds system limit, max. 505
-connections, caching I/O, single thread</tt></pre>
+Cherokee Web Server 0.99.3b2955 (Mar 10 2009): Listening on port ALL:80, TLS
+disabled, IPv6 enabled, using epoll, 1024 fds system limit, max. 505
+connections, caching I/O, 10 threads, 50 connections per thread, standard
+scheduling policy</tt></pre>
 </div></div>
 <div class="para"><p>Now you can access the administration interface simply by opening your
 web browser and visiting <a href="http://localhost:9090">http://localhost:9090</a></p></div>
@@ -258,7 +259,7 @@ redirected to <a href="http://example.net/feed">http://example.net/feed</a></p><
 <div class="para"><p>Any rule type can be used with the redirection handler: Directory,
 Extensions, Regular Expression, etc. In this case the fact that the
 rule type is "Regular Expression" affects only slightly. Refer to the
-appropiate section of the documentation,
+appropriate section of the documentation,
 <a href="modules_handlers_redir.html">Redirection Handler</a>, for more
 details.</p></div>
 <div class="para"><p>Note that the <tt>Type</tt> of the <strong>Redirection</strong> is <tt>External</tt>. This means

@@ -50,6 +50,7 @@ PageFeedback.py \
 PageInfoSource.py \
 Table.py \
 Theme.py \
+Rule.py \
 RuleList.py \
 Module.py \
 ModuleHandler.py \
@@ -63,6 +64,8 @@ ModuleFcgi.py \
 ModuleScgi.py \
 ModuleBalancer.py \
 ModuleSsi.py \
+ModuleSecdownload.py \
+ModuleEmptyGif.py \
 ModuleProxy.py \
 ModuleMirror.py \
 ModuleDbslayer.py \

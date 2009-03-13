@@ -23,29 +23,29 @@ are supported.</p></div>
 <div class="olist"><ol>
 <li>
 <p>
-<tt>Automatic Traffic Shaping</tt>: All the media file handled by this
+<tt>Automatic Traffic Shaping</tt>: All the media files handled by this
     module will be analyzed, so it figures the media bitrate. Once the
-    module knows it, it will limit the speed to the bitrate, so server
-    bandwidth is not wasted in the case the client stops
-    watching/listening the file before it has finished. This feature
-    also helps the server to handle a higher user concurrency before
-    the bandwidth limit is reached.
+    module knows it, it will limit the speed to that bitrate, so
+    server bandwidth is not wasted in the case the client stops
+    watching or listening to the file before it has finished. This
+    feature also helps the server to handle a higher user concurrency
+    before the bandwidth limit is reached.
 </p>
 </li>
 <li>
 <p>
 <tt>Seeking support</tt>: There are some web media players that support
     media seeking by using a ?<em>start</em>= parameter. So far, this method
-    is supported for FLV files, and it'll be eventually supported for
-    H264 videos as well.
+    is supported for FLV files, and it will be eventually supported
+    for H264 videos as well.
 </p>
 </li>
 </ol></div>
 <div class="para"><p>If the <em>Automatic Traffic Shaping</em> is enabled, all the media formats
 will be streamed, independently on whether or not seeking is supported
-for that format.  For instance, even if <em>seeking</em> wouldn't work, any
-MP3, OGG, AVI or Matroska file would be streamed according to its
-bitrate.</p></div>
+for that format.  For instance, even though <em>seeking</em> wouldn't work,
+any MP3, OGG, AVI or Matroska file would be streamed according to
+their bitrate.</p></div>
 <h3 id="_parameters_listing">Parameters: Listing</h3><div style="clear:left"></div>
 <div class="tableblock">
 <table rules="rows"
@@ -87,7 +87,7 @@ cellspacing="0" cellpadding="4">
     float   
     </td>
     <td align="left">
-    Optional. It's the factor by which the bandwidth                                limit would be multiplied. Default: 0.1.
+    Optional. It is the factor by which the bandwidth                                limit would be multiplied. Default: 0.1.
     </td>
   </tr>
   <tr>
@@ -98,7 +98,7 @@ cellspacing="0" cellpadding="4">
     number  
     </td>
     <td align="left">
-    Optional. Seconds of media that should be sent                                before setting the bandwidth limit. This allows the                                                  client to buffer some media. Default: 5 (seconds).
+    Optional. Seconds of media that should be sent                                before setting the bandwidth limit. This allows the                                client to buffer some media. Default: 5 (seconds).
     </td>
   </tr>
 </tbody>
@@ -106,11 +106,12 @@ cellspacing="0" cellpadding="4">
 </div>
 <h3 id="_notes_on_flv_streaming">Notes on FLV streaming</h3><div style="clear:left"></div>
 <div class="para"><p>It is important to remember that FLV videos must be indexed. It is
-only possible to seek along the media file if it is has some meta data
+only possible to seek along the media file if it has some meta data
 tags. Without these tags, seeking just would not work.</p></div>
 <div class="para"><p>There are tools like <a href="http://inlet-media.de/flvtool2">FLVTool2</a>,
 <a href="http://www.buraks.com/flvmdi/">FLVMDI</a> or
-<a href="http://yamdi.sourceforge.net/">Yamdi</a> that insert them.</p></div>
+<a href="http://yamdi.sourceforge.net/">Yamdi</a> that can be used to insert
+these tags.</p></div>
 </div>
 <div id="footer">
 <div id="footer-text">

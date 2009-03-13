@@ -243,6 +243,7 @@ adminpy_SCRIPTS = $(admin_scripts)
 @INSTALL_ADMIN_TRUE@PageInfoSource.py \
 @INSTALL_ADMIN_TRUE@Table.py \
 @INSTALL_ADMIN_TRUE@Theme.py \
+@INSTALL_ADMIN_TRUE@Rule.py \
 @INSTALL_ADMIN_TRUE@RuleList.py \
 @INSTALL_ADMIN_TRUE@Module.py \
 @INSTALL_ADMIN_TRUE@ModuleHandler.py \
@@ -256,6 +257,8 @@ adminpy_SCRIPTS = $(admin_scripts)
 @INSTALL_ADMIN_TRUE@ModuleScgi.py \
 @INSTALL_ADMIN_TRUE@ModuleBalancer.py \
 @INSTALL_ADMIN_TRUE@ModuleSsi.py \
+@INSTALL_ADMIN_TRUE@ModuleSecdownload.py \
+@INSTALL_ADMIN_TRUE@ModuleEmptyGif.py \
 @INSTALL_ADMIN_TRUE@ModuleProxy.py \
 @INSTALL_ADMIN_TRUE@ModuleMirror.py \
 @INSTALL_ADMIN_TRUE@ModuleDbslayer.py \

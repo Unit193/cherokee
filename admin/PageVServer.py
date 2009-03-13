@@ -5,6 +5,7 @@ from Form import *
 from Table import *
 from Entry import *
 from consts import *
+from Rule import *
 from RuleList import *
 from CherokeeManagement import *
 
@@ -55,6 +56,7 @@ HELPS = [
     ('cookbook_ssl',           "SSL cookbook")
 ]
 
+RULE_NAME_LEN_LIMIT = 35
 
 class PageVServer (PageMenu, FormHelper):
     def __init__ (self, cfg):
@@ -154,7 +156,7 @@ class PageVServer (PageMenu, FormHelper):
         # The 'add_new_entry' checking function depends on 
         # the whether 'add_new_type' is a directory, an extension
         # or a regular extension
-        rule_module = module_obj_factory (_type, self._cfg, pre, self.submit_url)
+        rule_module = module_obj_factory (_type, self._cfg, "%s!match"%(pre), self.submit_url)
 
         # Validate
         validation = DATA_VALIDATION[:]
@@ -309,16 +311,20 @@ class PageVServer (PageMenu, FormHelper):
             conf = priorities[prio]
 
             _type = conf.get_val('match')
-            pre   = '%s!%s' % (cfg_key, prio)
+            pre   = '%s!%s!match' % (cfg_key, prio)
 
             # Try to load the rule plugin
-            rule_module = module_obj_factory (_type, self._cfg, pre, self.submit_url)
-            name        = rule_module.get_name()
-            name_type   = rule_module.get_type_name()
+            rule = Rule(self._cfg, pre, self.submit_url, 0)
+            name      = rule.get_name()
+            name_type = rule.get_type_name()
+
+            # Ensure the name is too long
+            if len(name) > RULE_NAME_LEN_LIMIT:
+                name = "%s<b>...</b>" % (name[:RULE_NAME_LEN_LIMIT])
 
             if _type != 'default':
                 link     = '<a href="%s/rule/%s">%s</a>' % (url_prefix, prio, name)
-                js       = "post_del_key('%s', '%s');" % (self.submit_ajax_url, pre)
+                js       = "post_del_key('%s', '%s');" % (self.submit_ajax_url, "%s!%s"%(cfg_key, prio))
                 final    = self.InstanceCheckbox ('%s!match!final'%(pre), True, quiet=True)
                 link_del = self.InstanceImage ("bin.png", "Delete", border="0", onClick=js)
                 extra    = ''

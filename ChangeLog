@@ -1,4 +1,202 @@
+2009-03-13  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* 0.99.4 released
+
+	* qa/215-Post-Chunked3.py, qa/Makefile.am: Added a new QA test.
+	It tests empty chunked encoded POSTs.
+
+	* cherokee/handler_proxy.c: Some of the connection that were
+	closed are now kept alive. This ought to increase the overall
+	proxy performance.
+	
+	* cherokee/handler_proxy.c, cherokee/handler_proxy.h: Tries to
+	address: http://code.google.com/p/cherokee/issues/detail?id=261
+	There were time when the reverse proxy returned 500 errors by no
+	reason.
+
+	* cherokee/handler_proxy.c (cherokee_handler_proxy_init): Adds a
+	new snaity check. If an information source used from the reverse
+	proxy has no port, the port 80 will be assigned by default.
+
+2009-03-12  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* cherokee/header.c, cherokee/header.h, cherokee/handler_fcgi.c,
+	cherokee/post.c, cherokee/post.h, cherokee/handler_cgi.c,
+	cherokee/connection.c, admin/pyscgi.py, qa/213-Post-Chunked1.py,
+	qa/Makefile.am, qa/util.py, qa/214-Post-Chunked2.py: Implements
+	"Transfer-Encoding: chunked" POSTs.
+	
+	* cherokee/handler_cgi_base.c: Fixes the SCRIPT_NAME generation
+	when a CGI is inside a user directory (/~user).
+
+2009-03-11  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* cherokee/post.c, cherokee/header.c: Adds a couple of new TRACE
+	entries.  They help to debug the incoming header, and post info.
+
+	* admin/ModuleDirlist.py: Implements the new "Hidden files"
+	feature in cherokee-admin.
+
+	* cherokee/handler_dirlist.h, cherokee/handler_dirlist.c:
+	Implements a new "Hidden files" feature. It allows to hidde
+	certain files of being listed by the server.
+
+	* qa/212-DirList-Hidden.py, qa/Makefile.am: Tests the new "Hidden
+	Files" feature of the dirlist handler.
+
+	* cherokee/config_node.c (cherokee_config_node_convert_list):
+	Converted to use cherokee_buffer_t instead of char *.
+
+2009-03-10  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* cherokee/handler_server_info.c: "Uptime" was not being showed in
+	the HTML render.
+
+	* cherokee/handler_cgi.c (cherokee_handler_cgi_free): Fixes an
+	integer overflow.
+
+	* cherokee/handler_cgi_base.c, qa/210-Userdir_ScriptName.py: Tries
+	to address: http://code.google.com/p/cherokee/issues/detail?id=377
+
+	* qa/210-Userdir_ScriptName.py, qa/Makefile.am: Adds a new QA test
+	in order to reproduce the bug report #377:
+	http://code.google.com/p/cherokee/issues/detail?id=377
+
+2009-03-10  Taher Shihadeh <taher@unixwars.com>
+
+	* doc/modules_handlers_streaming.txt,
+	doc/modules_handlers_cgi.txt,
+	doc/modules_handlers_secdownload.txt, doc/other_community.txt,
+	doc/cookbook_ssl.txt, doc/modules_handlers.txt, doc/index.txt,
+	doc/config_quickstart.txt, doc/modules.txt,
+	doc/media/images/admin_vserver_errors.png,
+	doc/media/images/admin_handler_secdownload.png: documentation
+	cleanup.
+
+	* doc/dev_debug.txt, doc/basics_why_cherokee.txt,
+	doc/config_general.txt, doc/index.txt, doc/config_quickstart.txt,
+	doc/cookbook_optimizations.txt, doc/bundle_cherokee-admin.txt,
+	doc/dev_cherokee.conf.txt:  syncing with current release. Almost
+	there now.
+
+2009-03-10  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* admin/ModuleEmptyGif.py, admin/consts.py, admin/Makefile.am:
+	Adds the cherokee-admin module for the new Empty GIF handler.
+
+	* cherokee/Makefile.am, cherokee/handler_empty_gif.c,
+	cherokee/handler_empty_gif.h, configure.in, qa/211-EmptyGif.py,
+	qa/Makefile.am: Adds a new "Empty GIF" handler.
+
+	* cherokee/handler_cgi_base.c
+	(cherokee_handler_cgi_base_extract_path): Fixes the PATH_INFO
+	generation when a custom document root is set. This patch fixes:
+	http://code.google.com/p/cherokee/issues/detail?id=367
+
+2009-03-09  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* admin/Rule.py (Rule.get_name): Better handling of broken
+	configurations (unset rules).
+
+2009-03-09  Antonio Perez  <aperez@skarcha.com>
+
+	* admin/static/css/cherokee.css, admin/static/js/common.js,
+	admin/Entry.py: Click on a checkbox label auto-submits the form
+	now.
+
+2009-03-09  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* qa/209-ScriptAlias_DRoot.py, qa/Makefile.am: Adds a new QA test
+	in order to reprocude the bug report #367:
+	http://code.google.com/p/cherokee/issues/detail?id=367
+
+	* qa/208-Userdir_Pathinfo.py, qa/Makefile.am: Adds a new QA test
+	to test whether PATH_INFO works inside ~user directories.
+
+	* qa/207-RuleExists4.py, qa/Makefile.am: Adds a new QA test to
+	ensure the previous patches does actually fix the issue.
+
+	* cherokee/rule_exists.c (match): The rule should match files even
+	if they are inside directories. This patch fixes:
+	http://lists.octality.com/pipermail/cherokee/2009-March/009905.html
+
+2009-03-08  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* cherokee/handler_mirror.c, cherokee/handler_server_info.c,
+	cherokee/handler_dbslayer.c: Be more flexible with unknown config
+	entries: http://code.google.com/p/cherokee/issues/detail?id=392
+
+	* admin/PageInfoSource.py (PageInfoSource._render_source_usage):
+	Fixes bug: http://code.google.com/p/cherokee/issues/detail?id=391
+
+	* doc/media/images/admin_handler_secdownload.png, doc/index.txt,
+	doc/modules_handlers_secdownload.txt, doc/Makefile.am: Adds an
+	documentation entry for the new "Hidden Downloads" handler.
+
+	* doc/media/css/cherokee_doc.css: A few smalls changes to make the
+	documentation to use less fonts (types and sizes).
+
+	* admin/ModuleSecdownload.py, admin/consts.py, admin/Makefile.am:
+	Adds a support for the new "Hidden Downloads" plug-in in
+	cherokee-admin.
+
+	* qa/206-AuthType.py: Adds a new QA to test AUTH_TYPE.
+
+	* cherokee/handler_cgi_base.c
+	(cherokee_handler_cgi_base_build_basic_env): Adds support for the
+	AUTH_TYPE {Fast,S,}CGI variable. Thanks to Christian Hudon for
+	reporting: http://code.google.com/p/cherokee/issues/detail?id=390
+
+2009-03-07  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* cherokee/Makefile.am, cherokee/handler_secdownload.c,
+	cherokee/handler_secdownload.h, qa/204-secdownload2.py,
+	qa/Makefile.am, qa/205-secdownload3.py, qa/203-secdownload1.py,
+	secdownload.deps, configure.in: Implements a new 'Secure Download'
+	handler and adds a few new QA tests to test it out:
+	http://code.google.com/p/cherokee/issues/detail?id=386
+
+	* cherokee/util.c, cherokee/util.h, cherokee/buffer.c: Relocates
+	the hex_char to int array. It's global now.
+
+	* admin/PageVServer.py (PageVServer._render_rules_generic): Fixes
+	rule deletion. This's a regression introduced before the 0.99.3
+	release.
+
+	* cherokee/handler_cgi_base.c: Improves the X-Sendfile support, so
+	a much more set of headers are sent when a {Fast,S,}CGI replies
+	with a X-Sendfile header entry.
+
+	* qa/202-xsendfile2.py, qa/Makefile.am (EXTRA_DIST): Adds a new QA
+	test to check whether the right headers are sent when X-Sendfile
+	has been used in a {Fast,S,}CGI response.
+
+2009-03-06  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* admin/PageVServer.py (PageVServer._render_rules_generic): Adds a
+	new rule name limit, so even if there is some long entry, the
+	virtual server rule list still looks fine.
+
+	* cherokee/balancer_ip_hash.c (dispatch): The last information
+	source was not being used by the IP-Hash load balancer. Fixes:
+	http://code.google.com/p/cherokee/issues/detail?id=387
+
+2009-03-06  Antonio Perez  <aperez@skarcha.com>
+
+	* admin/PageEntry.py, admin/Rule.py, admin/PageVServer.py,
+	admin/static/css/cherokee.css: Visual enhancements to Complex
+	Rules configuration.
+
 2009-03-05  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* admin/PageEntry.py, admin/server.py, admin/ModuleGeoip.py,
+	admin/Rule.py, admin/ModuleBind.py, admin/ModuleRequest.py,
+	admin/PageVServer.py, admin/ModuleExtensions.py,
+	admin/ModuleHeader.py, admin/static/js/common.js,
+	admin/ModuleExists.py,admin/ModuleDirectory.py,
+	admin/ModuleMethod.py: Implements complex rules in Cherokee-admin.
+	This is the initial version, the GUI still needs quite a lot of
+	work.
 
 	* 0.99.3 released
 

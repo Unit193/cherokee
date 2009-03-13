@@ -130,7 +130,7 @@ make major code rewrites.</p></div>
 disable this when you have an application that is running the whole
 virtual server tree, as it is a common source of problems. You can
 look at a practical example about PATH_INFO in the
-<a href="modules_handlers_common.html">File &amp; Send</a> handler documentation.</p></div>
+<a href="modules_handlers_common.html">List &amp; Send</a> handler documentation.</p></div>
 <h3 id="examples">Examples</h3><div style="clear:left"></div>
 <div class="para"><p>This is a pretty common example. It defines a directory called <tt>cgi</tt>
 that points to a path out of the Sever root directory where the
@@ -144,7 +144,7 @@ CGI programs are located.</p></div>
 requests to be managed by a specific script.</p></div>
 <div class="para"><p>A real life example could be running
 <a href="http://trac.edgewall.org">Trac</a> as a CGI script. In that case you
-would want to map a URL to the trac.cgi script.</p></div>
+would want to map an URL to the trac.cgi script.</p></div>
 <div class="para"><p>For this you only need to set up the Script Alias option. Assuming you
 are using a <tt>Directory</tt>-type rule for the path <tt>/trac</tt> managed by the
 <tt>CGI</tt> handler, you could set <tt>/usr/share/trac/cgi-bin/trac.cgi</tt> as
