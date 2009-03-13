@@ -103,13 +103,17 @@ clean: unpatch
 	rm -f cherokee.spec
 	rm -f windows/cherokee.nsi
 	rm -f config.log
+	rm -rf $(BUILD_DIR)
 	dh_clean
 
 install: install-indep install-arch
 
 install-indep: 
-	# debian/<package>-doc
-	#INSTALLDOC#
+# cherokee-doc - Documentation
+	install -d $(DOC_DIR)/DEBIAN
+	install -d $(DOC_DIR)/usr/share/doc/cherokee-doc
+
+	mv $(BUILD_DIR)/usr/share/doc/cherokee/* $(DOC_DIR)/usr/share/doc/cherokee-doc/
 
 install-arch: 
 	dh_testdir
@@ -284,16 +288,17 @@ install-arch:
 	mv $(BUILD_DIR)/usr/bin/cget                         $(CGET_DIR)/usr/bin/
 	mv $(BUILD_DIR)/usr/share/man/man1/cget.1            $(CGET_DIR)/usr/share/man/man1/
 
-# cherokee-doc - Documentation
-	install -d $(DOC_DIR)/DEBIAN
-	install -d $(DOC_DIR)/usr/share/doc/cherokee-doc
-
-	mv $(BUILD_DIR)/usr/share/doc/cherokee/* $(DOC_DIR)/usr/share/doc/cherokee-doc/
-
 # cherokee - Main binary package
-	# Whatever we still have in $(BUILD_DIR) will become the main Cherokee
-	# package
-	mv $(BUILD_DIR)/* $(SERVER_DIR)
+	# Whatever we still have in $(BUILD_DIR) (except for 
+	# /usr/share/doc/cherokee, which we take care of in install-arch) will 
+	# become the main Cherokee package
+	install $(CURDIR)/debian/README.docs $(DEV_BASE_DIR)/usr/share/doc/libcherokee-base0-dev/
+	install -d $(SERVER_DIR)/usr/share
+	mv $(BUILD_DIR)/usr/bin $(SERVER_DIR)/usr/
+	mv $(BUILD_DIR)/usr/sbin $(SERVER_DIR)/usr/
+	mv $(BUILD_DIR)/usr/bin/share/cherokee $(SERVER_DIR)/usr/share/
+	mv $(BUILD_DIR)/etc $(SERVER_DIR)
+	mv $(BUILD_DIR)/var $(SERVER_DIR)
 
 	# References to cherokee-panic have been shuffled elsewhere
 	mv $(SERVER_DIR)/usr/bin/cherokee-panic             $(SERVER_DIR)/usr/share/cherokee
@@ -306,9 +311,6 @@ install-arch:
 		$(SERVER_DIR)/usr/include/cherokee \
 		$(SERVER_DIR)/usr/include \
 		$(SERVER_DIR)/usr/share/aclocal
-
-	# And create an empty directory for the log files
-	install -d $(SERVER_DIR)/var/log/cherokee
 
 # Must not depend on anything. This is to be called by
 # binary-arch/binary-indep
@@ -345,7 +347,7 @@ binary-common:
 
 # Build architecture independant packages using the common target.
 binary-indep: build-indep install-indep
-####	$(MAKE) -f debian/rules DH_OPTIONS=-i binary-common
+	$(MAKE) -f debian/rules DH_OPTIONS=-i binary-common
 
 # Build architecture dependant packages using the common target.
 binary-arch: build-arch install-arch
