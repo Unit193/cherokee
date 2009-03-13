@@ -297,7 +297,7 @@ install-arch:
 	mv $(BUILD_DIR)/usr/bin $(SERVER_DIR)/usr/
 	mv $(BUILD_DIR)/usr/sbin $(SERVER_DIR)/usr/
 	mv $(BUILD_DIR)/usr/share/cherokee $(SERVER_DIR)/usr/share/
-	mv $(BUILD)/usr/share/man $(SERVER_DIR)/usr/share/
+	mv $(BUILD_DIR)/usr/share/man $(SERVER_DIR)/usr/share/
 	mv $(BUILD_DIR)/etc $(SERVER_DIR)
 	mv $(BUILD_DIR)/var $(SERVER_DIR)
 
