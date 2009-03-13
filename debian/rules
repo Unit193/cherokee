@@ -296,21 +296,12 @@ install-arch:
 	install -d $(SERVER_DIR)/usr/share
 	mv $(BUILD_DIR)/usr/bin $(SERVER_DIR)/usr/
 	mv $(BUILD_DIR)/usr/sbin $(SERVER_DIR)/usr/
-	mv $(BUILD_DIR)/usr/bin/share/cherokee $(SERVER_DIR)/usr/share/
+	mv $(BUILD_DIR)/usr/share/cherokee $(SERVER_DIR)/usr/share/
 	mv $(BUILD_DIR)/etc $(SERVER_DIR)
 	mv $(BUILD_DIR)/var $(SERVER_DIR)
 
 	# References to cherokee-panic have been shuffled elsewhere
 	mv $(SERVER_DIR)/usr/bin/cherokee-panic             $(SERVER_DIR)/usr/share/cherokee
-
-	# Remove directories that have been emptied by shuffling around 
-	# files to our other generated packages
-	rmdir --ignore-fail-on-non-empty  $(SERVER_DIR)/usr/lib/cherokee \
-		$(SERVER_DIR)/usr/lib/pkgconfig \
-		$(SERVER_DIR)/usr/lib \
-		$(SERVER_DIR)/usr/include/cherokee \
-		$(SERVER_DIR)/usr/include \
-		$(SERVER_DIR)/usr/share/aclocal
 
 # Must not depend on anything. This is to be called by
 # binary-arch/binary-indep
