@@ -1,3 +1,50 @@
+2009-03-18  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* 0.99.5 released
+
+2009-03-17  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* cherokee/connection.c (cherokee_connection_build_header):
+	Reverts r2858.
+
+	* cherokee.conf.sample.pre: The default PHP set up should have the
+	'Error Handler' bit. Otherwise, applications such as Wordpress
+	won't work by default.
+
+	* cherokee/http.h (http_code_with_body): Fixed it. It was not
+	working according with RFC 2616: Section 4.3.
+
+	* admin/PageVServer.py: Fixes the final flag management. It seems
+	that we introducced a regression a few days ago.
+
+	* cherokee/bind.c (cherokee_bind_configure): Fixed compilation
+	with Sun CC. Patch by Alfred Peng <Alfred.Peng@Sun.COM>. Thanks!
+	http://code.google.com/p/cherokee/issues/detail?id=402
+
+	* cherokee/handler_proxy.c, cherokee/handler_proxy.h,
+	admin/ModuleProxy.py: Makes the reverse proxy configuration much
+	more consistent. Now the operations with headers/URLs are the same
+	for the Request (to the back-end server) and for the Response. It
+	also implements "Location:" header parsing (bug #263):
+	http://code.google.com/p/cherokee/issues/detail?id=263 
+	IMPORTANT: The configuration keys have changed! People will most
+	probably have to add the reverse proxy rules again.
+	
+2009-03-16  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* cherokee/http.h, cherokee/handler_proxy.c: Tries to fix a
+	problem sending POST requests to a Django back-end server:
+	http://code.google.com/p/cherokee/issues/detail?id=261
+
+	* cherokee/post.c, cherokee/connection.c: Adds a couple of new
+	TRACE entries.
+	
+	* cherokee/handler_proxy.c (cherokee_handler_proxy_step): Fixes a
+	bug in the reverse proxy.  When a backend server was sending a
+	HTTP/1.0 reply without Content-Lenght, and the server client was
+	using HTTP/1.1 with Keepalive, the server was screwing the
+	re-encoding.
+
 2009-03-13  Alvaro Lopez Ortega  <alvaro@octality.com>
 
 	* 0.99.4 released
