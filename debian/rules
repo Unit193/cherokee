@@ -293,7 +293,7 @@ install-arch:
 	# /usr/share/doc/cherokee, which we take care of in install-arch) will 
 	# become the main Cherokee package
 	install $(CURDIR)/debian/README.docs $(DEV_BASE_DIR)/usr/share/doc/libcherokee-base0-dev/
-	install -d $(SERVER_DIR)/usr/share $(SERVER_DIR)/var/log/cherokee
+	install -d $(SERVER_DIR)/usr/share
 	mv $(BUILD_DIR)/usr/bin $(SERVER_DIR)/usr/
 	mv $(BUILD_DIR)/usr/sbin $(SERVER_DIR)/usr/
 	mv $(BUILD_DIR)/usr/share/cherokee $(SERVER_DIR)/usr/share/
