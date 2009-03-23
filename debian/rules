@@ -300,6 +300,7 @@ install-arch:
 	mv $(BUILD_DIR)/usr/share/man $(SERVER_DIR)/usr/share/
 	mv $(BUILD_DIR)/etc $(SERVER_DIR)
 	mv $(BUILD_DIR)/var $(SERVER_DIR)
+	install -d $(SERVER_DIR)/var/log/cherokee
 
 	# References to cherokee-panic have been shuffled elsewhere
 	mv $(SERVER_DIR)/usr/bin/cherokee-panic             $(SERVER_DIR)/usr/share/cherokee
