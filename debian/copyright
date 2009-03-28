@@ -43,13 +43,25 @@ Exception:
  If you delete this exception statement from all source files in the
  program, then also delete it here.
 
+Files: cherokee/levenshtein_distance.*
+Copyright: Copyright 2002 by Steven McDougall
+License: GPL-2+ | Artistic
+
 Files: cherokee/pcre/*
 Copyright: Copyright (c) 1997-2007 University of Cambridge, Copyright (c) 2007, Google Inc.
 License: BSD-C3-PCRE
 
+File: cherokee/sha1.*
+Copyright: Digest::SHA1 by Gisle Aas Copyright 1999-2003, Uwe Hollerbach Copyright 1997
+License: GPL-2+ | Artistic
+
 Files: cherokee/zlib/*
 Copyright: Copyright (C) 1995-1998 Jean-loup Gailly and Mark Adler
 License: ZLIB
+
+Files: icons/
+Copyright: ***PENDIENTE*** Mark James
+License: ***PENDIENTE*** CC-BY-2.5 (exigencia de "include a link back to ts page in your credits")
 
 Files: qa/fcgi.py
 Copyright: Copyright (c) 2002, 2003, 2005, 2006 Allan Saddi <allan@saddi.com>
@@ -58,6 +70,12 @@ License: BSD-C2-FCGI
 Files: debian/*
 Copyright: Copyright 2004-2009, Alvaro Lopez Ortega <alvaro@alobbs.com>, Gunnar Wolf <gwolf@debian.org>
 License: GPL-2
+
+License: Artistic
+ This program is free software; you can redistribute it and/or modify
+ it under the terms of the Artistic License, which comes with Perl.
+ On Debian GNU/Linux systems, the complete text of the Artistic License
+ can be found in /usr/share/common-licenses/Artistic
 
 License: GPL-2
  This program is free software; you can redistribute it and/or modify
