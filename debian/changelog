@@ -1,3 +1,11 @@
+cherokee (0.99.8-1) unstable; urgency=low
+
+  * New upstream version
+  * Added some missing copyright notices to debian/copyright (including
+    the icons/* relicensing under (DFSG-free!) CC-BY-3.0
+
+ -- Gunnar Wolf <gwolf@debian.org>  Tue, 31 Mar 2009 12:32:55 -0600
+
 cherokee (0.99.5-1) unstable; urgency=low
 
   [ Leonel Nunez ]
