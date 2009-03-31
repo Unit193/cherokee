@@ -4,6 +4,8 @@ cherokee (0.99.8-1) unstable; urgency=low
   * Added some missing copyright notices to debian/copyright (including
     the icons/* relicensing under (DFSG-free!) CC-BY-3.0
   * Bumped up standards-version to 3.8.1; no changes needed
+  * Moved some remaining documentation links (i.e. in cherokee-admin) to
+    point to /usr/share/doc/cherokee-doc
 
  -- Gunnar Wolf <gwolf@debian.org>  Tue, 31 Mar 2009 12:32:55 -0600
 
