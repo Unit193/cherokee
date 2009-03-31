@@ -28,7 +28,7 @@ PHP</a> recipe for further hints on fine tuning this feature.</p></div>
 application.</p></div>
 <div class="para"><p>This assumes that you already have symfony installed and configured.
 You can find information about installation here:
-<a href="http://www.symfony-project.org/installation/">Symfony
+<a href="http://www.symfony-project.org/installation">Symfony
 Installation</a>. At the time of writing, symfony stable version is 1.2.</p></div>
 <div class="para"><p>Now that you have symfony installed, we shall create a symfony
 application in the folder <tt>~/demo</tt></p></div>
@@ -125,6 +125,50 @@ Symfony includes two controllers. One of them is "index.php". The
   example, our application name is "demo" so this controller will be
   called "demo_dev.php".
 </p>
+</li>
+<li>
+<p>
+A slight adition must be added to fix an issue with how requests for
+  the root are managed when there is a rule with the <tt>File exists</tt>
+  handler in place. If this is not put in place, you will recieve 403
+  errors. Simply define yet another redirection rule for this regular
+  expression:
+</p>
+<div class="tableblock">
+<table rules="none"
+frame="hsides"
+cellspacing="0" cellpadding="4">
+<col width="156" />
+<col width="347" />
+<col width="295" />
+<thead>
+  <tr>
+    <th align="left">
+    Type     
+    </th>
+    <th align="left">
+    Regular Expression
+    </th>
+    <th align="left">
+    Redirection
+    </th>
+  </tr>
+</thead>
+<tbody valign="top">
+  <tr>
+    <td align="left">
+    Internal 
+    </td>
+    <td align="left">
+    ^/$              
+    </td>
+    <td align="left">
+    /index.php
+    </td>
+  </tr>
+</tbody>
+</table>
+</div>
 </li>
 <li>
 <p>

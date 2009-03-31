@@ -100,6 +100,7 @@ install-data-local: $(CONFS) install-data-local-config
 		$(INSTALL_DATA) $(top_builddir)/cherokee.conf.sample $(DESTDIR)$(cherokeeconfdir)/cherokee.conf; \
 	fi
 	$(INSTALL_DATA) $(top_builddir)/cherokee.conf.sample $(DESTDIR)$(cherokeeadmindir)/cherokee.conf.sample
+	$(INSTALL_DATA) $(top_builddir)/performance.conf.sample $(DESTDIR)$(cherokeeadmindir)/performance.conf.sample
 	@if test -f $(DESTDIR)$(cherokeeconfdir)/cherokee.conf.perf_sample ; then \
 		echo "$@ will not overwrite existing $(DESTDIR)$(cherokeeconfdir)/cherokee.conf.perf_sample"; \
 	else \
@@ -119,6 +120,8 @@ uninstall-local: uninstall-local-config
 		echo "rm -f $(DESTDIR)$(cherokeeconfdir)/cherokee.conf.perf_sample"; \
 		$(RM) -f $(DESTDIR)$(cherokeeconfdir)/cherokee.conf.perf_sample; \
 	fi
+	$(RM) -f $(DESTDIR)$(cherokeeadmindir)/cherokee.conf.sample
+	$(RM) -f $(DESTDIR)$(cherokeeadmindir)/performance.conf.sample
 
 test:
 	$(MAKE) -C qa test

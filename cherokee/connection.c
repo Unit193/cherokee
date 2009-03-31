@@ -97,6 +97,7 @@ cherokee_connection_new  (cherokee_connection_t **conn)
 	n->options              = conn_op_log_at_end;
 	n->handler              = NULL; 
 	n->encoder              = NULL;
+	n->encoder_new_func     = NULL;
 	n->logger_ref           = NULL;
 	n->keepalive            = 0;
 	n->range_start          = 0;
@@ -286,6 +287,7 @@ cherokee_connection_clean (cherokee_connection_t *conn)
 		cherokee_encoder_free (conn->encoder);
 		conn->encoder = NULL;
 	}
+	conn->encoder_new_func = NULL;
 
 	if (conn->polling_fd != -1) {
 		close (conn->polling_fd);
@@ -463,11 +465,20 @@ out:
 	}
 #endif
 
-	/* Only 3xx errors can keep the connection alive
+	/* Let's keep alive 3xx, 404, and 410 responses.
 	 */
-	if ((! (http_type_300 (conn->error_code))) ||
-	    (! (HANDLER_SUPPORTS (conn->handler, hsupport_length))))
-	{
+	if (http_type_500 (conn->error_code)) {
+		conn->keepalive = 0;
+		
+	} else if (http_type_400 (conn->error_code) &&
+		   ((conn->error_code != http_not_found) && /* 404 */
+		    (conn->error_code != http_gone))) {     /* 410 */
+		conn->keepalive = 0;
+	}
+
+	/* Ensure that the error handler supports Content-Length:
+	 */
+	if (! HANDLER_SUPPORTS (conn->handler, hsupport_length)) {
 		conn->keepalive = 0;
 	}
 
@@ -723,6 +734,16 @@ cherokee_connection_build_header (cherokee_connection_t *conn)
 		} else {
 			conn->chunked_encoding = false;
 		}
+	}
+
+	/* Instance an encoder if needed. Special-case: the proxy
+	 * handler might have instanced a encoded at this stage.
+	 */
+	if ((conn->encoder == NULL) &&
+	    (conn->encoder_new_func))
+	{
+		/* Internally checks conn_op_cant_encoder */
+		cherokee_connection_instance_encoder (conn);
 	}
 
 	/* Add the server headers	
@@ -1077,15 +1098,54 @@ out:
 	return ret;
 }
 
-cherokee_boolean_t
+int
 cherokee_connection_should_include_length (cherokee_connection_t *conn)
 {
+	if (conn->encoder_new_func) {
+		return false;
+	}
 	if (conn->encoder) {
 		return false;
 	}
 
 	return true;
 }
+
+
+ret_t
+cherokee_connection_instance_encoder (cherokee_connection_t *conn)
+{
+	ret_t ret;
+
+	/* Ensure that the content can be encoded
+	 */
+	if (conn->options & conn_op_cant_encoder)
+		return ret_deny;
+
+	if (! http_type_200 (conn->error_code))
+		return ret_deny;
+
+	/* Instance and initialize the encoder
+	 */
+	ret = conn->encoder_new_func ((void **)&conn->encoder);
+	if (unlikely (ret != ret_ok))
+		goto error;
+		
+	ret = cherokee_encoder_init (conn->encoder, conn);
+	if (unlikely (ret != ret_ok))
+		goto error;
+	
+	cherokee_buffer_clean (&conn->encoder_buffer);
+	return ret_ok;
+
+error:
+	if (conn->encoder) {
+		cherokee_encoder_free (conn->encoder);
+		conn->encoder = NULL;
+	}
+	return ret_error;
+}
+
 
 ret_t 
 cherokee_connection_shutdown_wr (cherokee_connection_t *conn)
@@ -1291,7 +1351,6 @@ get_encoding (cherokee_connection_t *conn,
 	char tmp;
 	char *i1, *i2;
 	char *end;
-	encoder_func_new_t new_func = NULL;
 
 	/* ptr = Header at the "Accept-Encoding" position 
 	 */
@@ -1314,19 +1373,13 @@ get_encoding (cherokee_connection_t *conn,
 
 		tmp = *i2;    /* (2) */
 		*i2 = '\0';
-		ret = cherokee_avl_get_ptr (encoders_accepted, i1, (void **)&new_func);
+		ret = cherokee_avl_get_ptr (encoders_accepted, i1,
+					    (void **) &conn->encoder_new_func);
 		*i2 = tmp;    /* (2') */		
 		
-		if ((ret == ret_ok) && (new_func)) {
-			ret = new_func ((void **)&conn->encoder);
-			if (unlikely (ret != ret_ok))
-				goto error;
-
-			ret = cherokee_encoder_init (conn->encoder, conn);
-			if (unlikely (ret != ret_ok))
-				goto error;
-
-			cherokee_buffer_clean (&conn->encoder_buffer);
+		if ((ret == ret_ok) && 
+		    (conn->encoder_new_func != NULL))
+		{
 			break;
 		}
 
@@ -1338,10 +1391,6 @@ get_encoding (cherokee_connection_t *conn,
 
 	*end = CHR_CR; /* (1') */
 	return ret_ok;
-
-error:
-	*end = CHR_CR; /* (1') */
-	return ret_error;
 }
 
 

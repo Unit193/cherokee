@@ -112,6 +112,14 @@ tags. Without these tags, seeking just would not work.</p></div>
 <a href="http://www.buraks.com/flvmdi/">FLVMDI</a> or
 <a href="http://yamdi.sourceforge.net/">Yamdi</a> that can be used to insert
 these tags.</p></div>
+<h3 id="_notes_on_h264_mp4_streaming">Notes on H264 (mp4) streaming</h3><div style="clear:left"></div>
+<div class="para"><p>H264 files must be written in a special way so the server can stream
+them. If a H264 file is ready for progressive streaming, Flash 9 (and
+higher) will be able to play it while it's being downloaded.</p></div>
+<div class="para"><p>From a technical point of view, the server needs the H264 file to have
+its moov atoms (or boxes) in front of the data. The <tt>qt-faststart.c</tt>
+program - shipped with FFMpeg - rewrites H264 files so their atoms are
+placed in the required order.</p></div>
 </div>
 <div id="footer">
 <div id="footer-text">

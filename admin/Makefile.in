@@ -236,6 +236,7 @@ adminpy_SCRIPTS = $(admin_scripts)
 @INSTALL_ADMIN_TRUE@PageIcon.py \
 @INSTALL_ADMIN_TRUE@PageStatus.py \
 @INSTALL_ADMIN_TRUE@PageMime.py \
+@INSTALL_ADMIN_TRUE@PageNewConfig.py \
 @INSTALL_ADMIN_TRUE@PageVServer.py \
 @INSTALL_ADMIN_TRUE@PageVServers.py \
 @INSTALL_ADMIN_TRUE@PageError.py \
@@ -297,7 +298,6 @@ adminpy_DATA = $(admin_data)
 @INSTALL_ADMIN_TRUE@default.template.html \
 @INSTALL_ADMIN_TRUE@status.template.html \
 @INSTALL_ADMIN_TRUE@error_not_writable.template.html \
-@INSTALL_ADMIN_TRUE@error_not_found.template.html \
 @INSTALL_ADMIN_TRUE@error_icons_dir_missing.template.html \
 @INSTALL_ADMIN_TRUE@error_couldnt_launch.template.html
 
