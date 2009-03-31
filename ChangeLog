@@ -1,4 +1,184 @@
+2009-03-31  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* 0.99.8 released
+
+	* cherokee/connection.c (cherokee_connection_instance_encoder):
+	Fixes a memory leak when using the Reverse HTTP proxy in
+	conjunction with an encoder.
+
+	* cherokee/handler_proxy.c (parse_server_header): Remove the
+	keep-alive header. It will be added later on if case it is
+	replying a keep-alive connection.
+
+	* cherokee/connection.c: Fixes a huge regression. The server was
+	including a Content-Length header even if an encoder (gzip or
+	deflate) was being aplied to the content.
+
+2009-03-31  Antonio Perez  <aperez@skarcha.com>
+
+	* cherokee/rule_extensions.c: A dot at the end of the url or
+	followed by a slash, is not an extension.
+
+	* cherokee/handler_cgi_base.c: Fixes a path_info related bug
+	that was causing wrong values in SCRIPT_NAME, PHP_SELF and
+	DOCUMENT_ROOT environment variables.
+	http://lists.octality.com/pipermail/cherokee/2009-March/009998.html
+
+2009-03-30  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* cherokee/rule_extensions.c, qa/220-Pathinfo-Slash.py,
+	qa/Makefile.am: If a slash character is appended after a file,
+	the extension matching rule must recognize it and set the slash
+	as PATH_INFO. It also adds a new QA test to ensure the server
+	suffers the same regression again.
+
+	* cherokee/rule_extensions.c, qa/219-Ext-Dot-Pathinfo.py,
+	qa/Makefile.am: Fixes a problem on the extensions rule matching
+	module. It was not working properly when a request contained dot
+	characters on its PathInfo section. It also adds a new QA test
+	(#219) to cover this case.
+
+	* cherokee/handler_cgi_base.c, qa/218-DrupalRedirect.py,
+	qa/Makefile.am: There was a problem running Drupal with 'clean
+	url's. This patch fixes the issue. Basically, the *cgi class was
+	setting the REQUEST_URI value to the original URL plus the new
+	[already rewritten] query_string. The new QA #218 checks the
+	scenario (using a CGI instead of a php file).
+
+	* admin/ModuleHeader.py, cherokee/rule_header.c (match): Adds a
+	new "Cookie" option to the Header matching rule.
+
+2009-03-28  Antonio Perez  <aperez@skarcha.com>
+
+	* admin/server.py, admin/PageNewConfig.py,
+	admin/CherokeeManagement.py: Shows an error if configuration file
+	could not be created.
+
+2009-03-27  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* 0.99.7 released
+
+	* cherokee/handler_proxy.c (add_request): Fixes a regex issue:
+	http://code.google.com/p/cherokee/issues/detail?id=410
+
+	* cherokee/handler_streaming.c (set_auto_rate): Adds a missing
+	check: http://code.google.com/p/cherokee/issues/detail?id=415
+
+	* cherokee/handler_proxy.c, cherokee/handler_proxy.h,
+	admin/ModuleProxy.py: This patch adds a new configuration option
+	to the reverse proxy. It allows to point Cherokee whether or not
+	it can use keep-alive connections with the internal back-end
+	servers. I've seen that some servers (Cherrypy WSGI) keep timeout
+	sockets open and punches 408 errors to them when a request is
+	sent. That's obviously wrong. The problem can be worked around by
+	disabling keep-alive, although it will have a performance impact.
+
+	* cherokee/handler_proxy.c (build_request): X-Forwarded-Host
+	should include the port if it isn't standard.
+
+	* cherokee/http.c, cherokee/http.h: Adds error code 408.
+
+	* cherokee/handler_proxy.c, cherokee/connection.c: Fixes a
+	regression that was introduced yesterday. 
+
+	* admin/PageNewConfig.py (PageNewConfig._tweak_config_for_dev):
+	Adds a second default Information Source. It does not hurt and
+	it's kind of handy.
+
+2009-03-26  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* cherokee/connection-protected.h, cherokee/handler_cgi_base.c,
+	cherokee/handler_file.c, cherokee/handler_proxy.c,
+	cherokee/connection.c, qa/217-DoubleEncode.py, qa/Makefile.am:
+	Much better detection of encoded outputs form {Fast,S,}CGIs. For
+	instane, now the PHP rule can have GZip encoding enable, at the
+	same time that some PHP-based programs already return compressed
+	content.
+
+	* cherokee/handler_proxy.c (add_request): The pathinfo must be
+	encoded as well.
+
+	* cherokee/handler_cgi.c: For some reason, CGIs don't work under
+	valgrind. It also reports Cherokee trying to read fd -1. It seems
+	to be because pipe() doesn't success. This patch does a couple of
+	additional checks.
+
+	* cherokee.conf.sample.pre: Adds a new application/vnd.pkg5.info
+	mime type.
+
+	* cherokee/handler_proxy.c (add_request): Fixes a re-encoding
+	issue. URLs containing non-alpha-numeric characters were not being
+	handled propertly by the handler.
+
+	* cherokee/buffer.c (cherokee_buffer_escape_uri): New method.
+
+	* qa/216-NameSpace.py: New QA test. It requests a file with a
+	couple of space characters on the name.
+
+2009-03-25  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* cherokee/connection.c (cherokee_connection_setup_error_handler):
+	3xx and 4xx error can be kept alive. Connections have to be closed
+	only for 5xx responses.
+
+	* 0.99.6 released
+
+	* cherokee/handler_proxy.c (parse_server_header): It was not
+	dealing with "Content-Encoding" responses properly. This patch
+	fixes: http://code.google.com/p/cherokee/issues/detail?id=403
+
+2009-03-24  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* cherokee/handler_proxy.c (send_post): It had to write the POST
+	to a socket rather than to a file descriptor.
+
+	* cherokee/logger_custom.h, cherokee/logger_custom.c: Adds a new
+	customizable logger.
+
+2009-03-24  Taher Shihadeh <taher@unixwars.com>
+
+	* admin/Makefile.am: PageNewConfig.py was not being installed. Issue
+	http://code.google.com/p/cherokee/issues/detail?id=411 detected by
+	Stefan.
+
+2009-03-23  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* admin/server.py, admin/PageNewConfig.py, admin/PageError.py,
+	admin/error_not_found.template.html, admin/PageGeneral.py,
+	admin/CherokeeManagement.py, Makefile.am: When cherokee-admin was
+	launched and the configuration file didn't exist, it used to allow
+	to create a new one based on "cherokee.conf.sample". Now it gives
+	three options: "Regular", "Performance", and "Development". The
+	first one uses the previous cherokee.conf.sample file; the second
+	choice uses a static content focused configuration file; and
+	finally, the last option deploys a Cherokee-hacker focused
+	configuration file (it launches the server in a high-port, doesn't
+	create PID file, and does not log anything).
+
+	* cherokee/socket.c (cherokee_socket_sendfile): Address a
+	potention problem when calling sendfile().
+
+2009-03-20  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* cherokee/handler_proxy.c (cherokee_handler_proxy_init): Fixes
+	the reverse proxy error reporting.
+
+	* cherokee/Makefile.am, cherokee/cherokee.h, cherokee/template.c,
+	cherokee/template.h: Adds a very light template system.
+
 2009-03-18  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* cherokee/handler_server_info.c (add_traffic): Adds per virtual
+	server traffic information.
+
+	* cherokee/virtual_server.h: Added the "collect_statistics"
+	configuration key, so it can be defined whether or not a virtual
+	server should collected traffic statistics.
+
+	* admin/PageVServer.py (PageVServer._op_apply_changes): Updates it
+	to support the new "collect_statistics" key.
+
+	* performance.conf.sample.pre: Don't collect statistics.
 
 	* 0.99.5 released
 

@@ -220,7 +220,12 @@ run-tests.py \
 212-DirList-Hidden.py \
 213-Post-Chunked1.py \
 214-Post-Chunked2.py \
-215-Post-Chunked3.py
+215-Post-Chunked3.py \
+216-NameSpace.py \
+217-DoubleEncode.py \
+218-DrupalRedirect.py \
+219-Ext-Dot-Pathinfo.py \
+220-Pathinfo-Slash.py
 
 
 test:

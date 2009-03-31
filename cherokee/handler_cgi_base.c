@@ -376,14 +376,15 @@ cherokee_handler_cgi_base_build_basic_env (
 			cherokee_buffer_add_buffer (tmp, &conn->userdir);
 		}
 
-		if (! cherokee_buffer_is_empty (&conn->request_original))
+		if (! cherokee_buffer_is_empty (&conn->request_original)) {
 			cherokee_buffer_add_buffer (tmp, &conn->request_original);
-		else
+		} else {
 			cherokee_buffer_add_buffer (tmp, &conn->request);
 
-		if (! cherokee_buffer_is_empty (&conn->query_string)) {
-			cherokee_buffer_add_char (tmp, '?');
-			cherokee_buffer_add_buffer (tmp, &conn->query_string);
+			if (! cherokee_buffer_is_empty (&conn->query_string)) {
+				cherokee_buffer_add_char (tmp, '?');
+				cherokee_buffer_add_buffer (tmp, &conn->query_string);
+			}
 		}
 	}
 	set_env (cgi, "REQUEST_URI", tmp->buf, tmp->len);
@@ -452,6 +453,8 @@ cherokee_handler_cgi_base_build_basic_env (
 	/* Authentication
 	 */
 	switch (conn->req_auth_type) {
+	case http_auth_nothing:
+		break;
 	case http_auth_basic:
 		set_env (cgi, "AUTH_TYPE", "BASIC", 5);
 		break;
@@ -823,11 +826,8 @@ cherokee_handler_cgi_base_extract_path (cherokee_handler_cgi_base_t *cgi, cherok
 					pathinfo_len = end - p;
 					cherokee_buffer_drop_ending (&conn->local_directory, pathinfo_len);
 				} 
-
-/* 				if (p <= begin) { */
-/* 					conn->error_code = http_not_found; */
-/* 					goto bye; */
-/* 				} */
+			} else {
+				pathinfo_len = conn->pathinfo.len;
 			}
 		} 
 		else {
@@ -970,6 +970,10 @@ parse_header (cherokee_handler_cgi_base_t *cgi, cherokee_buffer_t *buffer)
 			cherokee_buffer_remove_chunk (buffer, begin - buffer->buf, end2 - begin);
 			end2 = begin;
 		} 
+
+		else if (strncasecmp ("Content-Encoding: ", begin, 18) == 0) {
+			BIT_SET (conn->options, conn_op_cant_encoder);
+		}
 
 		else if ((HANDLER_CGI_BASE_PROPS(cgi)->allow_xsendfile) &&
 			 ((strncasecmp ("X-Sendfile: ", begin, 12) == 0) ||

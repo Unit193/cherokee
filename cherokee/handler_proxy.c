@@ -118,8 +118,9 @@ cherokee_handler_proxy_configure (cherokee_config_node_t   *conf,
 		cherokee_module_props_init_base (MODULE_PROPS(n), 
 						 MODULE_PROPS_FREE(props_free));
 
-		n->balancer  = NULL;
-		n->reuse_max = DEFAULT_REUSE_MAX;
+		n->balancer           = NULL;
+		n->reuse_max          = DEFAULT_REUSE_MAX;
+		n->in_allow_keepalive = true;
 
 		INIT_LIST_HEAD (&n->in_request_regexs);
 		INIT_LIST_HEAD (&n->in_headers_add);
@@ -150,6 +151,9 @@ cherokee_handler_proxy_configure (cherokee_config_node_t   *conf,
 				return ret;
 		} else if (equal_buf_str (&subconf->key, "reuse_max")) {
 			props->reuse_max = atoi (subconf->val.buf);
+
+		} else if (equal_buf_str (&subconf->key, "in_allow_keepalive")) {
+			props->in_allow_keepalive = !! atoi (subconf->val.buf);
 
 		} else if (equal_buf_str (&subconf->key, "in_header_hide")) {
 			cherokee_config_node_foreach (j, subconf) {
@@ -248,6 +252,7 @@ static ret_t
 add_request (cherokee_handler_proxy_t *hdl,
 	     cherokee_buffer_t        *buf)
 {
+	int                             re;
 	ret_t                           ret;
 	cherokee_connection_t          *conn  = HANDLER_CONN(hdl);
 	cherokee_buffer_t              *tmp   = &HANDLER_THREAD(hdl)->tmp_buf1;
@@ -257,14 +262,16 @@ add_request (cherokee_handler_proxy_t *hdl,
 
 	/* Build the URL
 	 */
-	ret = cherokee_buffer_add_buffer (tmp, &conn->request);
+	ret = cherokee_buffer_escape_uri (tmp, &conn->request);
 	if (ret != ret_ok) {
 		return ret_error;
 	}
 
-	ret = cherokee_buffer_add_buffer (tmp, &conn->pathinfo);
-	if (ret != ret_ok) {
-		return ret_error;
+	if (! cherokee_buffer_is_empty (&conn->pathinfo)) {
+		ret = cherokee_buffer_escape_uri (tmp, &conn->pathinfo);
+		if (ret != ret_ok) {
+			return ret_error;
+		}
 	}
 
 	if (! cherokee_buffer_is_empty (&conn->query_string)) {
@@ -280,13 +287,14 @@ add_request (cherokee_handler_proxy_t *hdl,
 
 	/* Check the regexs
 	 */
-	replace_againt_regex_list (tmp, buf, &props->in_request_regexs);
+	re = replace_againt_regex_list (tmp, buf, &props->in_request_regexs);
+	if (re == 0) {
+		/* Did not match any regex, use the raw URL
+		 */
+		cherokee_buffer_add_buffer (buf, tmp);
+	}
 
 	TRACE(ENTRIES, "Rebuilt request: '%s'\n", tmp->buf);
-
-	/* Did not match any regex, use the raw URL
-	 */
-	cherokee_buffer_add_buffer (buf, tmp);
 	return ret_ok;
 }
 
@@ -403,8 +411,9 @@ build_request (cherokee_handler_proxy_t *hdl,
 		}
 	}
 
-	if ((is_keepalive) ||
-	    ((conn->header.version == http_version_11) && (! is_close)))
+	if ((props->in_allow_keepalive) &&
+	    ((is_keepalive) ||
+	     ((conn->header.version == http_version_11) && (! is_close))))
 	{
 		cherokee_buffer_add_str (buf, "Connection: Keep-Alive" CRLF);
 		hdl->pconn->keepalive_in = true;
@@ -508,6 +517,14 @@ build_request (cherokee_handler_proxy_t *hdl,
 	{
 		cherokee_buffer_add_str    (buf, "X-Forwarded-Host: ");
 		cherokee_buffer_add_buffer (buf, &conn->host);
+
+		if (((! conn->socket.is_tls) && (conn->bind->port != 80)) ||
+		    ((  conn->socket.is_tls) && (conn->bind->port != 443)))
+		{
+			cherokee_buffer_add_char    (buf, ':');
+			cherokee_buffer_add_ulong10 (buf, conn->bind->port);
+		}
+
 		cherokee_buffer_add_str    (buf, CRLF);
 	}
 
@@ -559,35 +576,34 @@ static ret_t
 send_post (cherokee_handler_proxy_t *hdl)
 {
 	ret_t                  ret;
-	int                    eagain_fd = -1;
-	int                    mode      =  0;
-	cherokee_connection_t *conn      = HANDLER_CONN(hdl);
-		
-	ret = cherokee_post_walk_to_fd (&conn->post,
-					hdl->pconn->socket.socket,
-					&eagain_fd, &mode);
+	cherokee_connection_t *conn = HANDLER_CONN(hdl);
+
+	ret = cherokee_post_walk_to_socket (&conn->post, &hdl->pconn->socket);
 
 	TRACE (ENTRIES",post", "Sending POST fd=%d, ret=%d\n", 
 	       hdl->pconn->socket.socket, ret);
-	
+
 	switch (ret) {
 	case ret_ok:
 		TRACE (ENTRIES",post", "%s\n", "finished");
 		return ret_ok;
-		
+
+	case ret_eof:
+	case ret_error:
+		return ret;
+
 	case ret_eagain:
-		if (eagain_fd != -1) {
-			ret = cherokee_thread_deactive_to_polling (HANDLER_THREAD(hdl),
-								   conn, eagain_fd,
-								   mode, false);
-			if (ret != ret_ok) {
-				return ret_eof;
-			}
+		ret = cherokee_thread_deactive_to_polling (HANDLER_THREAD(hdl),
+							   conn, hdl->pconn->socket.socket,
+							   FDPOLL_MODE_WRITE, false);
+		if (ret != ret_ok) {
+			return ret_eof;
 		}
 		return ret_eagain;
 		
 	default:
-		return ret;
+		RET_UNKNOWN(ret);
+		return ret_error;
 	}	
 }
 
@@ -761,7 +777,13 @@ cherokee_handler_proxy_init (cherokee_handler_proxy_t *hdl)
 		ret = cherokee_handler_proxy_conn_recv_headers (hdl->pconn, &hdl->tmp);
 		switch (ret) {
 		case ret_ok:
-			/* Got the header */
+			/* Turn Error Handling on. From this point the
+			 * handler object supports error handling.
+			 */
+			HANDLER(hdl)->support |= hsupport_error;
+			
+			/* Got the header.
+			 */
 			break;
 		case ret_eagain:
 			ret = cherokee_thread_deactive_to_polling (HANDLER_THREAD(hdl),
@@ -816,7 +838,6 @@ parse_server_header (cherokee_handler_proxy_t *hdl,
 	cherokee_http_version_t         version;
 	cherokee_connection_t          *conn         = HANDLER_CONN(hdl);
 	cherokee_handler_proxy_props_t *props        = HDL_PROXY_PROPS(hdl);
-
 
 	p = buf_in->buf;
 	header_end = buf_in->buf + buf_in->len;
@@ -897,6 +918,9 @@ parse_server_header (cherokee_handler_proxy_t *hdl,
 
 			goto next;
 
+		} else  if (strncmp (begin, "Keep-Alive:", 11) == 0) {
+			goto next;
+
 		} else  if (strncmp (begin, "Content-Length:", 15) == 0) {
 			char *c = begin + 15;
 			while (*c == ' ') c++;
@@ -925,6 +949,10 @@ parse_server_header (cherokee_handler_proxy_t *hdl,
 				cherokee_buffer_add_str    (buf_out, CRLF);
 				goto next;
 			}
+
+		} else if (strncmp (begin, "Content-Encoding:", 17) == 0) {
+			BIT_SET (conn->options, conn_op_cant_encoder);
+
 		} else {
 			colon = strchr (begin, ':');
 			if (unlikely (colon == NULL)) {
@@ -953,6 +981,17 @@ parse_server_header (cherokee_handler_proxy_t *hdl,
 	/* Additional headers */
 	list_for_each (i, &props->out_headers_add) {
 		add_header (buf_out, &HEADER_ADD(i)->key, &HEADER_ADD(i)->val);
+	}
+
+	/* Deal with Content-Encoding: If the response is no encoded,
+	 * and the handler is configured to encode, it has to add the
+	 * encoder headers at this point.
+	 */
+	if (conn->encoder_new_func) {
+		ret = cherokee_connection_instance_encoder (conn);
+		if (ret == ret_ok) {
+			cherokee_encoder_add_headers (conn->encoder, buf_out);
+		}
 	}
 
 	/* Special case: Client uses Keepalive, the back-end sent a
@@ -1245,7 +1284,7 @@ cherokee_handler_proxy_new (cherokee_handler_t     **hdl,
 	HANDLER(n)->step        = (handler_func_step_t) cherokee_handler_proxy_step;
 	HANDLER(n)->add_headers = (handler_func_add_headers_t) cherokee_handler_proxy_add_headers;
 
-	HANDLER(n)->support = hsupport_full_headers | hsupport_error;
+	HANDLER(n)->support = hsupport_full_headers;
 
 	/* Init
 	 */

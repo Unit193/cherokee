@@ -631,7 +631,8 @@ process_active_connections (cherokee_thread_t *thd)
 
 		/* Maybe update traffic counters
 		 */
-		if ((conn->traffic_next < thd->bogo_now) &&
+		if ((CONN_VSRV(conn)->data.enabled) &&
+		    (conn->traffic_next < thd->bogo_now) &&
 		    ((conn->rx != 0) || (conn->tx != 0)))
 		{
 			cherokee_connection_update_vhost_traffic (conn);
@@ -1379,6 +1380,8 @@ thread_full_handler (cherokee_thread_t *thd,
 
 	if (ret != ret_ok)
 		goto out;
+
+	PRINT_ERROR_S ("WARNING: Run out of file descriptors!!\n");
 	
 	/* Read the request
 	 */
@@ -1520,7 +1523,6 @@ should_accept_more (cherokee_thread_t *thd,
 ret_t 
 cherokee_thread_step_SINGLE_THREAD (cherokee_thread_t *thd)
 {
-	int                re;
 	ret_t              ret;
 	cherokee_boolean_t accepting;
 	cherokee_list_t   *i;
@@ -1566,10 +1568,7 @@ cherokee_thread_step_SINGLE_THREAD (cherokee_thread_t *thd)
 
 	/* Inspect the file descriptors
 	 */
-	re = cherokee_fdpoll_watch (thd->fdpoll, fdwatch_msecs);
-	if (re <= 0)
-		goto out;
-
+	cherokee_fdpoll_watch (thd->fdpoll, fdwatch_msecs);
 	thread_update_bogo_now (thd);
 
 	/* Accept new connections, if possible

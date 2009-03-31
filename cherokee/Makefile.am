@@ -743,6 +743,23 @@ endif
 
 
 #
+# Logger Custom
+#
+logger_custom = \
+logger_custom.h \
+logger_custom.c
+
+libplugin_custom_la_LDFLAGS = $(module_ldflags)  
+libplugin_custom_la_SOURCES = $(logger_custom)
+
+if STATIC_LOGGER_CUSTOM
+static_logger_custom_src = $(logger_custom)
+else
+dynamic_logger_custom_lib = libplugin_custom.la
+endif
+
+
+#
 # Logger NCSA
 #
 logger_ncsa = \
@@ -1136,6 +1153,8 @@ version.h \
 version.c \
 buffer.h \
 buffer.c \
+template.h \
+template.c \
 module.h \
 module.c \
 cryptor.h \
@@ -1262,6 +1281,7 @@ $(static_handler_dbslayer_src) \
 \
 $(static_logger_w3c_src) \
 $(static_logger_ncsa_src) \
+$(static_logger_custom_src) \
 $(static_logger_combined_src) \
 \
 $(static_encoder_gzip_src) \
@@ -1356,6 +1376,7 @@ init.h \
 util.h \
 version.h \
 buffer.h\
+template.h\
 fdpoll.h \
 http.h \
 list.h \
@@ -1433,9 +1454,10 @@ $(dynamic_handler_common_lib) \
 $(dynamic_handler_dbslayer_lib) \
 $(dynamic_encoder_gzip_lib) \
 $(dynamic_encoder_deflate_lib) \
-$(dynamic_logger_ncsa_lib) \
-$(dynamic_logger_combined_lib) \
 $(dynamic_logger_w3c_lib) \
+$(dynamic_logger_ncsa_lib) \
+$(dynamic_logger_custom_lib) \
+$(dynamic_logger_combined_lib) \
 $(dynamic_validator_pam_lib) \
 $(dynamic_validator_ldap_lib) \
 $(dynamic_validator_plain_lib) \
