@@ -1,8 +1,9 @@
 cherokee (0.99.8-1) unstable; urgency=low
 
-  * New upstream version
+  * New upstream version (Closes: #520983)
   * Added some missing copyright notices to debian/copyright (including
     the icons/* relicensing under (DFSG-free!) CC-BY-3.0
+  * Bumped up standards-version to 3.8.1; no changes needed
 
  -- Gunnar Wolf <gwolf@debian.org>  Tue, 31 Mar 2009 12:32:55 -0600
 
