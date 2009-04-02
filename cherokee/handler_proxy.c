@@ -362,6 +362,7 @@ build_request (cherokee_handler_proxy_t *hdl,
 	cherokee_boolean_t              XFH          = false;
 	cherokee_boolean_t              is_keepalive = false;
 	cherokee_boolean_t              is_close     = false;
+	cherokee_boolean_t              x_real_ip    = false;
 	cherokee_connection_t          *conn         = HANDLER_CONN(hdl);
 	cherokee_handler_proxy_props_t *props        = HDL_PROXY_PROPS(hdl);
 	cherokee_buffer_t              *tmp          = &HANDLER_THREAD(hdl)->tmp_buf1;
@@ -473,6 +474,18 @@ build_request (cherokee_handler_proxy_t *hdl,
 		{
 			XFH = true;
 		}
+		else if (! strncasecmp (begin, "X-Real-IP:", 10))
+		{
+			char *c = begin + 10;
+			while (*c == ' ') c++;
+
+			if (cherokee_buffer_is_empty (&conn->logger_real_ip)) {
+				cherokee_buffer_add (&conn->logger_real_ip, c, end-c);
+			}
+
+			x_real_ip = true;
+			goto next;
+		}
 		else {
 			colon = strchr (begin, ':');
 			if (unlikely (colon == NULL)) {
@@ -510,6 +523,13 @@ build_request (cherokee_handler_proxy_t *hdl,
 	}
 	cherokee_buffer_add     (buf, tmp->buf, strlen(tmp->buf));
 	cherokee_buffer_add_str (buf, CRLF);
+
+	/* X-Real-IP */
+	if (! x_real_ip) {
+		cherokee_buffer_add_str (buf, "X-Real-IP: ");
+		cherokee_buffer_add     (buf, tmp->buf, strlen(tmp->buf));
+		cherokee_buffer_add_str (buf, CRLF);
+	}
 
 	/* X-Forwarded-Host */
 	if ((XFH == false) && 
@@ -896,7 +916,7 @@ parse_server_header (cherokee_handler_proxy_t *hdl,
 		*end = '\0';
 		
 		/* Check the header entry  */
-		if (strncmp (begin, "Transfer-Encoding:", 18) == 0) {
+		if (strncasecmp (begin, "Transfer-Encoding:", 18) == 0) {
 			char *c = begin + 18;
 			while (*c == ' ') c++;
 
@@ -906,7 +926,7 @@ parse_server_header (cherokee_handler_proxy_t *hdl,
 
 			goto next;
 
-		} else  if (strncmp (begin, "Connection:", 11) == 0) {
+		} else  if (strncasecmp (begin, "Connection:", 11) == 0) {
 			char *c = begin + 11;
 			while (*c == ' ') c++;
 
@@ -918,10 +938,10 @@ parse_server_header (cherokee_handler_proxy_t *hdl,
 
 			goto next;
 
-		} else  if (strncmp (begin, "Keep-Alive:", 11) == 0) {
+		} else  if (strncasecmp (begin, "Keep-Alive:", 11) == 0) {
 			goto next;
 
-		} else  if (strncmp (begin, "Content-Length:", 15) == 0) {
+		} else  if (strncasecmp (begin, "Content-Length:", 15) == 0) {
 			char *c = begin + 15;
 			while (*c == ' ') c++;
 
@@ -934,7 +954,7 @@ parse_server_header (cherokee_handler_proxy_t *hdl,
 
 			HANDLER(hdl)->support |= hsupport_length;
 
-		} else  if (strncmp (begin, "Location:", 9) == 0) {
+		} else  if (strncasecmp (begin, "Location:", 9) == 0) {
 			cherokee_buffer_t *tmp1 = &HANDLER_THREAD(hdl)->tmp_buf1;
 			cherokee_buffer_t *tmp2 = &HANDLER_THREAD(hdl)->tmp_buf2;
 	
@@ -950,7 +970,7 @@ parse_server_header (cherokee_handler_proxy_t *hdl,
 				goto next;
 			}
 
-		} else if (strncmp (begin, "Content-Encoding:", 17) == 0) {
+		} else if (strncasecmp (begin, "Content-Encoding:", 17) == 0) {
 			BIT_SET (conn->options, conn_op_cant_encoder);
 
 		} else {

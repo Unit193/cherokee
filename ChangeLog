@@ -1,3 +1,44 @@
+2009-04-02  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* 0.99.9 released
+
+	* cherokee/handler_proxy.c (build_request): X-Real-IP is processed
+	in the proxy request. Thanks Denis Kot for pointing the mistake.
+
+	* cherokee/connection-protected.h, cherokee/handler_proxy.c,
+	cherokee/logger_custom.c, cherokee/logger_ncsa.c,
+	cherokee/connection.c: Adds X-Real-IP to the Reverse HTTP proxy,
+	ans the NCSA, Combined and Custom loggers.
+
+	* cherokee/util.c (cherokee_get_timezone_ref): Implements timezone
+	reading in FreeBSD. Patch based on bozzaj's patch (thanks!):
+	http://code.google.com/p/cherokee/issues/detail?id=424
+
+	* cherokee/handler_file.c (cherokee_handler_file_custom_init):
+	Fixes a encoder handling problem where a encoder wasn't taken into
+	account when it was actually going to be used.
+
+2009-04-01  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* cherokee/logger_ncsa.c (build_log_string): The query_string was
+	not being included in the logger. Patch by bozzaj.
+
+	* cherokee/logger_ncsa.c (build_log_string): Negative Timezones
+	were incorrectly printed in the log files. Patch by bozzaj.
+
+	* cherokee/virtual_server.c, cherokee/virtual_server.h,
+	cherokee/logger_writer.c, cherokee/logger_writer.h,
+	cherokee/logger.h, cherokee/logger_w3c.c, cherokee/logger_w3c.h,
+	cherokee/logger_ncsa.c, cherokee/logger_ncsa.h,
+	cherokee/server-protected.h, cherokee/server.c,
+	cherokee/logger_custom.c, cherokee/logger_custom.h,
+	cherokee/logger_combined.c, cherokee/logger_combined.h: Logger
+	writers are now shared among all the loggers (one per virtual
+	server). It saves fds on set ups with multiple vservers.
+
+	* doc/bundle_cherokee-tweak.txt: Fixes a typo. Thanks Tako
+	Schotanus for reporting.
+
 2009-03-31  Alvaro Lopez Ortega  <alvaro@octality.com>
 
 	* 0.99.8 released
@@ -23,6 +64,10 @@
 	that was causing wrong values in SCRIPT_NAME, PHP_SELF and
 	DOCUMENT_ROOT environment variables.
 	http://lists.octality.com/pipermail/cherokee/2009-March/009998.html
+
+	* cherokee/virtual_server.c, cherokee/virtual_server.h,
+	cherokee/cryptor_libssl.c, admin/PageVServer.py,
+	admin/static/css/cherokee.css: Adds SSL/TLS custom cipher list.
 
 2009-03-30  Alvaro Lopez Ortega  <alvaro@octality.com>
 
