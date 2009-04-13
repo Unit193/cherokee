@@ -288,6 +288,57 @@ endif
 
 
 #
+# VRule wildcard
+#
+vrule_wildcard = \
+vrule_wildcard.c \
+vrule_wildcard.h
+
+libplugin_wildcard_la_LDFLAGS = $(module_ldflags)  
+libplugin_wildcard_la_SOURCES = $(vrule_wildcard)
+
+if STATIC_VRULE_WILDCARD
+static_vrule_wildcard_src = $(vrule_wildcard)
+else
+dynamic_vrule_wildcard_lib = libplugin_wildcard.la
+endif
+
+
+#
+# VRule rehost
+#
+vrule_rehost = \
+vrule_rehost.c \
+vrule_rehost.h
+
+libplugin_rehost_la_LDFLAGS = $(module_ldflags)
+libplugin_rehost_la_SOURCES = $(vrule_rehost)
+
+if STATIC_VRULE_REHOST
+static_vrule_rehost_src = $(vrule_rehost)
+else
+dynamic_vrule_rehost_lib = libplugin_rehost.la
+endif
+
+
+#
+# Gen wildcard
+#
+gen_evhost = \
+gen_evhost.c \
+gen_evhost.h
+
+libplugin_evhost_la_LDFLAGS = $(module_ldflags)  
+libplugin_evhost_la_SOURCES = $(gen_evhost)
+
+if STATIC_GEN_EVHOST
+static_gen_evhost_src = $(gen_evhost)
+else
+dynamic_gen_evhost_lib = libplugin_evhost.la
+endif
+
+
+#
 # Handler server_info
 #
 handler_server_info = \
@@ -1257,6 +1308,11 @@ $(static_rule_not_src) \
 $(static_rule_and_src) \
 $(static_rule_or_src) \
 \
+$(static_vrule_wildcard_src) \
+$(static_vrule_rehost_src) \
+\
+$(static_gen_evhost_src) \
+\
 $(static_handler_file_src) \
 $(static_handler_admin_src) \
 $(static_handler_dirlist_src) \
@@ -1314,6 +1370,8 @@ rule_list.h \
 rule_list.c \
 rule_default.h \
 rule_default.c \
+vrule.h \
+vrule.c \
 config_entry.h \
 config_entry.c \
 server-protected.h \
@@ -1321,8 +1379,6 @@ server.h \
 server.c \
 bind.h \
 bind.c \
-virtual_server_names.h \
-virtual_server_names.c \
 virtual_server.h \
 virtual_server.c \
 encoder.h \
@@ -1431,6 +1487,9 @@ $(dynamic_rule_geoip_lib) \
 $(dynamic_rule_not_lib) \
 $(dynamic_rule_and_lib) \
 $(dynamic_rule_or_lib) \
+$(dynamic_vrule_wildcard_lib) \
+$(dynamic_vrule_rehost_lib) \
+$(dynamic_gen_evhost_lib) \
 $(dynamic_handler_file_lib) \
 $(dynamic_handler_cgi_lib) \
 $(dynamic_handler_phpcgi_lib) \

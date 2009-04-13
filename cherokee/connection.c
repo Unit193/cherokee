@@ -1125,6 +1125,10 @@ cherokee_connection_instance_encoder (cherokee_connection_t *conn)
 	if (conn->options & conn_op_cant_encoder)
 		return ret_deny;
 
+	if ((! http_code_with_body (conn->error_code)) ||
+	    (! http_method_with_body (conn->header.method)))
+		return ret_deny;
+
 	if (! http_type_200 (conn->error_code))
 		return ret_deny;
 
@@ -1486,12 +1490,16 @@ cherokee_connection_is_userdir (cherokee_connection_t *conn)
 
 
 ret_t
-cherokee_connection_build_local_directory (cherokee_connection_t *conn, cherokee_virtual_server_t *vsrv, cherokee_config_entry_t *entry)
+cherokee_connection_build_local_directory (cherokee_connection_t     *conn,
+					   cherokee_virtual_server_t *vsrv,
+					   cherokee_config_entry_t   *entry)
 {
 	ret_t ret;
 
-	if (entry->document_root && 
-	    entry->document_root->len >= 1) 
+	/* Custom Document Root
+	 */
+	if ((entry->document_root != NULL) && 
+	    (entry->document_root->len >= 1))
 	{
 		BIT_SET (conn->options, conn_op_document_root);
 
@@ -1520,13 +1528,34 @@ cherokee_connection_build_local_directory (cherokee_connection_t *conn, cherokee
 			cherokee_buffer_move_to_begin (&conn->request, 1);
 		}
 
-	} else {
-		/* Normal request
-		 */
-		ret = cherokee_buffer_add_buffer (&conn->local_directory, &vsrv->root);
+		goto ok;
 	}
+
+	/* Enhanced Virtual-Hosting
+	 */
+	if (vsrv->evhost != NULL) {
+		ret = EVHOST(vsrv->evhost)->func_document_root (vsrv->evhost, conn);
+		if (ret == ret_ok)
+			goto ok;
+		
+		/* Fall to use the default document root
+		 */
+		cherokee_buffer_clean (&conn->local_directory);
+	}
+
+	/* Regular request
+	 */
+	ret = cherokee_buffer_add_buffer (&conn->local_directory, &vsrv->root);
+	if (unlikely (ret != ret_ok))
+		goto error;
 	
-	return ret;
+ok:
+	TRACE(ENTRIES, "Set Local Directory: '%s'\n", conn->local_directory.buf);
+	return ret_ok;
+
+error:
+	PRINT_ERROR_S ("Couldn't set local directory\n");
+	return ret_error;
 }
 
 
@@ -1641,6 +1670,25 @@ get_range (cherokee_connection_t *conn, char *ptr, int ptr_len)
 
 
 static ret_t
+send_100continue (cherokee_connection_t *conn)
+{
+	ret_t       ret;
+	const char *reply   = "HTTP/1.1 100 Continue" CRLF CRLF; /* 25 chars */
+	size_t      written = 0;
+
+	ret = cherokee_socket_write (&conn->socket, reply, 25, &written);
+	if ((ret == ret_ok) && (written == 25)) {
+		TRACE(ENTRIES, "Sent a '100 Continue' response.\n");
+		return ret_ok;
+	}
+
+	TRACE(ENTRIES, "Could not send a '100 Continue' response. Error=500.\n");
+	conn->error_code = http_internal_error;
+	return ret_error;
+}
+
+
+static ret_t
 post_init (cherokee_connection_t *conn)
 {
 	ret_t    ret;
@@ -1698,6 +1746,17 @@ post_init (cherokee_connection_t *conn)
 	/* Set the length
 	 */
 	cherokee_post_set_len (&conn->post, post_len);
+
+	/* Check "Expect: 100-continue" header
+	 */
+	ret = cherokee_header_get_known (&conn->header, header_expect, &info, &info_len);
+	if (ret == ret_ok) {
+		ret = send_100continue(conn);
+		if (ret != ret_ok) {
+			return ret_error;
+		}
+	}
+
 	return ret_ok;
 }
 

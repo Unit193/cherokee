@@ -287,6 +287,7 @@ modules_loggers.html \
 modules_loggers_combined.html \
 modules_loggers_ncsa.html \
 modules_loggers_w3c.html \
+modules_loggers_custom.html \
 modules_validators.html \
 modules_validators_htdigest.html \
 modules_validators_htpasswd.html \
@@ -318,6 +319,7 @@ media/images/admin_advanced3.png \
 media/images/admin_advanced4.png \
 media/images/admin_behaviour.png \
 media/images/admin_dirlist_cherokee.png \
+media/images/admin_general.png \
 media/images/admin_general_networking.png \
 media/images/admin_general_permissions.png \
 media/images/admin_general_ports.png \

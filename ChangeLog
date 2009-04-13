@@ -1,3 +1,176 @@
+2009-04-13  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* 0.99.10 released
+
+2009-04-10  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* cherokee/proxy_hosts.c (poll_release): Implements a better reuse
+	policy.
+
+2009-04-09  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* cherokee/bogotime.c (update_guts): Fixes a regression and I
+	introducced yesterday.
+
+	* cherokee/connection.c (cherokee_connection_instance_encoder):
+	Encoders should not be used for replies without body.
+
+	* doc/modules_loggers_custom.txt, doc/modules_loggers.txt,
+	doc/modules.txt, doc/Makefile.am: Adds some basic 'Custom logger'
+	documentation.
+
+	* cherokee/handler_proxy.c (cherokee_handler_proxy_init): Improve
+	error management on the initialization phase.
+
+2009-04-08  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* cherokee/socket.c (cherokee_socket_test_read): New method.
+
+	* cherokee/http.h, cherokee/http.c: Adds 406 Not acceptable.
+
+	* cherokee/proxy_hosts.c, cherokee/handler_cgi_base.c,
+	cherokee/util.c: Adds a check to ensure that the incoming header
+	isn't larger than MAX_HEADER_LEN.
+
+	* cherokee/handler_proxy.c, cherokee/handler_proxy.h,
+	admin/ModuleProxy.py: Adds a new option to preserve the original
+	"Host:" header when the reverse proxy forwards a request.
+
+	* cherokee/logger_w3c.c, cherokee/bogotime.c, cherokee/bogotime.h,
+	cherokee/util.c, cherokee/util.h, cherokee/logger_ncsa.c: Some
+	updates regarding the time management routines. Some unused stuff
+	have been removed; a new callback mechanism has been also added.
+
+	* cherokee/logger_custom.c: Implements a couple of variable
+	replacement that were unimplemented yet.
+
+2009-04-07  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* doc/media/images/admin_general.png,
+	doc/media/images/admin_vserver_loggers.png,
+	doc/media/images/admin_general_networking.png,
+	doc/media/images/admin_advanced2.png,
+	doc/media/images/admin_advanced4.png,
+	doc/media/images/admin_general_permissions.png,
+	doc/media/images/admin_behaviour.png,
+	doc/media/images/admin_vserver.png,
+	doc/media/images/admin_rule_regex.png,
+	doc/media/images/admin_general_ports.png,
+	doc/media/images/admin_advanced1.png,
+	doc/media/images/admin_advanced3.png,
+	doc/media/images/admin_notrunning.png,
+	doc/media/images/admin_vserver_security.png,
+	doc/media/images/admin_noconfig.png,
+	doc/media/images/admin_vserver_vserver.png,
+	doc/config_info_sources.txt, doc/basics_upgrade.txt,
+	doc/Makefile.am: Documentation requires some attention. Some
+	images have been updated. More commits to come.
+
+	* cherokee/main_admin.c: Added a couple of printf()s to report the
+	URL where cherokee-admin interface is accessible.
+
+	* cherokee/header.c, cherokee/header.h, cherokee/handler_proxy.c,
+	cherokee/connection.c: Adds some sort support for POST requests
+	with "Expect: 100-Continue" header.
+
+2009-04-07  Antonio Perez  <aperez@skarcha.com>
+
+	* admin/PageVServer.py: 'Host Match' tab should not be available
+	for 'default' Virtual Host. Fixes bug #427:
+	http://code.google.com/p/cherokee/issues/detail?id=427
+
+	* admin/Rule.py: Fixes a bug with checkboxes in complex rules.
+	http://code.google.com/p/cherokee/issues/detail?id=405
+
+	* admin/consts.py, admin/PageVServer.py: Adds initial custom logs
+	support to Cherokee-Admin.
+
+2009-04-06  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* cherokee/server.c (cherokee_server_get_log_writer): Fixes a tiny
+	memory leak.
+
+	* qa/222-EVHost1.py, qa/223-EVHost2.py, qa/224-EVHost3.py,
+	qa/Makefile.am: Three new QA tests for testing the EVHost support.
+
+	* cherokee/virtual_server.c: Fixes a wrong memory initialization
+	issue introduced a couple of days ago.
+
+	* cherokee/gen_evhost.c, admin/PageVServer.py,
+	cherokee/gen_evhost.h, admin/ModuleEvhost.py: Adds a new
+	'check_document_root' flag to the EVHost plug-in. If turned on, it
+	will check whether the dynamically generated document root
+	exist. If not, it will use the regular document root instead.
+
+2009-04-05  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* contrib/0999to09910.py (convert): Fix. Do not convert host that
+	have no 'domain' entries (usually 'default').
+
+	* admin/ModuleWildcard.py, admin/ModuleRehost.py: Warn the user if
+	the list ('domain' or 'regex') is empty.
+
+	* admin/ModuleEvhost.py, admin/consts.py, admin/PageVServer.py,
+	admin/Makefile.am: Adds "Enhanced Virtual Hosting" support to
+	cherokee-admin.
+
+2009-04-04  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* cherokee/virtual_server.c, cherokee/virtual_server.h,
+	cherokee/Makefile.am, cherokee/gen_evhost.c, cherokee/plugin.h,
+	cherokee/gen_evhost.h, cherokee/connection.c, configure.in: Adds a
+	new "Enhanced Virtual Hosting" plug-in. It allows to define
+	generic virtual servers that can handle many different hosts.
+	Document root directories are dynamically generated (based on the
+	domain name).
+
+	* cherokee/handler_server_info.c: Adds support for vrules
+	[matching rules for virtual servers].
+
+	* admin/ModuleWildcard.py, admin/consts.py, admin/ModuleRehost.py,
+	admin/Makefile.am: Adds support for the 'Rehost' vrule in
+	cherokee-admin.
+	
+	* admin/ModuleWildcard.py, admin/consts.py, admin/PageVServer.py,
+	admin/Makefile.am: The new 'wildcard' virtual host match plug-in
+	is now supported by cherokee-admin.
+
+	* contrib/0999to09910.py: New configuration file converter.
+	Cherokee 0.99.9 to Cherokee 0.99.10.
+
+2009-04-03  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* cherokee/Makefile.am, cherokee/vrule.c, cherokee/vrule.h,
+	cherokee/vrule_rehost.c, cherokee/vrule_rehost.h,
+	cherokee/vrule_wildcard.c, cherokee/template.h,
+	cherokee/server-protected.h, cherokee/connection.c,
+	cherokee/server.c, configure.in, qa/Makefile.am,
+	qa/221-ReHost1.py: Adds a new "Host:" matcher based on regular
+	expressions. It also adds a new QA test for it.
+
+	* cherokee/virtual_server.c, cherokee/virtual_server.h,
+	cherokee/Makefile.am, cherokee/vrule.c, cherokee/vrule.h,
+	cherokee/vrule_wildcard.c, cherokee/vrule_wildcard.h,
+	cherokee/plugin.h, cherokee/virtual_server_names.c,
+	cherokee/virtual_server_names.h, cherokee/server.c, configure.in,
+	qa/125-domain-redir1.py, qa/020-VirtualHost.py, qa/045-Home2.py,
+	qa/044-Home.py, qa/021-VirtualHost2.py, qa/121-NoUserDir.py,
+	qa/094-URL-request.py, qa/139-domain-wildcards1.py: This patch
+	introduces a new plug-in type 'virtual server rule'. It's similar
+	to the behavior rules, but they are used to match virtual servers.
+	This infrastructure will be used as base to build a more powerful
+	'Enhanced Virtual-Hosting' mechanism.
+
+	* cherokee/rule.c: Clean up.
+
+	* cherokee/header.c, cherokee/header.h, cherokee/logger.c,
+	cherokee/logger_w3c.c, admin/Form.py, cherokee/logger.h,
+	cherokee/handler_proxy.c, cherokee/logger_combined.c,
+	cherokee/logger_custom.c, admin/PageVServer.py,
+	cherokee/logger_ncsa.c: Rework the X-Real-IP. Now it's supported
+	globally (at logger level), so Cherokee can act as consumer of
+	X-Real-IP headers, and it can also generate them from the proxy.
+
 2009-04-02  Alvaro Lopez Ortega  <alvaro@octality.com>
 
 	* 0.99.9 released
@@ -240,7 +413,7 @@
 	working according with RFC 2616: Section 4.3.
 
 	* admin/PageVServer.py: Fixes the final flag management. It seems
-	that we introducced a regression a few days ago.
+	that we introduced a regression a few days ago.
 
 	* cherokee/bind.c (cherokee_bind_configure): Fixed compilation
 	with Sun CC. Patch by Alfred Peng <Alfred.Peng@Sun.COM>. Thanks!
@@ -1583,7 +1756,7 @@
 
 	* cherokee/server-protected.h, cherokee/bind.c, cherokee/bind.h,
 	cherokee/thread.h, cherokee/server.c, cherokee/thread.c: This
-	patch tries to address a performance regression introducced on Dec
+	patch tries to address a performance regression introduced on Dec
 	27th.
 
 	* cherokee/iocache.c: Tries to fix a I/O-cache bug.  This patch is
@@ -3485,7 +3658,7 @@
 2008-08-18  Alvaro Lopez Ortega  <alvaro@alobbs.com>
 
 	* cherokee/thread.c: Fixes an issue of redirections replies over
-	Keepalive connections. This regression was introducced right
+	Keepalive connections. This regression was introduced right
 	before releasing 0.8.0.
 
 	* cherokee/handler_dirlist.c: Adds a final slash whenever the list
@@ -4191,7 +4364,7 @@
 
 	* cherokee/handler_error.c (build_hardcoded_response_page): This
 	handled has to take conn->web_directory into account. This patch
-	fixes a regression that I introducced a few days ago when I was
+	fixes a regression that I introduced a few days ago when I was
 	cleaning up the web_directory mess.
 
 	* cherokee/handler_error.c (cherokee_handler_error_add_headers):
@@ -11726,7 +11899,7 @@
 	Rodrigo Fernandez Vizarra: <Rodrigo.Fernandez-Vizarra@Sun.COM>
 
 	* cherokee/handler_dirlist.c (new_file_entry): Fixed. There was a
-	logic problem introducced on 0.4.22.
+	logic problem introduced on 0.4.22.
 
 2005-05-19  Alvaro Lopez Ortega  <alvaro@alobbs.com>
 
@@ -12284,7 +12457,7 @@
 2005-02-19  Alvaro Lopez Ortega  <alvaro@alobbs.com>
 
 	* cherokee/handler_cgi.c: Fixed silly bug.  Now POST requests are
-	working again.  This problem was introducced in the execl() to
+	working again.  This problem was introduced in the execl() to
 	execve() code conversion.
 
 2005-02-18  Alvaro Lopez Ortega  <alvaro@alobbs.com>

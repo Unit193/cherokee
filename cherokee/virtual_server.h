@@ -34,9 +34,10 @@
 #include "config_entry.h"
 #include "logger.h"
 #include "config_node.h"
-#include "virtual_server_names.h"
 #include "rule_list.h"
 #include "cryptor.h"
+#include "vrule.h"
+#include "gen_evhost.h"
 
 typedef struct {
 	cherokee_list_t              list_node;
@@ -44,7 +45,8 @@ typedef struct {
 
 	cherokee_buffer_t            name;            /* Name.    Eg: server1        */
 	cuint_t                      priority;        /* Evaluation priority         */
-	cherokee_vserver_names_t     domains;         /* Domains. Eg: www.alobbs.com */
+	cherokee_vrule_t            *matching;        /* Matching rule               */
+
 	cherokee_rule_list_t         rules;           /* Rule list: vserver behavior */
 	cherokee_boolean_t           keepalive;       /* Keep-alive support          */
 	ssize_t                      post_max_len;    /* Max post length             */
@@ -59,6 +61,7 @@ typedef struct {
 
 	cherokee_buffer_t            root;            /* Document root. Eg: /var/www */
 	cherokee_list_t              index_list;      /* Eg: index.html, index.php   */
+	void                        *evhost;
 
 	struct {                                      /* Number of bytes {up,down}loaded */
 		off_t                tx;

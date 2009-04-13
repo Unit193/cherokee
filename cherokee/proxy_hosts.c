@@ -151,7 +151,7 @@ cherokee_handler_proxy_poll_get (cherokee_handler_proxy_poll_t  *poll,
 		/* Reuse a prev connection */
 		poll->reuse_len -= 1;
 
-		i = poll->reuse.next;
+		i = poll->reuse.prev;
 		cherokee_list_del (i);
 		cherokee_list_add (i, &poll->active);
 
@@ -189,28 +189,36 @@ poll_release (cherokee_handler_proxy_poll_t *poll,
 	/* Not longer an active connection */
 	cherokee_list_del (&pconn->listed);
 
-	/* The proxy connection cannot be reused
+	/* Don't reuse connection w/o keep-alive
 	 */
-	if (poll->reuse_len > poll->reuse_max) {
+	if (! pconn->keepalive_in) {
 		cherokee_handler_proxy_conn_free (pconn);
 		return ret_ok;
 	}
 
+	/* If the reuse-list is full, dispose the oldest obj
+	 */
+	if (poll->reuse_len > poll->reuse_max) {
+		cherokee_handler_proxy_conn_t *oldest;		
+
+		oldest = PROXY_CONN(poll->reuse.prev);
+		cherokee_list_del (&oldest->listed);
+		poll->reuse_len -= 1;
+
+		cherokee_handler_proxy_conn_free (oldest);
+	}
+
 	/* Clean up
 	 */
-	pconn->enc      = pconn_enc_none;
-	pconn->size_in  = 0;
-	pconn->sent_out = 0;
+	pconn->keepalive_in = false;
+	pconn->size_in      = 0;
+	pconn->sent_out     = 0;
+	pconn->enc          = pconn_enc_none;
 
 	cherokee_buffer_clean (&pconn->header_in_raw);
 
-	/* Socket
+	/* Store it to be reused
 	 */
-	if (! pconn->keepalive_in) {
-		cherokee_socket_close (&pconn->socket);
-	}
-
-	/* Store it to be reused */
 	poll->reuse_len += 1;
 	cherokee_list_add (&pconn->listed, &poll->reuse);
 
@@ -319,8 +327,14 @@ cherokee_handler_proxy_conn_recv_headers (cherokee_handler_proxy_conn_t *pconn,
 	/* Look for the end of header
 	 */
 	ret = cherokee_find_header_end (&pconn->header_in_raw, &end, &sep_len);
-	if (ret != ret_ok)
+	switch (ret) {
+	case ret_ok:
+		break;
+	case ret_not_found:
 		return ret_eagain;
+	default:
+		return ret_error;
+	}
 
 	/* Copy the body if there is any
 	 */

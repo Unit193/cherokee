@@ -25,36 +25,41 @@
 #if !defined (CHEROKEE_INSIDE_CHEROKEE_H) && !defined (CHEROKEE_COMPILATION)
 # error "Only <cherokee/cherokee.h> can be included directly, this file may disappear or change contents."
 #endif
-     
-#ifndef CHEROKEE_VSERVER_LIST_H
-#define CHEROKEE_VSERVER_LIST_H
+
+#ifndef CHEROKEE_VRULE_EVHOST_H
+#define CHEROKEE_VRULE_EVHOST_H
 
 #include <cherokee/common.h>
-#include <cherokee/list.h>
+#include <cherokee/module.h>
 #include <cherokee/buffer.h>
+#include <cherokee/plugin.h>
+#include <cherokee/template.h>
+#include <cherokee/config_entry.h>
 
+CHEROKEE_BEGIN_DECLS
 
-/* Virtual server names
- */
-typedef cherokee_list_t cherokee_vserver_names_t;
+typedef ret_t (* evhost_func_new_t)       (void **evhost, void *vsrv);
+typedef ret_t (* evhost_func_configure_t) (void  *evhost, cherokee_config_node_t *conf);
+typedef ret_t (* evhost_func_droot_t)     (void  *evhost, void *conn);
 
-ret_t cherokee_vserver_names_mrproper (cherokee_vserver_names_t *list);
-ret_t cherokee_vserver_names_add_name (cherokee_vserver_names_t *list, cherokee_buffer_t *name);
-ret_t cherokee_vserver_names_find     (cherokee_vserver_names_t *list, cherokee_buffer_t *name);
-
-
-/* Virtual server entry
- */
 typedef struct {
-	cherokee_list_t     node;
-	cherokee_buffer_t   name;
-	cherokee_boolean_t  is_wildcard;
-} cherokee_vserver_name_entry_t;
+	/* Object */
+	cherokee_module_t   module;
 
-#define VSERVER_NAME(v) ((cherokee_vserver_name_entry_t *)(v))
+	/* Properties */
+	cherokee_template_t tpl_document_root;
+	cherokee_boolean_t  check_document_root;
 
-ret_t cherokee_vserver_name_entry_new   (cherokee_vserver_name_entry_t **entry, cherokee_buffer_t *name);
-ret_t cherokee_vserver_name_entry_match (cherokee_vserver_name_entry_t  *entry, cherokee_buffer_t *name);
-ret_t cherokee_vserver_name_entry_free  (cherokee_vserver_name_entry_t  *entry);
+	/* Methods */
+	evhost_func_droot_t func_document_root;
 
-#endif /* CHEROKEE_VSERVER_LIST_H */
+} cherokee_generic_evhost_t;
+
+#define EVHOST(x) ((cherokee_generic_evhost_t *)(x))
+
+ret_t cherokee_generic_evhost_new       (cherokee_generic_evhost_t **evhost);
+ret_t cherokee_generic_evhost_configure (cherokee_generic_evhost_t  *evhost,
+					 cherokee_config_node_t     *config);
+CHEROKEE_END_DECLS
+
+#endif /* CHEROKEE_VRULE_EVHOST_H */

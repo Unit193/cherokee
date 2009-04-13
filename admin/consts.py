@@ -46,7 +46,8 @@ LOGGERS = [
     ('',           'None'),
     ('combined',   'Apache compatible'),
     ('w3c',        'W3C'),
-    ('ncsa',       'NCSA')
+    ('ncsa',       'NCSA'),
+    ('custom',     'Custom')
 ]
 
 LOGGER_WRITERS = [
@@ -121,6 +122,11 @@ RULES = [
     ('geoip',      'GeoIP')
 ]
 
+VRULES = [
+    ('wildcard',   'Wildcards'),
+    ('rehost',     'Regular Expressions')
+]
+
 EXPIRATION_TYPE = [
     ('',         'Not set'),
     ('epoch',    'Already expired on 1970'),
@@ -131,6 +137,11 @@ EXPIRATION_TYPE = [
 CRYPTORS = [
     ('',         'No TLS/SSL'),
     ('libssl',   'OpenSSL / libssl')
+]
+
+EVHOSTS = [
+    ('',         'Off'),
+    ('evhost',   'Enhanced Virtual Hosting')
 ]
 
 CLIENT_CERTS = [
