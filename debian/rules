@@ -224,6 +224,7 @@ install-arch:
 	install $(CURDIR)/contrib/09to010.py $(LIB_CONFIG_DIR)/usr/share/cherokee/
 	install $(CURDIR)/contrib/011to098.py $(LIB_CONFIG_DIR)/usr/share/cherokee/
 	install $(CURDIR)/contrib/098to099.py $(LIB_CONFIG_DIR)/usr/share/cherokee/
+	install $(CURDIR)/contrib/0999to09910.py $(LIB_CONFIG_DIR)/usr/share/cherokee/
 
 
 # libcherokee-mod-admin - Administrative interface
