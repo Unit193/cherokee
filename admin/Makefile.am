@@ -94,6 +94,9 @@ ModuleExists.py \
 ModuleMethod.py \
 ModuleBind.py \
 ModuleCustomError.py \
+ModuleWildcard.py \
+ModuleRehost.py \
+ModuleEvhost.py \
 config.py \
 pyscgi.py \
 validations.py \

@@ -44,7 +44,8 @@ typedef enum {
 	cherokee_validator = 1 << 4,
 	cherokee_balancer  = 1 << 5,
 	cherokee_rule      = 1 << 6,
-	cherokee_cryptor   = 1 << 7
+	cherokee_vrule     = 1 << 7,
+	cherokee_cryptor   = 1 << 8
 } cherokee_plugin_type_t;
 
 
@@ -121,8 +122,8 @@ typedef struct {
  */
 #define PLUGIN_INFO_EASY_INIT(type,name)                            \
 	PLUGIN_INFO_INIT(name, type,                                \
-		(void *)cherokee_ ## type ## _ ## name ## _new,     \
-		(void *)cherokee_ ## type ## _ ## name ## _configure)
+		(void *)type ## _ ## name ## _new,     \
+		(void *)type ## _ ## name ## _configure)
 
 
 /* Plugin initialization function

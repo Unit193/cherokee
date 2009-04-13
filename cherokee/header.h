@@ -61,6 +61,8 @@ typedef enum {
 	header_user_agent,
 	header_x_forwarded_for,
 	header_x_forwarded_host,
+	header_x_real_ip,
+	header_expect,
 	HEADER_LENGTH
 } cherokee_common_header_t;
 

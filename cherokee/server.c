@@ -1849,23 +1849,27 @@ error:
 	return ret_error;
 }
 
-
 ret_t 
-cherokee_server_get_vserver (cherokee_server_t *srv, cherokee_buffer_t *name, cherokee_virtual_server_t **vsrv)
+cherokee_server_get_vserver (cherokee_server_t          *srv,
+			     cherokee_buffer_t          *host,
+			     cherokee_virtual_server_t **vsrv)
 {
-	cint_t                     re;
+	int                        re;
 	ret_t                      ret;
 	cherokee_list_t           *i;
 	cherokee_virtual_server_t *vserver;
 
-	/* Check the domain names 
+	/* Evaluate the vrules
 	 */
 	list_for_each (i, &srv->vservers) {
 		vserver = VSERVER(i);
 
-		ret = cherokee_vserver_names_find (&vserver->domains, name);
+		if (! vserver->matching)
+			continue;
+		
+		ret = cherokee_vrule_match (vserver->matching, host);
 		if (ret == ret_ok) {
-			TRACE (ENTRIES, "Virtual server '%s' matched domain '%s'\n", vserver->name.buf, name->buf);
+			TRACE (ENTRIES, "Virtual server '%s' matched vrule\n", vserver->name.buf);
 			*vsrv = vserver;
 			return ret_ok;
 		}
@@ -1876,7 +1880,7 @@ cherokee_server_get_vserver (cherokee_server_t *srv, cherokee_buffer_t *name, ch
 	list_for_each (i, &srv->vservers) {
 		vserver = VSERVER(i);
 
-		re = cherokee_buffer_cmp_buf (name, &vserver->name);
+		re = cherokee_buffer_cmp_buf (host, &vserver->name);
 		if (re == 0) {
 			TRACE (ENTRIES, "Virtual server '%s' matched by its nick\n", vserver->name.buf);
 			*vsrv = vserver;
@@ -1920,7 +1924,7 @@ cherokee_server_get_log_writer (cherokee_server_t         *srv,
 	 */
 	ret = cherokee_logger_writer_get_id (config, &tmp);
 	if (ret != ret_ok) {
-		return ret_error;
+		goto error;
 	}
 
 	/* Check the writers tree
@@ -1928,7 +1932,7 @@ cherokee_server_get_log_writer (cherokee_server_t         *srv,
 	ret = cherokee_avl_get (&srv->logger_writers_index, &tmp, (void **)writer);
 	if ((ret == ret_ok) && (*writer != NULL)) {
 		TRACE(ENTRIES",log", "Reusing logger: '%s'\n", tmp.buf);
-		return ret_ok;
+		goto ok;
 	}
 
 	/* Create a new writer object
@@ -1945,12 +1949,17 @@ cherokee_server_get_log_writer (cherokee_server_t         *srv,
 
 	/* Add it to the index
 	 */
+	cherokee_list_add (&(*writer)->listed, &srv->logger_writers);
+
 	ret = cherokee_avl_add (&srv->logger_writers_index, &tmp, *writer);
 	if (ret != ret_ok) {
 		goto error;
 	}
 		
+ok:
 	TRACE(ENTRIES",log", "Instanced a new logger: '%s'\n", tmp.buf);
+
+	cherokee_buffer_mrproper (&tmp);
 	return ret_ok;
 
 error:
