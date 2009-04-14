@@ -9,7 +9,7 @@
 
 import sys
 
-sys.path.append('../admin/')
+sys.path.append('/usr/share/cherokee/admin/')
 from config import *
 
 def save_result (content, file):
