@@ -1,0 +1,52 @@
+Index: cherokee/contrib/0999to09910.py
+===================================================================
+--- cherokee.orig/contrib/0999to09910.py	2009-04-14 18:18:10.000000000 -0500
++++ cherokee/contrib/0999to09910.py	2009-04-14 18:35:47.000000000 -0500
+@@ -9,7 +9,7 @@
+ 
+ import sys
+ 
+-sys.path.append('../admin/')
++sys.path.append('/usr/share/cherokee/admin/')
+ from config import *
+ 
+ def save_result (content, file):
+Index: cherokee/contrib/06to07.py
+===================================================================
+--- cherokee.orig/contrib/06to07.py	2009-04-14 18:36:13.000000000 -0500
++++ cherokee/contrib/06to07.py	2009-04-14 18:36:49.000000000 -0500
+@@ -9,7 +9,7 @@
+ 
+ import sys
+ 
+-sys.path.append('../admin/')
++sys.path.append('/usr/share/cherokee/admin/')
+ from config import *
+ 
+ def reparent_child (orig, target):
+Index: cherokee/contrib/07to08.py
+===================================================================
+--- cherokee.orig/contrib/07to08.py	2009-04-14 18:36:13.000000000 -0500
++++ cherokee/contrib/07to08.py	2009-04-14 18:36:45.000000000 -0500
+@@ -9,7 +9,7 @@
+ 
+ import sys
+ 
+-sys.path.append('../admin/')
++sys.path.append('/usr/share/cherokee/admin/')
+ from config import *
+ 
+ 
+Index: cherokee/contrib/08to09.py
+===================================================================
+--- cherokee.orig/contrib/08to09.py	2009-04-14 18:36:13.000000000 -0500
++++ cherokee/contrib/08to09.py	2009-04-14 18:36:34.000000000 -0500
+@@ -9,7 +9,7 @@
+ 
+ import sys
+ 
+-sys.path.append('../admin/')
++sys.path.append('/usr/share/cherokee/admin/')
+ from config import *
+ 
+ def save_result (content, file):

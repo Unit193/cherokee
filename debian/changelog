@@ -1,3 +1,9 @@
+cherokee (0.99.10-3) UNRELEASED; urgency=low
+
+  * Applied Leonel's patch to all migration scripts
+
+ -- Gunnar Wolf <gwolf@debian.org>  Tue, 14 Apr 2009 18:38:51 -0500
+
 cherokee (0.99.10-2) unstable; urgency=low
 
   * Added Absolute path /usr/share/cherokee/admin 
