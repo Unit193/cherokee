@@ -1,8 +1,10 @@
-cherokee (0.99.10-3) UNRELEASED; urgency=low
+cherokee (0.99.10-3) unstable; urgency=low
 
-  * Applied Leonel's patch to all migration scripts
+  * Moved Leonel's direct patch to the corresponding Quilt patch
+  * Now properly allows for updates from 0.99.9 - Sorry for the
+    breakage! (Closes: #524129)
 
- -- Gunnar Wolf <gwolf@debian.org>  Tue, 14 Apr 2009 18:38:51 -0500
+ -- Gunnar Wolf <gwolf@debian.org>  Fri, 17 Apr 2009 11:43:18 -0500
 
 cherokee (0.99.10-2) unstable; urgency=low
 
