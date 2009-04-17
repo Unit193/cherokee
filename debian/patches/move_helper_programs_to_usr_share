@@ -3,8 +3,8 @@
 #
 Index: cherokee/performance.conf.sample.pre
 ===================================================================
---- cherokee.orig/performance.conf.sample.pre	2009-01-23 15:18:15.000000000 -0600
-+++ cherokee/performance.conf.sample.pre	2009-01-23 15:25:55.000000000 -0600
+--- cherokee.orig/performance.conf.sample.pre	2009-04-17 11:31:01.000000000 -0500
++++ cherokee/performance.conf.sample.pre	2009-04-17 11:34:52.000000000 -0500
 @@ -13,7 +13,7 @@
  server!keepalive = 1
  server!keepalive_max_requests = 1000
@@ -16,8 +16,8 @@ Index: cherokee/performance.conf.sample.pre
  # Default virtual server
 Index: cherokee/admin/configured.py.pre
 ===================================================================
---- cherokee.orig/admin/configured.py.pre	2008-12-09 15:54:55.000000000 -0600
-+++ cherokee/admin/configured.py.pre	2009-01-23 15:25:55.000000000 -0600
+--- cherokee.orig/admin/configured.py.pre	2008-12-26 20:31:59.000000000 -0600
++++ cherokee/admin/configured.py.pre	2009-04-17 11:34:52.000000000 -0500
 @@ -14,7 +14,7 @@
  CHEROKEE_ADMINDIR   = join (PREFIX, "share/cherokee/admin")
  CHEROKEE_ICONSDIR   = join (PREFIX, "share/cherokee/icons")
@@ -29,9 +29,9 @@ Index: cherokee/admin/configured.py.pre
  CHEROKEE_DEPSDIR    = join (DATADIR, "cherokee/deps")
 Index: cherokee/cherokee.conf.sample.pre
 ===================================================================
---- cherokee.orig/cherokee.conf.sample.pre	2009-01-23 15:25:48.000000000 -0600
-+++ cherokee/cherokee.conf.sample.pre	2009-01-23 15:25:55.000000000 -0600
-@@ -15,7 +15,7 @@
+--- cherokee.orig/cherokee.conf.sample.pre	2009-04-17 11:34:51.000000000 -0500
++++ cherokee/cherokee.conf.sample.pre	2009-04-17 11:38:09.000000000 -0500
+@@ -13,7 +13,7 @@
  server!keepalive = 1
  server!keepalive_max_requests = 500
  server!server_tokens = full
