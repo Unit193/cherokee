@@ -1,0 +1,117 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+    <meta http-equiv="Content-Language" content="en-us" />
+    <meta name="ROBOTS" content="ALL" />
+    <meta http-equiv="imagetoolbar" content="no" />
+    <meta name="MSSmartTagsPreventParsing" content="true" />
+    <meta name="Keywords" content="cherokee web server httpd http" />
+    <meta name="Description" content="Cherokee is a flexible, very fast, lightweight Web server. It is implemented entirely in C, and has no dependencies beyond a standard C library. It is embeddable and extensible with plug-ins. It supports on-the-fly configuration by reading files or strings, TLS/SSL (via GNUTLS or OpenSSL), virtual hosts, authentication, cache friendly features, PHP, custom error management, and much more." />
+    <link href="media/css/cherokee_doc.css" rel="stylesheet" type="text/css" media="all" />
+  </head>
+<body>
+<h2 id="_a_href_index_html_index_a_8594_a_href_config_html_configuration_a_8594_a_href_config_virtual_servers_html_virtual_servers_a"><a href="index.html">Index</a> &#8594; <a href="config.html">Configuration</a> &#8594; <a href="config_virtual_servers.html">Virtual servers</a></h2>
+<div class="sectionbody">
+</div>
+<h2 id="_advanced_virtual_hosting">Advanced Virtual Hosting</h2>
+<div class="sectionbody">
+<div class="para"><p>Cherokee currently support a mechanism by which a single virtual
+server can handle many different domains. The document root of this
+virtual server is built dynamically, so even if the domains share a
+common configuration they can use a number of different Document Root
+directories.</p></div>
+<div class="imageblock">
+<div class="content">
+<img src="media/images/admin_vserver_evhost.png" alt="Advanced Virtual Hosting" title="Advanced Virtual Hosting"/>
+</div>
+</div>
+<div class="para"><p>The following replacement variables are supported. Let's suppose a
+request to the <tt>alo.users.example.com</tt> domain for the examples:</p></div>
+<div class="tableblock">
+<table rules="rows"
+frame="hsides"
+cellspacing="0" cellpadding="4">
+<col width="247" />
+<col width="276" />
+<col width="276" />
+<thead>
+  <tr>
+    <th align="left">
+    Variable                  
+    </th>
+    <th align="left">
+    Example                    
+    </th>
+    <th align="left">
+    Description
+    </th>
+  </tr>
+</thead>
+<tbody valign="top">
+  <tr>
+    <td align="left">
+    <tt>${domain}</tt>             
+    </td>
+    <td align="left">
+    alo.users.example.com      
+    </td>
+    <td align="left">
+    Full domain name
+    </td>
+  </tr>
+  <tr>
+    <td align="left">
+    <tt>${tld}</tt>                
+    </td>
+    <td align="left">
+    com                        
+    </td>
+    <td align="left">
+    Top Level Domain
+    </td>
+  </tr>
+  <tr>
+    <td align="left">
+    <tt>${domain_no_tld}</tt>      
+    </td>
+    <td align="left">
+    alo.users.example          
+    </td>
+    <td align="left">
+    Domain without the TLD
+    </td>
+  </tr>
+  <tr>
+    <td align="left">
+    <tt>${subdomain1}</tt>         
+    </td>
+    <td align="left">
+    users                      
+    </td>
+    <td align="left">
+    First sub-domain
+    </td>
+  </tr>
+  <tr>
+    <td align="left">
+    <tt>${subdomain2}</tt>         
+    </td>
+    <td align="left">
+    alo                        
+    </td>
+    <td align="left">
+    Second sub-domain
+    </td>
+  </tr>
+</tbody>
+</table>
+</div>
+</div>
+<div id="footer">
+<div id="footer-text">
+</div>
+</div>
+</body>
+</html>
