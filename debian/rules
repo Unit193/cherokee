@@ -68,7 +68,8 @@ config.status: configure
 			   --infodir=\$${prefix}/share/info      \
 			   --sysconfdir=/etc                     \
 	                   --docdir=/usr/share/doc/cherokee-doc  \
-			   --with-wwwroot=/var/www
+			   --with-wwwroot=/var/www               \
+			   --with-included-gettext
 
 build: patch build-stamp
 build-stamp: $(QUILT_STAMPFN) build-arch build-indep
@@ -295,11 +296,11 @@ install-arch:
 	# /usr/share/doc/cherokee, which we take care of in install-arch) will 
 	# become the main Cherokee package
 	install $(CURDIR)/debian/README.docs $(DEV_BASE_DIR)/usr/share/doc/libcherokee-base0-dev/
-	install -d $(SERVER_DIR)/usr/share
 	install -d $(SERVER_DIR)/usr/share/doc/cherokee
 	mv $(BUILD_DIR)/usr/bin $(SERVER_DIR)/usr/
 	mv $(BUILD_DIR)/usr/sbin $(SERVER_DIR)/usr/
 	mv $(BUILD_DIR)/usr/share/cherokee $(SERVER_DIR)/usr/share/
+	mv $(BUILD_DIR)/usr/share/locale $(SERVER_DIR)/usr/share/
 	mv $(BUILD_DIR)/usr/share/man $(SERVER_DIR)/usr/share/
 	mv $(BUILD_DIR)/etc $(SERVER_DIR)
 	mv $(BUILD_DIR)/var $(SERVER_DIR)

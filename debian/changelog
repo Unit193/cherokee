@@ -1,3 +1,9 @@
+cherokee (0.99.11-1) unstable; urgency=low
+
+  * New Upstream Version
+
+ -- Gunnar Wolf <gwolf@debian.org>  Sat, 18 Apr 2009 17:24:11 -0500
+
 cherokee (0.99.10-3) unstable; urgency=low
 
   * Moved Leonel's direct patch to the corresponding Quilt patch
