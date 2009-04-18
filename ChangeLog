@@ -1,3 +1,147 @@
+2009-04-18  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* 0.99.11 released
+
+	* cherokee/server.c (cherokee_server_step): Fixes a Graceful
+	Restart issue. The server was hogging the CPU while two or more
+	workers were working at the same time. This bug was also reported
+	by Stefan de Konink.
+
+	* cherokee/thread.c: Tries to fix an important bug. Random
+	connections were being closed every now and then. Bug discovered
+	by Stefan de Konink.
+
+2009-04-17  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* configure.in: Disable NLS support if gettext is not installed.
+
+	* m4/progtest.m4, m4/Makefile.am, m4/nls.m4, m4/po.m4, autogen.sh,
+	po/admin/en.po, po/admin/Rules-quot, po/admin/insert-header.sin,
+	po/admin/es., po/admin/remove-potcdate.sin, po/admin/cherokee.pot,
+	po/admin/Makefile.in.in, po/admin/ChangeLog, po/admin/POTFILES.in,
+	po/admin/quot.sed, po/admin/LINGUAS, po/admin/en@quot.header,
+	po/admin/en@boldquot.header, po/admin/boldquot.sed, README,
+	po/admin/Makevars, po/Makefile.am, configure.in, admin/config.py,
+	admin/server.py, admin/configured.py.pre, Makefile.am,
+	admin/po/cherokee-admin-en.po, admin/po/cherokee-admin.pot,
+	admin/po/cherokee-admin-es.po, admin/Makefile.am: 'Native Language
+	Support' integration.
+
+2009-04-17  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* admin/config.py (Config._parse): Fixes bug #444
+	http://code.google.com/p/cherokee/issues/detail?id=444
+	Cherokee-admin had trouble parsing configuration files with
+	embedded SQL queries.
+
+2009-04-16  Antonio Perez  <aperez@skarcha.com>
+
+	* admin/ModuleGeoip.py, admin/ModuleBind.py,
+	admin/po/cherokee-admin-en.po, admin/po/cherokee-admin.pot,
+	admin/po/cherokee-admin-es.po: More i18n changes and
+	translation files updates.
+
+2009-04-16  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* cherokee/bind.c (cherokee_bind_init_port): Clarifies the error
+	message.
+
+	* cherokee/handler_redir.c, qa/228-Redir-Paths2.py,
+	qa/Makefile.am, qa/227-Redir-Paths.py: Fixes bug #432
+	http://code.google.com/p/cherokee/issues/detail?id=432
+	Now hidden redirections can use non-global paths.
+
+	* cherokee/handler_cgi_base.c, admin/ModuleCgi.py: It will be
+	handier for many people if {Fast,S,}CGIs have the error handler
+	bit set by default.
+
+2009-04-15  Antonio Perez  <aperez@skarcha.com>
+
+	* admin/static/css/cherokee.css, admin/status.template.html,
+	admin/Page.py, admin/PageStatus.py: i18n changes to Status page
+	template, and the language drop-down menu was moved to the upper
+	right corner of Status page.
+
+	* admin/PageStatus.py: Removes Change Language button.
+
+	* admin/PageEntry.py, admin/Rule.py, admin/PageStatus.py,
+	admin/ModuleBind.py, admin/PageFeedback.py: Fixes feedback page
+	and other minor issues.
+
+2009-04-15  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* admin/Page.py, admin/PageStatus.py, admin/status.template.html:
+	The language drop-down menu isn't something that the user has to
+	access frequently. Thus, I've moved it away from the sidebar. The
+	CSS style has still to be fixed for this new location though.
+
+	* cherokee/validator_authlist.c, admin/ModuleAuthlist.py: Fixes
+	bug http://code.google.com/p/cherokee/issues/detail?id=433 . An
+	empty authlist validator is no longer a fatal error.
+
+2009-04-15  Taher Shihadeh  <taher@unixwars.com>
+
+	* admin/Rule.py: fixes issue
+	http://code.google.com/p/cherokee/issues/detail?id=440
+
+2009-04-14  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* qa/226-PathInfo-Default.py: Adds a new QA to test:
+	http://code.google.com/p/cherokee/issues/detail?id=439
+
+2009-04-14  Antonio Perez  <aperez@skarcha.com>
+
+	* admin/ModuleEmptyGif.py, admin/ModuleAdmin.py,
+	admin/PageEntry.py, admin/ModuleWildcard.py,
+	admin/error_icons_dir_missing.template.html, admin/Theme.py,
+	admin/config.py, admin/server.py, admin/ModuleAuth.py,
+	admin/ModuleGeoip.py, admin/ModuleRedir.py, admin/Page.py,
+	admin/PageNewConfig.py, admin/ModuleDirlist.py,
+	admin/ModuleHtdigest.py, admin/ModuleFile.py,
+	admin/PageError.py, admin/ModuleLdap.py,
+	admin/ModuleServerInfo.py, admin/ModuleCustomError.py,
+	admin/ModuleScgi.py, admin/error_couldnt_launch.template.html,
+	admin/PageAdvanced.py, admin/Rule.py, admin/ModuleCgi.py,
+	admin/ModulePlain.py, admin/ModuleDbslayer.py,
+	admin/PageVServers.py, admin/ModuleEvhost.py,
+	admin/PageStatus.py, admin/ModuleBind.py, admin/ModuleProxy.py,
+	admin/ModuleRoundRobin.py,
+	admin/error_not_writable.template.html, admin/ModuleHeader.py,
+	admin/ModuleCommon.py, admin/ModuleRequest.py,
+	admin/ModuleStreaming.py, admin/ModuleSsi.py,
+	admin/ModuleExtensions.py, admin/ModuleSecdownload.py,
+	admin/consts.py, admin/default.template.html,
+	admin/PageGeneral.py, admin/ModuleRehost.py,
+	admin/ModuleBalancer.py, admin/ModuleFcgi.py, admin/PageMime.py,
+	admin/ModuleExists.py, admin/ModuleMethod.py,
+	admin/po/cherokee-admin-en.po, admin/po/cherokee-admin.pot,
+	admin/po/cherokee-admin-es.po, admin/Table.py,
+	admin/PageVServer.py, admin/static/css/cherokee.css,
+	admin/Entry.py, admin/ModuleAuthlist.py, admin/Form.py,
+	admin/ModuleHtpasswd.py, admin/PageInfoSource.py,
+	admin/status.template.html, admin/ModuleDirectory.py,
+	admin/ModuleMysql.py, admin/validations.py,
+	admin/ModuleMirror.py, admin/PageFeedback.py,
+	admin/CherokeeManagement.py, admin/ModuleIpHash.py,
+	admin/PageIcon.py, admin/ModuleErrorRedir.py: Adds
+	internationalization (i18n) to cherokee-admin.
+
+	* admin/server.py, admin/Page.py, admin/po/cherokee-admin-en.po,
+	admin/po/cherokee-admin.pot, admin/po/cherokee-admin-es.po,
+	admin/PageVServer.py, admin/Form.py, admin/status.template.html:
+	More i18n related changes.
+
+2009-04-14  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* cherokee/handler_cgi_base.c, qa/225-PathTranslated.py,
+	qa/Makefile.am: Adds PATH_TRANSLATED support to {Fast,S,}CGI. It
+	also adds a new QA test.
+
+	* admin/PageVServer.py (PageVServer._render_hosts): Makes the
+	Virtual Server page slightly more consistent. It wasn't showing
+	the "Domain Matching" tab in the 'default' virtual host, and that
+	has proved to be confusing for some users.
+
 2009-04-13  Alvaro Lopez Ortega  <alvaro@octality.com>
 
 	* 0.99.10 released
