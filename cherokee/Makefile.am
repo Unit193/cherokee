@@ -1086,6 +1086,7 @@ libcherokee-config.la
 # extra cflags at link time can't hurt
 libcherokee_base_la_LDFLAGS = $(common_ldflags) $(library_soname)
 libcherokee_base_la_LIBADD = \
+$(RT_LIBS) \
 $(PTHREAD_LIBS) \
 $(PTHREAD_CFLAGS) \
 $(external_pcre_lib)
@@ -1161,6 +1162,12 @@ win32_cservice.h \
 win32_cservice.c 
 endif
 
+if USE_POSIX_SHM
+shm_src = \
+shm.h \
+shm.c
+endif
+
 libcherokee_base_la_SOURCES = \
 $(zlib_src) \
 $(internal_pcre_src) \
@@ -1172,6 +1179,7 @@ $(poll_port_src) \
 $(poll_select_src) \
 $(poll_win32_src) \
 $(win32_src) \
+$(shm_src) \
 cherokee.h \
 init.h \
 init.c \
@@ -1194,6 +1202,7 @@ crc32.c \
 macros.h \
 common.h \
 common-internal.h \
+nullable.h \
 util.h \
 util.c \
 human_strcmp.h \
@@ -1413,7 +1422,10 @@ connection_info.c \
 dwriter.h \
 dwriter.c \
 limiter.h \
-limiter.c
+limiter.c \
+spawner.h \
+spawner.c
+
 
 libcherokee_config_la_SOURCES = \
 admin_client.h \
@@ -1549,6 +1561,7 @@ libcherokee-server.la
 # Cherokee
 #
 cherokee_SOURCES = main.c
+cherokee_LDADD   = $(PTHREAD_LIBS) $(RT_LIBS)
 
 #
 # Cherokee admin
@@ -1605,6 +1618,7 @@ win32_misc.c
 
 EXTRA_DIST = \
 pcre/LICENCE \
+$(shm_src) \
 $(pcre_src) \
 $(win32_src) \
 $(getopt_src) \

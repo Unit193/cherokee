@@ -441,7 +441,7 @@ cherokee_handler_cgi_init (cherokee_handler_cgi_t *cgi)
 		 * otherwhise the server will drop it for the CGI
 		 * isn't fast enough
 		 */
-		conn->timeout = CONN_THREAD(conn)->bogo_now + CGI_TIMEOUT;
+		conn->timeout = cherokee_bogonow_now + CGI_TIMEOUT;
 		
 		cgi_base->init_phase = hcgi_phase_connect;
 
@@ -543,13 +543,12 @@ manage_child_cgi_process (cherokee_handler_cgi_t *cgi, int pipe_cgi[2], int pipe
 	/* Redirect the stderr
 	 */
 	if (CONN_VSRV(conn)->logger != NULL) {
-		cherokee_logger_t *log = CONN_VSRV(conn)->logger;
+		cherokee_logger_writer_t *writer = NULL;
+		cherokee_logger_t        *log    = CONN_VSRV(conn)->logger;
 
-		/* cherokee_logger_write_error_fd() uses locks. This
-		 * is a new process, so call directly the function.
-		 */
-		if (log->write_error_fd) {
-			log->write_error_fd (log, STDERR_FILENO);
+		cherokee_logger_get_error_writer (log, &writer);
+		if ((writer != NULL) && (writer->fd != -1)) {
+			dup2 (writer->fd, STDERR_FILENO);
 		}
 	}
 

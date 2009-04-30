@@ -128,8 +128,8 @@ config_server (cherokee_server_t *srv)
 	}
 
 	printf ("Web Interface:\n"
-		"  URL:               http://%s:9090/\n\n",
-		(bind_to) ? bind_to : "localhost");
+		"  URL:               http://%s:%d/\n\n",
+		(bind_to) ? bind_to : "localhost", port);
 
 	/* Configure the embedded server
 	 */
@@ -310,6 +310,7 @@ main (int argc, char **argv)
 #endif
 
 	cherokee_init();
+	cherokee_spawner_set_active (false);
 	process_parameters (argc, argv);
 
 	ret = cherokee_server_new (&srv);

@@ -28,7 +28,13 @@
 #include <sys/wait.h>
 #include <sys/stat.h>
 #include <errno.h>
+#include <sys/mman.h>
+#include <semaphore.h>
+#include <sys/types.h>
+#include <grp.h>
+#include <pthread.h>
 #include "server.h"
+#include "spawner.h"
 
 #ifdef HAVE_GETOPT_LONG
 # include <getopt.h>
@@ -46,6 +52,11 @@ pid_t               pid;
 char               *pid_file_path;
 cherokee_boolean_t  graceful_restart; 
 char               *cherokee_worker;
+char               *spawn_shared          = NULL;
+char               *spawn_shared_name     = NULL;
+sem_t              *spawn_shared_sem      = NULL;
+char               *spawn_shared_sem_name = NULL;
+pthread_t           spawn_thread;
 
 static void
 figure_worker_path (const char *arg0)
@@ -271,6 +282,157 @@ pid_file_clean (const char *pid_file)
 	free (pid_file_worker);
 }
 
+static void
+do_spawn (void)
+{
+	int          n;
+	int          size;
+	uid_t        uid;
+	gid_t        gid;
+	int          envs;
+	pid_t        child;
+	char        *interpreter;
+	int          log_stderr   = 0;
+	char        *log_file     = NULL;
+	char        *uid_str      = NULL;
+	char       **envp         = NULL;
+	char        *p            = spawn_shared;
+	const char  *argv[]       = {"sh", "-c", NULL, NULL};
+
+	/* Read the shared memory
+	 */
+
+	/* 1.- Interpreter */
+	size = *((int *)p);
+	interpreter = strdup (p + sizeof(int));
+	p += sizeof(int) + size + 1;
+
+	/* 2.- UID & GID */
+	size = *((int *)p);
+	if (size > 0) {
+		uid_str = strdup (p + sizeof(int));
+	}
+	p += sizeof(int) + size + 1;
+
+	memcpy (&uid, p, sizeof(uid_t));
+	p += sizeof(uid_t);
+
+	memcpy (&gid, p, sizeof(gid_t));
+	p += sizeof(gid_t);
+
+	/* 3.- Environment */
+	envs = *((int *)p);
+	p += sizeof(int);
+
+	envp = malloc (sizeof(char *) * (envs + 1));
+	envp[envs] = NULL;
+
+	for (n=0; n<envs; n++) {
+		char *e;
+
+		size = *((int *)p);
+		p += sizeof(int);
+		
+		e = malloc (size + 1);
+		strncpy (e, p, size);
+		envp[n] = e;
+
+		p += size + 1;
+	}
+
+	/* 4.- Error log */
+	size = *((int *)p);
+	if (size > 0) {
+		p += sizeof(int);
+
+		if (! strncmp (p, "stderr", 6)) {
+			log_stderr = 1;
+		} else if (! strncmp (p, "file,", 5)) {
+			log_file = p+5;
+		}
+
+		p += size + 1;
+	}
+
+	/* 5.- PID: it's -1 now */
+	n = *((int *)p);
+	if (n > 0) {
+		kill (n, SIGTERM);
+		*p = -1;
+	}
+
+	/* Spawn
+	 */
+	child = fork();
+	switch (child) {
+	case 0:
+		/* Logging */
+		if (log_file) {
+			int fd;
+			fd = open (log_file, O_WRONLY | O_APPEND | O_CREAT, 0600);
+			if (fd < 0) {
+				PRINT_ERROR ("WARNING: Couldn't open '%s' for writing..\n", log_file);
+			}
+			dup2 (fd, STDOUT_FILENO);
+			dup2 (fd, STDERR_FILENO);
+		} else if (log_stderr) {
+			/* do nothing */
+		} else {
+			close (STDOUT_FILENO);
+			close (STDERR_FILENO);
+		}
+
+		/* Change user & group */
+		if (uid_str != NULL) {
+			n = initgroups (uid_str, gid);
+			if (n == -1) {
+				PRINT_ERROR ("WARNING: initgroups failed User=%s, GID=%d\n", uid_str, gid);
+			}
+		}
+
+		if (gid != -1) {
+			n = setgid (gid);
+			if (n != 0) {
+				PRINT_ERROR ("WARNING: Could not set GID=%d\n", gid);
+			}
+		}
+
+		if (uid != -1) {
+			n = setuid (uid);
+			if (n != 0) {
+				PRINT_ERROR ("WARNING: Could not set UID=%d\n", uid);
+			}
+		}
+
+		/* Clean the shared memory */
+		size = (p - spawn_shared) - sizeof(int);
+		memset (spawn_shared, 0, size);
+
+		/* Execute the interpreter */
+		argv[2] = interpreter;
+		execve ("/bin/sh", (char **)argv, envp);
+
+		PRINT_ERROR ("ERROR: Could spawn %s\n", interpreter);
+		exit (1);
+	case -1:
+		/* Error */
+		break;
+	default:
+		/* Return the PID */
+		memcpy (p, (char *)&child, sizeof(int));
+		printf ("PID %d: launched '%s' with uid=%d, gid=%d\n", child, interpreter, uid, gid);
+		break;
+	}
+	
+	/* Clean up
+	 */
+	for (n=0; n<envs; n++) {
+		free (envp[n]);
+	}
+
+	free (envp);
+}
+
 static ret_t
 process_wait (pid_t pid)
 {
@@ -299,13 +461,13 @@ process_wait (pid_t pid)
 			exit (EXIT_OK_ONCE);
 
 		/* Child terminated normally */ 
-		PRINT_MSG ("Server PID=%d exited re=%d\n", pid, re);
+		PRINT_MSG ("PID %d: exited re=%d\n", pid, re);
 		if (re != 0) 
 			return ret_error;
 	} 
 	else if (WIFSIGNALED(exitcode)) {
 		/* Child process terminated by a signal */
-		PRINT_MSG ("Server PID=%d received a signal=%d\n", pid, WTERMSIG(exitcode));
+		PRINT_MSG ("PID %d: received a signal=%d\n", pid, WTERMSIG(exitcode));
 	}
 
 	return ret_ok;
@@ -341,7 +503,7 @@ signals_handler (int sig, siginfo_t *si, void *context)
 		/* Child exited */
 		process_wait (si->si_pid);
 		break;
-		
+
 	default:
 		/* Forward the signal */
 		kill (pid, sig);
@@ -439,6 +601,88 @@ is_single_execution (int argc, char *argv[])
 	return false;
 }
 
+
+#ifdef HAVE_POSIX_SHM
+
+static void *
+spawn_thread_func (void *param)
+{
+	int re;
+
+	UNUSED (param);
+
+	while (true) {
+		do {
+			re = sem_wait (spawn_shared_sem);
+		} while (re < 0 && errno == EINTR);
+		do_spawn ();
+	}
+
+	return NULL;
+}
+
+static ret_t
+spawn_init (void)
+{
+	int re;
+	int fd;
+	int mem_len;
+
+	/* Names
+	 */
+	mem_len = sizeof("/cherokee-spawner-XXXXXXX");
+	spawn_shared_name = malloc (mem_len);
+	snprintf (spawn_shared_name, mem_len, "/cherokee-spawner-%d", getpid());
+
+	mem_len = sizeof("/cherokee-spawner-XXXXXXX.sem");
+	spawn_shared_sem_name = malloc (mem_len);
+	snprintf (spawn_shared_sem_name, mem_len, "/cherokee-spawner-%d.sem", getpid());
+
+	/* Create the shared memory
+	 */
+	fd = shm_open (spawn_shared_name, O_RDWR | O_EXCL | O_CREAT, 0600);
+	if (fd < 0) {
+		return ret_error;
+	}
+
+	re = ftruncate (fd, SPAWN_SHARED_LEN);
+	if (re < 0) {
+		close (fd);
+		return ret_error;
+	}
+	
+	spawn_shared = mmap (0, SPAWN_SHARED_LEN, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+	if (spawn_shared == MAP_FAILED) {
+		close (fd);
+		spawn_shared = NULL;
+		return ret_error;
+	}
+
+	memset (spawn_shared, 0, SPAWN_SHARED_LEN);
+
+	close (fd);
+
+	/* Semaphore
+	 */
+	spawn_shared_sem = sem_open (spawn_shared_sem_name, O_CREAT, S_IRUSR | S_IWUSR, 0);
+	if (spawn_shared_sem == NULL) {
+		return ret_error;
+	}
+
+	/* Thread
+	 */
+	re = pthread_create (&spawn_thread, NULL, spawn_thread_func, NULL);
+	if (re != 0) {
+		PRINT_ERROR_S ("Couldn't spawning thread..\n");
+		return ret_error;
+	}
+	
+	return ret_ok;
+}
+
+#endif /* HAVE_POSIX_SHM */
+
+
 int
 main (int argc, char *argv[])
 {
@@ -470,6 +714,18 @@ main (int argc, char *argv[])
 		may_daemonize (argc, argv);
 		pid_file_save (pid_file_path, getpid());
 	}
+
+	/* Launch the spawning thread
+	 */
+#ifdef HAVE_POSIX_SHM
+	if (! single_time) {
+		ret = spawn_init();
+		if (ret != ret_ok) {
+			PRINT_MSG_S ("Couldn't initialize spawn mechanism.\n");
+			return ret_error;
+		}
+	}
+#endif
 
 	while (true) {
 		graceful_restart = false;

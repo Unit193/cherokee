@@ -264,6 +264,9 @@
 /* Have event ports */
 #undef HAVE_PORT
 
+/* Define to 1 to use POSIX shared memory */
+#undef HAVE_POSIX_SHM
+
 /* Have pthread support */
 #undef HAVE_PTHREAD
 

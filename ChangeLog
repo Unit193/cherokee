@@ -1,3 +1,138 @@
+2009-04-30  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* 0.99.13 released
+
+	* cherokee/Makefile.am, cherokee/source_interpreter.c,
+	cherokee/spawner.c, cherokee/main.c, configure.in: Fixes the new
+	spawning mechanism so Cherokee can be compiled without POSIX
+	shared memory support. (It seems that uclibc lacks it).
+
+	* cherokee/source_interpreter.c: Use the default group whenever a
+	UID is specified but a GID changed is not.
+
+2009-04-29  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* cherokee/spawner.c, cherokee/spawner.h, cherokee/shm.c,
+	cherokee/main.c: Fixes a spawner issue. It tries to fix:
+	http://code.google.com/p/cherokee/issues/detail?id=449
+	
+	* cherokee/source_interpreter.c, cherokee/source_interpreter.h,
+	cherokee/spawner.c, cherokee/spawner.h, admin/PageInfoSource.py,
+	cherokee/main.c: Adds group changing capabilities.
+
+	* cherokee/server.c: Use cherokee_getgrnam() instead of getgrnam().
+
+2009-04-28  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* 0.99.12 released
+
+	* cherokee/validator_mysql.c: A data base password isn't actually
+	required. Thus, the check for a password has been removed.
+
+	* admin/ModuleMysql.py (ModuleMysql._op_apply_changes): Disables
+	MD5 passwords when using Digest authentication.
+
+2009-04-26  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* cherokee/Makefile.am, cherokee/init.c: Fixes cget compilation.
+
+2009-04-25  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* cherokee/main.c (do_spawn): Fixes a glibc 2.9 compilation
+	problem. Thanks to Jacob Peddicord <jpeddicord@ubuntu.com> for
+	pointing out the issue.
+
+	* configure.in: Adds librt detection.
+
+	* admin/PageVServer.py (PageVServer._op_apply_changes): Fixes
+	logger disabilitation.
+
+	* cherokee/source_interpreter.c: If no custom UID is defined,
+	spawn new interpreters with the same UID as cherokee-worker.
+
+2009-04-24  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* cherokee/macros.h, cherokee/Makefile.am, cherokee/spawner.c,
+	cherokee/source_interpreter.c, cherokee/logger_combined.c,
+	cherokee/logger.c, cherokee/logger.h, cherokee/spawner.h,
+	cherokee/logger_w3c.c, cherokee/logger_w3c.h, cherokee/init.c,
+	cherokee/shm.c, cherokee/shm.h, cherokee/main_admin.c,
+	cherokee/main.c, cherokee/logger_ncsa.c, cherokee/logger_ncsa.h,
+	cherokee/handler_cgi.c, cherokee/logger_custom.c,
+	cherokee/logger_custom.h, cherokee/logger_combined.h,
+	cherokee/server.c: A new process spawning mechanism has been
+	implemented. It uses the main cherokee process (running as root)
+	to spawn new processes, so their UID can be changed. In this way,
+	cherokee-worker can run as an unprivileged user while interpreter
+	are spawned as another user.
+
+	* cherokee/handler_cgi_base.c, cherokee/handler_file.c,
+	qa/202-xsendfile2.py: Fixes a X-Sendfile support issue. It wasn't
+	coming along with keep-alive and chunked connections.
+
+2009-04-23  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* cherokee/handler_cgi_base.c (parse_header): Fixes the
+	X-Accel-Redirect support.
+
+2009-04-22  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* admin/server.py (main): Fixes a translation problem (warning).
+
+2009-04-22  Antonio Perez  <aperez@skarcha.com>
+
+	* admin/consts.py, admin/PageVServer.py: Fixes a bug, which was
+	causing that the domain mathing method of a virtual server could
+	be set but not configured.
+
+2009-04-21  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* cherokee/thread.c: Cleans up the piece of code where connections
+	were being closed. The behaviour changes as well, lingering close
+	is used by default now.
+
+2009-04-21  Antonio Perez  <aperez@skarcha.com>
+
+	* cherokee/socket.c, cherokee/cryptor_libssl.c: Tries to fix
+	some SSL issues. Related to bug:
+	http://code.google.com/p/cherokee/issues/detail?id=413
+
+2009-04-21  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* cherokee.conf.sample.pre: Adds a mime-type for JSON, and remove
+	a few others.
+
+	* cherokee/thread.c, cherokee/thread.h: Do not call pthread_wait
+	twice (it crashes).
+
+	* cherokee/handler_file.c, cherokee/handler_cgi.c,
+	cherokee/connection.c: Use cherokee_bogonow_now instead of the
+	thread local variable - it's proved to be safer.
+
+2009-04-20  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* admin/PageEntry.py: Reflexs the latest feature in
+	Cherokee-admin.
+
+	* cherokee/virtual_server.c, cherokee/Makefile.am,
+	cherokee/cherokee.h, cherokee/config_entry.c,
+	cherokee/config_entry.h, cherokee/nullable.h, cherokee/thread.c:
+	Implements a new 'no_log' property, so rules can specify whether
+	or not they want requests to be logged.
+
+	* cherokee/handler_proxy.c (build_request): Fixes bug #450
+	http://code.google.com/p/cherokee/issues/detail?id=450
+
+	* cherokee/main_admin.c (config_server): It was not printing the
+	right port when the -p was used.
+
+2009-04-18  Antonio Perez  <aperez@skarcha.com>
+
+	* cherokee/logger_w3c.c, cherokee/logger_ncsa.c: Query string
+	was being added to original request in NCSA and Apache compatible
+	logs; and was not being included in W3C log format. Thanks to
+	Enric Agut for reporting this bug.
+
 2009-04-18  Alvaro Lopez Ortega  <alvaro@octality.com>
 
 	* 0.99.11 released
