@@ -22,15 +22,23 @@
  * 02110-1301, USA.
  */ 
 
-#ifndef CHEROKEE_LOGGER_COMBINED_H
-#define CHEROKEE_LOGGER_COMBINED_H
+#if !defined (CHEROKEE_INSIDE_CHEROKEE_H) && !defined (CHEROKEE_COMPILATION)
+# error "Only <cherokee/cherokee.h> can be included directly, this file may disappear or change contents."
+#endif
 
-#include "logger_ncsa.h"
 
-typedef cherokee_logger_ncsa_t cherokee_logger_combined_t;
+#ifndef CHEROKEE_NULLABLE_H
+#define CHEROKEE_NULLABLE_H
 
-#define LOG_COMBINED(x) ((cherokee_logger_combined_t *)(x))
+CHEROKEE_BEGIN_DECLS
 
-ret_t cherokee_logger_combined_new (cherokee_logger_t **logger, cherokee_virtual_server_t *vsrv, cherokee_config_node_t *config);
+typedef int cherokee_null_bool_t;
 
-#endif /* CHEROKEE_LOGGER_COMBINED_H */
+#define NULLB_NULL       0xFC
+#define NULLB_TO_BOOL(x) ((x) & 0x3)
+#define NULLB_IS_NULL(x) ((x) & NULLB_NULL)
+#define NULLB_TO_STR(x)  (NULLB_IS_NULL(x) ? "NULL" : ((x) ? "True" : "False"))
+
+CHEROKEE_END_DECLS
+
+#endif /* CHEROKEE_NULLABLE_H */

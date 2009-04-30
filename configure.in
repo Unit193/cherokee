@@ -25,7 +25,7 @@ AC_PREREQ([2.60])
 dnl Version
 m4_define([cherokee_major_version], [0])
 m4_define([cherokee_minor_version], [99])
-m4_define([cherokee_micro_version], [11])
+m4_define([cherokee_micro_version], [13])
 m4_define([cherokee_version], m4_format('%s.%s.%s', cherokee_major_version, cherokee_minor_version, cherokee_micro_version))
 
 dnl Init autoconf and automake
@@ -747,6 +747,22 @@ samba_cv_HAVE_OFF64_T=yes,samba_cv_HAVE_OFF64_T=no,samba_cv_HAVE_OFF64_T=cross)]
 if test x"$samba_cv_HAVE_OFF64_T" = x"yes"; then
     AC_DEFINE(HAVE_OFF64_T,1,[Whether off64_t is available])
 fi
+
+dnl
+dnl Shared memory and semaphores
+dnl
+AC_CHECK_FUNC(shm_open, have_shm_open=yes)
+
+RT_LIBS=
+if test "$have_shm_open" != "yes"; then
+  AC_CHECK_LIB(rt, shm_open, RT_LIBS="-lrt" have_shm_open=yes)
+fi
+AC_SUBST(RT_LIBS)
+
+if test "$have_shm_open" = "yes"; then
+   AC_DEFINE(HAVE_POSIX_SHM, 1, [Define to 1 to use POSIX shared memory])
+fi
+AM_CONDITIONAL(USE_POSIX_SHM, test "$have_shm_open" = "yes")
 
 
 # From etr_socket_nsl.m4

@@ -26,6 +26,7 @@
 #include "server-protected.h"
 #include "server.h"
 #include "bind.h"
+#include "spawner.h"
 
 #include <fcntl.h>
 #include <sys/types.h>
@@ -241,6 +242,10 @@ cherokee_server_free (cherokee_server_t *srv)
 	/* Kill the child processes
 	 */
 	cherokee_avl_mrproper (&srv->sources, (cherokee_func_free_t)cherokee_source_free);
+
+	/* Spawn mechanism
+	 */
+	cherokee_spawner_free();
 
 	/* Threads
 	 */
@@ -886,6 +891,12 @@ cherokee_server_initialize (cherokee_server_t *srv)
 		}
 	}
 
+	/* Spawning mechanism
+	 */
+	if (cherokee_spawn_shared.mem == NULL) {
+		cherokee_spawner_init();
+	}
+
 	/* Chroot
 	 */
 	if (! cherokee_buffer_is_empty (&srv->chroot)) {
@@ -1061,8 +1072,6 @@ cherokee_server_step (cherokee_server_t *srv)
 		return ret_eof;
 	}
 
-	/* Should not be reached.
-	 */
 	return ret_eagain;
 }
 
@@ -1345,14 +1354,16 @@ configure_server_property (cherokee_config_node_t *conf, void *data)
 		srv->user = pwd.pw_uid;
 
 	} else if (equal_buf_str (&conf->key, "group")) {
-		struct group *grp;
+		struct group grp;
+		char         tmp[1024];
 		
-		grp = (struct group *) getgrnam (conf->val.buf);
-		if (grp == NULL) {
+		ret = cherokee_getgrnam (conf->val.buf, &grp, tmp, sizeof(tmp));
+		if (ret != ret_ok) {
 			PRINT_MSG ("ERROR: Group '%s' not found in the system\n", conf->val.buf);
 			return ret_error;
 		}		
-		srv->group = grp->gr_gid;
+
+		srv->group = grp.gr_gid;
 
 	} else if (equal_buf_str (&conf->key, "tls")) {
 		cryptor_func_new_t      instance;

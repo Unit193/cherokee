@@ -68,15 +68,15 @@ cherokee_logger_ncsa_new (cherokee_logger_t         **logger,
 	 */
 	cherokee_logger_init_base (LOGGER(n), PLUGIN_INFO_PTR(ncsa), config);
 
-	MODULE(n)->init           = (logger_func_init_t) cherokee_logger_ncsa_init;
-	MODULE(n)->free           = (logger_func_free_t) cherokee_logger_ncsa_free;
+	MODULE(n)->init             = (logger_func_init_t) cherokee_logger_ncsa_init;
+	MODULE(n)->free             = (logger_func_free_t) cherokee_logger_ncsa_free;
 
-	LOGGER(n)->flush          = (logger_func_flush_t) cherokee_logger_ncsa_flush;
-	LOGGER(n)->reopen         = (logger_func_reopen_t) cherokee_logger_ncsa_reopen;
-	LOGGER(n)->write_error    = (logger_func_write_error_t)  cherokee_logger_ncsa_write_error;
-	LOGGER(n)->write_access   = (logger_func_write_access_t) cherokee_logger_ncsa_write_access;
-	LOGGER(n)->write_string   = (logger_func_write_string_t) cherokee_logger_ncsa_write_string;
-	LOGGER(n)->write_error_fd = (logger_func_write_error_fd_t)  cherokee_logger_ncsa_write_error_fd;
+	LOGGER(n)->flush            = (logger_func_flush_t) cherokee_logger_ncsa_flush;
+	LOGGER(n)->reopen           = (logger_func_reopen_t) cherokee_logger_ncsa_reopen;
+	LOGGER(n)->get_error_writer = (logger_func_get_error_writer_t)  cherokee_logger_ncsa_get_error_writer;
+	LOGGER(n)->write_error      = (logger_func_write_error_t)  cherokee_logger_ncsa_write_error;
+	LOGGER(n)->write_access     = (logger_func_write_access_t) cherokee_logger_ncsa_write_access;
+	LOGGER(n)->write_string     = (logger_func_write_string_t) cherokee_logger_ncsa_write_string;
 
 	n->writer_access = NULL;
 	n->writer_error  = NULL;
@@ -181,7 +181,6 @@ build_log_string (cherokee_logger_ncsa_t *logger, cherokee_connection_t *cnt, ch
 	const char        *method;
 	const char        *version;
 	char               ipaddr[CHE_INET_ADDRSTRLEN];
-	cherokee_buffer_t *request;
 
 	/* Read the bogonow value from the thread and
 	 * if time has changed then recreate the date-time string.
@@ -223,10 +222,6 @@ build_log_string (cherokee_logger_ncsa_t *logger, cherokee_connection_t *cnt, ch
 	ret = cherokee_http_version_to_string (cnt->header.version, &version, &version_len);
 	if (unlikely(ret < ret_ok)) return ret;
 
-
-	request = cherokee_buffer_is_empty(&cnt->request_original) ? 
-		&cnt->request : &cnt->request_original;
-
 	/* Build the log string
 	 *
 	 * "%s - %s [%02d/%s/%d:%02d:%02d:%02d %c%02d%02d] \"%s %s %s\" %d "
@@ -248,11 +243,17 @@ build_log_string (cherokee_logger_ncsa_t *logger, cherokee_connection_t *cnt, ch
 	cherokee_buffer_add_buffer (buf, &logger->now_dtm);
 	cherokee_buffer_add        (buf, method, method_len);
 	cherokee_buffer_add_char   (buf, ' ');
-	cherokee_buffer_add_buffer (buf, request);
-	if (! cherokee_buffer_is_empty (&cnt->query_string)) {
-		cherokee_buffer_add_char   (buf, '?');
-		cherokee_buffer_add_buffer (buf, &cnt->query_string);
+
+	if (! cherokee_buffer_is_empty (&cnt->request_original)) {
+		cherokee_buffer_add_buffer (buf, &cnt->request_original);
+	} else {
+		cherokee_buffer_add_buffer (buf, &cnt->request);
+		if (! cherokee_buffer_is_empty (&cnt->query_string)) {
+			cherokee_buffer_add_char   (buf, '?');
+			cherokee_buffer_add_buffer (buf, &cnt->query_string);
+		}
 	}
+
 	cherokee_buffer_add_char   (buf, ' ');
 	cherokee_buffer_add        (buf, version, version_len);
 	cherokee_buffer_add_str    (buf, "\" ");
@@ -398,14 +399,10 @@ error:
 
 
 ret_t 
-cherokee_logger_ncsa_write_error_fd (cherokee_logger_ncsa_t *logger, int fd)
+cherokee_logger_ncsa_get_error_writer (cherokee_logger_ncsa_t    *logger,
+				       cherokee_logger_writer_t **writer)
 {
-	if ((logger->writer_error->fd != -1) &&
-	    (logger->writer_error->fd != fd))
-	{
-		dup2 (logger->writer_error->fd, fd);
-	}
-
+	*writer = logger->writer_error;
 	return ret_ok;
 }
 

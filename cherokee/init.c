@@ -30,6 +30,7 @@
 #include "util.h"
 #include "bogotime.h"
 #include "threading.h"
+#include "spawner.h"
 
 cuint_t           cherokee_cacheline_size;
 cint_t            cherokee_cpu_number;
