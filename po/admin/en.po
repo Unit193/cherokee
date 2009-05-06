@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: cherokee '0.99.10'\n"
 "Report-Msgid-Bugs-To: http://bugs.cherokee-project.com/\n"
-"POT-Creation-Date: 2009-04-30 17:20+0200\n"
+"POT-Creation-Date: 2009-05-06 09:01+0200\n"
 "PO-Revision-Date: 2009-04-14 21:27+CEST\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -1792,8 +1792,8 @@ msgstr ""
 #: admin/PageInfoSource.py:20
 #, fuzzy
 msgid ""
-"Execute the interpreter under a different group. Default: Same GID as the "
-"server."
+"Execute the interpreter under a different group. Default: Default GID of the "
+"new process UID."
 msgstr ""
 "Execute the interpreter under a different user. The server needs enough "
 "privileges to switch the user (usually root)."
@@ -2193,25 +2193,28 @@ msgid "Path to the executable that will be invoked on each log entry."
 msgstr "Path to the executable that will be invoked on each log entry."
 
 #: admin/PageVServer.py:59
+#, fuzzy
 msgid ""
-"Whether the logger should read and use the X-Real-IP header (send by reverse "
-"proxy front-ends)."
+"Whether the logger should read and use the X-Real-IP and X-Forwarded-For "
+"headers (send by reverse proxies)."
 msgstr ""
 "Whether the logger should read and use the X-Real-IP header (send by reverse "
 "proxy front-ends)."
 
 #: admin/PageVServer.py:60
+#, fuzzy
 msgid ""
-"Accept all the X-Real-IP headers. It's dangerous: turn it on only if you are "
-"centain of what you are doing."
+"Accept all the X-Real-IP and X-Forwarded-For headers. WARNING: Turn it on "
+"only if you are centain of what you are doing."
 msgstr ""
 "Accept all the X-Real-IP headers. It's dangerous: turn it on only if you are "
 "centain of what you are doing."
 
 #: admin/PageVServer.py:61
+#, fuzzy
 msgid ""
-"List of IP addresses and subnets that are allowed to send X-Real-IP headers "
-"(usually your proxy servers)."
+"List of IP addresses and subnets that are allowed to send X-Real-IP and X-"
+"Forwarded-For headers."
 msgstr ""
 "List of IP addresses and subnets that are allowed to send X-Real-IP headers "
 "(usually your proxy servers)."
@@ -2416,16 +2419,17 @@ msgid "Options"
 msgstr "Options"
 
 #: admin/PageVServer.py:546
-msgid "Accept X-Real-IP"
-msgstr "Accept X-Real-IP"
+msgid "Accept Forwarded IPs"
+msgstr ""
 
 #: admin/PageVServer.py:548
-msgid "Accept all X-Real-IPs"
-msgstr "Accept all X-Real-IPs"
+msgid "Don't check origin"
+msgstr ""
 
 #: admin/PageVServer.py:550
-msgid "X-Real-IP Hosts"
-msgstr "X-Real-IP Hosts"
+#, fuzzy
+msgid "Accept from Hosts"
+msgstr "Accepted domains"
 
 #: admin/PageVServer.py:558
 msgid "Host names"
@@ -2889,6 +2893,15 @@ msgstr "Time value contain invalid values"
 #: admin/validations.py:306
 msgid "Malformed time"
 msgstr "Malformed time"
+
+#~ msgid "Accept X-Real-IP"
+#~ msgstr "Accept X-Real-IP"
+
+#~ msgid "Accept all X-Real-IPs"
+#~ msgstr "Accept all X-Real-IPs"
+
+#~ msgid "X-Real-IP Hosts"
+#~ msgstr "X-Real-IP Hosts"
 
 #~ msgid "Active to use MD5 passwords."
 #~ msgstr "Active to use MD5 passwords."
