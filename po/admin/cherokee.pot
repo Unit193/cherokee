@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: cherokee 0.99.13\n"
+"Project-Id-Version: cherokee 0.99.14\n"
 "Report-Msgid-Bugs-To: http://bugs.cherokee-project.com/\n"
-"POT-Creation-Date: 2009-04-30 17:20+0200\n"
+"POT-Creation-Date: 2009-05-06 09:01+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1722,8 +1722,8 @@ msgstr ""
 
 #: admin/PageInfoSource.py:20
 msgid ""
-"Execute the interpreter under a different group. Default: Same GID as the "
-"server."
+"Execute the interpreter under a different group. Default: Default GID of the "
+"new process UID."
 msgstr ""
 
 #: admin/PageInfoSource.py:129
@@ -2093,20 +2093,20 @@ msgstr ""
 
 #: admin/PageVServer.py:59
 msgid ""
-"Whether the logger should read and use the X-Real-IP header (send by reverse "
-"proxy front-ends)."
+"Whether the logger should read and use the X-Real-IP and X-Forwarded-For "
+"headers (send by reverse proxies)."
 msgstr ""
 
 #: admin/PageVServer.py:60
 msgid ""
-"Accept all the X-Real-IP headers. It's dangerous: turn it on only if you are "
-"centain of what you are doing."
+"Accept all the X-Real-IP and X-Forwarded-For headers. WARNING: Turn it on "
+"only if you are centain of what you are doing."
 msgstr ""
 
 #: admin/PageVServer.py:61
 msgid ""
-"List of IP addresses and subnets that are allowed to send X-Real-IP headers "
-"(usually your proxy servers)."
+"List of IP addresses and subnets that are allowed to send X-Real-IP and X-"
+"Forwarded-For headers."
 msgstr ""
 
 #: admin/PageVServer.py:62
@@ -2303,15 +2303,15 @@ msgid "Options"
 msgstr ""
 
 #: admin/PageVServer.py:546
-msgid "Accept X-Real-IP"
+msgid "Accept Forwarded IPs"
 msgstr ""
 
 #: admin/PageVServer.py:548
-msgid "Accept all X-Real-IPs"
+msgid "Don't check origin"
 msgstr ""
 
 #: admin/PageVServer.py:550
-msgid "X-Real-IP Hosts"
+msgid "Accept from Hosts"
 msgstr ""
 
 #: admin/PageVServer.py:558

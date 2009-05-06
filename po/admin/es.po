@@ -7,9 +7,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: cherokee '0.99.10'\n"
 "Report-Msgid-Bugs-To: http://bugs.cherokee-project.com/\n"
-"POT-Creation-Date: 2009-04-30 17:20+0200\n"
-"PO-Revision-Date: 2009-04-16 17:22+0200\n"
-"Last-Translator: Antonio Pérez Jiménez <aperez@skarcha.com>\n"
+"POT-Creation-Date: 2009-05-06 09:01+0200\n"
+"PO-Revision-Date: 2009-05-05 12:17+0100\n"
+"Last-Translator: Alvaro Lopez Ortega <alvaro@alobbs.com>\n"
 "Language-Team: Spanish <>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -749,7 +749,7 @@ msgstr "Contraseña para conectar a la base de datos."
 
 #: admin/ModuleMysql.py:9
 msgid "Database name containing the user/password pair list."
-msgstr ""
+msgstr "Base de datos que contenga los pares de usuario y password."
 
 #: admin/ModuleMysql.py:10
 msgid "SQL command to execute. ${user} is replaced with the user name."
@@ -760,7 +760,7 @@ msgstr ""
 msgid ""
 "Active to use MD5 passwords. Only suitable for the \"Basic\" authentication "
 "mechanism."
-msgstr ""
+msgstr "Usar passwords en MD5. Sólo disponible para autenticación \"Basic\"."
 
 #: admin/ModuleMysql.py:38
 msgid "Unix Socket"
@@ -834,9 +834,8 @@ msgid "Request"
 msgstr "Solicitud"
 
 #: admin/ModuleProxy.py:40
-#, fuzzy
 msgid "Reply"
-msgstr "Realm"
+msgstr "Respuesta"
 
 #: admin/ModuleProxy.py:49
 msgid "Back-end Servers"
@@ -966,7 +965,7 @@ msgstr "Descargas ocultas"
 
 #: admin/ModuleSecdownload.py:17
 msgid "Shared secret between the server and the script."
-msgstr ""
+msgstr "Secreto compartido entre el servidor y el script."
 
 #: admin/ModuleSecdownload.py:18
 msgid "How long the download will last accessible - in seconds. Default: 60."
@@ -975,7 +974,7 @@ msgstr ""
 
 #: admin/ModuleSecdownload.py:35
 msgid "Secret"
-msgstr ""
+msgstr "Secreto"
 
 #: admin/ModuleSecdownload.py:36
 msgid "Timeout"
@@ -987,7 +986,7 @@ msgstr ""
 
 #: admin/ModuleSecdownload.py:50
 msgid "A shared-secret must be defined"
-msgstr ""
+msgstr "Un secreto compartido debe ser definido"
 
 #: admin/ModuleSecdownload.py:54
 msgid "It can't be empty"
@@ -1049,11 +1048,11 @@ msgstr "Ratio Automático"
 
 #: admin/ModuleStreaming.py:39
 msgid "Speedup Factor"
-msgstr ""
+msgstr "Factor de aceleración"
 
 #: admin/ModuleStreaming.py:40
 msgid "Initial Boost"
-msgstr ""
+msgstr "Impulso inicial"
 
 #: admin/ModuleWildcard.py:6
 msgid ""
@@ -1171,6 +1170,7 @@ msgstr ""
 #: admin/PageAdvanced.py:38
 msgid "Allows to choose the internal file descriptor polling method."
 msgstr ""
+"Permite elegir el método interno de inspección de descriptores de fichero."
 
 #: admin/PageAdvanced.py:39
 msgid "Minimum size of a file to use sendfile(). Default: 32768 Bytes."
@@ -1213,7 +1213,7 @@ msgstr "Número de segundos entre volcados de log. Defecto: 10 segundos."
 
 #: admin/PageAdvanced.py:46
 msgid "Time lapse (in seconds) between Nonce cache clean ups."
-msgstr ""
+msgstr "Tiempo (en segundos) entre limpiezas de la cache de 'Nonce's"
 
 #: admin/PageAdvanced.py:47
 msgid ""
@@ -1280,7 +1280,7 @@ msgstr "Chunked Encoding"
 
 #: admin/PageAdvanced.py:82
 msgid "Polling Method"
-msgstr ""
+msgstr "Método de inspección"
 
 #: admin/PageAdvanced.py:83
 msgid "Sendfile min size"
@@ -1304,7 +1304,7 @@ msgstr "Descriptores de fichero"
 
 #: admin/PageAdvanced.py:92
 msgid "Listening queue length"
-msgstr ""
+msgstr "Longitud de la cola de listen()"
 
 #: admin/PageAdvanced.py:94
 msgid "Log flush time"
@@ -1390,7 +1390,7 @@ msgstr ""
 
 #: admin/PageEntry.py:22
 msgid "Do not log requests matching this rule."
-msgstr ""
+msgstr "No escribir estas peticiones en el histórico."
 
 #: admin/PageEntry.py:23
 msgid ""
@@ -1794,22 +1794,21 @@ msgstr ""
 "manualmente."
 
 #: admin/PageInfoSource.py:19
-#, fuzzy
 msgid ""
 "Execute the interpreter under a different user. Default: Same UID as the "
 "server."
 msgstr ""
-"Ejecutar el intérprete con otro usuario. El servidor tiene que tener los "
-"provilegios suficientes para cambiar de usuario (normalmente root)."
+"Ejecutar el intérprete con otro usuario. Por defecto: el mismo UID del "
+"servidor."
 
 #: admin/PageInfoSource.py:20
 #, fuzzy
 msgid ""
-"Execute the interpreter under a different group. Default: Same GID as the "
-"server."
+"Execute the interpreter under a different group. Default: Default GID of the "
+"new process UID."
 msgstr ""
-"Ejecutar el intérprete con otro usuario. El servidor tiene que tener los "
-"provilegios suficientes para cambiar de usuario (normalmente root)."
+"Ejecutar el intérprete con otro usuario. Por defecto: El mismo GID que el "
+"servidor."
 
 #: admin/PageInfoSource.py:129
 msgid "Environment variables"
@@ -1841,9 +1840,8 @@ msgid "Execute as User"
 msgstr "Ejecutar como el usuario"
 
 #: admin/PageInfoSource.py:174 admin/PageInfoSource.py:201
-#, fuzzy
 msgid "Execute as Group"
-msgstr "Ejecutar como el usuario"
+msgstr "Ejecutar como el grupo"
 
 #: admin/PageInfoSource.py:208
 msgid "Information Sources Settings"
@@ -2221,25 +2219,28 @@ msgid "Path to the executable that will be invoked on each log entry."
 msgstr "Ruta al ejecutable al que se llamará por cada entra del log."
 
 #: admin/PageVServer.py:59
+#, fuzzy
 msgid ""
-"Whether the logger should read and use the X-Real-IP header (send by reverse "
-"proxy front-ends)."
+"Whether the logger should read and use the X-Real-IP and X-Forwarded-For "
+"headers (send by reverse proxies)."
 msgstr ""
 "Si el sistema de logs debería leer y usar la cabecera X-Real-IP (enviada por "
 "los proxies inversos)."
 
 #: admin/PageVServer.py:60
+#, fuzzy
 msgid ""
-"Accept all the X-Real-IP headers. It's dangerous: turn it on only if you are "
-"centain of what you are doing."
+"Accept all the X-Real-IP and X-Forwarded-For headers. WARNING: Turn it on "
+"only if you are centain of what you are doing."
 msgstr ""
 "Aceptar todas la cabeceras X-Real-IP. Es peligroso: actívelo sólo si sabe "
 "realmente lo que está haciendo."
 
 #: admin/PageVServer.py:61
+#, fuzzy
 msgid ""
-"List of IP addresses and subnets that are allowed to send X-Real-IP headers "
-"(usually your proxy servers)."
+"List of IP addresses and subnets that are allowed to send X-Real-IP and X-"
+"Forwarded-For headers."
 msgstr ""
 "Lista de direcciones IP y subredes a las que se les permite enviar cabeceras "
 "X-Real-IP (normalmente sus servidores proxy)."
@@ -2264,9 +2265,8 @@ msgstr ""
 "${user_remote}, ${request}, ${request_original}, ${vserver_name}"
 
 #: admin/PageVServer.py:64
-#, fuzzy
 msgid "Allows the selection of domain matching method."
-msgstr "Permite seleccionar cómo generar las repuestas de error."
+msgstr "Permite seleccionar cómo evaluar los nombres de domínio."
 
 #: admin/PageVServer.py:66
 msgid "<i>No</i>"
@@ -2282,7 +2282,7 @@ msgstr ""
 
 #: admin/PageVServer.py:72
 msgid "SSL cookbook"
-msgstr ""
+msgstr "Receta sobre SSL"
 
 #: admin/PageVServer.py:196 admin/PageVServer.py:207 admin/PageVServers.py:208
 msgid "Virtual Server"
@@ -2410,7 +2410,7 @@ msgstr "Hospedaje Virtual Avanzado"
 
 #: admin/PageVServer.py:464
 msgid "Logging Format"
-msgstr ""
+msgstr "Formato del histórico"
 
 #: admin/PageVServer.py:466
 msgid "Format"
@@ -2438,23 +2438,24 @@ msgstr "Errores"
 
 #: admin/PageVServer.py:537
 msgid "Writers"
-msgstr ""
+msgstr "Escritores"
 
 #: admin/PageVServer.py:540
 msgid "Options"
 msgstr "Opciones"
 
 #: admin/PageVServer.py:546
-msgid "Accept X-Real-IP"
-msgstr "Aceptar X-Real-IP"
+msgid "Accept Forwarded IPs"
+msgstr ""
 
 #: admin/PageVServer.py:548
-msgid "Accept all X-Real-IPs"
-msgstr "Aceptar todas las X-Real-IP"
+msgid "Don't check origin"
+msgstr ""
 
 #: admin/PageVServer.py:550
-msgid "X-Real-IP Hosts"
-msgstr "Servidor con X-Real-IP"
+#, fuzzy
+msgid "Accept from Hosts"
+msgstr "Dominios aceptados"
 
 #: admin/PageVServer.py:558
 msgid "Host names"
@@ -2462,7 +2463,7 @@ msgstr "Nombres de servidor"
 
 #: admin/PageVServer.py:565
 msgid "Matching method"
-msgstr ""
+msgstr "Método de evaluación"
 
 #: admin/PageVServer.py:599
 msgid "Filename must be set"
@@ -2520,6 +2521,7 @@ msgstr "No puede estar vacío"
 #: admin/Rule.py:13
 msgid "The default match ought not to be changed."
 msgstr ""
+"La regla de evaluación de la regla por defecto no debería ser alterada."
 
 #: admin/Rule.py:41
 msgid "Unknown"
@@ -2576,7 +2578,7 @@ msgstr "Clonar"
 #: admin/config.py:178
 #, python-format
 msgid "ERROR: Couldn't unpack '%s'"
-msgstr ""
+msgstr "ERROR: No pudo procesar '%s'"
 
 #: admin/config.py:293
 msgid "Could not copy configuration to "
@@ -2648,7 +2650,7 @@ msgstr "Redirecciones personalizadas"
 
 #: admin/consts.py:33
 msgid "Closest match"
-msgstr ""
+msgstr "Fichero más parecido"
 
 #: admin/consts.py:38
 msgid "Plain text file"
@@ -2676,11 +2678,11 @@ msgstr "Básico"
 
 #: admin/consts.py:49
 msgid "Digest"
-msgstr ""
+msgstr "Digest"
 
 #: admin/consts.py:50
 msgid "Basic or Digest"
-msgstr ""
+msgstr "Basic o Digest"
 
 #: admin/consts.py:55
 msgid "Apache compatible"
@@ -2700,7 +2702,7 @@ msgstr "Personalizado"
 
 #: admin/consts.py:63
 msgid "System logger"
-msgstr ""
+msgstr "Log del sistema"
 
 #: admin/consts.py:64
 msgid "Standard Error"
@@ -2716,7 +2718,7 @@ msgstr "Round Robin"
 
 #: admin/consts.py:70
 msgid "IP Hash"
-msgstr ""
+msgstr "IP Hash"
 
 #: admin/consts.py:74
 msgid "Local interpreter"
@@ -2768,7 +2770,7 @@ msgstr "Sin configurar"
 
 #: admin/consts.py:141
 msgid "Already expired on 1970"
-msgstr ""
+msgstr "Caducado en 1970"
 
 #: admin/consts.py:142
 msgid "Do not expire until 2038"
@@ -2823,9 +2825,9 @@ msgid "Incorrect parameters: PORT CONFIG_FILE"
 msgstr "Parámetros incorrectos: PORT CONFIG_FILE"
 
 #: admin/server.py:224
-#, fuzzy, python-format
+#, python-format
 msgid "Server %(version)s running.. PID=%(pid)d Port=%(scgi_port)d"
-msgstr "Servidor %s ejecutándose.. PID=%s Puerto=%d"
+msgstr "Servidor %(version)s ejecutandose.. PID=%(pid)d Puerto=%(scgi_port)d"
 
 #: admin/server.py:231
 msgid "Server exiting.."
@@ -2918,6 +2920,15 @@ msgstr "Valor de tiempo contiene valores no válidos"
 #: admin/validations.py:306
 msgid "Malformed time"
 msgstr "Tiempo malformado"
+
+#~ msgid "Accept X-Real-IP"
+#~ msgstr "Aceptar X-Real-IP"
+
+#~ msgid "Accept all X-Real-IPs"
+#~ msgstr "Aceptar todas las X-Real-IP"
+
+#~ msgid "X-Real-IP Hosts"
+#~ msgstr "Servidor con X-Real-IP"
 
 #~ msgid "Active to use MD5 passwords."
 #~ msgstr "Activar el uso de contraseñas MD5."
