@@ -45,7 +45,13 @@ EOF
 }
 
 case "$action" in
-    install|abort-upgrade)
+    install)
+	# Make sure the configuration file has a trailing whiteline to
+	# avoid confusing the parser (see #528160)
+	CONFFILE=/etc/cherokee.conf
+	if [ -f $CONFFILE -a ! -z "$(tail -1 $CONFFILE)" ]
+	    echo >> $CONFFILE
+	fi
 	;;
     upgrade)
 	if (  dpkg --compare-versions "$version" lt 0.6 )
@@ -167,6 +173,15 @@ EOF
         then
             migrate_conf_versions 0.99 0.9910 0999to09910.py
         fi
+
+	# Make sure the configuration file has a trailing whiteline to
+	# avoid confusing the parser (see #528160)
+	CONFFILE=/etc/cherokee.conf
+	if [ -f $CONFFILE -a ! -z "$(tail -1 $CONFFILE)" ]
+	    echo >> $CONFFILE
+	fi
+	;;
+    abort-upgrade)
 	;;
     *)
         echo "preinst called with unknown argument \`$action'" >&2
