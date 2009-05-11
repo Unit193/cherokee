@@ -50,6 +50,7 @@ case "$action" in
 	# avoid confusing the parser (see #528160)
 	CONFFILE=/etc/cherokee.conf
 	if [ -f $CONFFILE -a ! -z "$(tail -1 $CONFFILE)" ]
+	then
 	    echo >> $CONFFILE
 	fi
 	;;
@@ -178,6 +179,7 @@ EOF
 	# avoid confusing the parser (see #528160)
 	CONFFILE=/etc/cherokee.conf
 	if [ -f $CONFFILE -a ! -z "$(tail -1 $CONFFILE)" ]
+	    then
 	    echo >> $CONFFILE
 	fi
 	;;
