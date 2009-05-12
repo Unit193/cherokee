@@ -1,3 +1,9 @@
+cherokee (0.99.15-1) unstable; urgency=low
+
+  * New Upstream Version
+
+ -- Leonel Nunez <leonel@enelserver.com>  Tue, 12 May 2009 04:56:58 -0600
+
 cherokee (0.99.14-2) unstable; urgency=low
 
   * Add a trailing whitespace to the configuration file if it does not
