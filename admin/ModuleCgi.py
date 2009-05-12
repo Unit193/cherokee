@@ -3,12 +3,15 @@ import validations
 from Table import *
 from ModuleHandler import *
 
-NOTE_SCRIPT_ALIAS  = _('Path to an executable that will be run with the CGI as parameter.')
-NOTE_CHANGE_USER   = _('Execute the CGI under its file owner user ID.')
-NOTE_ERROR_HANDLER = _('Send errors exactly as they are generated.')
-NOTE_CHECK_FILE    = _('Check whether the file is in place.')
-NOTE_PASS_REQ      = _('Forward all the client headers to the CGI encoded as HTTP_*. headers.')
-NOTE_XSENDFILE     = _('Allow the use of the non-standard X-Sendfile header.')
+# For gettext
+N_ = lambda x: x
+
+NOTE_SCRIPT_ALIAS  = N_('Path to an executable that will be run with the CGI as parameter.')
+NOTE_CHANGE_USER   = N_('Execute the CGI under its file owner user ID.')
+NOTE_ERROR_HANDLER = N_('Send errors exactly as they are generated.')
+NOTE_CHECK_FILE    = N_('Check whether the file is in place.')
+NOTE_PASS_REQ      = N_('Forward all the client headers to the CGI encoded as HTTP_*. headers.')
+NOTE_XSENDFILE     = N_('Allow the use of the non-standard X-Sendfile header.')
 
 DATA_VALIDATION = [
     ('vserver!.+?!rule!.+?!handler!script_alias', validations.is_path),
@@ -40,15 +43,15 @@ class ModuleCgiBase (ModuleHandler):
 
         table = TableProps()
         if self.show_script_alias:
-            self.AddPropEntry (table, _("Script Alias"),  "%s!script_alias" % (self._prefix), NOTE_SCRIPT_ALIAS)
+            self.AddPropEntry (table, _("Script Alias"),  "%s!script_alias" % (self._prefix), _(NOTE_SCRIPT_ALIAS))
         if self.show_change_uid:
-            self.AddPropCheck (table, _("Change UID"), "%s!change_user"%(self._prefix), False, NOTE_CHANGE_USER)
+            self.AddPropCheck (table, _("Change UID"), "%s!change_user"%(self._prefix), False, _(NOTE_CHANGE_USER))
 
-        self.AddPropCheck (table, _("Error handler"),     "%s!error_handler"% (self._prefix), True, NOTE_ERROR_HANDLER)
+        self.AddPropCheck (table, _("Error handler"),     "%s!error_handler"% (self._prefix), True, _(NOTE_ERROR_HANDLER))
 
-        self.AddPropCheck (table, _("Check file"),           "%s!check_file"   % (self._prefix), True,  NOTE_CHECK_FILE)
-        self.AddPropCheck (table, _("Pass Request Headers"), "%s!pass_req_headers" % (self._prefix), True,  NOTE_PASS_REQ)
-        self.AddPropCheck (table, _("Allow X-Sendfile"),     "%s!xsendfile" % (self._prefix),        False, NOTE_XSENDFILE)
+        self.AddPropCheck (table, _("Check file"),           "%s!check_file"   % (self._prefix), True,  _(NOTE_CHECK_FILE))
+        self.AddPropCheck (table, _("Pass Request Headers"), "%s!pass_req_headers" % (self._prefix), True,  _(NOTE_PASS_REQ))
+        self.AddPropCheck (table, _("Allow X-Sendfile"),     "%s!xsendfile" % (self._prefix),        False, _(NOTE_XSENDFILE))
         txt += self.Indent(table)
 
         txt1 = '<h2>%s</h2>' % (_('Custom environment variables'))
@@ -59,8 +62,7 @@ class ModuleCgiBase (ModuleHandler):
             for env in envs:
                 pre = '%s!env!%s'%(self._prefix,env)
                 val = self.InstanceEntry(pre, 'text', size=25)
-                js = "post_del_key('/ajax/update', '%s');"%(pre)
-                link_del = self.InstanceImage ("bin.png", _("Delete"), border="0", onClick=js)
+                link_del = self.AddDeleteLink ('/ajax/update', pre)
                 table += (env, val, link_del)
 
             txt1 += self.Indent(table)

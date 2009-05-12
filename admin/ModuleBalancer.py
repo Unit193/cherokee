@@ -4,9 +4,12 @@ from Module import *
 
 from consts import *
 
-NOTE_BALANCER      = _('Allow to select how the connections will be dispatched.')
-NO_GENERAL_SOURCES = _('There are no Information Sources configured. Please proceed to configure an <a href="/source">Information Source</a>.')
-NO_SOURCE_WARNING  = _('A load balancer must be configured to use at least one information source.')
+# For gettext
+N_ = lambda x: x
+
+NOTE_BALANCER      = N_('Allow to select how the connections will be dispatched.')
+NO_GENERAL_SOURCES = N_('There are no Information Sources configured. Please proceed to configure an <a href="/source">Information Source</a>.')
+NO_SOURCE_WARNING  = N_('A load balancer must be configured to use at least one information source.')
 
 class ModuleBalancerGeneric (Module, FormHelper):
     def __init__ (self, cfg, prefix, submit_url, name):
@@ -59,8 +62,7 @@ class ModuleBalancerGeneric (Module, FormHelper):
                 host  = self._cfg.get_val('source!%s!host'%(sg))
                 link  = '<a href="/source/%s">%s</a>' % (sg, nick)
 
-                js = "post_del_key('/ajax/update', '%s!source!%s');"%(self._prefix, sb)
-                link_del = self.InstanceImage ("bin.png", _("Delete"), border="0", onClick=js)
+                link_del = self.AddDeleteLink ('/ajax/update', '%s!source!%s'%(self._prefix, sb))
 
                 table += (link, host, link_del)
             txt += str(table)

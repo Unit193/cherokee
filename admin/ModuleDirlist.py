@@ -6,12 +6,15 @@ from Table import *
 from ModuleHandler import *
 from configured import *
 
+# For gettext
+N_ = lambda x: x
+
 DEFAULT_THEME = "default"
 
-NOTE_THEME        = _("Choose the listing theme.")
-NOTE_ICON_DIR     = _("Web directory where the icon files are located. Default: <i>/icons</i>.")
-NOTE_NOTICE_FILES = _("List of notice files to be inserted.")
-NOTE_HIDDEN_FILES = _("List of files that should not be listed.")
+NOTE_THEME        = N_("Choose the listing theme.")
+NOTE_ICON_DIR     = N_("Web directory where the icon files are located. Default: <i>/icons</i>.")
+NOTE_NOTICE_FILES = N_("List of notice files to be inserted.")
+NOTE_HIDDEN_FILES = N_("List of files that should not be listed.")
 
 DATA_VALIDATION = [
     ('vserver!.+?!rule!.+?!handler!icon_dir',     validations.is_path),
@@ -20,7 +23,7 @@ DATA_VALIDATION = [
 ]
 
 HELPS = [
-    ('modules_handlers_dirlist', _("Only listing"))
+    ('modules_handlers_dirlist', N_("Only listing"))
 ]
 
 class ModuleDirlist (ModuleHandler):
@@ -47,10 +50,10 @@ class ModuleDirlist (ModuleHandler):
         txt += '<h2>%s</h2>' % (_('Theming'))
         table  = TableProps()
         themes = self._get_theme_list()
-        self.AddPropOptions_Reload (table, _('Theme'), "%s!theme" % (self._prefix), themes, NOTE_THEME)
-        self.AddPropEntry (table, _('Icons dir'),    "%s!icon_dir" % (self._prefix), NOTE_ICON_DIR)
-        self.AddPropEntry (table, _('Notice files'), "%s!notice_files" % (self._prefix), NOTE_NOTICE_FILES)
-        self.AddPropEntry (table, _('Hidden files'), "%s!hidden_files" % (self._prefix), NOTE_HIDDEN_FILES)
+        self.AddPropOptions_Reload (table, _('Theme'), "%s!theme" % (self._prefix), themes, _(NOTE_THEME))
+        self.AddPropEntry (table, _('Icons dir'),    "%s!icon_dir" % (self._prefix), _(NOTE_ICON_DIR))
+        self.AddPropEntry (table, _('Notice files'), "%s!notice_files" % (self._prefix), _(NOTE_NOTICE_FILES))
+        self.AddPropEntry (table, _('Hidden files'), "%s!hidden_files" % (self._prefix), _(NOTE_HIDDEN_FILES))
         txt += self.Indent(table)
 
         return txt
