@@ -304,8 +304,12 @@ do_spawn (void)
 
 	/* 1.- Interpreter */
 	size = *((int *)p);
-	interpreter = strdup (p + sizeof(int));
-	p += sizeof(int) + size + 1;
+	p += sizeof(int);
+
+	interpreter = malloc (sizeof("exec ") + size);
+	memcpy (interpreter, "exec ", 5);
+	memcpy (interpreter + 5, p, size + 1);
+	p += size + 1;
 
 	/* 2.- UID & GID */
 	size = *((int *)p);
@@ -342,9 +346,9 @@ do_spawn (void)
 
 	/* 4.- Error log */
 	size = *((int *)p);
+	p += sizeof(int);
+		
 	if (size > 0) {
-		p += sizeof(int);
-
 		if (! strncmp (p, "stderr", 6)) {
 			log_stderr = 1;
 		} else if (! strncmp (p, "file,", 5)) {
@@ -426,6 +430,8 @@ do_spawn (void)
 	
 	/* Clean up
 	 */
+	free (interpreter);
+
 	for (n=0; n<envs; n++) {
 		free (envp[n]);
 	}
@@ -493,9 +499,11 @@ signals_handler (int sig, siginfo_t *si, void *context)
 
 	case SIGINT:
 	case SIGTERM:
-		/* Kill child and exit */
-		kill (pid, SIGTERM);
-		process_wait (pid);
+		/* Kill all child */
+		kill (0, SIGTERM);
+		while ((wait (0) == -1) && (errno == EINTR));
+
+		/* Clean up and exit */
 		pid_file_clean (pid_file_path);
 		exit(0);
 

@@ -145,13 +145,12 @@ class PageVServers (PageMenu, FormHelper):
                 extra = ''
 
             if logger_val:
-                logging = 'yes'
+                logging = _('yes')
             else:
-                logging = 'no'
+                logging = _('no')
 
             if nick != "default":
-                js = "post_del_key('/ajax/update', 'vserver!%s');"%(prio)
-                link_del = self.InstanceImage ("bin.png", _("Delete"), border="0", onClick=js)
+                link_del = self.AddDeleteLink ('/ajax/update', 'vserver!%s'%(prio))
             else:
                 link_del = ''
 

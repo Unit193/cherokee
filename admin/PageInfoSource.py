@@ -132,8 +132,7 @@ class PageInfoSource (PageMenu, FormHelper):
             for env in envs:
                 pre = 'source!%s!env!%s'%(s,env)
                 val = self.InstanceEntry(pre, 'text', size=25)
-                js = "post_del_key('/ajax/update', '%s');"%(pre)
-                link_del = self.InstanceImage ("bin.png", _("Delete"), border="0", onClick=js)
+                link_del = self.AddDeleteLink ('/ajax/update', pre)
                 table += (env, val, link_del)
 
             txt += self.Indent(table)
@@ -164,14 +163,14 @@ class PageInfoSource (PageMenu, FormHelper):
         
         # Properties
         table = TableProps()
-        self.AddPropOptions_Reload (table, _('Type'),'source!%s!type'%(s), SOURCE_TYPES, NOTE_TYPE)
-        self.AddPropEntry   (table, _('Nick'),       'source!%s!nick'%(s), NOTE_NICK,req=True)
-        self.AddPropEntry   (table, _('Connection'), 'source!%s!host'%(s), NOTE_HOST,req=True)
+        self.AddPropOptions_Reload (table, _('Type'),'source!%s!type'%(s), SOURCE_TYPES, _(NOTE_TYPE))
+        self.AddPropEntry   (table, _('Nick'),       'source!%s!nick'%(s), _(NOTE_NICK), req=True)
+        self.AddPropEntry   (table, _('Connection'), 'source!%s!host'%(s), _(NOTE_HOST), req=True)
         if type == 'interpreter':
-            self.AddPropEntry (table, _('Interpreter'),      'source!%s!interpreter'%(s),  NOTE_INTERPRETER, req=True)
-            self.AddPropEntry (table, _('Spawning timeout'), 'source!%s!timeout'%(s), NOTE_TIMEOUT)
-            self.AddPropEntry (table, _('Execute as User'),  'source!%s!user'%(s), NOTE_USER)
-            self.AddPropEntry (table, _('Execute as Group'), 'source!%s!group'%(s), NOTE_GROUP)
+            self.AddPropEntry (table, _('Interpreter'),      'source!%s!interpreter'%(s),  _(NOTE_INTERPRETER), req=True)
+            self.AddPropEntry (table, _('Spawning timeout'), 'source!%s!timeout'%(s), _(NOTE_TIMEOUT))
+            self.AddPropEntry (table, _('Execute as User'),  'source!%s!user'%(s), _(NOTE_USER))
+            self.AddPropEntry (table, _('Execute as Group'), 'source!%s!group'%(s), _(NOTE_GROUP))
 
         tmp  = self.HiddenInput ('source_num', s)
         tmp += str(table)
@@ -191,14 +190,14 @@ class PageInfoSource (PageMenu, FormHelper):
         type = self._cfg.get_val('tmp!new_source_type')
 
         table = TableProps()
-        self.AddPropOptions_Reload (table, _('Type'),       'tmp!new_source_type', SOURCE_TYPES, NOTE_TYPE)
-        self.AddPropEntry          (table, _('Nick'),       'tmp!new_source_nick', NOTE_NICK, req=True)
-        self.AddPropEntry          (table, _('Connection'), 'tmp!new_source_host', NOTE_HOST, req=True)
+        self.AddPropOptions_Reload (table, _('Type'),       'tmp!new_source_type', SOURCE_TYPES, _(NOTE_TYPE))
+        self.AddPropEntry          (table, _('Nick'),       'tmp!new_source_nick', _(NOTE_NICK), req=True)
+        self.AddPropEntry          (table, _('Connection'), 'tmp!new_source_host', _(NOTE_HOST), req=True)
         if type == 'interpreter' or not type:
-            self.AddPropEntry (table, _('Interpreter'),      'tmp!new_source_interpreter', NOTE_INTERPRETER, req=True)
-            self.AddPropEntry (table, _('Spawning timeout'), 'tmp!new_source_timeout', NOTE_TIMEOUT)
-            self.AddPropEntry (table, _('Execute as User'),  'tmp!new_source_user', NOTE_USER)
-            self.AddPropEntry (table, _('Execute as Group'), 'tmp!new_source_group', NOTE_GROUP)
+            self.AddPropEntry (table, _('Interpreter'),      'tmp!new_source_interpreter', _(NOTE_INTERPRETER), req=True)
+            self.AddPropEntry (table, _('Spawning timeout'), 'tmp!new_source_timeout', _(NOTE_TIMEOUT))
+            self.AddPropEntry (table, _('Execute as User'),  'tmp!new_source_user', _(NOTE_USER))
+            self.AddPropEntry (table, _('Execute as Group'), 'tmp!new_source_group', _(NOTE_GROUP))
 
         txt += self.Indent(table)
         return txt
@@ -231,8 +230,7 @@ class PageInfoSource (PageMenu, FormHelper):
                     msg = _("Deletion forbidden. Check source usage.")
                     link = self.InstanceImage ("forbidden.png", msg, border="0")
                 else:
-                    js = "post_del_key('/source/ajax_update', 'source!%s');"%(s)
-                    link = self.InstanceImage ("bin.png", _("Delete"), border="0", onClick=js)
+                    link = self.AddDeleteLink ('/source/ajax_update', 'source!%s'%(s))
 
                 table += '<tr><td><a href="/%s/%s">%s</td><td>%s</td><td>%s</td><td>%s</td></tr>' % (self._id, s, nick, type, host, link)
             table += '<tr><td colspan="4" align="center"><br/><a href="/%s">%s</a></td></tr>' % (self._id, _('Add new'))
