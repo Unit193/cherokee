@@ -101,7 +101,7 @@ Description: Cherokee web server - Client libraries' development files
 Package: libcherokee-config0
 Section: httpd
 Architecture: any
-Depends: ${shlibs:Depends}, python
+Depends: ${shlibs:Depends}, python, python-support
 Replaces: libcherokee-server0 (<< 0.8.1-1)
 Description: Cherokee web server - Configuration libraries
  Cherokee is a very fast, flexible and easy to configure Web Server.

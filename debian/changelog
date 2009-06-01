@@ -1,3 +1,10 @@
+cherokee (0.99.15-2) unstable; urgency=low
+
+  * Added missing dependency on python-support to libcherokee-config0
+    (Closes: #526835)
+
+ -- Gunnar Wolf <gwolf@debian.org>  Mon, 01 Jun 2009 12:37:04 -0500
+
 cherokee (0.99.15-1) unstable; urgency=low
 
   * New Upstream Version
