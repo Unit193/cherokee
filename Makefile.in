@@ -37,9 +37,9 @@ subdir = .
 DIST_COMMON = README $(am__configure_deps) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in $(srcdir)/cherokee-config.in \
 	$(srcdir)/cherokee.pc.in $(srcdir)/cherokee.spec.in \
-	$(srcdir)/config.h.in $(top_srcdir)/configure AUTHORS COPYING \
-	ChangeLog INSTALL NEWS config.guess config.sub depcomp \
-	install-sh ltmain.sh missing
+	$(srcdir)/config.h.in $(top_srcdir)/configure ABOUT-NLS \
+	AUTHORS COPYING ChangeLog INSTALL NEWS config.guess \
+	config.rpath config.sub depcomp install-sh ltmain.sh missing
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/etr_socket_nsl.m4 \
 	$(top_srcdir)/m4/libwww.m4 $(top_srcdir)/m4/mysql.m4 \

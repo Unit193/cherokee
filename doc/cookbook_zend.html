@@ -70,7 +70,11 @@ Next, configure a rule with the handler <tt>File Exists</tt> that should be
   set to a priority lower than that of the <tt>php</tt> rule.  This one can
   be set to match whatever files you like, but the important thing is
   to check the <tt>Match any file</tt> checkbox. Let this rule be handled by
-  the <a href="modules_handlers_file.html">Static Content</a> handler.
+  the <a href="modules_handlers_common.html">List &amp; Send</a> handler. Note that
+  we're not using the <a href="modules_handlers_file.html">Static Content</a>
+  handler. This is because it doesn't support indexes, so it wouldn't
+  allow you to browse the website at <a href="http://hostname.tld/">http://hostname.tld/</a>, but only at
+  <a href="http://hostname.tld/index.php">http://hostname.tld/index.php</a>.
 </p>
 </li>
 <li>

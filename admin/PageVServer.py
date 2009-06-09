@@ -8,6 +8,7 @@ from consts import *
 from Rule import *
 from RuleList import *
 from CherokeeManagement import *
+from Wizard import *
 
 # For gettext
 N_ = lambda x: x
@@ -63,9 +64,6 @@ NOTE_EVHOST           = N_('How to support the "Advanced Virtual Hosting" mechan
 NOTE_LOGGER_TEMPLATE  = N_('The following variables are accepted: <br/>${ip_remote}, ${ip_local}, ${protocol}, ${transport}, ${port_server}, ${query_string}, ${request_first_line}, ${status}, ${now}, ${time_secs}, ${time_nsecs}, ${user_remote}, ${request}, ${request_original}, ${vserver_name}')
 NOTE_MATCHING_METHOD  = N_('Allows the selection of domain matching method.')
 
-TXT_NO  = N_("<i>No</i>")
-TXT_YES = N_("<i>Yes</i>")
-
 HELPS = [
     ('config_virtual_servers', N_("Virtual Servers")),
     ('modules_loggers',        N_("Loggers")),
@@ -98,7 +96,11 @@ class PageVServer (PageMenu, FormHelper):
             return '/vserver/'
 
         default_render = False
-        if post.get_val('is_submit'):
+        if '/wizard/' in uri:
+            re = self._op_apply_wizard (host, uri, post)
+            if re: return re
+
+        elif post.get_val('is_submit'):
             if post.get_val('tmp!new_rule!value'):
                 re = self._op_add_new_entry (post       = post,
                                              cfg_prefix = 'vserver!%s!rule' %(host),
@@ -216,10 +218,24 @@ class PageVServer (PageMenu, FormHelper):
 
         # Behavior
         pre = 'vserver!%s!rule' %(host)
-        tmp = self._render_rules_generic (cfg_key    = pre, 
+        tmp = self.Dialog(RULE_LIST_NOTE)
+        tmp += '<div class="rulesdiv">'
+        tmp += self._render_rules_generic (cfg_key    = pre, 
                                           url_prefix = '/vserver/%s'%(host),
                                           priorities = self._priorities)
+
+        tmp += '<div class="rulessection" id="newsection">'
         tmp += self._render_add_rule ("tmp!new_rule")
+        tmp += '</div>'
+
+        tmp += '<div class="rulessection" id="wizardsection">'
+        tmp += self._render_wizards (host)
+        tmp += '</div>'
+
+        tmp += '<div class="rulesbutton"><a id="newsection_b">%s</a></div>' % (_('Add new rule'))
+        tmp += '<div class="rulesbutton"><a id="wizardsection_b">%s</a></div>' % (_('Wizards'))
+
+        tmp += '</div>\n'
         tabs += [(_('Behavior'), tmp)]
 
         # Personal Webs
@@ -315,13 +331,15 @@ class PageVServer (PageMenu, FormHelper):
         if not len(priorities):
             return txt
 
-        txt += self.Dialog(RULE_LIST_NOTE)
 
         table_name = "rules%d" % (self._rule_table)
         self._rule_table += 1
 
+        ENABLED_IMAGE  = self.InstanceImage('tick.png', _('Yes'))
+        DISABLED_IMAGE = self.InstanceImage('cross.png', _('No'))
+
         txt += '<table id="%s" class="rulestable">' % (table_name)
-        txt += '<tr NoDrag="1" NoDrop="1"><th>%s</th><th>%s</th><th>%s</th><th>%s</th><th>%s</th><th>%s</th><th>%s</th></tr>' % (_('Target'), _('Type'), _('Handler'), _('Auth'), _('Enc'), _('Exp'), _('Final'))
+        txt += '<tr NoDrag="1" NoDrop="1"><th>%s</th><th>%s</th><th>%s</th><th>%s</th><th>%s</th><th>%s</th><th>%s</th><th>%s</th><th></th></tr>' % (_('Target'), _('Type'), _('Handler'), _('Root'), _('Auth'), _('Enc'), _('Exp'), _('Final'))
 
         # Rule list
         for prio in priorities:
@@ -331,7 +349,7 @@ class PageVServer (PageMenu, FormHelper):
             pre   = '%s!%s!match' % (cfg_key, prio)
 
             # Try to load the rule plugin
-            rule = Rule(self._cfg, pre, self.submit_url, 0)
+            rule = Rule(self._cfg, pre, self.submit_url, self.errors, 0)
             name      = rule.get_name()
             name_type = rule.get_type_name()
 
@@ -353,27 +371,30 @@ class PageVServer (PageMenu, FormHelper):
             if conf.get_val('handler'):
                 handler_name = self._get_handler_name (conf['handler'].value)
             else:
-                handler_name = TXT_NO
+                handler_name = DISABLED_IMAGE
 
             if conf.get_val('auth'):
                 auth_name = self._get_auth_name (conf['auth'].value)
             else:
-                auth_name = TXT_NO
+                auth_name = DISABLED_IMAGE
 
-            expiration = [TXT_NO, TXT_YES]['expiration' in conf.keys()]
+            expiration    = [DISABLED_IMAGE, ENABLED_IMAGE]['expiration' in conf.keys()]
+            document_root = [DISABLED_IMAGE, ENABLED_IMAGE]['document_root' in conf.keys()]
 
-            encoders = TXT_NO
+            encoders = DISABLED_IMAGE
             if 'encoder' in conf.keys():
                 for k in conf['encoder'].keys():
                     if int(conf.get_val('encoder!%s'%(k))):
-                        encoders = TXT_YES
+                        encoders = ENABLED_IMAGE
 
-            txt += '<!-- %s --><tr prio="%s" id="%s"%s><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>\n' % (
-                prio, pre, prio, extra, link, name_type, handler_name, auth_name, encoders, expiration, final, link_del)
+            txt += '<!-- %s --><tr prio="%s" id="%s"%s><td>%s</td><td>%s</td><td>%s</td><td class="center">%s</td><td class="center">%s</td><td class="center">%s</td><td class="center">%s</td><td class="center">%s</td><td class="center">%s</td></tr>\n' % (
+                prio, pre, prio, extra, link, name_type, handler_name, document_root, auth_name, encoders, expiration, final, link_del)
 
         txt += '</table>\n'
+
         txt += '''
                       <script type="text/javascript">
+                      prevSection = '';
                       $(document).ready(function() {
                         $("#%(name)s tr:even').addClass('alt')");
 
@@ -396,7 +417,21 @@ class PageVServer (PageMenu, FormHelper):
 
                       $(document).ready(function(){
                         $("table.rulestable tr:odd").addClass("odd");
+                        $("#newsection_b").click(function() { openSection('newsection')});
+                        $("#wizardsection_b").click(function() { openSection('wizardsection')});
                       });
+
+                      function openSection(section) 
+                      {
+                          if (prevSection != '') {
+                              $("#"+prevSection).hide();
+                              $("#"+prevSection+"_b").attr("style", "font-weight: normal;");
+                          }
+                          $("#"+section+"_b").attr("style", "font-weight: bold;");
+                          $("#"+section).show();
+                          prevSection = section;
+                      }
+
 
                       $(document).mouseup(function(){
                         $("table.rulestable tr:even").removeClass("odd");
@@ -406,6 +441,18 @@ class PageVServer (PageMenu, FormHelper):
                ''' % {'name':   table_name,
                       'url' :   self.submit_ajax_url,
                       'prefix': cfg_key}
+        return txt
+
+    def _render_wizards (self, host):
+        txt = ''
+        pre = 'vserver!%s'%(host)
+
+        mgr = WizardManager (self._cfg, "Rules", pre)
+        txt += mgr.render ("/vserver/%s"%(host))
+
+        if txt: 
+            txt = _("<h2>Wizards</h2>") + txt
+
         return txt
 
     def _render_personal_webs (self, host):
@@ -567,6 +614,19 @@ class PageVServer (PageMenu, FormHelper):
                                         _(NOTE_MATCHING_METHOD))
         txt += self.Indent(table) + e
         return txt
+
+    def _op_apply_wizard (self, host, uri, post):
+        tmp  = uri.split('/')
+        name = tmp[3]
+
+        mgr = WizardManager (self._cfg, "Rules", 'vserver!%s'%(host))
+        wizard = mgr.load (name)
+
+        output = wizard.run ("/vserver%s"%(uri), post)
+        if output:
+            return output
+
+        return '/vserver/%s' % (host)
 
     def _op_apply_changes (self, host, uri, post):
         pre = "vserver!%s" % (host)

@@ -37,13 +37,16 @@ PLUGIN_INFO_RULE_EASIEST_INIT(header);
 
 
 static ret_t 
-match (cherokee_rule_header_t *rule, 
-       cherokee_connection_t  *conn)
+match (cherokee_rule_header_t  *rule, 
+       cherokee_connection_t   *conn,
+       cherokee_config_entry_t *ret_conf)
 {
 	int      re;
 	ret_t    ret;
 	char    *info     = NULL;
 	cuint_t  info_len = 0;
+
+	UNUSED(ret_conf);
 
 	/* Find the header
 	 */
@@ -91,6 +94,8 @@ header_str_to_type (cherokee_buffer_t        *header,
 		*common_header = header_user_agent;
 	} else if (equal_buf_str (header, "Cookie")) {
 		*common_header = header_cookie;
+	} else if (equal_buf_str (header, "Host")) {
+		*common_header = header_host;
 	} else {
 		PRINT_ERROR ("ERROR: Unknown header: '%s'\n", header->buf);
 		return ret_error;

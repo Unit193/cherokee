@@ -3,7 +3,11 @@ N_ = lambda x: x
 
 AVAILABLE_LANGUAGES = [
     ('en',           N_('English')),
-    ('es',           N_('Spanish'))
+    ('es',           N_('Spanish')),
+    ('de',           N_('German')),
+    ('nl',           N_('Dutch')),
+    ('sv_SE',        N_('Swedish')),
+    ('zh_CN',        N_('Chinese Simplified'))
 ]
 
 HANDLERS = [
@@ -127,6 +131,7 @@ RULES = [
     ('exists',     N_('File Exists')),
     ('method',     N_('HTTP Method')),
     ('bind',       N_('Incoming Port')),
+    ('fullpath',   N_('Full Path')),
     ('geoip',      N_('GeoIP'))
 ]
 

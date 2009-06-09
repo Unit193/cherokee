@@ -1222,16 +1222,23 @@ cherokee_connection_step (cherokee_connection_t *conn)
 
 	/* Need to 'read' from handler ?
 	 */
-	if (conn->buffer.len > 0)
+	if (conn->buffer.len > 0) {
 		return ret_ok;
+
+	} else if (unlikely (conn->options & conn_op_got_eof)) {
+		return ret_eof;
+	}
 
 	/* Do a step in the handler
 	 */
 	step_ret = cherokee_handler_step (conn->handler, &conn->buffer);
 	switch (step_ret) {
 	case ret_ok:
+		break;
+
 	case ret_eof:
 	case ret_eof_have_data:
+		BIT_SET (conn->options, conn_op_got_eof);
 		break;
 
 	case ret_error:
@@ -1516,7 +1523,7 @@ cherokee_connection_build_local_directory (cherokee_connection_t     *conn,
 		 * on petition: http://server/thing/cherokee	
 		 * should read: /usr/share/this/rocks/cherokee	
 		 */
-		if (cherokee_buffer_is_empty(&conn->request_original)) {
+		if (cherokee_buffer_is_empty (&conn->request_original)) {
 			cherokee_buffer_add_buffer (&conn->request_original, &conn->request);
 		}
 
@@ -1575,7 +1582,7 @@ cherokee_connection_build_local_directory_userdir (cherokee_connection_t *conn, 
 
 		cherokee_buffer_add_buffer (&conn->local_directory, entry->document_root);
 
-		if (cherokee_buffer_is_empty(&conn->request_original)) {
+		if (cherokee_buffer_is_empty (&conn->request_original)) {
 			cherokee_buffer_add_buffer (&conn->request_original, &conn->request);
 		}
 

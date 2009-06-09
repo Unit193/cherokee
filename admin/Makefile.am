@@ -90,6 +90,7 @@ ModuleDefault.py \
 ModuleRequest.py \
 ModuleDirectory.py \
 ModuleExtensions.py \
+ModuleFullpath.py \
 ModuleGeoip.py \
 ModuleHeader.py \
 ModuleExists.py \
@@ -103,7 +104,15 @@ config.py \
 pyscgi.py \
 validations.py \
 CherokeeManagement.py \
-flags.py
+flags.py \
+util.py \
+Wizard.py \
+Wizard_PHP.py \
+Wizard_WordPress.py \
+Wizard_Django.py \
+Wizard_Redirect.py \
+Wizard_HotLinking.py \
+Wizard_Drupal.py
 endif
 
 adminpy_DATA = $(admin_data)
