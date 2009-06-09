@@ -1,3 +1,10 @@
+cherokee (0.99.16-1) unstable; urgency=low
+
+  * New Upstream Version
+  * Added recommends  php5-cgi to cherokee (closes: #532287)
+
+ -- Leonel Nunez <leonel@enelserver.com>  Tue, 09 Jun 2009 13:10:37 -0600
+
 cherokee (0.99.15-2) unstable; urgency=low
 
   * Added missing dependency on python-support to libcherokee-config0

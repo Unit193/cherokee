@@ -13,7 +13,7 @@ Package: cherokee
 Architecture: any
 Pre-Depends: libcherokee-config0 (= ${binary:Version})
 Depends: ${shlibs:Depends}, logrotate, libcherokee-base0 (= ${binary:Version}), libcherokee-server0 (= ${binary:Version}), libcherokee-mod-server-info
-Recommends: libcherokee-mod-admin
+Recommends: libcherokee-mod-admin, php5-cgi
 Suggests: libcherokee-mod-libssl, libcherokee-mod-streaming, libcherokee-mod-geoip, cherokee-doc
 Provides: httpd, httpd-cgi
 Description: Very fast, flexible and easy to configure web server
