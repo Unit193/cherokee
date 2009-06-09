@@ -182,6 +182,23 @@ endif
 
 
 #
+# Rule fullpath
+#
+rule_fullpath = \
+rule_fullpath.c \
+rule_fullpath.h
+
+libplugin_fullpath_la_LDFLAGS = $(module_ldflags)
+libplugin_fullpath_la_SOURCES = $(rule_fullpath)
+
+if STATIC_RULE_FULL_PATH
+static_rule_fullpath_src = $(rule_fullpath)
+else
+dynamic_rule_fullpath_lib = libplugin_fullpath.la
+endif
+
+
+#
 # Rule bind
 #
 rule_bind = \
@@ -1024,6 +1041,12 @@ cryptor_libssl = \
 cryptor_libssl.c \
 cryptor_libssl.h
 
+cryptor_libssl_dist = \
+cryptor_libssl_dh_512.c \
+cryptor_libssl_dh_1024.c \
+cryptor_libssl_dh_2048.c \
+cryptor_libssl_dh_4096.c
+
 libplugin_libssl_la_LDFLAGS = $(module_ldflags) $(TLS_LIBS)
 libplugin_libssl_la_SOURCES = $(cryptor_libssl)
 libplugin_libssl_la_CFLAGS  = $(TLS_CFLAGS)
@@ -1310,6 +1333,7 @@ $(static_rule_extensions_src) \
 $(static_rule_request_src) \
 $(static_rule_header_src) \
 $(static_rule_exists_src) \
+$(static_rule_fullpath_src) \
 $(static_rule_bind_src) \
 $(static_rule_method_src) \
 $(static_rule_geoip_src) \
@@ -1493,6 +1517,7 @@ $(dynamic_rule_extensions_lib) \
 $(dynamic_rule_request_lib) \
 $(dynamic_rule_header_lib) \
 $(dynamic_rule_exists_lib) \
+$(dynamic_rule_fullpath_lib) \
 $(dynamic_rule_bind_lib) \
 $(dynamic_rule_method_lib) \
 $(dynamic_rule_geoip_lib) \
@@ -1627,6 +1652,7 @@ $(validator_mysql) \
 $(handler_dbslayer) \
 $(cherokeedeps_DATA) \
 $(WINDOWS_PORT_FILES) \
+$(cryptor_libssl_dist) \
 loader.autoconf.h \
 loader.autoconf.inc
 

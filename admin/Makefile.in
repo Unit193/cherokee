@@ -295,6 +295,7 @@ adminpy_SCRIPTS = $(admin_scripts)
 @INSTALL_ADMIN_TRUE@ModuleRequest.py \
 @INSTALL_ADMIN_TRUE@ModuleDirectory.py \
 @INSTALL_ADMIN_TRUE@ModuleExtensions.py \
+@INSTALL_ADMIN_TRUE@ModuleFullpath.py \
 @INSTALL_ADMIN_TRUE@ModuleGeoip.py \
 @INSTALL_ADMIN_TRUE@ModuleHeader.py \
 @INSTALL_ADMIN_TRUE@ModuleExists.py \
@@ -308,7 +309,15 @@ adminpy_SCRIPTS = $(admin_scripts)
 @INSTALL_ADMIN_TRUE@pyscgi.py \
 @INSTALL_ADMIN_TRUE@validations.py \
 @INSTALL_ADMIN_TRUE@CherokeeManagement.py \
-@INSTALL_ADMIN_TRUE@flags.py
+@INSTALL_ADMIN_TRUE@flags.py \
+@INSTALL_ADMIN_TRUE@util.py \
+@INSTALL_ADMIN_TRUE@Wizard.py \
+@INSTALL_ADMIN_TRUE@Wizard_PHP.py \
+@INSTALL_ADMIN_TRUE@Wizard_WordPress.py \
+@INSTALL_ADMIN_TRUE@Wizard_Django.py \
+@INSTALL_ADMIN_TRUE@Wizard_Redirect.py \
+@INSTALL_ADMIN_TRUE@Wizard_HotLinking.py \
+@INSTALL_ADMIN_TRUE@Wizard_Drupal.py
 
 adminpy_DATA = $(admin_data)
 @INSTALL_ADMIN_TRUE@template_data = \

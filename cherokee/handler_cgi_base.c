@@ -74,12 +74,7 @@ cherokee_handler_cgi_base_init (cherokee_handler_cgi_base_t              *cgi,
 
 	/* Read the properties
 	 */
-	HANDLER(cgi)->support = hsupport_nothing;
-
-	if (HANDLER_CGI_BASE_PROPS(cgi)->is_error_handler) {
-		HANDLER(cgi)->support |= hsupport_error;
-	}
-	
+	HANDLER(cgi)->support = hsupport_nothing;	
 	return ret_ok;
 }
 
@@ -277,12 +272,11 @@ cherokee_handler_cgi_base_build_basic_env (
 	set_env (cgi, "GATEWAY_INTERFACE", "CGI/1.1", 7);
 	set_env (cgi, "PATH",              "/bin:/usr/bin:/sbin:/usr/sbin", 29);
 
-	/* Servers MUST supply this value to scripts. The QUERY_STRING
-	 * value is case-sensitive. If the Script-URI does not include a
-	 * query component, the QUERY_STRING metavariable MUST be defined
-	 * as an empty string ("").
+	/* Document Root of the current Virtual Server
 	 */
-	set_env (cgi, "DOCUMENT_ROOT", conn->local_directory.buf, conn->local_directory.len);
+	set_env (cgi, "DOCUMENT_ROOT", 
+		 CONN_VSRV(conn)->root.buf,
+		 CONN_VSRV(conn)->root.len);
 
 	/* The IP address of the client sending the request to the
 	 * server. This is not necessarily that of the user agent (such
@@ -629,6 +623,8 @@ cherokee_handler_cgi_base_build_envp (cherokee_handler_cgi_base_t *cgi, cherokee
 		 * - If the SCGI is handling / it is ''
 		 * - Otherwise, it is the web_directory.
 		 */
+		cherokee_buffer_clean (&tmp);
+
 		if (! cherokee_buffer_is_empty (&conn->userdir)) {
 			cherokee_buffer_add_str    (&tmp, "/~");
 			cherokee_buffer_add_buffer (&tmp, &conn->userdir);
@@ -751,7 +747,8 @@ mix_headers (cherokee_buffer_t *target,
 
 
 ret_t 
-cherokee_handler_cgi_base_extract_path (cherokee_handler_cgi_base_t *cgi, cherokee_boolean_t check_filename)
+cherokee_handler_cgi_base_extract_path (cherokee_handler_cgi_base_t *cgi,
+					cherokee_boolean_t           check_filename)
 {
 	ret_t                              ret;
 	cint_t                             req_len;
@@ -1070,11 +1067,18 @@ cherokee_handler_cgi_base_add_headers (cherokee_handler_cgi_base_t *cgi,
 	 */
 	cherokee_buffer_move_to_begin (inbuf, len + end_len);
 
+	/* From this moment, it can handle errors
+	 */
+	if (HANDLER_CGI_BASE_PROPS(cgi)->is_error_handler) {
+		HANDLER(cgi)->support |= hsupport_error;
+	}
+
 	/* Parse the header.. it is likely we will have something to do with it.
 	 */
 	ret = parse_header (cgi, outbuf);	
-	if (unlikely (ret != ret_ok))
+	if (unlikely (ret != ret_ok)) {
 		return ret;
+	}
 
 	/* Handle X-Sendfile
 	 */
@@ -1119,6 +1123,15 @@ cherokee_handler_cgi_base_add_headers (cherokee_handler_cgi_base_t *cgi,
 		cherokee_buffer_add_str      (outbuf, "Content-Length: ");
 		cherokee_buffer_add_ullong10 (outbuf, (cullong_t) cgi->content_length);
 		cherokee_buffer_add_str      (outbuf, CRLF);
+	}
+
+	/* Redirection without custom status
+	 */
+	if ((conn->error_code == http_ok) &&
+	    (! cherokee_buffer_is_empty (&conn->redirect)))
+	{
+		TRACE(ENTRIES, "Redirection without custom status. Setting %d\n", 302);
+		conn->error_code = http_moved_temporarily;
 	}
 
 	return ret_ok;
