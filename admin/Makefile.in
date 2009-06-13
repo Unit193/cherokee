@@ -317,7 +317,8 @@ adminpy_SCRIPTS = $(admin_scripts)
 @INSTALL_ADMIN_TRUE@Wizard_Django.py \
 @INSTALL_ADMIN_TRUE@Wizard_Redirect.py \
 @INSTALL_ADMIN_TRUE@Wizard_HotLinking.py \
-@INSTALL_ADMIN_TRUE@Wizard_Drupal.py
+@INSTALL_ADMIN_TRUE@Wizard_Drupal.py \
+@INSTALL_ADMIN_TRUE@Wizard_RoR.py
 
 adminpy_DATA = $(admin_data)
 @INSTALL_ADMIN_TRUE@template_data = \
