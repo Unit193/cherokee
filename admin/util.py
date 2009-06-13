@@ -59,6 +59,27 @@ def cfg_source_find_interpreter (cfg,
             in_nick in cfg.get_val("source!%s!nick"%(i))):
             return "source!%s" % (i)
 
+def cfg_source_find_empty_port (cfg, n_ports=1):
+    ports = []
+    for i in cfg.keys("source"):
+        host = cfg.get_val ("source!%s!host"%(i))
+        if not host: continue
+
+        colon = host.rfind(':')
+        if colon < 0: continue
+        
+        port = int (host[colon+1:])
+        if port < 1024: continue
+
+        ports.append (port)
+
+    pport = 1025
+    for x in ports:
+        if pport + n_ports < x:
+            return pport
+
+    assert (False)
+
 
 #
 # Paths
@@ -82,14 +103,18 @@ def path_find_binary (executable, extra_dirs=[], custom_test=None):
         if type(executable) == str:
             tmp = os.path.join (dir, executable)
             if os.path.exists (tmp):
-                if custom_test and custom_test(tmp):
-                    return tmp
+                if custom_test:
+                    if not custom_test(tmp):
+                        continue
+                return tmp
         elif type(executable) == list:
             for n in executable:
                 tmp = os.path.join (dir, n)
                 if os.path.exists (tmp):
-                    if custom_test and custom_test(tmp):
-                        return tmp
+                    if custom_test:
+                        if not custom_test(tmp):
+                            continue
+                    return tmp
 
 def path_find_w_default (path_list, default=''):
     """Find a path.
@@ -129,3 +154,17 @@ def os_get_document_root():
         return '/var/www'
 
     return ''
+
+
+#
+# Misc
+#
+def split_list (value):
+    ids = []
+    for t1 in value.split(','):
+        for t2 in t1.split(' '):
+            id = t2.strip()
+            if not id:
+                continue
+            ids.append(id)
+    return ids

@@ -101,7 +101,8 @@ class PageVServer (PageMenu, FormHelper):
             if re: return re
 
         elif post.get_val('is_submit'):
-            if post.get_val('tmp!new_rule!value'):
+            if (post.get_val('tmp!new_rule!value') or
+                post.get_val('tmp!new_rule!bypass_value_check')):
                 re = self._op_add_new_entry (post       = post,
                                              cfg_prefix = 'vserver!%s!rule' %(host),
                                              url_prefix = '/vserver/%s'%(host),
@@ -157,6 +158,24 @@ class PageVServer (PageMenu, FormHelper):
         priority = rules.get_highest_priority() + 100
         pre = '%s!%d' % (cfg_prefix, priority)
 
+        # Look for the rule type
+        _type = post.get_val (key_prefix)
+
+        # Build validation list
+        validation = DATA_VALIDATION[:]
+
+        # The 'add_new_entry' checking function depends on 
+        # the whether 'add_new_type' is a directory, an extension
+        # or a regular extension
+        rule_module = module_obj_factory (_type, self._cfg, "%s!match"%(pre), self.submit_url)
+        if 'validation' in dir(rule_module):
+            validation += rule_module.validation
+
+        # Validate
+        self._ValidateChanges (post, validation)
+        if self.has_errors():
+            return
+
         # Read the properties
         filtered_post = {}
         for p in post:
@@ -167,22 +186,6 @@ class PageVServer (PageMenu, FormHelper):
             if not prop: continue
 
             filtered_post[prop] = post[p][0]
-
-        # Look for the rule type
-        _type = post.get_val (key_prefix)
-
-        # The 'add_new_entry' checking function depends on 
-        # the whether 'add_new_type' is a directory, an extension
-        # or a regular extension
-        rule_module = module_obj_factory (_type, self._cfg, "%s!match"%(pre), self.submit_url)
-
-        # Validate
-        validation = DATA_VALIDATION[:]
-        validation += rule_module.validation
-
-        self._ValidateChanges (post, validation)
-        if self.has_errors():
-            return
 
         # Apply the changes to the configuration tree
         self._cfg['%s!match'%(pre)] = _type
@@ -339,7 +342,7 @@ class PageVServer (PageMenu, FormHelper):
         DISABLED_IMAGE = self.InstanceImage('cross.png', _('No'))
 
         txt += '<table id="%s" class="rulestable">' % (table_name)
-        txt += '<tr NoDrag="1" NoDrop="1"><th>%s</th><th>%s</th><th>%s</th><th>%s</th><th>%s</th><th>%s</th><th>%s</th><th>%s</th><th></th></tr>' % (_('Target'), _('Type'), _('Handler'), _('Root'), _('Auth'), _('Enc'), _('Exp'), _('Final'))
+        txt += '<tr><th>&nbsp;</th><th>%s</th><th>%s</th><th>%s</th><th>%s</th><th>%s</th><th>%s</th><th>%s</th><th>%s</th><th></th></tr>' % (_('Target'), _('Type'), _('Handler'), _('Root'), _('Auth'), _('Enc'), _('Exp'), _('Final'))
 
         # Rule list
         for prio in priorities:
@@ -358,15 +361,17 @@ class PageVServer (PageMenu, FormHelper):
                 name = "%s<b>...</b>" % (name[:RULE_NAME_LEN_LIMIT])
 
             if _type != 'default':
-                link     = '<a href="%s/rule/%s">%s</a>' % (url_prefix, prio, name)
-                final    = self.InstanceCheckbox ('%s!final'%(pre), True, quiet=True)
-                link_del = self.AddDeleteLink (self.submit_ajax_url, "%s!%s"%(cfg_key, prio))
-                extra    = ''
+                link      = '<a href="%s/rule/%s">%s</a>' % (url_prefix, prio, name)
+                final     = self.InstanceCheckbox ('%s!final'%(pre), True, quiet=True)
+                link_del  = self.AddDeleteLink (self.submit_ajax_url, "%s!%s"%(cfg_key, prio))
+                extra     = ''
+                draggable = ' class="dragHandle"'
             else:
-                link     = '<a href="%s/rule/%s">%s</a>' % (url_prefix, prio, _('Default'))
-                extra    = ' NoDrag="1" NoDrop="1"'
-                final    = self.HiddenInput ('%s!final'%(pre), "1")
-                link_del = ''
+                link      = '<a href="%s/rule/%s">%s</a>' % (url_prefix, prio, _('Default'))
+                final     = self.HiddenInput ('%s!final'%(pre), "1")
+                link_del  = ''
+                extra     = ' class="nodrag nodrop"'
+                draggable = ''
 
             if conf.get_val('handler'):
                 handler_name = self._get_handler_name (conf['handler'].value)
@@ -387,8 +392,8 @@ class PageVServer (PageMenu, FormHelper):
                     if int(conf.get_val('encoder!%s'%(k))):
                         encoders = ENABLED_IMAGE
 
-            txt += '<!-- %s --><tr prio="%s" id="%s"%s><td>%s</td><td>%s</td><td>%s</td><td class="center">%s</td><td class="center">%s</td><td class="center">%s</td><td class="center">%s</td><td class="center">%s</td><td class="center">%s</td></tr>\n' % (
-                prio, pre, prio, extra, link, name_type, handler_name, document_root, auth_name, encoders, expiration, final, link_del)
+            txt += '<!-- %s --><tr prio="%s" id="%s"%s><td%s>&nbsp;</td><td>%s</td><td>%s</td><td>%s</td><td class="center">%s</td><td class="center">%s</td><td class="center">%s</td><td class="center">%s</td><td class="center">%s</td><td class="center">%s</td></tr>\n' % (
+                prio, pre, prio, extra, draggable, link, name_type, handler_name, document_root, auth_name, encoders, expiration, final, link_del)
 
         txt += '</table>\n'
 
@@ -411,18 +416,32 @@ class PageVServer (PageMenu, FormHelper):
                                       window.location = window.location;
                                   }
                               );
-                          }
+                          },
+                          dragHandle: "dragHandle"
                         });
+
+                        $("#%(name)s tr:not(.nodrag, nodrop)").hover(function() {
+                            $(this.cells[0]).addClass('dragHandleH');
+                        }, function() {
+                            $(this.cells[0]).removeClass('dragHandleH');
+                        });
+
                       });
 
                       $(document).ready(function(){
                         $("table.rulestable tr:odd").addClass("odd");
                         $("#newsection_b").click(function() { openSection('newsection')});
                         $("#wizardsection_b").click(function() { openSection('wizardsection')});
+                        open_vsec  = get_cookie('open_vsec');
+                        if (open_vsec && document.referrer == window.location) {
+                            openSection(open_vsec);
+                        }
+
                       });
 
                       function openSection(section) 
                       {
+                          document.cookie = "open_vsec="  + section;
                           if (prevSection != '') {
                               $("#"+prevSection).hide();
                               $("#"+prevSection+"_b").attr("style", "font-weight: normal;");

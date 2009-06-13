@@ -1,3 +1,67 @@
+2009-06-13  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* 0.99.17 released
+
+	* cherokee/rule_exists.h, cherokee/rule_exists.c,
+	admin/ModuleExists.py: Add a new option to the exists rule, so it
+	checks for index file when a local directory is found.
+
+	* cherokee/handler_common.c, cherokee/virtual_server.c: The index
+	files list entries are now buffers instead of char*.
+
+	* admin/validations.py, split_list: Improve list parsing. From now
+	on, lists can be defined with ',' and/or ' '.
+
+	* admin/Rule.py, admin/ModuleExtensions.py, admin/PageVServer.py,
+	admin/validations.py: Fixes a problem reported on the mailing
+	list: Extension Lists weren't being checked:
+	http://lists.octality.com/pipermail/cherokee/2009-June/010467.html
+
+2009-06-12  Jonathan Hernandez  <ion@suavizado.com>
+	* admin/PageVServer.py admin/PageVServers.py: Add cookie for
+	persistency in sections. Fixes the bug #493:
+	http://bugs.cherokee-project.com/493
+
+2009-06-12  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* admin/ModuleExists.py: Adds a missing options supported by the
+	server: 'match_only_files'. It specifies whether regular files
+	should be the only entries taken into account by the rule match
+	plug-in.
+
+	* admin/Wizard_RoR.py: Fixes the wizard so it uses the right
+	directory root. Thanks to Gunnar Wolf for pointing the mistake.
+
+	* admin/PageInfoSource.py: Fixes Information Source table render.
+
+	* cherokee/source_interpreter.c, cherokee/spawner.c,
+	cherokee/connection-protected.h, cherokee/connection.c: Fixes a
+	potential issue for the new spawning mechanism.
+
+	* admin/PageEntry.py, admin/Rule.py, admin/Module.py: Improves the
+	Rule matching entries validation. It also fixes the bug #486:
+	http://bugs.cherokee-project.com/486
+
+2009-06-11  Alvaro Lopez Ortega  <alvaro@octality.com>
+
+	* admin/ModuleExists.py, admin/PageVServer.py: The "File Exists"
+	rule should allow to create new rule entries with the "Match Any
+	File" bit. This patch fixes http://bugs.cherokee-project.com/492
+
+	* admin/Wizard_RoR.py, admin/static/images/wizards/ror.png,
+	admin/static/images/wizards/Makefile.am, admin/Makefile.am,
+	admin/util.py: Adds a new Wizard for Ruby on Rails.
+
+	* admin/util.py (path_find_binary): It wasn't working property
+	when invoked without custom check function.
+
+2009-06-10  Antonio Perez  <aperez@skarcha.com>
+
+	* admin/PageVServers.py, admin/PageVServer.py,
+	admin/static/css/cherokee.css, admin/static/js/jquery.tablednd.js:
+	Since now, to reorder Virtual Servers or Rules, we have to click
+	on the first column of the table, instead on all the row.
+
 2009-06-09  Alvaro Lopez Ortega  <alvaro@octality.com>
 
 	* 0.99.16 released
