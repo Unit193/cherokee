@@ -1,8 +1,16 @@
 cherokee (0.99.19-1) unstable; urgency=low
 
+  [ Leonel Nunez ]
   * New Upstream Version
 
- -- Leonel Nunez <leonel@enelserver.com>  Tue, 23 Jun 2009 11:58:01 -0600
+  [ Gunnar Wolf ]
+  * Bumped up standards-version to 3.8.2, no changes needed
+  * DebHelper compat level was inconsistent (4 in debian/control, 5 in
+    debian/compat), fixed
+  * Fixed yet another Lintian warning: Preinst no longer hard-wires
+    Python binary location, trusts correct information set by dpkg
+
+ -- Gunnar Wolf <gwolf@debian.org>  Tue, 23 Jun 2009 17:48:09 -0500
 
 cherokee (0.99.17-1) unstable; urgency=low
 
