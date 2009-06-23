@@ -96,6 +96,7 @@ ModuleHeader.py \
 ModuleExists.py \
 ModuleMethod.py \
 ModuleBind.py \
+ModuleFrom.py \
 ModuleCustomError.py \
 ModuleWildcard.py \
 ModuleRehost.py \
@@ -113,7 +114,8 @@ Wizard_Django.py \
 Wizard_Redirect.py \
 Wizard_HotLinking.py \
 Wizard_Drupal.py \
-Wizard_RoR.py
+Wizard_RoR.py \
+Wizard_Mailman.py
 endif
 
 adminpy_DATA = $(admin_data)

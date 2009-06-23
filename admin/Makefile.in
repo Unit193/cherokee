@@ -301,6 +301,7 @@ adminpy_SCRIPTS = $(admin_scripts)
 @INSTALL_ADMIN_TRUE@ModuleExists.py \
 @INSTALL_ADMIN_TRUE@ModuleMethod.py \
 @INSTALL_ADMIN_TRUE@ModuleBind.py \
+@INSTALL_ADMIN_TRUE@ModuleFrom.py \
 @INSTALL_ADMIN_TRUE@ModuleCustomError.py \
 @INSTALL_ADMIN_TRUE@ModuleWildcard.py \
 @INSTALL_ADMIN_TRUE@ModuleRehost.py \
@@ -318,7 +319,8 @@ adminpy_SCRIPTS = $(admin_scripts)
 @INSTALL_ADMIN_TRUE@Wizard_Redirect.py \
 @INSTALL_ADMIN_TRUE@Wizard_HotLinking.py \
 @INSTALL_ADMIN_TRUE@Wizard_Drupal.py \
-@INSTALL_ADMIN_TRUE@Wizard_RoR.py
+@INSTALL_ADMIN_TRUE@Wizard_RoR.py \
+@INSTALL_ADMIN_TRUE@Wizard_Mailman.py
 
 adminpy_DATA = $(admin_data)
 @INSTALL_ADMIN_TRUE@template_data = \

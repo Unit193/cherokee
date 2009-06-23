@@ -140,7 +140,7 @@ class PageVServers (PageMenu, FormHelper):
         sorted_vservers.sort(sort_vservers, reverse=True)
 
         txt += '<div class="rulesdiv"><table id="%s" class="rulestable">' % (table_name)
-        txt += '<tr><th>&nbsp</th><th>%s</th><th>%s</th><th>%s</th><th>%s</th><th></th></tr>' % \
+        txt += '<tr class="nodrag nodrop"><th>&nbsp</th><th>%s</th><th>%s</th><th>%s</th><th>%s</th><th></th></tr>' % \
             (_('Nickname'), _('Root'), _('Domains'), _('Logging'))
 
         ENABLED_IMAGE  = self.InstanceImage('tick.png', _('Yes'))
@@ -305,8 +305,11 @@ class PageVServers (PageMenu, FormHelper):
         mgr = WizardManager (self._cfg, "VServer", pre='vserver')
         txt += mgr.render ("/vserver")
 
+        table = '<table id="wizSel" class="rulestable"><tr><th>Category</th><th>Wizard</th></tr>'
+        table += '<tr><td id="wizG"></td><td id="wizL"></td></table>'
+
         if txt: 
-            txt = _("<h2>Wizards</h2>") + txt
+            txt = _("<h2>Wizards</h2>") + table + txt
 
         return txt
 
