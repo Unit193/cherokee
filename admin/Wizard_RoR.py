@@ -8,12 +8,15 @@ from Wizard import *
 ROR_CHILD_PROCS = 3
 DEFAULT_BINS    = ['spawn-fcgi']
 
-NOTE_ROR_DIR   = _("Local path to the Ruby on Rails based project.")
-NOTE_NEW_HOST  = _("Name of the new domain that will be created.")
-NOTE_NEW_DIR   = _("Directory of the web directory where the Ruby on Rails project will live in.")
+NOTE_ROR_DIR    = _("Local path to the Ruby on Rails based project.")
+NOTE_NEW_HOST   = _("Name of the new domain that will be created.")
+NOTE_NEW_DIR    = _("Directory of the web directory where the Ruby on Rails project will live in.")
 
-ERROR_NO_ROR   = _("It does not look like a Ruby on Rails based project directory.")
-ERROR_NO_DROOT = _("The document root directory does not exist.")
+ERROR_DISPATCH  = _("<p>Even though the directory looks like a Ruby on Rails project, the public/dispatch.fcgi file wasn't found.</p>")
+ERROR_EXAMPLE   = _("<p>However a <b>public/dispatch.fcgi.example</b> file is present, so you might want to rename it.</p>")
+ERROR_RAILS23   = _("<p>If you are using Rails >= 2.3.0, you will have to execute the following command from the project directory in order to add the missing file:</p><p><pre>rake rails:update:generate_dispatchers</pre></p>")
+ERROR_NO_ROR    = _("It does not look like a Ruby on Rails based project directory.")
+ERROR_NO_DROOT  = _("The document root directory does not exist.")
 
 SOURCE = """
 source!%(src_num)d!type = interpreter
@@ -78,9 +81,9 @@ CONFIG_RULES_CHILD = """
 
 def is_ror_dir (path, cfg, nochroot):
     path = validations.is_local_dir_exists (path, cfg, nochroot)
-    manage = os.path.join (path, "script/process/spawner")
+    manage = os.path.join (path, "script/server")
     if not os.path.exists (manage):
-        raise ValueError, _("Directory doesn't look like a Ruby on Rails based project.")
+        raise ValueError, ERROR_NO_ROR
     return path
 
 DATA_VALIDATION = [
@@ -88,7 +91,43 @@ DATA_VALIDATION = [
     ("tmp!wizard_ror!new_host", (validations.is_new_host, 'cfg'))
 ]
 
-class Wizard_VServer_RoR (WizardPage):
+class CommonMethods:
+    def show (self):
+        spawn_fcgi = path_find_binary (DEFAULT_BINS)
+        if not spawn_fcgi:
+            self.no_show = "Could not find the spawn-fcgi binary"
+            return False
+        return True
+
+    def _render_content_dispatch_fcgi (self):
+        if self.errors.has_key('dispatch.fcgi'):
+            if self.errors.has_key('dispatch.fcgi.example'):
+                return self.Indent(self.Dialog(ERROR_DISPATCH + ERROR_EXAMPLE, 'important-information'))
+            else:
+                return self.Indent(self.Dialog(ERROR_DISPATCH + ERROR_RAILS23, 'important-information'))
+        return ''
+
+    def _op_apply_dispatch_fcgi (self, post):
+        # Incoming info
+        ror_dir  = post.get_val('tmp!wizard_ror!ror_dir')
+        new_host = post.get_val('tmp!wizard_ror!new_host')
+
+        # Check whether dispatch.fcgi is present
+        if not os.path.exists (os.path.join (ror_dir, "public/dispatch.fcgi")):
+            self._cfg['tmp!wizard_ror!ror_dir']  = ror_dir
+            self._cfg['tmp!wizard_ror!new_host'] = new_host
+
+            self.errors['dispatch.fcgi'] = 'Not found'
+            if os.path.exists (os.path.join (ror_dir, "public/dispatch.fcgi.example")):
+                self.errors['dispatch.fcgi.example'] = '1'
+            return True
+
+        del(self._cfg['tmp!wizard_ror!ror_dir'])
+        del(self._cfg['tmp!wizard_ror!new_host'])
+
+
+
+class Wizard_VServer_RoR (CommonMethods, WizardPage):
     ICON = "ror.png"
     DESC = "New virtual server based on a Ruby on Rails project."
 
@@ -99,13 +138,6 @@ class Wizard_VServer_RoR (WizardPage):
                              title  = _("Ruby on Rails Wizard"),
                              group  = WIZARD_GROUP_PLATFORM)
 
-    def show (self):
-        spawn_fcgi = path_find_binary (DEFAULT_BINS)
-        if not spawn_fcgi:
-            self.no_show = "Could not find the spawn-fcgi binary"
-            return False
-        return True
-
     def _render_content (self, url_pre):
         txt = '<h1>%s</h1>' % (self.title)
 
@@ -115,6 +147,8 @@ class Wizard_VServer_RoR (WizardPage):
         txt += self.Indent(table)
 
         txt += '<h2>Ruby on Rails Project</h2>'
+        txt += self._render_content_dispatch_fcgi()
+
         table = TableProps()
         self.AddPropEntry (table, _('Project Directory'), 'tmp!wizard_ror!ror_dir', NOTE_ROR_DIR)
         txt += self.Indent(table)
@@ -124,13 +158,16 @@ class Wizard_VServer_RoR (WizardPage):
 
         form = Form (url_pre, add_submit=True, auto=False)
         return form.Render(txt, DEFAULT_SUBMIT_VALUE)
-        return txt
 
     def _op_apply (self, post):
         # Validation
         self._ValidateChanges (post, DATA_VALIDATION)
         if self.has_errors():
             return
+
+        # Check whether dispatch.fcgi is present
+        error = self._op_apply_dispatch_fcgi (post)
+        if error: return
 
         # Incoming info
         ror_dir  = post.pop('tmp!wizard_ror!ror_dir')
@@ -157,7 +194,7 @@ class Wizard_VServer_RoR (WizardPage):
         self._common_apply_logging (post, vsrv_pre)
 
 
-class Wizard_Rules_RoR (WizardPage):
+class Wizard_Rules_RoR (CommonMethods, WizardPage):
     ICON = "ror.png"
     DESC = "New directory based on a Ruby of Rails project."
 
@@ -168,13 +205,6 @@ class Wizard_Rules_RoR (WizardPage):
                              title  = _("Ruby on Rails Wizard"),
                              group  = WIZARD_GROUP_PLATFORM)
 
-    def show (self):
-        spawn_fcgi = path_find_binary (DEFAULT_BINS)
-        if not spawn_fcgi:
-            self.no_show = "Could not find the spawn-fcgi binary"
-            return False
-        return True
-
     def _render_content (self, url_pre):
         txt = '<h1>%s</h1>' % (self.title)
 
@@ -184,6 +214,8 @@ class Wizard_Rules_RoR (WizardPage):
         txt += self.Indent(table)
 
         txt += '<h2>Ruby on Rails Project</h2>'
+        txt += self._render_content_dispatch_fcgi()
+
         table = TableProps()
         self.AddPropEntry (table, _('Project Directory'), 'tmp!wizard_ror!ror_dir', NOTE_ROR_DIR)
         txt += self.Indent(table)
@@ -197,6 +229,10 @@ class Wizard_Rules_RoR (WizardPage):
         self._ValidateChanges (post, DATA_VALIDATION)
         if self.has_errors():
             return
+
+        # Check whether dispatch.fcgi is present
+        error = self._op_apply_dispatch_fcgi (post)
+        if error: return
 
         # Incoming info
         ror_dir = post.pop('tmp!wizard_ror!ror_dir')

@@ -221,7 +221,7 @@ class PageVServer (PageMenu, FormHelper):
 
         # Behavior
         pre = 'vserver!%s!rule' %(host)
-        tmp = self.Dialog(RULE_LIST_NOTE)
+        tmp = self.Dialog(_(RULE_LIST_NOTE))
         tmp += '<div class="rulesdiv">'
         tmp += self._render_rules_generic (cfg_key    = pre, 
                                           url_prefix = '/vserver/%s'%(host),
@@ -342,7 +342,7 @@ class PageVServer (PageMenu, FormHelper):
         DISABLED_IMAGE = self.InstanceImage('cross.png', _('No'))
 
         txt += '<table id="%s" class="rulestable">' % (table_name)
-        txt += '<tr><th>&nbsp;</th><th>%s</th><th>%s</th><th>%s</th><th>%s</th><th>%s</th><th>%s</th><th>%s</th><th>%s</th><th></th></tr>' % (_('Target'), _('Type'), _('Handler'), _('Root'), _('Auth'), _('Enc'), _('Exp'), _('Final'))
+        txt += '<tr class="nodrag nodrop"><th>&nbsp;</th><th>%s</th><th>%s</th><th>%s</th><th>%s</th><th>%s</th><th>%s</th><th>%s</th><th>%s</th><th></th></tr>' % (_('Target'), _('Type'), _('Handler'), _('Root'), _('Auth'), _('Enc'), _('Exp'), _('Final'))
 
         # Rule list
         for prio in priorities:
@@ -469,8 +469,11 @@ class PageVServer (PageMenu, FormHelper):
         mgr = WizardManager (self._cfg, "Rules", pre)
         txt += mgr.render ("/vserver/%s"%(host))
 
+        table = '<table id="wizSel" class="rulestable"><tr><th>Category</th><th>Wizard</th></tr>'
+        table += '<tr><td id="wizG"></td><td id="wizL"></td></table>'
+
         if txt: 
-            txt = _("<h2>Wizards</h2>") + txt
+            txt = _("<h2>Wizards</h2>") + table + txt
 
         return txt
 
