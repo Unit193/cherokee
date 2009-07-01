@@ -257,6 +257,10 @@ add_time_nsecs (cherokee_template_t       *template,
 		cherokee_buffer_t         *output,
 		void                      *param)
 {
+	UNUSED (template);
+	UNUSED (token);
+	UNUSED (param);
+
 	return cherokee_buffer_add_ullong10 (output, cherokee_bogonow_msec);
 }
 
@@ -392,13 +396,13 @@ _init_template (cherokee_logger_custom_t *logger,
 
 	ret = cherokee_config_node_read (config, key_config, &tmp);
 	if (ret != ret_ok) {
-		PRINT_ERROR ("Custom Logger: A template is needed for logging connections: %s\n", key_config);
+		LOG_CRITICAL ("Custom Logger: A template is needed for logging connections: %s\n", key_config);
 		return ret_error;
 	}
 
 	ret = cherokee_template_parse (template, tmp);
 	if (ret != ret_ok) {
-		PRINT_ERROR ("Couldn't parse custom log: '%s'\n", tmp->buf);
+		LOG_CRITICAL ("Couldn't parse custom log: '%s'\n", tmp->buf);
 		return ret_error;
 	}
 
@@ -448,24 +452,27 @@ cherokee_logger_custom_new (cherokee_logger_t         **logger,
 	LOGGER(n)->get_error_writer = (logger_func_get_error_writer_t)  cherokee_logger_custom_get_error_writer;
 	LOGGER(n)->write_error      = (logger_func_write_error_t) cherokee_logger_custom_write_error;
 	LOGGER(n)->write_access     = (logger_func_write_access_t) cherokee_logger_custom_write_access;
-	LOGGER(n)->write_string     = (logger_func_write_string_t) cherokee_logger_custom_write_string;
 
 	/* Init properties
 	 */
 	ret = cherokee_config_node_get (config, "access", &subconf);
-	if (ret == ret_ok) {
-		ret = cherokee_server_get_log_writer (VSERVER_SRV(vsrv), subconf, &n->writer_access);
-		if (ret != ret_ok) {
-			return ret_error;
-		}
+	if (ret != ret_ok) {
+		LOG_CRITICAL_S ("Logger Custom: No 'access' log has been defined.\n");
+		return ret_error;
+	}
+	ret = cherokee_server_get_log_writer (VSERVER_SRV(vsrv), subconf, &n->writer_access);
+	if (ret != ret_ok) {
+		return ret_error;
 	}
 
 	ret = cherokee_config_node_get (config, "error", &subconf);
-	if (ret == ret_ok) {
-		ret = cherokee_server_get_log_writer (VSERVER_SRV(vsrv), subconf, &n->writer_error);
-		if (ret != ret_ok) {
-			return ret_error;
-		}
+	if (ret != ret_ok) {
+		LOG_CRITICAL_S ("Logger Custom: No 'error' log has been defined.\n");
+		return ret_error;
+	}
+	ret = cherokee_server_get_log_writer (VSERVER_SRV(vsrv), subconf, &n->writer_error);
+	if (ret != ret_ok) {
+		return ret_error;
 	}
 
 	/* Templates
@@ -585,7 +592,7 @@ error:
 
 ret_t
 cherokee_logger_custom_write_error (cherokee_logger_custom_t *logger,
-				    cherokee_connection_t    *conn)
+				    cherokee_buffer_t        *error)
 {
 	ret_t              ret;
 	cherokee_buffer_t *log;
@@ -594,28 +601,27 @@ cherokee_logger_custom_write_error (cherokee_logger_custom_t *logger,
 	 */
 	cherokee_logger_writer_get_buf (logger->writer_error, &log);
 
-	/* Render the template
+	/* Add the new string
 	 */
-	ret = cherokee_template_render (&logger->template_error, log, conn);
+	ret = cherokee_buffer_add_buffer (log, error);
 	if (unlikely (ret != ret_ok)) {
-		goto error;
+		ret = ret_error;
+		goto out;
 	}
 
-	cherokee_buffer_add_char (log, '\n');
-
-	/* It's an error. Flush it!
+	/* It's an error, flush it right away.
 	 */
 	ret = cherokee_logger_writer_flush (logger->writer_error, true);
 	if (unlikely (ret != ret_ok)) {
-		goto error;
+		ret = ret_error;
+		goto out;
 	}
 
-	cherokee_logger_writer_release_buf (logger->writer_error);
-	return ret_ok;
+	ret = ret_ok;
 
-error:
+out:
 	cherokee_logger_writer_release_buf (logger->writer_error);
-	return ret_error;
+	return ret;
 }
 
 ret_t

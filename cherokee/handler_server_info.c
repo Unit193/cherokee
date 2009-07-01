@@ -289,7 +289,7 @@ cherokee_handler_server_info_configure (cherokee_config_node_t *conf, cherokee_s
 				props->connection_details = true;
 
 			} else {
-				PRINT_ERROR("Unknown ServerInfo type: '%s'\n", subconf->val.buf);
+				LOG_ERROR("Unknown ServerInfo type: '%s'\n", subconf->val.buf);
 				return ret_error;
 			}
 		}
@@ -309,6 +309,13 @@ add_uptime (cherokee_dwriter_t *writer,
 	cherokee_buffer_t tmp   = CHEROKEE_BUF_INIT;
 	cuint_t           lapse = cherokee_bogonow_now - srv->start_time;
 
+	cherokee_dwriter_dict_open (writer);
+
+	/* Raw seconds number */
+	cherokee_dwriter_cstring (writer, "seconds");
+	cherokee_dwriter_integer (writer, lapse);
+
+	/* Formatted string */
 	days = lapse / (60*60*24);
 	lapse %= (60*60*24);
 	hours = lapse / (60*60);
@@ -329,13 +336,10 @@ add_uptime (cherokee_dwriter_t *writer,
 		cherokee_buffer_add_va (&tmp, "%d Seconds", lapse);
 	}
 
-	cherokee_dwriter_dict_open (writer);
-	cherokee_dwriter_cstring (writer, "seconds");
-	cherokee_dwriter_integer (writer, lapse);	
 	cherokee_dwriter_cstring (writer, "formatted");
 	cherokee_dwriter_bstring (writer, &tmp);
-	cherokee_dwriter_dict_close (writer);
 
+	cherokee_dwriter_dict_close (writer);
 	cherokee_buffer_mrproper (&tmp);
 }
 
@@ -495,7 +499,7 @@ modules_while (cherokee_buffer_t *key, void *value, void *params[])
 	} else if (mod->type & cherokee_vrule) {
 		*vrules += 1;
 	} else {
-		PRINT_ERROR("Unknown module type (%d)\n", mod->type);
+		LOG_ERROR("Unknown module type (%d)\n", mod->type);
 	}
 
 	return 0;
