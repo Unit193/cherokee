@@ -54,7 +54,7 @@
 #include "header.h"
 #include "header-protected.h"
 #include "post.h"
-
+#include "error_log.h"
 
 #define ENTRIES "handler,cgi"
 
@@ -492,7 +492,7 @@ _fd_set_properties (int fd, int add_flags, int remove_flags)
 	flags &= ~remove_flags;
 
 	if (fcntl (fd, F_SETFL, flags) == -1) {
-		PRINT_ERRNO (errno, "Setting pipe properties fd=%d: '${errno}'", fd);
+		LOG_ERRNO (errno, cherokee_err_error, "Setting pipe properties fd=%d: '${errno}'", fd);
 		return ret_error;
 	}	
 
@@ -500,7 +500,7 @@ _fd_set_properties (int fd, int add_flags, int remove_flags)
 }
 
 
-static void 
+static NORETURN void 
 manage_child_cgi_process (cherokee_handler_cgi_t *cgi, int pipe_cgi[2], int pipe_server[2])
 {
 	/* Child process
@@ -609,9 +609,7 @@ manage_child_cgi_process (cherokee_handler_cgi_t *cgi, int pipe_cgi[2], int pipe
 		if (re >= 0) {
 			re = setuid (info.st_uid);
 			if (re != 0) {
-				cherokee_logger_write_string (CONN_VSRV(conn)->logger, 
-							      "%s: couldn't set UID %d",
-							      script, info.st_uid);
+				LOG_ERROR("%s: couldn't set UID %d\n", script, info.st_uid);
 			}
 		}
 	}
@@ -653,9 +651,8 @@ manage_child_cgi_process (cherokee_handler_cgi_t *cgi, int pipe_cgi[2], int pipe
 
 		/* Don't use the logging system (concurrency issues)
 		 */
-		PRINT_ERROR ("Couldn't execute '%s': %s\n",
-			     absolute_path,
-			     cherokee_strerror_r(err, buferr, sizeof(buferr)));
+		LOG_ERROR ("Couldn't execute '%s': %s\n",
+			   absolute_path, cherokee_strerror_r(err, buferr, sizeof(buferr)));
 		exit(1);
 	}
 
@@ -835,7 +832,7 @@ fork_and_execute_cgi_win32 (cherokee_handler_cgi_t *cgi)
 	CloseHandle (hChildStdoutWr);
 
 	if (!re) {
-		PRINT_ERROR ("CreateProcess error: error=%d\n", GetLastError());
+		LOG_ERROR ("CreateProcess error: error=%d\n", GetLastError());
 
 		CloseHandle (pi.hProcess);
 		CloseHandle (pi.hThread);

@@ -33,6 +33,7 @@
 #include "thread.h"
 #include "source_interpreter.h"
 #include "bogotime.h"
+#include "error_log.h"
 
 #include "fastcgi.h"
 
@@ -80,7 +81,7 @@ process_package (cherokee_handler_fcgi_t *hdl, cherokee_buffer_t *inbuf, cheroke
 
 	if (header->version != 1) {
 		cherokee_buffer_print_debug (inbuf, -1);
-		PRINT_ERROR_S ("Parsing error: unknown version\n");
+		LOG_ERROR_S ("Parsing error: unknown version\n");
 		return ret_error;
 	}
 	
@@ -88,7 +89,7 @@ process_package (cherokee_handler_fcgi_t *hdl, cherokee_buffer_t *inbuf, cheroke
 	    header->type != FCGI_STDOUT && 
 	    header->type != FCGI_END_REQUEST) {
 		cherokee_buffer_print_debug (inbuf, -1);
-		PRINT_ERROR_S ("Parsing error: unknown type\n");
+		LOG_ERROR_S ("Parsing error: unknown type\n");
 		return ret_error;
 	}
 	
@@ -116,11 +117,7 @@ process_package (cherokee_handler_fcgi_t *hdl, cherokee_buffer_t *inbuf, cheroke
 /*		printf ("READ:STDERR (%d): %s", len, data?data:""); */
 
 		if (CONN_VSRV(conn)->logger != NULL) {
-			cherokee_buffer_t tmp = CHEROKEE_BUF_INIT;
-
-			cherokee_buffer_add (&tmp, data, len);
-			cherokee_logger_write_string (CONN_VSRV(conn)->logger, "%s", tmp.buf);
-			cherokee_buffer_mrproper (&tmp);
+			LOG_ERROR("%s\n", data);
 		}
 		else if (SOURCE_INT(hdl->src_ref)->debug) {
 			PRINT_MSG ("%.*s\n", len, data);
@@ -262,7 +259,7 @@ cherokee_handler_fcgi_configure (cherokee_config_node_t   *conf,
 	/* Final checks
 	 */
 	if (props->balancer == NULL) {
-		PRINT_ERROR_S ("ERROR: fcgi handler needs a balancer\n");
+		LOG_CRITICAL_S ("fcgi handler needs a balancer\n");
 		return ret_error;
 	}
 

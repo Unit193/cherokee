@@ -883,23 +883,6 @@ endif
 
 
 #
-# Logger W3C
-#
-logger_w3c = \
-logger_w3c.h \
-logger_w3c.c
-
-libplugin_w3c_la_LDFLAGS = $(module_ldflags)  
-libplugin_w3c_la_SOURCES = $(logger_w3c)
-
-if STATIC_LOGGER_W3C
-static_logger_w3c_src = $(logger_w3c)
-else
-dynamic_logger_w3c_lib = libplugin_w3c.la
-endif
-
-
-#
 # Validator PAM
 #
 if HAVE_PAM
@@ -1245,6 +1228,8 @@ common-internal.h \
 nullable.h \
 util.h \
 util.c \
+error_log.h \
+error_log.c \
 human_strcmp.h \
 human_strcmp.c \
 trace.h \
@@ -1298,7 +1283,12 @@ config_reader.c \
 bogotime.h \
 bogotime.c \
 cache.h \
-cache.c
+cache.c \
+logger.h \
+logger.c \
+logger_writer.h \
+logger_writer.c
+
 
 libcherokee_client_la_SOURCES = \
 url.h \
@@ -1386,7 +1376,6 @@ $(static_handler_custom_error_src) \
 $(static_handler_server_info_src) \
 $(static_handler_dbslayer_src) \
 \
-$(static_logger_w3c_src) \
 $(static_logger_ncsa_src) \
 $(static_logger_custom_src) \
 $(static_logger_combined_src) \
@@ -1434,10 +1423,6 @@ virtual_server.h \
 virtual_server.c \
 encoder.h \
 encoder.c \
-logger.h \
-logger.c \
-logger_writer.h \
-logger_writer.c \
 thread.h \
 thread.c \
 plugin.h \
@@ -1569,7 +1554,6 @@ $(dynamic_handler_common_lib) \
 $(dynamic_handler_dbslayer_lib) \
 $(dynamic_encoder_gzip_lib) \
 $(dynamic_encoder_deflate_lib) \
-$(dynamic_logger_w3c_lib) \
 $(dynamic_logger_ncsa_lib) \
 $(dynamic_logger_custom_lib) \
 $(dynamic_logger_combined_lib) \
