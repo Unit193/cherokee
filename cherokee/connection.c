@@ -152,7 +152,7 @@ cherokee_connection_new  (cherokee_connection_t **conn)
 	cherokee_header_init (&n->header, header_type_request);
 	cherokee_post_init (&n->post);
 
-	memset (n->regex_ovector, OVECTOR_LEN * sizeof(int), 0);
+	memset (n->regex_ovector, 0, OVECTOR_LEN * sizeof(int));
 	n->regex_ovecsize = 0;
 
 	n->chunked_encoding     = false;
@@ -277,7 +277,7 @@ cherokee_connection_clean (cherokee_connection_t *conn)
 	conn->limit_bps            = 0;
 	conn->limit_blocked_until  = 0;
 
-	memset (conn->regex_ovector, OVECTOR_LEN * sizeof(int), 0);
+	memset (conn->regex_ovector, 0, OVECTOR_LEN * sizeof(int));
 	conn->regex_ovecsize = 0;
 
 	if (conn->handler != NULL) {
@@ -1481,7 +1481,7 @@ get_authorization (cherokee_connection_t *conn,
 		break;
 
 	default:
-		PRINT_ERROR_S ("Unknown authentication method\n");
+		LOG_ERROR_S ("Unknown authentication method\n");
 		return ret_error;
 	}
 
@@ -1562,7 +1562,7 @@ ok:
 	return ret_ok;
 
 error:
-	PRINT_ERROR_S ("Couldn't set local directory\n");
+	LOG_ERROR_S ("Couldn't set local directory\n");
 	return ret_error;
 }
 
@@ -1908,7 +1908,7 @@ cherokee_connection_get_request (cherokee_connection_t *conn)
 		ret = cherokee_server_get_vserver (CONN_SRV(conn), &conn->host,
 						   (cherokee_virtual_server_t **)&conn->vserver);
 		if (unlikely (ret != ret_ok)) {
-			PRINT_ERROR ("Couldn't get virtual server: '%s'\n", conn->host.buf);
+			LOG_ERROR ("Couldn't get virtual server: '%s'\n", conn->host.buf);
 			return ret_error;
 		}
 		break;

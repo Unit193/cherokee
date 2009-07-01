@@ -25,7 +25,7 @@ AC_PREREQ([2.60])
 dnl Version
 m4_define([cherokee_major_version], [0])
 m4_define([cherokee_minor_version], [99])
-m4_define([cherokee_micro_version], [19])
+m4_define([cherokee_micro_version], [20])
 m4_define([cherokee_version], m4_format('%s.%s.%s', cherokee_major_version, cherokee_minor_version, cherokee_micro_version))
 
 dnl Init autoconf and automake
@@ -949,7 +949,11 @@ AC_ARG_ENABLE(pam, AC_HELP_STRING([--disable-pam],[Disable PAM support]), use_pa
 if test "x$use_pam" = "xyes"; then
      AC_CHECK_LIB(pam, pam_start, have_pam_lib=yes, have_pam_lib=no)
      AC_CHECK_LIB(pam, _pam_dispatch, have_pam_dispatch=yes, have_pam_dispatch=no)
-     AC_CHECK_HEADER(security/pam_modules.h, have_pam_include=yes, have_pam_include=no)
+     AC_CHECK_HEADER(security/pam_modules.h, have_pam_include=yes, have_pam_include=no, [[
+#ifdef HAVE_SECURITY_PAM_MODULES_H
+# include <security/pam_modules.h>
+#endif	  
+	]])
      AC_CHECK_HEADERS(security/_pam_macros.h security/pam_appl.h)
 fi
 
@@ -1186,6 +1190,10 @@ if test "x$want_ffmpeg" = "xyes"; then
 	 FFMPEG_LIBS="$FFMPEG_LIBS -lbz2"
    ])
 
+   AC_CHECK_LIB([m], [cos], [
+	 FFMPEG_LIBS="$FFMPEG_LIBS -lm"
+   ])
+
    AC_CHECK_HEADERS([libavformat/avformat.h], [
       have_ffmpeg_include=yes
    ],[have_ffmpeg_include=no]) 
@@ -1284,7 +1292,7 @@ AC_ARG_ENABLE(static-module,
 	   AC_HELP_STRING([--enable-static-module=MODULE][]),
 	   [use_static_module="$use_static_module $enableval "],[])
 
-modules="error_redir error_nn server_info file admin dirlist fcgi fastcgi scgi redir common cgi phpcgi proxy mirror ssi secdownload empty_gif custom_error dbslayer streaming gzip deflate ncsa combined custom w3c pam ldap mysql htpasswd plain htdigest authlist round_robin ip_hash directory extensions request header exists fullpath method from bind geoip wildcard rehost evhost libssl not and or"
+modules="error_redir error_nn server_info file admin dirlist fcgi fastcgi scgi redir common cgi phpcgi proxy mirror ssi secdownload empty_gif custom_error dbslayer streaming gzip deflate ncsa combined custom pam ldap mysql htpasswd plain htdigest authlist round_robin ip_hash directory extensions request header exists fullpath method from bind geoip wildcard rehost evhost libssl not and or"
 
 # Remove modules that will not be compiles
 #
@@ -1364,7 +1372,6 @@ AM_CONDITIONAL(STATIC_ENCODER_GZIP,           grep gzip           $conf_h >/dev/
 AM_CONDITIONAL(STATIC_ENCODER_DEFLATE,        grep deflate        $conf_h >/dev/null)
 AM_CONDITIONAL(STATIC_LOGGER_NCSA,            grep ncsa           $conf_h >/dev/null)
 AM_CONDITIONAL(STATIC_LOGGER_COMBINED,        grep combined       $conf_h >/dev/null)
-AM_CONDITIONAL(STATIC_LOGGER_W3C,             grep w3c            $conf_h >/dev/null)
 AM_CONDITIONAL(STATIC_LOGGER_CUSTOM,          grep custom         $conf_h >/dev/null)
 AM_CONDITIONAL(STATIC_VALIDATOR_PAM,          grep pam            $conf_h >/dev/null)
 AM_CONDITIONAL(STATIC_VALIDATOR_LDAP,         grep ldap           $conf_h >/dev/null)

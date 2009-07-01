@@ -58,6 +58,7 @@ cherokee_init (void)
 	/* Init the bogotime mechanism
 	 */
 	cherokee_bogotime_init();
+	cherokee_bogotime_update();
 
 	/* Init threading stuff
 	 */
@@ -67,7 +68,7 @@ cherokee_init (void)
 	 */
 	dcc_ncpus (&cherokee_cpu_number);
 	if (cherokee_cpu_number < 1) {
-		PRINT_ERROR ("Bad CPU number: %d, using 1\n", cherokee_cpu_number);
+		LOG_WARNING ("Bad CPU number: %d, using 1\n", cherokee_cpu_number);
 		cherokee_cpu_number = 1;
 	}
 
@@ -79,7 +80,7 @@ cherokee_init (void)
 	 */
 	ret = cherokee_sys_fdlimit_get (&cherokee_fdlimit);
 	if (ret < ret_ok) {
-		PRINT_ERROR_S ("ERROR: Unable to get file descriptor limit\n");
+		LOG_ERROR_S ("Unable to get file descriptor limit\n");
 		return ret;
 	}
 

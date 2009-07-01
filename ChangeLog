@@ -1,3 +1,394 @@
+2009-07-01  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3409, alo - 13:54:51
+
+	* Add the new "hash" parameter to the documentation. Patch by Frank
+	Groeneveld <frankgroeneveld@gmail.com>.
+	
+	M /cherokee/trunk/doc/modules_validators_mysql.txt
+
+2009-07-01  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3408, alo - 13:48:36
+
+	* Adds support for SHA1 hashed passwords. Based on patch by Frank
+	Groeneveld <frankgroeneveld@gmail.com>. Thank you, goog stuff!!
+	It implements: http://bugs.cherokee-project.com/477
+	
+	M /cherokee/trunk/admin/ModuleMysql.py
+	M /cherokee/trunk/cherokee/validator_mysql.c
+	M /cherokee/trunk/cherokee/validator_mysql.h
+
+2009-07-01  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3407, alo - 10:12:05
+
+	* Neither of these plug-ins was checking whether log writes were
+	specified in the configuration. This leaded to server crashes when
+	there were not configured properly.
+	
+	M /cherokee/trunk/cherokee/logger_ncsa.c
+	M /cherokee/trunk/cherokee/logger_custom.c
+
+2009-07-01  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3406, alo - 08:35:43
+
+	* FFMpeg depends on libm
+	
+	M /cherokee/trunk/configure.in
+
+2009-06-30  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3405, alo - 16:20:01
+
+	* Fixes a problem in the admin: host name entries could not be changed
+	because of old values were not being purged. Thanks to Stefan de
+	Konink for reporting.
+	 --This line, and those below, will be ignored--
+	
+	M    admin/PageVServer.py
+	
+	M /cherokee/trunk/admin/PageVServer.py
+
+2009-06-30  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3404, alo - 09:02:57
+
+	* Fixes a compilation problem
+	
+	M /cherokee/trunk/cherokee/Makefile.am
+	M /cherokee/trunk/cherokee/error_log.c
+	M /cherokee/trunk/cget/main.c
+
+2009-06-29  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3403, alo - 18:41:35
+
+	* Replace almost all the PRINT_ERROR, PRINT_ERROR_S and PRINT_ERRNO by
+	their equivalent macro in the new error reporting system.
+	
+	M /cherokee/trunk/cherokee/handler_redir.c
+	M /cherokee/trunk/cherokee/init.c
+	M /cherokee/trunk/cherokee/handler_fcgi.c
+	M /cherokee/trunk/cherokee/balancer_round_robin.c
+	M /cherokee/trunk/cherokee/encoder_gzip.c
+	M /cherokee/trunk/cherokee/icons.c
+	M /cherokee/trunk/cherokee/handler_error_redir.c
+	M /cherokee/trunk/cherokee/util.c
+	M /cherokee/trunk/cherokee/handler_server_info.c
+	M /cherokee/trunk/cherokee/rule_header.c
+	M /cherokee/trunk/cherokee/http.c
+	M /cherokee/trunk/cherokee/handler_custom_error.c
+	M /cherokee/trunk/cherokee/util.h
+	M /cherokee/trunk/cherokee/source_interpreter.c
+	M /cherokee/trunk/cherokee/plugin_loader.c
+	M /cherokee/trunk/cherokee/config_reader.c
+	M /cherokee/trunk/cherokee/rule_directory.c
+	M /cherokee/trunk/cherokee/access.c
+	M /cherokee/trunk/cherokee/gen_evhost.c
+	M /cherokee/trunk/cherokee/balancer_ip_hash.c
+	M /cherokee/trunk/cherokee/fdpoll-port.c
+	M /cherokee/trunk/cherokee/encoder_deflate.c
+	M /cherokee/trunk/cherokee/vrule_wildcard.c
+	M /cherokee/trunk/cherokee/rule_method.c
+	M /cherokee/trunk/cherokee/balancer.c
+	M /cherokee/trunk/cherokee/handler_dirlist.c
+	M /cherokee/trunk/cherokee/handler_mirror.c
+	M /cherokee/trunk/cherokee/cryptor_libssl.c
+	M /cherokee/trunk/cherokee/virtual_server.c
+	M /cherokee/trunk/cherokee/handler_proxy.c
+	M /cherokee/trunk/cherokee/rule_request.c
+	M /cherokee/trunk/cherokee/handler_scgi.c
+	M /cherokee/trunk/cherokee/logger_ncsa.c
+	M /cherokee/trunk/cherokee/post.c
+	M /cherokee/trunk/cherokee/validator_ldap.c
+	M /cherokee/trunk/cherokee/rule_extensions.c
+	M /cherokee/trunk/cherokee/config_entry.c
+	M /cherokee/trunk/cherokee/admin_client.c
+	M /cherokee/trunk/cherokee/macros.h
+	M /cherokee/trunk/cherokee/fdpoll-epoll.c
+	M /cherokee/trunk/cherokee/handler_cgi.c
+	M /cherokee/trunk/cherokee/source.c
+	M /cherokee/trunk/cherokee/handler_dbslayer.c
+	M /cherokee/trunk/cherokee/rule_bind.c
+	M /cherokee/trunk/cherokee/rule_fullpath.c
+	M /cherokee/trunk/cherokee/rule_exists.c
+	M /cherokee/trunk/cherokee/validator_mysql.c
+	M /cherokee/trunk/cherokee/template.c
+	M /cherokee/trunk/cherokee/main_worker.c
+	M /cherokee/trunk/cherokee/fdpoll-kqueue.c
+	M /cherokee/trunk/cherokee/spawner.c
+	M /cherokee/trunk/cherokee/main_tweak.c
+	M /cherokee/trunk/cherokee/vrule_rehost.c
+	M /cherokee/trunk/cherokee/avl.c
+	M /cherokee/trunk/cherokee/logger.h
+	M /cherokee/trunk/cherokee/validator_file.c
+	M /cherokee/trunk/cherokee/rule_geoip.c
+	M /cherokee/trunk/cherokee/downloader.c
+	M /cherokee/trunk/cherokee/connection.c
+	M /cherokee/trunk/cherokee/handler_secdownload.c
+	M /cherokee/trunk/cherokee/server.c
+	M /cherokee/trunk/cherokee/thread.c
+	M /cherokee/trunk/cherokee/common-internal.h
+	M /cherokee/trunk/cherokee/buffer.c
+	M /cherokee/trunk/cherokee/regex.c
+	M /cherokee/trunk/cherokee/logger_writer.c
+	M /cherokee/trunk/cherokee/bind.c
+	M /cherokee/trunk/cherokee/logger_writer.h
+	M /cherokee/trunk/cherokee/socket.c
+	M /cherokee/trunk/cherokee/ncpus.c
+	M /cherokee/trunk/cherokee/header.c
+	M /cherokee/trunk/cherokee/rule_from.c
+
+2009-06-29  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3402, alo - 18:36:27
+
+	* Add support for LOG_ERRNO and LOG_ERRNO_S
+	
+	M /cherokee/trunk/cherokee/error_log.c
+	M /cherokee/trunk/cherokee/error_log.h
+
+2009-06-29  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3401, alo - 14:42:27
+
+	* This patch changes substantially the way in which errors and warnings
+	are logged. From now on, warnings, regular errors, and critical issues
+	are logged in the error log. That was supposed to be the default
+	behavior, although most of the code used the PRINT_ERROR macro which
+	was not working with the logging subsystem. In this change-set a few
+	new macros are introduced so regular functions can log errors without
+	having access to the connection or the virtual server objects. Most of
+	the PRINT_ERROR references ought to be replaced with either LOG_ERROR,
+	LOG_WARNING or LOG_CRITICAL. So far only the cherokee/server.c
+	references have been replaced for testing purposes. More related
+	commits to come.
+	
+	M /cherokee/trunk/cherokee/fcgi_manager.c
+	M /cherokee/trunk/cherokee/init.c
+	M /cherokee/trunk/cherokee/handler_fcgi.c
+	M /cherokee/trunk/cherokee/threading.c
+	M /cherokee/trunk/cherokee/server.c
+	M /cherokee/trunk/cherokee/common-internal.h
+	M /cherokee/trunk/cherokee/thread.c
+	M /cherokee/trunk/cherokee/logger_custom.c
+	M /cherokee/trunk/cherokee/threading.h
+	M /cherokee/trunk/cherokee/handler_file.c
+	M /cherokee/trunk/cherokee/util.c
+	M /cherokee/trunk/cherokee/logger_custom.h
+	M /cherokee/trunk/cherokee/logger.c
+	M /cherokee/trunk/cherokee/logger_combined.c
+	M /cherokee/trunk/cherokee/validator_pam.c
+	M /cherokee/trunk/cherokee/util.h
+	M /cherokee/trunk/cherokee/logger_ncsa.c
+	M /cherokee/trunk/cherokee/logger.h
+	M /cherokee/trunk/cherokee/logger_ncsa.h
+	M /cherokee/trunk/cherokee/macros.h
+	A /cherokee/trunk/cherokee/error_log.c
+	M /cherokee/trunk/cherokee/trace.c
+	M /cherokee/trunk/cherokee/handler_cgi.c
+	A /cherokee/trunk/cherokee/error_log.h
+
+2009-06-29  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3400, alo - 14:02:21
+
+	* Deprecates the W3C logger.
+	
+	M /cherokee/trunk/admin/PageVServer.py
+	M /cherokee/trunk/admin/consts.py
+	M /cherokee/trunk/cherokee/Makefile.am
+	D /cherokee/trunk/cherokee/logger_w3c.c
+	D /cherokee/trunk/cherokee/logger_w3c.h
+	M /cherokee/trunk/configure.in
+
+2009-06-28  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3399, alo - 18:42:51
+
+	* Fixes a few gcc compilation warnings.
+	
+	M /cherokee/trunk/cherokee/main.c
+	M /cherokee/trunk/cherokee/server.c
+	M /cherokee/trunk/cherokee/common-internal.h
+	M /cherokee/trunk/cherokee/thread.c
+	M /cherokee/trunk/cherokee/handler_cgi.c
+
+2009-06-27  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3398, alo - 21:52:22
+
+	* If patch is meant to fix an autoconf warning. The configure script was
+	complaining about the secutiry/pam_modules.h system header. Check
+	http://bugs.cherokee-project.com/491 and chapter "19.7 Header Present
+	But Cannot Be Compiled" for the autoconf documentation for more info.
+	
+	M /cherokee/trunk/configure.in
+
+2009-06-27  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3397, alo - 21:34:24
+
+	* Do not set an empty REMOTE_USER variable when user has not been
+	authenticated. Fixes bug: http://bugs.cherokee-project.com/467
+	
+	M /cherokee/trunk/cherokee/handler_cgi_base.c
+
+2009-06-27  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3396, alo - 21:27:43
+
+	* When Cherokee was compiling without Pthread support (or threading was
+	turn off in the configuration), it was not able to perform graceful
+	restarts operations properly: http://bugs.cherokee-project.com/485
+	
+	M /cherokee/trunk/cherokee/thread.c
+
+2009-06-27  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3395, alo - 21:10:51
+
+	* Adds a couple of new properties 'backup' and 'hidden' for showing
+	back-up files and hidden files. By default both properties are false,
+	so the default behavior doesn't change. It fixes bug #485 anyway:
+	http://bugs.cherokee-project.com/485
+	
+	M /cherokee/trunk/cherokee/handler_dirlist.c
+	M /cherokee/trunk/admin/ModuleDirlist.py
+	M /cherokee/trunk/cherokee/handler_dirlist.h
+
+2009-06-27  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3394, alo - 20:50:12
+
+	* RegEx entries are editable now. http://bugs.cherokee-project.com/496
+	
+	M /cherokee/trunk/admin/ModuleProxy.py
+
+2009-06-27  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3393, alo - 20:31:48
+
+	* Fixes a problem with the 'seconds' property. Thanks Stefan de Konink
+	for the patch! Fixes http://bugs.cherokee-project.com/513
+	
+	M /cherokee/trunk/cherokee/handler_server_info.c
+
+2009-06-27  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3392, alo - 14:48:43
+
+	* Speeds up graceful restarts. http://bugs.cherokee-project.com/500
+	
+	M /cherokee/trunk/cherokee/thread.c
+
+2009-06-26  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3391, alo - 15:22:15
+
+	* Fixes a few calls to cherokee_logger_write_string() along the
+	code. Lines were not being separated with new line characters.
+	Fixes: http://bugs.cherokee-project.com/510
+	
+	M /cherokee/trunk/cherokee/fcgi_manager.c
+	M /cherokee/trunk/cherokee/validator_pam.c
+	M /cherokee/trunk/cherokee/handler_fcgi.c
+	M /cherokee/trunk/cherokee/handler_file.c
+	M /cherokee/trunk/cherokee/handler_cgi.c
+
+2009-06-26  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3390, alo - 13:23:23
+
+	* Now it uses bogonow instead of the time() system call. It also print a
+	more detailed time information (including milliseconds). This patch
+	implements: http://bugs.cherokee-project.com/511
+	
+	M /cherokee/trunk/cherokee/trace.c
+
+2009-06-26  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3389, alo - 12:25:46
+
+	* Adds a new property to the wizard. It allows to set a RAILS_ENV value
+	from within the Wizard. Fixes: http://bugs.cherokee-project.com/506
+	
+	M /cherokee/trunk/admin/Wizard_RoR.py
+
+2009-06-25  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3387, alo - 11:22:55
+
+	* Improve the validation process in the Wizards. It also improves the
+	persistence of the user entered information when a error shows up.
+	
+	M /cherokee/trunk/admin/Wizard_Mailman.py
+	M /cherokee/trunk/admin/Wizard.py
+	M /cherokee/trunk/admin/Wizard_Redirect.py
+	M /cherokee/trunk/admin/Wizard_Django.py
+	M /cherokee/trunk/admin/Wizard_RoR.py
+	M /cherokee/trunk/admin/Wizard_HotLinking.py
+	M /cherokee/trunk/admin/Wizard_Drupal.py
+	M /cherokee/trunk/admin/Wizard_WordPress.py
+
+2009-06-25  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3386, alo - 09:30:19
+
+	* Information sources were not shown in order. This quick fix sorts them
+	before rendering the information sources tables. Thanks to Gunnar Wolf
+	for logging this RFE. Fixes: http://bugs.cherokee-project.com/508
+	
+	M /cherokee/trunk/admin/PageInfoSource.py
+
+2009-06-25  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3385, alo - 09:14:32
+
+	* Adds a -d parameter to spawn-fcgi so it chmod()s to the RoR project
+	directory before spawning the new process. Thanks to Gunnar Wolf for
+	reporting! Fixes: http://bugs.cherokee-project.com/505
+	
+	M /cherokee/trunk/admin/Wizard_RoR.py
+
+2009-06-25  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3384, alo - 07:50:16
+
+	* Fixes a number of compilation warnings; thanks to Marcus Rueckert for
+	reporting them.
+	
+	M /cherokee/trunk/cherokee/handler_dirlist.c
+	M /cherokee/trunk/cherokee/logger_w3c.c
+	M /cherokee/trunk/cherokee/template.c
+	M /cherokee/trunk/cherokee/virtual_server.c
+	M /cherokee/trunk/cherokee/connection.c
+
+2009-06-25  Jonathan Hernandez  <ion@suavizado.com>
+            SVN: r3383, ion - 01:38:36
+
+	* Fix some look and feel problems in wizard panels UI.
+	
+	
+	M /cherokee/trunk/admin/static/js/wizards.js
+	M /cherokee/trunk/admin/static/css/cherokee.css
+
+2009-06-24  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3382, alo - 22:03:08
+
+	* Fixes a couple of compilation warnings.
+	
+	M /cherokee/trunk/cherokee/cryptor_libssl.c
+
+2009-06-24  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3381, alo - 18:22:09
+
+	* Uninitialized variable fix. Reported by Marcus Rueckert.
+	
+	M /cherokee/trunk/cherokee/main.c
+
+2009-06-24  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3380, alo - 18:07:59
+
+	* Fixes a wrong call to memset(). Thanks to Marcus Rueckert
+	<darix@opensu.se> for reporting this issue.
+	
+	M /cherokee/trunk/cherokee/connection.c
+
+2009-06-24  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3379, alo - 18:02:12
+
+	* 0.99.19 released
+	
+	M /cherokee/trunk/configure.in
+
+2009-06-24  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3378, alo - 18:01:29
+
+	M /cherokee/trunk/po/admin/es.po
+	M /cherokee/trunk/po/admin/de.po
+	M /cherokee/trunk/po/admin/nl.po
+	M /cherokee/trunk/po/admin/sv_SE.po
+	M /cherokee/trunk/po/admin/zh_CN.po
+	M /cherokee/trunk/po/admin/en.po
+
 2009-06-23  Alvaro Lopez Ortega  <alvaro@octality.com>
             SVN: r3376, alo - 15:17:49
 
