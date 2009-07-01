@@ -164,8 +164,10 @@ load_theme (cherokee_buffer_t *theme_path, cherokee_handler_dirlist_props_t *pro
 ret_t 
 cherokee_handler_dirlist_props_free  (cherokee_handler_dirlist_props_t *props)
 {
-	cherokee_list_content_free (&props->notice_files, cherokee_buffer_free);
-	cherokee_list_content_free (&props->hidden_files, cherokee_buffer_free);
+	cherokee_list_content_free (&props->notice_files,
+				    (cherokee_list_free_func) cherokee_buffer_free);
+	cherokee_list_content_free (&props->hidden_files,
+				    (cherokee_list_free_func) cherokee_buffer_free);
 
 	cherokee_buffer_mrproper (&props->header);
 	cherokee_buffer_mrproper (&props->footer);
@@ -200,6 +202,8 @@ cherokee_handler_dirlist_configure (cherokee_config_node_t *conf, cherokee_serve
 		n->show_group    = false;
 		n->show_icons    = true;
 		n->show_symlinks = true;
+		n->show_hidden   = false;
+		n->show_backup   = false;
 
 		cherokee_buffer_init (&n->header);
 		cherokee_buffer_init (&n->footer);
@@ -232,6 +236,10 @@ cherokee_handler_dirlist_configure (cherokee_config_node_t *conf, cherokee_serve
 			props->show_group = !! atoi (subconf->val.buf);
 		} else if (equal_buf_str (&subconf->key, "symlinks")) {
 			props->show_symlinks = !! atoi (subconf->val.buf);
+		} else if (equal_buf_str (&subconf->key, "hidden")) {
+			props->show_hidden = !! atoi (subconf->val.buf);
+		} else if (equal_buf_str (&subconf->key, "backup")) {
+			props->show_backup = !! atoi (subconf->val.buf);
 
 		} else if (equal_buf_str (&subconf->key, "theme")) {
 			theme = subconf->val.buf;
@@ -263,7 +271,7 @@ cherokee_handler_dirlist_configure (cherokee_config_node_t *conf, cherokee_serve
 	
 	ret = load_theme (&theme_path, props);
 	if (ret != ret_ok) {
-		PRINT_MSG ("Couldn't load theme '%s': %s\n", theme, theme_path.buf);
+		LOG_ERROR ("Couldn't load theme '%s': %s\n", theme, theme_path.buf);
 	}
 	cherokee_buffer_mrproper (&theme_path);
 	return ret;
@@ -323,14 +331,17 @@ generate_file_entry (cherokee_handler_dirlist_t *dhdl, DIR *dir, cherokee_buffer
 
 		/* Skip some files
 		 */
-		if ((name[0] == '.') ||
-		    (name[0] == '#') ||
-		    (name[n->name_len-1] == '~') ||
-		    is_file_in_list (&HDL_DIRLIST_PROP(dhdl)->notice_files, name, n->name_len) ||
-		    is_file_in_list (&HDL_DIRLIST_PROP(dhdl)->hidden_files, name, n->name_len))
-		{
+		if ((! HDL_DIRLIST_PROP(dhdl)->show_hidden) &&
+		    (name[0] == '.'))
 			continue;
-		}
+
+		if ((! HDL_DIRLIST_PROP(dhdl)->show_backup) &&
+		    ((name[0] == '#') || (name[n->name_len-1] == '~')))
+			continue;
+			    
+		if (is_file_in_list (&HDL_DIRLIST_PROP(dhdl)->notice_files, name, n->name_len) ||
+		    is_file_in_list (&HDL_DIRLIST_PROP(dhdl)->hidden_files, name, n->name_len))
+			continue;
 		
 		/* Build the local path, stat and clean
 		 */
@@ -435,7 +446,7 @@ cherokee_handler_dirlist_new  (cherokee_handler_t **hdl, void *cnt, cherokee_mod
 	if (cherokee_buffer_is_empty (&HDL_DIRLIST_PROP(n)->entry)  ||
 	    cherokee_buffer_is_empty (&HDL_DIRLIST_PROP(n)->header) ||
 	    cherokee_buffer_is_empty (&HDL_DIRLIST_PROP(n)->footer)) {
-		PRINT_ERROR_S ("The theme is incomplete\n");
+		LOG_CRITICAL_S ("The theme is incomplete\n");
 		return ret_error;
 	}
 

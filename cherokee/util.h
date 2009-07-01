@@ -61,6 +61,7 @@
 #include <cherokee/buffer.h>
 #include <cherokee/iocache.h>
 
+
 CHEROKEE_BEGIN_DECLS
 
 /* Error buffer size for cherokee_strerror_r().
@@ -117,7 +118,7 @@ ret_t   cherokee_parse_host         (cherokee_buffer_t *buf,
 				     cuint_t           *port);
 
 int     cherokee_string_is_ipv6     (cherokee_buffer_t *ip);
-
+ret_t   cherokee_buf_add_bogonow    (cherokee_buffer_t *buf, cherokee_boolean_t update);
 
 /* Time management functions
  */
@@ -168,7 +169,6 @@ ret_t cherokee_iovec_was_sent  (struct iovec orig[], uint16_t orig_len, size_t s
 /* Debug
  */
 void  cherokee_trace           (const char *entry, const char *file, int line, const char *func, const char *fmt, ...);
-void  cherokee_print_errno     (int error, const char *format, ...);
 
 /* Path management
  */

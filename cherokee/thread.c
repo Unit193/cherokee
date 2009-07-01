@@ -79,7 +79,7 @@ thread_update_bogo_now (cherokee_thread_t *thd)
 
 
 #ifdef HAVE_PTHREAD       
-static void *
+static NORETURN void *
 thread_routine (void *data)
 {
 	cherokee_thread_t *thread = THREAD(data);
@@ -166,6 +166,10 @@ cherokee_thread_new  (cherokee_thread_t      **thd,
 
 	n->fastcgi_servers     = NULL;
 	n->fastcgi_free_func   = NULL;
+
+	/* Thread Local Storage
+	 */
+	CHEROKEE_THREAD_PROP_SET (thread_logger_error_ptr, NULL);
 
 	/* Event poll object
 	 */
@@ -509,6 +513,10 @@ process_polling_connections (cherokee_thread_t *thd)
 	list_for_each_safe (i, tmp, LIST(&thd->polling_list)) {
 		conn = CONN(i);
 
+		/* Thread logger
+		 */
+		CHEROKEE_THREAD_PROP_SET (thread_logger_error_ptr, conn->logger_ref);
+
 		/* Has it been too much without any work?
 		 */
 		if (conn->timeout < cherokee_bogonow_now) {
@@ -577,6 +585,10 @@ process_active_connections (cherokee_thread_t *thd)
 
 		TRACE (ENTRIES, "thread (%p) processing conn (%p), phase %d '%s'\n", 
 		       thd, conn, conn->phase, cherokee_connection_get_phase_str (conn));
+
+		/* Thread logger
+		 */
+		CHEROKEE_THREAD_PROP_SET (thread_logger_error_ptr, conn->logger_ref);
 
 		/* Has the connection been too much time w/o any work
 		 */
@@ -833,6 +845,10 @@ process_active_connections (cherokee_thread_t *thd)
 				continue;
 			}
 
+			/* Thread logger
+			 */
+			CHEROKEE_THREAD_PROP_SET (thread_logger_error_ptr, conn->logger_ref);
+
 			/* If it's a POST we've to read more data
 			 */
 			if (http_method_with_input (conn->header.method)) {
@@ -1000,8 +1016,8 @@ process_active_connections (cherokee_thread_t *thd)
 			default:
 				if ((MODULE(conn->handler)->info) &&
 				    (MODULE(conn->handler)->info->name)) 
-					PRINT_ERROR ("Unknown ret %d from handler %s\n", ret,
-						     MODULE(conn->handler)->info->name);
+					LOG_ERROR ("Unknown ret %d from handler %s\n", ret,
+						   MODULE(conn->handler)->info->name);
 				else
 					RET_UNKNOWN(ret);
 				break;
@@ -1328,7 +1344,7 @@ thread_full_handler (cherokee_thread_t *thd,
 	if (ret != ret_ok)
 		goto out;
 
-	PRINT_ERROR_S ("WARNING: Run out of file descriptors!!\n");
+	LOG_WARNING_S ("Run out of file descriptors!!\n");
 	
 	/* Read the request
 	 */
@@ -1378,7 +1394,7 @@ accept_new_connection (cherokee_thread_t *thd,
 	 */
 	ret = cherokee_thread_get_new_connection (thd, &new_conn);
 	if (unlikely(ret < ret_ok)) {
-		PRINT_ERROR_S ("ERROR: Trying to get a new connection object\n");
+		LOG_ERROR_S ("Trying to get a new connection object\n");
 		cherokee_fd_close (new_fd);
 		return ret_deny;
 	}
@@ -1394,7 +1410,7 @@ accept_new_connection (cherokee_thread_t *thd,
 	CHEROKEE_MUTEX_LOCK (&thd->ownership);
 
 	if (unlikely(ret < ret_ok)) {
-		PRINT_ERROR_S ("ERROR: Trying to set sockaddr\n");
+		LOG_ERROR_S ("Trying to set sockaddr\n");
 		goto error;
 	}
 
@@ -1486,11 +1502,6 @@ cherokee_thread_step_SINGLE_THREAD (cherokee_thread_t *thd)
 	}
 #endif
 
-	/* Graceful restart
-	 */
-	if (srv->wanna_reinit)
-		goto out;
-
 	/* May have to reactive connections
 	 */
 	cherokee_limiter_reactive (&thd->limiter, thd);
@@ -1512,6 +1523,20 @@ cherokee_thread_step_SINGLE_THREAD (cherokee_thread_t *thd)
 	 */
 	fdwatch_msecs = cherokee_limiter_get_time_limit (&thd->limiter,
 							 fdwatch_msecs);
+
+	/* Graceful restart
+	 */
+	if (srv->wanna_reinit) {
+		if ((thd->active_list_num == 0) && 
+		    (thd->polling_list_num == 0))
+		{
+			thd->exit = true;
+			return ret_eof;
+		}
+
+		cherokee_fdpoll_watch (thd->fdpoll, fdwatch_msecs);
+		goto out;
+	}
 
 	/* Inspect the file descriptors
 	 */
@@ -1572,7 +1597,11 @@ watch_accept_MULTI_THREAD (cherokee_thread_t  *thd,
 	}
 
 	/* Shortcut: don't waste time on watch() */
-	if (unlikely (srv->wanna_exit)) {
+	if (unlikely ((srv->wanna_exit) ||
+		      ((srv->wanna_reinit) &&
+		       (thd->active_list_num  == 0) &&
+		       (thd->polling_list_num == 0))))
+	{
 		goto out;
 	}
 

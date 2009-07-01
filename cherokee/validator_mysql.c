@@ -73,8 +73,8 @@ cherokee_validator_mysql_configure (cherokee_config_node_t *conf, cherokee_serve
 		cherokee_buffer_init (&n->database);
 		cherokee_buffer_init (&n->query);
 
-		n->port           = MYSQL_DEFAULT_PORT;
-		n->use_md5_passwd = false;
+		n->port      = MYSQL_DEFAULT_PORT;
+		n->hash_type = cherokee_mysql_hash_none;
 
 		*_props = MODULE_PROPS (n);
 	}
@@ -105,8 +105,17 @@ cherokee_validator_mysql_configure (cherokee_config_node_t *conf, cherokee_serve
 		} else if (equal_buf_str (&subconf->key, "query")) {
 			cherokee_buffer_add_buffer (&props->query, &subconf->val);
 
-		} else if (equal_buf_str (&subconf->key, "use_md5_passwd")) {
-			props->use_md5_passwd = !!atoi (subconf->val.buf);
+		} else if (equal_buf_str (&subconf->key, "hash")) {
+			if (equal_buf_str (&subconf->val, "md5")) {
+				props->hash_type = cherokee_mysql_hash_md5;
+
+			} else if (equal_buf_str (&subconf->val, "sha1")) {
+				props->hash_type = cherokee_mysql_hash_sha1;
+
+			} else {
+				LOG_CRITICAL ("Validator MySQL: Unknown hash type: '%s'\n", subconf->val.buf);
+				return ret_error;
+			}
 
 		} else if ((equal_buf_str (&subconf->key, "methods") || 
 			    equal_buf_str (&subconf->key, "realm"))) 
@@ -114,7 +123,7 @@ cherokee_validator_mysql_configure (cherokee_config_node_t *conf, cherokee_serve
 			/* not handled here
 			 */
 		} else {
-			PRINT_MSG ("ERROR: Validator MySQL: Unknown key: '%s'\n", subconf->key.buf);
+			LOG_CRITICAL ("Validator MySQL: Unknown key: '%s'\n", subconf->key.buf);
 			return ret_error;
 		}
 	}
@@ -122,15 +131,15 @@ cherokee_validator_mysql_configure (cherokee_config_node_t *conf, cherokee_serve
 	/* Checks
 	 */
 	if (cherokee_buffer_is_empty (&props->user)) {
-		PRINT_ERROR_S ("ERROR: MySQL validator: an 'user' entry is needed\n");
+		LOG_ERROR_S ("MySQL validator: an 'user' entry is needed\n");
 		return ret_error;
 	}
 	if (cherokee_buffer_is_empty (&props->database)) {
-		PRINT_ERROR_S ("ERROR: MySQL validator: a 'database' entry is needed\n");
+		LOG_ERROR_S ("MySQL validator: a 'database' entry is needed\n");
 		return ret_error;
 	}
 	if (cherokee_buffer_is_empty (&props->query)) {
-		PRINT_ERROR_S ("ERROR: MySQL validator: a 'query' entry is needed\n");
+		LOG_ERROR_S ("MySQL validator: a 'query' entry is needed\n");
 		return ret_error;
 	}
 
@@ -145,7 +154,7 @@ init_mysql_connection (cherokee_validator_mysql_t *mysql, cherokee_validator_mys
 
 	if (unlikely ((props->host.buf == NULL) &&
 		      (props->unix_socket.buf == NULL))) {
-		PRINT_ERROR_S ("ERROR: MySQL validator misconfigured: A Host or Unix socket is needed.");
+		LOG_ERROR_S ("MySQL validator misconfigured: A Host or Unix socket is needed.");
 		return ret_error;
 	}
 
@@ -161,8 +170,8 @@ init_mysql_connection (cherokee_validator_mysql_t *mysql, cherokee_validator_mys
 				   props->port, 
 				   props->unix_socket.buf, 0);
 	if (conn == NULL) {
-		PRINT_ERROR ("Unable to connect to MySQL server: %s:%d %s\n", 
-			     props->host.buf, props->port, mysql_error (mysql->conn));
+		LOG_ERROR ("Unable to connect to MySQL server: %s:%d %s\n", 
+			   props->host.buf, props->port, mysql_error (mysql->conn));
 		return ret_error;
 	}
 
@@ -271,20 +280,22 @@ cherokee_validator_mysql_check (cherokee_validator_mysql_t *mysql, cherokee_conn
 	row     = mysql_fetch_row (result);
 	lengths = mysql_fetch_lengths (result);
 
-	if ((props->use_md5_passwd) || 
-	    (conn->req_auth_type == http_auth_digest))
-	{
-		cherokee_buffer_add_buffer (&user_passwd, &conn->validator->passwd);
-		cherokee_buffer_encode_md5_digest (&user_passwd);
-	} else {
-		cherokee_buffer_add_buffer (&user_passwd, &conn->validator->passwd);
-	}
 	cherokee_buffer_add (&db_passwd, row[0], (size_t) lengths[0]);
 
 	/* Check it out
 	 */
 	switch (conn->req_auth_type) {
 	case http_auth_basic:
+		cherokee_buffer_add_buffer (&user_passwd, &conn->validator->passwd);
+		
+		/* Hashes */
+		if (props->hash_type == cherokee_mysql_hash_md5) {
+			cherokee_buffer_encode_md5_digest (&user_passwd);
+		} else if (props->hash_type == cherokee_mysql_hash_sha1) {
+			cherokee_buffer_encode_sha1_digest (&user_passwd);
+		}
+
+		/* Compare passwords */
 		re = cherokee_buffer_case_cmp_buf (&user_passwd, &db_passwd);
 		ret = (re == 0) ? ret_ok : ret_deny;
 		break;
