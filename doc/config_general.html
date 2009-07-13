@@ -17,26 +17,20 @@
 </div>
 <h2 id="_general_configuration">General Configuration</h2>
 <div class="sectionbody">
+<h3 id="networking">Network</h3><div style="clear:left"></div>
 <div class="imageblock">
 <div class="content">
-<img src="media/images/admin_general.png" alt="General" title="General"/>
+<img src="media/images/admin_general_networking.png" alt="General" title="General"/>
 </div>
 </div>
-<h3 id="networking">Networking</h3><div style="clear:left"></div>
-<h4 id="_binding">Binding:</h4>
-<div class="para"><p>When the server is initiated it opens a port and starts listening to
-incoming requests. By default this is port 80 and it will use all the
-network interfaces of the machine, which is usually the desired
-behavior.</p></div>
 <h4 id="_ipv6_support">IPv6 support</h4>
 <div class="para"><p>The IPv6 configuration key brings the possibility of activating or
 deactivating the IPv6 support at the server. If Cherokee has been
 compiled with IPv6 support (&#8212;with-ipv6), this configuration entry
 will be fully functional, otherwise it will be ignored.</p></div>
-<h4 id="_listen">Listen</h4>
-<div class="para"><p>This specifies the IP of the network interface to use. It can be left
-empty.</p></div>
-<h3 id="basic_behavior">Basic Behavior</h3><div style="clear:left"></div>
+<h4 id="_ssl_tls_back_end">SSL/TLS Back-end</h4>
+<div class="para"><p>Specifies the TLS/SSL backend to be used, if any. The current option
+is OpenSSL.</p></div>
 <h4 id="_timeout">Timeout</h4>
 <div class="para"><p>Sets the number of seconds that Cherokee will wait before closing the
 connection.</p></div>
@@ -73,7 +67,7 @@ cellspacing="0" cellpadding="4">
     Minor                    
     </td>
     <td align="left">
-    Cherokee/0.11
+    Cherokee/0.98
     </td>
   </tr>
   <tr>
@@ -81,7 +75,7 @@ cellspacing="0" cellpadding="4">
     Minimal                  
     </td>
     <td align="left">
-    Cherokee/0.11.0
+    Cherokee/0.98.3
     </td>
   </tr>
   <tr>
@@ -89,7 +83,7 @@ cellspacing="0" cellpadding="4">
     OS                       
     </td>
     <td align="left">
-    Cherokee/0.11.0 (UNIX)
+    Cherokee/0.98.3 (UNIX)
     </td>
   </tr>
   <tr>
@@ -97,14 +91,31 @@ cellspacing="0" cellpadding="4">
     Full                     
     </td>
     <td align="left">
-    Cherokee/0.11.0 b2321 (UNIX)
+    Cherokee/0.98.3 b2955 (UNIX)
     </td>
   </tr>
 </tbody>
 </table>
 </div>
 <div class="para"><p>By default, Cherokee will use <strong>Full</strong>.</p></div>
+<h3 id="ports_to_listen">Ports to listen</h3><div style="clear:left"></div>
+<div class="imageblock">
+<div class="content">
+<img src="media/images/admin_general_ports.png" alt="Ports to listen" title="Ports to listen"/>
+</div>
+</div>
+<div class="para"><p>This section allows to configure the ports that the server will be
+listening to. You can add several different ports, and configure
+whether they will be used for HTTP or HTTPS.</p></div>
+<div class="para"><p>Each binding entry can be configured to listen to a network
+interface. In case the text entry is empty, the server will accept
+connection from the port on any interface.</p></div>
 <h3 id="server_permissions">Server Permissions</h3><div style="clear:left"></div>
+<div class="imageblock">
+<div class="content">
+<img src="media/images/admin_general_permissions.png" alt="Server Permissions" title="Server Permissions"/>
+</div>
+</div>
 <h4 id="_user_amp_group">User &amp; Group</h4>
 <div class="para"><p>The User directive configures which user the Cherokee daemon will
 normally run as. By default, Cherokee runs as root which is considered
@@ -117,12 +128,6 @@ the system ID.</p></div>
 <h4 id="_chroot">Chroot</h4>
 <div class="para"><p>Cherokee can be jailed inside a directory. Note that this should not
 be used as the sole security measure.</p></div>
-<h3 id="secure_http">Secure HTTP</h3><div style="clear:left"></div>
-<h4 id="_port_tls">Port TLS</h4>
-<div class="para"><p>The <strong>Port TLS</strong> specifies the port to be used for secure connections.</p></div>
-<h4 id="_back_end">Back-end</h4>
-<div class="para"><p>Specifies the TLS/SSL backend to be used, if any. The current option
-is OpenSSL.</p></div>
 </div>
 <div id="footer">
 <div id="footer-text">

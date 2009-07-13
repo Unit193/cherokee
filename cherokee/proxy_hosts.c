@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2008 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2009 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -18,9 +18,9 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
- * USA
- */
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
+ */ 
 
 #include "common-internal.h"
 #include "proxy_hosts.h"
@@ -37,7 +37,7 @@ poll_free (void *p)
 ret_t
 cherokee_handler_proxy_hosts_init (cherokee_handler_proxy_hosts_t *hosts)
 {
- 	CHEROKEE_MUTEX_INIT (&hosts->hosts_mutex, NULL);
+ 	CHEROKEE_MUTEX_INIT (&hosts->hosts_mutex, CHEROKEE_MUTEX_FAST);
 	cherokee_avl_init (&hosts->hosts);
 	cherokee_buffer_init (&hosts->tmp);
 
@@ -114,7 +114,7 @@ cherokee_handler_proxy_poll_new (cherokee_handler_proxy_poll_t **poll,
 
 	INIT_LIST_HEAD (&n->active);
 	INIT_LIST_HEAD (&n->reuse);
-	CHEROKEE_MUTEX_INIT (&n->mutex, NULL);
+	CHEROKEE_MUTEX_INIT (&n->mutex, CHEROKEE_MUTEX_FAST);
 
 	*poll = n;
 	return ret_ok;
@@ -151,7 +151,7 @@ cherokee_handler_proxy_poll_get (cherokee_handler_proxy_poll_t  *poll,
 		/* Reuse a prev connection */
 		poll->reuse_len -= 1;
 
-		i = poll->reuse.next;
+		i = poll->reuse.prev;
 		cherokee_list_del (i);
 		cherokee_list_add (i, &poll->active);
 
@@ -189,28 +189,36 @@ poll_release (cherokee_handler_proxy_poll_t *poll,
 	/* Not longer an active connection */
 	cherokee_list_del (&pconn->listed);
 
-	/* The proxy connection cannot be reused
+	/* Don't reuse connection w/o keep-alive
 	 */
-	if (poll->reuse_len > poll->reuse_max) {
+	if (! pconn->keepalive_in) {
 		cherokee_handler_proxy_conn_free (pconn);
 		return ret_ok;
 	}
 
+	/* If the reuse-list is full, dispose the oldest obj
+	 */
+	if (poll->reuse_len > poll->reuse_max) {
+		cherokee_handler_proxy_conn_t *oldest;		
+
+		oldest = PROXY_CONN(poll->reuse.prev);
+		cherokee_list_del (&oldest->listed);
+		poll->reuse_len -= 1;
+
+		cherokee_handler_proxy_conn_free (oldest);
+	}
+
 	/* Clean up
 	 */
-	pconn->enc      = pconn_enc_none;
-	pconn->size_in  = 0;
-	pconn->sent_out = 0;
+	pconn->keepalive_in = false;
+	pconn->size_in      = 0;
+	pconn->sent_out     = 0;
+	pconn->enc          = pconn_enc_none;
 
 	cherokee_buffer_clean (&pconn->header_in_raw);
 
-	/* Socket
+	/* Store it to be reused
 	 */
-	if (! pconn->keepalive_in) {
-		cherokee_socket_close (&pconn->socket);
-	}
-
-	/* Store it to be reused */
 	poll->reuse_len += 1;
 	cherokee_list_add (&pconn->listed, &poll->reuse);
 
@@ -319,8 +327,14 @@ cherokee_handler_proxy_conn_recv_headers (cherokee_handler_proxy_conn_t *pconn,
 	/* Look for the end of header
 	 */
 	ret = cherokee_find_header_end (&pconn->header_in_raw, &end, &sep_len);
-	if (ret != ret_ok)
+	switch (ret) {
+	case ret_ok:
+		break;
+	case ret_not_found:
 		return ret_eagain;
+	default:
+		return ret_error;
+	}
 
 	/* Copy the body if there is any
 	 */
@@ -344,10 +358,14 @@ cherokee_proxy_util_init_socket (cherokee_socket_t *socket,
 	ret_t ret;
 	
 	/* Family */
-	ret = cherokee_socket_set_client (socket, AF_INET);
-        if (unlikely(ret != ret_ok)) {
-		return ret_error;
+	if (cherokee_string_is_ipv6 (&src->host)) {
+		ret = cherokee_socket_set_client (socket, AF_INET6);
+	} else {
+		ret = cherokee_socket_set_client (socket, AF_INET);
 	}
+
+        if (unlikely(ret != ret_ok))
+		return ret_error;
 
 	/* TCP port */
         SOCKET_SIN_PORT(socket) = htons (src->port);

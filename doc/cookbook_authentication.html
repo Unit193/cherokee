@@ -90,7 +90,7 @@ step by step examples for Plain and PAM mechanisms in the
 same as for <tt>plain</tt> validation. The only difference is the tools used
 to create the passwords' file.</p></div>
 <h3 id="htdigest">htdigest</h3><div style="clear:left"></div>
-<div class="para"><p>To use this handler you will need a file created by the <tt>htdigest</tt>
+<div class="para"><p>To use this validator you will need a file created by the <tt>htdigest</tt>
 command. It is a tool to manage user files for digest (and basic)
 authentication.</p></div>
 <div class="sidebarblock">
@@ -121,7 +121,7 @@ $ cat pass
 testuser:secret:f24f76261bcd65780b33edde00855897</tt></pre>
 </div></div>
 <h3 id="htpasswd">htpasswd</h3><div style="clear:left"></div>
-<div class="para"><p>For this handle, the tool <tt>htpasswd</tt> is needed to create the
+<div class="para"><p>For this validator, the tool <tt>htpasswd</tt> is needed to create the
 files. The basic usage information is this:</p></div>
 <div class="sidebarblock">
 <div class="sidebar-content">
@@ -174,7 +174,7 @@ essential fields will be enough. Realm, database name, user, password
 and an SQL query that must return one row with one column as password.</p></div>
 <div class="imageblock">
 <div class="content">
-<img src="media/images/cookbook_mysql_validator.png" alt="MySQL handler set up" title="MySQL handler set up"/>
+<img src="media/images/cookbook_mysql_validator.png" alt="MySQL validator set up" title="MySQL validator set up"/>
 </div>
 </div>
 <div class="para"><p>In this case, we have used:</p></div>
@@ -252,6 +252,19 @@ processing of PHP files would take palce. This one is a <em>FINAL</em> rule,
 so the rule evaluation would stop.</p></div>
 <div class="para"><p>In case the PHP files were not being requested from the secured
 directory, just the second rule would apply.</p></div>
+<h3 id="fixed_list">Fixed list</h3><div style="clear:left"></div>
+<div class="para"><p>For this validator you will only need to add user-password pairs. As
+always, the <tt>realm</tt> field is mandatory.</p></div>
+<div class="imageblock">
+<div class="content">
+<img src="media/images/admin_validators_authlist.png" alt="Fixed List" title="Fixed List"/>
+</div>
+</div>
+<h3 id="ldap">LDAP</h3><div style="clear:left"></div>
+<div class="para"><p>Here is a basic example of the LDAP validator in action. It assumes
+you have a working LDAP service running at your localhost, and it uses
+no TLS of CA files.</p></div>
+<div class="para"><p>image::media/images/admin_validators_ldap.png</p></div>
 </div>
 <div id="footer">
 <div id="footer-text">

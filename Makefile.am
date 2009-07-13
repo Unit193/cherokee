@@ -1,6 +1,6 @@
 ## Cherokee: Makefile.am  -*- makefile -*-
 
-SUBDIRS = m4 www icons themes qa doc . admin contrib cherokee cget windows
+SUBDIRS = po m4 www icons themes qa doc . admin contrib cherokee cget windows dbslayer
 SUFFIXES = .sample.pre .sample .h.pre .h
 ACLOCAL_AMFLAGS = -I m4
 
@@ -14,7 +14,6 @@ m4data_DATA = cherokee.m4
 man_MANS =           \
 cherokee.1           \
 cherokee-config.1    \
-spawn-fcgi.1         \
 cherokee-tweak.1     \
 cherokee-admin.1     \
 cherokee-worker.1
@@ -63,13 +62,14 @@ debian_testing_chroot.sh
 
 
 EXTRA_DIST =          \
-TODO                  \
 http-cherokee.xml     \
 cherokee.spec         \
 cherokee.spec.in      \
 SUNWcherokee.spec     \
 pam.d_cherokee        \
 cherokee.pc.in        \
+svnlog2changelog.py   \
+changelog-update.sh   \
 $(m4data_DATA)        \
 $(CONFS_PRE)          \
 $(CONSTANTS_PRE)      \
@@ -102,6 +102,7 @@ install-data-local: $(CONFS) install-data-local-config
 		$(INSTALL_DATA) $(top_builddir)/cherokee.conf.sample $(DESTDIR)$(cherokeeconfdir)/cherokee.conf; \
 	fi
 	$(INSTALL_DATA) $(top_builddir)/cherokee.conf.sample $(DESTDIR)$(cherokeeadmindir)/cherokee.conf.sample
+	$(INSTALL_DATA) $(top_builddir)/performance.conf.sample $(DESTDIR)$(cherokeeadmindir)/performance.conf.sample
 	@if test -f $(DESTDIR)$(cherokeeconfdir)/cherokee.conf.perf_sample ; then \
 		echo "$@ will not overwrite existing $(DESTDIR)$(cherokeeconfdir)/cherokee.conf.perf_sample"; \
 	else \
@@ -121,6 +122,8 @@ uninstall-local: uninstall-local-config
 		echo "rm -f $(DESTDIR)$(cherokeeconfdir)/cherokee.conf.perf_sample"; \
 		$(RM) -f $(DESTDIR)$(cherokeeconfdir)/cherokee.conf.perf_sample; \
 	fi
+	$(RM) -f $(DESTDIR)$(cherokeeadmindir)/cherokee.conf.sample
+	$(RM) -f $(DESTDIR)$(cherokeeadmindir)/performance.conf.sample
 
 test:
 	$(MAKE) -C qa test

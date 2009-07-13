@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2008 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2009 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -18,12 +18,14 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
- * USA
- */
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
+ */ 
 
 #include "common-internal.h"
 #include "util.h"
+#include "logger.h"
+#include "bogotime.h"
 
 #include <stdlib.h>
 #include <stdarg.h>
@@ -77,6 +79,33 @@
 #define ENTRIES "util"
 
 const char *cherokee_version    = PACKAGE_VERSION;
+
+
+const char hex2dec_tab[256] = {
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  /* 00-0F */
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  /* 10-1F */
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  /* 20-2F */
+	0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 0, 0, 0, 0, 0,  /* 30-3F */
+	0,10,11,12,13,14,15, 0, 0, 0, 0, 0, 0, 0, 0, 0,  /* 40-4F */
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  /* 50-5F */
+	0,10,11,12,13,14,15, 0, 0, 0, 0, 0, 0, 0, 0, 0,  /* 60-6F */
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  /* 70-7F */
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  /* 80-8F */
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  /* 90-9F */
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  /* A0-AF */
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  /* B0-BF */
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  /* C0-CF */
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  /* D0-DF */
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  /* E0-EF */
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0   /* F0-FF */
+};
+
+const char *month[13] = {
+	"Jan", "Feb", "Mar", "Apr", "May", "Jun",
+	"Jul", "Aug", "Sep", "Oct", "Nov", "Dec", 
+	NULL
+};
+
 
 /* Given an error number (errno) it returns an error string.
  * Parameters "buf" and "bufsize" are passed by caller
@@ -244,6 +273,18 @@ strcasestr (register char *s, register char *find)
 		s--;
 	}
 	return ((char *) s);
+}
+#endif
+
+
+#ifndef HAVE_MALLOC
+void *
+rpl_malloc (size_t n)
+{
+	if (unlikely (n == 0))
+		n = 1;
+
+	return malloc (n);
 }
 #endif
 
@@ -516,7 +557,7 @@ cherokee_split_arguments (cherokee_buffer_t *request,
 
 
 int
-cherokee_estimate_va_length (char *fmt, va_list ap)
+cherokee_estimate_va_length (const char *fmt, va_list ap)
 {
 	char               *p;
 	cuchar_t            ch;
@@ -764,7 +805,7 @@ cherokee_fd_set_nodelay (int fd, cherokee_boolean_t enable)
 #else
  	flags = fcntl (fd, F_GETFL, 0);
 	if (unlikely (flags == -1)) {
-		PRINT_ERRNO (errno, "ERROR: fcntl/F_GETFL fd %d: ${errno}\n", fd);
+		LOG_ERRNO (errno, cherokee_err_error, "fcntl/F_GETFL fd %d: ${errno}\n", fd);
 		return ret_error;
 	}
 
@@ -776,7 +817,7 @@ cherokee_fd_set_nodelay (int fd, cherokee_boolean_t enable)
 	re = fcntl (fd, F_SETFL, flags);
 #endif	
 	if (unlikely (re < 0)) {
-		PRINT_ERRNO (errno, "ERROR: Setting O_NDELAY to fd %d: ${errno}\n", fd);
+		LOG_ERRNO (errno, cherokee_err_error, "Setting O_NDELAY to fd %d: ${errno}\n", fd);
 		return ret_error;
 	}
 
@@ -794,7 +835,7 @@ cherokee_fd_set_nonblocking (int fd, cherokee_boolean_t enable)
 #else	
 	flags = fcntl (fd, F_GETFL, 0);
 	if (flags < 0) {
-		PRINT_ERRNO (errno, "ERROR: fcntl/F_GETFL fd %d: ${errno}\n", fd);
+		LOG_ERRNO (errno, cherokee_err_error, "fcntl/F_GETFL fd %d: ${errno}\n", fd);
 		return ret_error;
 	}
 
@@ -806,7 +847,7 @@ cherokee_fd_set_nonblocking (int fd, cherokee_boolean_t enable)
 	re = fcntl (fd, F_SETFL, flags);
 #endif
 	if (re < 0) {
-		PRINT_ERRNO (errno, "ERROR: Setting O_NONBLOCK to fd %d: ${errno}\n", fd);
+		LOG_ERRNO (errno, cherokee_err_error, "Setting O_NONBLOCK to fd %d: ${errno}\n", fd);
 		return ret_error;
 	}
 
@@ -822,7 +863,7 @@ cherokee_fd_set_closexec (int fd)
 
 	re = fcntl (fd, F_SETFD, FD_CLOEXEC);
 	if (re < 0) {
-		PRINT_ERRNO (errno, "ERROR: Setting FD_CLOEXEC to fd %d: ${errno}\n", fd);
+		LOG_ERRNO (errno, cherokee_err_error, "Setting FD_CLOEXEC to fd %d: ${errno}\n", fd);
 		return ret_error;
 	}
 #endif
@@ -938,7 +979,7 @@ cherokee_path_arg_eval (cherokee_buffer_t *path)
 	if (path->buf[0] != '/') {
 		d = getcwd (tmp, sizeof(tmp));
 
-		cherokee_buffer_prepend (path, "/", 1);		
+		cherokee_buffer_prepend (path, (char *)"/", 1);		
 		cherokee_buffer_prepend (path, d, strlen(d));		
 	}
 
@@ -953,11 +994,24 @@ cherokee_path_arg_eval (cherokee_buffer_t *path)
 long * 
 cherokee_get_timezone_ref (void)
 {
-#ifdef HAVE_INT_TIMEZONE
-	return &timezone;
+#ifdef HAVE_STRUCT_TM_GMTOFF
+	struct tm   tm;
+	time_t      timestamp;
+	static long tz         = 43201; /* 12h+1s: out of range */
+
+	if (unlikely (tz == 43201)) {
+		timestamp = time(NULL);
+		cherokee_localtime (&timestamp, &tm);
+		tz = -tm.tm_gmtoff;
+	}
+	return &tz;
 #else
+# ifdef HAVE_INT_TIMEZONE
+	return &timezone;
+# else
 	static long _faked_timezone = 0;
 	return &_faked_timezone;
+# endif
 #endif
 }
 
@@ -1259,27 +1313,23 @@ cherokee_get_shell (const char **shell, const char **binary)
 }
 
 
-void
-cherokee_print_errno (int error, char *format, ...) 
+ret_t
+cherokee_buf_add_bogonow (cherokee_buffer_t  *buf,
+			  cherokee_boolean_t  update)
 {
-	va_list           ap;
-	char             *errstr;
-	char              err_tmp[ERROR_MAX_BUFSIZE];
-	cherokee_buffer_t buffer = CHEROKEE_BUF_INIT;
+	if (update) {
+		cherokee_bogotime_try_update();
+	}
 
-	errstr = cherokee_strerror_r (error, err_tmp, sizeof(err_tmp));
-	if (errstr == NULL)
-		errstr = "unknwon error (?)";
-
-	cherokee_buffer_ensure_size (&buffer, 128);
-	va_start (ap, format);
-	cherokee_buffer_add_va_list (&buffer, format, ap);
-	va_end (ap);
-
-	cherokee_buffer_replace_string (&buffer, "${errno}", 8, errstr, strlen(errstr));
-	PRINT_MSG_S (buffer.buf);
-
-	cherokee_buffer_mrproper (&buffer);
+	cherokee_buffer_add_va (buf, "[%02d/%02d/%d %02d:%02d:%02d.%03d]",
+				cherokee_bogonow_tmloc.tm_mday, 
+				cherokee_bogonow_tmloc.tm_mon, 
+				cherokee_bogonow_tmloc.tm_year + 1900,
+				cherokee_bogonow_tmloc.tm_hour, 
+				cherokee_bogonow_tmloc.tm_min, 
+				cherokee_bogonow_tmloc.tm_sec,
+				cherokee_bogonow_tv.tv_usec / 1000);
+	return ret_ok;
 }
 
 
@@ -1345,7 +1395,7 @@ cherokee_mkdir_p (cherokee_buffer_t *path)
 		*p = '\0';
 		re = cherokee_mkdir (path->buf, 0700);
 		if ((re != 0) && (errno != EEXIST)) {
-			PRINT_ERRNO (errno, "Could not mkdir '%s': ${errno}\n", path->buf);
+			LOG_ERRNO (errno, cherokee_err_error, "Could not mkdir '%s': ${errno}\n", path->buf);
 			return ret_error;
 		}
 		*p = '/';
@@ -1357,7 +1407,7 @@ cherokee_mkdir_p (cherokee_buffer_t *path)
 
 	re = cherokee_mkdir (path->buf, 0700);
 	if ((re != 0) && (errno != EEXIST)) {
-		PRINT_ERRNO (errno, "Could not mkdir '%s': ${errno}\n", path->buf);
+		LOG_ERRNO (errno, cherokee_err_error, "Could not mkdir '%s': ${errno}\n", path->buf);
 		return ret_error;
 	}
 	
@@ -1388,7 +1438,7 @@ cherokee_iovec_skip_sent (struct iovec *orig, uint16_t  orig_len,
 		} else {
 			/* Add only a piece */
 			dest[j].iov_len  = orig[i].iov_len  - (sent - total);
-			dest[j].iov_base = orig[i].iov_base + (sent - total);
+			dest[j].iov_base = ((char *)orig[i].iov_base) + (sent - total);
 			j++;
 		}
 	}
@@ -1438,7 +1488,7 @@ cherokee_io_stat (cherokee_iocache_t        *iocache,
 		case ret_ok:
 		case ret_ok_and_sent:
 			*info = &(*io_entry)->state;
-			return ret_ok;
+			return (*io_entry)->state_ret;
 
 		case ret_no_sys:
 			goto without;
@@ -1539,15 +1589,21 @@ cherokee_find_header_end (cherokee_buffer_t  *buf,
 	char *p;
 	char *fin;
 	char *begin;
+	char *limit;
 	int   len;
 
 	if (cherokee_buffer_is_empty (buf))
 		return ret_not_found;
 
-	p   = buf->buf;
-	fin = buf->buf + buf->len;
+	p     = buf->buf;
+	fin   = buf->buf + buf->len;
+	limit = buf->buf + MAX_HEADER_LEN;
 
 	while (p < fin) {
+		if (unlikely (p > limit)) {
+			return ret_error;
+		}
+
 		if ((*p == CHR_CR) || (*p == CHR_LF)) {
 			len   = 0;
 			begin = p;
@@ -1571,4 +1627,161 @@ cherokee_find_header_end (cherokee_buffer_t  *buf,
 	}
 
 	return ret_not_found;
+}
+
+
+ret_t
+cherokee_ntop (int family, struct sockaddr *addr, char *dst, size_t cnt)
+{
+	const char *str = NULL;
+	errno = EAFNOSUPPORT;
+
+	/* Only old systems without inet_ntop() function
+	 */
+#ifndef HAVE_INET_NTOP
+	{
+		str = inet_ntoa (((struct sockaddr_in *)addr)->sin_addr);
+		memcpy(dst, str, strlen(str));
+
+		return ret_ok;
+	}
+#else
+# ifdef HAVE_IPV6
+	if (family == AF_INET6) {
+		struct in6_addr *addr6 = &(((struct sockaddr_in6 *)addr)->sin6_addr);
+
+		if (IN6_IS_ADDR_V4MAPPED (addr6) ||
+		    IN6_IS_ADDR_V4COMPAT (addr6))
+		{
+			const void *p = &(addr6)->s6_addr[12];
+
+			str = inet_ntop (AF_INET, p, dst, cnt);
+			if (str == NULL) {
+				goto error;
+			}
+		} else {
+			str = (char *) inet_ntop (AF_INET6, addr6, dst, cnt);
+			if (str == NULL) {
+				goto error;
+			}
+		}
+	} else
+# endif
+	{
+		struct in_addr *addr4 = &((struct sockaddr_in *)addr)->sin_addr;
+		
+		str = inet_ntop (AF_INET, addr4, dst, cnt);
+		if (str == NULL) {
+			goto error;
+		}
+	}
+#endif
+
+	return ret_ok;
+
+error:
+	dst[0] = '\0';
+	return ret_error;
+}
+
+
+ret_t
+cherokee_tmp_dir_copy (cherokee_buffer_t *buffer)
+{
+	char *p;
+
+	/* Read a custom Cherokee variable
+	 */
+	p = getenv("CHEROKEE_TMPDIR");
+	if (p != NULL) {
+		cherokee_buffer_add (buffer, p, strlen(p));
+		return ret_ok;
+	} 
+
+	/* Read the system variable
+	 */
+#ifdef _WIN32
+	p = getenv("TEMP");
+#else
+	p = getenv("TMPDIR");
+#endif
+	if (p != NULL) {
+		cherokee_buffer_add (buffer, p, strlen(p));
+		return ret_ok;
+	}
+
+	/* Since everything has failed, let's go for /tmp
+	 */
+	cherokee_buffer_add_str (buffer, "/tmp");
+	return ret_ok;
+}
+
+
+ret_t
+cherokee_parse_host (cherokee_buffer_t  *buf,
+		     cherokee_buffer_t  *host,
+		     cuint_t            *port)
+{
+	char *p;
+	char *colon;
+
+
+	colon = strchr (buf->buf, ':');
+	if (colon == NULL) {
+		/* Host
+		 */
+		cherokee_buffer_add_buffer (host, buf);
+		return ret_ok;	
+	}
+	
+	p = strchr (colon+1, ':');
+	if (p == NULL) {
+		/* Host:port
+		 */
+		*port = atoi (colon+1);
+		cherokee_buffer_add (host, buf->buf, colon - buf->buf);
+		return ret_ok;
+	}
+
+#ifdef HAVE_IPV6
+	if (buf->buf[0] != '[') {
+		/* IPv6
+		 */
+		cherokee_buffer_add_buffer (host, buf);
+		return ret_ok;	
+	}
+
+	/* [IPv6]:port
+	 */
+	colon = strrchr(buf->buf, ']');
+	if (unlikely (colon == NULL))
+		return ret_error;
+	if (unlikely (colon[1] != ':'))
+		return ret_error;
+
+	colon += 1;
+	*port = atoi(colon+1);
+	cherokee_buffer_add (host, buf->buf+1, (colon-1)-(buf->buf+1));
+	return ret_ok;
+#endif
+	
+	return ret_error;
+}
+
+
+int
+cherokee_string_is_ipv6 (cherokee_buffer_t *ip)
+{
+	cuint_t i;
+	cuint_t colons = 0;
+	
+	for (i=0; i<ip->len; i++) {
+		if (ip->buf[i] == ':') {
+			colons += 1;
+			if (colons == 2)
+				return 1;
+		}
+	}
+
+	return 0;
 }

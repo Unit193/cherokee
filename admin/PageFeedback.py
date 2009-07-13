@@ -4,9 +4,10 @@ from CherokeeManagement import *
 
 from time import asctime
 
-INET_WARNING = """
-A working connection to the Internet is required for this form to work.
-"""
+# For gettext
+N_ = lambda x: x
+
+INET_WARNING = N_('A working connection to the Internet is required for this form to work.')
 
 CHEROKEE_FEEDBACK_URL = "/cgi-bin/feedback"
 
@@ -30,15 +31,13 @@ Configuration
 """
 
 THANKS_TEXT = """
-<h1>Report sent</h1>
-<p>Thank you a million for your feedback. We do appreciate your help.</p>
+<h1>%(_treport)s</h1>
+<p>%(_thanks)s</p>
 
 %(reply)s
 
-<h2>Report</h2>
-<pre>
-%(report)s
-</pre>
+<h2>%(_lreport)s</h2>
+<pre>%(report)s</pre>
 """
 
 class PageFeedback (PageMenu, FormHelper):
@@ -48,23 +47,22 @@ class PageFeedback (PageMenu, FormHelper):
 
     def _op_render (self):
         content = self._render_content()
-        self.AddMacroContent ('title', 'Feedback')
+        self.AddMacroContent ('title', _('Feedback'))
         self.AddMacroContent ('content', content)
         return Page.Render(self)
 
     def _render_content (self):
-        txt = '<h1>Feedback</h1>'
+        txt = '<h1>%s</h1>' % (_('Feedback'))
         txt += self.Dialog(INET_WARNING, 'important-information')
 
         table = Table(2)
-        self.AddTableEntry (table, 'Name',  'name')
-        self.AddTableEntry (table, 'EMail', 'email')
-        self.AddTableCheckbox (table, 'Include configuration', 'include_conf', True)
+        self.AddTableEntry (table, _('Name'),  'name')
+        self.AddTableEntry (table, _('EMail'), 'email')
+        self.AddTableCheckbox (table, _('Include configuration'), 'include_conf', True)
         txt += str(table)
 
-        txt += """<p>Message:</p>
-                  <p><textarea name="body" id="body" rows="20" style="width:100%;"></textarea></p>
-               """
+        txt += "<p>%s</p>" % (_('Message:')) + \
+               '<p><textarea name="body" id="body" rows="20" style="width:100%;"></textarea></p>'
         form = Form ("/%s" % (self._id),auto=False)
         return form.Render(txt)
 
@@ -81,19 +79,19 @@ class PageFeedback (PageMenu, FormHelper):
         try:
             data = response.read()
         except:
-            data = 'Error reading response from the serrver'
+            data = _('Error reading response from the server')
         conn.close()
         return data
-        
+
     def _op_apply_changes (self, uri, post):
         include_conf = (post.get_val('include_conf') == 'on')
         if include_conf:
             configuration = str(self._cfg)
         else:
-            configuration = 'Not included'
+            configuration = _('Not included')
 
-        
-        
+
+
         params = {
             'name':   post.pop('name',  ''),
             'email':  post.pop('email', ''),
@@ -110,11 +108,14 @@ class PageFeedback (PageMenu, FormHelper):
 
     def _op_render_thanks (self, text, reply):
         params = {
+            '_treport': _('Report sent'),
+            '_thanks':  _('Thank you a million for your feedback. We do appreciate your help.'),
+            '_lreport': _('Report'),
             'report': text,
             'reply':  self.Indent(reply)
         }
 
-        self.AddMacroContent ('title', 'Feedback: Thank you')
+        self.AddMacroContent ('title', _('Feedback: Thank you'))
         self.AddMacroContent ('content', THANKS_TEXT % params)
         return Page.Render(self)
 

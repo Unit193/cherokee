@@ -176,6 +176,9 @@
 /* Define to 1 if you have the `advapi32' library (-ladvapi32). */
 #undef HAVE_LIBADVAPI32
 
+/* Define to 1 if you have the <libavformat/avformat.h> header file. */
+#undef HAVE_LIBAVFORMAT_AVFORMAT_H
+
 /* Define to 1 if you have the `crypto' library (-lcrypto). */
 #undef HAVE_LIBCRYPTO
 
@@ -261,11 +264,20 @@
 /* Have event ports */
 #undef HAVE_PORT
 
+/* Define to 1 to use POSIX shared memory */
+#undef HAVE_POSIX_SHM
+
 /* Have pthread support */
 #undef HAVE_PTHREAD
 
 /* Define to 1 if you have the <pthread.h> header file. */
 #undef HAVE_PTHREAD_H
+
+/* Define to 1 if you have the `pthread_mutexattr_setkind_np' function. */
+#undef HAVE_PTHREAD_MUTEXATTR_SETKIND_NP
+
+/* Define to 1 if you have the `pthread_mutexattr_settype' function. */
+#undef HAVE_PTHREAD_MUTEXATTR_SETTYPE
 
 /* Define if your pthread library includes pthread_rwlock_t */
 #undef HAVE_PTHREAD_RWLOCK_T
@@ -386,6 +398,9 @@
 /* Define to 1 if you have the <syslog.h> header file. */
 #undef HAVE_SYSLOG_H
 
+/* Define to 1 to use SYSV semaphores */
+#undef HAVE_SYSV_SEMAPHORES
+
 /* Define to 1 if you have the <sys/dir.h> header file, and it defines `DIR'.
    */
 #undef HAVE_SYS_DIR_H
@@ -401,6 +416,9 @@
 
 /* Define to 1 if you have the <sys/isa_defs.h> header file. */
 #undef HAVE_SYS_ISA_DEFS_H
+
+/* Define to 1 if you have the <sys/machine.h> header file. */
+#undef HAVE_SYS_MACHINE_H
 
 /* Define to 1 if you have the <sys/mman.h> header file. */
 #undef HAVE_SYS_MMAN_H
@@ -552,6 +570,9 @@
 /* The size of `off_t', as computed by sizeof. */
 #undef SIZEOF_OFF_T
 
+/* The size of `sig_atomic_t', as computed by sizeof. */
+#undef SIZEOF_SIG_ATOMIC_T
+
 /* The size of `size_t', as computed by sizeof. */
 #undef SIZEOF_SIZE_T
 
@@ -584,6 +605,9 @@
 
 /* Trace facility */
 #undef TRACE_ENABLED
+
+/* Whether to use FFMpeg */
+#undef USE_FFMPEG
 
 /* Software version */
 #undef VERSION

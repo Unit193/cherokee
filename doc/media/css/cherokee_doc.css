@@ -1,7 +1,7 @@
 body {
- font-family: tahoma, helvetica, arial, sans-serif;
+ font-family: "Lucida Grande", Lucida, Verdana, sans-serif;
  font-size:10pt;
- color: #91928d;
+ color: #555;
 }
 
 /* Debug borders */
@@ -43,10 +43,13 @@ div.sidebar-title, div.image-title {
   margin-bottom: 0.5em;
 }
 
+div.sectionbody div.imageblock div.image-title {
+  text-align: center;
+}
+
 div.listingblock div.content {
   border: 1px solid silver;
   background: #f4f4f4;
-  padding: 0.5em;
 }
 
 div.quoteblock-content {
@@ -83,8 +86,6 @@ strong {
 
 tt {
   color: #205cab;
-  _font-size: 1.2em;
-  font-weight: bold;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -107,8 +108,8 @@ h3 + * {
 }
 
 div.sectionbody {
-  font-family: serif;
   margin-left: 0;
+  text-align:justify;
 }
 
 hr {
@@ -125,8 +126,7 @@ ul, ol, li > p {
 }
 
 pre {
-  padding: 0;
-  margin: 0;
+  margin-left: 20px;
 }
 
 span#author {
@@ -170,11 +170,10 @@ div.admonitionblock {
 }
 
 div.tableblock {
-margin-left: 10%;
-margin-right: 10%;
+margin-left:auto; margin-right:auto;
 margin-top: 1.5em;
 margin-bottom: 1.5em;
-
+text-align: center;
 }
 
 div.admonitionblock {
@@ -189,7 +188,6 @@ div.content { /* Block element content. */
 /* Block element titles. */
 div.title, caption.title {
   color: #527bbd;
-  font-family: sans-serif;
   font-weight: bold;
   text-align: left;
   margin-top: 1.0em;
@@ -221,7 +219,6 @@ div.listingblock {
 div.listingblock > div.content {
   border: 1px solid silver;
   background: #f4f4f4;
-  padding: 0.5em;
 }
 
 div.quoteblock {
@@ -266,7 +263,12 @@ div.exampleblock > div.content {
 }
 
 div.imageblock div.content { text-align:center; padding-left: 0; //margin-left:100px; }
-div.imageblock img { border: 1px solid silver; }
+div.imageblock img { 
+  border: 1px solid silver; 
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
 span.image img { border-style: none; }
 
 dl {
@@ -300,6 +302,10 @@ div.olist2 > ol {
 
 div.tableblock > table {
   border: 1px solid #527bbd;
+  width: 569px;
+  text-align:center;
+  margin-left:auto;
+  margin-right:auto;
 }
 
 thead {

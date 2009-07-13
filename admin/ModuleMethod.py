@@ -3,8 +3,11 @@ from Table import *
 from Module import *
 import validations
 
+# For gettext
+N_ = lambda x: x
+
 METHODS = [
-    ('',            'Choose'),
+    ('',            N_('Choose')),
     ('get',         'GET'),
     ('post',        'POST'),
     ('head',        'HEAD'),
@@ -27,25 +30,26 @@ METHODS = [
     ('unsubscribe', 'UNSUBSCRIBE')
 ]
 
-NOTE_METHOD  = "The HTTP method that should match this rule."
+NOTE_METHOD  = N_("The HTTP method that should match this rule.")
 
 
 class ModuleMethod (Module, FormHelper):
-    validation = [('tmp!new_rule!value', validations.is_safe_id_list)]
-
     def __init__ (self, cfg, prefix, submit_url):
         FormHelper.__init__ (self, 'method', cfg)
         Module.__init__ (self, 'method', cfg, prefix, submit_url)
+
+        self.validation = [('tmp!new_rule!value',       validations.is_safe_id_list),
+                           ('%s!method'%(self._prefix), validations.is_safe_id_list)]
 
     def _op_render (self):
         table = TableProps()
 
         if self._prefix.startswith('tmp!'):
-            self.AddPropOptions (table, 'Method', '%s!value'%(self._prefix), \
-                                 METHODS, NOTE_METHOD)
+            self.AddPropOptions (table, _('Method'), '%s!value'%(self._prefix), \
+                                 METHODS, _(NOTE_METHOD))
         else:
-            self.AddPropOptions (table, 'Method', '%s!method'%(self._prefix), \
-                                 METHODS[1:], NOTE_METHOD)
+            self.AddPropOptions (table, _('Method'), '%s!method'%(self._prefix), \
+                                 METHODS[1:], _(NOTE_METHOD))
 
         return str(table)
 
@@ -54,13 +58,13 @@ class ModuleMethod (Module, FormHelper):
 
     def apply_cfg (self, values):
         if not values.has_key('value'):
-            print "ERROR, a 'value' entry is needed!"
+            print _("ERROR, a 'value' entry is needed!")
 
         exts = values['value']
-        self._cfg['%s!match!method'%(self._prefix)] = exts
+        self._cfg['%s!method'%(self._prefix)] = exts
 
     def get_name (self):
-        return self._cfg.get_val ('%s!match!method'%(self._prefix))
+        return self._cfg.get_val ('%s!method'%(self._prefix))
 
     def get_type_name (self):
         return "HTTP method"

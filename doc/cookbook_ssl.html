@@ -29,6 +29,33 @@ enabled you will need to configure HTTPS settings for all of them.</p></div>
 where any HTTPS compliant browser will look by default. You can change
 that by specifying another port in the URL. For example,
 <a href="https://example.com:8080/">https://example.com:8080/</a> would look for an HTTPS server on port 8080.</p></div>
+<div class="para"><div class="title">How to enable the SSL support?</div><p>SSL support is not enabled by default. You will have to perform three
+straightforward actions is order to enable it:</p></div>
+<div class="olist"><ol>
+<li>
+<p>
+The first step is to enable a TLS/SSL engine. The option is
+    located in the <a href="config_general.html">General</a> configuration
+    setting. Cherokee is shipped with an libssl plug-in.
+</p>
+</li>
+<li>
+<p>
+Once the engine is configured, a new
+    <a href="config_general.html#ports_to_listen">binding port</a> must be
+    configured.  By default, HTTPS uses the port 443. Remember to add
+    this port, and to check the TLS toggle button.
+</p>
+</li>
+<li>
+<p>
+The last step would be to assign SSL certificates to the virtual
+    servers. The configuration is found inside each
+    <a href="config_virtual_servers.html#security">virtual server</a>
+    configuration, under the Security tab.
+</p>
+</li>
+</ol></div>
 <div class="para"><div class="title">How to manually test HTTP/HTTPS?</div><p>HTTP can easily be tested like this:</p></div>
 <div class="listingblock">
 <div class="content">
@@ -68,7 +95,7 @@ RSA private key file: a digital file that can be used to decrypt
 <p>
 CSR, or Certificate Signing Request: a digital file containing your
   public key and your name. It is sent to a Certifying Authority (CA)
-  that will convert sign it to conert it into a real Certificate.
+  that will convert sign it to convert it into a real Certificate.
 </p>
 </li>
 <li>
@@ -80,13 +107,24 @@ Certificate: contains your RSA public key and name, the name of the
 </p>
 </li>
 </ol></div>
-<div class="para"><div class="title">Does the startup between a non-SSL-aware and an SSL-aware web server</div><p>differ?</p></div>
-<div class="para"><p>Yes. Although in essence it is exactly the same, if you have a
+<div class="para"><div class="title">Does the startup between a non-SSL and an SSL-aware web server differ?</div><p>Yes. Although in essence it is exactly the same, if you have a
 passphrase on your SSL private key file, a startup dialog will asks
 you to enter it. This can be problematic if the web server needs to be
 started automatically. In this case, the <a href="#passphrase">passphrase</a>
 can be removed from your private key at the cost of erasing a security
-layer, wich brings additional security risks.</p></div>
+layer, which brings additional security risks.</p></div>
+<div class="para"><div class="title">Does Cherokee offer any help for Certificate Generation?</div><p>Yes. A script is provided to assist you with Certificate Generation.</p></div>
+<div class="para"><p>Just locate the <tt>contrib</tt> subdirectory and type:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>make-cert.sh</tt></pre>
+</div></div>
+<div class="para"><p>And follow the instructions. It will generate the required files, but
+you will have to install them manually.</p></div>
+<div class="para"><p>It has been tested and has worked fine every time, but if you don't find
+the script or it doesn't work for you can always follow the rest of
+the procedure described in this recipe to manually generate the
+certificates.</p></div>
 <h3 id="locate">Locate CA.pl or CA.sh</h3><div style="clear:left"></div>
 <div class="ilist"><ul>
 <li>
@@ -137,7 +175,7 @@ On MacOS X, you will find them in /System/Library/OpenSSL/misc/
      .....................................++++++
      ...++++++
      writing new private key to 'newreq.pem'
-     Enter PEM pass phrase: &lt;anothe phrase&gt;
+     Enter PEM pass phrase: &lt;another phrase&gt;
      Verifying - Enter PEM pass phrase: &lt;repeat it&gt;
      -----
      You are about to be asked to enter information that will be incorporated
@@ -234,8 +272,8 @@ a secure location.</p></div>
 <h3 id="passphrase">Pass-phrase issues</h3><div style="clear:left"></div>
 <div class="para"><p>As noted above, if you have a pass-phrase on your SSL private key file,
 the web-server start up will remain on hold until you enter it. Here
-is the information needed to changeit or even removing it, but bare in
-minda the security implications.</p></div>
+is the information needed to change it or even remove it, but bare in
+mind the security implications.</p></div>
 <div class="para"><div class="title">How to change the pass-phrase on a private key file?</div><p>Simply read it with the old pass-phrase and write it again, specifying
 a new pass-phrase.  This can be done withe these commands:</p></div>
 <div class="listingblock">

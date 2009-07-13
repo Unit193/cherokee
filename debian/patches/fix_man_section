@@ -1,9 +1,9 @@
 # Move manpage to the right section
 #
-Index: cherokee-0.9.0/cherokee-admin.1
+Index: cherokee/cherokee-admin.1
 ===================================================================
---- cherokee-0.9.0.orig/cherokee-admin.1	2008-09-22 07:16:01.000000000 -0500
-+++ cherokee-0.9.0/cherokee-admin.1	2008-09-26 12:41:18.000000000 -0500
+--- cherokee.orig/cherokee-admin.1	2008-12-26 20:31:59.000000000 -0600
++++ cherokee/cherokee-admin.1	2009-04-17 11:37:48.000000000 -0500
 @@ -1,4 +1,4 @@
 -.TH cherokee-admin 8 "July 28, 2008"
 +.TH cherokee-admin 1 "July 28, 2008"

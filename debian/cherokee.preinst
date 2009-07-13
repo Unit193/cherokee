@@ -8,8 +8,6 @@ set -e
 action=$1
 version=$2
 
-PATH=/bin:/sbin:/usr/bin:/usr/sbin
-
 migrate_conf_versions() {
     OLD_VERSION=$1
     NEW_VERSION=$2
@@ -25,7 +23,7 @@ migrate_conf_versions() {
     echo "----------------------------------------" >> $LOG
     echo "Translating $file" >> $LOG
     mv $file $oldfile
-    if /usr/bin/python $MIGRATOR $oldfile $file 2>>$LOG
+    if python $MIGRATOR $oldfile $file 2>>$LOG
     then
 	echo $file was successfully migrated >> $LOG
     else
@@ -45,7 +43,14 @@ EOF
 }
 
 case "$action" in
-    install|abort-upgrade)
+    install)
+	# Make sure the configuration file has a trailing whiteline to
+	# avoid confusing the parser (see #528160)
+	CONFFILE=/etc/cherokee.conf
+	if [ -f $CONFFILE -a ! -z "$(tail -1 $CONFFILE)" ]
+	then
+	    echo >> $CONFFILE
+	fi
 	;;
     upgrade)
 	if (  dpkg --compare-versions "$version" lt 0.6 )
@@ -64,7 +69,7 @@ case "$action" in
 	    # completely different syntax. 
 	    CONFPATH=/etc/cherokee
 	    OLDCONFPATH=$CONFPATH/pre-0.6
-	    TMPCONFPATH=$(/bin/mktemp -d /tmp/cherokee_migration.XXXXXXXX)
+	    TMPCONFPATH=$(mktemp -d /tmp/cherokee_migration.XXXXXXXX)
 	    MIGRATOR=/usr/share/cherokee/05to06.py
 	    LOG=$OLDCONFPATH/0.6_migration.log
 	    README=$OLDCONFPATH/0.6_migration_README
@@ -107,7 +112,7 @@ case "$action" in
 		    mv $file $oldfile		    
 		fi
 
-		if /usr/bin/python $MIGRATOR < $oldfile > $tmpfile 2>>$LOG
+		if python $MIGRATOR < $oldfile > $tmpfile 2>>$LOG
 		then
 		    echo $file was successfully migrated to temporary directory >> $LOG
 		else
@@ -152,6 +157,31 @@ EOF
         then
 	    migrate_conf_versions 0.9 0.10 09to010.py
 	fi
+
+	if ( dpkg --compare-versions "$version" lt 0.98 )
+        then
+	    migrate_conf_versions 0.11 0.98 011to098.py
+	fi
+
+        if ( dpkg --compare-versions "$version" lt 0.99 )
+        then
+            migrate_conf_versions 0.98 0.99 098to099.py
+        fi
+
+        if ( dpkg --compare-versions "$version" lt 0.9910 )
+        then
+            migrate_conf_versions 0.99 0.9910 0999to09910.py
+        fi
+
+	# Make sure the configuration file has a trailing whiteline to
+	# avoid confusing the parser (see #528160)
+	CONFFILE=/etc/cherokee.conf
+	if [ -f $CONFFILE -a ! -z "$(tail -1 $CONFFILE)" ]
+	    then
+	    echo >> $CONFFILE
+	fi
+	;;
+    abort-upgrade)
 	;;
     *)
         echo "preinst called with unknown argument \`$action'" >&2

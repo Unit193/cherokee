@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2008 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2009 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -18,9 +18,9 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
- * USA
- */
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
+ */ 
 
 #ifndef CHEROKEE_POST_H
 #define CHEROKEE_POST_H
@@ -39,16 +39,28 @@ typedef enum {
 	post_in_tmp_file
 } cherokee_post_type_t;
 
+typedef enum {
+	post_enc_regular,
+	post_enc_chunked
+} cherokee_post_encoding_t;
+
 typedef struct {
-	cherokee_post_type_t type;
-	off_t                size;
-	off_t                received;
-	off_t                walk_offset;
+	cherokee_post_type_t     type;
+	cherokee_post_encoding_t encoding;
 
-	cherokee_buffer_t    info;
+	cherokee_boolean_t       chunked_last;
+	off_t                    chunked_processed;
 
-	cherokee_buffer_t    tmp_file;
-	int                  tmp_file_fd;
+	cherokee_boolean_t       got_last_chunk;
+
+	off_t                    size;
+	off_t                    received;
+	off_t                    walk_offset;
+
+	cherokee_buffer_t        info;
+
+	cherokee_buffer_t        tmp_file;
+	int                      tmp_file_fd;
 } cherokee_post_t;
 
 #define POST(x)      ((cherokee_post_t *)(x))
@@ -64,8 +76,9 @@ int   cherokee_post_got_all        (cherokee_post_t *post);
 ret_t cherokee_post_set_len        (cherokee_post_t *post, off_t  len);
 ret_t cherokee_post_get_len        (cherokee_post_t *post, off_t *len);
 
-ret_t cherokee_post_append         (cherokee_post_t *post, char *str, size_t len);
+ret_t cherokee_post_append         (cherokee_post_t *post, const char *str, size_t len);
 ret_t cherokee_post_commit_buf     (cherokee_post_t *post, size_t len);
+ret_t cherokee_post_set_encoding   (cherokee_post_t *post, cherokee_post_encoding_t enc);
 
 ret_t cherokee_post_walk_reset     (cherokee_post_t *post);
 ret_t cherokee_post_walk_finished  (cherokee_post_t *post);

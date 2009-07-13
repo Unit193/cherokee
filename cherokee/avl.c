@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2008 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2009 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -18,9 +18,9 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
- * USA
- */
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
+ */ 
 
 #include "common-internal.h"
 #include "avl.h"
@@ -742,7 +742,7 @@ node_check (cherokee_avl_node_t *node)
 		if (node->left_child) {
 			tmp = node_prev (node);
 			if (tmp->right != node) {
-				PRINT_ERROR_S ("previous");
+				LOG_ERROR_S ("previous");
 				return ret_error;
 			}
 		}
@@ -750,7 +750,7 @@ node_check (cherokee_avl_node_t *node)
 		if (node->right_child) {
 			tmp = node_next (node);
 			if (tmp->left != node) {
-				PRINT_ERROR_S ("next");
+				LOG_ERROR_S ("next");
 				return ret_error;
 			}
 		}
@@ -765,7 +765,7 @@ node_check (cherokee_avl_node_t *node)
       
 		balance = right_height - left_height;
 		if (balance != node->balance) {
-			PRINT_ERROR_S ("Balance");
+			LOG_ERROR_S ("Balance");
 			return ret_error;
 		}
 

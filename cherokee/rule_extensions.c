@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2008 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2009 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -18,9 +18,9 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
- * USA
- */
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
+ */ 
 
 #include "common-internal.h"
 #include "rule_extensions.h"
@@ -66,8 +66,8 @@ configure (cherokee_rule_extensions_t *rule,
 
 	ret = cherokee_config_node_read (conf, "extensions", &tmp);
 	if (ret != ret_ok) {
-		PRINT_ERROR ("Rule prio=%d needs an 'extensions' property\n",
-			     RULE(rule)->priority);
+		LOG_CRITICAL ("Rule prio=%d needs an 'extensions' property\n",
+			      RULE(rule)->priority);
 		return ret_error;
 	}
 
@@ -84,40 +84,89 @@ _free (void *p)
 }
 
 static ret_t
-match (cherokee_rule_extensions_t *rule, cherokee_connection_t *conn)
+match (cherokee_rule_extensions_t *rule,
+       cherokee_connection_t      *conn,
+       cherokee_config_entry_t    *ret_conf)
 {
 	ret_t  ret;
 	char  *dot;
+	char  *slash;
+	char  *end;
+	char  *p;
 	void  *foo;
+	char  *dot_prev = NULL;
 
-	/* Dot at the end */
-	if (unlikely (cherokee_buffer_is_ending (&conn->request, '.')))
-		return ret_not_found;
+	UNUSED(ret_conf);
 
-	/* Find the extension */
-	dot = strrchr (conn->request.buf, '.');
+	end = conn->request.buf + conn->request.len;
+	p   = end - 1;
 
-	/* No extension */
-	if (dot == NULL)
-		return ret_not_found;
+	/* For each '.' */
+	while (p > conn->request.buf) {
+		if (*p != '.') {
+			p--;
+			continue;
+		}
 
-	/* Check it out */
-	ret = cherokee_avl_get_ptr (&rule->extensions, dot+1, &foo);
-	switch (ret) {
-	case ret_ok:
-		TRACE(ENTRIES, "Match extension: '%s'\n", dot+1);
-		return ret_ok;
-	case ret_not_found:
-		TRACE(ENTRIES, "Rule extension: did not match '%s'\n", dot+1);
-		return ret_not_found;
-	default:
-		conn->error_code = http_internal_error;
-		return ret_error;
+		if (p[1] == '\0') {
+			p--;
+			continue;
+		}
+
+		if (p[1] == '/') {
+			p--;
+			continue;
+		}
+
+		dot   = p;
+		slash = NULL;
+
+		/* Find a slash after the dot */
+		while (p < end) {
+			if (*p == '/') {
+				slash = p;
+				*p = '\0';
+				break;
+			}
+
+			p++;
+
+			if ((dot_prev != NULL) && (p >= dot_prev)) {
+				break;
+			}
+		}
+
+		/* Check it out */
+		ret = cherokee_avl_get_ptr (&rule->extensions, dot+1, &foo);
+		switch (ret) {
+		case ret_ok:
+			TRACE(ENTRIES, "Match extension: '%s'\n", dot+1);
+ 			if (slash != NULL) {
+				*slash = '/';
+			}
+			return ret_ok;
+		case ret_not_found:
+			TRACE(ENTRIES, "Rule extension: did not match '%s'\n", dot+1);
+			break;
+		default:
+			conn->error_code = http_internal_error;
+			return ret_error;
+		}
+
+		/* Revert pathinfo match char
+		 */
+		if (slash != NULL) {
+			*slash = '/';
+		}
+
+		dot_prev = dot;
+		p = dot - 1;
 	}
 
-	SHOULDNT_HAPPEN;
-	return ret_error;
+	TRACE(ENTRIES, "Rule extension: nothing more to test '%s'\n", conn->request.buf);
+	return ret_not_found;
 }
+
 
 ret_t
 cherokee_rule_extensions_new (cherokee_rule_extensions_t **rule)

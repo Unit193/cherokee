@@ -13,7 +13,6 @@
 # PARTICULAR PURPOSE.
 
 @SET_MAKE@
-
 VPATH = @srcdir@
 pkgdatadir = $(datadir)/@PACKAGE@
 pkglibdir = $(libdir)/@PACKAGE@
@@ -32,42 +31,22 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-bin_PROGRAMS = spawn-fcgi$(EXEEXT)
 subdir = contrib
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/etr_socket_nsl.m4 \
 	$(top_srcdir)/m4/libwww.m4 $(top_srcdir)/m4/mysql.m4 \
-	$(top_srcdir)/m4/network.m4 $(top_srcdir)/m4/pwd_grp.m4 \
-	$(top_srcdir)/m4/sendfile_samba.m4 $(top_srcdir)/acinclude.m4 \
-	$(top_srcdir)/configure.in
+	$(top_srcdir)/m4/network.m4 $(top_srcdir)/m4/nls.m4 \
+	$(top_srcdir)/m4/po.m4 $(top_srcdir)/m4/progtest.m4 \
+	$(top_srcdir)/m4/pwd_grp.m4 $(top_srcdir)/m4/sendfile_samba.m4 \
+	$(top_srcdir)/acinclude.m4 $(top_srcdir)/configure.in
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
-am__installdirs = "$(DESTDIR)$(bindir)"
-binPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
-PROGRAMS = $(bin_PROGRAMS)
-am_spawn_fcgi_OBJECTS = spawn-fcgi.$(OBJEXT)
-spawn_fcgi_OBJECTS = $(am_spawn_fcgi_OBJECTS)
-spawn_fcgi_LDADD = $(LDADD)
-DEFAULT_INCLUDES = -I. -I$(top_builddir)@am__isrc@
-depcomp = $(SHELL) $(top_srcdir)/depcomp
-am__depfiles_maybe = depfiles
-COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
-	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
-LTCOMPILE = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
-	--mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
-	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
-CCLD = $(CC)
-LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
-	--mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) \
-	$(LDFLAGS) -o $@
-SOURCES = $(spawn_fcgi_SOURCES)
-DIST_SOURCES = $(spawn_fcgi_SOURCES)
-ETAGS = etags
-CTAGS = ctags
+SOURCES =
+DIST_SOURCES =
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
 AMTAR = @AMTAR@
@@ -104,7 +83,13 @@ ETR_SOCKET_LIBS = @ETR_SOCKET_LIBS@
 EXEEXT = @EXEEXT@
 F77 = @F77@
 FFLAGS = @FFLAGS@
+FFMPEG_CFLAGS = @FFMPEG_CFLAGS@
+FFMPEG_LIBS = @FFMPEG_LIBS@
+GETTEXT_MACRO_VERSION = @GETTEXT_MACRO_VERSION@
+GMSGFMT = @GMSGFMT@
+GMSGFMT_015 = @GMSGFMT_015@
 GREP = @GREP@
+HAVE_MSGFMT = @HAVE_MSGFMT@
 HaveRtldGlobal = @HaveRtldGlobal@
 HaveRtldLocal = @HaveRtldLocal@
 HaveRtldNext = @HaveRtldNext@
@@ -124,6 +109,9 @@ LTLIBOBJS = @LTLIBOBJS@
 MAINT = @MAINT@
 MAKEINFO = @MAKEINFO@
 MKDIR_P = @MKDIR_P@
+MSGFMT = @MSGFMT@
+MSGFMT_015 = @MSGFMT_015@
+MSGMERGE = @MSGMERGE@
 MYSQL_CFLAGS = @MYSQL_CFLAGS@
 MYSQL_CONFIG = @MYSQL_CONFIG@
 MYSQL_LDFLAGS = @MYSQL_LDFLAGS@
@@ -145,12 +133,17 @@ PHPCGI = @PHPCGI@
 PTHREAD_CFLAGS = @PTHREAD_CFLAGS@
 PTHREAD_LIBS = @PTHREAD_LIBS@
 RANLIB = @RANLIB@
+RT_LIBS = @RT_LIBS@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
 STRIP = @STRIP@
 TLS_LIBS = @TLS_LIBS@
+USE_NLS = @USE_NLS@
 VERSION = @VERSION@
 WWW_ROOT = @WWW_ROOT@
+XGETTEXT = @XGETTEXT@
+XGETTEXT_015 = @XGETTEXT_015@
+XGETTEXT_EXTRA_OPTIONS = @XGETTEXT_EXTRA_OPTIONS@
 abs_builddir = @abs_builddir@
 abs_srcdir = @abs_srcdir@
 abs_top_builddir = @abs_top_builddir@
@@ -203,25 +196,32 @@ sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-INCLUDES = \
--I$(top_srcdir) \
--I$(top_srcdir)/cherokee
-
-spawn_fcgi_SOURCES = spawn-fcgi.c
 EXTRA_DIST = \
-cherokee \
+cherokee.pre \
 bin2buffer.py \
 05to06.py \
 06to07.py \
 07to08.py \
 08to09.py \
 09to010.py \
-tracelor.py
+011to098.py \
+098to099.py \
+0999to09910.py \
+tracelor.py \
+make-cert.sh
+
+CLEANFILES = \
+cherokee \
+server.pem \
+rand.dat \
+cakey.key \
+cakey.csr \
+cakey.pem \
+make-dh_params.sh
 
 all: all-am
 
 .SUFFIXES:
-.SUFFIXES: .c .lo .o .obj
 $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
@@ -251,120 +251,18 @@ $(top_srcdir)/configure: @MAINTAINER_MODE_TRUE@ $(am__configure_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
-install-binPROGRAMS: $(bin_PROGRAMS)
-	@$(NORMAL_INSTALL)
-	test -z "$(bindir)" || $(MKDIR_P) "$(DESTDIR)$(bindir)"
-	@list='$(bin_PROGRAMS)'; for p in $$list; do \
-	  p1=`echo $$p|sed 's/$(EXEEXT)$$//'`; \
-	  if test -f $$p \
-	     || test -f $$p1 \
-	  ; then \
-	    f=`echo "$$p1" | sed 's,^.*/,,;$(transform);s/$$/$(EXEEXT)/'`; \
-	   echo " $(INSTALL_PROGRAM_ENV) $(LIBTOOL) --mode=install $(binPROGRAMS_INSTALL) '$$p' '$(DESTDIR)$(bindir)/$$f'"; \
-	   $(INSTALL_PROGRAM_ENV) $(LIBTOOL) --mode=install $(binPROGRAMS_INSTALL) "$$p" "$(DESTDIR)$(bindir)/$$f" || exit 1; \
-	  else :; fi; \
-	done
-
-uninstall-binPROGRAMS:
-	@$(NORMAL_UNINSTALL)
-	@list='$(bin_PROGRAMS)'; for p in $$list; do \
-	  f=`echo "$$p" | sed 's,^.*/,,;s/$(EXEEXT)$$//;$(transform);s/$$/$(EXEEXT)/'`; \
-	  echo " rm -f '$(DESTDIR)$(bindir)/$$f'"; \
-	  rm -f "$(DESTDIR)$(bindir)/$$f"; \
-	done
-
-clean-binPROGRAMS:
-	@list='$(bin_PROGRAMS)'; for p in $$list; do \
-	  f=`echo $$p|sed 's/$(EXEEXT)$$//'`; \
-	  echo " rm -f $$p $$f"; \
-	  rm -f $$p $$f ; \
-	done
-spawn-fcgi$(EXEEXT): $(spawn_fcgi_OBJECTS) $(spawn_fcgi_DEPENDENCIES) 
-	@rm -f spawn-fcgi$(EXEEXT)
-	$(LINK) $(spawn_fcgi_OBJECTS) $(spawn_fcgi_LDADD) $(LIBS)
-
-mostlyclean-compile:
-	-rm -f *.$(OBJEXT)
-
-distclean-compile:
-	-rm -f *.tab.c
-
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/spawn-fcgi.Po@am__quote@
-
-.c.o:
-@am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
-@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(COMPILE) -c $<
-
-.c.obj:
-@am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ `$(CYGPATH_W) '$<'`
-@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(COMPILE) -c `$(CYGPATH_W) '$<'`
-
-.c.lo:
-@am__fastdepCC_TRUE@	$(LTCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
-@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LTCOMPILE) -c -o $@ $<
 
 mostlyclean-libtool:
 	-rm -f *.lo
 
 clean-libtool:
 	-rm -rf .libs _libs
-
-ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)
-	list='$(SOURCES) $(HEADERS) $(LISP) $(TAGS_FILES)'; \
-	unique=`for i in $$list; do \
-	    if test -f "$$i"; then echo $$i; else echo $(srcdir)/$$i; fi; \
-	  done | \
-	  $(AWK) '    { files[$$0] = 1; } \
-	       END { for (i in files) print i; }'`; \
-	mkid -fID $$unique
 tags: TAGS
+TAGS:
 
-TAGS:  $(HEADERS) $(SOURCES)  $(TAGS_DEPENDENCIES) \
-		$(TAGS_FILES) $(LISP)
-	tags=; \
-	here=`pwd`; \
-	list='$(SOURCES) $(HEADERS)  $(LISP) $(TAGS_FILES)'; \
-	unique=`for i in $$list; do \
-	    if test -f "$$i"; then echo $$i; else echo $(srcdir)/$$i; fi; \
-	  done | \
-	  $(AWK) '    { files[$$0] = 1; } \
-	       END { for (i in files) print i; }'`; \
-	if test -z "$(ETAGS_ARGS)$$tags$$unique"; then :; else \
-	  test -n "$$unique" || unique=$$empty_fix; \
-	  $(ETAGS) $(ETAGSFLAGS) $(AM_ETAGSFLAGS) $(ETAGS_ARGS) \
-	    $$tags $$unique; \
-	fi
 ctags: CTAGS
-CTAGS:  $(HEADERS) $(SOURCES)  $(TAGS_DEPENDENCIES) \
-		$(TAGS_FILES) $(LISP)
-	tags=; \
-	here=`pwd`; \
-	list='$(SOURCES) $(HEADERS)  $(LISP) $(TAGS_FILES)'; \
-	unique=`for i in $$list; do \
-	    if test -f "$$i"; then echo $$i; else echo $(srcdir)/$$i; fi; \
-	  done | \
-	  $(AWK) '    { files[$$0] = 1; } \
-	       END { for (i in files) print i; }'`; \
-	test -z "$(CTAGS_ARGS)$$tags$$unique" \
-	  || $(CTAGS) $(CTAGSFLAGS) $(AM_CTAGSFLAGS) $(CTAGS_ARGS) \
-	     $$tags $$unique
+CTAGS:
 
-GTAGS:
-	here=`$(am__cd) $(top_builddir) && pwd` \
-	  && cd $(top_srcdir) \
-	  && gtags -i $(GTAGS_ARGS) $$here
-
-distclean-tags:
-	-rm -f TAGS ID GTAGS GRTAGS GSYMS GPATH tags
 
 distdir: $(DISTFILES)
 	@srcdirstrip=`echo "$(srcdir)" | sed 's/[].[^$$\\*]/\\\\&/g'`; \
@@ -394,11 +292,8 @@ distdir: $(DISTFILES)
 	done
 check-am: all-am
 check: check-am
-all-am: Makefile $(PROGRAMS)
+all-am: Makefile all-local
 installdirs:
-	for dir in "$(DESTDIR)$(bindir)"; do \
-	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
-	done
 install: install-am
 install-exec: install-exec-am
 install-data: install-data-am
@@ -416,6 +311,7 @@ install-strip:
 mostlyclean-generic:
 
 clean-generic:
+	-test -z "$(CLEANFILES)" || rm -f $(CLEANFILES)
 
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
@@ -425,13 +321,11 @@ maintainer-clean-generic:
 	@echo "it deletes files that may require special tools to rebuild."
 clean: clean-am
 
-clean-am: clean-binPROGRAMS clean-generic clean-libtool mostlyclean-am
+clean-am: clean-generic clean-libtool mostlyclean-am
 
 distclean: distclean-am
-	-rm -rf ./$(DEPDIR)
 	-rm -f Makefile
-distclean-am: clean-am distclean-compile distclean-generic \
-	distclean-tags
+distclean-am: clean-am distclean-generic
 
 dvi: dvi-am
 
@@ -447,7 +341,7 @@ install-data-am:
 
 install-dvi: install-dvi-am
 
-install-exec-am: install-binPROGRAMS
+install-exec-am:
 
 install-html: install-html-am
 
@@ -462,14 +356,12 @@ install-ps: install-ps-am
 installcheck-am:
 
 maintainer-clean: maintainer-clean-am
-	-rm -rf ./$(DEPDIR)
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 
 mostlyclean: mostlyclean-am
 
-mostlyclean-am: mostlyclean-compile mostlyclean-generic \
-	mostlyclean-libtool
+mostlyclean-am: mostlyclean-generic mostlyclean-libtool
 
 pdf: pdf-am
 
@@ -479,24 +371,27 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-binPROGRAMS
+uninstall-am:
 
 .MAKE: install-am install-strip
 
-.PHONY: CTAGS GTAGS all all-am check check-am clean clean-binPROGRAMS \
-	clean-generic clean-libtool ctags distclean distclean-compile \
-	distclean-generic distclean-libtool distclean-tags distdir dvi \
-	dvi-am html html-am info info-am install install-am \
-	install-binPROGRAMS install-data install-data-am install-dvi \
+.PHONY: all all-am all-local check check-am clean clean-generic \
+	clean-libtool distclean distclean-generic distclean-libtool \
+	distdir dvi dvi-am html html-am info info-am install \
+	install-am install-data install-data-am install-dvi \
 	install-dvi-am install-exec install-exec-am install-html \
 	install-html-am install-info install-info-am install-man \
 	install-pdf install-pdf-am install-ps install-ps-am \
 	install-strip installcheck installcheck-am installdirs \
 	maintainer-clean maintainer-clean-generic mostlyclean \
-	mostlyclean-compile mostlyclean-generic mostlyclean-libtool \
-	pdf pdf-am ps ps-am tags uninstall uninstall-am \
-	uninstall-binPROGRAMS
+	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
+	uninstall uninstall-am
 
+
+cherokee: cherokee.pre
+	sed -e "s|%sysconfdir%|${sysconfdir}|g; s|%datadir%|${datadir}|g; s|%docdir%|${docdir}|g; s|%prefix%|${prefix}|g; s|%localstatedir%|${localstatedir}|g; s|%libdir%|${libdir}|g; s|%wwwroot%|${WWW_ROOT}|g; s|%version%|${PACKAGE_VERSION}|g; s|%phpcgi%|${PHPCGI}|g" $< > $@
+
+all-local: cherokee
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

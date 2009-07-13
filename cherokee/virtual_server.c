@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2008 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2009 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -18,9 +18,9 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
- * USA
- */
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
+ */ 
 
 #include "common-internal.h"
 #include "virtual_server.h"
@@ -31,6 +31,7 @@
 #include "access.h"
 #include "handler_error.h"
 #include "rule_default.h"
+#include "gen_evhost.h"
 
 #include <errno.h>
 
@@ -51,10 +52,12 @@ cherokee_virtual_server_new (cherokee_virtual_server_t **vserver, void *server)
 	n->default_handler = NULL;
 	n->error_handler   = NULL;
 	n->logger          = NULL;
-	n->logger_props    = NULL;
 	n->priority        = 0;
 	n->keepalive       = true;
 	n->cryptor         = NULL;
+	n->post_max_len    = -1;
+	n->evhost          = NULL;
+	n->matching        = NULL;
 
 	/* Virtual entries
 	 */
@@ -68,16 +71,20 @@ cherokee_virtual_server_new (cherokee_virtual_server_t **vserver, void *server)
 
 	/* Data transference 
 	 */
+	n->data.enabled    = true;
 	n->data.rx         = 0;
 	n->data.tx         = 0;
 	CHEROKEE_MUTEX_INIT(&n->data.rx_mutex, NULL);
 	CHEROKEE_MUTEX_INIT(&n->data.tx_mutex, NULL);
 
-	/* TLS related files
+	/* TLS related
 	 */
+	n->verify_depth    = 1;
 	cherokee_buffer_init (&n->server_cert);
 	cherokee_buffer_init (&n->server_key);
-	cherokee_buffer_init (&n->ca_cert);
+	cherokee_buffer_init (&n->certs_ca);
+	cherokee_buffer_init (&n->req_client_certs);
+	cherokee_buffer_init (&n->ciphers);
 
 	ret = cherokee_buffer_init (&n->root);
 	if (unlikely(ret < ret_ok))
@@ -86,8 +93,6 @@ cherokee_virtual_server_new (cherokee_virtual_server_t **vserver, void *server)
 	ret = cherokee_buffer_init (&n->name);
 	if (unlikely(ret < ret_ok))
 		return ret;
-
-	INIT_LIST_HEAD (&n->domains);
 
 	ret = cherokee_buffer_init (&n->userdir);
 	if (unlikely(ret < ret_ok))
@@ -105,7 +110,9 @@ cherokee_virtual_server_free (cherokee_virtual_server_t *vserver)
 {
 	cherokee_buffer_mrproper (&vserver->server_cert);
 	cherokee_buffer_mrproper (&vserver->server_key);
-	cherokee_buffer_mrproper (&vserver->ca_cert);
+	cherokee_buffer_mrproper (&vserver->certs_ca);
+	cherokee_buffer_mrproper (&vserver->req_client_certs);
+	cherokee_buffer_mrproper (&vserver->ciphers);
 
 	if (vserver->error_handler != NULL) {
 		cherokee_config_entry_free (vserver->error_handler);
@@ -122,20 +129,22 @@ cherokee_virtual_server_free (cherokee_virtual_server_t *vserver)
 		vserver->cryptor = NULL;
 	}
 
-	cherokee_buffer_mrproper (&vserver->name);
-	cherokee_vserver_names_mrproper (&vserver->domains);
+	if (vserver->matching != NULL) {
+		cherokee_vrule_free (vserver->matching);
+		vserver->matching = NULL;
+	}
 
-	cherokee_buffer_mrproper (&vserver->root);
+	if (vserver->evhost != NULL) {
+		MODULE(vserver->evhost)->free (vserver->evhost);
+	}
 
 	if (vserver->logger != NULL) {
 		cherokee_logger_free (vserver->logger);
 		vserver->logger = NULL;
 	}
-	if (vserver->logger_props != NULL) {
-		cherokee_avl_free (vserver->logger_props, NULL); // FIXIT
-		vserver->logger_props = NULL;
-	}
 
+	cherokee_buffer_mrproper (&vserver->name);
+	cherokee_buffer_mrproper (&vserver->root);
 	cherokee_buffer_mrproper (&vserver->userdir);
 
 	/* Destroy the virtual_entries
@@ -145,7 +154,8 @@ cherokee_virtual_server_free (cherokee_virtual_server_t *vserver)
 
 	/* Index list
 	 */
-	cherokee_list_content_free (&vserver->index_list, free);
+	cherokee_list_content_free (&vserver->index_list,
+				    (cherokee_list_free_func) cherokee_buffer_free);
 
 	free (vserver);	
 	return ret_ok;
@@ -158,8 +168,6 @@ cherokee_virtual_server_has_tls (cherokee_virtual_server_t *vserver)
 	if (! cherokee_buffer_is_empty (&vserver->server_cert))
 		return ret_ok;
 	if (! cherokee_buffer_is_empty (&vserver->server_key))
-		return ret_ok;
-	if (! cherokee_buffer_is_empty (&vserver->ca_cert))
 		return ret_ok;
 
 	return ret_not_found;
@@ -174,15 +182,14 @@ cherokee_virtual_server_init_tls (cherokee_virtual_server_t *vsrv)
 
 	/* Check if all of them are empty
 	 */
-	if (cherokee_buffer_is_empty (&vsrv->ca_cert)    &&
-	    cherokee_buffer_is_empty (&vsrv->server_key) &&
-	    cherokee_buffer_is_empty (&vsrv->server_cert))
+	if (cherokee_buffer_is_empty (&vsrv->server_cert) &&
+	    cherokee_buffer_is_empty (&vsrv->server_key))
 		return ret_not_found;
 
-	/* Check one or more are empty
+	/* Check if key or certificate are empty
 	 */
-	if (cherokee_buffer_is_empty (&vsrv->server_key) ||
-	    cherokee_buffer_is_empty (&vsrv->server_cert))
+	if (cherokee_buffer_is_empty (&vsrv->server_cert) ||
+	    cherokee_buffer_is_empty (&vsrv->server_key))
 		return ret_error;
 	
 	/* Instance virtual server's cryptor
@@ -216,11 +223,15 @@ cherokee_virtual_server_add_tx (cherokee_virtual_server_t *vserver, size_t tx)
 static ret_t 
 add_directory_index (char *index, void *data)
 {
+	cherokee_buffer_t         *new_buf;
 	cherokee_virtual_server_t *vserver = VSERVER(data);
 
 	TRACE(ENTRIES, "Adding directory index '%s'\n", index);
 
-	cherokee_list_add_tail_content (&vserver->index_list, strdup(index));
+	cherokee_buffer_new (&new_buf);
+	cherokee_buffer_add (new_buf, index, strlen(index));
+
+	cherokee_list_add_tail_content (&vserver->index_list, new_buf);
 	return ret_ok;
 }
 
@@ -341,7 +352,7 @@ init_entry_property (cherokee_config_node_t *conf, void *data)
 			return ret;
 
 		if ((entry->authentication & vinfo->valid_methods) != entry->authentication) {
-			PRINT_MSG ("ERROR: '%s' unsupported methods\n", tmp->buf);
+			LOG_CRITICAL ("Unsupported methods '%s'\n", tmp->buf);
 			return ret_error;
 		}		
 
@@ -364,18 +375,26 @@ init_entry_property (cherokee_config_node_t *conf, void *data)
 			entry->expiration = cherokee_expiration_time;
 			ret = cherokee_config_node_read (conf, "time", &tmp);
 			if (ret != ret_ok) {
-				PRINT_ERROR_S ("Expiration 'time' without a time property\n");
+				LOG_ERROR_S ("Expiration 'time' without a time property\n");
 				return ret_error;
 			}
 
 			entry->expiration_time = cherokee_eval_formated_time (tmp);
 		}
 
+	} else if (equal_buf_str (&conf->key, "rate")) {
+		entry->limit_bps = atoi(conf->val.buf);
+
+	} else if (equal_buf_str (&conf->key, "no_log")) {
+		if (equal_buf_str (&conf->val, "1")) {
+			entry->no_log = true;
+		}
+		
 	} else if (equal_buf_str (&conf->key, "match")) {
 		/* Ignore: Previously handled 
 		 */
 	} else {
-		PRINT_MSG ("ERROR: Virtual Server parser: Unknown key \"%s\"\n", conf->key.buf);
+		LOG_CRITICAL ("Virtual Server parser: Unknown key \"%s\"\n", conf->key.buf);
 		return ret_error;
 	}
 
@@ -447,7 +466,7 @@ cherokee_virtual_server_new_rule (cherokee_virtual_server_t  *vserver,
 	/* Sanity check
 	 */
 	if (cherokee_buffer_is_empty (type)) {
-		PRINT_ERROR ("Rule match prio=%d must include a type property\n", priority);
+		LOG_CRITICAL ("Rule match prio=%d must include a type property\n", priority);
 		return ret_error;
 	}
 
@@ -461,7 +480,7 @@ cherokee_virtual_server_new_rule (cherokee_virtual_server_t  *vserver,
 	} else {
 		ret = cherokee_plugin_loader_get (&srv->loader, type->buf, &info);
 		if (ret < ret_ok) {
-			PRINT_MSG ("ERROR: Couldn't load rule module '%s'\n", type->buf);
+			LOG_CRITICAL ("ERROR: Couldn't load rule module '%s'\n", type->buf);
 			return ret_error;
 		}
 
@@ -503,7 +522,7 @@ add_rule (cherokee_config_node_t    *config,
 	 */
 	prio = atoi (config->key.buf);
 	if (prio <= CHEROKEE_RULE_PRIO_NONE) {
-		PRINT_ERROR ("Invalid priority: '%s'\n", config->key.buf);
+		LOG_CRITICAL ("Invalid priority: '%s'\n", config->key.buf);
 		return ret_error;
 	}
 
@@ -511,7 +530,7 @@ add_rule (cherokee_config_node_t    *config,
 	 */
 	ret = cherokee_config_node_get (config, "match", &subconf);
 	if (ret != ret_ok) {
-		PRINT_ERROR ("Rule prio=%d needs a 'match' section\n", prio);
+		LOG_CRITICAL ("Rule prio=%d needs a 'match' section\n", prio);
 		return ret_error;
 	}
 
@@ -541,14 +560,37 @@ failed:
 }
 
 
-static ret_t 
-add_domain (cherokee_config_node_t *config, cherokee_virtual_server_t *vserver)
+static ret_t
+configure_match (cherokee_config_node_t    *config, 
+		 cherokee_virtual_server_t *vserver)
 {
-	ret_t ret;
+	ret_t                   ret;
+	vrule_func_new_t        func_new;
+	cherokee_plugin_info_t *info      = NULL;
+	cherokee_server_t      *srv       = SRV(vserver->server_ref);
 
-	TRACE (ENTRIES, "Adding vserver '%s' domain name '%s'\n", vserver->name.buf, config->val.buf);
+	if (cherokee_buffer_is_empty (&config->val)) {
+		LOG_CRITICAL_S ("A virtual server 'match' must be specified\n");
+		return ret_error;
+	}
 
-	ret = cherokee_vserver_names_add_name (&vserver->domains, &config->val);
+	/* Instance a new virtual server match obj
+	 */
+	ret = cherokee_plugin_loader_get (&srv->loader, config->val.buf, &info);
+	if (ret < ret_ok) {
+		LOG_CRITICAL ("Couldn't load vrule module '%s'\n", config->val.buf);
+		return ret_error;
+	}
+
+	func_new = (vrule_func_new_t) info->instance;
+	if (func_new == NULL)
+		return ret_error;
+
+	ret = func_new ((void **) &vserver->matching);
+	if (ret != ret_ok)
+		return ret;
+
+	ret = cherokee_vrule_configure (vserver->matching, config, vserver);
 	if (ret != ret_ok)
 		return ret;
 
@@ -557,31 +599,78 @@ add_domain (cherokee_config_node_t *config, cherokee_virtual_server_t *vserver)
 
 
 static ret_t 
+add_evhost (cherokee_config_node_t *config, cherokee_virtual_server_t *vserver)
+{
+	ret_t                   ret;
+	evhost_func_new_t       func_new;	
+	evhost_func_configure_t func_config;
+	cherokee_plugin_info_t *info         = NULL;
+	cherokee_server_t      *srv          = SRV(vserver->server_ref);
+
+	/* Ensure there is a logger to instance..
+	 */
+	if (cherokee_buffer_is_empty (&config->val)) {
+		return ret_ok;
+	}
+
+	/* Load the plug-in
+	 */
+	ret = cherokee_plugin_loader_get (&srv->loader, config->val.buf, &info);
+	if (ret < ret_ok) {
+		LOG_CRITICAL ("Couldn't load evhost module '%s'\n", config->val.buf);
+		return ret_error;
+	}
+
+	func_new = (evhost_func_new_t) info->instance;
+	if (func_new == NULL)
+		return ret_error;
+
+	func_config = (evhost_func_configure_t) info->configure;
+	if (func_config == NULL)
+		return ret_error;
+
+	/* Instance the evhost object
+	 */
+	ret = func_new ((void **) &vserver->evhost, vserver);
+	if (ret != ret_ok)
+		return ret;
+
+	/* Configure it
+	 */
+	ret = func_config (vserver->evhost, config);
+	if (ret != ret_ok)
+		return ret_error;
+	
+	return ret_ok;
+}
+
+static ret_t 
 add_logger (cherokee_config_node_t *config, cherokee_virtual_server_t *vserver)
 {
 	ret_t                   ret;
 	logger_func_new_t       func_new;
 	cherokee_plugin_info_t *info      = NULL;
 	cherokee_server_t      *srv       = SRV(vserver->server_ref);
-
+	
+	/* Ensure there is a logger to instance..
+	 */
 	if (cherokee_buffer_is_empty (&config->val)) {
-		PRINT_ERROR_S ("ERROR: A logger must be specified\n");
-		return ret_error;
-	}
-
-	ret = cherokee_plugin_loader_get (&srv->loader, config->val.buf, &info);
-	if (ret < ret_ok) {
-		PRINT_MSG ("ERROR: Couldn't load logger module '%s'\n", config->val.buf);
-		return ret_error;
+		return ret_ok;
 	}
 
 	/* Instance a new logger
 	 */
+	ret = cherokee_plugin_loader_get (&srv->loader, config->val.buf, &info);
+	if (ret < ret_ok) {
+		LOG_CRITICAL ("Couldn't load logger module '%s'\n", config->val.buf);
+		return ret_error;
+	}
+
 	func_new = (logger_func_new_t) info->instance;
 	if (func_new == NULL)
 		return ret_error;
 
-	ret = func_new ((void **) &vserver->logger, config);
+	ret = func_new ((void **) &vserver->logger, vserver, config);
 	if (ret != ret_ok)
 		return ret;
 
@@ -595,9 +684,9 @@ configure_rules (cherokee_config_node_t    *config,
 		 cherokee_rule_list_t      *rule_list)
 {
 	ret_t                   ret;
-	cherokee_list_t        *i; //, *j;
+	cherokee_list_t        *i; 
 	cherokee_config_node_t *subconf;
-//	cherokee_boolean_t      did_default = false;
+/*	cherokee_boolean_t      did_default = false; */
 
 	cherokee_config_node_foreach (i, config) {
 		subconf = CONFIG_NODE(i);
@@ -610,7 +699,7 @@ configure_rules (cherokee_config_node_t    *config,
 	 */
 	cherokee_rule_list_sort (rule_list);
 
-// TODO:
+/* TODO: */
 /* 	if (! did_default) { */
 /* 		PRINT_ERROR ("ERROR: vserver '%s': A default rule is needed\n", vserver->name.buf); */
 /* 		return ret_error; */
@@ -629,9 +718,6 @@ configure_user_dir (cherokee_config_node_t *config, cherokee_virtual_server_t *v
 	 */
 	cherokee_buffer_add_buffer (&vserver->userdir, &config->val);
 
-	if (cherokee_buffer_end_char (&vserver->userdir) != '/')
-		cherokee_buffer_add_str (&vserver->userdir, "/");
-
 	/* Configure the rest of the entries
 	 */
  	ret = cherokee_config_node_get (config, "rule", &subconf); 
@@ -649,7 +735,6 @@ configure_virtual_server_property (cherokee_config_node_t *conf, void *data)
 {
 	ret_t                      ret;
 	cherokee_buffer_t         *tmp;
-	cherokee_list_t           *i;
 	cherokee_virtual_server_t *vserver = VSERVER(data);
 
 	if (equal_buf_str (&conf->key, "document_root")) {
@@ -660,6 +745,11 @@ configure_virtual_server_property (cherokee_config_node_t *conf, void *data)
 		cherokee_buffer_clean (&vserver->root);
 		cherokee_buffer_add_buffer (&vserver->root, tmp);
 		cherokee_fix_dirpath (&vserver->root);
+
+	} else if (equal_buf_str (&conf->key, "match")) {
+		ret = configure_match (conf, vserver);
+		if (ret != ret_ok)
+			return ret;
 
 	} else if (equal_buf_str (&conf->key, "nick")) {
 		cherokee_buffer_clean (&vserver->name);
@@ -677,16 +767,15 @@ configure_virtual_server_property (cherokee_config_node_t *conf, void *data)
 		ret = configure_rules (conf, vserver, &vserver->rules);
 		if (ret != ret_ok) return ret;
 
-	} else if (equal_buf_str (&conf->key, "domain")) {
-		cherokee_config_node_foreach (i, conf) {
-			ret = add_domain (CONFIG_NODE(i), vserver);
-			if (ret != ret_ok)
-				return ret;		
-		}
 	} else if (equal_buf_str (&conf->key, "error_handler")) {
 		ret = add_error_handler (conf, vserver);
 		if (ret != ret_ok)
 			return ret;
+
+	} else if (equal_buf_str (&conf->key, "evhost")) {
+		ret = add_evhost (conf, vserver);
+		if (ret != ret_ok)
+			return ret_error;
 
 	} else if (equal_buf_str (&conf->key, "logger")) {
 		ret = add_logger (conf, vserver);
@@ -696,20 +785,32 @@ configure_virtual_server_property (cherokee_config_node_t *conf, void *data)
 	} else if (equal_buf_str (&conf->key, "directory_index")) {
 		cherokee_config_node_read_list (conf, NULL, add_directory_index, vserver);
 
+	} else if (equal_buf_str (&conf->key, "post_max_len")) {
+		vserver->post_max_len = atoi (conf->val.buf);
+
+	} else if (equal_buf_str (&conf->key, "collect_statistics")) {
+		vserver->data.enabled = !! atoi (conf->val.buf);
+
+	} else if (equal_buf_str (&conf->key, "ssl_verify_depth")) {
+		vserver->verify_depth = !!atoi (conf->val.buf);
+
 	} else if (equal_buf_str (&conf->key, "ssl_certificate_file")) {
-		cherokee_buffer_init (&vserver->server_cert);
 		cherokee_buffer_add_buffer (&vserver->server_cert, &conf->val);
 
 	} else if (equal_buf_str (&conf->key, "ssl_certificate_key_file")) {
-		cherokee_buffer_init (&vserver->server_key);
 		cherokee_buffer_add_buffer (&vserver->server_key, &conf->val);
 
 	} else if (equal_buf_str (&conf->key, "ssl_ca_list_file")) {
-		cherokee_buffer_init (&vserver->ca_cert);
-		cherokee_buffer_add_buffer (&vserver->ca_cert, &conf->val);
+		cherokee_buffer_add_buffer (&vserver->certs_ca, &conf->val);
+
+	} else if (equal_buf_str (&conf->key, "ssl_client_certs")) {
+		cherokee_buffer_add_buffer (&vserver->req_client_certs, &conf->val);
+
+	} else if (equal_buf_str (&conf->key, "ssl_ciphers")) {
+		cherokee_buffer_add_buffer (&vserver->ciphers, &conf->val);
 
 	} else {
-		PRINT_MSG ("ERROR: Virtual Server: Unknown key '%s'\n", conf->key.buf);
+		LOG_CRITICAL ("Virtual Server: Unknown key '%s'\n", conf->key.buf);
 		return ret_error;
 	}
 
@@ -737,12 +838,12 @@ cherokee_virtual_server_configure (cherokee_virtual_server_t *vserver,
 	/* Perform some sanity checks
 	 */
 	if (cherokee_buffer_is_empty (&vserver->name)) {
-		PRINT_MSG ("ERROR: Virtual host prio=%d needs a nick\n", prio);
+		LOG_CRITICAL ("Virtual host prio=%d needs a nick\n", prio);
 		return ret_error;
 	}
 
 	if (cherokee_buffer_is_empty (&vserver->root)) {
-		PRINT_MSG ("ERROR: Virtual host '%s' needs a document_root\n", vserver->name.buf);
+		LOG_CRITICAL ("Virtual host '%s' needs a document_root\n", vserver->name.buf);
 		return ret_error;
 	}
 

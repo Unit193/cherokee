@@ -33,14 +33,16 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
+@INSTALL_ADMIN_TRUE@am__append_1 = static
 subdir = admin
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/etr_socket_nsl.m4 \
 	$(top_srcdir)/m4/libwww.m4 $(top_srcdir)/m4/mysql.m4 \
-	$(top_srcdir)/m4/network.m4 $(top_srcdir)/m4/pwd_grp.m4 \
-	$(top_srcdir)/m4/sendfile_samba.m4 $(top_srcdir)/acinclude.m4 \
-	$(top_srcdir)/configure.in
+	$(top_srcdir)/m4/network.m4 $(top_srcdir)/m4/nls.m4 \
+	$(top_srcdir)/m4/po.m4 $(top_srcdir)/m4/progtest.m4 \
+	$(top_srcdir)/m4/pwd_grp.m4 $(top_srcdir)/m4/sendfile_samba.m4 \
+	$(top_srcdir)/acinclude.m4 $(top_srcdir)/configure.in
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(install_sh) -d
@@ -111,7 +113,13 @@ ETR_SOCKET_LIBS = @ETR_SOCKET_LIBS@
 EXEEXT = @EXEEXT@
 F77 = @F77@
 FFLAGS = @FFLAGS@
+FFMPEG_CFLAGS = @FFMPEG_CFLAGS@
+FFMPEG_LIBS = @FFMPEG_LIBS@
+GETTEXT_MACRO_VERSION = @GETTEXT_MACRO_VERSION@
+GMSGFMT = @GMSGFMT@
+GMSGFMT_015 = @GMSGFMT_015@
 GREP = @GREP@
+HAVE_MSGFMT = @HAVE_MSGFMT@
 HaveRtldGlobal = @HaveRtldGlobal@
 HaveRtldLocal = @HaveRtldLocal@
 HaveRtldNext = @HaveRtldNext@
@@ -131,6 +139,9 @@ LTLIBOBJS = @LTLIBOBJS@
 MAINT = @MAINT@
 MAKEINFO = @MAKEINFO@
 MKDIR_P = @MKDIR_P@
+MSGFMT = @MSGFMT@
+MSGFMT_015 = @MSGFMT_015@
+MSGMERGE = @MSGMERGE@
 MYSQL_CFLAGS = @MYSQL_CFLAGS@
 MYSQL_CONFIG = @MYSQL_CONFIG@
 MYSQL_LDFLAGS = @MYSQL_LDFLAGS@
@@ -152,12 +163,17 @@ PHPCGI = @PHPCGI@
 PTHREAD_CFLAGS = @PTHREAD_CFLAGS@
 PTHREAD_LIBS = @PTHREAD_LIBS@
 RANLIB = @RANLIB@
+RT_LIBS = @RT_LIBS@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
 STRIP = @STRIP@
 TLS_LIBS = @TLS_LIBS@
+USE_NLS = @USE_NLS@
 VERSION = @VERSION@
 WWW_ROOT = @WWW_ROOT@
+XGETTEXT = @XGETTEXT@
+XGETTEXT_015 = @XGETTEXT_015@
+XGETTEXT_EXTRA_OPTIONS = @XGETTEXT_EXTRA_OPTIONS@
 abs_builddir = @abs_builddir@
 abs_srcdir = @abs_srcdir@
 abs_top_builddir = @abs_top_builddir@
@@ -210,7 +226,7 @@ sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-@INSTALL_ADMIN_TRUE@SUBDIRS = static
+SUBDIRS = $(am__append_1)
 SUFFIXES = .py.pre .py
 PY_PRE = \
 configured.py.pre
@@ -234,6 +250,7 @@ adminpy_SCRIPTS = $(admin_scripts)
 @INSTALL_ADMIN_TRUE@PageIcon.py \
 @INSTALL_ADMIN_TRUE@PageStatus.py \
 @INSTALL_ADMIN_TRUE@PageMime.py \
+@INSTALL_ADMIN_TRUE@PageNewConfig.py \
 @INSTALL_ADMIN_TRUE@PageVServer.py \
 @INSTALL_ADMIN_TRUE@PageVServers.py \
 @INSTALL_ADMIN_TRUE@PageError.py \
@@ -241,6 +258,7 @@ adminpy_SCRIPTS = $(admin_scripts)
 @INSTALL_ADMIN_TRUE@PageInfoSource.py \
 @INSTALL_ADMIN_TRUE@Table.py \
 @INSTALL_ADMIN_TRUE@Theme.py \
+@INSTALL_ADMIN_TRUE@Rule.py \
 @INSTALL_ADMIN_TRUE@RuleList.py \
 @INSTALL_ADMIN_TRUE@Module.py \
 @INSTALL_ADMIN_TRUE@ModuleHandler.py \
@@ -254,9 +272,12 @@ adminpy_SCRIPTS = $(admin_scripts)
 @INSTALL_ADMIN_TRUE@ModuleScgi.py \
 @INSTALL_ADMIN_TRUE@ModuleBalancer.py \
 @INSTALL_ADMIN_TRUE@ModuleSsi.py \
+@INSTALL_ADMIN_TRUE@ModuleSecdownload.py \
+@INSTALL_ADMIN_TRUE@ModuleEmptyGif.py \
 @INSTALL_ADMIN_TRUE@ModuleProxy.py \
 @INSTALL_ADMIN_TRUE@ModuleMirror.py \
 @INSTALL_ADMIN_TRUE@ModuleDbslayer.py \
+@INSTALL_ADMIN_TRUE@ModuleStreaming.py \
 @INSTALL_ADMIN_TRUE@ModuleErrorNn.py \
 @INSTALL_ADMIN_TRUE@ModuleErrorRedir.py \
 @INSTALL_ADMIN_TRUE@ModuleAuth.py \
@@ -269,27 +290,43 @@ adminpy_SCRIPTS = $(admin_scripts)
 @INSTALL_ADMIN_TRUE@ModuleMysql.py \
 @INSTALL_ADMIN_TRUE@ModulePam.py \
 @INSTALL_ADMIN_TRUE@ModuleRoundRobin.py \
+@INSTALL_ADMIN_TRUE@ModuleIpHash.py \
 @INSTALL_ADMIN_TRUE@ModuleDefault.py \
 @INSTALL_ADMIN_TRUE@ModuleRequest.py \
 @INSTALL_ADMIN_TRUE@ModuleDirectory.py \
 @INSTALL_ADMIN_TRUE@ModuleExtensions.py \
+@INSTALL_ADMIN_TRUE@ModuleFullpath.py \
 @INSTALL_ADMIN_TRUE@ModuleGeoip.py \
 @INSTALL_ADMIN_TRUE@ModuleHeader.py \
 @INSTALL_ADMIN_TRUE@ModuleExists.py \
 @INSTALL_ADMIN_TRUE@ModuleMethod.py \
+@INSTALL_ADMIN_TRUE@ModuleBind.py \
+@INSTALL_ADMIN_TRUE@ModuleFrom.py \
 @INSTALL_ADMIN_TRUE@ModuleCustomError.py \
+@INSTALL_ADMIN_TRUE@ModuleWildcard.py \
+@INSTALL_ADMIN_TRUE@ModuleRehost.py \
+@INSTALL_ADMIN_TRUE@ModuleEvhost.py \
 @INSTALL_ADMIN_TRUE@config.py \
 @INSTALL_ADMIN_TRUE@pyscgi.py \
 @INSTALL_ADMIN_TRUE@validations.py \
 @INSTALL_ADMIN_TRUE@CherokeeManagement.py \
-@INSTALL_ADMIN_TRUE@flags.py
+@INSTALL_ADMIN_TRUE@flags.py \
+@INSTALL_ADMIN_TRUE@util.py \
+@INSTALL_ADMIN_TRUE@Wizard.py \
+@INSTALL_ADMIN_TRUE@Wizard_PHP.py \
+@INSTALL_ADMIN_TRUE@Wizard_WordPress.py \
+@INSTALL_ADMIN_TRUE@Wizard_Django.py \
+@INSTALL_ADMIN_TRUE@Wizard_Redirect.py \
+@INSTALL_ADMIN_TRUE@Wizard_HotLinking.py \
+@INSTALL_ADMIN_TRUE@Wizard_Drupal.py \
+@INSTALL_ADMIN_TRUE@Wizard_RoR.py \
+@INSTALL_ADMIN_TRUE@Wizard_Mailman.py
 
 adminpy_DATA = $(admin_data)
 @INSTALL_ADMIN_TRUE@template_data = \
 @INSTALL_ADMIN_TRUE@default.template.html \
 @INSTALL_ADMIN_TRUE@status.template.html \
 @INSTALL_ADMIN_TRUE@error_not_writable.template.html \
-@INSTALL_ADMIN_TRUE@error_not_found.template.html \
 @INSTALL_ADMIN_TRUE@error_icons_dir_missing.template.html \
 @INSTALL_ADMIN_TRUE@error_couldnt_launch.template.html
 
@@ -699,7 +736,7 @@ uninstall-am: uninstall-adminhelpDATA uninstall-adminpyDATA \
 
 
 .py.pre.py:
-	sed -e "s|%sysconfdir%|${sysconfdir}|g; s|%datadir%|${datadir}|g; s|%docdir%|${docdir}|g; s|%prefix%|${prefix}|g; s|%localstatedir%|${localstatedir}|g; s|%libdir%|${libdir}|g; s|%wwwroot%|${WWW_ROOT}|g; s|%version%|${PACKAGE_VERSION}|g; s|%phpcgi%|${PHPCGI}|g" $< > $@
+	sed -e "s|%sysconfdir%|${sysconfdir}|g; s|%datadir%|${datadir}|g; s|%docdir%|${docdir}|g; s|%prefix%|${prefix}|g; s|%localstatedir%|${localstatedir}|g; s|%libdir%|${libdir}|g; s|%localedir%|${localedir}|g; s|%wwwroot%|${WWW_ROOT}|g; s|%version%|${PACKAGE_VERSION}|g; s|%phpcgi%|${PHPCGI}|g" $< > $@
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

@@ -4,9 +4,8 @@
  *
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
- *      Ayose Cazorla León <setepo@gulic.org>
  *
- * Copyright (C) 2001-2008 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2009 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -19,9 +18,9 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
- * USA
- */
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
+ */ 
 
 #include "common-internal.h"
 #include "handler_redir.h"
@@ -53,7 +52,13 @@ match_and_substitute (cherokee_handler_redir_t *n)
 	
 	/* Append the query string
 	 */
-	if (! cherokee_buffer_is_empty (&conn->query_string)) {
+	if ((conn->web_directory.len > 1) &&
+	    (conn->options & conn_op_document_root))
+	{
+		cherokee_buffer_prepend_buf (&conn->request, &conn->web_directory);
+	}
+
+	if  (! cherokee_buffer_is_empty (&conn->query_string)) {
 		cherokee_buffer_add_str (&conn->request, "?");
 		cherokee_buffer_add_buffer (&conn->request, &conn->query_string);
 	}
@@ -76,7 +81,7 @@ match_and_substitute (cherokee_handler_redir_t *n)
 		 */
 		if (conn->web_directory.len == 1)
 			subject = conn->request.buf + (conn->web_directory.len - 1);
-		else 
+		else
 			subject = conn->request.buf + conn->web_directory.len;
 
 		subject_len = strlen (subject);
@@ -106,7 +111,7 @@ match_and_substitute (cherokee_handler_redir_t *n)
 		else {
 			rc = pcre_exec (list->re, NULL, subject, subject_len, 0, 0, ovector, OVECTOR_LEN);
 			if (rc == 0) {
-				PRINT_ERROR_S("Too many groups in the regex\n");
+				LOG_ERROR_S("Too many groups in the regex\n");
 			}
 
 			TRACE (ENTRIES, "subject = \"%s\" + len(\"%s\")-1=%d\n", 
@@ -120,7 +125,9 @@ match_and_substitute (cherokee_handler_redir_t *n)
 
 		/* Make a copy of the original request before rewrite it
 		 */
-		cherokee_buffer_add_buffer (&conn->request_original, &conn->request);
+		if (cherokee_buffer_is_empty (&conn->request_original)) {
+			cherokee_buffer_add_buffer (&conn->request_original, &conn->request);
+		}
 		
 		cherokee_buffer_clean (tmp);
 		cherokee_buffer_add (tmp, subject, subject_len);
@@ -131,8 +138,10 @@ match_and_substitute (cherokee_handler_redir_t *n)
 			int   len;
 			char *args;
 
-			cherokee_buffer_clean (&conn->pathinfo);
 			cherokee_buffer_clean (&conn->request);
+			cherokee_buffer_clean (&conn->pathinfo);
+			cherokee_buffer_clean (&conn->web_directory);
+			cherokee_buffer_clean (&conn->local_directory);
 
 			cherokee_buffer_ensure_size (&conn->request, conn->request.len + subject_len);
 			cherokee_regex_substitute (&list->subs,    /* regex str */
@@ -141,12 +150,17 @@ match_and_substitute (cherokee_handler_redir_t *n)
 						   ovector, rc);
 
 
+			/* Arguments */
 			cherokee_split_arguments (&conn->request, 0, &args, &len);
-
 			if (len > 0) {
 				cherokee_buffer_clean (&conn->query_string);
 				cherokee_buffer_add (&conn->query_string, args, len);
 				cherokee_buffer_drop_ending (&conn->request, len+1);
+			}
+
+			/* Non-global redirection */
+			if (conn->request.buf[0] != '/') {
+				cherokee_buffer_prepend_str (&conn->request, "/");
 			}
 
 			TRACE (ENTRIES, "Hidden redirect to: request=\"%s\" query_string=\"%s\"\n", 
@@ -172,8 +186,15 @@ match_and_substitute (cherokee_handler_redir_t *n)
 	ret = ret_ok;
 
 out:
-	if (! cherokee_buffer_is_empty (&conn->query_string))
+	if (! cherokee_buffer_is_empty (&conn->query_string)) {
 		cherokee_buffer_drop_ending (&conn->request, conn->query_string.len + 1);
+	}
+
+	if ((conn->web_directory.len > 1) &&
+	    (conn->options & conn_op_document_root))
+	{
+		cherokee_buffer_move_to_begin (&conn->request, conn->web_directory.len);
+	}
 
 	return ret;
 }

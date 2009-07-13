@@ -136,7 +136,7 @@ run-tests.py \
 128-ValidMethod-common.py \
 129-Basic-EmptyPasswd.py \
 130-Digest-EmptyPasswd.py \
-131-ChangeUser-phpcgi.py \
+131-PHP-zero-len-post+Redir.py \
 132-file-ContentType.py \
 133-If-None-Match.py \
 134-HTTP_headers.py \
@@ -196,7 +196,46 @@ run-tests.py \
 188-Method2.py \
 189-Redir9.py \
 190-RuleExists4.py \
-191-RuleExists5.py
+191-RuleExists5.py \
+192-RedirDocumentRoot.py \
+193-PHP-documentroot.py \
+194-PHP-zero-len-post.py \
+195-ServerAddr.py \
+196-Mime3.py \
+197-SOAPAction.py \
+198-HTTPresponse.py \
+199-ErrorRedir.py \
+200-ErrorRedir2.py \
+201-PostLimit.py \
+202-xsendfile2.py \
+203-secdownload1.py \
+204-secdownload2.py \
+205-secdownload3.py \
+206-AuthType.py \
+207-RuleExists4.py \
+208-Userdir_Pathinfo.py \
+209-ScriptAlias_DRoot.py \
+210-Userdir_ScriptName.py \
+211-EmptyGif.py \
+212-DirList-Hidden.py \
+213-Post-Chunked1.py \
+214-Post-Chunked2.py \
+215-Post-Chunked3.py \
+216-NameSpace.py \
+217-DoubleEncode.py \
+218-DrupalRedirect.py \
+219-Ext-Dot-Pathinfo.py \
+220-Pathinfo-Slash.py \
+221-ReHost1.py \
+222-EVHost1.py \
+223-EVHost2.py \
+224-EVHost3.py \
+225-PathTranslated.py \
+226-PathInfo-Default.py \
+227-Redir-Paths.py \
+228-Redir-Paths2.py \
+229-Fullpath.py \
+230-Fullpath2.py
 
 test:
 	./run-tests.py

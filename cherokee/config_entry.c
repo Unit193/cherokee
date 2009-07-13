@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2008 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2009 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -18,9 +18,9 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
- * USA
- */
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
+ */ 
 
 #include "common-internal.h"
 #include "config_entry.h"
@@ -67,6 +67,8 @@ cherokee_config_entry_init (cherokee_config_entry_t *entry)
 	entry->expiration_time      = 0;
 
 	entry->encoders             = NULL;
+	entry->limit_bps            = 0;
+	entry->no_log               = NULLB_NULL;
 
 	return ret_ok;
 }
@@ -134,7 +136,7 @@ cherokee_config_entry_set_handler (cherokee_config_entry_t        *entry,
 	return_if_fail (plugin_info != NULL, ret_error);
 
 	if (PLUGIN_INFO(plugin_info)->type != cherokee_handler) {
-		PRINT_ERROR ("Directory '%s' has not a handler module!\n", entry->document_root->buf);
+		LOG_ERROR ("Directory '%s' has not a handler module!\n", entry->document_root->buf);
 		return ret_error;
 	}
 
@@ -194,6 +196,13 @@ cherokee_config_entry_complete (cherokee_config_entry_t *entry, cherokee_config_
 	if (! entry->encoders)
 		entry->encoders = source->encoders;
 
+	if (! entry->limit_bps)
+		entry->limit_bps = source->limit_bps;
+
+	if (entry->no_log == NULLB_NULL) {
+		entry->no_log = source->no_log;
+	}
+
 	return ret_ok;
 }
 
@@ -204,7 +213,7 @@ cherokee_config_entry_print (cherokee_config_entry_t *entry)
 	printf ("document_root:             %s\n", entry->document_root ? entry->document_root->buf : "");
 	printf ("only_secure:               %d\n", entry->only_secure);
 	printf ("access:                    %p\n", entry->access);
-	printf ("handler_new                %p\n", entry->handler_new_func);
+	printf ("handler_new:               %p\n", entry->handler_new_func);
 	printf ("http_methods:              0x%x\n", entry->handler_methods);
 	printf ("handler_properties:        %p\n", entry->handler_properties);
 	printf ("validator_new:             %p\n", entry->validator_new_func);
@@ -212,8 +221,10 @@ cherokee_config_entry_print (cherokee_config_entry_t *entry)
 	printf ("auth_realm:                %s\n", entry->auth_realm ? entry->auth_realm->buf : "");
 	printf ("users:                     %p\n", entry->users);
 	printf ("expiration type:           %d\n", entry->expiration);
-	printf ("expiration_time            %lu\n", entry->expiration_time);
-	printf ("encoders_accepted          %p\n", entry->encoders);
+	printf ("expiration_time:           %lu\n", entry->expiration_time);
+	printf ("encoders_accepted:         %p\n", entry->encoders);
+	printf ("limit bps:                 %d\n", entry->limit_bps);
+	printf ("no_log:                    %s\n", NULLB_TO_STR(entry->no_log));
 
 	return ret_ok;
 }

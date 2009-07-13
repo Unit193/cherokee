@@ -24,6 +24,12 @@ class ConfigNode (object):
             return default
         return subcfg.value
 
+    def get_vals (self, keys, default=None):
+        values = []
+        for k in keys:
+            values += [self.get_val(k)]
+        return values
+
     # Get child
     #
     def _getitem_simple (self, key):
@@ -173,9 +179,10 @@ class Config:
             if line[0] == '#': continue
 
             try:
-                path, value = line.split (" = ")
+                path, value = line.split (" = ", 1)
             except:
-                print "ERROR: Couldn't unpack '%s'"%(line)
+                msg = _("ERROR: Couldn't unpack '%s'")
+                print msg % (line)
                 raise
 
             node = self._create_path (path)
@@ -230,6 +237,9 @@ class Config:
 
     def get_val (self, path, default=None):
         return self.root.get_val (path, default)
+
+    def get_vals (self, paths, default=None):
+        return self.root.get_vals (paths, default)
 
     def __delitem__ (self, path):
         parent, parent_path, child_name = self._get_parent_node (path)
@@ -289,7 +299,7 @@ class Config:
             t.close()
             s.close()
         except:
-            print ("Could copy configuration to " + self.file+'.backup')
+            print _("Could not copy configuration to ") + self.file + '.backup'
 
         # Write the new one
         cfg = self.serialize()

@@ -225,6 +225,67 @@ converted. This behavior -not adding the semicolon in the generated
 string automatically- is a design decision taken to make the
 underlying infrastructure more flexible.</p></div>
 </div>
+<h2 id="_mysql_wrapper_for_php">MySQL Wrapper for PHP</h2>
+<div class="sectionbody">
+<div class="para"><p>To facilitate the use of the MySQL Database Bridge, the PHP-MySQL API
+has been replicated in a wrapper that can be found under
+<tt>dbslayer/mysql_wrap.php</tt> in Cherokee's source tree. It should provide
+an easy to use method of benefiting from the advantages offered by
+Cherokee without having to modify your applications.</p></div>
+<div class="para"><p>You can use it in any of two ways:</p></div>
+<div class="olist"><ol>
+<li>
+<p>
+By directly overriding every <tt>mysql_*</tt> function call.
+</p>
+</li>
+<li>
+<p>
+By prepending <tt>cherokee_</tt> to every <tt>mysql_*</tt> function.
+</p>
+</li>
+</ol></div>
+<div class="para"><p>This is controlled when you run the initialization function. By
+default it tries to override the built-in MySQL functions. If you
+cannot provide a suitable environment or it simply fails, try passing
+a <tt>FALSE</tt> value as the optional second parameter.</p></div>
+<div class="para"><p>The requirements for the wrapper are basically the
+<a href="http://php.net/manual/en/book.curl.php">cURL library</a>.</p></div>
+<div class="para"><p>To override the built-in function, you need to have
+<a href="http://php.net/manual/en/book.apd.php">APD</a> installed.</p></div>
+<div class="para"><p>If you don not, it is as simple as providing the <tt>phpize</tt> program
+(bundled with package <tt>php5-dev</tt> on Debian based Linux distribution)
+and issuing:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>pecl install apd</tt></pre>
+</div></div>
+<div class="para"><p>To use the wrapper you simply have to include the file in your code
+and initialize it with the appropriate host:port of a running Cherokee
+MySQL Bridge instance.</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>&lt;?php
+
+$host="http://localhost:8888";
+cherokee_init($host);
+
+/* Add a second parameter if you don't want to override the built-in functions.
+
+cherokee_init($host, FALSE);
+
+*/
+
+?&gt;</tt></pre>
+</div></div>
+<div class="para"><p>From there on the built-in functions should be extended to support
+Cherokee Bridged MySQL resources as well as the regular MySQL ones.</p></div>
+<div class="para"><p>If you don't care about mixing regular MySQL resources and Bridged
+ones, as will be the case in most ocasions, you could even skip the
+manual initialization and simply modify the <tt>cherokee_mysql_connect()</tt>
+and <tt>cherokee_mysql_pconnect()</tt> functions to do the task for you on
+invocation.</p></div>
+</div>
 <div id="footer">
 <div id="footer-text">
 </div>

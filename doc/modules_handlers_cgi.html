@@ -107,6 +107,17 @@ cellspacing="0" cellpadding="4">
     Use the non-standard X-Sendfile header.
     </td>
   </tr>
+  <tr>
+    <td align="left">
+    Pass Request Headers  
+    </td>
+    <td align="left">
+    Boolean 
+    </td>
+    <td align="left">
+    Forward all the headers to the CGI as HTTP_*
+    </td>
+  </tr>
 </tbody>
 </table>
 </div>
@@ -119,7 +130,7 @@ make major code rewrites.</p></div>
 disable this when you have an application that is running the whole
 virtual server tree, as it is a common source of problems. You can
 look at a practical example about PATH_INFO in the
-<a href="modules_handlers_common.html">File &amp; Send</a> handler documentation.</p></div>
+<a href="modules_handlers_common.html">List &amp; Send</a> handler documentation.</p></div>
 <h3 id="examples">Examples</h3><div style="clear:left"></div>
 <div class="para"><p>This is a pretty common example. It defines a directory called <tt>cgi</tt>
 that points to a path out of the Sever root directory where the
@@ -129,6 +140,17 @@ CGI programs are located.</p></div>
 <img src="media/images/admin_handler_cgi.png" alt="CGI" title="CGI"/>
 </div>
 </div>
+<div class="para"><div class="title">Script Alias</div><p>Another example could be the case where you wanted your default
+requests to be managed by a specific script.</p></div>
+<div class="para"><p>A real life example could be running
+<a href="http://trac.edgewall.org">Trac</a> as a CGI script. In that case you
+would want to map an URL to the trac.cgi script.</p></div>
+<div class="para"><p>For this you only need to set up the Script Alias option. Assuming you
+are using a <tt>Directory</tt>-type rule for the path <tt>/trac</tt> managed by the
+<tt>CGI</tt> handler, you could set <tt>/usr/share/trac/cgi-bin/trac.cgi</tt> as
+Script Alias.</p></div>
+<div class="para"><p>After this, every request that matched the <tt>/trac</tt> path would be
+managed by the <tt>trac.cgi</tt> script.</p></div>
 </div>
 <div id="footer">
 <div id="footer-text">

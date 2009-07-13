@@ -38,9 +38,10 @@ DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/etr_socket_nsl.m4 \
 	$(top_srcdir)/m4/libwww.m4 $(top_srcdir)/m4/mysql.m4 \
-	$(top_srcdir)/m4/network.m4 $(top_srcdir)/m4/pwd_grp.m4 \
-	$(top_srcdir)/m4/sendfile_samba.m4 $(top_srcdir)/acinclude.m4 \
-	$(top_srcdir)/configure.in
+	$(top_srcdir)/m4/network.m4 $(top_srcdir)/m4/nls.m4 \
+	$(top_srcdir)/m4/po.m4 $(top_srcdir)/m4/progtest.m4 \
+	$(top_srcdir)/m4/pwd_grp.m4 $(top_srcdir)/m4/sendfile_samba.m4 \
+	$(top_srcdir)/acinclude.m4 $(top_srcdir)/configure.in
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(install_sh) -d
@@ -110,7 +111,13 @@ ETR_SOCKET_LIBS = @ETR_SOCKET_LIBS@
 EXEEXT = @EXEEXT@
 F77 = @F77@
 FFLAGS = @FFLAGS@
+FFMPEG_CFLAGS = @FFMPEG_CFLAGS@
+FFMPEG_LIBS = @FFMPEG_LIBS@
+GETTEXT_MACRO_VERSION = @GETTEXT_MACRO_VERSION@
+GMSGFMT = @GMSGFMT@
+GMSGFMT_015 = @GMSGFMT_015@
 GREP = @GREP@
+HAVE_MSGFMT = @HAVE_MSGFMT@
 HaveRtldGlobal = @HaveRtldGlobal@
 HaveRtldLocal = @HaveRtldLocal@
 HaveRtldNext = @HaveRtldNext@
@@ -130,6 +137,9 @@ LTLIBOBJS = @LTLIBOBJS@
 MAINT = @MAINT@
 MAKEINFO = @MAKEINFO@
 MKDIR_P = @MKDIR_P@
+MSGFMT = @MSGFMT@
+MSGFMT_015 = @MSGFMT_015@
+MSGMERGE = @MSGMERGE@
 MYSQL_CFLAGS = @MYSQL_CFLAGS@
 MYSQL_CONFIG = @MYSQL_CONFIG@
 MYSQL_LDFLAGS = @MYSQL_LDFLAGS@
@@ -151,12 +161,17 @@ PHPCGI = @PHPCGI@
 PTHREAD_CFLAGS = @PTHREAD_CFLAGS@
 PTHREAD_LIBS = @PTHREAD_LIBS@
 RANLIB = @RANLIB@
+RT_LIBS = @RT_LIBS@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
 STRIP = @STRIP@
 TLS_LIBS = @TLS_LIBS@
+USE_NLS = @USE_NLS@
 VERSION = @VERSION@
 WWW_ROOT = @WWW_ROOT@
+XGETTEXT = @XGETTEXT@
+XGETTEXT_015 = @XGETTEXT_015@
+XGETTEXT_EXTRA_OPTIONS = @XGETTEXT_EXTRA_OPTIONS@
 abs_builddir = @abs_builddir@
 abs_srcdir = @abs_srcdir@
 abs_top_builddir = @abs_top_builddir@

@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2008 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2009 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -18,9 +18,9 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
- * USA
- */
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
+ */ 
 
 #if !defined (CHEROKEE_INSIDE_CHEROKEE_H) && !defined (CHEROKEE_COMPILATION)
 # error "Only <cherokee/cherokee.h> can be included directly, this file may disappear or change contents."
@@ -44,7 +44,8 @@ typedef enum {
 	cherokee_validator = 1 << 4,
 	cherokee_balancer  = 1 << 5,
 	cherokee_rule      = 1 << 6,
-	cherokee_cryptor   = 1 << 7
+	cherokee_vrule     = 1 << 7,
+	cherokee_cryptor   = 1 << 8
 } cherokee_plugin_type_t;
 
 
@@ -121,8 +122,8 @@ typedef struct {
  */
 #define PLUGIN_INFO_EASY_INIT(type,name)                            \
 	PLUGIN_INFO_INIT(name, type,                                \
-		(void *)cherokee_ ## type ## _ ## name ## _new,     \
-		(void *)cherokee_ ## type ## _ ## name ## _configure)
+		(void *)type ## _ ## name ## _new,     \
+		(void *)type ## _ ## name ## _configure)
 
 
 /* Plugin initialization function

@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2008 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2009 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -18,9 +18,9 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
- * USA
- */
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
+ */ 
 
 #include "common-internal.h"
 #include "rule_method.h"
@@ -46,14 +46,14 @@ configure (cherokee_rule_method_t    *rule,
 
 	ret = cherokee_config_node_read (conf, "method", &tmp);
 	if (ret != ret_ok) {
-		PRINT_ERROR ("Rule prio=%d needs an 'method' property\n", 
-			     RULE(rule)->priority);
+		LOG_CRITICAL ("Rule prio=%d needs an 'method' property\n", 
+			      RULE(rule)->priority);
 		return ret_error;
 	}
 
 	ret = cherokee_http_string_to_method (tmp, &rule->method);
 	if (ret != ret_ok) {
-		PRINT_ERROR ("Did not recognize HTTP method '%s'\n", tmp->buf);
+		LOG_CRITICAL ("Did not recognize HTTP method '%s'\n", tmp->buf);
 		return ret;
 	}
 
@@ -63,13 +63,17 @@ configure (cherokee_rule_method_t    *rule,
 static ret_t
 _free (void *p)
 {
+	UNUSED(p);
 	return ret_ok;
 }
 
 static ret_t 
-match (cherokee_rule_method_t *rule,
-       cherokee_connection_t  *conn)
+match (cherokee_rule_method_t  *rule,
+       cherokee_connection_t   *conn,
+       cherokee_config_entry_t *ret_conf)
 {
+	UNUSED(ret_conf);
+
 	if (conn->header.method == rule->method) {
 		TRACE(ENTRIES, "Match method: %d\n", rule->method);
 		return ret_ok;

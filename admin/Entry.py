@@ -34,20 +34,32 @@ class Entry:
 
     def __str__ (self):
         suffix = ""
+        disabled = ""
+
         if self._type == "checkbox":
             if "quiet" in self._kwargs and self._kwargs["quiet"]:
                 del(self._kwargs["quiet"])
             else:
-                suffix = " Enabled"
+                suffix = self.AddToggleSpan(_(" Enabled"))
+
+        if "disabled" in self._kwargs:
+            if self._kwargs["disabled"] == True:
+                disabled = " disabled"
+
+            del (self._kwargs["disabled"])
 
         error = '<div id="error_%s"></div>' % (self._name)
-        props = 'id="%s" name="%s" type="%s"' % (self._name, self._name, self._type)
+        props = 'id="%s" name="%s" type="%s"%s' % (self._name, self._name, self._type, disabled)
 
         for prop in self._kwargs:
             props += ' %s="%s"' % (prop, self._kwargs[prop])
 
         return "<input %s />"%(props) + suffix + error
 
+    def AddToggleSpan (self, text):
+        js = "javascript:var obj = get_by_id('%s'); obj.checked = (! obj.checked); do_autosubmit(obj);" % (self._name)
+        text = '<span class="cbtoggletext" onClick="%s">%s</span>' % (js, text)
+        return text
 
 
 class EntryOptions:
@@ -75,9 +87,9 @@ class EntryOptions:
         for option in self._opts:
             name, label = option
             if self._selected == name:
-                txt += '\t<option value="%s" selected>%s</option>\n' % (name, label)
+                txt += '\t<option value="%s" selected>%s</option>\n' % (name, _(label))
             else:
-                txt += '\t<option value="%s">%s</option>\n' % (name, label)
+                txt += '\t<option value="%s">%s</option>\n' % (name, _(label))
 
         txt += '</select>\n'
 

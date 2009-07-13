@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2008 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2009 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -18,9 +18,9 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
- * USA
- */
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
+ */ 
 
 #ifndef CHEROKEE_HANDLER_PROXY_H
 #define CHEROKEE_HANDLER_PROXY_H
@@ -54,9 +54,18 @@ typedef struct {
 	cherokee_balancer_t            *balancer;
 	cherokee_handler_proxy_hosts_t  hosts;
 	cuint_t                         reuse_max;
-	cherokee_avl_t                  headers_hide;
-	cherokee_list_t                 headers_add;
-	cherokee_list_t                 request_regexs;
+	
+	/* Request processing */
+	cherokee_avl_t                  in_headers_hide;
+	cherokee_list_t                 in_headers_add;
+	cherokee_list_t                 in_request_regexs;
+	cherokee_boolean_t              in_allow_keepalive;
+	cherokee_boolean_t              in_preserve_host;
+
+	/* Reply processing */
+	cherokee_avl_t                  out_headers_hide;
+	cherokee_list_t                 out_headers_add;
+	cherokee_list_t                 out_request_regexs;
 } cherokee_handler_proxy_props_t;
 
 typedef struct {
@@ -67,6 +76,7 @@ typedef struct {
 	cherokee_handler_proxy_conn_t       *pconn;
 	cherokee_buffer_t                    tmp;
 	cherokee_boolean_t                   respined;
+	cherokee_boolean_t                   got_all;
 
 	cherokee_handler_proxy_init_phase_t  init_phase;
 } cherokee_handler_proxy_t;

@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2008 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2009 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -18,9 +18,9 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
- * USA
- */
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
+ */ 
 
 #if !defined (CHEROKEE_INSIDE_CHEROKEE_H) && !defined (CHEROKEE_COMPILATION)
 # error "Only <cherokee/cherokee.h> can be included directly, this file may disappear or change contents."
@@ -45,7 +45,7 @@ CHEROKEE_BEGIN_DECLS
  */
 typedef ret_t (* rule_func_new_t)       (void **rule);
 typedef ret_t (* rule_func_configure_t) (void  *rule, cherokee_config_node_t *conf, void *vsrv);
-typedef ret_t (* rule_func_match_t)     (void  *rule, void *cnt);
+typedef ret_t (* rule_func_match_t)     (void  *rule, void *cnt, void *ret_conf);
 
 /* Data types
  */
@@ -87,7 +87,7 @@ ret_t cherokee_rule_init_base   (cherokee_rule_t *rule, cherokee_plugin_info_t *
 
 /* Rule virtual methods
  */
-ret_t cherokee_rule_match       (cherokee_rule_t *rule, void *cnt);
+ret_t cherokee_rule_match       (cherokee_rule_t *rule, void *cnt, void *ret_conf);
 ret_t cherokee_rule_configure   (cherokee_rule_t *rule, cherokee_config_node_t *conf, void *vsrv);
 
 CHEROKEE_END_DECLS

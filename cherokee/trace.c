@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2008 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2009 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -18,14 +18,15 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
- * USA
- */
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
+ */ 
 
 #include "common-internal.h"
 #include "trace.h"
 #include "buffer.h"
 #include "util.h"
+#include "bogotime.h"
 
 #ifdef HAVE_SYSLOG_H
 # include <syslog.h>
@@ -96,8 +97,6 @@ cherokee_trace_do_trace (const char *entry, const char *file, int line, const ch
 	char               *lentry;
 	char               *lentry_end;
 	va_list             args;
-	struct tm           now;
-	time_t              now_time;
 	cherokee_buffer_t  *trace_modules = &trace.modules;
 	cherokee_boolean_t  do_log        = false;
 	cherokee_buffer_t   entries       = CHEROKEE_BUF_INIT;
@@ -118,7 +117,10 @@ cherokee_trace_do_trace (const char *entry, const char *file, int line, const ch
 		/* Check for 'all'
 		 */
 		p = strstr (trace_modules->buf, "all");
-		if (p) do_log = true;
+		if (p) {
+			do_log = true;
+			break;
+		}
 
 		/* Check the type
 		 */
@@ -149,15 +151,8 @@ cherokee_trace_do_trace (const char *entry, const char *file, int line, const ch
 	}
 
 	if (trace.print_time) {
-		now_time = time(NULL);
-		cherokee_localtime (&now_time, &now);
-		cherokee_buffer_add_va (&entries, "[%02d/%02d/%d:%02d:%02d:%02d] ",
-					now.tm_mday, 
-					now.tm_mon, 
-					now.tm_year + 1900,
-					now.tm_hour, 
-					now.tm_min, 
-					now.tm_sec);
+		cherokee_buf_add_bogonow (&entries, true);
+		cherokee_buffer_add_char (&entries, ' ');
 	}
 	
 	cherokee_buffer_add_va (&entries, "%18s:%04d (%30s): ", file, line, func);

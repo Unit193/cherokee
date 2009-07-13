@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2008 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2009 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -18,9 +18,9 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
- * USA
- */
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
+ */ 
 
 #include "common-internal.h"
 
@@ -106,7 +106,7 @@ cherokee_admin_client_prepare (cherokee_admin_client_t *admin,
 	if ((admin->url_ref == NULL) || 
 	    (admin->poll_ref == NULL))
 	{
-		PRINT_ERROR_S ("ERROR: Internal error\n");
+		LOG_CRITICAL_S ("Internal error\n");
 		return ret_error;
 	}
 	
@@ -177,6 +177,8 @@ internal_step (cherokee_admin_client_t *admin)
 	switch (ret) {
 	case ret_eof:
 	case ret_eof_have_data:
+		if (cherokee_buffer_is_empty (&DOWNLOADER(admin->downloader)->body))
+			return ret_eof;
 		return ret_ok;
 	case ret_error:
 	case ret_eagain:
@@ -192,7 +194,7 @@ internal_step (cherokee_admin_client_t *admin)
 
 
 static void
-prepare_and_set_post (cherokee_admin_client_t *admin, char *str, cuint_t str_len)
+prepare_and_set_post (cherokee_admin_client_t *admin, const char *str, cuint_t str_len)
 {
 	cherokee_downloader_t *downloader = DOWNLOADER(admin->downloader);
 
@@ -211,14 +213,14 @@ prepare_and_set_post (cherokee_admin_client_t *admin, char *str, cuint_t str_len
 	prepare_and_set_post(admin, str"\n", sizeof(str))
 
 
-#define CHECK_AND_SKIP_LITERAL(string, substr) \
-	if ((string == NULL) || (strlen(string) == 0)) \
-		return ret_error; \
-	if (strncmp (string, substr, sizeof(substr)-1)) { \
-		PRINT_ERROR ("ERROR: Uknown response len(" FMT_SIZE "): '%s'\n", \
-			     (CST_SIZE) strlen(string), string); \
-		return ret_error; \
-	} \
+#define CHECK_AND_SKIP_LITERAL(string, substr)				\
+	if ((string == NULL) || (strlen(string) == 0))			\
+		return ret_error;					\
+	if (strncmp (string, substr, sizeof(substr)-1)) {		\
+		LOG_ERROR ("Uknown response len(" FMT_SIZE "): '%s'\n", \
+			   (CST_SIZE) strlen(string), string);		\
+		return ret_error;					\
+	}								\
 	string += sizeof(substr)-1;
 
 
@@ -234,8 +236,8 @@ check_and_skip_literal (cherokee_buffer_t *buf, const char *literal)
 	re = strncmp (buf->buf, literal, len);
 	if (re != 0) {
 #if 0
-		PRINT_ERROR ("ERROR: Couldn't find len(%d):'%s' in len(%d):'%s'\n", 
-			     strlen(literal), literal, buf->len, buf->buf);
+		LOG_ERROR ("Couldn't find len(%d):'%s' in len(%d):'%s'\n", 
+			   strlen(literal), literal, buf->len, buf->buf);
 #endif
 		return ret_error;
 	}

@@ -1,13 +1,15 @@
 ## Cherokee: Makefile.am  -*- makefile -*-
 
+SUBDIRS = 
+
 if INSTALL_ADMIN
-SUBDIRS = static
+SUBDIRS += static
 endif
 
 SUFFIXES = .py.pre .py
 
 .py.pre.py:
-	sed -e "s|%sysconfdir%|${sysconfdir}|g; s|%datadir%|${datadir}|g; s|%docdir%|${docdir}|g; s|%prefix%|${prefix}|g; s|%localstatedir%|${localstatedir}|g; s|%libdir%|${libdir}|g; s|%wwwroot%|${WWW_ROOT}|g; s|%version%|${PACKAGE_VERSION}|g; s|%phpcgi%|${PHPCGI}|g" $< > $@
+	sed -e "s|%sysconfdir%|${sysconfdir}|g; s|%datadir%|${datadir}|g; s|%docdir%|${docdir}|g; s|%prefix%|${prefix}|g; s|%localstatedir%|${localstatedir}|g; s|%libdir%|${libdir}|g; s|%localedir%|${localedir}|g; s|%wwwroot%|${WWW_ROOT}|g; s|%version%|${PACKAGE_VERSION}|g; s|%phpcgi%|${PHPCGI}|g" $< > $@
 
 PY_PRE = \
 configured.py.pre
@@ -43,6 +45,7 @@ PageGeneral.py \
 PageIcon.py \
 PageStatus.py \
 PageMime.py \
+PageNewConfig.py \
 PageVServer.py \
 PageVServers.py \
 PageError.py \
@@ -50,6 +53,7 @@ PageFeedback.py \
 PageInfoSource.py \
 Table.py \
 Theme.py \
+Rule.py \
 RuleList.py \
 Module.py \
 ModuleHandler.py \
@@ -63,9 +67,12 @@ ModuleFcgi.py \
 ModuleScgi.py \
 ModuleBalancer.py \
 ModuleSsi.py \
+ModuleSecdownload.py \
+ModuleEmptyGif.py \
 ModuleProxy.py \
 ModuleMirror.py \
 ModuleDbslayer.py \
+ModuleStreaming.py \
 ModuleErrorNn.py \
 ModuleErrorRedir.py \
 ModuleAuth.py \
@@ -78,20 +85,37 @@ ModuleHtpasswd.py \
 ModuleMysql.py \
 ModulePam.py \
 ModuleRoundRobin.py \
+ModuleIpHash.py \
 ModuleDefault.py \
 ModuleRequest.py \
 ModuleDirectory.py \
 ModuleExtensions.py \
+ModuleFullpath.py \
 ModuleGeoip.py \
 ModuleHeader.py \
 ModuleExists.py \
 ModuleMethod.py \
+ModuleBind.py \
+ModuleFrom.py \
 ModuleCustomError.py \
+ModuleWildcard.py \
+ModuleRehost.py \
+ModuleEvhost.py \
 config.py \
 pyscgi.py \
 validations.py \
 CherokeeManagement.py \
-flags.py
+flags.py \
+util.py \
+Wizard.py \
+Wizard_PHP.py \
+Wizard_WordPress.py \
+Wizard_Django.py \
+Wizard_Redirect.py \
+Wizard_HotLinking.py \
+Wizard_Drupal.py \
+Wizard_RoR.py \
+Wizard_Mailman.py
 endif
 
 adminpy_DATA = $(admin_data)
@@ -102,7 +126,6 @@ template_data = \
 default.template.html \
 status.template.html \
 error_not_writable.template.html \
-error_not_found.template.html \
 error_icons_dir_missing.template.html \
 error_couldnt_launch.template.html
 endif

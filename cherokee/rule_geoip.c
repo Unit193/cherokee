@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2008 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2009 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -18,9 +18,9 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
- * USA
- */
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
+ */ 
 
 #include "common-internal.h"
 #include "rule_geoip.h"
@@ -51,7 +51,7 @@ geoip_get (void)
 	
 	/* Return the global if it's ready
 	 */
-	if (likely (_geoip)) {
+	if (likely (_geoip != NULL)) {
 		_geoip_refs += 1;
 		return _geoip;
 	}
@@ -89,12 +89,16 @@ geoip_release (void)
  */
 
 static ret_t 
-match (cherokee_rule_t *rule_, cherokee_connection_t *conn)
+match (cherokee_rule_t         *rule_,
+       cherokee_connection_t   *conn,
+       cherokee_config_entry_t *ret_conf)
 {
 	ret_t                  ret;
 	void                  *foo;
 	const char            *country;
 	cherokee_rule_geoip_t *rule = RULE_GEOIP(rule_);
+
+	UNUSED(ret_conf);
 
 	country = GeoIP_country_code_by_ipnum (rule->geoip, SOCKET_ADDRESS_IPv4(&conn->socket));
 	if (country == NULL) {
@@ -147,8 +151,8 @@ configure (cherokee_rule_geoip_t       *rule,
 
 	ret = cherokee_config_node_read (conf, "countries", &tmp);
 	if (ret != ret_ok) {
-		PRINT_ERROR ("Rule prio=%d needs an 'geoip' property\n", 
-			     RULE(rule)->priority);
+		LOG_CRITICAL ("Rule prio=%d needs an 'geoip' property\n", 
+			      RULE(rule)->priority);
 		return ret_error;
 	}
 

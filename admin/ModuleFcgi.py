@@ -19,22 +19,20 @@ class ModuleFcgi (ModuleCgiBase):
     def __init__ (self, cfg, prefix, submit):
         ModuleCgiBase.__init__ (self, cfg, prefix, 'fcgi', submit)
 
-        self.show_script_alias  = False
+        self.show_script_alias  = True
         self.show_change_uid    = False
         self.show_document_root = True
-
-        self._util__set_fixed_check_file()
 
     def _op_render (self):
         txt = ModuleCgiBase._op_render (self)
 
-        txt += '<h2>FastCGI specific</h2>'
+        txt += '<h2>%s</h2>' % (_('FastCGI specific'))
 
         table = TableProps()
         prefix = "%s!balancer" % (self._prefix)
         assert (self.submit_url)
-        e = self.AddPropOptions_Reload (table, "Balancer", prefix,
-                                        modules_available(BALANCERS), NOTE_BALANCER)
+        e = self.AddPropOptions_Reload (table, _("Balancer"), prefix,
+                                        modules_available(BALANCERS), _(NOTE_BALANCER))
         txt += self.Indent (str(table) + e)
         return txt
 

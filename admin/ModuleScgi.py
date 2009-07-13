@@ -4,6 +4,9 @@ from Module import *
 from validations import *
 from consts import *
 
+# For gettext
+N_ = lambda x: x
+
 from ModuleCgi import *
 from ModuleBalancer import NOTE_BALANCER
 
@@ -23,17 +26,15 @@ class ModuleScgi (ModuleCgiBase):
         self.show_change_uid    = False
         self.show_document_root = True
 
-        self._util__set_fixed_check_file()
-
     def _op_render (self):
         txt = ModuleCgiBase._op_render (self)
 
-        txt += '<h2>SCGI specific</h2>'
+        txt += '<h2>%s</h2>' % (_('SCGI specific'))
 
         table = TableProps()
         prefix = "%s!balancer" % (self._prefix)
-        e = self.AddPropOptions_Reload (table, "Balancer", prefix, 
-                                        modules_available(BALANCERS), NOTE_BALANCER)
+        e = self.AddPropOptions_Reload (table, _("Balancer"), prefix, 
+                                        modules_available(BALANCERS), _(NOTE_BALANCER))
         txt += self.Indent(str(table) + e)
         return txt
 

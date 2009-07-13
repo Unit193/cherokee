@@ -1,3 +1,184 @@
+cherokee (0.99.20-1) unstable; urgency=low
+
+  * New Upstream Version
+
+ -- Gunnar Wolf <gwolf@debian.org>  Wed, 01 Jul 2009 11:00:52 -0500
+
+cherokee (0.99.19-1) unstable; urgency=low
+
+  [ Leonel Nunez ]
+  * New Upstream Version
+
+  [ Gunnar Wolf ]
+  * Bumped up standards-version to 3.8.2, no changes needed
+  * DebHelper compat level was inconsistent (4 in debian/control, 5 in
+    debian/compat), fixed
+  * Fixed yet another Lintian warning: Preinst no longer hard-wires
+    Python binary location, trusts correct information set by dpkg
+
+ -- Gunnar Wolf <gwolf@debian.org>  Tue, 23 Jun 2009 17:48:09 -0500
+
+cherokee (0.99.17-1) unstable; urgency=low
+
+  * New Upstream Version
+  * Removed recommends php5-cgi since upstream removed
+    the default config
+  * Added Recommends  spawn-fcgi as RoR needs it
+
+ -- Leonel Nunez <leonel@enelserver.com>  Mon, 15 Jun 2009 15:03:18 -0600
+
+cherokee (0.99.16-1) unstable; urgency=low
+
+  * New Upstream Version
+  * Added recommends  php5-cgi to cherokee (closes: #532287)
+
+ -- Leonel Nunez <leonel@enelserver.com>  Tue, 09 Jun 2009 13:10:37 -0600
+
+cherokee (0.99.15-2) unstable; urgency=low
+
+  * Added missing dependency on python-support to libcherokee-config0
+    (Closes: #526835)
+
+ -- Gunnar Wolf <gwolf@debian.org>  Mon, 01 Jun 2009 12:37:04 -0500
+
+cherokee (0.99.15-1) unstable; urgency=low
+
+  * New Upstream Version
+
+ -- Leonel Nunez <leonel@enelserver.com>  Tue, 12 May 2009 04:56:58 -0600
+
+cherokee (0.99.14-2) unstable; urgency=low
+
+  * Add a trailing whitespace to the configuration file if it does not
+    have many, to avoid confusing the wrapper (Closes: #528160, #524958)
+
+ -- Gunnar Wolf <gwolf@debian.org>  Mon, 11 May 2009 07:14:05 -0500
+
+cherokee (0.99.14-1) unstable; urgency=low
+
+  * New Upstream Version
+
+ -- Leonel Nunez <leonel@enelserver.com>  Wed, 06 May 2009 04:59:15 -0600
+
+cherokee (0.99.13-1) unstable; urgency=low
+
+  * New Upstream Version
+
+ -- Leonel Nunez <leonel@enelserver.com>  Thu, 30 Apr 2009 10:36:15 -0600
+
+cherokee (0.99.11-1) unstable; urgency=low
+
+  * New Upstream Version
+
+ -- Gunnar Wolf <gwolf@debian.org>  Sat, 18 Apr 2009 17:24:11 -0500
+
+cherokee (0.99.10-3) unstable; urgency=low
+
+  * Moved Leonel's direct patch to the corresponding Quilt patch
+  * Now properly allows for updates from 0.99.9 - Sorry for the
+    breakage! (Closes: #524129)
+
+ -- Gunnar Wolf <gwolf@debian.org>  Fri, 17 Apr 2009 11:43:18 -0500
+
+cherokee (0.99.10-2) unstable; urgency=low
+
+  * Added Absolute path /usr/share/cherokee/admin 
+    to 0999to09910.py
+
+ -- Leonel Nunez <leonel@enelserver.com>  Mon, 13 Apr 2009 19:11:23 -0600
+
+cherokee (0.99.10-1) unstable; urgency=low
+
+  * New Upstream Version
+
+ -- Leonel Nunez <leonel@enelserver.com>  Mon, 13 Apr 2009 13:52:17 -0600
+
+cherokee (0.99.9-1) unstable; urgency=low
+
+  * New Upstream Version
+
+ -- Leonel Nunez <leonel@enelserver.com>  Thu, 02 Apr 2009 14:56:22 -0600
+
+cherokee (0.99.8-1) unstable; urgency=low
+
+  * New upstream version (Closes: #520983)
+  * Added some missing copyright notices to debian/copyright (including
+    the icons/* relicensing under (DFSG-free!) CC-BY-3.0
+  * Bumped up standards-version to 3.8.1; no changes needed
+  * Moved some remaining documentation links (i.e. in cherokee-admin) to
+    point to /usr/share/doc/cherokee-doc
+
+ -- Gunnar Wolf <gwolf@debian.org>  Tue, 31 Mar 2009 12:32:55 -0600
+
+cherokee (0.99.5-1) unstable; urgency=low
+
+  [ Leonel Nunez ]
+  * New Upstream Version
+
+  [ Gunnar Wolf ]
+  * Re-wrote debian/copyright using the machine-parsable format; noted
+    missing files by different authors/conditions than Cherokee proper
+
+ -- Gunnar Wolf <gwolf@debian.org>  Mon, 23 Mar 2009 15:06:20 -0600
+
+cherokee (0.99.4-2) unstable; urgency=low
+
+  * Created /var/log/cherokee, which we stopped creating by mistake on
+    the last version (Closes: #519765)
+
+ -- Gunnar Wolf <gwolf@debian.org>  Tue, 17 Mar 2009 11:35:27 -0600
+
+cherokee (0.99.4-1) unstable; urgency=low
+
+  [ Leonel Nunez ]
+  * New Upstream Version
+
+  [ Gunnar Wolf ]
+  * Upstream version fixed incorrectly set environment variables
+    (Closes: #517362)
+  * Split documentation into its own package (Closes: #509595)
+
+ -- Gunnar Wolf <gwolf@debian.org>  Fri, 13 Mar 2009 12:54:35 -0600
+
+cherokee (0.99.3-1) unstable; urgency=low
+
+  [ Leonel Núñez ]
+  * New Upstream Version
+
+  [ Gunnar Wolf ]
+  * Added Leonel Núñez as an uploader
+  * Removed the spawn-fcgi alternative handling code, as it was removed
+    upstream
+  * Moved all packages to section "httpd" (see msg
+    877i3d9d2w.fsf@vorlon.ganneff.de at debian-devel, 26/02/2009)
+  * Specific GPL version used noted in debian/copyright, avoiding
+    lintian warnings
+  * Create two new binary packages: libcherokee-mod-streaming and
+    libcherokee-mod-geoip
+
+ -- Gunnar Wolf <gwolf@debian.org>  Mon, 09 Mar 2009 19:27:22 -0600
+
+cherokee (0.98.1-1) unstable; urgency=low
+
+  * New Upstream Version
+
+ -- Gunnar Wolf <gwolf@debian.org>  Tue, 27 Jan 2009 10:50:28 -0600
+
+cherokee (0.98.0-1) unstable; urgency=low
+
+  * New Upstream Version
+  * Updated description to match the current base advertised feature set
+  * Removed the ldap-deprecated patch, as it was included upstream
+
+ -- Gunnar Wolf <gwolf@debian.org>  Fri, 23 Jan 2009 15:18:16 -0600
+
+cherokee (0.11.6-1) unstable; urgency=low
+
+  * New Upstream Version
+  * Added ldap-deprecated patch, fixing reliability (and FTBFS) problems
+    in 64 bit platforms (Closes: #509698)
+
+ -- Gunnar Wolf <gwolf@debian.org>  Fri, 26 Dec 2008 10:55:21 -0600
 cherokee (0.11.5-1) unstable; urgency=low
 
   * New Upstream Version

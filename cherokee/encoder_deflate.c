@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2008 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2009 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -18,13 +18,14 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
- * USA
- */
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
+ */ 
 
 #include "common-internal.h"
 #include "encoder_deflate.h"
 #include "plugin_loader.h"
+
 
 /* Plug-in initialization
  */
@@ -91,7 +92,7 @@ cherokee_encoder_deflate_add_headers (cherokee_encoder_deflate_t *encoder,
 }
 
 
-static char *
+static const char *
 get_deflate_error_string (int err)
 {
 	switch (err) {
@@ -130,8 +131,8 @@ cherokee_encoder_deflate_init (cherokee_encoder_deflate_t *encoder)
 				 Z_DEFAULT_STRATEGY);
 
 	if (err != Z_OK) {
-		PRINT_ERROR("Error in deflateInit2() = %s\n", 
-			    get_deflate_error_string(err));
+		LOG_ERROR("deflateInit2() = %s\n", 
+			  get_deflate_error_string(err));
 
 		return ret_error;
 	}
@@ -180,16 +181,15 @@ do_encode (cherokee_encoder_deflate_t *encoder,
 		case Z_STREAM_END:
 			err = zlib_deflateEnd (z);
 			if (err != Z_OK) {
-				PRINT_ERROR("Error in deflateEnd(): err=%s\n", 
-					    get_deflate_error_string(err));
+				LOG_ERROR("deflateEnd(): err=%s\n", 
+					  get_deflate_error_string(err));
 				return ret_error;
 			}
 			cherokee_buffer_add (out, buf, sizeof(buf) - z->avail_out);
 			break;
 		default:
-			PRINT_ERROR("Error in deflate(): err=%s avail=%d\n", 
-				    get_deflate_error_string(err), 
-				    z->avail_in);
+			LOG_ERROR("deflate(): err=%s avail=%d\n", 
+				  get_deflate_error_string(err), z->avail_in);
 			
 			zlib_deflateEnd (z);
 			return ret_error;		

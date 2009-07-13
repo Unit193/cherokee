@@ -2,10 +2,13 @@ from Form import *
 from Table import *
 from ModuleHandler import *
 
-NOTE_IO_CACHE = 'Enables an internal I/O cache that improves performance.'
+# For gettext
+N_ = lambda x: x
+
+NOTE_IO_CACHE = N_('Enables an internal I/O cache that improves performance.')
 
 HELPS = [
-    ('modules_handlers_file', "Static Content")
+    ('modules_handlers_file', N_("Static Content"))
 ]
 
 class ModuleFile (ModuleHandler):
@@ -20,9 +23,9 @@ class ModuleFile (ModuleHandler):
         txt = ''
 
         table = TableProps()
-        self.AddPropCheck (table, "Use I/O cache", "%s!iocache" % (self._prefix), True, NOTE_IO_CACHE)
+        self.AddPropCheck (table, _("Use I/O cache"), "%s!iocache" % (self._prefix), True, _(NOTE_IO_CACHE))
 
-        txt += '<h2>File Sending</h2>'
+        txt += '<h2>%s</h2>' % (_('File Sending'))
         txt += self.Indent(table)
         return txt
 

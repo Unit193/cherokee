@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2008 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2009 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -18,9 +18,9 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
- * USA
- */
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
+ */ 
 
 #ifndef CHEROKEE_VIRTUAL_SERVER_H
 #define CHEROKEE_VIRTUAL_SERVER_H
@@ -34,9 +34,10 @@
 #include "config_entry.h"
 #include "logger.h"
 #include "config_node.h"
-#include "virtual_server_names.h"
 #include "rule_list.h"
 #include "cryptor.h"
+#include "vrule.h"
+#include "gen_evhost.h"
 
 typedef struct {
 	cherokee_list_t              list_node;
@@ -44,32 +45,38 @@ typedef struct {
 
 	cherokee_buffer_t            name;            /* Name.    Eg: server1        */
 	cuint_t                      priority;        /* Evaluation priority         */
-	cherokee_vserver_names_t     domains;         /* Domains. Eg: www.alobbs.com */
+	cherokee_vrule_t            *matching;        /* Matching rule               */
+
 	cherokee_rule_list_t         rules;           /* Rule list: vserver behavior */
 	cherokee_boolean_t           keepalive;       /* Keep-alive support          */
+	ssize_t                      post_max_len;    /* Max post length             */
 
 	cherokee_config_entry_t     *default_handler; /* Default handler             */
 	cherokee_config_entry_t     *error_handler;   /* Default error handler       */
 
 	cherokee_logger_t           *logger;          /* Logger object               */
-	cherokee_avl_t              *logger_props;    /* Logger properties table     */
 
 	cherokee_buffer_t            userdir;         /* Eg: public_html             */
 	cherokee_rule_list_t         userdir_rules;   /* User dir behavior           */
 
 	cherokee_buffer_t            root;            /* Document root. Eg: /var/www */
 	cherokee_list_t              index_list;      /* Eg: index.html, index.php   */
+	void                        *evhost;
 
 	struct {                                      /* Number of bytes {up,down}loaded */
 		off_t                tx;
 		off_t                rx;
 		CHEROKEE_MUTEX_T    (tx_mutex);
 		CHEROKEE_MUTEX_T    (rx_mutex);
+		cherokee_boolean_t   enabled;
 	} data;
 
+	cuint_t                      verify_depth;
 	cherokee_buffer_t            server_cert;
 	cherokee_buffer_t            server_key;
-	cherokee_buffer_t            ca_cert;
+	cherokee_buffer_t            certs_ca;
+	cherokee_buffer_t            req_client_certs;
+	cherokee_buffer_t            ciphers;
 	cherokee_cryptor_vserver_t  *cryptor;
 
 } cherokee_virtual_server_t;

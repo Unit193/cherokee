@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2008 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2009 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -18,9 +18,9 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
- * USA
- */
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
+ */ 
 
 #include "common-internal.h"
 
@@ -119,7 +119,7 @@ cherokee_validator_ldap_configure (cherokee_config_node_t *conf, cherokee_server
 			/* Not handled here
 			 */
 		} else {
-			PRINT_MSG ("ERROR: Validator LDAP: Unknown key: '%s'\n", subconf->key.buf);
+			PRINT_MSG ("Validator LDAP: Unknown key: '%s'\n", subconf->key.buf);
 			return ret_error;
 		}
 	}
@@ -127,22 +127,22 @@ cherokee_validator_ldap_configure (cherokee_config_node_t *conf, cherokee_server
 	/* Checks
 	 */
 	if (cherokee_buffer_is_empty (&props->basedn)) {
-		PRINT_ERROR_S ("ERROR: LDAP validator: An entry 'base_dn' is needed\n");
+		LOG_ERROR_S ("LDAP validator: An entry 'base_dn' is needed\n");
 		return ret_error;
 	}
 	if (cherokee_buffer_is_empty (&props->filter)) {
-		PRINT_ERROR_S ("ERROR: LDAP validator: An entry 'filter' is needed\n");
+		LOG_ERROR_S ("LDAP validator: An entry 'filter' is needed\n");
 		return ret_error;
 	}
 	if (cherokee_buffer_is_empty (&props->server)) {
-		PRINT_ERROR_S ("ERROR: LDAP validator: An entry 'server' is needed\n");
+		LOG_ERROR_S ("LDAP validator: An entry 'server' is needed\n");
 		return ret_error;
 	}
 
 	if ((cherokee_buffer_is_empty (&props->bindpw) &&
 	     (! cherokee_buffer_is_empty (&props->basedn)))) {
-		PRINT_ERROR_S ("ERROR: LDAP validator: Potential security problem found:\n"
-			       "\tanonymous bind validation. Check (RFC 2251, section 4.2.2)\n");
+		LOG_ERROR_S ("LDAP validator: Potential security problem found:\n"
+			     "\tanonymous bind validation. Check (RFC 2251, section 4.2.2)\n");
 		return ret_error;
 	}
 
@@ -160,8 +160,9 @@ init_ldap_connection (cherokee_validator_ldap_t *ldap, cherokee_validator_ldap_p
 	 */
 	ldap->conn = ldap_init (props->server.buf, props->port);
 	if (ldap->conn == NULL) {
-		PRINT_ERRNO (errno, "Couldn't connect to LDAP: %s:%d: '${errno}'", 
-			     props->server.buf, props->port);
+		LOG_ERRNO (errno, cherokee_err_critical,
+			   "Couldn't connect to LDAP: %s:%d: '${errno}'", 
+			   props->server.buf, props->port);
 		return ret_error;
 	}
 
@@ -172,8 +173,8 @@ init_ldap_connection (cherokee_validator_ldap_t *ldap, cherokee_validator_ldap_p
 	val = LDAP_VERSION3;
 	re = ldap_set_option (ldap->conn, LDAP_OPT_PROTOCOL_VERSION, &val);
 	if (re != LDAP_OPT_SUCCESS) {
-		PRINT_ERROR ("ERROR: LDAP validator: Couldn't set the LDAP version 3: %s\n", 
-			     ldap_err2string (re));
+		LOG_ERROR ("LDAP validator: Couldn't set the LDAP version 3: %s\n", 
+			   ldap_err2string (re));
 		return ret_error;		
 	}
 
@@ -186,13 +187,13 @@ init_ldap_connection (cherokee_validator_ldap_t *ldap, cherokee_validator_ldap_p
 		if (! cherokee_buffer_is_empty (&props->ca_file)) {
 			re = ldap_set_option (NULL, LDAP_OPT_X_TLS_CACERTFILE, props->ca_file.buf);
 			if (re != LDAP_OPT_SUCCESS) {
-				PRINT_ERROR ("ERROR: LDAP validator: Couldn't set CA file %s: %s\n", 
-					     props->ca_file.buf, ldap_err2string (re));
+				LOG_CRITICAL ("LDAP validator: Couldn't set CA file %s: %s\n", 
+					      props->ca_file.buf, ldap_err2string (re));
 				return ret_error; 
 			}
 		}
 #else
-		PRINT_ERROR_S ("Can't StartTLS, it isn't supported by LDAP client libraries\n");
+		LOG_ERROR_S ("Can't StartTLS, it isn't supported by LDAP client libraries\n");
 #endif
 	}
 
@@ -208,9 +209,9 @@ init_ldap_connection (cherokee_validator_ldap_t *ldap, cherokee_validator_ldap_p
 	}
 
 	if (re != LDAP_SUCCESS) {
-		PRINT_ERROR ("Couldn't bind (%s:%d): %s:%s : %s\n", 
-			     props->server.buf, props->port, props->binddn.buf, 
-			     props->bindpw.buf, ldap_err2string (re));
+		LOG_CRITICAL ("Couldn't bind (%s:%d): %s:%s : %s\n", 
+			      props->server.buf, props->port, props->binddn.buf, 
+			      props->bindpw.buf, ldap_err2string (re));
 		return ret_error;		
 	}
 
@@ -280,7 +281,7 @@ validate_dn (cherokee_validator_ldap_props_t *props, char *dn, char *password)
 			goto error;
 		}
 #else
-		PRINT_ERROR_S ("Can't StartTLS, it isn't supported by LDAP client libraries\n");
+		LOG_ERROR_S ("Can't StartTLS, it isn't supported by LDAP client libraries\n");
 #endif
 	}
 
@@ -341,7 +342,7 @@ cherokee_validator_ldap_check (cherokee_validator_ldap_t *ldap, cherokee_connect
 	 */
 	re = ldap_search_s (ldap->conn, props->basedn.buf, LDAP_SCOPE_SUBTREE, ldap->filter.buf, attrs, 0, &message);
 	if (re != LDAP_SUCCESS) {
-		PRINT_ERROR ("Couldn't search in LDAP server: %s\n", props->filter.buf);
+		LOG_ERROR ("Couldn't search in LDAP server: %s\n", props->filter.buf);
 		return ret_error;
 	}
 

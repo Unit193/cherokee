@@ -30,7 +30,10 @@ MOD_SRV_INFO_DIR = $(CURDIR)/debian/libcherokee-mod-server-info
 MOD_MYSQL_DIR    = $(CURDIR)/debian/libcherokee-mod-mysql
 MOD_LDAP_DIR     = $(CURDIR)/debian/libcherokee-mod-ldap
 MOD_LIBSSL_DIR   = $(CURDIR)/debian/libcherokee-mod-libssl
+MOD_STREAM_DIR   = $(CURDIR)/debian/libcherokee-mod-streaming
+MOD_GEOIP_DIR    = $(CURDIR)/debian/libcherokee-mod-geoip
 SERVER_DIR       = $(CURDIR)/debian/cherokee
+DOC_DIR          = $(CURDIR)/debian/cherokee-doc
 CGET_DIR         = $(CURDIR)/debian/cget
 
 # These are used for cross-compiling and for saving the configure script
@@ -64,7 +67,9 @@ config.status: configure
 			   --mandir=\$${prefix}/share/man        \
 			   --infodir=\$${prefix}/share/info      \
 			   --sysconfdir=/etc                     \
-			   --with-wwwroot=/var/www
+	                   --docdir=/usr/share/doc/cherokee-doc  \
+			   --with-wwwroot=/var/www               \
+			   --with-included-gettext
 
 build: patch build-stamp
 build-stamp: $(QUILT_STAMPFN) build-arch build-indep
@@ -100,13 +105,17 @@ clean: unpatch
 	rm -f cherokee.spec
 	rm -f windows/cherokee.nsi
 	rm -f config.log
+	rm -rf $(BUILD_DIR)
 	dh_clean
 
 install: install-indep install-arch
 
-install-indep:
-	# debian/<package>-doc
-	#INSTALLDOC#
+install-indep: 
+# cherokee-doc - Documentation
+	install -d $(DOC_DIR)/DEBIAN
+	install -d $(DOC_DIR)/usr/share/doc/cherokee-doc
+
+	mv $(BUILD_DIR)/usr/share/doc/cherokee-doc $(DOC_DIR)/usr/share/doc/
 
 install-arch: 
 	dh_testdir
@@ -214,6 +223,10 @@ install-arch:
 	install $(CURDIR)/contrib/07to08.py $(LIB_CONFIG_DIR)/usr/share/cherokee/
 	install $(CURDIR)/contrib/08to09.py $(LIB_CONFIG_DIR)/usr/share/cherokee/
 	install $(CURDIR)/contrib/09to010.py $(LIB_CONFIG_DIR)/usr/share/cherokee/
+	install $(CURDIR)/contrib/011to098.py $(LIB_CONFIG_DIR)/usr/share/cherokee/
+	install $(CURDIR)/contrib/098to099.py $(LIB_CONFIG_DIR)/usr/share/cherokee/
+	install $(CURDIR)/contrib/0999to09910.py $(LIB_CONFIG_DIR)/usr/share/cherokee/
+
 
 # libcherokee-mod-admin - Administrative interface
 	install -d $(MOD_ADMIN_DIR)/DEBIAN
@@ -244,6 +257,16 @@ install-arch:
 	install -d $(MOD_LIBSSL_DIR)/usr/lib/cherokee
 	mv $(BUILD_DIR)/usr/lib/cherokee/libplugin_libssl.*   $(MOD_LIBSSL_DIR)/usr/lib/cherokee
 
+# libcherokee-mod-streaming - Media streaming functions
+	install -d $(MOD_STREAM_DIR)/DEBIAN
+	install -d $(MOD_STREAM_DIR)/usr/lib/cherokee
+	mv $(BUILD_DIR)/usr/lib/cherokee/libplugin_streaming.* $(MOD_STREAM_DIR)/usr/lib/cherokee
+
+# libcherokee-mod-geoip - GeoIP resolution functions
+	install -d $(MOD_GEOIP_DIR)/DEBIAN
+	install -d $(MOD_GEOIP_DIR)/usr/lib/cherokee
+	mv $(BUILD_DIR)/usr/lib/cherokee/libplugin_geoip.* $(MOD_GEOIP_DIR)/usr/lib/cherokee
+
 # libcherokee-server0 - Runtime library
 	install -d $(LIB_SERVER_DIR)/DEBIAN
 	install -d $(LIB_SERVER_DIR)/usr/lib/cherokee
@@ -269,28 +292,22 @@ install-arch:
 	mv $(BUILD_DIR)/usr/share/man/man1/cget.1            $(CGET_DIR)/usr/share/man/man1/
 
 # cherokee - Main binary package
-	# Whatever we still have in $(BUILD_DIR) will become the main Cherokee
-	# package
-	mv $(BUILD_DIR)/* $(SERVER_DIR)
+	# Whatever we still have in $(BUILD_DIR) (except for 
+	# /usr/share/doc/cherokee, which we take care of in install-arch) will 
+	# become the main Cherokee package
+	install $(CURDIR)/debian/README.docs $(DEV_BASE_DIR)/usr/share/doc/libcherokee-base0-dev/
+	install -d $(SERVER_DIR)/usr/share/doc/cherokee
+	mv $(BUILD_DIR)/usr/bin $(SERVER_DIR)/usr/
+	mv $(BUILD_DIR)/usr/sbin $(SERVER_DIR)/usr/
+	mv $(BUILD_DIR)/usr/share/cherokee $(SERVER_DIR)/usr/share/
+	mv $(BUILD_DIR)/usr/share/locale $(SERVER_DIR)/usr/share/
+	mv $(BUILD_DIR)/usr/share/man $(SERVER_DIR)/usr/share/
+	mv $(BUILD_DIR)/etc $(SERVER_DIR)
+	mv $(BUILD_DIR)/var $(SERVER_DIR)
+	install -d $(SERVER_DIR)/var/log/cherokee
 
 	# References to cherokee-panic have been shuffled elsewhere
 	mv $(SERVER_DIR)/usr/bin/cherokee-panic             $(SERVER_DIR)/usr/share/cherokee
-
-	# spawn-fcgi is handled through alternatives
-	mv $(SERVER_DIR)/usr/bin/spawn-fcgi  $(SERVER_DIR)/usr/bin/spawn-fcgi.cherokee
-	mv $(SERVER_DIR)/usr/share/man/man1/spawn-fcgi.1  $(SERVER_DIR)/usr/share/man/man1/spawn-fcgi.cherokee.1
-
-	# Remove directories that have been emptied by shuffling around 
-	# files to our other generated packages
-	rmdir --ignore-fail-on-non-empty  $(SERVER_DIR)/usr/lib/cherokee \
-		$(SERVER_DIR)/usr/lib/pkgconfig \
-		$(SERVER_DIR)/usr/lib \
-		$(SERVER_DIR)/usr/include/cherokee \
-		$(SERVER_DIR)/usr/include \
-		$(SERVER_DIR)/usr/share/aclocal
-
-	# And create an empty directory for the log files
-	install -d $(SERVER_DIR)/var/log/cherokee
 
 # Must not depend on anything. This is to be called by
 # binary-arch/binary-indep
@@ -319,7 +336,7 @@ binary-common:
 	dh_pysupport /usr/share/cherokee/admin
 #	dh_python
 	dh_makeshlibs
-	dh_shlibdeps -L libcherokee-base0 -L libcherokee-server0 -L libcherokee-client0 -L libcherokee-base0-dev -L libcherokee-server0-dev -L libcherokee-client0-dev -L cget -L cherokee -l debian/libcherokee-base0/usr/lib:debian/libcherokee-base0/usr/lib/cherokee:debian/libcherokee-client0/usr/lib:debian/libcherokee-client0/usr/lib/cherokee:debian/libcherokee-server0/usr/lib:debian/libcherokee-server0/usr/lib/cherokee
+	dh_shlibdeps 
 	dh_installdeb
 	dh_gencontrol
 	dh_md5sums
@@ -327,7 +344,7 @@ binary-common:
 
 # Build architecture independant packages using the common target.
 binary-indep: build-indep install-indep
-####	$(MAKE) -f debian/rules DH_OPTIONS=-i binary-common
+	$(MAKE) -f debian/rules DH_OPTIONS=-i binary-common
 
 # Build architecture dependant packages using the common target.
 binary-arch: build-arch install-arch

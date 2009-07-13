@@ -4,9 +4,8 @@
  *
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
- *      Christopher Pruden <pruden@dyndns.org>
  *
- * Copyright (C) 2001-2008 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2009 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -19,9 +18,9 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
- * USA
- */
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
+ */ 
 
 
 #include "common-internal.h"
@@ -40,8 +39,11 @@
 
 #include <ctype.h>
 
+#define ENTRIES "header"
 
-// #define HEADER_INTERNAL_DEBUG
+#if 0
+# define HEADER_INTERNAL_DEBUG
+#endif
 
 #ifdef HEADER_INTERNAL_DEBUG
 # define HEADER_INTERNAL_CHECK(h)       	                                                   \
@@ -516,7 +518,9 @@ cherokee_header_get_length (cherokee_header_t *hdr, cuint_t *len)
 
 
 ret_t 
-cherokee_header_get_unknown (cherokee_header_t *hdr, char *name, int name_len, char **header, cuint_t *header_len)
+cherokee_header_get_unknown (cherokee_header_t *hdr, 
+			     const char        *name,   cuint_t name_len,
+			     char             **header, cuint_t *header_len)
 {
 	int i;
 
@@ -538,7 +542,10 @@ cherokee_header_get_unknown (cherokee_header_t *hdr, char *name, int name_len, c
 
 
 ret_t
-cherokee_header_copy_unknown (cherokee_header_t *hdr, char *name, int name_len, cherokee_buffer_t *buf)
+cherokee_header_copy_unknown (cherokee_header_t *hdr,
+			      const char        *name,
+			      cuint_t            name_len,
+			      cherokee_buffer_t *buf)
 {
 	ret_t    ret;
 	char    *info;
@@ -811,7 +818,7 @@ cherokee_header_parse (cherokee_header_t *hdr, cherokee_buffer_t *buffer, cherok
 	/* Check the buffer content
 	 */
 	if ((buffer->buf == NULL) || (buffer->len < 5)) {
-		PRINT_ERROR_S ("ERROR: Calling cherokee_header_parse() with an empty header\n");
+		LOG_ERROR_S ("Calling cherokee_header_parse() with an empty header\n");
 		return ret_error;
 	}
 
@@ -832,9 +839,9 @@ cherokee_header_parse (cherokee_header_t *hdr, cherokee_buffer_t *buffer, cherok
 		ret = has_header_request (hdr, buffer, buffer->len);
 		if (ret != ret_ok) {
 			if (ret == ret_not_found)
-				PRINT_ERROR("ERROR: EOH not found:\n===\n%s===\n", buffer->buf);
+				LOG_ERROR("EOH not found:\n===\n%s===\n", buffer->buf);
 			else
-				PRINT_ERROR("ERROR: Too many initial CRLF:\n===\n%s===\n", buffer->buf);
+				LOG_ERROR("Too many initial CRLF:\n===\n%s===\n", buffer->buf);
 			return ret_error;
 		}
 	}
@@ -845,6 +852,8 @@ cherokee_header_parse (cherokee_header_t *hdr, cherokee_buffer_t *buffer, cherok
 	 */
 	chr_header_end = *header_end;
 	*header_end = '\0';
+
+	TRACE(ENTRIES, "Incoming header:\n%s", buffer->buf);
 
 	/* Parse the special first line
 	 */
@@ -966,6 +975,12 @@ cherokee_header_parse (cherokee_header_t *hdr, cherokee_buffer_t *buffer, cherok
 			} else
 				goto unknown;
 			break;
+		case 'E':
+			if (header_equals ("Expect", header_expect, begin, header_len)) {
+				ret = add_known_header (hdr, header_expect, val_offs, val_len);
+			} else
+				goto unknown;
+			break;
 		case 'H':
 			if (header_equals ("Host", header_host, begin, header_len)) {
 				ret = add_known_header (hdr, header_host, val_offs, val_len);
@@ -1002,6 +1017,12 @@ cherokee_header_parse (cherokee_header_t *hdr, cherokee_buffer_t *buffer, cherok
 			} else
 				goto unknown;
 			break;
+		case 'T':
+			if (header_equals ("Transfer-Encoding", header_range, begin, header_len)) {
+				ret = add_known_header (hdr, header_transfer_encoding, val_offs, val_len);
+			} else
+				goto unknown;
+			break;
 		case 'U':
 			if (header_equals ("Upgrade", header_upgrade, begin, header_len)) {
 				ret = add_known_header (hdr, header_upgrade, val_offs, val_len);
@@ -1015,6 +1036,8 @@ cherokee_header_parse (cherokee_header_t *hdr, cherokee_buffer_t *buffer, cherok
 				ret = add_known_header (hdr, header_x_forwarded_for, val_offs, val_len);
 			} else if (header_equals ("X-Forwarded-Host", header_x_forwarded_host, begin, header_len)) {
 				ret = add_known_header (hdr, header_x_forwarded_host, val_offs, val_len);
+			} else if (header_equals ("X-Real-IP", header_x_real_ip, begin, header_len)) {
+				ret = add_known_header (hdr, header_x_real_ip, val_offs, val_len);
 			} else
 				goto unknown;
 			break;
@@ -1026,7 +1049,7 @@ cherokee_header_parse (cherokee_header_t *hdr, cherokee_buffer_t *buffer, cherok
 		}
 
 		if (ret < ret_ok) {
-			PRINT_ERROR_S ("ERROR: Failed to add_(un)known_header()\n");
+			LOG_ERROR_S ("Failed to add_(un)known_header()\n");
 			*header_end = chr_header_end;
 			return ret;
 		}

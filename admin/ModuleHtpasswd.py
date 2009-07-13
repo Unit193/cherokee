@@ -3,11 +3,13 @@ import validations
 from Table import *
 from ModuleAuth import *
 
-NOTE_PASSWD = "Full path to the Htpasswd formated password file."
+# For gettext
+N_ = lambda x: x
+
+NOTE_PASSWD = N_("Full path to the Htpasswd formated password file.")
 
 DATA_VALIDATION = [
-    ('vserver!.*?!(directory|extensions|request)!.*?!passwdfile', 
-     (validations.is_local_file_exists, 'cfg'))
+    ('vserver!.*?!rule!.*?!auth!passwdfile', (validations.is_local_file_exists, 'cfg'))
 ]
 
 HELPS = [
@@ -28,15 +30,15 @@ class ModuleHtpasswd (ModuleAuthBase):
         txt  = ModuleAuthBase._op_render (self)
 
         table = TableProps()
-        self.AddPropEntry (table, "Password File", "%s!passwdfile"%(self._prefix), NOTE_PASSWD)
+        self.AddPropEntry (table, _("Password File"), "%s!passwdfile"%(self._prefix), _(NOTE_PASSWD))
 
-        txt += "<h2>Htpasswd file</h2>"
+        txt += "<h2>%s</h2>" % (_('Htpasswd file'))
         txt += self.Indent(table)
         return txt
 
     def _op_apply_changes (self, uri, post):
         pre = '%s!passwdfile' % (self._prefix)
-        self.Validate_NotEmpty (post, pre, 'Password file can not be empty')
+        self.Validate_NotEmpty (post, pre, _('Password file can not be empty'))
 
         self.ApplyChanges ([], post, DATA_VALIDATION)
         ModuleAuthBase._op_apply_changes (self, uri, post)

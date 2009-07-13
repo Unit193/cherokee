@@ -1,7 +1,7 @@
 !include "MUI.nsh"
 
 Name "Cherokee Web Server"
-OutFile "Cherokee-setup-0.11.5.exe"
+OutFile "Cherokee-setup-0.99.20.exe"
 InstallDir "$PROGRAMFILES\Cherokee"
 DirText "Choose a folder in which to install Cherokee"
 ShowInstDetails show

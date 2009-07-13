@@ -21,10 +21,9 @@ phpcgi.deps \
 scgi.deps \
 fcgi.deps \
 fastcgi.deps \
-cgi.deps
-
-cherokeedatadir = "$(datadir)/cherokee"
-cherokeedata_DATA = mime_types.txt
+cgi.deps \
+streaming.deps \
+secdownload.deps
 
 #
 # External sources
@@ -183,7 +182,41 @@ endif
 
 
 #
-# Rule exists
+# Rule fullpath
+#
+rule_fullpath = \
+rule_fullpath.c \
+rule_fullpath.h
+
+libplugin_fullpath_la_LDFLAGS = $(module_ldflags)
+libplugin_fullpath_la_SOURCES = $(rule_fullpath)
+
+if STATIC_RULE_FULL_PATH
+static_rule_fullpath_src = $(rule_fullpath)
+else
+dynamic_rule_fullpath_lib = libplugin_fullpath.la
+endif
+
+
+#
+# Rule bind
+#
+rule_bind = \
+rule_bind.c \
+rule_bind.h
+
+libplugin_bind_la_LDFLAGS = $(module_ldflags)  
+libplugin_bind_la_SOURCES = $(rule_bind)
+
+if STATIC_RULE_BIND
+static_rule_bind_src = $(rule_bind)
+else
+dynamic_rule_bind_lib = libplugin_bind.la
+endif
+
+
+#
+# Rule method
 #
 rule_method = \
 rule_method.c \
@@ -196,6 +229,23 @@ if STATIC_RULE_METHOD
 static_rule_method_src = $(rule_method)
 else
 dynamic_rule_method_lib = libplugin_method.la
+endif
+
+
+#
+# Rule from
+#
+rule_from = \
+rule_from.c \
+rule_from.h
+
+libplugin_from_la_LDFLAGS = $(module_ldflags)  
+libplugin_from_la_SOURCES = $(rule_from)
+
+if STATIC_RULE_FROM
+static_rule_from_src = $(rule_from)
+else
+dynamic_rule_from_lib = libplugin_from.la
 endif
 
 
@@ -268,6 +318,57 @@ if STATIC_RULE_OR
 static_rule_or_src = $(rule_or)
 else
 dynamic_rule_or_lib = libplugin_or.la
+endif
+
+
+#
+# VRule wildcard
+#
+vrule_wildcard = \
+vrule_wildcard.c \
+vrule_wildcard.h
+
+libplugin_wildcard_la_LDFLAGS = $(module_ldflags)  
+libplugin_wildcard_la_SOURCES = $(vrule_wildcard)
+
+if STATIC_VRULE_WILDCARD
+static_vrule_wildcard_src = $(vrule_wildcard)
+else
+dynamic_vrule_wildcard_lib = libplugin_wildcard.la
+endif
+
+
+#
+# VRule rehost
+#
+vrule_rehost = \
+vrule_rehost.c \
+vrule_rehost.h
+
+libplugin_rehost_la_LDFLAGS = $(module_ldflags)
+libplugin_rehost_la_SOURCES = $(vrule_rehost)
+
+if STATIC_VRULE_REHOST
+static_vrule_rehost_src = $(vrule_rehost)
+else
+dynamic_vrule_rehost_lib = libplugin_rehost.la
+endif
+
+
+#
+# Gen wildcard
+#
+gen_evhost = \
+gen_evhost.c \
+gen_evhost.h
+
+libplugin_evhost_la_LDFLAGS = $(module_ldflags)  
+libplugin_evhost_la_SOURCES = $(gen_evhost)
+
+if STATIC_GEN_EVHOST
+static_gen_evhost_src = $(gen_evhost)
+else
+dynamic_gen_evhost_lib = libplugin_evhost.la
 endif
 
 
@@ -578,11 +679,64 @@ endif
 
 
 #
+# Handler secdownload
+#
+handler_secdownload = \
+handler_secdownload.c \
+handler_secdownload.h
+
+libplugin_secdownload_la_LDFLAGS = $(module_ldflags)  
+libplugin_secdownload_la_SOURCES = $(handler_secdownload)
+
+if STATIC_HANDLER_SECDOWNLOAD
+static_handler_secdownload_src = $(handler_secdownload)
+else
+dynamic_handler_secdownload_lib = libplugin_secdownload.la
+endif
+
+
+#
+# Handler empty_gif
+#
+handler_empty_gif = \
+handler_empty_gif.c \
+handler_empty_gif.h
+
+libplugin_empty_gif_la_LDFLAGS = $(module_ldflags)  
+libplugin_empty_gif_la_SOURCES = $(handler_empty_gif)
+
+if STATIC_HANDLER_EMPTY_GIF
+static_handler_empty_gif_src = $(handler_empty_gif)
+else
+dynamic_handler_empty_gif_lib = libplugin_empty_gif.la
+endif
+
+
+#
+# Handler streaming
+#
+handler_streaming = \
+handler_streaming.c \
+handler_streaming.h
+
+libplugin_streaming_la_LDFLAGS = $(module_ldflags)
+libplugin_streaming_la_SOURCES = $(handler_streaming)
+libplugin_streaming_la_LIBADD  = $(FFMPEG_LIBS)
+libplugin_streaming_la_CFLAGS  = $(FFMPEG_CFLAGS)
+
+if STATIC_HANDLER_STREAMING
+static_handler_streaming_src   = $(handler_streaming)
+static_handler_streaming_lib   = $(FFMPEG_LIBS)
+static_handler_streaming_flags = $(FFMPEG_CFLAGS)
+else
+dynamic_handler_streaming_lib = libplugin_streaming.la
+endif
+
+
+#
 # Handler DB Slayer
 #
 handler_dbslayer = \
-dwriter.c \
-dwriter.h \
 handler_dbslayer.h \
 handler_dbslayer.c
 
@@ -674,6 +828,23 @@ endif
 
 
 #
+# Logger Custom
+#
+logger_custom = \
+logger_custom.h \
+logger_custom.c
+
+libplugin_custom_la_LDFLAGS = $(module_ldflags)  
+libplugin_custom_la_SOURCES = $(logger_custom)
+
+if STATIC_LOGGER_CUSTOM
+static_logger_custom_src = $(logger_custom)
+else
+dynamic_logger_custom_lib = libplugin_custom.la
+endif
+
+
+#
 # Logger NCSA
 #
 logger_ncsa = \
@@ -708,23 +879,6 @@ if STATIC_LOGGER_COMBINED
 static_logger_combined_src = $(logger_combined)
 else
 dynamic_logger_combined_lib = libplugin_combined.la
-endif
-
-
-#
-# Logger W3C
-#
-logger_w3c = \
-logger_w3c.h \
-logger_w3c.c
-
-libplugin_w3c_la_LDFLAGS = $(module_ldflags)  
-libplugin_w3c_la_SOURCES = $(logger_w3c)
-
-if STATIC_LOGGER_W3C
-static_logger_w3c_src = $(logger_w3c)
-else
-dynamic_logger_w3c_lib = libplugin_w3c.la
 endif
 
 
@@ -887,6 +1041,12 @@ cryptor_libssl = \
 cryptor_libssl.c \
 cryptor_libssl.h
 
+cryptor_libssl_dist = \
+cryptor_libssl_dh_512.c \
+cryptor_libssl_dh_1024.c \
+cryptor_libssl_dh_2048.c \
+cryptor_libssl_dh_4096.c
+
 libplugin_libssl_la_LDFLAGS = $(module_ldflags) $(TLS_LIBS)
 libplugin_libssl_la_SOURCES = $(cryptor_libssl)
 libplugin_libssl_la_CFLAGS  = $(TLS_CFLAGS)
@@ -920,6 +1080,23 @@ endif
 
 
 
+#
+# Balancer IP Hash
+#
+balancer_ip_hash = \
+balancer_ip_hash.c \
+balancer_ip_hash.h
+
+libplugin_ip_hash_la_LDFLAGS = $(module_ldflags) 
+libplugin_ip_hash_la_SOURCES = $(balancer_ip_hash)
+
+if STATIC_BALANCER_IP_HASH
+static_balancer_ip_hash_src = $(balancer_ip_hash)
+else
+dynamic_balancer_ip_hash_lib = libplugin_ip_hash.la
+endif
+
+
 lib_LTLIBRARIES = \
 libcherokee-base.la \
 libcherokee-client.la \
@@ -932,6 +1109,7 @@ libcherokee-config.la
 # extra cflags at link time can't hurt
 libcherokee_base_la_LDFLAGS = $(common_ldflags) $(library_soname)
 libcherokee_base_la_LIBADD = \
+$(RT_LIBS) \
 $(PTHREAD_LIBS) \
 $(PTHREAD_CFLAGS) \
 $(external_pcre_lib)
@@ -947,18 +1125,20 @@ libcherokee_server_la_CFLAGS = \
 $(static_validator_htpasswd_flags) \
 $(static_validator_mysql_flags) \
 $(static_cryptor_libssl_flags) \
-$(static_handler_dbslayer_flags)
+$(static_handler_dbslayer_flags) \
+$(static_handler_streaming_flags)
 
 libcherokee_server_la_LIBADD = \
 $(PTHREAD_LIBS) \
 $(PTHREAD_CFLAGS) \
 $(static_validator_pam_lib) \
-$(static_validator_ldap_lib)  \
-$(static_rule_geoip_lib)  \
+$(static_validator_ldap_lib) \
+$(static_rule_geoip_lib) \
 $(static_validator_htpasswd_lib) \
 $(static_validator_mysql_lib) \
 $(static_handler_proxy_lib) \
 $(static_handler_dbslayer_lib) \
+$(static_handler_streaming_lib) \
 $(static_cryptor_libssl_lib) \
 libcherokee-base.la
 
@@ -1005,6 +1185,12 @@ win32_cservice.h \
 win32_cservice.c 
 endif
 
+if USE_POSIX_SHM
+shm_src = \
+shm.h \
+shm.c
+endif
+
 libcherokee_base_la_SOURCES = \
 $(zlib_src) \
 $(internal_pcre_src) \
@@ -1016,9 +1202,12 @@ $(poll_port_src) \
 $(poll_select_src) \
 $(poll_win32_src) \
 $(win32_src) \
+$(shm_src) \
 cherokee.h \
 init.h \
 init.c \
+threading.h \
+threading.c \
 avl.h \
 avl.c \
 avl_r.h \
@@ -1036,8 +1225,11 @@ crc32.c \
 macros.h \
 common.h \
 common-internal.h \
+nullable.h \
 util.h \
 util.c \
+error_log.h \
+error_log.c \
 human_strcmp.h \
 human_strcmp.c \
 trace.h \
@@ -1046,6 +1238,8 @@ version.h \
 version.c \
 buffer.h \
 buffer.c \
+template.h \
+template.c \
 module.h \
 module.c \
 cryptor.h \
@@ -1089,7 +1283,12 @@ config_reader.c \
 bogotime.h \
 bogotime.c \
 cache.h \
-cache.c
+cache.c \
+logger.h \
+logger.c \
+logger_writer.h \
+logger_writer.c
+
 
 libcherokee_client_la_SOURCES = \
 url.h \
@@ -1141,11 +1340,19 @@ $(static_rule_extensions_src) \
 $(static_rule_request_src) \
 $(static_rule_header_src) \
 $(static_rule_exists_src) \
+$(static_rule_fullpath_src) \
+$(static_rule_bind_src) \
 $(static_rule_method_src) \
+$(static_rule_from_src) \
 $(static_rule_geoip_src) \
 $(static_rule_not_src) \
 $(static_rule_and_src) \
 $(static_rule_or_src) \
+\
+$(static_vrule_wildcard_src) \
+$(static_vrule_rehost_src) \
+\
+$(static_gen_evhost_src) \
 \
 $(static_handler_file_src) \
 $(static_handler_admin_src) \
@@ -1162,12 +1369,15 @@ $(static_handler_common_src) \
 $(static_handler_proxy_src) \
 $(static_handler_mirror_src) \
 $(static_handler_ssi_src) \
+$(static_handler_secdownload_src) \
+$(static_handler_empty_gif_src) \
+$(static_handler_streaming_src) \
 $(static_handler_custom_error_src) \
 $(static_handler_server_info_src) \
 $(static_handler_dbslayer_src) \
 \
-$(static_logger_w3c_src) \
 $(static_logger_ncsa_src) \
+$(static_logger_custom_src) \
 $(static_logger_combined_src) \
 \
 $(static_encoder_gzip_src) \
@@ -1184,6 +1394,7 @@ $(static_validator_mysql_src) \
 $(static_cryptor_libssl_src) \
 \
 $(static_balancer_round_robin_src) \
+$(static_balancer_ip_hash_src) \
 \
 $(common_cgi) \
 $(common_val_file) \
@@ -1199,21 +1410,19 @@ rule_list.h \
 rule_list.c \
 rule_default.h \
 rule_default.c \
+vrule.h \
+vrule.c \
 config_entry.h \
 config_entry.c \
 server-protected.h \
 server.h \
 server.c \
-virtual_server_names.h \
-virtual_server_names.c \
+bind.h \
+bind.c \
 virtual_server.h \
 virtual_server.c \
 encoder.h \
 encoder.c \
-logger.h \
-logger.c \
-logger_writer.h \
-logger_writer.c \
 thread.h \
 thread.c \
 plugin.h \
@@ -1236,7 +1445,14 @@ source_interpreter.c \
 info.h \
 info.c \
 connection_info.h \
-connection_info.c
+connection_info.c \
+dwriter.h \
+dwriter.c \
+limiter.h \
+limiter.c \
+spawner.h \
+spawner.c
+
 
 libcherokee_config_la_SOURCES = \
 admin_client.h \
@@ -1255,6 +1471,7 @@ init.h \
 util.h \
 version.h \
 buffer.h\
+template.h\
 fdpoll.h \
 http.h \
 list.h \
@@ -1303,11 +1520,17 @@ $(dynamic_rule_extensions_lib) \
 $(dynamic_rule_request_lib) \
 $(dynamic_rule_header_lib) \
 $(dynamic_rule_exists_lib) \
+$(dynamic_rule_fullpath_lib) \
+$(dynamic_rule_bind_lib) \
 $(dynamic_rule_method_lib) \
+$(dynamic_rule_from_lib) \
 $(dynamic_rule_geoip_lib) \
 $(dynamic_rule_not_lib) \
 $(dynamic_rule_and_lib) \
 $(dynamic_rule_or_lib) \
+$(dynamic_vrule_wildcard_lib) \
+$(dynamic_vrule_rehost_lib) \
+$(dynamic_gen_evhost_lib) \
 $(dynamic_handler_file_lib) \
 $(dynamic_handler_cgi_lib) \
 $(dynamic_handler_phpcgi_lib) \
@@ -1321,6 +1544,9 @@ $(dynamic_handler_redir_lib) \
 $(dynamic_handler_proxy_lib) \
 $(dynamic_handler_mirror_lib) \
 $(dynamic_handler_ssi_lib) \
+$(dynamic_handler_secdownload_lib) \
+$(dynamic_handler_empty_gif_lib) \
+$(dynamic_handler_streaming_lib) \
 $(dynamic_handler_custom_error_lib) \
 $(dynamic_handler_error_redir_lib) \
 $(dynamic_handler_error_nn_lib) \
@@ -1329,8 +1555,8 @@ $(dynamic_handler_dbslayer_lib) \
 $(dynamic_encoder_gzip_lib) \
 $(dynamic_encoder_deflate_lib) \
 $(dynamic_logger_ncsa_lib) \
+$(dynamic_logger_custom_lib) \
 $(dynamic_logger_combined_lib) \
-$(dynamic_logger_w3c_lib) \
 $(dynamic_validator_pam_lib) \
 $(dynamic_validator_ldap_lib) \
 $(dynamic_validator_plain_lib) \
@@ -1339,7 +1565,8 @@ $(dynamic_validator_htpasswd_lib) \
 $(dynamic_validator_authlist_lib) \
 $(dynamic_validator_mysql_lib) \
 $(dynamic_cryptor_libssl_lib) \
-$(dynamic_balancer_round_robin_lib) 
+$(dynamic_balancer_round_robin_lib) \
+$(dynamic_balancer_ip_hash_lib) 
 
 
 #
@@ -1352,17 +1579,17 @@ sbin_PROGRAMS += cherokee
 endif
 
 cherokee_worker_SOURCES = main_worker.c
+cherokee_worker_LDFLAGS = -export-dynamic
 cherokee_worker_LDADD   = \
-$(PTHREAD_LIBS) \
-$(PTHREAD_CFLAGS) \
+$(libcherokee_server_la_LIBADD) \
 libcherokee-base.la \
 libcherokee-server.la
-cherokee_LDFLAGS = -export-dynamic
 
 #
 # Cherokee
 #
 cherokee_SOURCES = main.c
+cherokee_LDADD   = $(PTHREAD_LIBS) $(RT_LIBS)
 
 #
 # Cherokee admin
@@ -1379,8 +1606,7 @@ bin_PROGRAMS = cherokee-tweak
 
 cherokee_tweak_SOURCES = main_tweak.c
 cherokee_tweak_LDADD = \
-$(PTHREAD_LIBS) \
-$(PTHREAD_CFLAGS) \
+$(libcherokee_server_la_LIBADD) \
 libcherokee-base.la \
 libcherokee-client.la \
 libcherokee-server.la \
@@ -1420,6 +1646,7 @@ win32_misc.c
 
 EXTRA_DIST = \
 pcre/LICENCE \
+$(shm_src) \
 $(pcre_src) \
 $(win32_src) \
 $(getopt_src) \
@@ -1427,8 +1654,8 @@ $(bin_SCRIPTS) \
 $(validator_mysql) \
 $(handler_dbslayer) \
 $(cherokeedeps_DATA) \
-$(cherokeedata_DATA) \
 $(WINDOWS_PORT_FILES) \
+$(cryptor_libssl_dist) \
 loader.autoconf.h \
 loader.autoconf.inc
 

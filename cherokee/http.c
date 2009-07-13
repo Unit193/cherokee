@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2008 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2009 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -18,9 +18,9 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
- * USA
- */
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
+ */ 
 
 #include "common-internal.h"
 #include "http.h"
@@ -152,6 +152,7 @@ cherokee_http_code_to_string (cherokee_http_t code, const char **str)
 	/* 2xx
 	 */
 	case http_ok:  	                    *str = http_ok_string; break;
+	case http_created:                  *str = http_created_string; break;
 	case http_accepted:                 *str = http_accepted_string; break;
 	case http_no_content:               *str = http_no_content_string; break;
 	case http_partial_content:          *str = http_partial_content_string; break;
@@ -170,6 +171,9 @@ cherokee_http_code_to_string (cherokee_http_t code, const char **str)
 	case http_access_denied:            *str = http_access_denied_string; break;
 	case http_not_found:                *str = http_not_found_string; break;
 	case http_method_not_allowed:       *str = http_method_not_allowed_string; break;
+	case http_not_acceptable:           *str = http_not_acceptable_string; break;
+	case http_request_timeout:          *str = http_request_timeout_string; break;
+	case http_gone:                     *str = http_gone_string; break;
 	case http_length_required:          *str = http_length_required_string; break;
 	case http_request_entity_too_large: *str = http_request_entity_too_large_string; break;
 	case http_unsupported_media_type:   *str = http_unsupported_media_type_string; break;
@@ -212,6 +216,7 @@ cherokee_http_code_copy (cherokee_http_t code, cherokee_buffer_t *buf)
 		/* 2xx
 		 */
 		entry_code (ok);
+		entry_code (created);
 		entry_code (accepted);
 		entry_code (no_content);
 		entry_code (partial_content);
@@ -230,7 +235,10 @@ cherokee_http_code_copy (cherokee_http_t code, cherokee_buffer_t *buf)
 		entry_code (access_denied);
 		entry_code (not_found);
 		entry_code (method_not_allowed);
+		entry_code (not_acceptable);
+		entry_code (request_timeout);
 		entry_code (length_required);
+		entry_code (gone);
 		entry_code (request_entity_too_large);
 		entry_code (request_uri_too_long);
 		entry_code (unsupported_media_type);
@@ -252,7 +260,7 @@ cherokee_http_code_copy (cherokee_http_t code, cherokee_buffer_t *buf)
 		entry_code (switching_protocols);
 
 	default:
- 		PRINT_ERROR ("ERROR: Unknown HTTP status code %d\n", code);
+ 		LOG_WARNING ("Unknown HTTP status code %d\n", code);
  		cherokee_buffer_add_str (buf, http_internal_error_string);
  		return ret_error;
 	}

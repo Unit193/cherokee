@@ -18,12 +18,17 @@
 <h2 id="_handler_redirection">Handler: Redirection</h2>
 <div class="sectionbody">
 <div class="para"><p>The main idea of a redirection is telling the web client to go to
-another URL when the requested URL matches a rule. If you are looking
-for connection forwarding, you should check the
-<a href="modules_handlers_mirror.html">generic balancer</a> instead.</p></div>
+another URL when the requested URL matches a rule. It could happen
+that this is not precisely what you are looking for. Check the
+<a href="modules_handlers_mirror.html">generic balancer</a> for layer 4
+connection forwarding instead, or if you are looking for more complex
+layer 7 operations take a look at the
+<a href="modules_handlers_proxy.html">reverse proxy</a> handler. However, for
+URL redirections this handler is the place to go. A very common
+scenario would be rewriting URLS.</p></div>
 <div class="vlist"><dl>
 <dt>
-For example, if you have URLs like
+Lets suppose you have URLs like
 </dt>
 <dd>
 <div class="listingblock">
@@ -73,7 +78,10 @@ Type: [External | Internal]
 <li>
 <p>
 <strong>Regular Expression</strong> and <strong>Substitution</strong> are the matching request and
-   the intended target of such petition.
+   the intended target of such petition. Getting into details of
+   regular expressions is out of the scope of this document. Besides,
+   there are many <a href="http://perldoc.perl.org/perlre.html">Perl
+   regular expressions</a> references.
 </p>
 </li>
 </ul></div>
@@ -123,7 +131,7 @@ cellspacing="0" cellpadding="4">
 <tbody valign="top">
   <tr>
     <td align="left">
-    <em>"/(d+)$"</em>         
+    <em>/(\d+)$</em>          
     </td>
     <td align="left">
     <a href="http://example.com/inst/photogallery/viewphoto?photoid=$1">http://example.com/inst/photogallery/viewphoto?photoid=$1</a>
@@ -131,7 +139,7 @@ cellspacing="0" cellpadding="4">
   </tr>
   <tr>
     <td align="left">
-    <em>"/(\d+)/cmts"</em>    
+    <em>/(\d+)/cmts</em>      
     </td>
     <td align="left">
     <a href="http://example.com/viewcomments?photoid=$1">http://example.com/viewcomments?photoid=$1</a>
@@ -139,7 +147,7 @@ cellspacing="0" cellpadding="4">
   </tr>
   <tr>
     <td align="left">
-    <em>"/(\d+)/delete"</em>  
+    <em>/(\d+)/delete</em>    
     </td>
     <td align="left">
     <a href="http://example.com/inst/photogallery/admin?photoid=$1&amp;method=delete">http://example.com/inst/photogallery/admin?photoid=$1&amp;method=delete</a>

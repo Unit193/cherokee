@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2008 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2009 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -18,9 +18,9 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
- * USA
- */
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
+ */ 
 
 #include "common-internal.h"
 #include "source.h"
@@ -89,19 +89,19 @@ cherokee_source_connect (cherokee_source_t *src, cherokee_socket_t *sock)
 	 */
 	if (! cherokee_buffer_is_empty (&src->unix_socket)) {
 		ret = cherokee_socket_set_client (sock, AF_UNIX);
-		if (ret != ret_ok) 
+		if (unlikely (ret != ret_ok))
 			return ret;
 
 		/* Copy the unix socket path */
 		ret = cherokee_socket_gethostbyname (sock, &src->unix_socket);
-		if (ret != ret_ok)
+		if (unlikely (ret != ret_ok))
 			return ret;
 
 		/* Set non-blocking */
 		ret = cherokee_fd_set_nonblocking (sock->socket, true);
-		if (ret != ret_ok) {
-			PRINT_ERRNO (errno, "Failed to set nonblocking (fd=%d): ${errno}\n",
-				     sock->socket);
+		if (unlikely (ret != ret_ok)) {
+			LOG_ERRNO (errno, cherokee_err_error,
+				   "Failed to set nonblocking (fd=%d): ${errno}\n", sock->socket);
 		}
 
 		goto out;
@@ -109,20 +109,27 @@ cherokee_source_connect (cherokee_source_t *src, cherokee_socket_t *sock)
 
 	/* INET socket
 	 */
-	ret = cherokee_socket_set_client (sock, AF_INET);
-	if (ret != ret_ok) return ret;
+	if (cherokee_string_is_ipv6 (&src->host)) {
+		ret = cherokee_socket_set_client (sock, AF_INET6);
+	} else {
+		ret = cherokee_socket_set_client (sock, AF_INET);
+	}
+
+	if (unlikely (ret != ret_ok))
+		return ret;
 	
 	/* Query the host */
 	ret = cherokee_resolv_cache_get_host (resolv, src->host.buf, sock);
-	if (ret != ret_ok) return ret;
+	if (unlikely (ret != ret_ok))
+		return ret;
 	
 	SOCKET_ADDR_IPv4(sock)->sin_port = htons(src->port);
 
 	/* Set non-blocking */
 	ret = cherokee_fd_set_nonblocking (sock->socket, true);
-	if (ret != ret_ok) {
-		PRINT_ERRNO (errno, "Failed to set nonblocking (fd=%d): ${errno}\n",
-			     sock->socket);
+	if (unlikely (ret != ret_ok)) {
+		LOG_ERRNO (errno, cherokee_err_error,
+			   "Failed to set nonblocking (fd=%d): ${errno}\n", sock->socket);
 	}
 
 out: 	
@@ -168,7 +175,7 @@ cherokee_source_connect_polling (cherokee_source_t     *src,
 static ret_t
 set_host (cherokee_source_t *src, cherokee_buffer_t *host)
 {
-	char *p;
+	ret_t ret;
 
 	if (cherokee_buffer_is_empty (host))
 		return ret_error;
@@ -188,18 +195,9 @@ set_host (cherokee_source_t *src, cherokee_buffer_t *host)
 	
 	/* Host name
 	 */
-	p = strchr (host->buf, ':');
-	if (p == NULL) {
-		cherokee_buffer_add_buffer (&src->host, host);
-		return ret_ok;
-	} 
-	
-	/* Host name + port
-	 */
-	*p = '\0';
-	src->port = atoi (p+1);
-	cherokee_buffer_add (&src->host, host->buf, p - host->buf);
-	*p = ':';
+	ret = cherokee_parse_host (host, &src->host, &src->port);
+	if (unlikely (ret != ret_ok))
+		return ret_error;
 	
 	return ret_ok;
 }
@@ -224,3 +222,21 @@ cherokee_source_configure (cherokee_source_t *src, cherokee_config_node_t *conf)
 
 	return ret_ok;
 }
+
+
+ret_t
+cherokee_source_copy_name (cherokee_source_t *src,
+			   cherokee_buffer_t *buf)
+{
+	if (! cherokee_buffer_is_empty (&src->unix_socket)) {
+		cherokee_buffer_add_buffer (buf, &src->unix_socket);
+		return ret_ok;
+	}
+
+	cherokee_buffer_add_buffer  (buf, &src->host);
+	cherokee_buffer_add_char    (buf, ':');
+	cherokee_buffer_add_ulong10 (buf, src->port);
+
+	return ret_ok;
+}
+

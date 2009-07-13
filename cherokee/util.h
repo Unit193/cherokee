@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2008 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2009 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -18,9 +18,9 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
- * USA
- */
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
+ */ 
 
 #if !defined (CHEROKEE_INSIDE_CHEROKEE_H) && !defined (CHEROKEE_COMPILATION)
 # error "Only <cherokee/cherokee.h> can be included directly, this file may disappear or change contents."
@@ -43,11 +43,15 @@
 #endif 
 
 #ifdef HAVE_PWD_H
-#include <pwd.h>
+# include <pwd.h>
 #endif
 
 #ifdef HAVE_GRP_H
-#include <grp.h>
+# include <grp.h>
+#endif
+
+#ifdef HAVE_SYS_UIO_H
+# include <sys/uio.h>
 #endif
 
 #include <time.h>
@@ -56,6 +60,7 @@
 
 #include <cherokee/buffer.h>
 #include <cherokee/iocache.h>
+
 
 CHEROKEE_BEGIN_DECLS
 
@@ -84,6 +89,14 @@ char *strnstr (const char *s, const char *find, size_t slen);
 #ifndef HAVE_STRCASESTR
 char *strcasestr (register char *s, register char *find);
 #endif
+#ifndef HAVE_MALLOC
+void *rpl_malloc (size_t n);
+#endif
+
+/* Constants
+ */
+extern const char hex2dec_tab[256];
+extern const char *month[13];
 
 /* String management functions
  */
@@ -92,12 +105,20 @@ int     cherokee_isbigendian        (void);
 char   *cherokee_min_str            (char *s1, char *s2);
 char   *cherokee_max_str            (char *s1, char *s2);
 size_t  cherokee_strlcat            (char *dst, const char *src, size_t siz);
-int     cherokee_estimate_va_length (char *format, va_list ap);
+int     cherokee_estimate_va_length (const char *format, va_list ap);
 long    cherokee_eval_formated_time (cherokee_buffer_t *buf);  
 ret_t   cherokee_fix_dirpath        (cherokee_buffer_t *buf);
+
 ret_t   cherokee_find_header_end    (cherokee_buffer_t  *buf,
 				     char              **end,
 				     cuint_t            *sep_len);
+
+ret_t   cherokee_parse_host         (cherokee_buffer_t *buf,
+				     cherokee_buffer_t *host,
+				     cuint_t           *port);
+
+int     cherokee_string_is_ipv6     (cherokee_buffer_t *ip);
+ret_t   cherokee_buf_add_bogonow    (cherokee_buffer_t *buf, cherokee_boolean_t update);
 
 /* Time management functions
  */
@@ -114,6 +135,7 @@ ret_t cherokee_getpwnam      (const char *name, struct passwd *pwbuf, char *buf,
 ret_t cherokee_getgrnam      (const char *name, struct group *pwbuf, char *buf, size_t buflen);
 ret_t cherokee_mkstemp       (cherokee_buffer_t *buffer, int *fd);
 ret_t cherokee_mkdir_p       (cherokee_buffer_t *path);
+ret_t cherokee_ntop          (int family, struct sockaddr *addr, char *dst, size_t cnt);
 
 ret_t cherokee_io_stat       (cherokee_iocache_t        *iocache, 
 			      cherokee_buffer_t         *path, 
@@ -135,6 +157,7 @@ ret_t cherokee_sys_fdlimit_get (cuint_t *limit);
 ret_t cherokee_sys_fdlimit_set (cuint_t  limit);
 ret_t cherokee_get_shell       (const char **shell, const char **binary);
 void  cherokee_print_wrapped   (cherokee_buffer_t *buffer);
+ret_t cherokee_tmp_dir_copy    (cherokee_buffer_t *buffer);
 
 /* IO vectors
  */
@@ -146,7 +169,6 @@ ret_t cherokee_iovec_was_sent  (struct iovec orig[], uint16_t orig_len, size_t s
 /* Debug
  */
 void  cherokee_trace           (const char *entry, const char *file, int line, const char *func, const char *fmt, ...);
-void  cherokee_print_errno     (int error, char *format, ...);
 
 /* Path management
  */

@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2008 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2009 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -18,9 +18,9 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
- * USA
- */
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
+ */ 
 
 #include "common-internal.h"
 #include "handler_cgi_base.h"
@@ -52,15 +52,10 @@ cherokee_handler_cgi_base_init (cherokee_handler_cgi_base_t              *cgi,
 	 */
 	cherokee_handler_init_base (HANDLER(cgi), conn, props, info);
 
-	/* Supported features
-	 */
-	HANDLER(cgi)->support = hsupport_maybe_length;
-
 	/* Init to default values
 	 */
 	cgi->init_phase          = hcgi_phase_build_headers;
 	cgi->content_length      = 0;
-	cgi->content_length_set  = false;
 	cgi->got_eof             = false;
 	cgi->file_handler        = NULL;
 
@@ -79,10 +74,7 @@ cherokee_handler_cgi_base_init (cherokee_handler_cgi_base_t              *cgi,
 
 	/* Read the properties
 	 */
-	if (HANDLER_CGI_BASE_PROPS(cgi)->is_error_handler) {
-		HANDLER(cgi)->support |= hsupport_error;		
-	}
-	
+	HANDLER(cgi)->support = hsupport_nothing;	
 	return ret_ok;
 }
 
@@ -164,11 +156,11 @@ cherokee_handler_cgi_base_configure (cherokee_config_node_t *conf, cherokee_serv
 	INIT_LIST_HEAD (&props->system_env);
 	cherokee_buffer_init (&props->script_alias);
 
-	props->is_error_handler = false;
+	props->is_error_handler = true;
 	props->change_user      = false;
 	props->check_file       = true;
 	props->allow_xsendfile  = false;
-	props->pass_req_headers = false;
+	props->pass_req_headers = true;
 
 	/* Parse the configuration tree
 	 */
@@ -255,15 +247,16 @@ add_win32_systemroot_env (cherokee_handler_cgi_base_t              *cgi,
 
 ret_t 
 cherokee_handler_cgi_base_build_basic_env (
-			cherokee_handler_cgi_base_t              *cgi, 
-			cherokee_handler_cgi_base_add_env_pair_t  set_env_pair,
-			cherokee_connection_t                    *conn,
-			cherokee_buffer_t                        *tmp)
+	cherokee_handler_cgi_base_t              *cgi, 
+	cherokee_handler_cgi_base_add_env_pair_t  set_env_pair,
+	cherokee_connection_t                    *conn,
+	cherokee_buffer_t                        *tmp)
 {
-	int      re;
-	ret_t    ret;
-	char    *p;
-	cuint_t  p_len;
+	int              re;
+	ret_t            ret;
+	char            *p;
+	cuint_t          p_len;
+	cherokee_bind_t *bind = CONN_BIND(HANDLER_CONN(cgi));
 
 	char remote_ip[CHE_INET_ADDRSTRLEN+1];
 	CHEROKEE_TEMP(temp, 32);
@@ -271,20 +264,19 @@ cherokee_handler_cgi_base_build_basic_env (
 	/* Set the basic variables
 	 */
 	set_env (cgi, "SERVER_SOFTWARE",
-		 HANDLER_SRV(cgi)->server_string.buf, 
-		 HANDLER_SRV(cgi)->server_string.len); 
+		 bind->server_string.buf,
+		 bind->server_string.len);
 
 	set_env (cgi, "SERVER_NAME",       "Cherokee", 8);
 	set_env (cgi, "SERVER_SIGNATURE",  "<address>Cherokee web server</address>", 38);
 	set_env (cgi, "GATEWAY_INTERFACE", "CGI/1.1", 7);
 	set_env (cgi, "PATH",              "/bin:/usr/bin:/sbin:/usr/sbin", 29);
 
-	/* Servers MUST supply this value to scripts. The QUERY_STRING
-	 * value is case-sensitive. If the Script-URI does not include a
-	 * query component, the QUERY_STRING metavariable MUST be defined
-	 * as an empty string ("").
+	/* Document Root of the current Virtual Server
 	 */
-	set_env (cgi, "DOCUMENT_ROOT", conn->local_directory.buf, conn->local_directory.len);
+	set_env (cgi, "DOCUMENT_ROOT", 
+		 CONN_VSRV(conn)->root.buf,
+		 CONN_VSRV(conn)->root.len);
 
 	/* The IP address of the client sending the request to the
 	 * server. This is not necessarily that of the user agent (such
@@ -350,10 +342,10 @@ cherokee_handler_cgi_base_build_basic_env (
 
 	/* Remote user
 	 */
-	if (conn->validator && !cherokee_buffer_is_empty (&conn->validator->user))
+	if (conn->validator && !cherokee_buffer_is_empty (&conn->validator->user)) {
+		/* Only set when user authenticated (bug #467) */
 		set_env (cgi, "REMOTE_USER", conn->validator->user.buf, conn->validator->user.len);
-	else 
-		set_env (cgi, "REMOTE_USER", "", 0);
+	}
 
 	/* Set PATH_INFO 
 	 */
@@ -378,14 +370,15 @@ cherokee_handler_cgi_base_build_basic_env (
 			cherokee_buffer_add_buffer (tmp, &conn->userdir);
 		}
 
-		if (! cherokee_buffer_is_empty (&conn->request_original))
+		if (! cherokee_buffer_is_empty (&conn->request_original)) {
 			cherokee_buffer_add_buffer (tmp, &conn->request_original);
-		else
+		} else {
 			cherokee_buffer_add_buffer (tmp, &conn->request);
 
-		if (! cherokee_buffer_is_empty (&conn->query_string)) {
-			cherokee_buffer_add_char (tmp, '?');
-			cherokee_buffer_add_buffer (tmp, &conn->query_string);
+			if (! cherokee_buffer_is_empty (&conn->query_string)) {
+				cherokee_buffer_add_char (tmp, '?');
+				cherokee_buffer_add_buffer (tmp, &conn->query_string);
+			}
 		}
 	}
 	set_env (cgi, "REQUEST_URI", tmp->buf, tmp->len);
@@ -406,22 +399,64 @@ cherokee_handler_cgi_base_build_basic_env (
 	 */
 	if (conn->socket.is_tls) {
 		set_env (cgi, "HTTPS", "on", 2);
-		set_env (cgi, "SERVER_PORT", 
-			 HANDLER_SRV(cgi)->server_port_tls.buf,
-			 HANDLER_SRV(cgi)->server_port_tls.len);
 	} else  {
 		set_env (cgi, "HTTPS", "off", 3);
-		set_env (cgi, "SERVER_PORT", 
-			 HANDLER_SRV(cgi)->server_port.buf,
-			 HANDLER_SRV(cgi)->server_port.len);
 	}
+
+	set_env (cgi, "SERVER_PORT", 
+		 bind->server_port.buf,
+		 bind->server_port.len);
 
 	/* Set SERVER_ADDR
 	 */
-	set_env (cgi, "SERVER_ADDR", 
-		 HANDLER_SRV(cgi)->server_address.buf,
-		 HANDLER_SRV(cgi)->server_address.len);
-	
+	if (cherokee_buffer_is_empty (&bind->ip)) {	
+		cherokee_sockaddr_t my_address;
+		cuint_t             my_address_len = 0;
+		char                ip_str[CHE_INET_ADDRSTRLEN+1];
+
+		my_address_len = sizeof(my_address);
+		getsockname (SOCKET_FD(&conn->socket), 
+			     (struct sockaddr *)&my_address,
+			     &my_address_len);
+
+		cherokee_ntop (my_address.sa_in.sin_family,
+			       (struct sockaddr *) &my_address,
+			       ip_str, sizeof(ip_str)-1);
+
+		set_env (cgi, "SERVER_ADDR",
+			 ip_str, strlen(ip_str));
+	} else {
+		set_env (cgi, "SERVER_ADDR",
+			 bind->server_address.buf,
+			 bind->server_address.len);
+	}
+
+	/* Internal error redirection:
+	 * It is okay if the QS is empty.
+	 */
+	if (! cherokee_buffer_is_empty (&conn->error_internal_url)) {
+		set_env (cgi, "REDIRECT_URL", 
+			 conn->error_internal_url.buf,
+			 conn->error_internal_url.len);
+
+		set_env (cgi, "REDIRECT_QUERY_STRING", 
+			 conn->error_internal_qs.buf,
+			 conn->error_internal_qs.len);
+	}
+
+	/* Authentication
+	 */
+	switch (conn->req_auth_type) {
+	case http_auth_nothing:
+		break;
+	case http_auth_basic:
+		set_env (cgi, "AUTH_TYPE", "Basic", 5);
+		break;
+	case http_auth_digest:
+		set_env (cgi, "AUTH_TYPE", "Digest", 6);
+		break;
+	}
+
 	/* HTTP variables
 	 */
 	ret = cherokee_header_get_known (&conn->header, header_accept, &p, &p_len);
@@ -515,10 +550,30 @@ cherokee_handler_cgi_base_build_basic_env (
 
 
 static ret_t
-foreach_header_add_unknown_variable (cherokee_buffer_t *header, cherokee_buffer_t *content, void *data)
+foreach_header_add_unknown_variable (cherokee_buffer_t *header,
+				     cherokee_buffer_t *content,
+				     void              *data)
 {
+	cuint_t                      i;
 	cherokee_handler_cgi_base_t *cgi = HDL_CGI_BASE(data);
-	
+
+	/* Transfor 'Headers' to HTTP_HEADERS
+	 * NOTE: header is a copy, it can be modified
+	 */
+	for (i=0; i<header->len; i++) {
+		if ((header->buf[i] >= 'a') &&
+		    (header->buf[i] <= 'z'))
+		{
+			header->buf[i] -= ('a' - 'A');
+		} else if (header->buf[i] == '-') {
+			header->buf[i] = '_';
+		}
+	}
+
+	cherokee_buffer_prepend_str (header, "HTTP_");
+
+	/* Add it to the *CGI environment
+	 */
 	cgi->add_env_pair (cgi, 
 			   header->buf, header->len, 
 			   content->buf, content->len);
@@ -529,11 +584,11 @@ foreach_header_add_unknown_variable (cherokee_buffer_t *header, cherokee_buffer_
 ret_t 
 cherokee_handler_cgi_base_build_envp (cherokee_handler_cgi_base_t *cgi, cherokee_connection_t *conn)
 {
-	ret_t                               ret;
-	cherokee_list_t                    *i;
-	cherokee_buffer_t                  *name;
-	cuint_t                             len      = 0;
-	char                               *p        = "";
+	ret_t                              ret;
+	cherokee_list_t                   *i;
+	cherokee_buffer_t                 *name;
+	cuint_t                            len       = 0;
+	const char                        *p         = "";
 	cherokee_buffer_t                  tmp       = CHEROKEE_BUF_INIT;
 	cherokee_handler_cgi_base_props_t *cgi_props = HANDLER_CGI_BASE_PROPS(cgi); 
 
@@ -568,6 +623,13 @@ cherokee_handler_cgi_base_build_envp (cherokee_handler_cgi_base_t *cgi, cherokee
 		 * - If the SCGI is handling / it is ''
 		 * - Otherwise, it is the web_directory.
 		 */
+		cherokee_buffer_clean (&tmp);
+
+		if (! cherokee_buffer_is_empty (&conn->userdir)) {
+			cherokee_buffer_add_str    (&tmp, "/~");
+			cherokee_buffer_add_buffer (&tmp, &conn->userdir);
+		}
+
 		if (conn->web_directory.len > 1) {
 			cgi->add_env_pair (cgi, "SCRIPT_NAME", 11, 
 					   conn->web_directory.buf, conn->web_directory.len);
@@ -588,15 +650,20 @@ cherokee_handler_cgi_base_build_envp (cherokee_handler_cgi_base_t *cgi, cherokee
 				name = &cgi->executable; /* cgi */
 			}
 			if (conn->local_directory.len > 0){
-				p = name->buf + conn->local_directory.len - 1;
+				p = name->buf + conn->local_directory.len;
 				len = (name->buf + name->len) - p;
 			} else {
 				p = name->buf;
 				len = name->len;
 			}
 		}
-	
-		if (conn->web_directory.len > 1) {
+
+		if (! cherokee_buffer_is_empty (&conn->userdir)) {
+			cherokee_buffer_add_str    (&tmp, "/~");
+			cherokee_buffer_add_buffer (&tmp, &conn->userdir);
+		}
+
+		if (cherokee_connection_use_webdir(conn)) {
 			cherokee_buffer_add_buffer (&tmp, &conn->web_directory);
 		}
 
@@ -604,6 +671,20 @@ cherokee_handler_cgi_base_build_envp (cherokee_handler_cgi_base_t *cgi, cherokee
 			cherokee_buffer_add (&tmp, p, len);
 
 		cgi->add_env_pair (cgi, "SCRIPT_NAME", 11, tmp.buf, tmp.len);
+	}
+
+	/* Set PATH_TRANSLATED; only if PATH_INFO is set
+	 */
+	if (! cherokee_buffer_is_empty (&conn->pathinfo)) {
+		cherokee_buffer_add_buffer (&conn->local_directory, 
+					    &conn->pathinfo);
+
+		cgi->add_env_pair (cgi, "PATH_TRANSLATED", 15,
+				   conn->local_directory.buf,
+				   conn->local_directory.len);
+
+		cherokee_buffer_drop_ending (&conn->local_directory, 
+					     conn->pathinfo.len);
 	}
 
 	/* SCRIPT_FILENAME
@@ -615,8 +696,59 @@ cherokee_handler_cgi_base_build_envp (cherokee_handler_cgi_base_t *cgi, cherokee
 }
 
 
+static ret_t
+mix_headers (cherokee_buffer_t *target,
+	     cherokee_buffer_t *source)
+{
+	char  tmp;
+	char *begin;
+	char *colon;
+	char *end, *end1, *end2;
+
+	begin = source->buf;
+	while ((begin != NULL) && *begin)
+	{
+		end1 = strchr (begin, CHR_CR);
+		end2 = strchr (begin, CHR_LF);
+
+		end = cherokee_min_str (end1, end2);
+		if (end == NULL) break;
+
+		end2 = end;
+		while ((*end2 == CHR_CR) || (*end2 == CHR_LF)) {
+			end2++;
+		}
+		
+		/* Begin points to the beginning of a new line
+		 */
+		tmp   = *end2;
+		*end2 = '\0';
+		colon = strstr (begin, ":");
+		*end2 = tmp;
+
+		if (colon != NULL) {
+			tmp = colon[1];
+			colon[1] = '\0';
+
+			end1 = strcasestr (target->buf, begin);
+			colon[1] = tmp;
+
+			if (end1 == NULL) {
+				cherokee_buffer_add     (target, begin, end-begin);
+				cherokee_buffer_add_str (target, CRLF);
+			}
+		}
+		
+		begin = end2;
+	}
+
+	return ret_ok;
+}
+
+
 ret_t 
-cherokee_handler_cgi_base_extract_path (cherokee_handler_cgi_base_t *cgi, cherokee_boolean_t check_filename)
+cherokee_handler_cgi_base_extract_path (cherokee_handler_cgi_base_t *cgi,
+					cherokee_boolean_t           check_filename)
 {
 	ret_t                              ret;
 	cint_t                             req_len;
@@ -641,10 +773,15 @@ cherokee_handler_cgi_base_extract_path (cherokee_handler_cgi_base_t *cgi, cherok
 
 		/* Check the path_info even if it uses a  scriptalias. The PATH_INFO 	
 		 * is the rest of the substraction of request - configured directory.
-		 */
-		cherokee_buffer_add (&conn->pathinfo, 
-				     conn->request.buf + conn->web_directory.len, 
-				     conn->request.len - conn->web_directory.len);
+		 */				     
+		if (cherokee_connection_use_webdir (conn)) {
+			cherokee_buffer_add_buffer (&conn->pathinfo, &conn->request);
+		} else {
+			cherokee_buffer_add (&conn->pathinfo,
+					     conn->request.buf + conn->web_directory.len,
+					     conn->request.len - conn->web_directory.len);
+		}
+
 		return ret_ok;
 	}
 
@@ -701,11 +838,8 @@ cherokee_handler_cgi_base_extract_path (cherokee_handler_cgi_base_t *cgi, cherok
 					pathinfo_len = end - p;
 					cherokee_buffer_drop_ending (&conn->local_directory, pathinfo_len);
 				} 
-
-/* 				if (p <= begin) { */
-/* 					conn->error_code = http_not_found; */
-/* 					goto bye; */
-/* 				} */
+			} else {
+				pathinfo_len = conn->pathinfo.len;
 			}
 		} 
 		else {
@@ -745,68 +879,7 @@ cherokee_handler_cgi_base_extract_path (cherokee_handler_cgi_base_t *cgi, cherok
 bye:
 	/* Clean up the mess
 	 */
-	cherokee_buffer_drop_ending (&conn->local_directory, (req_len - pathinfo_len) - 1);
-	return ret;
-}
-
-static ret_t
-xsendfile_add_headers (cherokee_handler_cgi_base_t *cgi, cherokee_buffer_t *buffer)
-{
-	ret_t                     ret;
-	struct stat               l_stat;
-	cherokee_iocache_entry_t *cached = NULL;
-	cherokee_server_t        *srv    = HANDLER_SRV(cgi);
-	cherokee_connection_t    *conn   = HANDLER_CONN(cgi);
-
-	/* Get the file information
-	 */
-	if (srv->iocache) {
-		ret = cherokee_iocache_autoget (srv->iocache, 
-						&cgi->xsendfile,
-						iocache_stat,
-						&cached);
-		TRACE (ENTRIES, "iocache: %s, ret=%d\n", 
-		       cgi->xsendfile.buf, ret);
-	} else {
-		ret = ret_no_sys;
-	}
-
-	switch (ret) {
-	case ret_ok:
-	case ret_ok_and_sent:
-		break;
-	case ret_deny:
-		conn->error_code = http_access_denied;
-		ret = ret_error;
-		goto out;
-	case ret_no_sys:
-		/* Stat() it if the cache was full
-		 */
-		ret = cherokee_stat (cgi->xsendfile.buf, &l_stat);
-		if (ret != ret_ok) {
-			ret = ret_error;
-			goto out;
-		}
-		break;
-	default:
-		conn->error_code = http_not_found;
-		ret = ret_error;
-		goto out;
-	}
-
-	/* Add Content-Length
-	 */
-	cherokee_buffer_add_str (buffer, "Content-Length: ");
-	if (cached) {
-		cherokee_buffer_add_ullong10 (buffer, (cullong_t) cached->state.st_size);
-	} else {
-		cherokee_buffer_add_ullong10 (buffer, (cullong_t) l_stat.st_size);
-	}
-	cherokee_buffer_add_str (buffer, CRLF);
-	ret = ret_ok;
-
-out:
-	cherokee_iocache_entry_unref (&cached);
+	cherokee_buffer_drop_ending (&conn->local_directory, (req_len - pathinfo_len));
 	return ret;
 }
 
@@ -856,7 +929,7 @@ parse_header (cherokee_handler_cgi_base_t *cgi, cherokee_buffer_t *buffer)
 			status[3] = '\0';
 		
 			code = atoi (status);
-			if (code <= 0) {
+			if (code < 100) {
 				conn->error_code = http_internal_error;
 				return ret_error;
 			}
@@ -868,13 +941,37 @@ parse_header (cherokee_handler_cgi_base_t *cgi, cherokee_buffer_t *buffer)
 			continue;
 		}
 
-		else if (strncasecmp ("Content-Length: ", begin, 16) == 0) {
-			char saved = *end;
+		else if (strncasecmp ("HTTP/", begin, 5) == 0) {
+			int  code;
+			char status[4];
 
-			*end = '\0';
-			cgi->content_length = strtoll (begin+16, (char **)NULL, 10);
-			cgi->content_length_set = true;
-			*end = saved;
+			memcpy (status, begin+9, 3);
+			status[3] = '\0';
+
+			code = atoi (status);
+			if (code < 100) {
+				conn->error_code = http_internal_error;
+				return ret_error;
+			}
+		
+			cherokee_buffer_remove_chunk (buffer, begin - buffer->buf, end2 - begin);
+			end2 = begin;
+
+			conn->error_code = code;			
+			continue;
+		}
+
+		else if (strncasecmp ("Content-Length: ", begin, 16) == 0) {
+
+			if (cherokee_connection_should_include_length(conn)) {
+				char saved = *end;
+
+				*end = '\0';
+				cgi->content_length = strtoll (begin+16, (char **)NULL, 10);
+				*end = saved;
+
+				HANDLER(cgi)->support |= hsupport_length;
+			}
 
 			cherokee_buffer_remove_chunk (buffer, begin - buffer->buf, end2 - begin);
 			end2 = begin;
@@ -886,15 +983,28 @@ parse_header (cherokee_handler_cgi_base_t *cgi, cherokee_buffer_t *buffer)
 			end2 = begin;
 		} 
 
+		else if (strncasecmp ("Content-Encoding: ", begin, 18) == 0) {
+			BIT_SET (conn->options, conn_op_cant_encoder);
+		}
+
 		else if ((HANDLER_CGI_BASE_PROPS(cgi)->allow_xsendfile) &&
-			 ((strncasecmp ("X-Sendfile: ", begin, 12) == 0) ||
-			  (strncasecmp ("X-Accel-Redirect: ", begin, 18) == 0))) 
+			 (strncasecmp ("X-Sendfile: ", begin, 12) == 0))
 		{
 			cherokee_buffer_add (&cgi->xsendfile, begin+12, end - (begin+12));
 			cherokee_buffer_remove_chunk (buffer, begin - buffer->buf, end2 - begin);
 			end2 = begin;
 
 			TRACE (ENTRIES, "Found X-Sendfile header: '%s'\n", cgi->xsendfile.buf);
+		}
+
+		else if ((HANDLER_CGI_BASE_PROPS(cgi)->allow_xsendfile) &&
+			 (strncasecmp ("X-Accel-Redirect: ", begin, 18) == 0))
+		{
+			cherokee_buffer_add (&cgi->xsendfile, begin+18, end - (begin+18));
+			cherokee_buffer_remove_chunk (buffer, begin - buffer->buf, end2 - begin);
+			end2 = begin;
+
+			TRACE (ENTRIES, "Found X-Accel-Redirect header: '%s'\n", cgi->xsendfile.buf);
 		}
 
 		begin = end2;
@@ -905,7 +1015,8 @@ parse_header (cherokee_handler_cgi_base_t *cgi, cherokee_buffer_t *buffer)
 
 
 ret_t 
-cherokee_handler_cgi_base_add_headers (cherokee_handler_cgi_base_t *cgi, cherokee_buffer_t *outbuf)
+cherokee_handler_cgi_base_add_headers (cherokee_handler_cgi_base_t *cgi,
+				       cherokee_buffer_t           *outbuf)
 {
 	ret_t                  ret;
 	int                    len;
@@ -935,7 +1046,12 @@ cherokee_handler_cgi_base_add_headers (cherokee_handler_cgi_base_t *cgi, cheroke
 	/* Look the end of headers
 	 */
 	ret = cherokee_find_header_end (inbuf, &content, &end_len);
-	if (ret != ret_ok) {
+	switch (ret) {
+	case ret_ok:
+		break;
+	case ret_error:
+		return ret_error;
+	default:
 		return (cgi->got_eof) ? ret_eof : ret_eagain;		
 	}
 
@@ -951,23 +1067,24 @@ cherokee_handler_cgi_base_add_headers (cherokee_handler_cgi_base_t *cgi, cheroke
 	 */
 	cherokee_buffer_move_to_begin (inbuf, len + end_len);
 
+	/* From this moment, it can handle errors
+	 */
+	if (HANDLER_CGI_BASE_PROPS(cgi)->is_error_handler) {
+		HANDLER(cgi)->support |= hsupport_error;
+	}
+
 	/* Parse the header.. it is likely we will have something to do with it.
 	 */
 	ret = parse_header (cgi, outbuf);	
-	if (unlikely (ret != ret_ok))
+	if (unlikely (ret != ret_ok)) {
 		return ret;
+	}
 
 	/* Handle X-Sendfile
 	 */
 	if (! cherokee_buffer_is_empty (&cgi->xsendfile)) 
 	{
-		/* Add Content-Length header
-		 */
-		ret = xsendfile_add_headers (cgi, outbuf);
-		if (ret != ret_ok) {
-			TRACE(ENTRIES, "Couldn't access X-Sendfile: %s\n", cgi->xsendfile.buf);
-			return ret_error;
-		}
+		cherokee_buffer_t cgi_header = CHEROKEE_BUF_INIT;
 
 		/* Instance the 'file' sub-handler
 		 */
@@ -981,16 +1098,40 @@ cherokee_handler_cgi_base_add_headers (cherokee_handler_cgi_base_t *cgi, cheroke
 		if (ret != ret_ok)
 			return ret_error;
 
+		/* Work out the header
+		 */
+		cherokee_buffer_add_buffer (&cgi_header, outbuf);
+		cherokee_buffer_clean (outbuf);
+		
+		ret = cherokee_handler_file_add_headers (cgi->file_handler, outbuf);
+		if (ret != ret_ok)
+			return ret_error;		
+
+		/* Overwrite the handler properties
+		 */
+		HANDLER(cgi)->support  = HANDLER(cgi->file_handler)->support;
+		conn->chunked_encoding = false;
+
+		mix_headers (outbuf, &cgi_header);		
 		return ret_ok;
 	}
 
 	/* Content-Length response header
 	 */
-	if (cgi->content_length_set) {
+	if (HANDLER_SUPPORTS (cgi, hsupport_length))
+	{
 		cherokee_buffer_add_str      (outbuf, "Content-Length: ");
 		cherokee_buffer_add_ullong10 (outbuf, (cullong_t) cgi->content_length);
-		cherokee_buffer_add_str      (outbuf, CRLF);		
+		cherokee_buffer_add_str      (outbuf, CRLF);
+	}
 
+	/* Redirection without custom status
+	 */
+	if ((conn->error_code == http_ok) &&
+	    (! cherokee_buffer_is_empty (&conn->redirect)))
+	{
+		TRACE(ENTRIES, "Redirection without custom status. Setting %d\n", 302);
+		conn->error_code = http_moved_temporarily;
 	}
 
 	return ret_ok;

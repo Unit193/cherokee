@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2008 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2009 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -18,9 +18,9 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
- * USA
- */
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
+ */ 
 
 #include "common-internal.h"
 #include "buffer.h"
@@ -474,7 +474,7 @@ cherokee_buffer_add_ullong16 (cherokee_buffer_t *buf, cullong_t ulNum)
 
 
 ret_t 
-cherokee_buffer_add_va_fixed (cherokee_buffer_t *buf, char *format, ...)
+cherokee_buffer_add_va_fixed (cherokee_buffer_t *buf, const char *format, ...)
 {
 	int len;
 	int size = buf->size - buf->len;	/* final '\0' is always available */
@@ -506,7 +506,7 @@ cherokee_buffer_add_va_fixed (cherokee_buffer_t *buf, char *format, ...)
 
 
 ret_t 
-cherokee_buffer_add_va_list (cherokee_buffer_t *buf, char *format, va_list args)
+cherokee_buffer_add_va_list (cherokee_buffer_t *buf, const char *format, va_list args)
 {
 	int len;
 	int estimation;
@@ -520,15 +520,15 @@ cherokee_buffer_add_va_list (cherokee_buffer_t *buf, char *format, va_list args)
 	 */
 	estimation = cherokee_estimate_va_length (format, args);
 	if (unlikely (estimation) < 0) {
-		PRINT_ERROR ("  -> '%s', esti=%d ( < 0)\n", format, estimation);
+		LOG_ERROR ("  -> '%s', esti=%d ( < 0)\n", format, estimation);
 		return ret_error;
 	}
 
 	/* Ensure enough size for buffer.
 	 */
 	ret = cherokee_buffer_ensure_size (buf, buf->len + estimation + 2);
-	if (ret != ret_ok) {
-		PRINT_ERROR ("  -> '%s', esti=%d ensure_size=%d failed !\n", format, estimation, buf->len + estimation + 2);
+	if (unlikely (ret != ret_ok)) {
+		LOG_ERROR ("  -> '%s', esti=%d ensure_size=%d failed !\n", format, estimation, buf->len + estimation + 2);
 		return ret;
 	}
 
@@ -537,15 +537,15 @@ cherokee_buffer_add_va_list (cherokee_buffer_t *buf, char *format, va_list args)
 	 */
 	size = buf->size - buf->len;
 	if (size < 1) {
-		PRINT_ERROR ("  -> '%s', esti=%d size=%d ( < 1)!\n", format, estimation, size);
+		LOG_ERROR ("  -> '%s', esti=%d size=%d ( < 1)!\n", format, estimation, size);
 		return ret_error;
 	}
 	len = vsnprintf (buf->buf + buf->len, size, format, args2);
 
 #if 0
 	if (estimation < len)
-		PRINT_ERROR ("  -> '%s' -> '%s', esti=%d real=%d size=%d\n", 
-			     format, buf->buf + buf->len, estimation, len, size);
+		LOG_ERROR ("  -> '%s' -> '%s', esti=%d real=%d size=%d\n", 
+			   format, buf->buf + buf->len, estimation, len, size);
 #endif
 
 	if (unlikely (len < 0))
@@ -554,8 +554,8 @@ cherokee_buffer_add_va_list (cherokee_buffer_t *buf, char *format, va_list args)
 	/* At this point buf-size is always greater than buf-len, thus size > 0.
 	 */
 	if (len >= size) {
-		PRINT_ERROR ("Failed estimation=%d, needed=%d available size=%d: %s\n", 
-			     estimation, len, size, format);
+		LOG_ERROR ("Failed estimation=%d, needed=%d available size=%d: %s\n", 
+			   estimation, len, size, format);
 
 		cherokee_buffer_ensure_size (buf, buf->len + len + 2);
 		size = buf->size - buf->len;
@@ -574,7 +574,7 @@ cherokee_buffer_add_va_list (cherokee_buffer_t *buf, char *format, va_list args)
 
 
 ret_t 
-cherokee_buffer_add_va (cherokee_buffer_t *buf, char *format, ...)
+cherokee_buffer_add_va (cherokee_buffer_t *buf, const char *format, ...)
 {
 	ret_t   ret;
 	va_list ap;
@@ -636,7 +636,7 @@ cherokee_buffer_add_char_n (cherokee_buffer_t *buf, char c, int num)
 
 
 ret_t
-cherokee_buffer_prepend (cherokee_buffer_t *buf, char *txt, size_t size)
+cherokee_buffer_prepend (cherokee_buffer_t *buf, const char *txt, size_t size)
 {
 	int free = buf->size - buf->len;
 
@@ -682,8 +682,8 @@ cherokee_buffer_move_to_begin (cherokee_buffer_t *buf, cuint_t pos)
 
 #if 0
 	if (strlen(buf->buf) != buf->len) {
-		PRINT_ERROR ("ERROR: cherokee_buffer_move_to_begin(): strlen=%d buf->len=%d\n", 
-			     strlen(buf->buf), buf->len);
+		LOG_ERROR ("ERROR: cherokee_buffer_move_to_begin(): strlen=%d buf->len=%d\n", 
+			   strlen(buf->buf), buf->len);
 	}
 #endif
 
@@ -886,7 +886,7 @@ cherokee_buffer_case_cmp (cherokee_buffer_t *buf, char *txt, cuint_t txt_len)
 
 
 size_t
-cherokee_buffer_cnt_spn (cherokee_buffer_t *buf, cuint_t offset, char *str) 
+cherokee_buffer_cnt_spn (cherokee_buffer_t *buf, cuint_t offset, const char *str) 
 {
 	if (unlikely ((buf->buf == NULL) || (buf->len <= offset)))
 		return 0;
@@ -896,7 +896,7 @@ cherokee_buffer_cnt_spn (cherokee_buffer_t *buf, cuint_t offset, char *str)
 
 
 size_t 
-cherokee_buffer_cnt_cspn (cherokee_buffer_t *buf, cuint_t offset, char *str) 
+cherokee_buffer_cnt_cspn (cherokee_buffer_t *buf, cuint_t offset, const char *str) 
 {
 	if (unlikely ((buf->buf == NULL) || (buf->len <= offset)))
 		return 0;
@@ -940,7 +940,7 @@ cherokee_buffer_read_file (cherokee_buffer_t *buf, char *filename)
 	 */
 	f = open (filename, O_RDONLY | O_BINARY);
 	if (f < 0) {
-		PRINT_ERRNO(errno, "Couldn't open '%s': ${errno}\n", filename);
+		LOG_ERRNO(errno, cherokee_err_error, "Couldn't open '%s': ${errno}\n", filename);
 		return ret_error;
 	}
 
@@ -997,7 +997,7 @@ cherokee_buffer_read_from_fd (cherokee_buffer_t *buf, int fd, size_t size, size_
 			return ret_error;
 		}
 
-		PRINT_ERRNO (errno, "read(%d, %u,..): '${errno}'", fd, size);
+		LOG_ERRNO (errno, cherokee_err_error, "read(%d, %u,..): '${errno}'", fd, size);
 		return ret_error;
 	}
 	else if (len == 0) {
@@ -1090,25 +1090,6 @@ cherokee_buffer_print_debug (cherokee_buffer_t *buf, int len)
 ret_t
 cherokee_buffer_unescape_uri (cherokee_buffer_t *buffer)
 {
-	static const char hex2dec_tab[256] = {
-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  /* 00-0F */
-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  /* 10-1F */
-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  /* 20-2F */
-		0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 0, 0, 0, 0, 0,  /* 30-3F */
-		0,10,11,12,13,14,15, 0, 0, 0, 0, 0, 0, 0, 0, 0,  /* 40-4F */
-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  /* 50-5F */
-		0,10,11,12,13,14,15, 0, 0, 0, 0, 0, 0, 0, 0, 0,  /* 60-6F */
-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  /* 70-7F */
-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  /* 80-8F */
-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  /* 90-9F */
-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  /* A0-AF */
-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  /* B0-BF */
-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  /* C0-CF */
-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  /* D0-DF */
-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  /* E0-EF */
-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0   /* F0-FF */
-	};
-
 	char *psrc;
 	char *ptgt;
 	int   len;
@@ -1165,6 +1146,60 @@ cherokee_buffer_unescape_uri (cherokee_buffer_t *buffer)
 	return ret_ok;
 }
 
+ret_t
+cherokee_buffer_escape_uri (cherokee_buffer_t *buffer, cherokee_buffer_t *src)
+{
+	cuint_t  i;
+	char    *s, *t;
+	cuint_t  n_escape = 0;
+
+	/* Each *bit* position of the array represents whether the
+	 * character is escaped.
+	 */
+	static uint32_t is_char_escaped[] = {
+		0xffffffff, 0x80000029, 0x00000000, 0x80000000,
+		0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff
+	};
+
+	if (unlikely (src->buf == NULL))
+		return ret_error;
+
+	/* Count how many characters it'll have to escape
+	 */
+	for (i=0, s=src->buf; i<src->len; i++, s++) {
+		if (is_char_escaped[*s >> 5] & (1 << (*s & 0x1f))) {
+			n_escape++;
+		}
+	}
+
+	/* Get the memory
+	 */
+	cherokee_buffer_ensure_addlen (buffer, src->len + (n_escape * 2));
+
+	/* Convert it
+	 */
+	s = src->buf;
+	t = buffer->buf + buffer->len;
+
+	for (i=0; i<src->len; i++) {
+		if (is_char_escaped[*s >> 5] & (1 << (*s & 0x1f))) {
+			*t++ = '%';
+			*t++ = TO_HEX(*s >> 4);
+			*t++ = TO_HEX(*s & 0xf);
+			s++;
+		} else {
+			*t++ = *s++;
+		}
+	}
+
+	/* ..and the final touch
+	 */
+	*t = '\0';
+	buffer->len += src->len + (n_escape * 2);
+
+	return ret_ok;
+}
+
 
 ret_t 
 cherokee_buffer_add_escape_html (cherokee_buffer_t *buf, cherokee_buffer_t *src)
@@ -1211,16 +1246,16 @@ cherokee_buffer_add_escape_html (cherokee_buffer_t *buf, cherokee_buffer_t *src)
 				continue;
 		}
 	}
-
+ 
 	/* Verify there are no embedded '\0'.
 	 */
-	if ( (cuint_t)(p1 - src->buf) != src->len)
+	if (unlikely ((cuint_t)(p1 - src->buf) != src->len))
 		return ret_error;
 
 	/* Ensure there is proper buffer size.
 	 */
 	ret = cherokee_buffer_ensure_addlen (buf, src->len + extra + 1);
-	if (ret != ret_ok)
+	if (unlikely (ret != ret_ok))
 		return ret;
 
 	/* Escape and copy data to destination buffer.
@@ -1497,6 +1532,36 @@ cherokee_buffer_encode_sha1 (cherokee_buffer_t *buf, cherokee_buffer_t *encoded)
 }
 
 
+ret_t
+cherokee_buffer_encode_sha1_digest (cherokee_buffer_t *buf)
+{
+	int           i;
+	unsigned char digest[20];
+	SHA_INFO      sha1;
+ 
+	sha_init (&sha1);
+	sha_update (&sha1, (unsigned char*) buf->buf, buf->len);
+	sha_final (&sha1, digest);
+
+	cherokee_buffer_ensure_size (buf, 2 * SHA1_DIGEST_SIZE);
+
+	for (i = 0; i < 20; ++i) {
+		int tmp;
+
+		tmp = ((digest[i] >> 4) & 0xf);
+		buf->buf[i*2] = TO_HEX(tmp);
+
+		tmp = (digest[i] & 0xf);
+		buf->buf[(i*2)+1] = TO_HEX(tmp);
+	}
+
+	buf->buf[2 * SHA1_DIGEST_SIZE] = '\0';
+	buf->len = 2 * SHA1_DIGEST_SIZE;
+
+	return ret_ok;
+}
+
+
 /* Encode sha1 in base64, both source (buf) and destination (encoded)
  * buffers are overwritten, but possibly not reallocated.
  */
@@ -1610,8 +1675,8 @@ cherokee_buffer_end_char (cherokee_buffer_t *buf)
 
 ret_t 
 cherokee_buffer_replace_string (cherokee_buffer_t *buf, 
-				char *substring,   int substring_length, 
-				char *replacement, int replacement_length)
+				const char *substring,   int substring_length, 
+				const char *replacement, int replacement_length)
 {
 	int         remaining_length;
 	int         result_length;
@@ -1622,11 +1687,25 @@ cherokee_buffer_replace_string (cherokee_buffer_t *buf,
 
 	/* Verify formal parameters
 	 * (those which are not tested would raise a segment violation).
+	 * We keep the corner case of a NULL replacement string, since our
+	 * beloved cherokee_buffer_t's might be passed to us, and a
+	 * NULL buf->buf is legit for 0-sized buffers.
 	 */
-	if (buf == NULL || buf->buf == NULL ||
-	    substring == NULL || substring_length < 1 ||
-		replacement == NULL || replacement_length < 0)
+	if (replacement == NULL) {
+		if (unlikely (replacement_length != 0))
+			return ret_deny;
+
+		replacement = "";
+	}
+
+	if ((buf == NULL) ||
+	    (buf->buf == NULL) ||
+	    (substring == NULL) ||
+	    (substring_length < 1) ||
+	    (replacement_length < 0))
+	{
 		return ret_deny;
+	}
 
 	/* Calculate the new size
 	 */

@@ -4,20 +4,25 @@ from Page import *
 from Form import *
 from Table import *
 from Entry import *
+from Wizard import *
+
+# For gettext
+N_ = lambda x: x
 
 DATA_VALIDATION = [
     ("new_vserver_name",   validations.is_safe_id),
     ("new_vserver_droot", (validations.is_dev_null_or_local_dir_exists, 'cfg')),
+    ("vserver_clone_trg",  validations.is_safe_id),
 ]
 
-COMMENT = """
+COMMENT = N_("""
 <p>'Virtual Server' is an abstraction mechanism that allows to define
 a custom number of parameters and rules that have to be applied to one or
 more domains.</p>
-"""
+""")
 
 HELPS = [
-    ('config_virtual_servers', "Virtual Servers")
+    ('config_virtual_servers', N_("Virtual Servers"))
 ]
 
 def domain_cmp (d1, d2):
@@ -46,12 +51,16 @@ class PageVServers (PageMenu, FormHelper):
     def _op_render (self):
         content = self._render_vserver_list()
 
-        self.AddMacroContent ('title', 'Virtual Servers configuration')
+        self.AddMacroContent ('title', _('Virtual Servers configuration'))
         self.AddMacroContent ('content', content)
 
         return Page.Render(self)
 
     def _op_handler (self, uri, post):
+        if '/wizard/' in uri:
+            re = self._op_apply_wizard (uri, post)
+            if re: return re
+
         if post.get_val('is_submit'):
             if post.get_val('vserver_clone_trg'):
                 tmp = self._op_clone_vserver (post)
@@ -73,6 +82,19 @@ class PageVServers (PageMenu, FormHelper):
                 return "ok"
 
         return self._op_render()
+
+    def _op_apply_wizard (self, uri, post):
+        tmp  = uri.split('/')
+        name = tmp[2]
+
+        mgr = WizardManager (self._cfg, "VServer", 'vserver')
+        wizard = mgr.load (name)
+
+        output = wizard.run ("/vserver%s"%(uri), post)
+        if output:
+            return output
+
+        return '/vserver'
 
     def _normailze_vservers (self):
         vservers = [int(x) for x in self._cfg['vserver'].keys()]
@@ -105,54 +127,77 @@ class PageVServers (PageMenu, FormHelper):
             n += 10
 
     def _render_vserver_list (self):
-        txt = "<h1>Virtual Servers</h1>"
+        txt = "<h1>%s</h1>" % (_('Virtual Servers'))
         txt += self.Dialog (COMMENT)
 
         vservers = self._cfg['vserver']
         table_name = 'vserver_sortable_table'
 
-        sorted_vservers = self._cfg['vserver'].keys()
-        sorted_vservers.sort(reverse=True)
+        def sort_vservers(x,y):
+            return cmp(int(x), int(y))
 
-        txt += '<table id="%s" class="rulestable">' % (table_name)
-        txt += '<tr NoDrag="1" NoDrop="1"><th>Nickname</th><th>Root</th><th>Domains</th><th>Logging</th><th></th></tr>'
+        sorted_vservers = self._cfg['vserver'].keys()
+        sorted_vservers.sort(sort_vservers, reverse=True)
+
+        txt += '<div class="rulesdiv"><table id="%s" class="rulestable">' % (table_name)
+        txt += '<tr class="nodrag nodrop"><th>&nbsp</th><th>%s</th><th>%s</th><th>%s</th><th>%s</th><th></th></tr>' % \
+            (_('Nickname'), _('Root'), _('Domains'), _('Logging'))
+
+        ENABLED_IMAGE  = self.InstanceImage('tick.png', _('Yes'))
+        DISABLED_IMAGE = self.InstanceImage('cross.png', _('No'))
 
         for prio in sorted_vservers:
             nick          = self._cfg.get_val('vserver!%s!nick'%(prio))
             document_root = self._cfg.get_val('vserver!%s!document_root'%(prio), '')
             logger_val    = self._cfg.get_val('vserver!%s!logger'%(prio))
-            domains       = self._cfg.keys('vserver!%s!domain'%(prio))
 
-            if not domains:
-                doms = 1
+            hmatchtype    = self._cfg.get_val('vserver!%s!match'%(prio), None)
+            if hmatchtype == 'rehost':
+                skey = 'regex'
+            elif hmatchtype == 'wildcard':
+                skey = 'domain'
             else:
-                doms = len(domains)
-                if not nick in domains:
-                    doms += 1
+                doms = 1
+
+            if hmatchtype:
+                prefix        = 'vserver!%s!match!%s!%%s' % (prio,skey)
+                domkeys       = [prefix % k for k in self._cfg.keys(prefix[:-3])]
+                domains       = self._cfg.get_vals(domkeys)
+                if domains:
+                    doms = len(domains)
+                    if not nick in domains:
+                        doms += 1
+                else:
+                    doms = 1
 
             link = '<a href="/vserver/%s">%s</a>' % (prio, nick)
             if nick == 'default':
-                extra = ' NoDrag="1" NoDrop="1"'
+                extra = ' class="nodrag nodrop"'
+                draggable = ''
             else:
                 extra = ''
+                draggable = ' class="dragHandle"'
 
             if logger_val:
-                logging = 'yes'
+                logging = ENABLED_IMAGE
             else:
-                logging = 'no'
+                logging = DISABLED_IMAGE
 
             if nick != "default":
-                js = "post_del_key('/ajax/update', 'vserver!%s');"%(prio)
-                link_del = self.InstanceImage ("bin.png", "Delete", border="0", onClick=js)
+                link_del = self.AddDeleteLink ('/ajax/update', 'vserver!%s'%(prio))
             else:
                 link_del = ''
 
-            txt += '<tr prio="%s" id="%s"%s><td>%s</td><td>%s</td><td>%d</td><td>%s</td><td>%s</td></tr>' % (
-                prio, prio, extra, link, document_root, doms, logging, link_del)
+            txt += '<tr prio="%s" id="%s"%s><td%s>&nbsp</td><td>%s</td><td>%s</td><td class="center">%d</td><td class="center">%s</td><td class="center">%s</td></tr>' % (
+                prio, prio, extra, draggable, link, document_root, doms, logging, link_del)
 
         txt += '</table>'
+
+
         txt += '''
                       <script type="text/javascript">
+                      var prevSection = '';
+
                       $(document).ready(function() {
                         $("#%(name)s tr:even').addClass('alt')");
 
@@ -168,13 +213,40 @@ class PageVServers (PageMenu, FormHelper):
                                       window.location.reload();
                                   }
                               );
-                          }
+                          },
+                          dragHandle: "dragHandle"
                         });
+
+                        $("#%(name)s tr:not(.nodrag, nodrop)").hover(function() {
+                            $(this.cells[0]).addClass('dragHandleH');
+                        }, function() {
+                            $(this.cells[0]).removeClass('dragHandleH');
+                        });
+
                       });
 
                       $(document).ready(function(){
                         $("table.rulestable tr:odd").addClass("odd");
+                        $("#newsection_b").click(function() { openSection('newsection')});
+                        $("#clonesection_b").click(function() { openSection('clonesection')});
+                        $("#wizardsection_b").click(function() { openSection('wizardsection')});
+                        open_vssec  = get_cookie('open_vssec');
+                        if (open_vssec && document.referrer == window.location) {
+                            openSection(open_vssec);
+                        }
                       });
+
+                      function openSection(section) 
+                      {
+                          document.cookie = "open_vssec="  + section;
+                          if (prevSection != '') {
+                              $("#"+prevSection).hide();
+                              $("#"+prevSection+"_b").attr("style", "font-weight: normal;");
+                          }
+		          $("#"+section+"_b").attr("style", "font-weight: bold;");
+                          $("#"+section).show();
+                          prevSection = section;
+                      }
 
                       $(document).mouseup(function(){
                         $("table.rulestable tr:even").removeClass("odd");
@@ -185,19 +257,22 @@ class PageVServers (PageMenu, FormHelper):
                       'url' :   '/vserver/ajax_update'}
 
         # Add new Virtual Server
-        table = Table(3,1)
-        table += ('Nickname', 'Document Root')
+        txt += '<div class="rulessection" id="newsection">'
+        table = Table(3, 1, header_style='width="200px"')
+        table += (_('Nickname'), _('Document Root'))
         fo1 = Form ("/vserver", add_submit=False, auto=False)
         en1 = self.InstanceEntry ("new_vserver_name",  "text", size=20)
         en2 = self.InstanceEntry ("new_vserver_droot", "text", size=40)
         table += (en1, en2, SUBMIT_ADD)
 
-        txt += "<h2>Add new Virtual Server</h2>"
-        txt += fo1.Render(str(table))
+        txt += "<h2>%s</h2>" % (_('Add new Virtual Server'))
+        txt += self.Indent(fo1.Render(str(table)))
+        txt += '</div>'
 
         # Clone Virtual Server
-        table = Table(3,1, header_style='width="250px"')
-        table += ('Virtual Server', 'Clone as..')
+        txt += '<div class="rulessection" id="clonesection">'
+        table = Table(3, 1, header_style='width="200px"')
+        table += (_('Virtual Server'), _('Clone as..'))
         fo1 = Form ("/vserver", add_submit=False, auto=False)
 
         clonable = []
@@ -209,8 +284,32 @@ class PageVServers (PageMenu, FormHelper):
         en1 = self.InstanceEntry   ("vserver_clone_trg", "text", size=40)
         table += (op1[0], en1, SUBMIT_CLONE)
 
-        txt += "<h2>Clone Virtual Server</h2>"
-        txt += fo1.Render(str(table))
+        txt += "<h2>%s</h2>" % (_('Clone Virtual Server'))
+        txt += self.Indent(fo1.Render(str(table)))
+        txt += '</div>'
+
+        # Wizards
+        txt += '<div class="rulessection" id="wizardsection">'
+        txt += self._render_wizards()
+        txt += '</div>'
+
+        txt += '<div class="rulesbutton"><a id="newsection_b">%s</a></div>' % (_('Add new Virtual Server'))
+        txt += '<div class="rulesbutton"><a id="clonesection_b">%s</a></div>' % (_('Clone Virtual Server'))
+        txt += '<div class="rulesbutton"><a id="wizardsection_b">%s</a></div>' % (_('Wizards'))
+        txt += '</div>'
+        
+        return txt
+
+    def _render_wizards (self):
+        txt = ''
+        mgr = WizardManager (self._cfg, "VServer", pre='vserver')
+        txt += mgr.render ("/vserver")
+
+        table = '<table id="wizSel" class="rulestable"><tr><th>Category</th><th>Wizard</th></tr>'
+        table += '<tr><td id="wizG"></td><td id="wizL"></td></table>'
+
+        if txt: 
+            txt = _("<h2>Wizards</h2>") + table + txt
 
         return txt
 
@@ -229,6 +328,11 @@ class PageVServers (PageMenu, FormHelper):
         return str(n+10)
 
     def _op_clone_vserver (self, post):
+        # Validate entries
+        self._ValidateChanges (post, DATA_VALIDATION)
+        if self.has_errors():
+            return
+
         # Fetch data
         prio_source = post.pop('vserver_clone_src')
         nick_target = post.pop('vserver_clone_trg')
@@ -236,7 +340,7 @@ class PageVServers (PageMenu, FormHelper):
 
         # Check the field has been filled out
         if not nick_target:
-            self._error_add ('vserver_clone_trg', '', 'Cannot be empty')
+            self._error_add ('vserver_clone_trg', '', _('Cannot be empty'))
             return
 
         # Clone it
@@ -250,7 +354,7 @@ class PageVServers (PageMenu, FormHelper):
         # Ensure that no entry in empty
         for key in ['new_vserver_name', 'new_vserver_droot']:
             if not post.get_val(key):
-                self._error_add (key, '', 'Cannot be empty')
+                self._error_add (key, '', _('Cannot be empty'))
 
         self._ValidateChanges (post, DATA_VALIDATION)
         if self.has_errors():

@@ -9,6 +9,7 @@ import pyscgi
 import thread
 import signal
 import socket
+import gettext
 
 # Application modules
 #
@@ -25,12 +26,10 @@ from PageEntry import *
 from PageAdvanced import *
 from PageFeedback import *
 from PageError import *
+from PageNewConfig import *
 from PageAjaxUpdate import *
 from PageInfoSource import *
 from CherokeeManagement import *
-try:
-    from PageWizard import *
-except: pass
 
 # Constants
 #
@@ -39,6 +38,7 @@ MODIFIED_CHECK_ELAPSE = 1
 # Globals
 #
 cfg = None
+SELECTED_LANGUAGE = False
 
 # Request handler
 #
@@ -55,10 +55,19 @@ class Handler(pyscgi.SCGIHandler):
         status  = "200 OK"
         uri     = self.env['REQUEST_URI']
 
+        if (not SELECTED_LANGUAGE and
+            self.env.has_key('HTTP_ACCEPT_LANGUAGE')):
+            try:
+                langs = self.env['HTTP_ACCEPT_LANGUAGE']
+            except:
+                langs = None
+
+            select_language (langs)
+
         # Ensure that the configuration file is writable
         if not cfg.has_tree():
             if not uri.startswith('/create_config'):
-                page = PageError (cfg, PageError.CONFIG_NOT_FOUND)
+                page = PageNewConfig (cfg)
         elif not cfg.is_writable():
             page = PageError (cfg, PageError.CONFIG_NOT_WRITABLE)
         elif not os.path.isdir(CHEROKEE_ICONSDIR):
@@ -85,11 +94,10 @@ class Handler(pyscgi.SCGIHandler):
             page = PageAdvanced(cfg)
         elif uri.startswith('/feedback'):
             page = PageFeedback(cfg)
-        elif uri.startswith('/wizard'):
-            page = PageWizard(cfg)
         elif uri == '/vserver' or \
              uri == '/vserver/' or \
-             uri == '/vserver/ajax_update':
+             uri == '/vserver/ajax_update' or\
+             uri.startswith('/vserver/wizard'):
             page = PageVServers(cfg)
         elif uri.startswith('/vserver/'):
             if "/rule/" in uri:
@@ -107,24 +115,23 @@ class Handler(pyscgi.SCGIHandler):
             manager.save (restart = post_restart)
             cherokee_management_reset()
 
-            body = "Configuration saved."
+            body = _('Configuration saved.')
             if post_restart == 'graceful':
-                body += ' Graceful restart performed.'
+                body += _(' Graceful restart performed.')
             elif post_restart == 'hard':
-                body += ' Hard restart performed.'
+                body += _(' Hard restart performed.')
 
-        elif uri.startswith('/apply'):
+        elif uri.startswith('/change_language'):
             self.handle_post()
             post = Post(self.post)
+            post_lang = post.get_val('language')
 
-            manager = cherokee_management_get (cfg)
-            manager.save (restart = post.get_val('restart'))
-            cherokee_management_reset()
-            body = "/"
+            select_language(post_lang)
+            body = '/'
+
         elif uri.startswith('/launch'):
             manager = cherokee_management_get (cfg)
             error = manager.launch()
-            cherokee_management_reset()
             if error:
                 page = PageError (cfg, PageError.COULDNT_LAUNCH, error=error)
             else:
@@ -135,13 +142,18 @@ class Handler(pyscgi.SCGIHandler):
             cherokee_management_reset()
             body = "/"
         elif uri.startswith('/create_config'):
-            manager = cherokee_management_get (cfg)
-            manager.create_config (cfg.file)
-            cherokee_management_reset()
-            cfg = Config (cfg.file)
-            body = "/"
+            tmp = PageNewConfig (cfg)
+            body = tmp.HandleRequest(uri, Post(''))
+            if body:
+                cfg = Config (cfg.file)
+            else:
+                tmp = PageError (cfg, PageError.CONFIG_NOT_WRITABLE)
+                body = tmp._op_render()
+
         elif uri.startswith('/ajax/update'):
             page = PageAjaxUpdate (cfg)
+        elif uri.startswith('/rule'):
+            page = RuleOp(cfg)
         elif uri == '/':
             page = PageStatus(cfg)
         else:
@@ -166,15 +178,31 @@ class Handler(pyscgi.SCGIHandler):
         return self.send (content)
 
 
+def select_language (langs):
+    global SELECTED_LANGUAGE
+
+    if langs:
+        languages = [l for s in langs.split(',') for l in s.split(';') if not '=' in l]
+        try:
+            gettext.translation('cherokee', LOCALEDIR, languages).install()
+        except:
+            pass
+
+    SELECTED_LANGUAGE = True
+
+
 # Server
 #
 def main():
+    # Gettext initialization
+    gettext.install('cherokee')
+
     # Read the arguments
     try:
         scgi_port = int(sys.argv[1])
         cfg_file  = sys.argv[2]
     except:
-        print "Incorrect parameters: PORT CONFIG_FILE"
+        print _("Incorrect parameters: PORT CONFIG_FILE")
         raise SystemExit
 
     # Try to avoid zombie processes
@@ -193,14 +221,16 @@ def main():
     global cfg
     cfg = Config(cfg_file)
 
-    print ("Server %s running.. PID=%d Port=%d" % (VERSION, os.getpid(), scgi_port))
+    version = VERSION
+    pid     = os.getpid()
+    print _("Server %(version)s running.. PID=%(pid)d Port=%(scgi_port)d") % (locals())
 
     # Iterate until the user exists
     try:
         while True:
             srv.handle_request()
     except KeyboardInterrupt:
-        print "\rServer exiting.."
+        print "\r", _("Server exiting..")
 
     srv.server_close()
 

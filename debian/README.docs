@@ -3,5 +3,5 @@
 
 This package comes from the 'cherokee' source package - In order to
 avoid repeating the documentation all over the place, we have decided
-to put it all in the 'cherokee' binary package. Please install it, you
-will find the HTML documentation in /usr/share/doc/cherokee/
+to put it all in the 'cherokee-doc' binary package. Please install it,
+you will find the HTML documentation in /usr/share/doc/cherokee-doc/

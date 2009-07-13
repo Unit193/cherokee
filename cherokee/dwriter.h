@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2008 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2009 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -18,9 +18,9 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
- * USA
- */
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
+ */ 
 
 #if !defined (CHEROKEE_INSIDE_CHEROKEE_H) && !defined (CHEROKEE_COMPILATION)
 # error "Only <cherokee/cherokee.h> can be included directly, this file may disappear or change contents."
@@ -64,7 +64,7 @@ typedef struct {
 } cherokee_dwriter_t;
 
 #define cherokee_dwriter_cstring(w,s) cherokee_dwriter_string(w, s, sizeof(s)-1)
-
+#define cherokee_dwriter_bstring(w,b) cherokee_dwriter_string(w, (b)->buf, (b)->len)
 
 ret_t cherokee_dwriter_init       (cherokee_dwriter_t *writer, cherokee_buffer_t *tmp);
 ret_t cherokee_dwriter_mrproper   (cherokee_dwriter_t *writer);
@@ -72,8 +72,8 @@ ret_t cherokee_dwriter_set_buffer (cherokee_dwriter_t *writer, cherokee_buffer_t
 
 ret_t cherokee_dwriter_integer    (cherokee_dwriter_t *w, unsigned long l);
 ret_t cherokee_dwriter_double     (cherokee_dwriter_t *w, double d);
-ret_t cherokee_dwriter_number     (cherokee_dwriter_t *w, char *s, int len);
-ret_t cherokee_dwriter_string     (cherokee_dwriter_t *w, char *s, int len);
+ret_t cherokee_dwriter_number     (cherokee_dwriter_t *w, const char *s, int len);
+ret_t cherokee_dwriter_string     (cherokee_dwriter_t *w, const char *s, int len);
 ret_t cherokee_dwriter_null       (cherokee_dwriter_t *w);
 ret_t cherokee_dwriter_bool       (cherokee_dwriter_t *w, cherokee_boolean_t b);
 ret_t cherokee_dwriter_dict_open  (cherokee_dwriter_t *w);

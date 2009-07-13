@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2008 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2009 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -18,9 +18,9 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
- * USA
- */
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
+ */ 
 
 #if !defined (CHEROKEE_INSIDE_CHEROKEE_H) && !defined (CHEROKEE_COMPILATION)
 # error "Only <cherokee/cherokee.h> can be included directly, this file may disappear or change contents."
@@ -80,8 +80,10 @@
 
 #if __GNUC_VERSION >= 30000
 # define must_check  __attribute__ ((warn_unused_result))
+# define no_return   __attribute__ ((noreturn))
 #else 
 # define must_check  
+# define no_return
 #endif
 
 #define DEFAULT_RECV_SIZE             2048
@@ -280,20 +282,18 @@
 /* Printing macros
  */
 #ifdef __GNUC__
-# define PRINT_MSG(fmt,arg...)       fprintf(stderr, fmt, ##arg)
-# define PRINT_ERROR(fmt,arg...)     fprintf(stderr, "%s:%d: "fmt, __FILE__, __LINE__, ##arg)
-# define PRINT_ERRNO(err,fmt,arg...) cherokee_print_errno(err, "%s:%d: "fmt"\n", __FILE__, __LINE__, ##arg)
+# define PRINT_MSG(fmt,arg...)    fprintf(stderr, fmt, ##arg)
+# define PRINT_ERROR(fmt,arg...)  fprintf(stderr, "%s:%d - "fmt, __FILE__, __LINE__, ##arg)
 #else
-# define PRINT_MSG(fmt,...)          fprintf(stderr, fmt, __VA_ARGS__)
-# define PRINT_ERROR(fmt,...)        fprintf(stderr, "%s:%d: "fmt, __FILE__, __LINE__, __VA_ARGS__)
-# define PRINT_ERRNO(err,fmt,...)    cherokee_print_errno(err, "%s:%d: "fmt"\n", __FILE__, __LINE__, __VA_ARGS__)
+# define PRINT_MSG(fmt,...)       fprintf(stderr, fmt, __VA_ARGS__)
+# define PRINT_ERROR(fmt,...)     fprintf(stderr, "%s:%d - "fmt, __FILE__, __LINE__, __VA_ARGS__)
 #endif
 
 #ifdef DEBUG
 # ifdef __GNUC__
-#  define PRINT_DEBUG(fmt,arg...) do { fprintf(stdout, "%s:%d: " fmt,__FILE__,__LINE__,##arg); fflush(stdout); } while (0)
+#  define PRINT_DEBUG(fmt,arg...) do { fprintf(stdout, "%s:%d - " fmt,__FILE__,__LINE__,##arg); fflush(stdout); } while (0)
 # else
-#  define PRINT_DEBUG(fmt,...) do { fprintf(stdout, "%s:%d: " fmt,__FILE__,__LINE__,__VA_ARGS__); fflush(stdout); } while (0)
+#  define PRINT_DEBUG(fmt,...) do { fprintf(stdout, "%s:%d - " fmt,__FILE__,__LINE__,__VA_ARGS__); fflush(stdout); } while (0)
 # endif
 #else 
 # ifdef __GNUC__
@@ -303,9 +303,8 @@
 # endif
 #endif
 
-#define PRINT_ERRNO_S(e,str) PRINT_ERRNO(e, str, "")
-#define PRINT_ERROR_S(str)   PRINT_ERROR("%s",str)
-#define PRINT_MSG_S(str)     PRINT_MSG("%s",str)
+#define PRINT_ERROR_S(str)        PRINT_ERROR("%s",str)
+#define PRINT_MSG_S(str)          PRINT_MSG("%s",str)
 
 /* Tracing facility
  */

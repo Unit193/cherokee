@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2008 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2009 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -18,9 +18,9 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
- * USA
- */
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
+ */ 
 
 #include "common-internal.h"
 #include "access.h"
@@ -118,16 +118,37 @@ new_subnet (void)
 
 
 ret_t 
-cherokee_access_new (cherokee_access_t **entry)
+cherokee_access_init (cherokee_access_t *entry)
 {
-	CHEROKEE_NEW_STRUCT (n, access);
-
-	INIT_LIST_HEAD(&n->list_ips);
-	INIT_LIST_HEAD(&n->list_subnets);
-	
-	*entry = n;
+	INIT_LIST_HEAD(&entry->list_ips);
+	INIT_LIST_HEAD(&entry->list_subnets);
 	return ret_ok;
 }
+
+ret_t 
+cherokee_access_mrproper (cherokee_access_t *entry)
+{
+	cherokee_list_t *i, *tmp;
+	
+	/* Free the IP list items
+	 */
+	list_for_each_safe (i, tmp, LIST(&entry->list_ips)) {
+		cherokee_list_del (i);
+		free (i);
+	}
+
+	/* Free the Subnet list items
+	 */
+	list_for_each_safe (i, tmp, LIST(&entry->list_subnets)) {
+		cherokee_list_del (i);
+		free (i);
+	}
+
+	return ret_ok;
+}
+
+CHEROKEE_ADD_FUNC_NEW (access);
+CHEROKEE_ADD_FUNC_FREE (access);
 
 
 static void
@@ -149,30 +170,6 @@ print_ip (ip_type_t type, ip_t *ip)
 #else
 	printf ("%s", inet_ntoa (ip->ip4));
 #endif
-}
-
-
-ret_t 
-cherokee_access_free (cherokee_access_t *entry)
-{
-	cherokee_list_t *i, *tmp;
-	
-	/* Free the IP list items
-	 */
-	list_for_each_safe (i, tmp, LIST(&entry->list_ips)) {
-		cherokee_list_del (i);
-		free (i);
-	}
-
-	/* Free the Subnet list items
-	 */
-	list_for_each_safe (i, tmp, LIST(&entry->list_subnets)) {
-		cherokee_list_del (i);
-		free (i);
-	}
-
-	free (entry);
-	return ret_ok;
 }
 
 
@@ -200,9 +197,9 @@ parse_ip (char *ip, ip_item_t *n)
 # ifdef HAVE_IPV6
 	if (n->type == ipv6) {
 		if (IN6_IS_ADDR_V4MAPPED (&(n->ip).ip6)) {
-			PRINT_ERROR ("ERROR: This IP '%s' is IPv6-mapped IPv6 address.  "
-				     "Please, specify IPv4 in a.b.c.d style instead "
-				     "of ::ffff:a.b.c.d style\n", ip);
+			LOG_ERROR ("ERROR: This IP '%s' is IPv6-mapped IPv6 address.  "
+				   "Please, specify IPv4 in a.b.c.d style instead "
+				   "of ::ffff:a.b.c.d style\n", ip);
 			return ret_error;
 		}
 	}
@@ -315,7 +312,7 @@ cherokee_access_add_ip (cherokee_access_t *entry, char *ip)
 
 	ret = parse_ip (ip, n);
 	if (ret < ret_ok) {
-		PRINT_ERROR ("IP address '%s' seems to be invalid\n", ip);
+		LOG_ERROR ("IP address '%s' seems to be invalid\n", ip);
 
 		free_ip(n);
 		return ret;
@@ -374,7 +371,7 @@ cherokee_access_add_subnet (cherokee_access_t *entry, char *subnet)
 	 */
 	ret = parse_ip (ip.buf, IP_NODE(n));
 	if (ret < ret_ok) {
-		PRINT_ERROR ("IP address '%s' seems to be invalid\n", ip.buf);
+		LOG_ERROR ("IP address '%s' seems to be invalid\n", ip.buf);
 		goto error;
 	}
 
@@ -382,7 +379,7 @@ cherokee_access_add_subnet (cherokee_access_t *entry, char *subnet)
 	 */
 	ret = parse_netmask (mask, n);
 	if (ret < ret_ok) {
-		PRINT_ERROR ("Netmask '%s' seems to be invalid\n", mask);
+		LOG_ERROR ("Netmask '%s' seems to be invalid\n", mask);
 		goto error;	
 	}
 

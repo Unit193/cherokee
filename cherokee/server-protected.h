@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2008 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2009 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -18,9 +18,9 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
- * USA
- */
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
+ */ 
 
 #ifndef CHEROKEE_SERVER_PROTECTED_H
 #define CHEROKEE_SERVER_PROTECTED_H
@@ -55,7 +55,7 @@
 #include "config_node.h"
 #include "version.h"
 #include "cryptor.h"
-
+#include "logger_writer.h"
 
 struct cherokee_server {
 	/* Exit related
@@ -91,6 +91,9 @@ struct cherokee_server {
 
 	/* Programmed tasks
 	 */
+	cherokee_list_t            logger_writers;
+	cherokee_avl_t             logger_writers_index;
+
 	int                        log_flush_lapse;
 	time_t                     log_flush_next;
 
@@ -99,11 +102,6 @@ struct cherokee_server {
 
 	/* Main socket
 	 */
-	cherokee_socket_t          socket;
-	cherokee_socket_t          socket_tls;
-
-	CHEROKEE_MUTEX_T          (accept_mutex);
-	CHEROKEE_MUTEX_T          (accept_tls_mutex);
 	cherokee_cryptor_t        *cryptor;
 
 	/* System related
@@ -116,7 +114,6 @@ struct cherokee_server {
 	 */
 	cuint_t                    conns_max;
 	cint_t                     conns_reuse_max;
-	cuint_t                    conns_num_bogo;
 
 	cherokee_boolean_t         keepalive;
 	cuint_t                    keepalive_max;
@@ -125,26 +122,16 @@ struct cherokee_server {
 	/* Networking config
 	 */
 	cherokee_boolean_t         ipv6;
-	cherokee_buffer_t          listen_to;
 	int                        fdwatch_msecs;
 	int                        listen_queue;
-
-	unsigned short             port;
-	unsigned short             port_tls;
 	cherokee_boolean_t         tls_enabled;
+
+	cherokee_list_t            listeners;
+	CHEROKEE_MUTEX_T          (listeners_mutex);
 
 	/* Server name
 	 */
 	cherokee_server_token_t    server_token;
-
-	cherokee_buffer_t          server_string;
-	cherokee_buffer_t          server_string_ext;
-	cherokee_buffer_t          server_string_w_port;
-	cherokee_buffer_t          server_string_w_port_tls;
-
-	cherokee_buffer_t          server_address;
-	cherokee_buffer_t          server_port;
-	cherokee_buffer_t          server_port_tls;
 
 	/* User/group and chroot
 	 */
@@ -189,5 +176,7 @@ struct cherokee_server {
 
 ret_t cherokee_server_del_connection (cherokee_server_t *srv, char *begin);
 ret_t cherokee_server_get_vserver    (cherokee_server_t *srv, cherokee_buffer_t *name, cherokee_virtual_server_t **vsrv);
+ret_t cherokee_server_get_next_bind  (cherokee_server_t *srv, cherokee_bind_t *bind, cherokee_bind_t **next);
+ret_t cherokee_server_get_log_writer (cherokee_server_t *srv, cherokee_config_node_t *config, cherokee_logger_writer_t **writer);
 
 #endif /* CHEROKEE_SERVER_PROTECTED_H */

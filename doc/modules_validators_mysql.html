@@ -16,11 +16,11 @@
 <div class="sectionbody">
 <h3 id="_validator_mysql">Validator: Mysql</h3><div style="clear:left"></div>
 <div class="para"><p>The MySQL validator allows you to authenticate a user against a MySQL database.</p></div>
-<h4 id="parameters">Parameters</h4>
-<div class="tableblock">
+<div class="tableblock" id="parameters">
 <table rules="rows"
 frame="hsides"
 cellspacing="0" cellpadding="4">
+<caption class="title">Table: Parameters</caption>
 <col width="400" />
 <col width="400" />
 <thead>
@@ -92,17 +92,19 @@ cellspacing="0" cellpadding="4">
   </tr>
   <tr>
     <td align="left">
-    <em>use_md5_passwd</em>        
+    <em>hash</em>                  
     </td>
     <td align="left">
-    Optional. The passwords in the database table                              are hashed with MD5.  Default: <em>0</em>.
+    Optional. What the passwords in the database table                             are hashed with. Valid options are <em>sha1</em>                             <em>md5</em> or <em>none</em>. Default: <em>none</em>.
     </td>
   </tr>
 </tbody>
 </table>
 </div>
-<div class="para"><p>against it.  Take a look at the following example:</p></div>
+<div class="para"><p>The <tt>query</tt> parameter is given an argument <tt>${user}</tt> so you can query
+against it.</p></div>
 <div class="listingblock">
+<div class="title">Example: Sample query</div>
 <div class="content">
 <pre><tt>    SELECT password FROM auth_users WHERE username = '${user}'</tt></pre>
 </div></div>

@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2008 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2009 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -18,9 +18,9 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
- * USA
- */
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
+ */ 
 
 #include "common-internal.h"
 #include "handler_fastcgi.h"
@@ -98,7 +98,7 @@ cherokee_handler_fastcgi_configure (cherokee_config_node_t *conf, cherokee_serve
 			cherokee_config_node_foreach (j, conf) {
 				cherokee_config_node_t *subconf2 = CONFIG_NODE(j);
 
-				// TODO : implement this
+				/* TODO : implement this */
 				subconf2 = subconf2;
 			}
 			
@@ -144,8 +144,8 @@ fcgi_build_request_body (FCGI_BeginRequestRecord *request)
 
 static void 
 set_env_pair (cherokee_handler_cgi_base_t *cgi_base, 
-	      char *key, int key_len, 
-	      char *val, int val_len)
+	      const char *key, int key_len, 
+	      const char *val, int val_len)
 {
 	int                         len;
 	FCGI_BeginRequestRecord     request;
@@ -587,7 +587,7 @@ send_post (cherokee_handler_fastcgi_t *hdl, cherokee_buffer_t *buf)
 }
 
 
-ret_t
+static ret_t
 init_respin (cherokee_handler_fastcgi_t *hdl)
 {
 	ret_t ret;

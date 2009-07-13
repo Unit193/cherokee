@@ -42,7 +42,7 @@ Let's see a basic example
 <dd>
 <div class="listingblock">
 <div class="content">
-<pre><tt>    server!port = 80
+<pre><tt>    server!bind!1!port = 80
     server!keepalive = 1</tt></pre>
 </div></div>
 </dd>
@@ -82,35 +82,24 @@ cellspacing="0" cellpadding="4">
 <tbody valign="top">
   <tr>
     <td align="left">
-    server!port
+    server!bind!#!port
     </td>
     <td align="left">
     Number         
     </td>
     <td align="left">
-    TCP port for HTTP
+    Listen to a TCP port. <em>#</em> is a secuential                                                    number since many ports can be listened at once.
     </td>
   </tr>
   <tr>
     <td align="left">
-    server!tls
+    server!bind!#!tls
     </td>
     <td align="left">
-    String         
+    Bool           
     </td>
     <td align="left">
-    TLS/SSL backend: libssl
-    </td>
-  </tr>
-  <tr>
-    <td align="left">
-    server!port_tls
-    </td>
-    <td align="left">
-    Number         
-    </td>
-    <td align="left">
-    TCP port for HTTPS
+    on|off: whether the listened port <em>#</em> is for HTTPS.
     </td>
   </tr>
   <tr>
@@ -411,7 +400,7 @@ cellspacing="0" cellpadding="4">
     Minor                     
     </td>
     <td align="left">
-    Cherokee/0.11
+    Cherokee/0.99
     </td>
   </tr>
   <tr>
@@ -419,7 +408,7 @@ cellspacing="0" cellpadding="4">
     Minimal                   
     </td>
     <td align="left">
-    Cherokee/0.11.0
+    Cherokee/0.99.3
     </td>
   </tr>
   <tr>
@@ -427,7 +416,7 @@ cellspacing="0" cellpadding="4">
     OS                        
     </td>
     <td align="left">
-    Cherokee/0.11.0 (UNIX)
+    Cherokee/0.99.3 (UNIX)
     </td>
   </tr>
   <tr>
@@ -435,7 +424,7 @@ cellspacing="0" cellpadding="4">
     Full                      
     </td>
     <td align="left">
-    Cherokee/0.11.0 b2311 (UNIX)
+    Cherokee/0.99.3 b2955 (UNIX)
     </td>
   </tr>
 </tbody>
@@ -1664,7 +1653,7 @@ might wish to rewrite in the headers before relaying the connection.</p></div>
 <div class="para"><p>This is a basic example:</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>server!port = 1234
+<pre><tt>server!bind!1!port = 1234
 
 # The proxy configuration
 vserver!1!nick = default

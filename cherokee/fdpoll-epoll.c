@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2008 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2009 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -18,9 +18,9 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
- * USA
- */
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
+ */ 
 
 #include "common-internal.h"
 #include "fdpoll-protected.h"
@@ -74,8 +74,7 @@ _free (cherokee_fdpoll_epoll_t *fdp)
 
 	/* Caller has to set this pointer to NULL.
 	 */
-	free (fdp);        
-
+	free (fdp);
 	return ret_ok;
 }
 
@@ -87,7 +86,7 @@ _add (cherokee_fdpoll_epoll_t *fdp, int fd, int rw)
 
 	/* Check the fd limit
 	 */
-	if (cherokee_fdpoll_is_full (FDPOLL(fdp))) {
+	if (unlikely (cherokee_fdpoll_is_full (FDPOLL(fdp)))) {
 		PRINT_ERROR_S("epoll_add: fdpoll is full !\n");
 		return ret_error;
 	}
@@ -110,7 +109,8 @@ _add (cherokee_fdpoll_epoll_t *fdp, int fd, int rw)
 	}
 
 	if (epoll_ctl (fdp->ep_fd, EPOLL_CTL_ADD, fd, &ev) < 0) {
-		PRINT_ERRNO (errno, "epoll_ctl(%d, EPOLL_CTL_ADD, %d): '${errno}'", fdp->ep_fd, fd);
+		LOG_ERRNO (errno, cherokee_err_error,
+			   "epoll_ctl(%d, EPOLL_CTL_ADD, %d): '${errno}'", fdp->ep_fd, fd);
 		return ret_error;
 	}
 
@@ -130,13 +130,14 @@ _del (cherokee_fdpoll_epoll_t *fdp, int fd)
 
 	/* Check the fd limit
 	 */
-	if (cherokee_fdpoll_is_empty (FDPOLL(fdp))) {
+	if (unlikely (cherokee_fdpoll_is_empty (FDPOLL(fdp)))) {
 		SHOULDNT_HAPPEN;
 		return ret_error;
 	}
 
 	if (epoll_ctl(fdp->ep_fd, EPOLL_CTL_DEL, fd, &ev) < 0) {
-		PRINT_ERRNO (errno, "epoll_ctl(%d, EPOLL_CTL_DEL, %d): '${errno}'", fdp->ep_fd, fd);
+		LOG_ERRNO (errno, cherokee_err_error,
+			   "epoll_ctl(%d, EPOLL_CTL_DEL, %d): '${errno}'", fdp->ep_fd, fd);
 		return ret_error;
 	}
 
@@ -226,7 +227,8 @@ _set_mode (cherokee_fdpoll_epoll_t *fdp, int fd, int rw)
 	}
 
 	if (epoll_ctl(fdp->ep_fd, EPOLL_CTL_MOD, fd, &ev) < 0) {
-		PRINT_ERRNO (errno, "epoll_ctl(%d, EPOLL_CTL_MOD, %d): '${errno}'", fdp->ep_fd, fd);
+		LOG_ERRNO (errno, cherokee_err_error,
+			   "epoll_ctl(%d, EPOLL_CTL_MOD, %d): '${errno}'", fdp->ep_fd, fd);
 		return ret_error;
 	}
 	return ret_ok;
@@ -310,7 +312,8 @@ fdpoll_epoll_new (cherokee_fdpoll_t **fdp, int sys_fd_limit, int fd_limit)
 		 * but the kernel doesn't.
 		 */
 #if 0
-		PRINT_ERRNO (errno, "epoll_create(%d): '${errno}'", nfd->nfiles+1);
+		LOG_ERRNO (errno, cherokee_err_error,
+			   "epoll_create(%d): '${errno}'", nfd->nfiles+1);
 #endif
 		_free (n);
 		return ret_error;
@@ -318,7 +321,8 @@ fdpoll_epoll_new (cherokee_fdpoll_t **fdp, int sys_fd_limit, int fd_limit)
 
 	re = fcntl (n->ep_fd, F_SETFD, FD_CLOEXEC);
 	if (re < 0) {
-		PRINT_ERRNO (errno, "Could not set CloseExec to the epoll descriptor: fcntl: '${errno}'");
+		LOG_ERRNO (errno, cherokee_err_error,
+			   "Could not set CloseExec to the epoll descriptor: fcntl: '${errno}'");
 		_free (n);
 		return ret_error;		
 	}

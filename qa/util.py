@@ -1,9 +1,9 @@
-import os, sys, time, random, fcntl, socket
+import os, sys, time, random, fcntl, socket, math
 
 from conf import *
 
 term = os.getenv("TERM")
-if 'color' in term:
+if 'color' in term or term == 'rxvt':
     MESSAGE_SUCCESS = '\033[0;48;36m Success \033[0m' # Blue
     MESSAGE_FAILED  = '\033[0;48;31m  Failed \033[0m' # Red
     MESSAGE_SKIPPED = '\033[0;48;33m Skipped \033[0m' # Yellow
@@ -257,3 +257,25 @@ def figure_public_ip():
     ips = socket.gethostbyname_ex (socket.gethostname())[2]
     ips.sort(ip_cmp)
     return ips[0]
+
+
+def get_forwarded_http_header (header):
+    return 'HTTP_' + header.upper().replace('-','_')
+
+def chunk_encode (txt, size=None, pieces=None):
+    out = ''
+
+    if not pieces:
+        pieces = random.randint (1, 10)
+    if not size:
+        size = int (math.ceil (len(txt)/float(pieces)))
+
+    for n in range(pieces):
+        sub = txt[(n*size):(n+1)*size]
+        out += hex(len(sub))[2:]
+        out += '\r\n'
+        out += sub
+        out += '\r\n'
+
+    out += '0\r\n'
+    return out

@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2008 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2009 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -18,9 +18,9 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
- * USA
- */
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
+ */ 
 
 #if !defined (CHEROKEE_INSIDE_CHEROKEE_H) && !defined (CHEROKEE_COMPILATION)
 # error "Only <cherokee/cherokee.h> can be included directly, this file may disappear or change contents."
@@ -86,6 +86,7 @@ typedef enum {
 	http_continue                 = 100,
 	http_switching_protocols      = 101,
 	http_ok                       = 200,
+	http_created                  = 201,
 	http_accepted                 = 202,
 	http_no_content               = 204,
 	http_partial_content          = 206,
@@ -98,6 +99,9 @@ typedef enum {
 	http_access_denied            = 403,
 	http_not_found                = 404,
 	http_method_not_allowed       = 405,
+	http_not_acceptable           = 406,
+	http_request_timeout          = 408,
+	http_gone                     = 410,
 	http_length_required          = 411,
  	http_request_entity_too_large = 413,
 	http_request_uri_too_long     = 414,
@@ -115,6 +119,7 @@ typedef enum {
 #define http_continue_string                 "100 Continue"
 #define http_switching_protocols_string      "101 Switching Protocols"
 #define http_ok_string                       "200 OK"
+#define http_created_string                  "201 Created"
 #define http_accepted_string                 "202 Accepted"
 #define http_no_content_string               "204 No Content"
 #define http_partial_content_string          "206 Partial Content"
@@ -127,6 +132,9 @@ typedef enum {
 #define http_access_denied_string            "403 Forbidden"
 #define http_not_found_string                "404 Not Found"
 #define http_method_not_allowed_string       "405 Method Not Allowed"
+#define http_not_acceptable_string           "406 Not Acceptable"
+#define http_request_timeout_string          "408 Request Time-out"
+#define http_gone_string                     "410 Gone"
 #define http_length_required_string          "411 Length Required"
 #define http_request_entity_too_large_string "413 Request Entity too large"
 #define http_request_uri_too_long_string     "414 Request-URI too long"
@@ -140,17 +148,21 @@ typedef enum {
 #define http_gateway_timeout_string          "504 Gateway Timeout"
 #define http_version_not_supported_string    "505 HTTP Version Not Supported"
 
+#define http_type_100_max 102
 #define http_type_200_max 206
-#define http_type_300_max 307
-#define http_type_400_max 417
+#define http_type_300_max 304
+#define http_type_400_max 426
 #define http_type_500_max 505
 
+#define http_type_100(c)  ((c >= 100) && (c <= http_type_100_max))
 #define http_type_200(c)  ((c >= 200) && (c <= http_type_200_max))
 #define http_type_300(c)  ((c >= 300) && (c <= http_type_300_max))
 #define http_type_400(c)  ((c >= 400) && (c <= http_type_400_max))
 #define http_type_500(c)  ((c >= 500) && (c <= http_type_500_max))
 
-#define http_method_with_body(m)  ((m != http_head) && (m != http_options))
+#define http_method_with_body(m)  (((m) != http_head)   && \
+				   ((m) != http_options))
+
 #define http_method_with_input(m) ((m == http_post)     || \
 				   (m == http_put)      || \
 				   (m == http_mkcol)    || \
@@ -158,9 +170,10 @@ typedef enum {
 				   (m == http_propfind) || \
 				   (m == http_proppatch))
 
-#define http_code_with_body(e)   ((e != http_continue)            && \
-				  (e != http_not_modified)        && \
-				  (e != http_switching_protocols))
+/* RFC 2616: Section 4.3 */
+#define http_code_with_body(e)    ((! http_type_100(e))            /* 1xx */ && \
+				   ((e) != http_no_content)        /* 204 */ && \
+				   ((e) != http_not_modified))     /* 304 */
 
 ret_t cherokee_http_method_to_string  (cherokee_http_method_t  method,  const char **str, cuint_t *str_len);
 ret_t cherokee_http_string_to_method  (cherokee_buffer_t *string, cherokee_http_method_t *method);

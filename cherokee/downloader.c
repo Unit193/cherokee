@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2008 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2009 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -18,9 +18,9 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
- * USA
- */
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
+ */ 
 
 #include "common-internal.h"
 #include "downloader.h"
@@ -402,7 +402,7 @@ downloader_header_read (cherokee_downloader_t *downloader, cherokee_buffer_t *tm
 		return ret_error;
 
 	default:
-		PRINT_ERROR ("Unknown ret code %d\n", ret);
+		LOG_ERROR ("Unknown ret code %d\n", ret);
 		SHOULDNT_HAPPEN;
 		return ret;
 	}
@@ -583,7 +583,7 @@ cherokee_downloader_post_set (cherokee_downloader_t *downloader, cherokee_post_t
 	TRACE(ENTRIES, "post=%p\n", post);
 
 	if (downloader->post != NULL) {
-		PRINT_ERROR_S ("WARNING: Overwriting post info\n");
+		LOG_WARNING_S ("Overwriting post info\n");
 	}
 
 	downloader->post = post;

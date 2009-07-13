@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2008 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2009 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -18,9 +18,9 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
- * USA
- */
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
+ */ 
 
 #include "common-internal.h"
 
@@ -51,7 +51,7 @@
 
 #define APP_COPY_NOTICE \
 	"Written by Alvaro Lopez Ortega <alvaro@gnu.org>\n\n"                          \
-	"Copyright (C) 2001-2008 Alvaro Lopez Ortega.\n"                               \
+	"Copyright (C) 2001-2009 Alvaro Lopez Ortega.\n"                               \
 	"This is free software; see the source for copying conditions.  There is NO\n" \
 	"warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n"
 
@@ -104,7 +104,7 @@ wait_process (pid_t pid)
 		else if (errno == EINTR) 
 			continue;
 		else {
-			PRINT_ERRNO (errno, "ERROR: waitting PID %d: ${errno}\n", pid);
+			PRINT_ERROR ("ERROR: waitting PID %d, error %d\n", pid, errno);
 			return;
 		}
 	}
@@ -152,8 +152,8 @@ signals_handler (int sig, siginfo_t *si, void *context)
 static ret_t
 test_configuration_file (void)
 {
-	ret_t  ret;
-	char  *config;
+	ret_t       ret;
+	const char *config;
 
 	config = (config_file) ? config_file : DEFAULT_CONFIG_FILE;
 	ret = cherokee_server_read_config_file (srv, config);
@@ -208,7 +208,7 @@ common_server_initialization (cherokee_server_t *srv)
 		cherokee_path_arg_eval (&droot);
 
 		cherokee_buffer_add_va (&tmp, 
-					"server!port = %d\n"
+					"server!bind!1!port = %d\n"
 					"vserver!1!document_root = %s\n"
 					BASIC_CONFIG, port, droot.buf);
 
@@ -225,7 +225,7 @@ common_server_initialization (cherokee_server_t *srv)
 		}
 
 	} else {
-		char *config;
+		const char *config;
 		
 		/* Read the configuration file
 		 */

@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2008 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2009 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -18,9 +18,9 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
- * USA
- */
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
+ */ 
 
 #include "common-internal.h"
 #include "validator.h"
@@ -350,8 +350,8 @@ error:
 ret_t 
 cherokee_validator_digest_check (cherokee_validator_t *validator, cherokee_buffer_t *passwd, cherokee_connection_t *conn)
 {
-	int               re;
 	ret_t             ret;
+	int               re   = -1;
 	cherokee_buffer_t a1   = CHEROKEE_BUF_INIT;
 	cherokee_buffer_t buf  = CHEROKEE_BUF_INIT;
 

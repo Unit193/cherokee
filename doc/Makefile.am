@@ -5,7 +5,6 @@ SUFFIXES = .txt .html
 .txt.html:
 	$(ASCIIDOC) -o $@ $(top_srcdir)/doc/$< 
 
-docdir = $(datadir)/doc/cherokee
 doc_DATA = \
 index.html \
 basics.html \
@@ -30,6 +29,7 @@ config.html \
 config_quickstart.html \
 config_general.html \
 config_virtual_servers.html \
+config_virtual_servers_evhost.html \
 config_virtual_servers_rule.html \
 config_icons.html \
 config_mime_types.html \
@@ -58,8 +58,18 @@ cookbook_drupal.html \
 cookbook_zend.html \
 cookbook_kumbia.html \
 cookbook_nagios.html \
+cookbook_symfony.html \
+cookbook_moodle.html \
+cookbook_alfresco.html \
+cookbook_liferay.html \
+cookbook_sugarcrm.html \
+cookbook_trac.html \
+cookbook_phpbb.html \
+cookbook_phpmyadmin.html \
+cookbook_managing_logs.html \
 modules.html \
 modules_balancers.html \
+modules_balancers_ip_hash.html \
 modules_balancers_round_robin.html \
 modules_encoders.html \
 modules_encoders_gzip.html \
@@ -76,13 +86,16 @@ modules_handlers_fcgi.html \
 modules_handlers_scgi.html \
 modules_handlers_server_info.html \
 modules_handlers_ssi.html \
+modules_handlers_streaming.html \
 modules_handlers_mirror.html \
 modules_handlers_admin.html \
 modules_handlers_proxy.html \
+modules_handlers_secdownload.html \
 modules_loggers.html \
 modules_loggers_combined.html \
 modules_loggers_ncsa.html \
 modules_loggers_w3c.html \
+modules_loggers_custom.html \
 modules_validators.html \
 modules_validators_htdigest.html \
 modules_validators_htpasswd.html \
@@ -115,6 +128,9 @@ media/images/admin_advanced4.png \
 media/images/admin_behaviour.png \
 media/images/admin_dirlist_cherokee.png \
 media/images/admin_general.png \
+media/images/admin_general_networking.png \
+media/images/admin_general_permissions.png \
+media/images/admin_general_ports.png \
 media/images/admin_info_sources.png \
 media/images/admin_handler_admin.png \
 media/images/admin_handler_cgi.png \
@@ -127,6 +143,7 @@ media/images/admin_handler_file.png \
 media/images/admin_handler_onlylisting_ex.png \
 media/images/admin_handler_onlylisting.png \
 media/images/admin_handler_dbslayer.png \
+media/images/admin_handler_secdownload.png \
 media/images/admin_icons1.png \
 media/images/admin_icons2.png \
 media/images/admin_icons3.png \
@@ -138,10 +155,14 @@ media/images/admin_notrunning.png \
 media/images/admin_rule_regex.png \
 media/images/admin_validators_pam.png \
 media/images/admin_validators_plain.png \
+media/images/admin_validators_authlist.png \
+media/images/admin_validators_ldap.png \
 media/images/admin_vserver_errors.png \
 media/images/admin_vserver_loggers.png \
 media/images/admin_vserver.png \
+media/images/admin_vserver_security.png \
 media/images/admin_vserver_vserver.png \
+media/images/admin_vserver_evhost.png \
 media/images/admin_handler_proxy.png \
 media/images/cookbook_django_common.png \
 media/images/cookbook_django_infosources.png \
@@ -178,7 +199,7 @@ media/images/cookbook_drupal_example1.png \
 media/images/cookbook_drupal_example2.png \
 media/images/cookbook_drupal_example3.png \
 media/images/cookbook_drupal_example4.png \
-media/images/cookbook_drupal_example5.png \
+media/images/cookbook_drupal_rules.png \
 media/images/cookbook_wp1.png \
 media/images/cookbook_wp2.png \
 media/images/cookbook_wp3.png \
@@ -192,9 +213,54 @@ media/images/cookbook_nagios1.png \
 media/images/cookbook_nagios2.png \
 media/images/cookbook_nagios3.png \
 media/images/cookbook_nagios4.png \
+media/images/cookbook_symfony.png \
+media/images/cookbook_moodle_db.png \
+media/images/cookbook_moodle_document_root.png \
+media/images/cookbook_moodle_modules.png \
+media/images/cookbook_moodle_paths.png \
+media/images/cookbook_moodle.png \
+media/images/cookbook_alfresco_alfresco.png \
+media/images/cookbook_alfresco_assistant.png \
+media/images/cookbook_alfresco_install.png \
+media/images/cookbook_alfresco_path.png \
+media/images/cookbook_alfresco_share.png \
+media/images/cookbook_alfresco_soffice.png \
+media/images/cookbook_liferay.png \
+media/images/cookbook_sugarcrm_install0.png \
+media/images/cookbook_sugarcrm_install1.png \
+media/images/cookbook_sugarcrm_running0.png \
+media/images/cookbook_sugarcrm_running1.png \
+media/images/cookbook_trac.png \
+media/images/cookbook_trac_info.png \
+media/images/cookbook_trac_rules.png \
+media/images/cookbook_trac_scgi.png \
+media/images/cookbook_trac_static.png \
+media/images/cookbook_phpbb_1_intro.png \
+media/images/cookbook_phpbb_2_req.png \
+media/images/cookbook_phpbb_3_db.png \
+media/images/cookbook_phpbb_4_admin.png \
+media/images/cookbook_phpbb_5_config.png \
+media/images/cookbook_phpbb_6_advanced.png \
+media/images/cookbook_phpbb_7_create.png \
+media/images/cookbook_phpbb_8_final.png \
+media/images/cookbook_phpbb_adm.png \
+media/images/cookbook_phpbb_adm_warning.png \
+media/images/cookbook_phpbb_rules.png \
+media/images/cookbook_phpbb_running.png \
+media/images/cookbook_phpmyadmin.png \
+media/images/cookbook_phpmyadmin_denied.png \
+media/images/cookbook_managing_logs_security.png \
+media/images/cookbook_managing_logs_rules.png \
+media/images/cookbook_managing_logs_handler.png \
+media/images/proxy_phase1.png \
+media/images/proxy_phase2.png \
 media/images/tracelor.png
 
 EXTRA_DIST = \
 $(doc_DATA) \
 $(docmediacss_DATA) \
 $(docmediaimages_DATA)
+
+
+serve:
+	../cherokee/cherokee -r .

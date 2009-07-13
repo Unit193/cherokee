@@ -45,7 +45,13 @@ $ django-admin startproject example</tt></pre>
 <tt>example</tt>. Now you are ready to configure Cherokee. You only need to
 know how to spawn the FastCGI or SCGI, which is done with a script
 provided by your project called <tt>manage.py</tt>.</p></div>
-<div class="para"><p>It can be run on a TCP port or on a Unix socket. In our example we
+<div class="para"><p>It is important to ensure that <tt>manage.py</tt> has execution permissions.
+If it had not, you would only have to set them by running:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>chmod a+rx manage.py</tt></pre>
+</div></div>
+<div class="para"><p>Django can be run on a TCP port or on a Unix socket. In our example we
 will be launching it as threaded server on a TCP port with SCGI
 protocol. This is acomplished with the following command, which is
 what we will have to set up in <tt>cherokee-admin</tt>.</p></div>
@@ -127,6 +133,32 @@ about your recently created project.</p></div>
 <img src="media/images/cookbook_django.png" alt="Django example" title="Django example"/>
 </div>
 </div>
+<div class="sidebarblock">
+<div class="sidebar-content">
+<div class="para"><p>Should you wish to deploy your Django application directly instead of
+through <tt>manage.py</tt> this could be easily achieved. Just remember to
+daemonize the script used to launch the interpreter in the relevant
+<tt>information source</tt>.</p></div>
+<div class="para"><p>This is done adding the appropriate parameter to the <tt>runfastcgi</tt>
+method of <tt>django.core.servers.fastcgi</tt> in your script.</p></div>
+<div class="listingblock">
+<div class="title">Example: Using a unix socket:</div>
+<div class="content">
+<pre><tt>from django.core.servers.fastcgi import runfastcgi
+
+runfastcgi(method="threaded", daemonize="true", maxrequests=5,
+           protocol="scgi", socket="/tmp/cherokee-django.socket",
+           pidfile="/tmp/cherokee-django.pid")</tt></pre>
+</div></div>
+<div class="listingblock">
+<div class="title">Example: Using a host:port configuration:</div>
+<div class="content">
+<pre><tt>from django.core.servers.fastcgi import runfastcgi
+
+runfastcgi(method="threaded", daemonize="true", maxrequests=5,
+           protocol="scgi", host="127.0.0.1", port=3033)</tt></pre>
+</div></div>
+</div></div>
 </div>
 <div id="footer">
 <div id="footer-text">

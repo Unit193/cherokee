@@ -5,11 +5,14 @@ from ModuleHandler import *
 from ModuleFile import *
 from ModuleDirlist import *
 
-NOTE_PATHINFO = "Allow extra tailing paths"
-NOTE_DIRLIST  = "Allow to list directory contents"
+# For gettext
+N_ = lambda x: x
+
+NOTE_PATHINFO = N_("Allow extra tailing paths")
+NOTE_DIRLIST  = N_("Allow to list directory contents")
 
 HELPS = [
-    ('modules_handlers_common', "List & Send")
+    ('modules_handlers_common', N_("List & Send"))
 ]
 
 class ModuleCommon (ModuleHandler):
@@ -28,12 +31,12 @@ class ModuleCommon (ModuleHandler):
 
         # Local properties
         table = TableProps()
-        self.AddPropCheck (table, 'Allow PathInfo', '%s!allow_pathinfo'%(self._prefix), False, NOTE_PATHINFO)
-        self.AddPropCheck (table, 'Allow Directory Listing', '%s!allow_dirlist'%(self._prefix), True, NOTE_DIRLIST)
+        self.AddPropCheck (table, _('Allow PathInfo'), '%s!allow_pathinfo'%(self._prefix), False, _(NOTE_PATHINFO))
+        self.AddPropCheck (table, _('Allow Directory Listing'), '%s!allow_dirlist'%(self._prefix), True, _(NOTE_DIRLIST))
 
-        txt = '<h2>Parsing</h2>'
+        txt = '<h2>%s</h2>' % (_('Parsing'))
         txt += self.Indent(table)
-        
+
         # Copy errors to the modules, 
         # they may need to print them
         self._copy_errors (self, self._file)
@@ -48,13 +51,13 @@ class ModuleCommon (ModuleHandler):
         self.ApplyCheckbox (post, '%s!allow_pathinfo'%(self._prefix))
         self.ApplyCheckbox (post, '%s!allow_dirlist'%(self._prefix))
 
-        # Copy errors from the child modules
-        self._copy_errors (self._file,    self)
-        self._copy_errors (self._dirlist, self)
-
         # Apply the changes
         self._file._op_apply_changes (uri, post)
         self._dirlist._op_apply_changes (uri, post)
+
+        # Copy errors from the child modules
+        self._copy_errors (self._file,    self)
+        self._copy_errors (self._dirlist, self)
 
     def _copy_errors (self, _from, _to):
         for e in _from.errors:

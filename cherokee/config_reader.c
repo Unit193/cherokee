@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2008 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2009 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -18,9 +18,9 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
- * USA
- */
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
+ */ 
 
 #include "common-internal.h"
 #include "config_reader.h"
@@ -62,7 +62,7 @@ do_include (cherokee_config_node_t *conf, cherokee_buffer_t *path)
 
 	re = stat (path->buf, &info);
 	if (re < 0) {
-		PRINT_MSG ("Could not access '%s'\n", path->buf);
+		LOG_CRITICAL ("Could not access '%s'\n", path->buf);
 		return ret_error;
 	}
 
@@ -131,8 +131,8 @@ check_config_node_sanity (cherokee_config_node_t *conf)
 			re = cherokee_buffer_case_cmp_buf (&CONFIG_NODE(i)->key, 
 							   &CONFIG_NODE(j)->key);
 			if (re == 0) {
-				PRINT_ERROR ("ERROR: '%s' and '%s' as child of the same node.\n",
-					     CONFIG_NODE(i)->key.buf, CONFIG_NODE(j)->key.buf);
+				LOG_ERROR ("'%s' and '%s' as child of the same node.\n",
+					   CONFIG_NODE(i)->key.buf, CONFIG_NODE(j)->key.buf);
 				return ret_error;
 			}
 		}
@@ -172,14 +172,14 @@ cherokee_config_reader_parse_string (cherokee_config_node_t *conf, cherokee_buff
 		eol = cherokee_min_str (strchr(begin, '\n'), 
 					strchr(begin, '\r'));
 
-		if (eol == NULL) 
-			break;
+		if (eol == NULL) {
+			eol = eof;
+		}
 
 		/* Check that it's long enough
 		 */
 		if (eol - begin <= 4) {
-			begin = eol + 1;
-			continue;
+			goto next;
 		}
 		*eol = '\0';
 
@@ -223,7 +223,11 @@ cherokee_config_reader_parse_string (cherokee_config_node_t *conf, cherokee_buff
 
 		/* Next loop
 		 */
+	next:
 		begin = eol + 1;
+		if (begin >= eof) {
+			break;
+		}
 
 		cherokee_buffer_clean (&key);
 		cherokee_buffer_clean (&val);
@@ -242,7 +246,7 @@ cherokee_config_reader_parse_string (cherokee_config_node_t *conf, cherokee_buff
 	return ret_ok;
 
 error:
-	PRINT_MSG ("Error parsing: %s\n", begin);
+	LOG_ERROR ("Error parsing: %s\n", begin);
 
 	cherokee_buffer_mrproper (&key);
 	cherokee_buffer_mrproper (&val);

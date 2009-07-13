@@ -3,9 +3,9 @@
 /* Cherokee
  *
  * Authors:
- *      Brian Rosner (brosner@gmail.com)
+ *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2008 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2009 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -18,9 +18,9 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
- * USA
- */
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
+ */ 
 
 #ifndef CHEROKEE_VALIDATOR_MYSQL_H
 #define CHEROKEE_VALIDATOR_MYSQL_H
@@ -35,6 +35,12 @@ typedef struct {
 	MYSQL		       *conn;
 } cherokee_validator_mysql_t;
 
+typedef enum {
+	cherokee_mysql_hash_none,
+	cherokee_mysql_hash_md5,
+	cherokee_mysql_hash_sha1
+} cherokee_mysql_hash_t;
+
 typedef struct {
 	cherokee_module_props_t	base;
 	
@@ -47,8 +53,7 @@ typedef struct {
 	cherokee_buffer_t	database;
 	cherokee_buffer_t	query;
 
-	cherokee_boolean_t      use_md5_passwd;
-	
+	cherokee_mysql_hash_t   hash_type;
 } cherokee_validator_mysql_props_t;
 
 #define MYSQL(x)           ((cherokee_validator_mysql_t *)(x))

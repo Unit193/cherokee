@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2008 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2009 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -18,9 +18,9 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
- * USA
- */
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
+ */ 
 
 #include "common-internal.h"
 #include "rule_request.h"
@@ -36,21 +36,25 @@ PLUGIN_INFO_RULE_EASIEST_INIT(request);
 
 
 static ret_t 
-match (cherokee_rule_request_t *rule, cherokee_connection_t *conn)
+match (cherokee_rule_request_t *rule,
+       cherokee_connection_t   *conn,
+       cherokee_config_entry_t *ret_conf)
 {
 	int                     re;
 	ret_t                   ret;
 	cherokee_regex_table_t *regexs = CONN_SRV(conn)->regexs;
 
+	UNUSED(ret_conf);
+
 	/* Sanity checks
 	 */
 	if (unlikely (regexs == NULL)) {
-		PRINT_ERROR_S ("Couldn't access regex table\n");
+		LOG_ERROR_S ("Couldn't access regex table\n");
 		return ret_error;
 	}
 
 	if (unlikely (rule->pcre == NULL)) {
-		PRINT_ERROR_S ("RegExp rule has null pcre\n");
+		LOG_ERROR_S ("RegExp rule has null pcre\n");
 		return ret_error;
 	}
 
@@ -105,8 +109,7 @@ configure (cherokee_rule_request_t   *rule,
 	 */
 	ret = cherokee_config_node_copy (conf, "request", &rule->pattern);
 	if (ret != ret_ok) {
-		PRINT_ERROR ("Rule prio=%d needs a 'request' property\n", 
-			     RULE(rule)->priority);
+		LOG_CRITICAL ("Rule prio=%d needs a 'request' property\n", RULE(rule)->priority);
 		return ret_error;
 	}
 

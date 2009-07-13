@@ -78,20 +78,18 @@ function options_active_prop (options_id, props_prefix)
 }
 
 
-function options_changed (url, options_id, parent_id)
+function options_changed (url, obj)
 {
-	   var thisform = $("#"+parent_id).children("#"+options_id)[0];
-	   var options  = thisform.options;
-	   var selected = options[options.selectedIndex].value;
+	var selected = jQuery(obj).val();
 
-	   /* POST the new value and reload */
-	   var post = options_id + "=" + selected;
+	/* POST the new value and reload */
+	var post = obj.name + "=" + selected;
 
-	   jQuery.post (url, post,
-              function (data, textStatus) {
-   			   window.location = window.location;
-              }
-	   );
+	jQuery.post (url, post,
+		function (data, textStatus) {
+			window.location = window.location;
+		}
+	);
 }
 
 function save_config()
@@ -156,13 +154,18 @@ function get_cookie (key)
   return unescape (document.cookie.substring (i, e));
 }
 
+function do_autosubmit(obj)
+{
+	if (check_all_or_none('required')) {
+		setConfirmUnload(false);
+		obj.form.submit();
+	}
+}
+
 /* Auto submission of some forms */
-function autosubmit(event) {
-	$(".auto input:not(.noautosubmit), select:not(.noautosubmit)").change(function(event) {
-		if (check_all_or_none('required')) {
-			setConfirmUnload(false);
-			this.form.submit();
-		}
+function autosubmit() {
+	$(".auto input:not(.noautosubmit), select:not(.noautosubmit)").change(function() {
+		do_autosubmit(this);
 	});
 }
 
@@ -225,4 +228,53 @@ function unloadMessage()
 {
   return 'Settings were modified but not saved.\n'+
          'They will be lost if you leave Cherokee-Admin.';
+}
+
+
+
+/* RULES
+ */
+
+function rule_do_not (prefix)
+{
+    post = 'prefix='+prefix;
+    jQuery.post("/rule/not", post,
+		function (data, textStatus) {
+		    setConfirmUnload(false);
+		    window.location = window.location;
+		}
+    );
+}
+
+function rule_do_and (prefix)
+{
+    post = 'prefix='+prefix;
+    jQuery.post("/rule/and", post,
+		function (data, textStatus) {
+		    setConfirmUnload(false);
+		    window.location = window.location;
+		}
+    );
+}
+
+function rule_do_or (prefix)
+{
+    post = 'prefix='+prefix;
+    jQuery.post("/rule/or", post,
+		function (data, textStatus) {
+		    setConfirmUnload(false);
+		    window.location = window.location;
+		}
+    );
+}
+
+function rule_delete (prefix)
+{
+    post = 'prefix='+prefix;
+    jQuery.post("/rule/del", post,
+		function (data, textStatus) {
+		    setConfirmUnload(false);
+		    window.location = window.location;
+		}
+    );
 }

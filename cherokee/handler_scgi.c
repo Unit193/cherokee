@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2008 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2009 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -18,9 +18,9 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
- * USA
- */
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
+ */ 
 
 #include "common-internal.h"
 #include "handler_scgi.h"
@@ -39,7 +39,7 @@
 
 /* Plug-in initialization
  */
-CGI_LIB_INIT (scgi, http_get | http_post | http_head);
+CGI_LIB_INIT (scgi, http_all_methods);
 
 /* Methods implementation
  */
@@ -70,7 +70,7 @@ cherokee_handler_scgi_configure (cherokee_config_node_t *conf, cherokee_server_t
 		cherokee_handler_cgi_base_props_init_base (PROP_CGI_BASE(n), 
 							   MODULE_PROPS_FREE(props_free));
 
-		INIT_LIST_HEAD(&n->scgi_env_ref);   // TODO: finish this
+		INIT_LIST_HEAD(&n->scgi_env_ref);   /* TODO: finish this */
 		n->balancer = NULL;
 
 		*_props = MODULE_PROPS(n);
@@ -97,7 +97,7 @@ cherokee_handler_scgi_configure (cherokee_config_node_t *conf, cherokee_server_t
 	/* Final checks
 	 */
 	if (props->balancer == NULL) {
-		PRINT_ERROR_S ("ERROR: SCGI handler needs a balancer\n");
+		LOG_CRITICAL_S ("ERROR: SCGI handler needs a balancer\n");
 		return ret_error;
 	}
 
@@ -107,11 +107,23 @@ cherokee_handler_scgi_configure (cherokee_config_node_t *conf, cherokee_server_t
 
 static void 
 add_env_pair (cherokee_handler_cgi_base_t *cgi_base, 
-	      char *key, int key_len, 
-	      char *val, int val_len)
+	      const char *key, int key_len, 
+	      const char *val, int val_len)
 {
 	static char              zero = '\0';
 	cherokee_handler_scgi_t *scgi = HDL_SCGI(cgi_base);
+
+#ifdef TRACE_ENABLED
+	cherokee_buffer_t       *tmp  = &HANDLER_THREAD(cgi_base)->tmp_buf2;
+
+	cherokee_buffer_clean   (tmp);
+	cherokee_buffer_add     (tmp, key, key_len);
+	cherokee_buffer_add_str (tmp, " = \"");
+	cherokee_buffer_add     (tmp, val, val_len);
+	cherokee_buffer_add_str (tmp, "\"\n");
+
+	TRACE (ENTRIES, "%s", tmp->buf);
+#endif
 
 	cherokee_buffer_ensure_size (&scgi->header, scgi->header.len + key_len + val_len + 3);
 
@@ -270,8 +282,11 @@ connect_to_server (cherokee_handler_scgi_t *hdl)
 	/* Try to connect
 	 */
 	if (hdl->src_ref->type == source_host) {
-		ret = cherokee_source_connect_polling (hdl->src_ref, 
-						       &hdl->socket, conn);		
+		ret = cherokee_source_connect_polling (hdl->src_ref, &hdl->socket, conn);
+		if ((ret == ret_deny) || (ret == ret_error))
+		{
+			cherokee_balancer_report_fail (props->balancer, conn, hdl->src_ref);
+		}
 	} else {
 		ret = cherokee_source_interpreter_connect_polling (SOURCE_INT(hdl->src_ref),
 								   &hdl->socket, conn, 

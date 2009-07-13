@@ -179,7 +179,7 @@ Cherokee issue the failure.</p></div>
 <h3 id="behavior">Behavior</h3><div style="clear:left"></div>
 <div class="para"><p>This sections allows to define a set of rules to define how the server
 should handle the different requests. A summary of the existing rules is
-presented, containig several fields of information:</p></div>
+presented, containing several fields of information:</p></div>
 <div class="olist"><ol>
 <li>
 <p>
@@ -516,19 +516,26 @@ w3c - <a href="modules_loggers_w3c.html">W3C Log Format</a>
 <h3 id="security">Security</h3><div style="clear:left"></div>
 <div class="para"><p>The virtual server must be configured with the path to the certificate
 before using secure connections (https). There is a document which
-might help to generate SSL <a href="cookbook_ssl.html">keys</a></p></div>
+might help to generate SSL <a href="cookbook_ssl.html">keys</a> and that
+should provide tips and information on how to configure SSL, TLS and
+certificates.</p></div>
 <div class="para"><p>Cherokee fully supports the usage of different certificates for each
-virtual server in a given host, be it using SNI as defined in
-<a href="http://www.rfc-archive.org/getrfc.php?rfc=3546">RFC 3546</a> or by
-elegantly respinning the secure handshake. Check the
-<a href="other_goodies.html#ssl-vhosts">SSL Virtual Hosts</a> information for
-more details.</p></div>
+virtual server in a given host by it using SNI as defined in
+<a href="http://www.rfc-archive.org/getrfc.php?rfc=3546">RFC 3546</a>.</p></div>
+<div class="imageblock">
+<div class="content">
+<img src="media/images/admin_vserver_security.png" alt="Certificates" title="Certificates"/>
+</div>
+</div>
 <div class="para"><p>If you want HTTPS to work, you must remember this:</p></div>
 <div class="olist"><ol>
 <li>
 <p>
 Providing the PEM-encoded files is mandatory for both <tt>Certificate</tt>
-  and <tt>Certificate key</tt> fields. Providing the <tt>CA List</tt> is optional.
+  and <tt>Certificate key</tt> fields. Providing the <tt>CA List</tt> and the
+  <tt>Client Certs</tt> is optional. The trusted CA certificates file should
+  be a single file with all the certificates concatenated. The <tt>Client
+  Certs</tt>, also PEM-encoded, is used to check the client certificates.
 </p>
 </li>
 <li>
@@ -541,7 +548,7 @@ If you have several virtual servers, the <tt>Security</tt> section must be
   not provide the service would not be handled in a coherente
   manner. None of the alternatives is very elegant in design: falling
   back to HTTP, issuing an error that is likely to restart the HTTPS
-  hanshake, etc. This behavior, however, might change in the future
+  handshake, etc. This behavior, however, might change in the future
   depending on the popularity of any proposed mechanisms.
 </p>
 </li>

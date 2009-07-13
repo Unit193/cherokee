@@ -136,6 +136,23 @@ licensing schemes can be negotiated on a particular basis. Contact
 Attribution (by)</a> license, which is the most accommodating in terms of
 what others can do with it. It lets others distribute, remix, tweak,
 and build upon the work, even commercially.</p></div>
+<h3 id="faq13">How can I contribute contents to the documentation?</h3><div style="clear:left"></div>
+<div class="para"><p>The documentation is written and maintained using
+<a href="http://www.methods.co.nz/asciidoc/">AsciiDoc</a>, a text document
+format for writing short documents, articles, books and UNIX man pages
+that can be easily translated to HTML and DocBook markups. It is
+really easy to get the hang of it, so if you want to contribute,
+please take a look at the
+<a href="http://powerman.name/doc/asciidoc">AsciiDoc Cheatsheet</a> and start
+editing the documentation sources right ahead. They are distributed
+with the source code and are located under <tt>./doc</tt> of the source tree.
+If you don't have SVN access, simply mail your contributions to
+<a href="mailto:feedback@cherokee-project.com">feedback@cherokee-project.com</a>.</p></div>
+<h3 id="faq14">Can encoders be set for specfic file types?</h3><div style="clear:left"></div>
+<div class="para"><p>Yes. Since content encoding is set on a per-rule basis, simply add a
+rule at the beginning of the virtual server that matches the specific
+file extensions and has the encoding enabled. Set the rule to be
+non-final. That should do the trick.</p></div>
 </div>
 <div id="footer">
 <div id="footer-text">

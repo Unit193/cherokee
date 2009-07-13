@@ -5,11 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * This piece of code by:
- * 	Pablo Neira Ayuso <pneira@optimat.com>
- *      Miguel Angel Ajo Pelayo <ajo@godsmaze.org> 
- *
- * Copyright (C) 2001-2008 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2009 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -22,9 +18,9 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
- * USA
- */
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
+ */ 
 
 #ifndef CHEROKEE_LOGGER_NCSA_H
 #define CHEROKEE_LOGGER_NCSA_H
@@ -34,7 +30,7 @@
 #include "connection.h"
 #include "logger.h"
 #include "logger_writer.h"
-
+#include "virtual_server.h"
 
 typedef struct {
 	cherokee_logger_t logger;
@@ -48,26 +44,26 @@ typedef struct {
 	cherokee_buffer_t  referer;
 	cherokee_buffer_t  useragent;
 
-	cherokee_logger_writer_t writer_access;
-	cherokee_logger_writer_t writer_error;
+	cherokee_logger_writer_t *writer_access;
+	cherokee_logger_writer_t *writer_error;
 } cherokee_logger_ncsa_t;
 
+#define LOG_NCSA(x) ((cherokee_logger_ncsa_t *)(x))
 
-ret_t cherokee_logger_ncsa_new       (cherokee_logger_t     **logger, cherokee_config_node_t *config);
-ret_t cherokee_logger_ncsa_init_base (cherokee_logger_ncsa_t *logger, cherokee_config_node_t *config);
+ret_t cherokee_logger_ncsa_new       (cherokee_logger_t     **logger, cherokee_virtual_server_t *vsrv, cherokee_config_node_t *config);
+ret_t cherokee_logger_ncsa_init_base (cherokee_logger_ncsa_t *logger, cherokee_virtual_server_t *vsrv, cherokee_config_node_t *config);
 ret_t cherokee_logger_ncsa_configure (cherokee_config_node_t *conf, cherokee_server_t *srv, cherokee_module_props_t **props);
 
 /* virtual methods implementation
  */
-ret_t cherokee_logger_ncsa_init           (cherokee_logger_ncsa_t *logger);
-ret_t cherokee_logger_ncsa_free           (cherokee_logger_ncsa_t *logger);
+ret_t cherokee_logger_ncsa_init             (cherokee_logger_ncsa_t *logger);
+ret_t cherokee_logger_ncsa_free             (cherokee_logger_ncsa_t *logger);
 
-ret_t cherokee_logger_ncsa_flush          (cherokee_logger_ncsa_t *logger);
-ret_t cherokee_logger_ncsa_reopen         (cherokee_logger_ncsa_t *logger);
+ret_t cherokee_logger_ncsa_flush            (cherokee_logger_ncsa_t *logger);
+ret_t cherokee_logger_ncsa_reopen           (cherokee_logger_ncsa_t *logger);
+ret_t cherokee_logger_ncsa_get_error_writer (cherokee_logger_ncsa_t *logger, cherokee_logger_writer_t **writer);
 
-ret_t cherokee_logger_ncsa_write_access   (cherokee_logger_ncsa_t *logger, cherokee_connection_t *conn);
-ret_t cherokee_logger_ncsa_write_error    (cherokee_logger_ncsa_t *logger, cherokee_connection_t *conn);
-ret_t cherokee_logger_ncsa_write_string   (cherokee_logger_ncsa_t *logger, const char *string);
-ret_t cherokee_logger_ncsa_write_error_fd (cherokee_logger_ncsa_t *logger, int fd);
+ret_t cherokee_logger_ncsa_write_access     (cherokee_logger_ncsa_t *logger, cherokee_connection_t *conn);
+ret_t cherokee_logger_ncsa_write_error      (cherokee_logger_ncsa_t *logger, cherokee_buffer_t *error);
 
 #endif /* CHEROKEE_LOGGER_NCSA_H */

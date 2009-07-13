@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2008 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2009 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -18,9 +18,9 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
- * USA
- */
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
+ */ 
 
 #include "common-internal.h"
 #include "fcgi_manager.h"
@@ -29,6 +29,7 @@
 #include "connection-protected.h"
 #include "handler_fastcgi.h"
 #include "source_interpreter.h"
+#include "error_log.h"
 
 #include <unistd.h>
 
@@ -287,11 +288,7 @@ process_package (cherokee_fcgi_manager_t *mgr, cherokee_buffer_t *inbuf)
 	switch (type) {
 	case FCGI_STDERR: 
 		if (CONN_VSRV(conn)->logger != NULL) {
-			cherokee_buffer_t tmp = CHEROKEE_BUF_INIT;
-			
-			cherokee_buffer_add (&tmp, data, len);
-			cherokee_logger_write_string (CONN_VSRV(conn)->logger, "%s", tmp.buf);
-			cherokee_buffer_mrproper (&tmp);		
+			LOG_ERROR ("%s\n", data);
 		}
 		exit(1);
 		break;

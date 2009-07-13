@@ -36,9 +36,10 @@ DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/etr_socket_nsl.m4 \
 	$(top_srcdir)/m4/libwww.m4 $(top_srcdir)/m4/mysql.m4 \
-	$(top_srcdir)/m4/network.m4 $(top_srcdir)/m4/pwd_grp.m4 \
-	$(top_srcdir)/m4/sendfile_samba.m4 $(top_srcdir)/acinclude.m4 \
-	$(top_srcdir)/configure.in
+	$(top_srcdir)/m4/network.m4 $(top_srcdir)/m4/nls.m4 \
+	$(top_srcdir)/m4/po.m4 $(top_srcdir)/m4/progtest.m4 \
+	$(top_srcdir)/m4/pwd_grp.m4 $(top_srcdir)/m4/sendfile_samba.m4 \
+	$(top_srcdir)/acinclude.m4 $(top_srcdir)/configure.in
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(install_sh) -d
@@ -82,7 +83,13 @@ ETR_SOCKET_LIBS = @ETR_SOCKET_LIBS@
 EXEEXT = @EXEEXT@
 F77 = @F77@
 FFLAGS = @FFLAGS@
+FFMPEG_CFLAGS = @FFMPEG_CFLAGS@
+FFMPEG_LIBS = @FFMPEG_LIBS@
+GETTEXT_MACRO_VERSION = @GETTEXT_MACRO_VERSION@
+GMSGFMT = @GMSGFMT@
+GMSGFMT_015 = @GMSGFMT_015@
 GREP = @GREP@
+HAVE_MSGFMT = @HAVE_MSGFMT@
 HaveRtldGlobal = @HaveRtldGlobal@
 HaveRtldLocal = @HaveRtldLocal@
 HaveRtldNext = @HaveRtldNext@
@@ -102,6 +109,9 @@ LTLIBOBJS = @LTLIBOBJS@
 MAINT = @MAINT@
 MAKEINFO = @MAKEINFO@
 MKDIR_P = @MKDIR_P@
+MSGFMT = @MSGFMT@
+MSGFMT_015 = @MSGFMT_015@
+MSGMERGE = @MSGMERGE@
 MYSQL_CFLAGS = @MYSQL_CFLAGS@
 MYSQL_CONFIG = @MYSQL_CONFIG@
 MYSQL_LDFLAGS = @MYSQL_LDFLAGS@
@@ -123,12 +133,17 @@ PHPCGI = @PHPCGI@
 PTHREAD_CFLAGS = @PTHREAD_CFLAGS@
 PTHREAD_LIBS = @PTHREAD_LIBS@
 RANLIB = @RANLIB@
+RT_LIBS = @RT_LIBS@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
 STRIP = @STRIP@
 TLS_LIBS = @TLS_LIBS@
+USE_NLS = @USE_NLS@
 VERSION = @VERSION@
 WWW_ROOT = @WWW_ROOT@
+XGETTEXT = @XGETTEXT@
+XGETTEXT_015 = @XGETTEXT_015@
+XGETTEXT_EXTRA_OPTIONS = @XGETTEXT_EXTRA_OPTIONS@
 abs_builddir = @abs_builddir@
 abs_srcdir = @abs_srcdir@
 abs_top_builddir = @abs_top_builddir@
@@ -319,7 +334,7 @@ run-tests.py \
 128-ValidMethod-common.py \
 129-Basic-EmptyPasswd.py \
 130-Digest-EmptyPasswd.py \
-131-ChangeUser-phpcgi.py \
+131-PHP-zero-len-post+Redir.py \
 132-file-ContentType.py \
 133-If-None-Match.py \
 134-HTTP_headers.py \
@@ -379,7 +394,46 @@ run-tests.py \
 188-Method2.py \
 189-Redir9.py \
 190-RuleExists4.py \
-191-RuleExists5.py
+191-RuleExists5.py \
+192-RedirDocumentRoot.py \
+193-PHP-documentroot.py \
+194-PHP-zero-len-post.py \
+195-ServerAddr.py \
+196-Mime3.py \
+197-SOAPAction.py \
+198-HTTPresponse.py \
+199-ErrorRedir.py \
+200-ErrorRedir2.py \
+201-PostLimit.py \
+202-xsendfile2.py \
+203-secdownload1.py \
+204-secdownload2.py \
+205-secdownload3.py \
+206-AuthType.py \
+207-RuleExists4.py \
+208-Userdir_Pathinfo.py \
+209-ScriptAlias_DRoot.py \
+210-Userdir_ScriptName.py \
+211-EmptyGif.py \
+212-DirList-Hidden.py \
+213-Post-Chunked1.py \
+214-Post-Chunked2.py \
+215-Post-Chunked3.py \
+216-NameSpace.py \
+217-DoubleEncode.py \
+218-DrupalRedirect.py \
+219-Ext-Dot-Pathinfo.py \
+220-Pathinfo-Slash.py \
+221-ReHost1.py \
+222-EVHost1.py \
+223-EVHost2.py \
+224-EVHost3.py \
+225-PathTranslated.py \
+226-PathInfo-Default.py \
+227-Redir-Paths.py \
+228-Redir-Paths2.py \
+229-Fullpath.py \
+230-Fullpath2.py
 
 all: all-am
 

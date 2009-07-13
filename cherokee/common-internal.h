@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2008 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2009 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -18,9 +18,9 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
- * USA
- */
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
+ */ 
 
 #ifndef CHEROKEE_COMMON_INTERNAL_H
 #define CHEROKEE_COMMON_INTERNAL_H
@@ -34,6 +34,8 @@
 #endif
 
 #include "common.h"
+#include "threading.h"
+#include "error_log.h"
 
 #ifndef _WIN32
 # if defined HAVE_ENDIAN_H
@@ -42,6 +44,8 @@
 #  include <machine/endian.h>
 # elif defined HAVE_SYS_ENDIAN_H
 #  include <sys/endian.h>
+# elif defined HAVE_SYS_MACHINE_H
+#  include <sys/machine.h>
 # elif defined HAVE_SYS_ISA_DEFS_H
 #  include <sys/isa_defs.h>
 # else
@@ -77,10 +81,13 @@
 # error "Can not include inttypes or stdint"
 #endif
 
-
 #ifdef HAVE_PTHREAD
 # include <pthread.h>
 #endif
+
+#include <sys/types.h>
+#include <sys/ipc.h>
+#include <sys/sem.h>
 
 #ifdef HAVE_INLINE
 # define INLINE inline
@@ -91,41 +98,49 @@
 #endif
 
 #ifdef HAVE_PTHREAD
-# define CHEROKEE_MUTEX_T(n)          pthread_mutex_t n
-# define CHEROKEE_RWLOCK_T(n)         pthread_rwlock_t n
-# define CHEROKEE_THREAD_JOIN(t)      pthread_join(t,NULL)
-# define CHEROKEE_THREAD_SELF         pthread_self()
+# define CHEROKEE_MUTEX_T(n)           pthread_mutex_t n
+# define CHEROKEE_RWLOCK_T(n)          pthread_rwlock_t n
+# define CHEROKEE_THREAD_JOIN(t)       pthread_join(t,NULL)
+# define CHEROKEE_THREAD_SELF          pthread_self()
 
-# define CHEROKEE_MUTEX_LOCK(m)       pthread_mutex_lock(m)
-# define CHEROKEE_MUTEX_UNLOCK(m)     pthread_mutex_unlock(m)
-# define CHEROKEE_MUTEX_INIT(m,n)     pthread_mutex_init(m,n)
-# define CHEROKEE_MUTEX_DESTROY(m)    pthread_mutex_destroy(m)
-# define CHEROKEE_MUTEX_TRY_LOCK(m)   pthread_mutex_trylock(m)
+# define CHEROKEE_THREAD_PROP_GET(p)   pthread_getspecific(p)
+# define CHEROKEE_THREAD_PROP_SET(p,v) pthread_setspecific(p,v)
+# define CHEROKEE_THREAD_PROP_NEW(p,f) pthread_key_create2(p,f)
 
-# define CHEROKEE_RWLOCK_INIT(m,n)    pthread_rwlock_init(m,n)
-# define CHEROKEE_RWLOCK_READER(m)    pthread_rwlock_rdlock(m)
-# define CHEROKEE_RWLOCK_WRITER(m)    pthread_rwlock_wrlock(m)
-# define CHEROKEE_RWLOCK_TRYREADER(m) pthread_rwlock_tryrdlock(m)
-# define CHEROKEE_RWLOCK_TRYWRITER(m) pthread_rwlock_trywrlock(m)
-# define CHEROKEE_RWLOCK_UNLOCK(m)    pthread_rwlock_unlock(m)
-# define CHEROKEE_RWLOCK_DESTROY(m)   pthread_rwlock_destroy(m)
+# define CHEROKEE_MUTEX_LOCK(m)        pthread_mutex_lock(m)
+# define CHEROKEE_MUTEX_UNLOCK(m)      pthread_mutex_unlock(m)
+# define CHEROKEE_MUTEX_INIT(m,n)      pthread_mutex_init(m,n)
+# define CHEROKEE_MUTEX_DESTROY(m)     pthread_mutex_destroy(m)
+# define CHEROKEE_MUTEX_TRY_LOCK(m)    pthread_mutex_trylock(m)
+
+# define CHEROKEE_RWLOCK_INIT(m,n)     pthread_rwlock_init(m,n)
+# define CHEROKEE_RWLOCK_READER(m)     pthread_rwlock_rdlock(m)
+# define CHEROKEE_RWLOCK_WRITER(m)     pthread_rwlock_wrlock(m)
+# define CHEROKEE_RWLOCK_TRYREADER(m)  pthread_rwlock_tryrdlock(m)
+# define CHEROKEE_RWLOCK_TRYWRITER(m)  pthread_rwlock_trywrlock(m)
+# define CHEROKEE_RWLOCK_UNLOCK(m)     pthread_rwlock_unlock(m)
+# define CHEROKEE_RWLOCK_DESTROY(m)    pthread_rwlock_destroy(m)
 #else
 # define CHEROKEE_MUTEX_T(n)          
 # define CHEROKEE_RWLOCK_T(n)         
 # define CHEROKEE_THREAD_JOIN(t)
-# define CHEROKEE_THREAD_SELF         0
+# define CHEROKEE_THREAD_SELF          0
+
+# define CHEROKEE_THREAD_PROP_GET(p)   NULL
+# define CHEROKEE_THREAD_PROP_SET(p,v) NULL
+# define CHEROKEE_THREAD_PROP_NEW(p,f) 0
 
 # define CHEROKEE_MUTEX_LOCK(m)
 # define CHEROKEE_MUTEX_UNLOCK(m)
 # define CHEROKEE_MUTEX_INIT(m,n)  
 # define CHEROKEE_MUTEX_DESTROY(m) 
-# define CHEROKEE_MUTEX_TRY_LOCK(m)   0
+# define CHEROKEE_MUTEX_TRY_LOCK(m)    0
 
 # define CHEROKEE_RWLOCK_INIT(m,n)
 # define CHEROKEE_RWLOCK_READER(m)
 # define CHEROKEE_RWLOCK_WRITER(m)
-# define CHEROKEE_RWLOCK_TRYREADER(m) 0
-# define CHEROKEE_RWLOCK_TRYWRITER(m) 0
+# define CHEROKEE_RWLOCK_TRYREADER(m)  0
+# define CHEROKEE_RWLOCK_TRYWRITER(m)  0
 # define CHEROKEE_RWLOCK_UNLOCK(m)
 # define CHEROKEE_RWLOCK_DESTROY(m)
 #endif
@@ -202,5 +217,26 @@ char *strcasestr(char *s, char *find);
 #ifndef S_ISLNK
 # define S_ISLNK(i) (0)
 #endif
+
+/* SysV semaphores
+ */
+#ifndef SEM_R
+# define SEM_R 0400
+#endif
+
+#ifndef SEM_A
+# define SEM_A 0200
+#endif
+
+/* GCC specific
+ */
+#ifndef NORETURN
+# ifdef __GNUC__
+#  define NORETURN __attribute__((noreturn))
+# else
+#  define NORETURN
+# endif
+#endif
+
 
 #endif /* CHEROKEE_COMMON_INTERNAL_H */

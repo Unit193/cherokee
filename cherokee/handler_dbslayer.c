@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2008 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2009 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -18,9 +18,9 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
- * USA
- */
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
+ */ 
 
 #include "common-internal.h"
 #include "handler_dbslayer.h"
@@ -68,15 +68,24 @@ static ret_t
 send_query (cherokee_handler_dbslayer_t *hdl)
 {
 	int                    re;
+	cuint_t                len;
 	cherokee_connection_t *conn = HANDLER_CONN(hdl);
 	cherokee_buffer_t     *tmp  = &HANDLER_THREAD(hdl)->tmp_buf1;
 
 	/* Extract the SQL query
 	 */
+	if ((cherokee_buffer_is_empty (&conn->web_directory)) ||
+	    (cherokee_buffer_is_ending (&conn->web_directory, '/')))
+	{
+		len = conn->web_directory.len;
+	} else {
+		len = conn->web_directory.len + 1;
+	}
+
 	cherokee_buffer_clean (tmp);
 	cherokee_buffer_add   (tmp, 
-			       conn->request.buf + conn->web_directory.len,
-			       conn->request.len - conn->web_directory.len);
+			       conn->request.buf + len,
+			       conn->request.len - len);
 
 	cherokee_buffer_unescape_uri (tmp);
 
@@ -518,7 +527,8 @@ cherokee_handler_dbslayer_configure (cherokee_config_node_t  *conf,
 
 		if (equal_buf_str (&subconf->key, "balancer")) {
 			ret = cherokee_balancer_instance (&subconf->val, subconf, srv, &props->balancer); 
-			if (ret != ret_ok) return ret;
+			if (ret != ret_ok)
+				return ret;
 
 		} else  if (equal_buf_str (&subconf->key, "user")) {
 			cherokee_buffer_clean (&props->user);
@@ -544,20 +554,16 @@ cherokee_handler_dbslayer_configure (cherokee_config_node_t  *conf,
 				props->lang = dwriter_ruby;
 
 			} else {
-				PRINT_ERROR ("ERROR: DBSlayer: unrecognized language '%s'\n",
-					     subconf->val.buf);
+				LOG_CRITICAL ("DBSlayer: unrecognized language '%s'\n", subconf->val.buf);
 				return ret_error;
 			}
-		} else {
-			PRINT_ERROR_S ("ERROR: DBSlayer handler needs a balancer\n");
-			return ret_error;
-		}
+		} 
 	}
 
 	/* Final checks
 	 */
 	if (props->balancer == NULL) {
-		PRINT_ERROR_S ("ERROR: DBSlayer handler needs a balancer\n");
+		LOG_CRITICAL_S ("DBSlayer handler needs a balancer\n");
 		return ret_error;
 	}
 

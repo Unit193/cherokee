@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2008 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2009 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -18,9 +18,9 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
- * USA
- */
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
+ */ 
 
 #include "common-internal.h"
 #include "rule_header.h"
@@ -37,13 +37,16 @@ PLUGIN_INFO_RULE_EASIEST_INIT(header);
 
 
 static ret_t 
-match (cherokee_rule_header_t *rule, 
-       cherokee_connection_t  *conn)
+match (cherokee_rule_header_t  *rule, 
+       cherokee_connection_t   *conn,
+       cherokee_config_entry_t *ret_conf)
 {
 	int      re;
 	ret_t    ret;
 	char    *info     = NULL;
 	cuint_t  info_len = 0;
+
+	UNUSED(ret_conf);
 
 	/* Find the header
 	 */
@@ -89,8 +92,12 @@ header_str_to_type (cherokee_buffer_t        *header,
 		*common_header = header_referer;
 	} else if (equal_buf_str (header, "User-Agent")) {
 		*common_header = header_user_agent;
+	} else if (equal_buf_str (header, "Cookie")) {
+		*common_header = header_cookie;
+	} else if (equal_buf_str (header, "Host")) {
+		*common_header = header_host;
 	} else {
-		PRINT_ERROR ("ERROR: Unknown header: '%s'\n", header->buf);
+		LOG_CRITICAL ("Unknown header: '%s'\n", header->buf);
 		return ret_error;
 	}
 
@@ -111,8 +118,8 @@ configure (cherokee_rule_header_t    *rule,
 	 */
 	ret = cherokee_config_node_read (conf, "header", &header);
 	if (ret != ret_ok) {
-		PRINT_ERROR ("Rule header prio=%d needs a 'header' entry\n", 
-			     RULE(rule)->priority);
+		LOG_ERROR ("Rule header prio=%d needs a 'header' entry\n", 
+			   RULE(rule)->priority);
 		return ret_error;
 	}
 
@@ -124,8 +131,8 @@ configure (cherokee_rule_header_t    *rule,
 	 */
 	ret = cherokee_config_node_copy (conf, "match", &rule->match);
 	if (ret != ret_ok) {
-		PRINT_ERROR ("Rule header prio=%d needs a 'match' entry\n", 
-			     RULE(rule)->priority);
+		LOG_ERROR ("Rule header prio=%d needs a 'match' entry\n", 
+			   RULE(rule)->priority);
 		return ret_error;
 	}
 

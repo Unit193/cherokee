@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2008 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2009 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -18,9 +18,9 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
- * USA
- */
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
+ */ 
 
 #include "common-internal.h"
 #include "rule.h"
@@ -48,21 +48,15 @@ cherokee_rule_init_base (cherokee_rule_t *rule, cherokee_plugin_info_t *info)
 ret_t 
 cherokee_rule_free (cherokee_rule_t *rule)
 {
-	/* Sanity checks
-	 */
-	return_if_fail (rule != NULL, ret_error);
-
 	/* Free the Config Entry property
 	 */
 	cherokee_config_entry_mrproper (&rule->config);
 
 	/* Call the virtual method
 	 */
-	if (MODULE(rule)->free == NULL) {
-		return ret_error;
+	if (MODULE(rule)->free) {
+		MODULE(rule)->free (rule); 
 	}
-	
-	MODULE(rule)->free (rule); 
 
 	/* Free the rule
 	 */
@@ -96,13 +90,8 @@ cherokee_rule_configure (cherokee_rule_t *rule, cherokee_config_node_t *conf, vo
 {
 	ret_t ret;
 
-	/* Sanity checks
-	 */	
-	return_if_fail (rule != NULL, ret_error);
-
-	if (rule->configure == NULL) {
-		return ret_error;
-	}
+	return_if_fail (rule, ret_error);
+	return_if_fail (rule->configure, ret_error);
 
 	ret = configure_base (rule, conf);
 	if (ret != ret_ok) return ret;
@@ -114,18 +103,13 @@ cherokee_rule_configure (cherokee_rule_t *rule, cherokee_config_node_t *conf, vo
 
 
 ret_t 
-cherokee_rule_match (cherokee_rule_t *rule, void *cnt)
+cherokee_rule_match (cherokee_rule_t *rule, void *cnt, void *ret_conf)
 {
-	/* Sanity checks
-	 */	
-	return_if_fail (rule != NULL, ret_error);
-
-	if (rule->match == NULL) {
-		return ret_error;
-	}
+	return_if_fail (rule, ret_error);
+	return_if_fail (rule->match, ret_error);
 
 	/* Call the real method
 	 */
-	return rule->match (rule, CONN(cnt));
+	return rule->match (rule, CONN(cnt), CONF_ENTRY(ret_conf));
 }
 

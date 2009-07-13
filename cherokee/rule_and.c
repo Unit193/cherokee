@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2008 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2009 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -18,9 +18,9 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
- * USA
- */
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
+ */ 
 
 #include "common-internal.h"
 #include "rule_and.h"
@@ -32,20 +32,22 @@
 PLUGIN_INFO_RULE_EASIEST_INIT(and);
 
 static ret_t 
-match (cherokee_rule_t *rule, cherokee_connection_t *conn)
+match (cherokee_rule_t         *rule,
+       cherokee_connection_t   *conn,
+       cherokee_config_entry_t *ret_conf)
 {
 	ret_t ret;
 
 	/* Evaluate the left side. If it does not match do not even
 	 * try to evaluate the right part.
 	 */
-	ret = cherokee_rule_match (RULE_AND(rule)->left, conn);
+	ret = cherokee_rule_match (RULE_AND(rule)->left, conn, ret_conf);
 	if (ret != ret_ok) 
 		return ret;
 
 	/* It matched, it is time for the right side
 	 */
-	return cherokee_rule_match (RULE_AND(rule)->right, conn);
+	return cherokee_rule_match (RULE_AND(rule)->right, conn, ret_conf);
 }
 
 static ret_t 

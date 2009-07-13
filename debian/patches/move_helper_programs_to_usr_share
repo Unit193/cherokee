@@ -1,10 +1,10 @@
 # All programs meant to be called by other components of Cherokee (and
 # not by a human) should go into /usr/share/cherokee, not /usr/bin
 #
-Index: cherokee-0.9.0/performance.conf.sample.pre
+Index: cherokee/performance.conf.sample.pre
 ===================================================================
---- cherokee-0.9.0.orig/performance.conf.sample.pre	2008-09-17 08:43:21.000000000 -0500
-+++ cherokee-0.9.0/performance.conf.sample.pre	2008-09-26 12:40:46.000000000 -0500
+--- cherokee.orig/performance.conf.sample.pre	2009-04-17 11:31:01.000000000 -0500
++++ cherokee/performance.conf.sample.pre	2009-04-17 11:34:52.000000000 -0500
 @@ -13,7 +13,7 @@
  server!keepalive = 1
  server!keepalive_max_requests = 1000
@@ -14,10 +14,10 @@ Index: cherokee-0.9.0/performance.conf.sample.pre
  server!pid_file = %localstatedir%/run/cherokee.pid
  
  # Default virtual server
-Index: cherokee-0.9.0/admin/configured.py.pre
+Index: cherokee/admin/configured.py.pre
 ===================================================================
---- cherokee-0.9.0.orig/admin/configured.py.pre	2008-09-17 08:42:52.000000000 -0500
-+++ cherokee-0.9.0/admin/configured.py.pre	2008-09-26 12:40:46.000000000 -0500
+--- cherokee.orig/admin/configured.py.pre	2008-12-26 20:31:59.000000000 -0600
++++ cherokee/admin/configured.py.pre	2009-04-17 11:34:52.000000000 -0500
 @@ -14,7 +14,7 @@
  CHEROKEE_ADMINDIR   = join (PREFIX, "share/cherokee/admin")
  CHEROKEE_ICONSDIR   = join (PREFIX, "share/cherokee/icons")
@@ -27,11 +27,11 @@ Index: cherokee-0.9.0/admin/configured.py.pre
  CHEROKEE_PLUGINDIR  = join (LIBDIR, "cherokee")
  CHEROKEE_DATADIR    = join (DATADIR, "cherokee")
  CHEROKEE_DEPSDIR    = join (DATADIR, "cherokee/deps")
-Index: cherokee-0.9.0/cherokee.conf.sample.pre
+Index: cherokee/cherokee.conf.sample.pre
 ===================================================================
---- cherokee-0.9.0.orig/cherokee.conf.sample.pre	2008-09-26 12:39:24.000000000 -0500
-+++ cherokee-0.9.0/cherokee.conf.sample.pre	2008-09-26 12:41:40.000000000 -0500
-@@ -14,7 +14,7 @@
+--- cherokee.orig/cherokee.conf.sample.pre	2009-04-17 11:34:51.000000000 -0500
++++ cherokee/cherokee.conf.sample.pre	2009-04-17 11:38:09.000000000 -0500
+@@ -13,7 +13,7 @@
  server!keepalive = 1
  server!keepalive_max_requests = 500
  server!server_tokens = full

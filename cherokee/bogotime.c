@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2008 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2009 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -18,9 +18,9 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
- * USA
- */
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
+ */ 
 
 #include "common-internal.h"
 #include "bogotime.h"
@@ -31,14 +31,19 @@
  */
 
 /* Thread safe */
-time_t            cherokee_bogonow_now;
-int               cherokee_bogonow_tzloc_sign;
-cuint_t           cherokee_bogonow_tzloc_offset;
+volatile cherokee_msec_t cherokee_bogonow_msec;
+volatile time_t          cherokee_bogonow_now;
+struct timeval           cherokee_bogonow_tv;
+long                     cherokee_bogonow_tzloc;
 
 /* Thread unsafe */
-struct tm         cherokee_bogonow_tmloc;
-struct tm         cherokee_bogonow_tmgmt;
-cherokee_buffer_t cherokee_bogonow_strgmt;
+struct tm                cherokee_bogonow_tmloc;
+struct tm                cherokee_bogonow_tmgmt;
+cherokee_buffer_t        cherokee_bogonow_strgmt;
+
+/* Registered callbacks */
+static cherokee_list_t   _callbacks;
+
 
 /* Global
  */
@@ -66,17 +71,30 @@ cherokee_bogotime_release (void)
 
 /* Functions
  */
+static void
+init_timezone (void)
+{
+	long *tz_ref;
+	tz_ref = cherokee_get_timezone_ref();
+	cherokee_bogonow_tzloc = - (*tz_ref / 60);
+}
+
 ret_t
 cherokee_bogotime_init (void)
 {
 	if (inited)
 		return ret_ok;
 
-	cherokee_bogonow_now          = 0;
-	cherokee_bogonow_tzloc_sign   = '+';
-	cherokee_bogonow_tzloc_offset = 0;
+	/* Properties */
+	cherokee_bogonow_now = 0;
 
-	cherokee_buffer_init (&cherokee_bogonow_strgmt);
+	INIT_LIST_HEAD (&_callbacks);
+
+	cherokee_buffer_init        (&cherokee_bogonow_strgmt);
+	cherokee_buffer_ensure_size (&cherokee_bogonow_strgmt, DTM_SIZE_GMTTM_STR+2);
+
+	/* Init time zone */
+	init_timezone();
 
 	inited = true;
 	return ret_ok;
@@ -85,9 +103,11 @@ cherokee_bogotime_init (void)
 ret_t
 cherokee_bogotime_free (void)
 {
-	if (! inited)
+	if (! inited) {
 		return ret_ok;
+	}
 
+	cherokee_list_content_free (&_callbacks, NULL);
 	cherokee_buffer_mrproper (&cherokee_bogonow_strgmt);
 	CHEROKEE_RWLOCK_DESTROY (&lock);
 
@@ -99,41 +119,46 @@ cherokee_bogotime_free (void)
 static ret_t
 update_guts (void)
 {
-	time_t  newtime;
-	size_t  szlen = 0;
-	char    bufstr[DTM_SIZE_GMTTM_STR + 2];
+	int              re;
+	cherokee_list_t *c;
+	size_t           len = 0;
 
 	/* Read the time
 	 */
-	newtime = time (NULL);
-	if (cherokee_bogonow_now >= newtime) 
-		return ret_ok;
+	re = gettimeofday (&cherokee_bogonow_tv, NULL);
+	if (unlikely (re != 0))
+		return ret_error;
 
 	/* Update internal variables
 	 */
-	cherokee_bogonow_now = newtime;
+	cherokee_bogonow_msec = ((cherokee_bogonow_tv.tv_sec * 1000) + 
+				 (cherokee_bogonow_tv.tv_usec) / 1000);
+
+	if (cherokee_bogonow_now == cherokee_bogonow_tv.tv_sec)
+		return ret_ok;
+
+	cherokee_bogonow_now = cherokee_bogonow_tv.tv_sec;
 
 	/* Convert time to both GMT and local time struct
 	 */
-	cherokee_gmtime    (&newtime, &cherokee_bogonow_tmgmt);
-	cherokee_localtime (&newtime, &cherokee_bogonow_tmloc);
+	cherokee_gmtime    ((const time_t *)&cherokee_bogonow_now, &cherokee_bogonow_tmgmt);
+	cherokee_localtime ((const time_t *)&cherokee_bogonow_now, &cherokee_bogonow_tmloc);
 
-#ifdef HAVE_STRUCT_TM_GMTOFF
-	cherokee_bogonow_tzloc_sign   = cherokee_bogonow_tmloc.tm_gmtoff < 0 ? '-' : '+';
-	cherokee_bogonow_tzloc_offset = abs (cherokee_bogonow_tmloc.tm_gmtoff / 3600);
-#else
-	cherokee_bogonow_tzloc_sign   = timezone < 0 ? '-' : '+';
-	cherokee_bogonow_tzloc_offset = abs (timezone / 3600);
-#endif
-
+	/* Regenerate the GMT string */
 	cherokee_buffer_clean (&cherokee_bogonow_strgmt);
+	len = cherokee_dtm_gmttm2str (cherokee_bogonow_strgmt.buf,
+				      cherokee_bogonow_strgmt.size,
+				      &cherokee_bogonow_tmgmt);
+	cherokee_bogonow_strgmt.len = len;
+	cherokee_bogonow_strgmt.buf[len] = '\0';
 
-	szlen = cherokee_dtm_gmttm2str (bufstr, sizeof(bufstr), &cherokee_bogonow_tmgmt);
-	cherokee_buffer_add (&cherokee_bogonow_strgmt, bufstr, szlen);
-
-	/* NOTE: a local time string should have {+-}timezone_offset (hours)
-	 *       added to date-time GMT string.
+	/* Callbacks
 	 */
+	list_for_each (c, &_callbacks) {
+		bogotime_callback_t func = LIST_ITEM_INFO(c);
+		func();
+	}
+
 	return ret_ok;
 }
 
@@ -157,11 +182,24 @@ cherokee_bogotime_try_update (void)
 	ret_t ret;
 	int   unlocked;
 
-	unlocked = CHEROKEE_RWLOCK_TRYREADER (&lock);
+	unlocked = CHEROKEE_RWLOCK_TRYWRITER (&lock);
 	if (unlocked) 
 		return ret_not_found;
 
 	ret = update_guts();
+	CHEROKEE_RWLOCK_UNLOCK (&lock);
+
+	return ret;
+}
+
+
+ret_t
+cherokee_bogotime_add_callback (bogotime_callback_t func)
+{
+	ret_t ret;
+
+	CHEROKEE_RWLOCK_WRITER (&lock);
+	ret = cherokee_list_add_tail_content (&_callbacks, (void *)func);
 	CHEROKEE_RWLOCK_UNLOCK (&lock);
 
 	return ret;

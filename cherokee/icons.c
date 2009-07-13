@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2008 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2009 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -18,9 +18,9 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
- * USA
- */
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
+ */ 
 
 #include "common-internal.h"
 
@@ -255,7 +255,7 @@ cherokee_icons_get_icon (cherokee_icons_t   *icons,
 		return ret_ok;
 	}
 
-	PRINT_MSG_S ("A default icons is needed\n");
+	LOG_CRITICAL_S ("A default icons is needed\n");
 	return ret_error;
 }
 
@@ -287,7 +287,7 @@ add_suffix (char *file, void *data)
 
 	ret = cherokee_icons_add_suffix (icons, key, &file_buf);
 	if (ret != ret_ok) {
-		PRINT_ERROR ("Couldn't assign suffix '%s' to file '%s'\n", file, key->buf);
+		LOG_ERROR ("Couldn't assign suffix '%s' to file '%s'\n", file, key->buf);
 		return ret_error;
 	}
 

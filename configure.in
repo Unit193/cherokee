@@ -2,7 +2,7 @@ dnl -*- mode: m4-mode -*-
 dnl Process this file with autoconf to produce a configure script.
 
 AC_COPYRIGHT([
-Copyright (C) 2001-2008 Alvaro Lopez Ortega
+Copyright (C) 2001-2009 Alvaro Lopez Ortega
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of version 2 of the GNU General Public
@@ -19,17 +19,17 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 USA
 ])
 
-dnl require autoconf 2.56
-AC_PREREQ(2.56)
+dnl require autoconf 2.60
+AC_PREREQ([2.60])
 
 dnl Version
 m4_define([cherokee_major_version], [0])
-m4_define([cherokee_minor_version], [11])
-m4_define([cherokee_micro_version], [5])
+m4_define([cherokee_minor_version], [99])
+m4_define([cherokee_micro_version], [20])
 m4_define([cherokee_version], m4_format('%s.%s.%s', cherokee_major_version, cherokee_minor_version, cherokee_micro_version))
 
 dnl Init autoconf and automake
-AC_INIT([cherokee], [cherokee_version], [http://bugs.cherokee-project.com], [cherokee])
+AC_INIT([cherokee], [cherokee_version], [http://bugs.cherokee-project.com/], [cherokee])
 AC_CONFIG_SRCDIR([cherokee/server.c])
 AC_CONFIG_MACRO_DIR([m4])
 AM_INIT_AUTOMAKE([no-define])
@@ -220,7 +220,7 @@ AC_PROG_CC
 AC_PROG_CC_STDC
 AC_PROG_INSTALL
 AC_PROG_MAKE_SET
-AC_PROG_LIBTOOL
+AM_PROG_LIBTOOL
 
 AC_PATH_PROG(cherokeepath, cherokee)
 
@@ -244,10 +244,10 @@ AC_HEADER_DIRENT
 AC_HEADER_TIME
 AC_HEADER_SYS_WAIT
 
-AC_CHECK_HEADERS(endian.h machine/endian.h sys/endian.h sys/isa_defs.h sys/utsname.h sys/poll.h poll.h )
+AC_CHECK_HEADERS(endian.h machine/endian.h sys/machine.h sys/endian.h sys/isa_defs.h sys/utsname.h sys/poll.h poll.h )
 AC_CHECK_HEADERS(sys/socket.h sys/un.h netinet/in.h arpa/inet.h netinet/tcp.h sys/ioctl.h fcntl.h sys/ofcntl.h sys/time.h)
 AC_CHECK_HEADERS(sys/resource.h resource.h unistd.h syslog.h stdint.h inttypes.h error.h pwd.h sys/uio.h)
-AC_CHECK_HEADERS(pthread.h netdb.h stdarg.h sys/filio.h sys/varargs.h sys/select.h sys/mman.h grp.h winsock.h)
+AC_CHECK_HEADERS(pthread.h netdb.h stdarg.h sys/filio.h sys/varargs.h sys/select.h sys/mman.h sys/uio.h grp.h winsock.h)
 AC_CHECK_HEADERS(winsock.h winsock2.h)
 
 AC_SYS_LARGEFILE
@@ -272,6 +272,7 @@ AC_CHECK_SIZEOF(unsigned long long)
 AC_CHECK_SIZEOF(unsigned int)
 AC_CHECK_SIZEOF(off_t)
 AC_CHECK_SIZEOF(size_t)
+AC_CHECK_SIZEOF(sig_atomic_t)
 
 AC_CACHE_CHECK([for long long],samba_cv_have_longlong,[
 AC_TRY_RUN([#include <stdio.h>
@@ -466,7 +467,7 @@ dnl Check for GNU getopt_long()
 dnl
 AC_CHECK_HEADERS(getopt.h)
 AC_CHECK_FUNC(getopt_long, have_getopt_long="yes")
-AM_CONDITIONAL(HAVE_GETOPT_LONG, test x"$have_getopt_long" = "xyes")
+AM_CONDITIONAL(HAVE_GETOPT_LONG, test "x$have_getopt_long" = "xyes")
 
 
 dnl
@@ -567,6 +568,13 @@ then
 	if test x"$have_pthread_attr_setschedpolicy" = "xyes"; then
 	     AC_DEFINE(HAVE_PTHREAD_SETSCHEDPOLICY, 1, [Pthread support pthread_attr_setschedpolicy])
 	fi
+
+	save_LIBS="$LIBS"
+	LIBS="$LIBS $PTHREAD_LIBS"
+
+	AC_CHECK_FUNCS(pthread_mutexattr_settype pthread_mutexattr_setkind_np)
+
+	LIBS="$save_LIBS"
 
 	CFLAGS="$oldcflags"
 fi
@@ -740,6 +748,46 @@ if test x"$samba_cv_HAVE_OFF64_T" = x"yes"; then
     AC_DEFINE(HAVE_OFF64_T,1,[Whether off64_t is available])
 fi
 
+dnl
+dnl Shared Memory
+dnl
+AC_CHECK_FUNC(shm_open, have_shm_open=yes)
+
+RT_LIBS=
+if test "$have_shm_open" != "yes"; then
+  AC_CHECK_LIB(rt, shm_open, [
+  			    RT_LIBS="-lrt"
+			    have_shm_open=yes])
+fi
+if test "$have_shm_open" != "yes"; then
+  AC_CHECK_LIB(rt, shm_open, [
+  			    RT_LIBS="-lposix4"
+			    have_shm_open=yes])
+fi
+AC_SUBST(RT_LIBS)
+
+if test "$have_shm_open" = "yes"; then
+   AC_DEFINE(HAVE_POSIX_SHM, 1, [Define to 1 to use POSIX shared memory])
+fi
+AM_CONDITIONAL(USE_POSIX_SHM, test "$have_shm_open" = "yes")
+
+
+dnl
+dnl SYSV Semaphores
+dnl
+AC_CHECK_HEADER(sys/sem.h, sysv_sem=yes, sysv_sem=no)
+
+if test "x$sysv_sem" = "xyes"; then
+   AC_CHECK_FUNC(semget, , sysv_sem=no)
+   AC_CHECK_FUNC(semop, , sysv_sem=no)
+   AC_CHECK_FUNC(semctl, , sysv_sem=no)
+fi
+
+if test "x$sysv_sem" = xyes; then
+   AC_DEFINE(HAVE_SYSV_SEMAPHORES, 1, [Define to 1 to use SYSV semaphores])
+fi
+AM_CONDITIONAL(USE_SYSV_SEMAPHORES, test "x$sysv_sem" = xyes)
+
 
 # From etr_socket_nsl.m4
 ETR_SOCKET_NSL
@@ -892,7 +940,7 @@ if test "x$use_internal_pcre" != "xyes"; then
   fi
 fi
 
-AM_CONDITIONAL(USE_INTERNAL_PCRE, test $have_pcre = "built-in")
+AM_CONDITIONAL(USE_INTERNAL_PCRE, test "x$have_pcre" = "xbuilt-in")
 
 dnl
 dnl PAM
@@ -901,7 +949,11 @@ AC_ARG_ENABLE(pam, AC_HELP_STRING([--disable-pam],[Disable PAM support]), use_pa
 if test "x$use_pam" = "xyes"; then
      AC_CHECK_LIB(pam, pam_start, have_pam_lib=yes, have_pam_lib=no)
      AC_CHECK_LIB(pam, _pam_dispatch, have_pam_dispatch=yes, have_pam_dispatch=no)
-     AC_CHECK_HEADER(security/pam_modules.h, have_pam_include=yes, have_pam_include=no)
+     AC_CHECK_HEADER(security/pam_modules.h, have_pam_include=yes, have_pam_include=no, [[
+#ifdef HAVE_SECURITY_PAM_MODULES_H
+# include <security/pam_modules.h>
+#endif	  
+	]])
      AC_CHECK_HEADERS(security/_pam_macros.h security/pam_appl.h)
 fi
 
@@ -1013,6 +1065,22 @@ AM_CONDITIONAL(USE_OPENSSL, test "x$have_openssl" = "xyes")
 
 
 dnl
+dnl Native Language Support
+dnl
+AM_PO_SUBDIRS
+
+if test "x$USE_NLS" = "xyes"; then
+   AC_CHECK_PROG(HAVE_MSGFMT, msgfmt,yes,no)
+
+   if test "x$HAVE_MSGFMT" = "xno"; then
+      AC_MSG_ERROR([msgfmt not found. You need to install the 'gettext' package, or pass --enable-nls=no to configure.])
+   fi
+fi
+
+AM_CONDITIONAL(NLS_ENABLED, test "x$USE_NLS" = "xyes")
+AC_CONFIG_FILES([po/admin/Makefile.in])
+
+dnl
 dnl LDAP
 dnl
 AC_ARG_WITH([ldap],
@@ -1049,7 +1117,7 @@ else
        have_ldap="no"
 fi
 
-AM_CONDITIONAL(HAVE_LDAP, test $have_ldap = "yes")
+AM_CONDITIONAL(HAVE_LDAP, test "x$have_ldap" = "xyes")
 
 
 dnl
@@ -1057,6 +1125,7 @@ dnl Check for MySQL: Execution of a string containing multiple
 dnl statements was introduced in the MySQL release 5.0.0
 dnl
 AX_LIB_MYSQL(5.0.0)
+
 
 dnl
 dnl GeoIP library
@@ -1078,7 +1147,7 @@ AC_ARG_WITH([geoip],
         [want_geoip="yes"]
 )
 
-if test "$want_geoip" = "yes"; then
+if test "x$want_geoip" = "xyes"; then
    AC_CHECK_LIB(GeoIP, GeoIP_new, have_geoip_lib=yes, have_geoip_lib=no) 
    AC_CHECK_HEADERS(GeoIP.h, have_geoip_include=yes, have_geoip_include=no) 
 fi
@@ -1088,7 +1157,57 @@ if test "$have_geoip_lib $have_geoip_include" = "yes yes"; then
    have_geoip="yes"
 fi
 
-AM_CONDITIONAL(HAVE_GEOIP, test $have_geoip = "yes")
+AM_CONDITIONAL(HAVE_GEOIP, test "x$have_geoip" = "xyes")
+
+
+dnl
+dnl FFMpeg library
+dnl
+AC_ARG_WITH([ffmpeg],
+        AC_HELP_STRING([--with-ffmpeg=@<:@ARG@:>@],
+            [use the FFMpeg library @<:@default=yes@:>@, optionally specify path to dev libs]
+        ),
+        [
+        if test "$withval" = "no"; then
+            want_ffmpeg="no"
+        elif test "$withval" = "yes"; then
+            want_ffmpeg="yes"
+        else
+            want_ffmpeg="yes"
+            FFMPEG_CONFIG="$withval"
+        fi
+        ],
+        [want_ffmpeg="yes"]
+)
+
+if test "x$want_ffmpeg" = "xyes"; then
+   AC_CHECK_LIB([avformat], [main], [
+	 FFMPEG_LIBS="-lavformat -lavcodec -lavutil"
+   	 have_ffmpeg_lib=yes
+   ],[have_ffmpeg_lib=no]) 
+
+   AC_CHECK_LIB([bz2], [BZ2_bzdopen], [
+	 FFMPEG_LIBS="$FFMPEG_LIBS -lbz2"
+   ])
+
+   AC_CHECK_LIB([m], [cos], [
+	 FFMPEG_LIBS="$FFMPEG_LIBS -lm"
+   ])
+
+   AC_CHECK_HEADERS([libavformat/avformat.h], [
+      have_ffmpeg_include=yes
+   ],[have_ffmpeg_include=no]) 
+fi
+
+have_ffmpeg="no"
+if test "$have_ffmpeg_lib $have_ffmpeg_include" = "yes yes"; then
+   have_ffmpeg="yes"
+   AC_SUBST(FFMPEG_LIBS)
+   AC_SUBST(FFMPEG_CFLAGS)
+   AC_DEFINE([USE_FFMPEG], 1, [Whether to use FFMpeg])
+fi
+
+AM_CONDITIONAL(HAVE_FFMPEG, test "x$have_ffmpeg" = "xyes")
 
 
 dnl
@@ -1110,7 +1229,7 @@ AC_MSG_CHECKING([$PHPCGI supports FastCGI])
 if test "x$PHPCGI" = "x"; then
    AC_MSG_RESULT([no])
 else
-   $PHPCGI -v | grep 'cgi-fcgi' >/dev/null 2>/dev/null
+   $PHPCGI -v -d session.save_path=/tmp | grep 'cgi-fcgi' >/dev/null 2>/dev/null
    if test $? != 0; then
       PHPCGI=""
       AC_MSG_RESULT([no])
@@ -1158,6 +1277,12 @@ AC_ARG_ENABLE(admin,
 	   wants_admin="$enableval", wants_admin="yes")
 AM_CONDITIONAL(INSTALL_ADMIN, test "x$wants_admin" != "xno")
 
+dnl
+dnl Clean the .pre files
+dnl
+pres="constants.h cherokee.conf.sample performance.conf.sample admin/configured.py contrib/cherokee"
+AC_MSG_NOTICE([Deleting .pre files])
+rm -f $pres
 
 dnl
 dnl Options
@@ -1167,7 +1292,7 @@ AC_ARG_ENABLE(static-module,
 	   AC_HELP_STRING([--enable-static-module=MODULE][]),
 	   [use_static_module="$use_static_module $enableval "],[])
 
-modules="error_redir error_nn server_info file admin dirlist fcgi fastcgi scgi redir common cgi phpcgi proxy mirror ssi custom_error dbslayer gzip deflate ncsa combined w3c pam ldap mysql htpasswd plain htdigest authlist round_robin directory extensions request header exists method geoip libssl not and or"
+modules="error_redir error_nn server_info file admin dirlist fcgi fastcgi scgi redir common cgi phpcgi proxy mirror ssi secdownload empty_gif custom_error dbslayer streaming gzip deflate ncsa combined custom pam ldap mysql htpasswd plain htdigest authlist round_robin ip_hash directory extensions request header exists fullpath method from bind geoip wildcard rehost evhost libssl not and or"
 
 # Remove modules that will not be compiles
 #
@@ -1238,13 +1363,16 @@ AM_CONDITIONAL(STATIC_HANDLER_PHPCGI,         grep phpcgi         $conf_h >/dev/
 AM_CONDITIONAL(STATIC_HANDLER_PROXY,          grep proxy          $conf_h >/dev/null)
 AM_CONDITIONAL(STATIC_HANDLER_MIRROR,         grep mirror         $conf_h >/dev/null)
 AM_CONDITIONAL(STATIC_HANDLER_SSI,            grep ssi            $conf_h >/dev/null)
+AM_CONDITIONAL(STATIC_HANDLER_SECDOWNLOAD,    grep secdownload    $conf_h >/dev/null)
+AM_CONDITIONAL(STATIC_HANDLER_EMPTY_GIF,      grep empty_gif      $conf_h >/dev/null)
 AM_CONDITIONAL(STATIC_HANDLER_CUSTOM_ERROR,   grep custom_error   $conf_h >/dev/null)
 AM_CONDITIONAL(STATIC_HANDLER_DBSLAYER,       grep dbslayer       $conf_h >/dev/null)
+AM_CONDITIONAL(STATIC_HANDLER_STREAMING,      grep streaming      $conf_h >/dev/null)
 AM_CONDITIONAL(STATIC_ENCODER_GZIP,           grep gzip           $conf_h >/dev/null)
 AM_CONDITIONAL(STATIC_ENCODER_DEFLATE,        grep deflate        $conf_h >/dev/null)
 AM_CONDITIONAL(STATIC_LOGGER_NCSA,            grep ncsa           $conf_h >/dev/null)
 AM_CONDITIONAL(STATIC_LOGGER_COMBINED,        grep combined       $conf_h >/dev/null)
-AM_CONDITIONAL(STATIC_LOGGER_W3C,             grep w3c            $conf_h >/dev/null)
+AM_CONDITIONAL(STATIC_LOGGER_CUSTOM,          grep custom         $conf_h >/dev/null)
 AM_CONDITIONAL(STATIC_VALIDATOR_PAM,          grep pam            $conf_h >/dev/null)
 AM_CONDITIONAL(STATIC_VALIDATOR_LDAP,         grep ldap           $conf_h >/dev/null)
 AM_CONDITIONAL(STATIC_VALIDATOR_MYSQL,        grep mysql          $conf_h >/dev/null)
@@ -1253,14 +1381,21 @@ AM_CONDITIONAL(STATIC_VALIDATOR_PLAIN,        grep plain          $conf_h >/dev/
 AM_CONDITIONAL(STATIC_VALIDATOR_HTDIGEST,     grep htdigest       $conf_h >/dev/null)
 AM_CONDITIONAL(STATIC_VALIDATOR_AUTHLIST,     grep authlist       $conf_h >/dev/null)
 AM_CONDITIONAL(STATIC_BALANCER_ROUND_ROBIN,   grep round_robin    $conf_h >/dev/null)
+AM_CONDITIONAL(STATIC_BALANCER_IP_HASH,       grep ip_hash        $conf_h >/dev/null)
 AM_CONDITIONAL(STATIC_CRYPTOR_LIBSSL,         grep libssl         $conf_h >/dev/null)
 AM_CONDITIONAL(STATIC_RULE_DIRECTORY,         grep directory      $conf_h >/dev/null)
 AM_CONDITIONAL(STATIC_RULE_EXTENSIONS,        grep extensions     $conf_h >/dev/null)
 AM_CONDITIONAL(STATIC_RULE_REQUEST,           grep request        $conf_h >/dev/null)
 AM_CONDITIONAL(STATIC_RULE_HEADER,            grep header         $conf_h >/dev/null)
 AM_CONDITIONAL(STATIC_RULE_EXISTS,        	 grep exists         $conf_h >/dev/null)
+AM_CONDITIONAL(STATIC_RULE_FULL_PATH,         grep fullpath       $conf_h >/dev/null)
+AM_CONDITIONAL(STATIC_RULE_BIND,        	 grep bind           $conf_h >/dev/null)
 AM_CONDITIONAL(STATIC_RULE_METHOD,        	 grep method         $conf_h >/dev/null)
+AM_CONDITIONAL(STATIC_RULE_FROM,        	 grep from           $conf_h >/dev/null)
 AM_CONDITIONAL(STATIC_RULE_GEOIP,             grep geoip          $conf_h >/dev/null)
+AM_CONDITIONAL(STATIC_VRULE_WILDCARD,         grep wildcard       $conf_h >/dev/null)
+AM_CONDITIONAL(STATIC_VRULE_REHOST,           grep rehost         $conf_h >/dev/null)
+AM_CONDITIONAL(STATIC_GEN_EVHOST,             grep evhost         $conf_h >/dev/null)
 # These must be at the end
 AM_CONDITIONAL(STATIC_RULE_NOT,               grep _not_          $conf_h >/dev/null)
 AM_CONDITIONAL(STATIC_RULE_AND,               grep _and_          $conf_h >/dev/null)
@@ -1281,15 +1416,19 @@ doc/Makefile
 themes/Makefile 
 themes/default/Makefile 
 themes/firefox3/Makefile 
+themes/plain/Makefile 
 windows/Makefile
 windows/cherokee.nsi
 www/Makefile 
+dbslayer/Makefile
 admin/Makefile
 admin/static/Makefile
 admin/static/js/Makefile
 admin/static/css/Makefile
 admin/static/images/Makefile
 admin/static/images/flags/Makefile
+admin/static/images/wizards/Makefile
+po/Makefile
 ])
 
 
@@ -1328,6 +1467,7 @@ echo "Compatible PAM        $have_pam"
 echo "LDAP                  $have_ldap"
 echo "MySQL                 $have_mysql"
 echo "GeoIP                 $have_geoip"
+echo "FFMpeg                $have_ffmpeg"
 echo "crypt support         $crypt_type"
 if test "x$is_beta" = "xyes"; then
 echo "Beta release          $svn_rev"

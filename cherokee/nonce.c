@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2008 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2009 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -18,9 +18,9 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
- * USA
- */
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
+ */ 
 
 #include "common-internal.h"
 #include "nonce.h"
@@ -94,6 +94,7 @@ cherokee_nonce_table_free (cherokee_nonce_table_t *nonces)
 	cherokee_avl_mrproper (&nonces->table, NULL);
 	CHEROKEE_MUTEX_DESTROY (&nonces->access);
 
+	free (nonces);
 	return ret_ok;
 }
 
@@ -148,7 +149,6 @@ cherokee_nonce_table_generate (cherokee_nonce_table_t *nonces,
 
 	/* Generate nonce string
 	 */
-	cherokee_buffer_clean (nonce);
 	cherokee_buffer_add_ullong16(nonce, (cullong_t) cherokee_bogonow_now);
 	cherokee_buffer_add_ulong16 (nonce, (culong_t) rand());
 	cherokee_buffer_add_ulong16 (nonce, (culong_t) POINTER_TO_INT(conn));

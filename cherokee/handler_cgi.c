@@ -4,9 +4,8 @@
  *
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
- *      Ayose Cazorla León <setepo@gulic.org>
  *
- * Copyright (C) 2001-2008 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2009 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -19,9 +18,9 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
- * USA
- */
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
+ */ 
 
 #include "common-internal.h"
 #include "handler_cgi.h"
@@ -55,7 +54,7 @@
 #include "header.h"
 #include "header-protected.h"
 #include "post.h"
-
+#include "error_log.h"
 
 #define ENTRIES "handler,cgi"
 
@@ -82,6 +81,11 @@ read_from_cgi (cherokee_handler_cgi_base_t *cgi_base, cherokee_buffer_t *buffer)
 	ret_t                   ret;
  	size_t                  read_ = 0;
 	cherokee_handler_cgi_t *cgi   = HDL_CGI(cgi_base);
+
+	/* Sanity check: pipe() accessed
+	 */
+	if (unlikely (cgi->pipeInput < 0))
+		return ret_eof;
 
 	/* Read the data from the pipe:
 	 */
@@ -212,18 +216,32 @@ cherokee_handler_cgi_free (cherokee_handler_cgi_t *cgi)
 		cgi->pipeOutput = -1;
 	}
 
-#ifndef _WIN32
-        /* Maybe kill the CGI
+        /* Kill the CGI
 	 */
+#ifndef _WIN32
 	if (cgi->pid > 0) {
-		pid_t pid;
+		pid_t  pid;
+		cint_t tries = 2;
 
-		do {
-			pid = waitpid (cgi->pid, NULL, WNOHANG);
-		} while ((pid == 1) && (errno == EINTR));
-
-		if (pid <= 0) {
+		while (true) {
+			do {
+				pid = waitpid (cgi->pid, NULL, WNOHANG);
+			} while ((pid == 1) && (errno == EINTR));
+			
+			if (pid > 0) {
+				/* Ok */
+				break;
+			} else if (errno == ECHILD) {
+				/* Already death */
+				break;
+			}
+			
+			/* Failed */
 			kill (cgi->pid, SIGTERM);
+
+			tries--;
+			if (tries < 0)
+				break;
 		}
 	}
 #else
@@ -237,6 +255,8 @@ cherokee_handler_cgi_free (cherokee_handler_cgi_t *cgi)
 	}
 #endif
 
+        /* Free the environment variables
+	 */
 #ifdef _WIN32
 	cherokee_buffer_mrproper (&cgi->envp);
 #else
@@ -291,8 +311,8 @@ cherokee_handler_cgi_configure (cherokee_config_node_t *conf, cherokee_server_t 
 
 void
 cherokee_handler_cgi_add_env_pair (cherokee_handler_cgi_base_t *cgi_base,
-				   char *name,    int name_len,
-				   char *content, int content_len)
+				   const char *name,    int name_len,
+				   const char *content, int content_len)
 {
 	cherokee_handler_cgi_t *cgi = HDL_CGI(cgi_base);
 
@@ -332,12 +352,13 @@ cherokee_handler_cgi_add_env_pair (cherokee_handler_cgi_base_t *cgi_base,
 }
 
 static ret_t
-add_environment (cherokee_handler_cgi_t *cgi, cherokee_connection_t *conn)
+add_environment (cherokee_handler_cgi_t *cgi,
+		 cherokee_connection_t  *conn)
 {
 	ret_t                        ret;
-	char                        *length;
-	cuint_t                      length_len;
+	off_t                        post_len;
 	cherokee_handler_cgi_base_t *cgi_base = HDL_CGI_BASE(cgi);
+	cherokee_buffer_t           *tmp      = THREAD_TMP_BUF2(CONN_THREAD(conn));
 
 	ret = cherokee_handler_cgi_base_build_envp (HDL_CGI_BASE(cgi), conn);
 	if (unlikely (ret != ret_ok))
@@ -345,9 +366,13 @@ add_environment (cherokee_handler_cgi_t *cgi, cherokee_connection_t *conn)
 
 	/* CONTENT_LENGTH
 	 */
-	ret = cherokee_header_get_known (&conn->header, header_content_length, &length, &length_len);
-	if (ret == ret_ok)
-		set_env (cgi_base, "CONTENT_LENGTH", length, length_len);
+	if (http_method_with_input (conn->header.method)) {
+		cherokee_post_get_len (&conn->post, &post_len);
+
+		cherokee_buffer_clean (tmp);
+		cherokee_buffer_add_ullong10 (tmp, post_len);
+		set_env (cgi_base, "CONTENT_LENGTH", tmp->buf, tmp->len);
+	}
 
 	/* SCRIPT_FILENAME
 	 */
@@ -355,7 +380,9 @@ add_environment (cherokee_handler_cgi_t *cgi, cherokee_connection_t *conn)
 		return ret_error;
 
 	set_env (cgi_base, "SCRIPT_FILENAME",
-		 cgi_base->executable.buf, cgi_base->executable.len);
+		 cgi_base->executable.buf,
+		 cgi_base->executable.len);
+
 	return ret_ok;
 }
 
@@ -414,7 +441,7 @@ cherokee_handler_cgi_init (cherokee_handler_cgi_t *cgi)
 		 * otherwhise the server will drop it for the CGI
 		 * isn't fast enough
 		 */
-		conn->timeout = CONN_THREAD(conn)->bogo_now + CGI_TIMEOUT;
+		conn->timeout = cherokee_bogonow_now + CGI_TIMEOUT;
 		
 		cgi_base->init_phase = hcgi_phase_connect;
 
@@ -465,7 +492,7 @@ _fd_set_properties (int fd, int add_flags, int remove_flags)
 	flags &= ~remove_flags;
 
 	if (fcntl (fd, F_SETFL, flags) == -1) {
-		PRINT_ERRNO (errno, "Setting pipe properties fd=%d: '${errno}'", fd);
+		LOG_ERRNO (errno, cherokee_err_error, "Setting pipe properties fd=%d: '${errno}'", fd);
 		return ret_error;
 	}	
 
@@ -473,7 +500,7 @@ _fd_set_properties (int fd, int add_flags, int remove_flags)
 }
 
 
-static void 
+static NORETURN void 
 manage_child_cgi_process (cherokee_handler_cgi_t *cgi, int pipe_cgi[2], int pipe_server[2])
 {
 	/* Child process
@@ -501,16 +528,28 @@ manage_child_cgi_process (cherokee_handler_cgi_t *cgi, int pipe_cgi[2], int pipe
 		
 	/* Change stdin and out
 	 */
-	dup2 (pipe_server[0], STDIN_FILENO);
+	re  = dup2 (pipe_server[0], STDIN_FILENO);
 	close (pipe_server[0]);
 
-	dup2 (pipe_cgi[1], STDOUT_FILENO);
+	if (unlikely (re != 0)) {
+		printf ("Status: 500" CRLF_CRLF);
+		printf ("X-Debug: file=%s line=%d" CRLF_CRLF, __FILE__, __LINE__);
+		exit(1);
+	}
+
+	re |= dup2 (pipe_cgi[1], STDOUT_FILENO);
 	close (pipe_cgi[1]);
 
 	/* Redirect the stderr
 	 */
 	if (CONN_VSRV(conn)->logger != NULL) {
-		cherokee_logger_write_error_fd (CONN_VSRV(conn)->logger, STDERR_FILENO);
+		cherokee_logger_writer_t *writer = NULL;
+		cherokee_logger_t        *log    = CONN_VSRV(conn)->logger;
+
+		cherokee_logger_get_error_writer (log, &writer);
+		if ((writer != NULL) && (writer->fd != -1)) {
+			dup2 (writer->fd, STDERR_FILENO);
+		}
 	}
 
 # if 0
@@ -544,6 +583,7 @@ manage_child_cgi_process (cherokee_handler_cgi_t *cgi, int pipe_cgi[2], int pipe
 
 	if (re < 0) {
 		printf ("Status: 500" CRLF_CRLF);
+		printf ("X-Debug: file=%s line=%d" CRLF_CRLF, __FILE__, __LINE__);
 		exit(1);
 	}
 
@@ -569,9 +609,7 @@ manage_child_cgi_process (cherokee_handler_cgi_t *cgi, int pipe_cgi[2], int pipe
 		if (re >= 0) {
 			re = setuid (info.st_uid);
 			if (re != 0) {
-				cherokee_logger_write_string (CONN_VSRV(conn)->logger, 
-							      "%s: couldn't set UID %d",
-							      script, info.st_uid);
+				LOG_ERROR("%s: couldn't set UID %d\n", script, info.st_uid);
 			}
 		}
 	}
@@ -607,13 +645,14 @@ manage_child_cgi_process (cherokee_handler_cgi_t *cgi, int pipe_cgi[2], int pipe
 			break;
 		default:
 			printf ("Status: 500" CRLF_CRLF);
+			printf ("X-Debug: file=%s line=%d cmd=%s: %s" CRLF_CRLF,
+				__FILE__, __LINE__, absolute_path, strerror(err));
 		}
 
 		/* Don't use the logging system (concurrency issues)
 		 */
-		PRINT_ERROR ("Couldn't execute '%s': %s\n",
-			     absolute_path,
-			     cherokee_strerror_r(err, buferr, sizeof(buferr)));
+		LOG_ERROR ("Couldn't execute '%s': %s\n",
+			   absolute_path, cherokee_strerror_r(err, buferr, sizeof(buferr)));
 		exit(1);
 	}
 
@@ -793,7 +832,7 @@ fork_and_execute_cgi_win32 (cherokee_handler_cgi_t *cgi)
 	CloseHandle (hChildStdoutWr);
 
 	if (!re) {
-		PRINT_ERROR ("CreateProcess error: error=%d\n", GetLastError());
+		LOG_ERROR ("CreateProcess error: error=%d\n", GetLastError());
 
 		CloseHandle (pi.hProcess);
 		CloseHandle (pi.hThread);

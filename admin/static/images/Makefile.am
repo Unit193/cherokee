@@ -1,18 +1,26 @@
 ## Cherokee: Makefile.am  -*- makefile -*-
 
-SUBDIRS = flags
+SUBDIRS = flags wizards
 
 DARKGLASS_ICONS = \
 online.png \
 offline.png
 
+SILK_ICONS = \
+cross.png \
+tick.png
+
 adminstaticdir = "$(datadir)/cherokee/admin/static/images"
 adminstatic_DATA = \
 $(DARKGLASS_ICONS) \
+$(SILK_ICONS) \
 background.png \
 cherokee-logo-bar.png \
+top-bar.png \
+menu-sep.png \
 menu-active.png \
 menu-highlight.png \
+tab.png \
 workarea.png \
 help.png \
 button-left.png \
@@ -26,7 +34,11 @@ bin.png \
 favicon.ico \
 macFFBgHack.png \
 loadingAnimation.gif \
-forbidden.png
+forbidden.png \
+web_proud.jpg \
+rulestable-th.png \
+arrow_ns.png \
+arrow_ns_h.png
 
 EXTRA_DIST = \
 $(adminstatic_DATA)

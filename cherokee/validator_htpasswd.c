@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2008 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2009 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -18,9 +18,9 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
- * USA
- */
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
+ */ 
 
 #include "common-internal.h"
 #include "validator_htpasswd.h"
@@ -126,7 +126,7 @@ crypt_r_emu (const char *key, const char *salt, const char *compared)
 #endif
 
 
-ret_t
+static ret_t
 check_crypt (char *passwd, char *salt, const char *compared)
 {
 	ret_t ret;
@@ -210,8 +210,8 @@ validate_md5 (cherokee_connection_t *conn, const char *magic, char *crypted)
 static ret_t
 validate_non_salted_sha (cherokee_connection_t *conn, char *crypted)
 {	
-	cuint_t           c_len       = strlen (crypted);
-	cherokee_thread_t *thread = CONN_THREAD(conn);
+	cuint_t           c_len      = strlen (crypted);
+	cherokee_thread_t *thread    = CONN_THREAD(conn);
 	cherokee_buffer_t *sha1_buf1 = THREAD_TMP_BUF1(thread);
 	cherokee_buffer_t *sha1_buf2 = THREAD_TMP_BUF2(thread);
 
@@ -245,6 +245,8 @@ request_isnt_passwd_file (cherokee_validator_htpasswd_t *htpasswd,
 	char    *p;
 	cuint_t  re;
 	cuint_t  len;
+
+	UNUSED(htpasswd);
 
 	/* Sanity check */
 	if (cherokee_buffer_is_empty (full_path))

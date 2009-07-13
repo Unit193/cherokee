@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2008 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2009 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -18,18 +18,21 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
- * USA
- */
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
+ */ 
 
 #include "common-internal.h"
 #include <signal.h>
 #include "init.h"
 #include "server.h"
 #include "socket.h"
+#include "spawner.h"
 
-#ifdef HAVE_GETOPT_H
+#ifdef HAVE_GETOPT_LONG
 # include <getopt.h>
+#else 
+# include "getopt/getopt.h"
 #endif
 
 #define APP_NAME        \
@@ -37,7 +40,7 @@
 
 #define APP_COPY_NOTICE \
 	"Written by Alvaro Lopez Ortega <alvaro@gnu.org>\n\n"                          \
-	"Copyright (C) 2001-2008 Alvaro Lopez Ortega.\n"                               \
+	"Copyright (C) 2001-2009 Alvaro Lopez Ortega.\n"                               \
 	"This is free software; see the source for copying conditions.  There is NO\n" \
 	"warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n"
 
@@ -48,29 +51,29 @@
 #define DEFAULT_CONFIG_FILE  CHEROKEE_CONFDIR "/cherokee.conf"
 #define DEFAULT_BIND         "127.0.0.1"
 #define RULE_PRE             "vserver!1!rule!"
- 
-static int   port          = DEFAULT_PORT;
-static char *document_root = DEFAULT_DOCUMENTROOT;
-static char *config_file   = DEFAULT_CONFIG_FILE;
-static char *bind_to       = DEFAULT_BIND;
-static int   debug         = 0;
-static int   unsecure      = 0;
+
+static int         port          = DEFAULT_PORT;
+static const char *document_root = DEFAULT_DOCUMENTROOT;
+static const char *config_file   = DEFAULT_CONFIG_FILE;
+static const char *bind_to       = DEFAULT_BIND;
+static int         debug         = 0;
+static int         unsecure      = 0;
 
 static ret_t
 find_empty_port (int starting, int *port)
 {
 	ret_t             ret;
 	cherokee_socket_t s;
-	int               p    = starting;
-	cherokee_buffer_t bind = CHEROKEE_BUF_INIT;
+	int               p     = starting;
+	cherokee_buffer_t bind_ = CHEROKEE_BUF_INIT;
 
-	cherokee_buffer_add_str (&bind, "127.0.0.1");
+	cherokee_buffer_add_str (&bind_, "127.0.0.1");
 
 	cherokee_socket_init (&s);
 	cherokee_socket_set_client (&s, AF_INET);
 
 	while (true) {
-		ret = cherokee_socket_bind (&s, p, &bind);
+		ret = cherokee_socket_bind (&s, p, &bind_);
 		if (ret == ret_ok) 
 			break;
 
@@ -78,9 +81,10 @@ find_empty_port (int starting, int *port)
 			return ret_error;
 	}
 
-	cherokee_socket_close(&s);
-	cherokee_socket_mrproper(&s);
-	cherokee_buffer_mrproper(&bind);
+	cherokee_socket_close (&s);
+
+	cherokee_socket_mrproper (&s);
+	cherokee_buffer_mrproper (&bind_);
 
 	*port = p;
 	return ret_ok;
@@ -110,27 +114,37 @@ config_server (cherokee_server_t *srv)
 	cherokee_buffer_t buf       = CHEROKEE_BUF_INIT;
 	cherokee_buffer_t password  = CHEROKEE_BUF_INIT;
 
+	/* Print some information
+	 */
+	printf ("\n");
+
 	if (unsecure == 0) {
 		ret = generate_admin_password (&password);
 		if (ret != ret_ok) 
 			return ret;
 
-		printf ("\nLogin:\n"
+		printf ("Login:\n"
 			"  User:              admin\n"
 			"  One-time Password: %s\n\n", password.buf);
 	}
 
+	printf ("Web Interface:\n"
+		"  URL:               http://%s:%d/\n\n",
+		(bind_to) ? bind_to : "localhost", port);
+
+	/* Configure the embedded server
+	 */
 	ret = find_empty_port (scgi_port, &scgi_port);
 	if (ret != ret_ok) 
 		return ret;
 
-	cherokee_buffer_add_va  (&buf, "server!port = %d\n", port);
+	cherokee_buffer_add_va  (&buf, "server!bind!1!port = %d\n", port);
 	cherokee_buffer_add_str (&buf, "server!thread_number = 1\n");
 	cherokee_buffer_add_str (&buf, "server!ipv6 = 0\n");
 	cherokee_buffer_add_str (&buf, "server!max_connection_reuse = 0\n");
 
 	if (bind_to)
-		cherokee_buffer_add_va (&buf, "server!listen = %s\n", bind_to);
+		cherokee_buffer_add_va (&buf, "server!bind!1!interface = %s\n", bind_to);
 
 	cherokee_buffer_add_str (&buf, "vserver!1!nick = default\n");
 	cherokee_buffer_add_va  (&buf, "vserver!1!document_root = %s\n", document_root);
@@ -138,13 +152,16 @@ config_server (cherokee_server_t *srv)
 	cherokee_buffer_add_va  (&buf,
 				 "source!1!nick = app-logic\n"
 				 "source!1!type = interpreter\n"
-				 "source!1!timeout = 15\n"
+				 "source!1!timeout = 25\n"
 				 "source!1!host = localhost:%d\n"
-				 "source!1!interpreter = %s/server.py %d %s\n",
-				 scgi_port, document_root, scgi_port, config_file);
+				 "source!1!interpreter = %s/server.py %d %s\n"
+				 "source!1!env!PATH = %s\n",
+				 scgi_port, document_root, scgi_port, 
+				 config_file, getenv("PATH"));
 
-	if (debug)
+	if (debug) {
 		cherokee_buffer_add_str  (&buf, "source!1!debug = 1\n");
+	}
 
 	cherokee_buffer_add_str  (&buf, 
 				  RULE_PRE "1!match = default\n"
@@ -175,11 +192,21 @@ config_server (cherokee_server_t *srv)
 				 RULE_PRE "3!handler = file\n"
 				 RULE_PRE "3!handler!iocache = 0\n");
 
+	if (! debug) {
+		cherokee_buffer_add_str (&buf, RULE_PRE "3!expiration = time\n");
+		cherokee_buffer_add_str (&buf, RULE_PRE "3!expiration!time = 30d\n");
+	}
+
 	cherokee_buffer_add_va  (&buf, 
 				 RULE_PRE "4!match = request\n"
 				 RULE_PRE "4!match!request = ^/favicon.ico$\n"
 				 RULE_PRE "4!document_root = %s/static/images\n"
 				 RULE_PRE "4!handler = file\n", document_root);
+
+	if (! debug) {
+		cherokee_buffer_add_str (&buf, RULE_PRE "4!expiration = time\n");
+		cherokee_buffer_add_str (&buf, RULE_PRE "4!expiration!time = 30d\n");
+	}
 
 	cherokee_buffer_add_va  (&buf, 
 				 RULE_PRE "5!match = directory\n"
@@ -188,12 +215,25 @@ config_server (cherokee_server_t *srv)
 				 RULE_PRE "5!handler!iocache = 0\n"
 				 RULE_PRE "5!document_root = %s\n", CHEROKEE_ICONSDIR);
 
+	if (! debug) {
+		cherokee_buffer_add_str (&buf, RULE_PRE "5!expiration = time\n");
+		cherokee_buffer_add_str (&buf, RULE_PRE "5!expiration!time = 30d\n");
+	}
+
 	cherokee_buffer_add_va  (&buf, 
 				 RULE_PRE "6!match = directory\n"
 				 RULE_PRE "6!match!directory = /help\n"
 				 RULE_PRE "6!handler = file\n"
 				 RULE_PRE "6!handler!iocache = 0\n"
 				 RULE_PRE "6!document_root = %s\n", CHEROKEE_DOCDIR);
+
+	cherokee_buffer_add_str (&buf,
+				 "mime!text/javascript!extensions = js\n"
+				 "mime!text/css!extensions = css\n"
+				 "mime!image/png!extensions = png\n"
+				 "mime!image/jpeg!extensions = jpeg,jpg\n"
+				 "mime!image/svg+xml!extensions = svg,svgz\n"
+				 "mime!image/gif!extensions = gif\n");
 
 	ret = cherokee_server_read_config_string (srv, &buf);
 	if (ret != ret_ok) {
@@ -289,6 +329,7 @@ main (int argc, char **argv)
 #endif
 
 	cherokee_init();
+	cherokee_spawner_set_active (false);
 	process_parameters (argc, argv);
 
 	ret = cherokee_server_new (&srv);

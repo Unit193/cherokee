@@ -56,7 +56,7 @@ cellspacing="0" cellpadding="4">
     <em>binddn</em>      
     </td>
     <td align="left">
-    Optional. Bind Distinguished Name (<tt>user</tt>). If none                         is provided and anonymous bind will be attempted.
+    Optional. Bind Distinguished Name (<tt>user</tt>). If none                         is provided an anonymous bind will be attempted.
     </td>
   </tr>
   <tr>
@@ -104,6 +104,11 @@ cellspacing="0" cellpadding="4">
 </div>
 <h4 id="compatibility">Compatibility</h4>
 <div class="para"><p>This validator is compatible with the <strong>basic</strong> scheme.</p></div>
+<h4 id="notes">Notes</h4>
+<div class="para"><p>The server address can be specified as an IP address or a hostname.</p></div>
+<div class="para"><p>Base DN, also known as search base, identifies the part of the
+directory tree you want to manage.</p></div>
+<div class="para"><p>Bind DN is the user name.</p></div>
 </div>
 <div id="footer">
 <div id="footer-text">

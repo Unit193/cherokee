@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2008 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2009 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -18,9 +18,9 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
- * USA
- */
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
+ */ 
 
 #include "common-internal.h"
 #include "http.h"
@@ -41,14 +41,21 @@ PLUGIN_INFO_VALIDATOR_EASIEST_INIT (pam, http_auth_basic);
 
 
 ret_t
-cherokee_validator_pam_configure (cherokee_config_node_t *conf, cherokee_server_t *srv, cherokee_module_props_t **props)
+cherokee_validator_pam_configure (cherokee_config_node_t   *conf,
+				  cherokee_server_t        *srv,
+				  cherokee_module_props_t **props)
 {
+	UNUSED(conf);
+	UNUSED(srv);
+	UNUSED(props);
+
 	return ret_ok;
 }
 
 
 ret_t 
-cherokee_validator_pam_new (cherokee_validator_pam_t **pam, cherokee_module_props_t *props)
+cherokee_validator_pam_new (cherokee_validator_pam_t **pam,
+			    cherokee_module_props_t  *props)
 {
 	CHEROKEE_NEW_STRUCT(n,validator_pam);
 
@@ -137,13 +144,16 @@ auth_pam_talker (int                        num_msg,
 
 
 ret_t 
-cherokee_validator_pam_check (cherokee_validator_pam_t  *pam, cherokee_connection_t *conn)
+cherokee_validator_pam_check (cherokee_validator_pam_t *pam,
+			      cherokee_connection_t    *conn)
 {
 	int                  ret;
 	static pam_handle_t *pamhandle = NULL;
 	struct pam_conv      pamconv   = {&auth_pam_talker, conn};
 
 	extern int _pam_dispatch (pam_handle_t *, int, int);
+
+	UNUSED(pam);
 
 	/* Start the PAM query
 	 */
@@ -158,11 +168,7 @@ cherokee_validator_pam_check (cherokee_validator_pam_t  *pam, cherokee_connectio
 #ifdef HAVE_PAM_FAIL_DELAY
 	ret = pam_fail_delay (pamhandle, 0);
 	if (ret != PAM_SUCCESS) {
-		cherokee_buffer_t msg = CHEROKEE_BUF_INIT;
-		
-		cherokee_buffer_add_str (&msg, "Setting pam fail delay failed");
-		cherokee_logger_write_string (CONN_VSRV(conn)->logger, "%s", msg.buf);
-		cherokee_buffer_mrproper (&msg);
+		LOG_ERROR_S ("Setting pam fail delay failed\n");
 
 		conn->error_code = http_internal_error;
 		return ret_error;
@@ -188,14 +194,9 @@ cherokee_validator_pam_check (cherokee_validator_pam_t  *pam, cherokee_connectio
 #endif
 
 	if (ret != PAM_SUCCESS) {
-		cherokee_buffer_t msg = CHEROKEE_BUF_INIT;
-
-		cherokee_buffer_add_str (&msg, "PAM: user '");
-		cherokee_buffer_add_buffer (&msg, &conn->validator->user);
-		cherokee_buffer_add_va (&msg, "' - not authenticated: %s", pam_strerror(pamhandle, ret));
-
-		cherokee_logger_write_string (CONN_VSRV(conn)->logger, "%s", msg.buf);
-		cherokee_buffer_mrproper (&msg);
+		LOG_ERROR ("PAM: user '%s' - not authenticated: %s\n",
+			   conn->validator->user.buf,
+			   pam_strerror(pamhandle, ret));
 
 		goto unauthorized;
 	}
@@ -204,14 +205,9 @@ cherokee_validator_pam_check (cherokee_validator_pam_t  *pam, cherokee_connectio
 	 */
 	ret = pam_acct_mgmt (pamhandle, PAM_DISALLOW_NULL_AUTHTOK); 
 	if (ret != PAM_SUCCESS) {
-		cherokee_buffer_t msg = CHEROKEE_BUF_INIT;
-
-		cherokee_buffer_add_str (&msg, "PAM: user '");
-		cherokee_buffer_add_buffer (&msg, &conn->validator->user);
-		cherokee_buffer_add_va (&msg, "'  - invalid account: %s", pam_strerror(pamhandle, ret));
-
-		cherokee_logger_write_string (CONN_VSRV(conn)->logger, "%s", msg.buf);
-		cherokee_buffer_mrproper (&msg);
+		LOG_ERROR ("PAM: user '%s' - invalid account: %s\n",
+			   conn->validator->user.buf,
+			   pam_strerror(pamhandle, ret));
 
 		goto unauthorized;
 	}
@@ -226,8 +222,14 @@ unauthorized:
 
 
 ret_t 
-cherokee_validator_pam_add_headers (cherokee_validator_pam_t  *pam, cherokee_connection_t *conn, cherokee_buffer_t *buf)
+cherokee_validator_pam_add_headers (cherokee_validator_pam_t *pam,
+				    cherokee_connection_t    *conn,
+				    cherokee_buffer_t        *buf)
 {
+	UNUSED(pam);
+	UNUSED(conn);
+	UNUSED(buf);
+
 	return ret_ok;
 }
 
