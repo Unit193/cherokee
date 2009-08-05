@@ -1498,50 +1498,62 @@ cherokee_connection_is_userdir (cherokee_connection_t *conn)
 
 
 ret_t
-cherokee_connection_build_local_directory (cherokee_connection_t     *conn,
-					   cherokee_virtual_server_t *vsrv,
-					   cherokee_config_entry_t   *entry)
+cherokee_connection_set_custom_droot (cherokee_connection_t   *conn,
+				      cherokee_config_entry_t *entry)
 {
 	ret_t ret;
 
-	/* Custom Document Root
+	/* Shortcut
 	 */
-	if ((entry->document_root != NULL) && 
-	    (entry->document_root->len >= 1))
-	{
-		BIT_SET (conn->options, conn_op_document_root);
+	if ((entry->document_root == NULL) ||
+	    (entry->document_root->len <= 0))
+		return ret_ok;
 
-		/* Have a special DocumentRoot
-		 */
-		ret = cherokee_buffer_add_buffer (&conn->local_directory, entry->document_root);
+	/* Have a special DocumentRoot
+	 */
+	BIT_SET (conn->options, conn_op_document_root);
 
-		/* It has to drop the webdir from the request:
-		 *	
-		 * Directory /thing {
-		 *    DocumentRoot /usr/share/this/rocks
-		 * }	
-		 *	
-		 * on petition: http://server/thing/cherokee	
-		 * should read: /usr/share/this/rocks/cherokee	
-		 */
-		if (cherokee_buffer_is_empty (&conn->request_original)) {
-			cherokee_buffer_add_buffer (&conn->request_original, &conn->request);
-		}
+	cherokee_buffer_clean (&conn->local_directory);
+	ret = cherokee_buffer_add_buffer (&conn->local_directory, entry->document_root);
 
-		if (conn->web_directory.len > 1) {
-			cherokee_buffer_move_to_begin (&conn->request, conn->web_directory.len);
-		}
-
-		if ((conn->request.len >= 2) && (strncmp(conn->request.buf, "//", 2) == 0)) {
-			cherokee_buffer_move_to_begin (&conn->request, 1);
-		}
-
-		goto ok;
+	/* It has to drop the webdir from the request:
+	 *	
+	 * Directory /thing {
+	 *    DocumentRoot /usr/share/this/rocks
+	 * }	
+	 *	
+	 * on petition: http://server/thing/cherokee	
+	 * should read: /usr/share/this/rocks/cherokee	
+	 */
+	if (cherokee_buffer_is_empty (&conn->request_original)) {
+		cherokee_buffer_add_buffer (&conn->request_original, &conn->request);
 	}
+	
+	if (conn->web_directory.len > 1) {
+		cherokee_buffer_move_to_begin (&conn->request, conn->web_directory.len);
+	}
+	
+	if ((conn->request.len >= 2) && (strncmp(conn->request.buf, "//", 2) == 0)) {
+		cherokee_buffer_move_to_begin (&conn->request, 1);
+	}
+
+	TRACE(ENTRIES, "Set Custom Local Directory: '%s'\n", conn->local_directory.buf);
+	return ret_ok;
+}
+
+
+ret_t
+cherokee_connection_build_local_directory (cherokee_connection_t     *conn,
+					   cherokee_virtual_server_t *vsrv)
+{
+	ret_t ret;
 
 	/* Enhanced Virtual-Hosting
 	 */
 	if (vsrv->evhost != NULL) {
+		TRACE(ENTRIES, "About to evaluate EVHost. Now Document root is: '%s'\n",
+		      conn->local_directory.buf ? conn->local_directory.buf : "");
+
 		ret = EVHOST(vsrv->evhost)->func_document_root (vsrv->evhost, conn);
 		if (ret == ret_ok)
 			goto ok;
@@ -1568,35 +1580,12 @@ error:
 
 
 ret_t
-cherokee_connection_build_local_directory_userdir (cherokee_connection_t *conn, cherokee_virtual_server_t *vsrv, cherokee_config_entry_t *entry)
+cherokee_connection_build_local_directory_userdir (cherokee_connection_t     *conn,
+						   cherokee_virtual_server_t *vsrv)
 {
 	ret_t         ret;
 	struct passwd pwd;
 	char          tmp[1024];
-
-	/* Has a defined DocumentRoot
-	 */
-	if (entry->document_root &&
-	    entry->document_root->len >= 1) 
-	{
-		BIT_SET (conn->options, conn_op_document_root);
-
-		cherokee_buffer_add_buffer (&conn->local_directory, entry->document_root);
-
-		if (cherokee_buffer_is_empty (&conn->request_original)) {
-			cherokee_buffer_add_buffer (&conn->request_original, &conn->request);
-		}
-
-		if (conn->web_directory.len > 1) {
-			cherokee_buffer_move_to_begin (&conn->request, conn->web_directory.len);
-		}
-
-		if ((conn->request.len >= 2) && (strncmp(conn->request.buf, "//", 2) == 0)) {
-			cherokee_buffer_move_to_begin (&conn->request, 1);
-		}
-
-		return ret_ok;
-	}
 
 	/* Default: it is inside the UserDir in home
 	 */
@@ -1905,7 +1894,7 @@ cherokee_connection_get_request (cherokee_connection_t *conn)
 		
 		/* Set the virtual server reference
 		 */
-		ret = cherokee_server_get_vserver (CONN_SRV(conn), &conn->host,
+		ret = cherokee_server_get_vserver (CONN_SRV(conn), &conn->host, conn,
 						   (cherokee_virtual_server_t **)&conn->vserver);
 		if (unlikely (ret != ret_ok)) {
 			LOG_ERROR ("Couldn't get virtual server: '%s'\n", conn->host.buf);
@@ -2404,19 +2393,21 @@ cherokee_connection_log_delayed (cherokee_connection_t *conn)
 ret_t 
 cherokee_connection_update_vhost_traffic (cherokee_connection_t *conn)
 {
-	/* Update the virtual server traffic counters
+	if (CONN_VSRV(conn)->collector == NULL)
+		return ret_ok;
+
+	cherokee_collector_vsrv_count (CONN_VSRV(conn)->collector,
+				       conn->rx_partial,
+				       conn->tx_partial);
+
+	/* Update the time for the next update
 	 */
-	cherokee_virtual_server_add_rx (CONN_VSRV(conn), conn->rx_partial);
-	cherokee_virtual_server_add_tx (CONN_VSRV(conn), conn->tx_partial);	
+	conn->traffic_next = cherokee_bogonow_now + DEFAULT_TRAFFIC_UPDATE;
 
 	/* Reset partial counters
 	 */
 	conn->rx_partial = 0;
 	conn->tx_partial = 0;
-
-	/* Update the time for the next update
-	 */
-	conn->traffic_next += DEFAULT_TRAFFIC_UPDATE;
 
 	return ret_ok;
 }
@@ -2491,14 +2482,21 @@ cherokee_connection_use_webdir (cherokee_connection_t *conn)
 char *
 cherokee_connection_print (cherokee_connection_t *conn)
 {
-	cherokee_buffer_t *buf = &conn->self_trace;
 	const char        *phase;
+	cherokee_buffer_t *buf    = &conn->self_trace;
 
+	/* Shortcut: Don't render if not tracing
+	 */
+	if (! cherokee_trace_is_tracing())
+		return "";
+
+	/* Render
+	 */
 	cherokee_buffer_clean (buf);
 
 	if (conn == NULL) {
 		cherokee_buffer_add_str (buf, "Connection is NULL\n");
-		return ret_ok;
+		return buf->buf;
 	}
 
 	phase = cherokee_connection_get_phase_str (conn);

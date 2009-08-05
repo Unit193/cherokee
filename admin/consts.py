@@ -138,7 +138,8 @@ RULES = [
 VRULES = [
     ('',           N_('Choose..')),
     ('wildcard',   N_('Wildcards')),
-    ('rehost',     N_('Regular Expressions'))
+    ('rehost',     N_('Regular Expressions')),
+    ('target_ip',  N_('Server IP'))
 ]
 
 EXPIRATION_TYPE = [
@@ -162,4 +163,9 @@ CLIENT_CERTS = [
     ('',         N_('Skip')),
     ('accept',   N_('Accept')),
     ('required', N_('Require'))
+]
+
+COLLECTORS = [
+    ('',         N_('Disabled')),
+    ('rrd',      N_('RRDtool graphs'))
 ]

@@ -88,6 +88,7 @@
 #include "source_interpreter.h"
 
 #define ENTRIES "core,server"
+#define GRNAM_BUF_LEN 8192
 
 ret_t
 cherokee_server_new  (cherokee_server_t **srv)
@@ -132,7 +133,7 @@ cherokee_server_new  (cherokee_server_t **srv)
 	n->group_orig       = getgid();
 	n->group            = n->group_orig;
 
-	n->fdlimit_custom    = -1;
+	n->fdlimit_custom    = FD_NUM_CUSTOM_LIMIT;
 	n->fdlimit_available = -1;
 
 	n->conns_max        =  0;
@@ -145,6 +146,7 @@ cherokee_server_new  (cherokee_server_t **srv)
 	n->mime             = NULL;
 	n->icons            = NULL;
 	n->regexs           = NULL;
+	n->collector        = NULL;
 
 	cherokee_buffer_init (&n->chroot);
 	cherokee_buffer_init (&n->timeout_header);
@@ -275,11 +277,17 @@ cherokee_server_free (cherokee_server_t *srv)
 	cherokee_icons_free (srv->icons);
 	cherokee_regex_table_free (srv->regexs);
 
-	if (srv->iocache)
+	if (srv->iocache) {
 		cherokee_iocache_free (srv->iocache);
+	}
 
-	if (srv->cryptor)
+	if (srv->cryptor) {
 		cherokee_cryptor_free (srv->cryptor);
+	}
+
+	if (srv->collector) {
+		cherokee_collector_free (srv->collector);
+	}
 
 	cherokee_nonce_table_free (srv->nonces);
 
@@ -325,8 +333,8 @@ change_execution_user (cherokee_server_t *srv, struct passwd *ent)
 	if (srv->user_orig == 0) {
 		error = initgroups (ent->pw_name, srv->group);
 		if (error == -1) {
-			LOG_ERROR ("initgroups: Unable to set groups for user `%s' and GID %d\n", 
-				   ent->pw_name, srv->group);
+			LOG_WARNING ("initgroups: Unable to set groups for user `%s' and GID %d\n", 
+				     ent->pw_name, srv->group);
 		}
 	}
 
@@ -335,8 +343,8 @@ change_execution_user (cherokee_server_t *srv, struct passwd *ent)
 	if (srv->group != srv->group_orig) {
 		error = setgid (srv->group);
 		if (error != 0) {
-			LOG_ERROR ("Can't change group to GID %d, running with GID=%d\n",
-				   srv->group, srv->group_orig);
+			LOG_WARNING ("Can't change group to GID %d, running with GID=%d\n",
+				     srv->group, srv->group_orig);
 		}
 	}
 
@@ -345,8 +353,8 @@ change_execution_user (cherokee_server_t *srv, struct passwd *ent)
 	if (srv->user != srv->user_orig) {
 		error = setuid (srv->user);		
 		if (error != 0) {
-			LOG_ERROR ("Can't change user to UID %d, running with UID=%d\n",
-				   srv->user, srv->user_orig);
+			LOG_WARNING ("Can't change user to UID %d, running with UID=%d\n",
+				     srv->user, srv->user_orig);
 		}
 	}
 
@@ -552,8 +560,8 @@ initialize_server_threads (cherokee_server_t *srv)
 		if ((poll_fd_limit > 0) &&
 		    (fds_per_thread > poll_fd_limit)) 
 		{
-			LOG_ERROR ("fds_per_thread %d > %d poll_fd_limit (reduce that limit)\n",
-				   fds_per_thread, poll_fd_limit);
+			LOG_WARNING ("fds_per_thread %d > %d poll_fd_limit (reduce that limit)\n",
+				     fds_per_thread, poll_fd_limit);
 			fds_per_thread = poll_fd_limit - listen_fds;
 		}
 	}
@@ -753,6 +761,41 @@ raise_fd_limit (cherokee_server_t *srv, cint_t new_limit)
 	return ret_ok;
 }
 
+static ret_t
+initialize_collectors (cherokee_server_t *srv)
+{
+	ret_t                      ret;
+	cherokee_list_t           *i;
+	cherokee_virtual_server_t *vsrv;
+
+	if (srv->collector == NULL) {
+		return ret_ok;
+	}
+
+	TRACE (ENTRIES, "Initializing the main information collector %s", "\n");
+
+	ret = cherokee_collector_init (srv->collector);
+	if (ret != ret_ok) {
+		return ret_error;
+	}
+
+	list_for_each (i, &srv->vservers) {
+		vsrv = VSERVER(i);
+
+		if (vsrv->collector == NULL) {
+			continue;
+		}
+			
+		TRACE (ENTRIES, "Initializing collector for vserver '%s'\n", vsrv->name.buf);
+
+		ret = cherokee_collector_vsrv_init (vsrv->collector, vsrv);
+		if (ret != ret_ok) {
+			return ret_error;
+		}
+	}
+
+	return ret_ok;
+}
 
 ret_t
 cherokee_server_initialize (cherokee_server_t *srv) 
@@ -943,6 +986,12 @@ cherokee_server_initialize (cherokee_server_t *srv)
 		if (unlikely(ret < ret_ok))
 			return ret;
 	}
+
+	/* Collectors
+	 */
+	ret = initialize_collectors (srv);
+	if (ret != ret_ok)
+		return ret_error;
 
 	/* Create the threads
 	 */
@@ -1356,7 +1405,7 @@ configure_server_property (cherokee_config_node_t *conf, void *data)
 
 	} else if (equal_buf_str (&conf->key, "group")) {
 		struct group grp;
-		char         tmp[1024];
+		char         tmp[GRNAM_BUF_LEN];
 		
 		ret = cherokee_getgrnam (conf->val.buf, &grp, tmp, sizeof(tmp));
 		if (ret != ret_ok) {
@@ -1380,6 +1429,19 @@ configure_server_property (cherokee_config_node_t *conf, void *data)
 			return ret;
 
 		ret = cherokee_cryptor_configure (srv->cryptor, conf, srv);
+		if (ret != ret_ok)
+			return ret;
+
+	} else if (equal_buf_str (&conf->key, "collector")) {
+		collector_func_new_t    instance;
+		cherokee_plugin_info_t *info      = NULL;
+
+		ret = cherokee_plugin_loader_get (&srv->loader, conf->val.buf, &info);
+		if ((ret != ret_ok) || (info == NULL))
+			return ret;
+
+		instance = (collector_func_new_t) info->instance;
+		ret = instance ((void **) &srv->collector, info, conf);
 		if (ret != ret_ok)
 			return ret;
 
@@ -1689,20 +1751,6 @@ cherokee_server_get_reusable_conns (cherokee_server_t *srv, cuint_t *num)
 
 
 ret_t 
-cherokee_server_get_total_traffic (cherokee_server_t *srv, size_t *rx, size_t *tx)
-{
-	cherokee_list_t *i;
-
-	list_for_each (i, &srv->vservers) {
-		*rx += VSERVER(i)->data.rx;
-		*tx += VSERVER(i)->data.tx;
-	}
-
-	return ret_ok;
-}
-
-
-ret_t 
 cherokee_server_handle_HUP (cherokee_server_t *srv)
 {
 	cherokee_list_t *i;
@@ -1722,8 +1770,9 @@ cherokee_server_handle_HUP (cherokee_server_t *srv)
 ret_t 
 cherokee_server_handle_TERM (cherokee_server_t *srv)
 {
-	if (srv != NULL)
+	if (srv != NULL) {
 		srv->wanna_exit = true;
+	}
 
 	return ret_ok;
 }
@@ -1851,44 +1900,10 @@ cherokee_server_get_backup_mode (cherokee_server_t *srv, cherokee_boolean_t *act
 	return ret_ok;
 }
 
-
-ret_t 
-cherokee_server_write_pidfile (cherokee_server_t *srv)
-{
-	size_t  written;
-	FILE   *file;
-	CHEROKEE_TEMP(buffer, 10);
-
-	if (cherokee_buffer_is_empty (&srv->pidfile))
-		return ret_not_found;
-
-	cherokee_buffer_add_str (&srv->pidfile, ".worker");
-
-	file = fopen (srv->pidfile.buf, "w+");
-	if (file == NULL) {
-		LOG_ERRNO (errno, cherokee_err_error,
-			   "Cannot write PID file '%s': '${errno}'", srv->pidfile.buf);
-		goto error;
-	}
-
-	snprintf (buffer, buffer_size, "%d\n", getpid());
-	written = fwrite (buffer, 1, strlen(buffer), file);
-	fclose (file);
-
-	if (written <= 0)
-		goto error;
-
-	cherokee_buffer_drop_ending (&srv->pidfile, 7);
-	return ret_ok;
-
-error:
-	cherokee_buffer_drop_ending (&srv->pidfile, 7);
-	return ret_error;
-}
-
 ret_t 
 cherokee_server_get_vserver (cherokee_server_t          *srv,
 			     cherokee_buffer_t          *host,
+			     cherokee_connection_t      *conn,
 			     cherokee_virtual_server_t **vsrv)
 {
 	int                        re;
@@ -1904,7 +1919,7 @@ cherokee_server_get_vserver (cherokee_server_t          *srv,
 		if (! vserver->matching)
 			continue;
 		
-		ret = cherokee_vrule_match (vserver->matching, host);
+		ret = cherokee_vrule_match (vserver->matching, host, conn);
 		if (ret == ret_ok) {
 			TRACE (ENTRIES, "Virtual server '%s' matched vrule\n", vserver->name.buf);
 			*vsrv = vserver;

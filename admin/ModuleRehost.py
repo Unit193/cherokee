@@ -9,7 +9,11 @@ N_ = lambda x: x
 NOTE_REHOST   = N_("Regular Expression against which the hosts be Host name will be compared.")
 WARNING_EMPTY = N_("At least one Regular Expression string must be defined.")
 
+DATA_VALIDATION = []
+
 class ModuleRehost (Module, FormHelper):
+    PROPERTIES = ['regex']
+
     def __init__ (self, cfg, prefix, submit_url):
         FormHelper.__init__ (self, 'rehost', cfg)
         Module.__init__ (self, 'rehost', cfg, prefix, submit_url)
@@ -32,7 +36,10 @@ class ModuleRehost (Module, FormHelper):
                 domain = cfg_domains[i].value
                 cfg_key = "%s!%s" % (pre, i)
                 en = self.InstanceEntry (cfg_key, 'text')
-                link_del = self.AddDeleteLink ('/ajax/update', cfg_key)
+                if len(cfg_domains.keys()) >= 2:
+                    link_del = self.AddDeleteLink ('/ajax/update', cfg_key)
+                else:
+                    link_del = ''
                 table += (en, link_del)
 
             txt += self.Indent(table)
@@ -54,3 +61,6 @@ class ModuleRehost (Module, FormHelper):
         txt += self.Indent(table)
 
         return txt
+
+    def _op_apply_changes (self, uri, post):
+        self.ApplyChangesPrefix (self._prefix, [], post, DATA_VALIDATION)

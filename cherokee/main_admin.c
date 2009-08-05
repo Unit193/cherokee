@@ -23,11 +23,15 @@
  */ 
 
 #include "common-internal.h"
+
 #include <signal.h>
+#include <sys/stat.h>
+
 #include "init.h"
 #include "server.h"
 #include "socket.h"
 #include "spawner.h"
+#include "config_reader.h"
 
 #ifdef HAVE_GETOPT_LONG
 # include <getopt.h>
@@ -49,6 +53,7 @@
 #define DEFAULT_PORT         9090
 #define DEFAULT_DOCUMENTROOT CHEROKEE_DATADIR "/admin"
 #define DEFAULT_CONFIG_FILE  CHEROKEE_CONFDIR "/cherokee.conf"
+#define DEFAULT_UNIX_SOCKET  "/tmp/cherokee-admin-scgi.socket"
 #define DEFAULT_BIND         "127.0.0.1"
 #define RULE_PRE             "vserver!1!rule!"
 
@@ -58,6 +63,7 @@ static const char *config_file   = DEFAULT_CONFIG_FILE;
 static const char *bind_to       = DEFAULT_BIND;
 static int         debug         = 0;
 static int         unsecure      = 0;
+static int         scgi_port     = 0;
 
 static ret_t
 find_empty_port (int starting, int *port)
@@ -107,12 +113,46 @@ generate_admin_password (cherokee_buffer_t *buf)
 }
 
 static ret_t
+remove_old_socket (const char *path)
+{
+	int         re;
+	struct stat info;
+
+	/* It might not exist
+	 */
+	re = stat (path, &info);
+	if (re != 0) {
+		return ret_ok;
+	}
+
+	/* If exist, it must be a socket
+	 */
+	if (! S_ISSOCK(info.st_mode)) {
+		PRINT_MSG ("ERROR: Something happens; '%s' isn't a socket.\n", path);
+		return ret_error;
+	}
+
+	/* Remove it
+	 */
+	re = unlink (path);
+	if (re != 0) {
+		PRINT_MSG ("ERROR: Couldn't remove unix socket '%s'.\n", path);
+		return ret_error;
+	}
+
+	return ret_ok;
+}
+
+
+static ret_t
 config_server (cherokee_server_t *srv) 
 {
-	ret_t             ret;
-	int               scgi_port = 4000;
-	cherokee_buffer_t buf       = CHEROKEE_BUF_INIT;
-	cherokee_buffer_t password  = CHEROKEE_BUF_INIT;
+	ret_t                   ret;
+	cherokee_config_node_t  conf;
+	cherokee_buffer_t       buf       = CHEROKEE_BUF_INIT;
+	cherokee_buffer_t       password  = CHEROKEE_BUF_INIT;
+	cherokee_buffer_t       rrd_dir   = CHEROKEE_BUF_INIT;
+	cherokee_buffer_t       fake;
 
 	/* Print some information
 	 */
@@ -134,30 +174,49 @@ config_server (cherokee_server_t *srv)
 
 	/* Configure the embedded server
 	 */
-	ret = find_empty_port (scgi_port, &scgi_port);
-	if (ret != ret_ok) 
-		return ret;
+	if (scgi_port > 0) {
+		ret = find_empty_port (scgi_port, &scgi_port);
+	} else {
+		ret = remove_old_socket (DEFAULT_UNIX_SOCKET);
+	}
+	if (ret != ret_ok) {
+		return ret_error;
+	}
 
 	cherokee_buffer_add_va  (&buf, "server!bind!1!port = %d\n", port);
 	cherokee_buffer_add_str (&buf, "server!thread_number = 1\n");
 	cherokee_buffer_add_str (&buf, "server!ipv6 = 0\n");
 	cherokee_buffer_add_str (&buf, "server!max_connection_reuse = 0\n");
 
-	if (bind_to)
+	if (bind_to) {
 		cherokee_buffer_add_va (&buf, "server!bind!1!interface = %s\n", bind_to);
+	}
 
 	cherokee_buffer_add_str (&buf, "vserver!1!nick = default\n");
 	cherokee_buffer_add_va  (&buf, "vserver!1!document_root = %s\n", document_root);
 
-	cherokee_buffer_add_va  (&buf,
-				 "source!1!nick = app-logic\n"
-				 "source!1!type = interpreter\n"
-				 "source!1!timeout = 25\n"
-				 "source!1!host = localhost:%d\n"
-				 "source!1!interpreter = %s/server.py %d %s\n"
-				 "source!1!env!PATH = %s\n",
-				 scgi_port, document_root, scgi_port, 
-				 config_file, getenv("PATH"));
+	if (scgi_port <= 0) {
+		cherokee_buffer_add_va  (&buf,
+					 "source!1!nick = app-logic\n"
+					 "source!1!type = interpreter\n"
+					 "source!1!timeout = 25\n"
+					 "source!1!host = %s\n"
+					 "source!1!interpreter = %s/server.py %s %s\n"
+					 "source!1!env!PATH = %s\n",
+					 DEFAULT_UNIX_SOCKET, document_root,
+					 DEFAULT_UNIX_SOCKET,
+					 config_file, getenv("PATH"));
+	} else {
+		cherokee_buffer_add_va  (&buf,
+					 "source!1!nick = app-logic\n"
+					 "source!1!type = interpreter\n"
+					 "source!1!timeout = 25\n"
+					 "source!1!host = localhost:%d\n"
+					 "source!1!interpreter = %s/server.py %d %s\n"
+					 "source!1!env!PATH = %s\n",
+					 scgi_port, document_root, scgi_port, 
+					 config_file, getenv("PATH"));
+	}
 
 	if (debug) {
 		cherokee_buffer_add_str  (&buf, "source!1!debug = 1\n");
@@ -227,6 +286,32 @@ config_server (cherokee_server_t *srv)
 				 RULE_PRE "6!handler!iocache = 0\n"
 				 RULE_PRE "6!document_root = %s\n", CHEROKEE_DOCDIR);
 
+	/* Figure the RRDtool db directory
+	 */
+	cherokee_config_node_init (&conf);
+	cherokee_buffer_fake (&fake, config_file, strlen(config_file));
+
+	ret = cherokee_config_reader_parse (&conf, &fake);
+	if (ret == ret_ok) {
+		ret = cherokee_config_node_copy (&conf, "server!collector!database_dir", &rrd_dir);
+		if (ret == ret_ok) {
+			cherokee_buffer_add_str (&rrd_dir, "/images");
+		}
+	}
+
+	cherokee_buffer_add_va  (&buf, 
+				 RULE_PRE "6!match = directory\n"
+				 RULE_PRE "6!match!directory = /graphs\n"
+				 RULE_PRE "6!handler = file\n"
+				 RULE_PRE "6!handler!iocache = 0\n"
+				 RULE_PRE "6!document_root = %s\n",
+				 rrd_dir.buf ? rrd_dir.buf : CHEROKEE_GRAPHS_DIR);
+
+	if (! debug) {
+		cherokee_buffer_add_str (&buf, RULE_PRE "6!expiration = time\n");
+		cherokee_buffer_add_str (&buf, RULE_PRE "6!expiration!time = 60\n");
+	}
+
 	cherokee_buffer_add_str (&buf,
 				 "mime!text/javascript!extensions = js\n"
 				 "mime!text/css!extensions = css\n"
@@ -241,6 +326,9 @@ config_server (cherokee_server_t *srv)
 		return ret;
 	}
 
+	cherokee_config_node_mrproper (&conf);
+
+	cherokee_buffer_mrproper (&rrd_dir);
 	cherokee_buffer_mrproper (&password);
 	cherokee_buffer_mrproper (&buf);
 	return ret_ok;
@@ -258,6 +346,7 @@ print_help (void)
 		"  -b,  --bind[=IP]              Bind net iface; no arg means all\n"
 		"  -d,  --appdir=DIR             Application directory\n"
 		"  -p,  --port=NUM               TCP port\n"
+		"  -t,  --internal-tcp           Use TCP for internal communications\n"
 		"  -C,  --target=PATH            Configuration file to modify\n\n"
 		"Report bugs to " PACKAGE_BUGREPORT "\n");
 }
@@ -268,18 +357,19 @@ process_parameters (int argc, char **argv)
 	int c;
 
 	struct option long_options[] = {
-		{"help",     no_argument,       NULL, 'h'},
-		{"version",  no_argument,       NULL, 'V'},
-		{"debug",    no_argument,       NULL, 'x'},
-		{"unsecure", no_argument,       NULL, 'u'},
-		{"bind",     optional_argument, NULL, 'b'},
-		{"appdir",   required_argument, NULL, 'd'},
-		{"port",     required_argument, NULL, 'p'},
-		{"target",   required_argument, NULL, 'C'},
+		{"help",         no_argument,       NULL, 'h'},
+		{"version",      no_argument,       NULL, 'V'},
+		{"debug",        no_argument,       NULL, 'x'},
+		{"unsecure",     no_argument,       NULL, 'u'},
+		{"internal-tcp", no_argument,       NULL, 't'},
+		{"bind",         optional_argument, NULL, 'b'},
+		{"appdir",       required_argument, NULL, 'd'},
+		{"port",         required_argument, NULL, 'p'},
+		{"target",       required_argument, NULL, 'C'},
 		{NULL, 0, NULL, 0}
 	};
 
-	while ((c = getopt_long(argc, argv, "hVxub::d:p:C:", long_options, NULL)) != -1) {
+	while ((c = getopt_long(argc, argv, "hVxutb::d:p:C:", long_options, NULL)) != -1) {
 		switch(c) {
 		case 'b':
 			if (optarg)
@@ -301,6 +391,9 @@ process_parameters (int argc, char **argv)
 			break;
 		case 'u':
 			unsecure = 1;
+			break;
+		case 't':
+			scgi_port = 4000;
 			break;
 		case 'V':
 			printf (APP_NAME " " PACKAGE_VERSION "\n" APP_COPY_NOTICE);
