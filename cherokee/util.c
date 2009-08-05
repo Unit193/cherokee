@@ -891,9 +891,11 @@ cherokee_syslog (int priority, cherokee_buffer_t *buf)
 
 		syslog (priority, "%s", p);
 
-		if (nl != NULL) 
-			*nl = '\n';
+		if (nl == NULL) {
+			break;
+		} 
 
+		*nl = '\n';
 		p = nl + 1;
 	} while (p < end);
 
@@ -1582,51 +1584,75 @@ strnstr (const char *s, const char *find, size_t slen)
 
 
 ret_t
-cherokee_find_header_end (cherokee_buffer_t  *buf,
-			  char              **end,
-			  cuint_t            *sep_len)
+cherokee_find_header_end_cstr (char      *c_str,
+			       cint_t     c_len,
+			       char     **end,
+			       cuint_t   *sep_len)
 {
 	char *p;
 	char *fin;
 	char *begin;
-	char *limit;
-	int   len;
+	int   cr_n, lf_n;
 
-	if (cherokee_buffer_is_empty (buf))
+	if ((c_str == NULL) || (c_len <= 0))
 		return ret_not_found;
 
-	p     = buf->buf;
-	fin   = buf->buf + buf->len;
-	limit = buf->buf + MAX_HEADER_LEN;
+	p   = c_str;
+	fin = c_str + MIN(c_len, MAX_HEADER_LEN);
 
 	while (p < fin) {
-		if (unlikely (p > limit)) {
-			return ret_error;
-		}
-
-		if ((*p == CHR_CR) || (*p == CHR_LF)) {
-			len   = 0;
+ 		if ((*p == CHR_CR) || (*p == CHR_LF)) {
+			cr_n  = 0;
+			lf_n  = 0;
 			begin = p;
-			while ((*p == CHR_CR) || (*p == CHR_LF)) {
+
+			/* Valid scenarios:
+			 * CR_n: [CRLF_CRLF] 0, 1, 1, 2, 2  | [LF_LF] 0, 0
+			 * LF_n:             0, 0, 1, 1, 2  |         1, 2
+			 * 
+			 * so, the two forbidden situations are:
+			 * CR_n: 1, 2
+			 * LF_n: 2, 0
+			 */
+			while (p < fin) {
 				if (*p == CHR_LF) {
-					len += 1;
-					if (len == 2) {
+					lf_n++;
+					if (lf_n == 2) {
 						*end     = begin;
 						*sep_len = (p - begin) + 1;
 						return ret_ok;
 					}
+
 				} else if (*p == CHR_CR) {
-					;
+					cr_n++;
+
 				} else {
 					break;
 				}
-				p += 1;
+
+				if (unlikely (((cr_n == 1) && (lf_n == 2)) ||
+					      ((cr_n == 2) && (lf_n == 0))))
+				{
+					return ret_error;
+				}
+
+				p++;
 			}
 		}
-		p += 1;
+
+		p++;
 	}
 
 	return ret_not_found;
+}
+
+
+ret_t
+cherokee_find_header_end (cherokee_buffer_t  *buf,
+			  char              **end,
+			  cuint_t            *sep_len)
+{
+	return cherokee_find_header_end_cstr (buf->buf, buf->len, end, sep_len);
 }
 
 
@@ -1784,4 +1810,44 @@ cherokee_string_is_ipv6 (cherokee_buffer_t *ip)
 	}
 
 	return 0;
+}
+
+
+ret_t
+cherokee_find_exec_in_path (const char        *bin_name,
+			    cherokee_buffer_t *fullpath)
+{
+	int   re;
+	char *p, *q;
+	char *path;
+
+	p = getenv("PATH");
+	if (p == NULL) {
+		return ret_not_found;
+	}
+	
+	path = strdup(p);
+	p    = path;
+	do {
+		q = strchr (p, ':');
+		if (q) {
+			*q = '\0';
+		}
+
+		cherokee_buffer_clean   (fullpath);
+		cherokee_buffer_add     (fullpath, p, strlen(p));
+		cherokee_buffer_add_str (fullpath, "/");
+		cherokee_buffer_add     (fullpath, bin_name, strlen(bin_name));
+
+		re = access (fullpath->buf, X_OK);
+		if (re == 0) {
+			free (path);
+			return ret_ok;
+		}
+
+		p = q + 1;
+	} while(q);
+
+	free (path);
+	return ret_not_found;
 }

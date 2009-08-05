@@ -9,7 +9,7 @@ endif
 SUFFIXES = .py.pre .py
 
 .py.pre.py:
-	sed -e "s|%sysconfdir%|${sysconfdir}|g; s|%datadir%|${datadir}|g; s|%docdir%|${docdir}|g; s|%prefix%|${prefix}|g; s|%localstatedir%|${localstatedir}|g; s|%libdir%|${libdir}|g; s|%localedir%|${localedir}|g; s|%wwwroot%|${WWW_ROOT}|g; s|%version%|${PACKAGE_VERSION}|g; s|%phpcgi%|${PHPCGI}|g" $< > $@
+	sed -e "s|%sysconfdir%|${sysconfdir}|g; s|%sbindir%|${sbindir}|g; s|%docdir%|${docdir}|g; s|%prefix%|${prefix}|g; s|%localstatedir%|${localstatedir}|g; s|%libdir%|${libdir}|g; s|%wwwroot%|${WWW_ROOT}|g; s|%version%|${PACKAGE_VERSION}|g; s|%phpcgi%|${PHPCGI}|g; s|%datadir%|${datadir}|g; s|%localedir%|${localedir}|g" $< > $@
 
 PY_PRE = \
 configured.py.pre
@@ -100,11 +100,14 @@ ModuleFrom.py \
 ModuleCustomError.py \
 ModuleWildcard.py \
 ModuleRehost.py \
+ModuleTargetIp.py \
 ModuleEvhost.py \
+ModuleRrd.py \
 config.py \
 pyscgi.py \
 validations.py \
 CherokeeManagement.py \
+GraphManager.py \
 flags.py \
 util.py \
 Wizard.py \
@@ -115,7 +118,9 @@ Wizard_Redirect.py \
 Wizard_HotLinking.py \
 Wizard_Drupal.py \
 Wizard_RoR.py \
-Wizard_Mailman.py
+Wizard_Mailman.py \
+Wizard_Icons.py \
+Wizard_CommonStatic.py
 endif
 
 adminpy_DATA = $(admin_data)

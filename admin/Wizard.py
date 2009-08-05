@@ -9,7 +9,7 @@ WIZARD_GROUP_CMS      = 'CMS'
 WIZARD_GROUP_TASKS    = 'Tasks'
 WIZARD_GROUP_PLATFORM = 'Platforms'
 
-USUAL_STATIC_FILES = ['/favicon.ico', '/robots.txt']
+USUAL_STATIC_FILES = ['/favicon.ico', '/robots.txt', '/crossdomain.xml']
 
 class Wizard:
     def __init__ (self, cfg, pre=None):
@@ -35,6 +35,17 @@ class Wizard:
         page.AddMacroContent ('title', "%s error"%(self.name))
         page.AddMacroContent ('content', content)
         return page.Render()
+
+    # Utilities
+    #
+    def _apply_cfg_chunk (self, config_txt):
+        lines = config_txt.split('\n')
+        lines = filter (lambda x: len(x) and x[0] != '#', lines)
+
+        for line in lines:
+            line = line.strip()
+            left, right = line.split (" = ", 2)
+            self._cfg[left] = right
 
 class WizardManager:
     def __init__ (self, cfg, _type, pre):
@@ -164,15 +175,6 @@ class WizardPage (PageMenu, FormHelper, Wizard):
 
     # Utilities
     #
-    def _apply_cfg_chunk (self, config_txt):
-        lines = config_txt.split('\n')
-        lines = filter (lambda x: len(x) and x[0] != '#', lines)
-
-        for line in lines:
-            line = line.strip()
-            left, right = line.split (" = ", 2)
-            self._cfg[left] = right
-
     def _cfg_store_post (self, post):
         for key in post:
             if key.startswith('tmp!'):

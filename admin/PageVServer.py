@@ -9,6 +9,7 @@ from Rule import *
 from RuleList import *
 from CherokeeManagement import *
 from Wizard import *
+from GraphManager import *
 
 # For gettext
 N_ = lambda x: x
@@ -49,7 +50,6 @@ NOTE_DOCUMENT_ROOT    = N_('Virtual Server root directory.')
 NOTE_DIRECTORY_INDEX  = N_('List of name files that will be used as directory index. Eg: <em>index.html,index.php</em>.')
 NOTE_MAX_UPLOAD_SIZE  = N_('The maximum size, in bytes, for POST uploads. (Default: unlimited)')
 NOTE_KEEPALIVE        = N_('Whether this virtual server is allowed to use Keep-alive (Default: yes)')
-NOTE_COLLECT          = N_('Specifies if Traffic Statistics should be collected for the virtual server (Default: yes)')
 NOTE_DISABLE_LOG      = N_('The Logging is currently enabled.')
 NOTE_LOGGERS          = N_('Logging format. Apache compatible is highly recommended here.')
 NOTE_ACCESSES         = N_('Back-end used to store the log accesses.')
@@ -63,6 +63,7 @@ NOTE_X_REAL_IP_ACCESS = N_('List of IP addresses and subnets that are allowed to
 NOTE_EVHOST           = N_('How to support the "Advanced Virtual Hosting" mechanism. (Default: off)')
 NOTE_LOGGER_TEMPLATE  = N_('The following variables are accepted: <br/>${ip_remote}, ${ip_local}, ${protocol}, ${transport}, ${port_server}, ${query_string}, ${request_first_line}, ${status}, ${now}, ${time_secs}, ${time_nsecs}, ${user_remote}, ${request}, ${request_original}, ${vserver_name}')
 NOTE_MATCHING_METHOD  = N_('Allows the selection of domain matching method.')
+NOTE_COLLECTOR        = N_('Whether or not it should collected statistics about the traffic of this virtual server.')
 
 HELPS = [
     ('config_virtual_servers', N_("Virtual Servers")),
@@ -259,7 +260,8 @@ class PageVServer (PageMenu, FormHelper):
         tabs += [(_('Error handler'), tmp)]
 
         # Logging
-        tmp = self._render_logger(host)
+        tmp  = self._render_logger(host)
+        tmp += self._render_graphs(host)
         tabs += [(_('Logging'), tmp)]
 
         # Security
@@ -514,7 +516,6 @@ class PageVServer (PageMenu, FormHelper):
         table = TableProps()
         self.AddPropCheck (table, _('Keep-alive'),         '%s!keepalive'%(pre), True, _(NOTE_KEEPALIVE))
         self.AddPropEntry (table, _('Max Upload Size'),    '%s!post_max_len' % (pre),  _(NOTE_MAX_UPLOAD_SIZE))
-        self.AddPropCheck (table, _('Traffic Statistics'), '%s!collect_statistics'%(pre), True, _(NOTE_COLLECT))
         txt += self.Indent(table)
 
         txt += '<h2>%s</h2>' % (_('Advanced Virtual Hosting'))
@@ -522,6 +523,60 @@ class PageVServer (PageMenu, FormHelper):
         e = self.AddPropOptions_Reload (table, _('Method'), '%s!evhost'%(pre),
                                         modules_available(EVHOSTS), _(NOTE_EVHOST))
         txt += self.Indent(table) + e
+
+        return txt
+
+    def _render_graphs (self, host):
+        txt  = ''
+        pre  = "vserver!%s" % (host)
+        name = self._cfg.get_val('vserver!%s!nick'%(host), "default")
+
+        # Server collects statistics
+        srv_has = (self._cfg.get_val('server!collector') != None)
+
+        # VServer options
+        txt += '<h2>%s</h2>' % (_('Statistics'))
+        table = TableProps()
+        if srv_has:
+            self.AddPropCheck (table, _('Collect Statistics'), '%s!collector!enabled'%(pre), True, _(NOTE_COLLECTOR))
+        else:
+            self.AddPropCheck (table, _('Collect Statistics'), '%s!collector!enabled'%(pre), True, _(NOTE_COLLECTOR), disabled=1)
+
+        txt += self.Indent(table)
+        txt += "<br/>"
+        
+        # VServer collect statistics
+        if not srv_has:
+            return txt
+
+        if not int(self._cfg.get_val('%s!collector!enabled'%(pre), '1')):
+            return txt
+
+        if not graphs_are_active(self._cfg):
+            return txt
+
+        txt += '<script type="text/javascript" src="/static/js/graphs.js"></script>';
+        txt += '<div id="grapharea">'
+        txt += ' <div id="gtype">'
+        txt += '  <div id="g1m" class="gbutton"><a onclick="graphChangeInterval(\'1m\')">%s</a></div>' % (_("1 month"))
+        txt += '  <div id="g1w" class="gbutton"><a onclick="graphChangeInterval(\'1w\')">%s</a></div>' % (_("1 week"))
+        txt += '  <div id="g1d" class="gbutton"><a onclick="graphChangeInterval(\'1d\')">%s</a></div>' % (_("1 day"))
+        txt += '  <div id="g6h" class="gbutton"><a onclick="graphChangeInterval(\'6h\')">%s</a></div>' % (_("6 hours"))
+        txt += '  <div id="g1h" class="gbutton gsel"><a onclick="graphChangeInterval(\'1h\')">%s</a></div>' % (_("1 hour"))
+        txt += ' </div>'
+        txt += ' <div id="graphdiv">'
+        txt += '  <img id="graphimg" src="/graphs/vserver_traffic_%s_1h.png" alt="Graph" />' % (name)
+        txt += ' </div>'
+        txt += '</div>'
+
+        txt += """<script type="text/javascript">
+                   graphPrefix   = "vserver";
+                   graphType     = "traffic";
+                   graphVServer  = "%s";
+                   graphInterval = "1h";
+                   $(document).ready(function() { refreshGraph(); });
+                  </script>
+               """ % (name)
 
         return txt
 
@@ -642,11 +697,15 @@ class PageVServer (PageMenu, FormHelper):
         # EVHost
         self.ApplyChanges_OptionModule ('%s!evhost'%(pre), uri, post)
 
+        # EVHost
+        self.ApplyChanges_OptionModule ('%s!match'%(pre), uri, post)
+
         # Look for the checkboxes
         checkboxes = ['%s!keepalive'%(pre),
                       '%s!collect_statistics'%(pre),
                       '%s!logger!x_real_ip_enabled'%(pre),
-                      '%s!logger!x_real_ip_access_all'%(pre)]
+                      '%s!logger!x_real_ip_access_all'%(pre),
+                      '%s!collector!enabled'%(pre)]
 
         tmp = self._cfg['%s!rule'%(pre)]
         if tmp and tmp.has_child():

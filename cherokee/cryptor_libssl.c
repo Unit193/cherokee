@@ -201,7 +201,7 @@ openssl_sni_servername_cb (SSL *ssl, int *ad, void *arg)
 	 */
 	cherokee_buffer_fake (&tmp, servername, strlen(servername));
 
-	ret = cherokee_server_get_vserver (srv, &tmp, &vsrv);
+	ret = cherokee_server_get_vserver (srv, &tmp, NULL, &vsrv);
 	if ((ret != ret_ok) || (vsrv == NULL)) {
 		LOG_ERROR ("Servername did not match: '%s'\n", servername);
 		return SSL_TLSEXT_ERR_NOACK; 
@@ -209,6 +209,15 @@ openssl_sni_servername_cb (SSL *ssl, int *ad, void *arg)
 
 	TRACE (ENTRIES, "SNI: Setting new TLS context. Virtual host='%s'\n",
 	       vsrv->name.buf);
+
+	/* Check whether the Virtual Server supports TLS
+	 */
+	if ((vsrv->cryptor == NULL) ||
+	    (CRYPTOR_VSRV_SSL(vsrv->cryptor)->context == NULL))
+	{
+		TRACE (ENTRIES, "Virtual server '%s' does not support SSL\n", servername);
+		return SSL_TLSEXT_ERR_NOACK;		
+	}
 
 	/* Set the new SSL context
 	 */
@@ -313,13 +322,17 @@ _vserver_new (cherokee_cryptor_t          *cryp,
 		}
 	}
 
-	/* Certificate
-	 */
 #if (OPENSSL_VERSION_NUMBER < 0x0090808fL)
 	/* OpenSSL < 0.9.8h
 	 */
 	ERR_clear_error();
 #endif
+
+	/* Certificate
+	 */
+	TRACE(ENTRIES, "Vserver '%s'. Reading certificate file '%s'\n",
+	      vsrv->name.buf, vsrv->server_cert.buf);
+
 	rc = SSL_CTX_use_certificate_chain_file (n->context, vsrv->server_cert.buf);
 	if (rc != 1) {
 		OPENSSL_LAST_ERROR(error);
@@ -330,6 +343,9 @@ _vserver_new (cherokee_cryptor_t          *cryp,
 
 	/* Private key
 	 */
+	TRACE(ENTRIES, "Vserver '%s'. Reading key file '%s'\n",
+	      vsrv->name.buf, vsrv->server_key.buf);
+
 	rc = SSL_CTX_use_PrivateKey_file (n->context, vsrv->server_key.buf, SSL_FILETYPE_PEM);
 	if (rc != 1) {
 		OPENSSL_LAST_ERROR(error);
