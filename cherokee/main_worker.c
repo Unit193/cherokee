@@ -75,8 +75,7 @@
 	"vserver!1!rule!3!document_root = " CHEROKEE_THEMEDIR "\n"	\
 	"icons!default = page_white.png\n"				\
 	"icons!directory = folder.png\n"				\
-	"icons!parent_directory = arrow_turn_left.png\n"		\
-	"try_include = " CHEROKEE_CONFDIR "/mods-enabled\n"
+	"icons!parent_directory = arrow_turn_left.png\n"
 
 static cherokee_server_t  *srv           = NULL;
 static char               *config_file   = NULL;
@@ -128,6 +127,10 @@ signals_handler (int sig, siginfo_t *si, void *context)
 
 	case SIGINT:
 	case SIGTERM:
+		if (srv->wanna_exit) {
+			break;
+		}
+
 		printf ("Server is exiting..\n");
 		cherokee_server_handle_TERM (srv);
 		break;
@@ -240,8 +243,6 @@ common_server_initialization (cherokee_server_t *srv)
 
 	if (daemon_mode)
 		cherokee_server_daemonize (srv);
-
-	cherokee_server_write_pidfile (srv);
 
 	ret = cherokee_server_initialize (srv);
 	if (ret != ret_ok) return ret_error;

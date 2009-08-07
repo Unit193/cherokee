@@ -201,9 +201,9 @@ class FormHelper (WebComponent):
     def InstanceLinkedImage (self, name, alt, link, **kwargs):
         return self.InstanceLink(link, self.InstanceImage(name, alt, **kwargs))
 
-    def AddDeleteLink (self, url, key):
+    def AddDeleteLink (self, url, key, **kwargs):
         js = "javascript:post_del_key('%s', '%s');" % (url, key)
-        return self.InstanceLinkedImage("bin.png", _("Delete"), js, border="0")
+        return self.InstanceLinkedImage("bin.png", _("Delete"), js, border="0", **kwargs)
 
     def InstanceOptions (self, cfg_key, options, *args, **kwargs):
         value = self._cfg.get_val (cfg_key)
@@ -257,33 +257,6 @@ class FormHelper (WebComponent):
                 render = "Couldn't load the properties module: %s" % (name)
             else:
                 render = props_widget._op_render()
-        else:
-            render = ''
-
-        return render
-
-    def AddTableOptions_Reload (self, table, title, cfg_key, options, **kwargs):
-        assert (self.submit_url)
-        print "DEPRECATED: AddTableOptions_Reload"
-
-        # The Table entry itself
-        js = "options_changed('/ajax/update', this);"
-        name = self.AddTableOptions (table, title, cfg_key, options, onChange=js)
-
-        # If there was no cfg value, pick the first
-        if not name:
-            name = options[0][0]
-
-        # Render active option
-        if name:
-            try:
-                # Inherit the errors, if any
-                kwargs['errors'] = self.errors
-                props_widget = module_obj_factory (name, self._cfg, cfg_key,
-                                                   self.submit_url, **kwargs)
-                render = props_widget._op_render()
-            except IOError:
-                render = "Couldn't load the properties module: %s" % (name)
         else:
             render = ''
 

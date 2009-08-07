@@ -356,6 +356,40 @@ endif
 
 
 #
+# VRule Target IP
+#
+vrule_target_ip = \
+vrule_target_ip.c \
+vrule_target_ip.h
+
+libplugin_target_ip_la_LDFLAGS = $(module_ldflags)
+libplugin_target_ip_la_SOURCES = $(vrule_target_ip)
+
+if STATIC_VRULE_TARGET_IP
+static_vrule_target_ip_src = $(vrule_target_ip)
+else
+dynamic_vrule_target_ip_lib = libplugin_target_ip.la
+endif
+
+
+#
+# Collector RRD
+#
+collector_rrd = \
+collector_rrd.c \
+collector_rrd.h
+
+libplugin_rrd_la_LDFLAGS = $(module_ldflags)
+libplugin_rrd_la_SOURCES = $(collector_rrd)
+
+if STATIC_COLLECTOR_RRD
+static_collector_rrd_src = $(collector_rrd)
+else
+dynamic_collector_rrd_lib = libplugin_rrd.la
+endif
+
+
+#
 # Gen wildcard
 #
 gen_evhost = \
@@ -1047,15 +1081,15 @@ cryptor_libssl_dh_1024.c \
 cryptor_libssl_dh_2048.c \
 cryptor_libssl_dh_4096.c
 
-libplugin_libssl_la_LDFLAGS = $(module_ldflags) $(TLS_LIBS)
+libplugin_libssl_la_LDFLAGS = $(module_ldflags) $(LIBSSL_LIBS)
 libplugin_libssl_la_SOURCES = $(cryptor_libssl)
-libplugin_libssl_la_CFLAGS  = $(TLS_CFLAGS)
+libplugin_libssl_la_CFLAGS  = $(LIBSSL_CFLAGS)
 
 if USE_OPENSSL
 if STATIC_CRYPTOR_LIBSSL
 static_cryptor_libssl_src   = $(cryptor_libssl)
-static_cryptor_libssl_lib   = $(TLS_LIBS)
-static_cryptor_libssl_flags = $(TLS_CFLAGS)
+static_cryptor_libssl_lib   = $(LIBSSL_LIBS)
+static_cryptor_libssl_flags = $(LIBSSL_CFLAGS)
 else
 dynamic_cryptor_libssl_lib = libplugin_libssl.la
 endif
@@ -1351,8 +1385,11 @@ $(static_rule_or_src) \
 \
 $(static_vrule_wildcard_src) \
 $(static_vrule_rehost_src) \
+$(static_vrule_target_ip_src) \
 \
 $(static_gen_evhost_src) \
+\
+$(static_collector_rrd_src) \
 \
 $(static_handler_file_src) \
 $(static_handler_admin_src) \
@@ -1451,7 +1488,9 @@ dwriter.c \
 limiter.h \
 limiter.c \
 spawner.h \
-spawner.c
+spawner.c \
+collector.h \
+collector.c
 
 
 libcherokee_config_la_SOURCES = \
@@ -1482,11 +1521,11 @@ header.h \
 resolv_cache.h \
 post.h \
 trace.h \
-avl.h \
 cache.h \
 iocache.h \
 module.h \
 cryptor.h \
+nullable.h \
 \
 config_node.h \
 config_entry.h \
@@ -1530,6 +1569,8 @@ $(dynamic_rule_and_lib) \
 $(dynamic_rule_or_lib) \
 $(dynamic_vrule_wildcard_lib) \
 $(dynamic_vrule_rehost_lib) \
+$(dynamic_vrule_target_ip_lib) \
+$(dynamic_collector_rrd_lib) \
 $(dynamic_gen_evhost_lib) \
 $(dynamic_handler_file_lib) \
 $(dynamic_handler_cgi_lib) \
@@ -1655,9 +1696,7 @@ $(validator_mysql) \
 $(handler_dbslayer) \
 $(cherokeedeps_DATA) \
 $(WINDOWS_PORT_FILES) \
-$(cryptor_libssl_dist) \
-loader.autoconf.h \
-loader.autoconf.inc
+$(cryptor_libssl_dist)
 
 distclean-local:
 	$(RM) -f loader.autoconf.h loader.autoconf.inc

@@ -150,6 +150,8 @@ cherokee_thread_new  (cherokee_thread_t      **thd,
 
 	n->exit                = false;
 	n->ended               = false;
+	n->is_full             = false;
+
 	n->server              = server;
 	n->thread_type         = type;
 
@@ -520,9 +522,17 @@ process_polling_connections (cherokee_thread_t *thd)
 		/* Has it been too much without any work?
 		 */
 		if (conn->timeout < cherokee_bogonow_now) {
-			TRACE (ENTRIES",polling", "conn %p(fd=%d): Time out\n", 
+			TRACE (ENTRIES",polling,timeout", "conn %p(fd=%d): Time out\n", 
 			       conn, SOCKET_FD(&conn->socket));
 
+			/* Information collection
+			 */
+			if (THREAD_SRV(thd)->collector != NULL) {
+				cherokee_collector_log_timeout (THREAD_SRV(thd)->collector);
+			}
+
+			/* Close it
+			 */
 			if (conn->phase <= phase_add_headers) {
 				send_hardcoded_error (&conn->socket,
 						      http_gateway_timeout_string,
@@ -593,7 +603,14 @@ process_active_connections (cherokee_thread_t *thd)
 		/* Has the connection been too much time w/o any work
 		 */
 		if (conn->timeout < cherokee_bogonow_now) {
-			TRACE (ENTRIES, "thread (%p) processing conn (%p): Time out\n", thd, conn);
+			TRACE (ENTRIES",polling,timeout", 
+			       "thread (%p) processing conn (%p): Time out\n", thd, conn);
+
+			/* Information collection
+			 */
+			if (THREAD_SRV(thd)->collector != NULL) {
+				cherokee_collector_log_timeout (THREAD_SRV(thd)->collector);
+			}
 
 			conns_freed++;
 			close_active_connection (thd, conn);
@@ -610,9 +627,9 @@ process_active_connections (cherokee_thread_t *thd)
 
 		/* Maybe update traffic counters
 		 */
-		if ((CONN_VSRV(conn)->data.enabled) &&
-		    ((conn->rx != 0) || (conn->tx != 0)) &&
-		    (conn->traffic_next < cherokee_bogonow_now))
+		if ((CONN_VSRV(conn)->collector) &&
+		    (conn->traffic_next < cherokee_bogonow_now) &&
+		    ((conn->rx_partial != 0) || (conn->tx_partial != 0)))
 		{
 			cherokee_connection_update_vhost_traffic (conn);
 		}
@@ -625,14 +642,14 @@ process_active_connections (cherokee_thread_t *thd)
 			continue;
 		}
 
-		/* Process the connection?
-		 * 2.- Inspect the file descriptor if it's not shutdown
-		 *     and it's not reading header or there is no more buffered data.
+		/* Check if the connection is active
 		 */
-		if ((! (conn->options & conn_op_was_polling)) &&
-		    (conn->phase != phase_shutdown) &&
-		    (conn->phase != phase_lingering) &&
-		    (conn->phase != phase_reading_header || conn->incoming_header.len <= 0))
+		if (conn->options & conn_op_was_polling) {
+			BIT_UNSET (conn->options, conn_op_was_polling);
+		}
+		else if ((conn->phase != phase_shutdown) &&
+			 (conn->phase != phase_lingering) &&
+			 (conn->phase != phase_reading_header || conn->incoming_header.len <= 0))
 		{
 			re = cherokee_fdpoll_check (thd->fdpoll, 
 						    SOCKET_FD(&conn->socket), 
@@ -647,13 +664,7 @@ process_active_connections (cherokee_thread_t *thd)
 					continue;
 			}
 		}
-
-		/* This connection was polling a moment ago
-		 */
-		if (conn->options & conn_op_was_polling) {
-			BIT_UNSET (conn->options, conn_op_was_polling);
-		}
-
+		
 		TRACE (ENTRIES, "conn on phase n=%d: %s\n", 
 		       conn->phase, cherokee_connection_get_phase_str (conn));
 
@@ -896,6 +907,15 @@ process_active_connections (cherokee_thread_t *thd)
 			} else {
 				rules = &CONN_VSRV(conn)->rules;
 			}
+
+			/* Local directory
+			 */
+			if (cherokee_buffer_is_empty (&conn->local_directory)) {
+				if (is_userdir)
+					ret = cherokee_connection_build_local_directory_userdir (conn, CONN_VSRV(conn));
+				else
+					ret = cherokee_connection_build_local_directory (conn, CONN_VSRV(conn));
+			}
 			
 			/* Check against the rule list
 			 */
@@ -905,19 +925,14 @@ process_active_connections (cherokee_thread_t *thd)
 				continue;
 			}
 
+			/* Local directory
+			 */
+			cherokee_connection_set_custom_droot (conn, &entry);
+
 			/* Set the logger of the connection
 			 */
 			if (entry.no_log != true) {
 				conn->logger_ref = CONN_VSRV(conn)->logger;
-			}
-
-			/* Local directory
-			 */
-			if (cherokee_buffer_is_empty (&conn->local_directory)) {
-				if (is_userdir)
-					ret = cherokee_connection_build_local_directory_userdir (conn, CONN_VSRV(conn), &entry);
-				else
-					ret = cherokee_connection_build_local_directory (conn, CONN_VSRV(conn), &entry);
 			}
 
 			/* Check of the HTTP method is supported by the handler
@@ -1390,6 +1405,12 @@ accept_new_connection (cherokee_thread_t *thd,
 	if (ret != ret_ok)
 		return ret_deny;
 
+	/* Information collection
+	 */
+	if (THREAD_SRV(thd)->collector != NULL) {
+		cherokee_collector_log_accept (THREAD_SRV(thd)->collector);
+	}
+
 	/* We got the new socket, now set it up in a new connection object
 	 */
 	ret = cherokee_thread_get_new_connection (thd, &new_conn);
@@ -1578,11 +1599,12 @@ watch_accept_MULTI_THREAD (cherokee_thread_t  *thd,
 			   cherokee_boolean_t  block,
 			   int                 fdwatch_msecs)
 {
-	ret_t              ret;
-	int                unlocked;
-	cherokee_bind_t   *bind;
-	cherokee_list_t   *i;
- 	cherokee_server_t *srv        = THREAD_SRV(thd);
+	ret_t               ret;
+	int                 unlocked;
+	cherokee_bind_t    *bind;
+	cherokee_list_t    *i;
+	cherokee_boolean_t  yield      = false;
+ 	cherokee_server_t  *srv        = THREAD_SRV(thd);
 
 	/* Lock
 	 */
@@ -1627,13 +1649,27 @@ watch_accept_MULTI_THREAD (cherokee_thread_t  *thd,
 	list_for_each (i, &srv->listeners) {
 		bind = BIND(i);
 
+		/* Is it full?
+		 */
 		if (unlikely (thd->conns_num >= thd->conns_max)) {
-			thread_full_handler (thd, bind);
+			if (thd->is_full) {
+				thread_full_handler (thd, bind);
+				thd->is_full = false;
+			} else {
+				thd->is_full = true;
+			}
+
+			yield = true;
+			break;
 		} else {
-			do {
-				ret = accept_new_connection (thd, bind);
-			} while (should_accept_more (thd, bind, ret) == ret_ok);
+			thd->is_full = false;
 		}
+		
+		/* Accept new connections
+		 */
+		do {
+			ret = accept_new_connection (thd, bind);
+		} while (should_accept_more (thd, bind, ret) == ret_ok);
 	}
 
 	/* Release the port file descriptors 
@@ -1649,6 +1685,10 @@ out:
 	/* Unlock
 	 */
 	CHEROKEE_MUTEX_UNLOCK (&srv->listeners_mutex);
+
+	if (yield) {
+		CHEROKEE_THREAD_YIELD();
+	}
 }
 
 
@@ -1786,7 +1826,8 @@ cherokee_thread_get_new_connection (cherokee_thread_t *thd, cherokee_connection_
 	new_connection->server    = server;
 	new_connection->vserver   = VSERVER(server->vservers.prev); 
 
-	new_connection->timeout   = cherokee_bogonow_now + THREAD_SRV(thd)->timeout;
+	new_connection->timeout      = cherokee_bogonow_now + THREAD_SRV(thd)->timeout;
+	new_connection->traffic_next = cherokee_bogonow_now + DEFAULT_TRAFFIC_UPDATE;
 
 	*conn = new_connection;
 	return ret_ok;
