@@ -7,8 +7,9 @@ cherokee (0.99.22-1) unstable; urgency=low
   [ Gunnar Wolf ]
   * Added libcherokee-mod-rrd binary package for the RRD information
     collector
+  * Added Suggests: from cherokee to all of the relevant binary packages
 
- -- Gunnar Wolf <gwolf@debian.org>  Fri, 07 Aug 2009 11:12:05 -0500
+ -- Gunnar Wolf <gwolf@debian.org>  Fri, 07 Aug 2009 11:46:29 -0500
 
 cherokee (0.99.20-1) unstable; urgency=low
 
