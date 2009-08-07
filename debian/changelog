@@ -1,9 +1,14 @@
 cherokee (0.99.22-1) unstable; urgency=low
 
+  [ Leonel Nunez ]
   * New Upstream Version
   * Removed fix_rpath  patch
 
- -- Leonel Nunez <leonel@enelserver.com>  Wed, 05 Aug 2009 05:14:51 -0600
+  [ Gunnar Wolf ]
+  * Added libcherokee-mod-rrd binary package for the RRD information
+    collector
+
+ -- Gunnar Wolf <gwolf@debian.org>  Fri, 07 Aug 2009 11:12:05 -0500
 
 cherokee (0.99.20-1) unstable; urgency=low
 

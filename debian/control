@@ -287,7 +287,7 @@ Section: httpd
 Architecture: any
 Depends: ${shlibs:Depends}, libcherokee-server0 (= ${binary:Version})
 Enhances: cherokee
-Description: Cherokee web server - Media streaming functions plugin
+Description: Cherokee web server - GeoIP-based IP resolution functionality
  Cherokee is a very fast, flexible and easy to configure Web Server.
  It supports the widespread technologies nowadays: FastCGI, SCGI, PHP,
  CGI, TLS and SSL encrypted connections, Virtual hosts, Authentication,
@@ -301,6 +301,26 @@ Description: Cherokee web server - Media streaming functions plugin
  This plugin includes the GeoIP-based IP resolution functionality. You
  will probably want to install this plugin unless you are aiming to a
  minimal dependency footprint.
+
+Package: libcherokee-mod-rrd
+Section: httpd
+Architecture: any
+Depends: ${shlibs:Depends}, libcherokee-server0 (= ${binary:Version}), rrdtool
+Enhances: cherokee
+Description: Cherokee web server - RRDtool based information collector
+ Cherokee is a very fast, flexible and easy to configure Web Server.
+ It supports the widespread technologies nowadays: FastCGI, SCGI, PHP,
+ CGI, TLS and SSL encrypted connections, Virtual hosts, Authentication,
+ on the fly encoding, Apache compatible log files, HTTP Load Balancing,
+ Data Base Balancing, SSI, Reverse HTTP Proxy and much more.
+ .
+ Cherokee also provides an easy to use configuration interface that
+ allows to configure the server from top to bottom without having to
+ edit a text configuration file.
+ .
+ This plugin includes the RRDtool based information collector
+ functionality. You will probably want to install this plugin unless
+ you are aiming to a minimal dependency footprint.
 
 Package: cget
 Section: web

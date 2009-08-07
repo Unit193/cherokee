@@ -32,6 +32,7 @@ MOD_LDAP_DIR     = $(CURDIR)/debian/libcherokee-mod-ldap
 MOD_LIBSSL_DIR   = $(CURDIR)/debian/libcherokee-mod-libssl
 MOD_STREAM_DIR   = $(CURDIR)/debian/libcherokee-mod-streaming
 MOD_GEOIP_DIR    = $(CURDIR)/debian/libcherokee-mod-geoip
+MOD_RRD_DIR      = $(CURDIR)/debian/libcherokee-mod-rrd
 SERVER_DIR       = $(CURDIR)/debian/cherokee
 DOC_DIR          = $(CURDIR)/debian/cherokee-doc
 CGET_DIR         = $(CURDIR)/debian/cget
@@ -266,6 +267,11 @@ install-arch:
 	install -d $(MOD_GEOIP_DIR)/DEBIAN
 	install -d $(MOD_GEOIP_DIR)/usr/lib/cherokee
 	mv $(BUILD_DIR)/usr/lib/cherokee/libplugin_geoip.* $(MOD_GEOIP_DIR)/usr/lib/cherokee
+
+# libcherokee-mod-rrd - GeoIP resolution functions
+	install -d $(MOD_RRD_DIR)/DEBIAN
+	install -d $(MOD_RRD_DIR)/usr/lib/cherokee
+	mv $(BUILD_DIR)/usr/lib/cherokee/libplugin_rrd.* $(MOD_RRD_DIR)/usr/lib/cherokee
 
 # libcherokee-server0 - Runtime library
 	install -d $(LIB_SERVER_DIR)/DEBIAN
