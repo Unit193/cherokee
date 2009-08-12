@@ -271,6 +271,8 @@ install-arch:
 # libcherokee-mod-rrd - GeoIP resolution functions
 	install -d $(MOD_RRD_DIR)/DEBIAN
 	install -d $(MOD_RRD_DIR)/usr/lib/cherokee
+	install -d $(MOD_RRD_DIR)/var/lib/cherokee/graphs/images
+	rm -f $(BUILD_DIR)/var/lib/cherokee/graphs
 	mv $(BUILD_DIR)/usr/lib/cherokee/libplugin_rrd.* $(MOD_RRD_DIR)/usr/lib/cherokee
 
 # libcherokee-server0 - Runtime library
