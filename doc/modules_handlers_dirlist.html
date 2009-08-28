@@ -17,152 +17,105 @@
 </div>
 <h2 id="_handler_directory_listing">Handler: Directory Listing</h2>
 <div class="sectionbody">
-<div class="para"><p>The <strong>Only Listing</strong> handler builds a list of directories and files
+<div class="paragraph"><p>The <strong>Only Listing</strong> handler builds a list of directories and files
 within the requested directory, but <strong>does not allow you to download
 its contents</strong>. Refer to <a href="modules_handlers_common.html">List &amp;
 Send</a> for the opposite behaviour.</p></div>
 <h3 id="listing">Parameters: Listing</h3><div style="clear:left"></div>
 <div class="tableblock">
-<table rules="rows"
-frame="hsides"
+<table rules="all"
+width="100%"
+frame="border"
 cellspacing="0" cellpadding="4">
-<col width="170" />
-<col width="100" />
-<col width="530" />
+<col width="20%" />
+<col width="20%" />
+<col width="60%" />
 <thead>
-  <tr>
-    <th align="left">
-    Parameters       
-    </th>
-    <th align="left">
-    Type    
-    </th>
-    <th align="left">
-    Description
-    </th>
-  </tr>
+<tr>
+<th align="left" valign="top">Parameters </th>
+<th align="left" valign="top">Type    </th>
+<th align="left" valign="top">Description</th>
+</tr>
 </thead>
-<tbody valign="top">
-  <tr>
-    <td align="left">
-    <tt>`size</tt>`         
-    </td>
-    <td align="left">
-    boolean 
-    </td>
-    <td align="left">
-    Optional. Display the size of files in the                                   listings. Default: <tt>`Enabled</tt>`.
-    </td>
-  </tr>
-  <tr>
-    <td align="left">
-    <tt>`date</tt>`         
-    </td>
-    <td align="left">
-    boolean 
-    </td>
-    <td align="left">
-    Optional. Display the last modification date of                              the files and directories in the listings.                                   Default: <tt>`Enabled</tt>`.
-    </td>
-  </tr>
-  <tr>
-    <td align="left">
-    <tt>`user</tt>`         
-    </td>
-    <td align="left">
-    boolean 
-    </td>
-    <td align="left">
-    Optional. Display the owner of the files and directories                              in the listings. Default: <tt>`Disabled</tt>`.
-    </td>
-  </tr>
-  <tr>
-    <td align="left">
-    <tt>`group</tt>`        
-    </td>
-    <td align="left">
-    boolean 
-    </td>
-    <td align="left">
-    Optional. Display the group ownership of the files and                               directories in the listings. Default <tt>`Disabled</tt>`.
-    </td>
-  </tr>
-  <tr>
-    <td align="left">
-    <tt>`symlinks</tt>`     
-    </td>
-    <td align="left">
-    boolean 
-    </td>
-    <td align="left">
-    Optional. Display symbolic links. Default <tt>`Enabled</tt>`.
-    </td>
-  </tr>
+<tbody>
+<tr>
+<td align="left" valign="top"><p class="table"><tt>size</tt></p></td>
+<td align="left" valign="top"><p class="table">boolean</p></td>
+<td align="left" valign="top"><p class="table">Optional. Display the size of files in the
+                      listings. Default: <tt>Enabled</tt>.</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><tt>date</tt></p></td>
+<td align="left" valign="top"><p class="table">boolean</p></td>
+<td align="left" valign="top"><p class="table">Optional. Display the last modification date of                       the files and directories in the listings.
+                      Default: <tt>Enabled</tt>.</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><tt>user</tt></p></td>
+<td align="left" valign="top"><p class="table">boolean</p></td>
+<td align="left" valign="top"><p class="table">Optional. Display the owner of the files and
+                      directories in the listings.
+                      Default: <tt>Disabled</tt>.</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><tt>group</tt></p></td>
+<td align="left" valign="top"><p class="table">boolean</p></td>
+<td align="left" valign="top"><p class="table">Optional. Display the group ownership of the
+                      files and directories in the listings.
+                      Default <tt>Disabled</tt>.</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><tt>symlinks</tt></p></td>
+<td align="left" valign="top"><p class="table">boolean</p></td>
+<td align="left" valign="top"><p class="table">Optional. Display symbolic links.
+                      Default <tt>Enabled</tt>.</p></td>
+</tr>
 </tbody>
 </table>
 </div>
 <h3 id="theming">Parameters: Theming</h3><div style="clear:left"></div>
 <div class="tableblock">
-<table rules="rows"
-frame="hsides"
+<table rules="all"
+width="100%"
+frame="border"
 cellspacing="0" cellpadding="4">
-<col width="170" />
-<col width="100" />
-<col width="530" />
+<col width="20%" />
+<col width="20%" />
+<col width="60%" />
 <thead>
-  <tr>
-    <th align="left">
-    Parameters       
-    </th>
-    <th align="left">
-    Type    
-    </th>
-    <th align="left">
-    Description
-    </th>
-  </tr>
+<tr>
+<th align="left" valign="top">Parameters     </th>
+<th align="left" valign="top">Type    </th>
+<th align="left" valign="top">Description</th>
+</tr>
 </thead>
-<tbody valign="top">
-  <tr>
-    <td align="left">
-    <tt>`theme</tt>`        
-    </td>
-    <td align="left">
-    string  
-    </td>
-    <td align="left">
-    Optional. The theme to use when displaying the                               directory listings. Default: <tt>`default</tt>`.
-    </td>
-  </tr>
-  <tr>
-    <td align="left">
-    <tt>`icon_dir</tt>`     
-    </td>
-    <td align="left">
-    string  
-    </td>
-    <td align="left">
-    Optional: Alternative path to a new icon set.
-    </td>
-  </tr>
-  <tr>
-    <td align="left">
-    <tt>`notice_files</tt>` 
-    </td>
-    <td align="left">
-    string  
-    </td>
-    <td align="left">
-    Optional: List of notice files to be inserted.
-    </td>
-  </tr>
+<tbody>
+<tr>
+<td align="left" valign="top"><p class="table"><tt>theme</tt></p></td>
+<td align="left" valign="top"><p class="table">string</p></td>
+<td align="left" valign="top"><p class="table">Optional. The theme to use when displaying
+                          the directory listings.
+                          Default: <tt>default</tt>.</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><tt>icon_dir</tt></p></td>
+<td align="left" valign="top"><p class="table">string</p></td>
+<td align="left" valign="top"><p class="table">Optional: Alternative path to a new icon
+                          set.</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><tt>notice_files</tt></p></td>
+<td align="left" valign="top"><p class="table">string</p></td>
+<td align="left" valign="top"><p class="table">Optional: List of notice files to be
+                          inserted.</p></td>
+</tr>
 </tbody>
 </table>
 </div>
-<div class="para"><p>It is possible to change the default theme used when displaying the directory
+<div class="paragraph"><p>It is possible to change the default theme used when displaying the directory
 listings.</p></div>
-<div class="vlist"><dl>
-<dt>
+<div class="dlist"><dl>
+<dt class="hdlist1">
 It is also possible to create a new one
 </dt>
 <dd>
@@ -171,21 +124,21 @@ It is also possible to create a new one
 <pre><tt>   $ ls /usr/share/cherokee/themes/firefox3/
    entry.html  footer.html  header.html  theme.css</tt></pre>
 </div></div>
-<div class="para"><p>Simply create a new directory in the above mentioned path containing
-the listed files and  you'll be able to select it in <tt>cherokee-admin</tt>.</p></div>
+<div class="paragraph"><p>Simply create a new directory in the above mentioned path containing
+the listed files and  you&#8217;ll be able to select it in <tt>cherokee-admin</tt>.</p></div>
 </dd>
 </dl></div>
 <h3 id="examples">Examples</h3><div style="clear:left"></div>
-<div class="para"><p>This configuration</p></div>
+<div class="paragraph"><p>This configuration</p></div>
 <div class="imageblock">
 <div class="content">
-<img src="media/images/admin_handler_onlylisting.png" alt="Only listing configuration" title="Only listing configuration"/>
+<img src="media/images/admin_handler_onlylisting.png" alt="media/images/admin_handler_onlylisting.png" />
 </div>
 </div>
-<div class="para"><p>will return something like</p></div>
+<div class="paragraph"><p>will return something like</p></div>
 <div class="imageblock">
 <div class="content">
-<img src="media/images/admin_handler_onlylisting_ex.png" alt="Only listing example" title="Only listing example"/>
+<img src="media/images/admin_handler_onlylisting_ex.png" alt="media/images/admin_handler_onlylisting_ex.png" />
 </div>
 </div>
 </div>

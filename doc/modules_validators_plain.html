@@ -15,59 +15,52 @@
 <h2 id="_a_href_index_html_index_a_8594_a_href_modules_html_modules_a_8594_a_href_modules_validators_html_validators_a"><a href="index.html">Index</a> &#8594; <a href="modules.html">Modules</a> &#8594; <a href="modules_validators.html">Validators</a></h2>
 <div class="sectionbody">
 <h3 id="_validator_plain">Validator: Plain</h3><div style="clear:left"></div>
-<div class="para"><p>The plain validator uses a flat-file to authenticate users.</p></div>
+<div class="paragraph"><p>The plain validator uses a flat-file to authenticate users.</p></div>
 <h4 id="_syntax">Syntax</h4>
-<div class="para"><p>Each line defines a user.  The username and password are delimited by a <tt>`:</tt>`
+<div class="paragraph"><p>Each line defines a user.  The username and password are delimited by a <tt>`:</tt>`
 colon.</p></div>
 <h4 id="parameters">Parameters</h4>
 <div class="tableblock">
-<table rules="rows"
-frame="hsides"
+<table rules="all"
+width="100%"
+frame="border"
 cellspacing="0" cellpadding="4">
-<col width="175" />
-<col width="624" />
+<col width="20%" />
+<col width="80%" />
 <thead>
-  <tr>
-    <th align="left">
-    Parameter       
-    </th>
-    <th align="left">
-    Description
-    </th>
-  </tr>
+<tr>
+<th align="left" valign="top">Parameter      </th>
+<th align="left" valign="top">Description</th>
+</tr>
 </thead>
-<tbody valign="top">
-  <tr>
-    <td align="left">
-    <em>passwdfile</em>  
-    </td>
-    <td align="left">
-    Required. The location of the user/pass file.
-    </td>
-  </tr>
+<tbody>
+<tr>
+<td align="left" valign="top"><p class="table"><em>passwdfile</em></p></td>
+<td align="left" valign="top"><p class="table">Required. The location of the user/pass file.</p></td>
+</tr>
 </tbody>
 </table>
 </div>
-<div class="para"><p>The parameter that specifies the file containing the pairs
+<div class="paragraph"><p>The parameter that specifies the file containing the pairs
 <em>user:password</em> is mandatory. <tt>Plain</tt> authentication can use both
 <tt>Basic</tt> and <tt>Digest</tt> schemes.</p></div>
-<div class="para"><p>You can and should place the password file outside the web tree to
+<div class="paragraph"><p>You can and should place the password file outside the web tree to
 prevent remote users from accessing the list.</p></div>
 <div class="imageblock">
 <div class="content">
-<img src="media/images/admin_validators_plain.png" alt="Validator Plain" title="Validator Plain"/>
+<img src="media/images/admin_validators_plain.png" alt="media/images/admin_validators_plain.png" />
 </div>
 </div>
-<div class="para"><p>This could be the contents of the the file <tt>/var/www/passwd</tt> specified
+<div class="paragraph"><p>This could be the contents of the the file <tt>/var/www/passwd</tt> specified
 in this example:</p></div>
 <div class="sidebarblock">
 <div class="sidebar-content">
-<div class="para"><p>testuser:testpassword</p></div>
-<div class="para"><p>cherokee:webserver</p></div>
+<div class="paragraph"><p>testuser:testpassword</p></div>
+<div class="paragraph"><p>cherokee:webserver</p></div>
 </div></div>
-<div class="para"><p>This would only allow access to the users <tt>cherokee</tt> and <tt>testuser</tt>.</p></div>
+<div class="paragraph"><p>This would only allow access to the users <tt>cherokee</tt> and <tt>testuser</tt>.</p></div>
 <h4 id="compatibility">Compatibility</h4>
-<div class="para"><p>This validator is compatible with both <strong>basic</strong> and <strong>digest</strong> schemes.</p></div>
+<div class="paragraph"><p>This validator is compatible with both <strong>basic</strong> and <strong>digest</strong> schemes.</p></div>
 </div>
 <div id="footer">
 <div id="footer-text">

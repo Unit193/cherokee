@@ -20,113 +20,90 @@
 <h3 id="networking">Network</h3><div style="clear:left"></div>
 <div class="imageblock">
 <div class="content">
-<img src="media/images/admin_general_networking.png" alt="General" title="General"/>
+<img src="media/images/admin_general_networking.png" alt="media/images/admin_general_networking.png" />
 </div>
 </div>
 <h4 id="_ipv6_support">IPv6 support</h4>
-<div class="para"><p>The IPv6 configuration key brings the possibility of activating or
+<div class="paragraph"><p>The IPv6 configuration key brings the possibility of activating or
 deactivating the IPv6 support at the server. If Cherokee has been
-compiled with IPv6 support (&#8212;with-ipv6), this configuration entry
+compiled with IPv6 support (--with-ipv6), this configuration entry
 will be fully functional, otherwise it will be ignored.</p></div>
 <h4 id="_ssl_tls_back_end">SSL/TLS Back-end</h4>
-<div class="para"><p>Specifies the TLS/SSL backend to be used, if any. The current option
+<div class="paragraph"><p>Specifies the TLS/SSL backend to be used, if any. The current option
 is OpenSSL.</p></div>
 <h4 id="_timeout">Timeout</h4>
-<div class="para"><p>Sets the number of seconds that Cherokee will wait before closing the
+<div class="paragraph"><p>Sets the number of seconds that Cherokee will wait before closing the
 connection.</p></div>
 <h4 id="_server_tokens">Server Tokens</h4>
-<div class="para"><p>This specifies the string that Cherokee should use to identify
+<div class="paragraph"><p>This specifies the string that Cherokee should use to identify
 itself.</p></div>
 <div class="tableblock">
-<table rules="rows"
-frame="hsides"
+<table rules="all"
+width="100%"
+frame="border"
 cellspacing="0" cellpadding="4">
-<col width="400" />
-<col width="400" />
+<col width="50%" />
+<col width="50%" />
 <thead>
-  <tr>
-    <th align="left">
-    Parameters               
-    </th>
-    <th align="left">
-    Description
-    </th>
-  </tr>
+<tr>
+<th align="left" valign="top">Parameters </th>
+<th align="left" valign="top">Description</th>
+</tr>
 </thead>
-<tbody valign="top">
-  <tr>
-    <td align="left">
-    Product                  
-    </td>
-    <td align="left">
-    Cherokee
-    </td>
-  </tr>
-  <tr>
-    <td align="left">
-    Minor                    
-    </td>
-    <td align="left">
-    Cherokee/0.98
-    </td>
-  </tr>
-  <tr>
-    <td align="left">
-    Minimal                  
-    </td>
-    <td align="left">
-    Cherokee/0.98.3
-    </td>
-  </tr>
-  <tr>
-    <td align="left">
-    OS                       
-    </td>
-    <td align="left">
-    Cherokee/0.98.3 (UNIX)
-    </td>
-  </tr>
-  <tr>
-    <td align="left">
-    Full                     
-    </td>
-    <td align="left">
-    Cherokee/0.98.3 b2955 (UNIX)
-    </td>
-  </tr>
+<tbody>
+<tr>
+<td align="left" valign="top"><p class="table">Product</p></td>
+<td align="left" valign="top"><p class="table">Cherokee</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">Minor</p></td>
+<td align="left" valign="top"><p class="table">Cherokee/0.98</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">Minimal</p></td>
+<td align="left" valign="top"><p class="table">Cherokee/0.98.3</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">OS</p></td>
+<td align="left" valign="top"><p class="table">Cherokee/0.98.3 (UNIX)</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">Full</p></td>
+<td align="left" valign="top"><p class="table">Cherokee/0.98.3 b2955 (UNIX)</p></td>
+</tr>
 </tbody>
 </table>
 </div>
-<div class="para"><p>By default, Cherokee will use <strong>Full</strong>.</p></div>
+<div class="paragraph"><p>By default, Cherokee will use <strong>Full</strong>.</p></div>
 <h3 id="ports_to_listen">Ports to listen</h3><div style="clear:left"></div>
 <div class="imageblock">
 <div class="content">
-<img src="media/images/admin_general_ports.png" alt="Ports to listen" title="Ports to listen"/>
+<img src="media/images/admin_general_ports.png" alt="media/images/admin_general_ports.png" />
 </div>
 </div>
-<div class="para"><p>This section allows to configure the ports that the server will be
+<div class="paragraph"><p>This section allows to configure the ports that the server will be
 listening to. You can add several different ports, and configure
 whether they will be used for HTTP or HTTPS.</p></div>
-<div class="para"><p>Each binding entry can be configured to listen to a network
+<div class="paragraph"><p>Each binding entry can be configured to listen to a network
 interface. In case the text entry is empty, the server will accept
 connection from the port on any interface.</p></div>
 <h3 id="server_permissions">Server Permissions</h3><div style="clear:left"></div>
 <div class="imageblock">
 <div class="content">
-<img src="media/images/admin_general_permissions.png" alt="Server Permissions" title="Server Permissions"/>
+<img src="media/images/admin_general_permissions.png" alt="media/images/admin_general_permissions.png" />
 </div>
 </div>
 <h4 id="_user_amp_group">User &amp; Group</h4>
-<div class="para"><p>The User directive configures which user the Cherokee daemon will
+<div class="paragraph"><p>The User directive configures which user the Cherokee daemon will
 normally run as. By default, Cherokee runs as root which is considered
 undesirable in all but the most trustful network configurations.</p></div>
-<div class="para"><p>The User directive used in conjunction with the Group directive
+<div class="paragraph"><p>The User directive used in conjunction with the Group directive
 instructs the daemon to switch to the specified user and group as
 quickly as possible after startup.</p></div>
-<div class="para"><p>There are two possible formats: using the user or group name, or using
+<div class="paragraph"><p>There are two possible formats: using the user or group name, or using
 the system ID.</p></div>
 <h4 id="_chroot">Chroot</h4>
-<div class="para"><p>Cherokee can be jailed inside a directory. Note that this should not
+<div class="paragraph"><p>Cherokee can be jailed inside a directory. Note that this should not
 be used as the sole security measure.</p></div>
 </div>
 <div id="footer">

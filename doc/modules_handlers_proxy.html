@@ -17,26 +17,26 @@
 </div>
 <h2 id="_handler_http_reverse_proxy">Handler: HTTP reverse proxy</h2>
 <div class="sectionbody">
-<div class="para"><p>This handler is one of the most demanded features of Cherokee. It
+<div class="paragraph"><p>This handler is one of the most demanded features of Cherokee. It
 dispatches in-bound network traffic to a set of servers, and presents
 a single interface to the requesters. This is particularly useful to
 load balance a cluster of webservers at a much higher network stack
 level than that allowed by the
 <a href="modules_hanlders_mirror.html">generic balancer</a>.</p></div>
-<div class="para"><p>All connections coming from the Internet addressed to one of the Web
+<div class="paragraph"><p>All connections coming from the Internet addressed to one of the Web
 servers are routed through the proxy, which can either deal with the
 request or pass it (with or without modifications) to the other web
 servers.</p></div>
-<div class="para"><p>The reverse proxy can do several interesting things besides simply
+<div class="paragraph"><p>The reverse proxy can do several interesting things besides simply
 load balancing. It can rewrite headers, and it can try to establish
 keep-alive connections with every system interfacing with it. That is,
-it doesn't matter if all the clients requesting contents from our
+it doesn&#8217;t matter if all the clients requesting contents from our
 publicly available Reverse Proxy do not support this feature: the
 Keep-Alive connections can still be kept within the local pool,
 greatly improving performance.</p></div>
-<div class="para"><p>The task of the reverse proxy can be summarized in the following
+<div class="paragraph"><p>The task of the reverse proxy can be summarized in the following
 steps.</p></div>
-<div class="ilist"><ul>
+<div class="ulist"><ul>
 <li>
 <p>
 Phase 1: The proxy receives a request, adds the necessary HTTP
@@ -48,10 +48,10 @@ Phase 1: The proxy receives a request, adds the necessary HTTP
 </ul></div>
 <div class="imageblock">
 <div class="content">
-<img src="media/images/proxy_phase1.png" alt="Phase 1" title="Phase 1"/>
+<img src="media/images/proxy_phase1.png" alt="media/images/proxy_phase1.png" />
 </div>
 </div>
-<div class="ilist"><ul>
+<div class="ulist"><ul>
 <li>
 <p>
 Phase 2: Once the server that has received the request sends back the
@@ -62,20 +62,20 @@ Phase 2: Once the server that has received the request sends back the
 </ul></div>
 <div class="imageblock">
 <div class="content">
-<img src="media/images/proxy_phase2.png" alt="Phase 2" title="Phase 2"/>
+<img src="media/images/proxy_phase2.png" alt="media/images/proxy_phase2.png" />
 </div>
 </div>
-<div class="para"><p>To use the HTTP reverse proxy handler you simply have to specify
+<div class="paragraph"><p>To use the HTTP reverse proxy handler you simply have to specify
 several parameters. First define a series of
 <a href="config_info_sources.html">information sources</a>. Those will be the
 ones handling the requests in the end.</p></div>
 <div class="imageblock">
 <div class="content">
-<img src="media/images/admin_handler_proxy.png" alt="Reverse Proxy" title="Reverse Proxy"/>
+<img src="media/images/admin_handler_proxy.png" alt="media/images/admin_handler_proxy.png" />
 </div>
 </div>
-<div class="para"><p>Then you will have to specify:</p></div>
-<div class="ilist"><ul>
+<div class="paragraph"><p>Then you will have to specify:</p></div>
+<div class="ulist"><ul>
 <li>
 <p>
 Reuse connections: the maximum number of connetions per server to be

@@ -20,6 +20,7 @@ error_redir.deps \
 phpcgi.deps \
 scgi.deps \
 fcgi.deps \
+uwsgi.deps \
 fastcgi.deps \
 cgi.deps \
 streaming.deps \
@@ -530,6 +531,29 @@ endif
 
 
 #
+# Handler uwsgi
+#
+if !STATIC_HANDLER_UWSGI
+handleruwsgi_cgi = handler_cgi_base.h handler_cgi_base.c
+endif
+
+handler_uwsgi = \
+$(handleruwsgi_cgi) \
+handler_uwsgi.h \
+handler_uwsgi.c
+
+libplugin_uwsgi_la_LDFLAGS = $(module_ldflags)  
+libplugin_uwsgi_la_SOURCES = $(handler_uwsgi)
+libplugin_uwsgi_la_LIBADD  = $(dynamic_handler_file_lib)
+
+if STATIC_HANDLER_UWSGI
+static_handler_uwsgi_src = $(handler_uwsgi)
+else
+dynamic_handler_uwsgi_lib = libplugin_uwsgi.la
+endif
+
+
+#
 # Handler fastcgi
 #
 if !STATIC_HANDLER_FASTCGI
@@ -676,23 +700,6 @@ else
 dynamic_handler_proxy_lib = libplugin_proxy.la
 endif
 
-
-#
-# Handler mirror
-#
-handler_mirror = \
-handler_mirror.c \
-handler_mirror.h
-
-libplugin_mirror_la_LDFLAGS = $(module_ldflags)  
-libplugin_mirror_la_SOURCES = $(handler_mirror)
-libplugin_mirror_la_LIBADD  = libcherokee-client.la  
-
-if STATIC_HANDLER_MIRROR
-static_handler_mirror_src = $(handler_mirror)
-else
-dynamic_handler_mirror_lib = libplugin_mirror.la
-endif
 
 
 #
@@ -1352,6 +1359,10 @@ if STATIC_HANDLER_SCGI
    common_cgi = handler_cgi_base.h \
 	     	 handler_cgi_base.c
 endif
+if STATIC_HANDLER_UWSGI
+   common_cgi = handler_cgi_base.h \
+	     	 handler_cgi_base.c
+endif
 
 if STATIC_VALIDATOR_PLAIN
    common_val_file = validator_file.h \
@@ -1396,6 +1407,7 @@ $(static_handler_admin_src) \
 $(static_handler_dirlist_src) \
 $(static_handler_scgi_src) \
 $(static_handler_fcgi_src) \
+$(static_handler_uwsgi_src) \
 $(static_handler_fastcgi_src) \
 $(static_handler_redir_src) \
 $(static_handler_error_redir_src) \
@@ -1404,7 +1416,6 @@ $(static_handler_cgi_src) \
 $(static_handler_phpcgi_src) \
 $(static_handler_common_src) \
 $(static_handler_proxy_src) \
-$(static_handler_mirror_src) \
 $(static_handler_ssi_src) \
 $(static_handler_secdownload_src) \
 $(static_handler_empty_gif_src) \
@@ -1580,10 +1591,10 @@ $(dynamic_handler_admin_lib) \
 $(dynamic_handler_dirlist_lib) \
 $(dynamic_handler_scgi_lib) \
 $(dynamic_handler_fcgi_lib) \
+$(dynamic_handler_uwsgi_lib) \
 $(dynamic_handler_fastcgi_lib) \
 $(dynamic_handler_redir_lib) \
 $(dynamic_handler_proxy_lib) \
-$(dynamic_handler_mirror_lib) \
 $(dynamic_handler_ssi_lib) \
 $(dynamic_handler_secdownload_lib) \
 $(dynamic_handler_empty_gif_lib) \

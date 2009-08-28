@@ -17,48 +17,37 @@
 </div>
 <h2 id="_handler_server_info">Handler: Server Info</h2>
 <div class="sectionbody">
-<div class="para"><p>The Server Info handler is used to create rules that can provide
+<div class="paragraph"><p>The Server Info handler is used to create rules that can provide
 information about the web server. When these rules are matched,
-information regarding Cherokee's status will be displayed. The pages
+information regarding Cherokee&#8217;s status will be displayed. The pages
 will be refreshed every 30 seconds.</p></div>
 <div class="tableblock">
-<table rules="rows"
-frame="hsides"
+<table rules="all"
+width="100%"
+frame="border"
 cellspacing="0" cellpadding="4">
-<col width="207" />
-<col width="103" />
-<col width="488" />
+<col width="20%" />
+<col width="10%" />
+<col width="70%" />
 <thead>
-  <tr>
-    <th align="left">
-    Parameters          
-    </th>
-    <th align="left">
-    Type    
-    </th>
-    <th align="left">
-    Description
-    </th>
-  </tr>
+<tr>
+<th align="left" valign="top">Parameters </th>
+<th align="left" valign="top">Type   </th>
+<th align="left" valign="top">Description</th>
+</tr>
 </thead>
-<tbody valign="top">
-  <tr>
-    <td align="left">
-    type                
-    </td>
-    <td align="left">
-    String 
-    </td>
-    <td align="left">
-    just_about | normal | connection_details
-    </td>
-  </tr>
+<tbody>
+<tr>
+<td align="left" valign="top"><p class="table">type</p></td>
+<td align="left" valign="top"><p class="table">String</p></td>
+<td align="left" valign="top"><p class="table">just_about | normal | connection_details</p></td>
+</tr>
 </tbody>
 </table>
 </div>
-<div class="para"><p>The type parameter specifies influences the verbosity of the output.</p></div>
-<div class="para"><p>If set to <tt>just_about</tt>, it will display:</p></div>
-<div class="ilist"><ul>
+<div class="paragraph"><p>The type parameter specifies influences the verbosity of the output.</p></div>
+<div class="paragraph"><p>If set to <tt>just_about</tt>, it will display:</p></div>
+<div class="ulist"><ul>
 <li>
 <p>
 Release number of Cherokee.
@@ -70,8 +59,8 @@ Brief license notice.
 </p>
 </li>
 </ul></div>
-<div class="para"><p>If set to <tt>normal</tt>, some extra information will be provided regarding:</p></div>
-<div class="ilist"><ul>
+<div class="paragraph"><p>If set to <tt>normal</tt>, some extra information will be provided regarding:</p></div>
+<div class="ulist"><ul>
 <li>
 <p>
 General Information
@@ -103,9 +92,9 @@ File Caching
 </p>
 </li>
 </ul></div>
-<div class="para"><p>If set to <tt>connection_details</tt> it will also  provide more detailed
+<div class="paragraph"><p>If set to <tt>connection_details</tt> it will also  provide more detailed
 information about the existing connections:</p></div>
-<div class="ilist"><ul>
+<div class="ulist"><ul>
 <li>
 <p>
 ID
