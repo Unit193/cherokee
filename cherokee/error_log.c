@@ -36,12 +36,13 @@ cherokee_error_log_set_log (cherokee_logger_t *logger)
 }
 
 ret_t
-cherokee_error_log (cherokee_error_type_t type, 
+cherokee_error_log (cherokee_error_type_t type,
 		    const char *format, ...)
 {
-	va_list            ap;
-	cherokee_logger_t *logger; 
-	cherokee_buffer_t  tmp     = CHEROKEE_BUF_INIT;
+	va_list                   ap;
+	cherokee_logger_t        *logger;
+	cherokee_logger_writer_t *writer = NULL;
+	cherokee_buffer_t         tmp    = CHEROKEE_BUF_INIT;
 
 	/* Error message formatting
 	 */
@@ -63,6 +64,12 @@ cherokee_error_log (cherokee_error_type_t type,
 	cherokee_buffer_add_va_list (&tmp, format, ap);
 	va_end (ap);
 
+	/* Backtrace
+	 */
+#ifdef BACKTRACES_ENABLED
+	cherokee_buf_add_backtrace (&tmp, 2);
+#endif
+
 	/* Logging: 1st option - connection's logger
 	 */
 	logger = LOGGER (CHEROKEE_THREAD_PROP_GET (thread_logger_error_ptr));
@@ -76,11 +83,16 @@ cherokee_error_log (cherokee_error_type_t type,
 	/* Do logging
 	 */
 	if (logger) {
-		cherokee_logger_write_error (logger, &tmp);
-	} 
+		cherokee_logger_get_error_writer (logger, &writer);
+		if ((writer) && (writer->initialized)) {
+			cherokee_logger_write_error (logger, &tmp);
+		}
+	}
 
 	if ((logger == NULL) ||
-	    (type == cherokee_err_critical)) 
+	    (! writer) ||
+	    ((writer) && (! writer->initialized)) ||
+	    (type == cherokee_err_critical))
 	{
 		fprintf (stderr, "%s", tmp.buf);
 	}

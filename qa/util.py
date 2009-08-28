@@ -111,7 +111,10 @@ def look_for_php():
             __php_ref = PHPCGI_PATH
             return __php_ref
 
-    for p in PHP_DIRS:
+    dirs  = os.getenv("PATH").split(":")
+    dirs += PHP_DIRS
+
+    for p in dirs:
         for n in PHP_NAMES:
             php = os.path.join(p,n)
             if os.path.exists(php):
@@ -119,8 +122,7 @@ def look_for_php():
                     __php_ref = php
                     return php
 
-    error = "Couldn't find a suitable PHP interpreter (with fastcgi support)"
-    __php_ref = error
+    __php_ref = ''
     return __php_ref
 
 
@@ -135,14 +137,16 @@ def look_for_python():
         __python_ref = PYTHON_PATH
         return __python_ref
 
-    for p in PYTHON_DIRS:
+    dirs  = os.getenv("PATH").split(":")
+    dirs += PYTHON_DIRS
+
+    for p in dirs:
         for n in PYTHON_NAMES:
             py = os.path.join(p,n)
             if os.path.exists(py):
                 __python_ref = py
                 return py
 
-    print "ERROR: Python interpreter not found"
     __python_ref = ''
     return __python_ref
 

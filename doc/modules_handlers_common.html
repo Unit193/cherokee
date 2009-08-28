@@ -17,64 +17,49 @@
 </div>
 <h2 id="_handler_list_amp_send">Handler: List &amp; Send</h2>
 <div class="sectionbody">
-<div class="para"><p>The <strong>List &amp; Send</strong> (<tt>`common</tt>` internally) handler behavior depends
+<div class="paragraph"><p>The <strong>List &amp; Send</strong> (<tt>`common</tt>` internally) handler behavior depends
 on whether it replies a request for a directory or a file.</p></div>
-<div class="para"><p>In case a directory is requested, it will use the
+<div class="paragraph"><p>In case a directory is requested, it will use the
 <a href="modules_handlers_dirlist.html">Listing Only</a> handler in order to
 list its contents. And, in case a file is request, it will use the
 <a href="modules_handlers_file.html">File Sending</a> handler.</p></div>
 <h3 id="parameters">Parameters</h3><div style="clear:left"></div>
 <div class="tableblock">
-<table rules="rows"
-frame="hsides"
+<table rules="all"
+width="100%"
+frame="border"
 cellspacing="0" cellpadding="4">
-<col width="200" />
-<col width="125" />
-<col width="475" />
+<col width="20%" />
+<col width="10%" />
+<col width="70%" />
 <thead>
-  <tr>
-    <th align="left">
-    Parameters      
-    </th>
-    <th align="left">
-    Type    
-    </th>
-    <th align="left">
-    Description
-    </th>
-  </tr>
+<tr>
+<th align="left" valign="top">Parameters       </th>
+<th align="left" valign="top">Type    </th>
+<th align="left" valign="top">Description</th>
+</tr>
 </thead>
-<tbody valign="top">
-  <tr>
-    <td align="left">
-    <tt>allow_pathinfo</tt>
-    </td>
-    <td align="left">
-    boolean 
-    </td>
-    <td align="left">
-    Makes the handler to stop parsing the                             pathinfo string. Default: <tt>Disabled</tt>.
-    </td>
-  </tr>
-  <tr>
-    <td align="left">
-    <tt>allow_dirlist</tt> 
-    </td>
-    <td align="left">
-    boolean 
-    </td>
-    <td align="left">
-    Enables showing the contents of a directory.
-    </td>
-  </tr>
+<tbody>
+<tr>
+<td align="left" valign="top"><p class="table"><tt>allow_pathinfo</tt></p></td>
+<td align="left" valign="top"><p class="table">boolean</p></td>
+<td align="left" valign="top"><p class="table">Makes the handler to stop parsing the
+                            pathinfo string. Default: <tt>Disabled</tt>.</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><tt>allow_dirlist</tt></p></td>
+<td align="left" valign="top"><p class="table">boolean</p></td>
+<td align="left" valign="top"><p class="table">Enables showing the contents of a
+                            directory.</p></td>
+</tr>
 </tbody>
 </table>
 </div>
-<div class="para"><p>Besides, it inherits all the parameters from the
+<div class="paragraph"><p>Besides, it inherits all the parameters from the
 <a href="modules_handlers_file.html">file/Static Content</a> and
 <a href="modules_handlers_dirlist.html">dirlist/Only listing</a> handlers.</p></div>
-<div class="vlist"><dl>
-<dt>
+<div class="dlist"><dl>
+<dt class="hdlist1">
 This example shows the practical effect of <strong>pathinfo</strong>
 </dt>
 <dd>
@@ -91,28 +76,28 @@ This example shows the practical effect of <strong>pathinfo</strong>
 </dd>
 </dl></div>
 <h3 id="examples">Examples</h3><div style="clear:left"></div>
-<div class="para"><p>Here is a basic example.</p></div>
+<div class="paragraph"><p>Here is a basic example.</p></div>
 <div class="imageblock">
 <div class="content">
-<img src="media/images/admin_handler_dirlist.png" alt="Dirlist configuration" title="Dirlist configuration"/>
+<img src="media/images/admin_handler_dirlist.png" alt="media/images/admin_handler_dirlist.png" />
 </div>
-<div class="image-title">Figure: Configuration</div>
+<div class="image-title">Configuration</div>
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="media/images/admin_handler_dirlist_ex.png" alt="Dirlist example" title="Dirlist example"/>
+<img src="media/images/admin_handler_dirlist_ex.png" alt="media/images/admin_handler_dirlist_ex.png" />
 </div>
-<div class="image-title">Figure: Actual output</div>
+<div class="image-title">Actual output</div>
 </div>
 <h3 id="indexes">Indexes</h3><div style="clear:left"></div>
-<div class="para"><p>This is the behavior inherited from the
+<div class="paragraph"><p>This is the behavior inherited from the
 <a href="modules_handlers_dirlist.html">dirlist/Only listing</a> handler.</p></div>
-<div class="para"><p>Simply enable the desired file attributes to be shown under <tt>Listing</tt>,
+<div class="paragraph"><p>Simply enable the desired file attributes to be shown under <tt>Listing</tt>,
 and choose the HTML template to use (<tt>default</tt> -with the Cherokee logo-,
 <tt>plain</tt> -a fixed width theme- and <tt>firefox3</tt>).</p></div>
-<div class="para"><p>You can also include a <tt>Notice file</tt> to show its contents on top of
+<div class="paragraph"><p>You can also include a <tt>Notice file</tt> to show its contents on top of
 every automatically generated list.</p></div>
-<div class="para"><p>Of course, the lists are sortable by any of the displayed attributes.</p></div>
+<div class="paragraph"><p>Of course, the lists are sortable by any of the displayed attributes.</p></div>
 </div>
 <div id="footer">
 <div id="footer-text">

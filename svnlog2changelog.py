@@ -12,10 +12,11 @@ from sys import stdin
 import xml.dom.minidom
 
 DEVELOPERS = {
-    'alo'    : "Alvaro Lopez Ortega  <alvaro@octality.com>",
-    'aperez' : "Antonio Perez  <aperez@skarcha.com>",
-    'ion'    : "Jonathan Hernandez  <ion@suavizado.com>",
-    'taher'  : "Taher Shihadeh  <taher@unixwars.com>"
+    'alo'          : "Alvaro Lopez Ortega  <alvaro@octality.com>",
+    'aperez'       : "Antonio Perez  <aperez@skarcha.com>",
+    'ion'          : "Jonathan Hernandez  <ion@suavizado.com>",
+    'taher'        : "Taher Shihadeh  <taher@unixwars.com>",
+    'robertounbit' : "Roberto De Ioris <roberto@unbit.it>"
 }
 
 def get_text (nodelist):
@@ -63,8 +64,8 @@ for entry in log.getElementsByTagName('logentry'):
     print "%s  %s" % (date, author)
     print " "*12 + "SVN: r%s, %s - %s" % (revision, dev, time)
     if msg:
-        print
-        print msg,
+        print msg.encode("utf-8"),
+
     if paths:
         print
         print paths

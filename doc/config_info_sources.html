@@ -17,16 +17,16 @@
 </div>
 <h2 id="_information_sources">Information Sources</h2>
 <div class="sectionbody">
-<div class="para"><p>Every information source to be used by the web server is configured
+<div class="paragraph"><p>Every information source to be used by the web server is configured
 only once in this section. After that, any virtual server will be able
 to use as many as desired without having to set up the same thing over
 and over again for every one of the configured servers.</p></div>
-<div class="para"><p>This section shows the configured information sources (<em>Known
+<div class="paragraph"><p>This section shows the configured information sources (<em>Known
 sources</em>), the usage of sources by every defined rule in your virtual
 servers (<em>Source usage</em>) and allows the addition and edition of
 sources.</p></div>
-<div class="para"><p>There are two possible settings as <strong>information sources</strong>:</p></div>
-<div class="olist"><ol>
+<div class="paragraph"><p>There are two possible settings as <strong>information sources</strong>:</p></div>
+<div class="olist arabic"><ol class="arabic">
 <li>
 <p>
 <strong>Remote</strong>: Cherokee will simply dispatch the request to the specified
@@ -54,13 +54,13 @@ sources.</p></div>
 </p>
 </li>
 </ol></div>
-<div class="para"><p>Note that because of Cherokee's flexibility and modularity, sometimes
+<div class="paragraph"><p>Note that because of Cherokee&#8217;s flexibility and modularity, sometimes
 and deppending of the situation one or the other setting might not
 make much sense. In such ocasions <tt>cherokee-admin</tt> will simply hide
 whatever options do not apply.</p></div>
 <div class="imageblock">
 <div class="content">
-<img src="media/images/admin_info_sources.png" alt="Information Sources" title="Information Sources"/>
+<img src="media/images/admin_info_sources.png" alt="media/images/admin_info_sources.png" />
 </div>
 </div>
 <div class="admonitionblock">
@@ -89,14 +89,14 @@ alternative information sources or by completely eliminating the rule.</td>
 </tr></table>
 </div>
 <h3 id="unix_sockets">Unix Sockets</h3><div style="clear:left"></div>
-<div class="para"><p>Note that information sources can be adressed by host:port or directly
+<div class="paragraph"><p>Note that information sources can be adressed by host:port or directly
 through Unix sockets. You only have to specify a full path to the
 socket instead of the <tt>host:port</tt>.</p></div>
-<div class="para"><p>For instance an entry such as <tt>/var/tmp/socket-tmp.1</tt> should get
+<div class="paragraph"><p>For instance an entry such as <tt>/var/tmp/socket-tmp.1</tt> should get
 everything to simply work if that was a correct path.</p></div>
 <h3 id="further_insight">Further insight</h3><div style="clear:left"></div>
-<div class="para"><p>This is the list of currently supported balancing strategies:</p></div>
-<div class="ilist"><ul>
+<div class="paragraph"><p>This is the list of currently supported balancing strategies:</p></div>
+<div class="ulist"><ul>
 <li>
 <p>
 <a href="modules_balancers_round_robin.html">Round Robin</a>
@@ -108,8 +108,8 @@ everything to simply work if that was a correct path.</p></div>
 </p>
 </li>
 </ul></div>
-<div class="para"><p>And these are the handlers that use balancing:</p></div>
-<div class="ilist"><ul>
+<div class="paragraph"><p>And these are the handlers that use balancing:</p></div>
+<div class="ulist"><ul>
 <li>
 <p>
 <a href="modules_handlers_proxy.html">Reverse HTTP proxy</a>
@@ -123,11 +123,6 @@ everything to simply work if that was a correct path.</p></div>
 <li>
 <p>
 <a href="modules_handlers_scgi.html">SCGI</a>
-</p>
-</li>
-<li>
-<p>
-<a href="modules_handlers_mirror.html">Generic balancer</a>
 </p>
 </li>
 <li>

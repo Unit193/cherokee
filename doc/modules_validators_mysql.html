@@ -15,103 +15,74 @@
 <h2 id="_a_href_index_html_index_a_8594_a_href_modules_html_modules_a_8594_a_href_modules_validators_html_validators_a"><a href="index.html">Index</a> &#8594; <a href="modules.html">Modules</a> &#8594; <a href="modules_validators.html">Validators</a></h2>
 <div class="sectionbody">
 <h3 id="_validator_mysql">Validator: Mysql</h3><div style="clear:left"></div>
-<div class="para"><p>The MySQL validator allows you to authenticate a user against a MySQL database.</p></div>
+<div class="paragraph"><p>The MySQL validator allows you to authenticate a user against a MySQL database.</p></div>
 <div class="tableblock" id="parameters">
-<table rules="rows"
-frame="hsides"
+<table rules="all"
+width="100%"
+frame="border"
 cellspacing="0" cellpadding="4">
-<caption class="title">Table: Parameters</caption>
-<col width="400" />
-<col width="400" />
+<caption class="title">Parameters</caption>
+<col width="20%" />
+<col width="80%" />
 <thead>
-  <tr>
-    <th align="left">
-    Parameter                 
-    </th>
-    <th align="left">
-    Description
-    </th>
-  </tr>
+<tr>
+<th align="left" valign="top">Parameter       </th>
+<th align="left" valign="top">Description</th>
+</tr>
 </thead>
-<tbody valign="top">
-  <tr>
-    <td align="left">
-    <em>host</em>                  
-    </td>
-    <td align="left">
-    Optional. The server that is running the                                  MySQL database server. Default: <em>localhost</em>.
-    </td>
-  </tr>
-  <tr>
-    <td align="left">
-    <em>port</em>                  
-    </td>
-    <td align="left">
-    Optional. The port that MySQL is listening on.                             Default: <em>3306</em>.
-    </td>
-  </tr>
-  <tr>
-    <td align="left">
-    <em>unix_socket</em>           
-    </td>
-    <td align="left">
-    Optional. A Unix socket.
-    </td>
-  </tr>
-  <tr>
-    <td align="left">
-    <em>user</em>                  
-    </td>
-    <td align="left">
-    The MySQL user to authenticate as.
-    </td>
-  </tr>
-  <tr>
-    <td align="left">
-    <em>passwd</em>                
-    </td>
-    <td align="left">
-    The MySQL user password to use.
-    </td>
-  </tr>
-  <tr>
-    <td align="left">
-    <em>database</em>              
-    </td>
-    <td align="left">
-    Required. The MySQL database to select upon                                connection.
-    </td>
-  </tr>
-  <tr>
-    <td align="left">
-    <em>query</em>                 
-    </td>
-    <td align="left">
-    Required. The query to execute to authenticate                             the HTTP user.
-    </td>
-  </tr>
-  <tr>
-    <td align="left">
-    <em>hash</em>                  
-    </td>
-    <td align="left">
-    Optional. What the passwords in the database table                             are hashed with. Valid options are <em>sha1</em>                             <em>md5</em> or <em>none</em>. Default: <em>none</em>.
-    </td>
-  </tr>
+<tbody>
+<tr>
+<td align="left" valign="top"><p class="table"><em>host</em></p></td>
+<td align="left" valign="top"><p class="table">Optional. The server that is running the MySQL
+                  database server. Default: <em>localhost</em>.</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><em>port</em></p></td>
+<td align="left" valign="top"><p class="table">Optional. The port that MySQL is listening on.
+                  Default: <em>3306</em>.</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><em>unix_socket</em></p></td>
+<td align="left" valign="top"><p class="table">Optional. A Unix socket.</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><em>user</em></p></td>
+<td align="left" valign="top"><p class="table">The MySQL user to authenticate as.</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><em>passwd</em></p></td>
+<td align="left" valign="top"><p class="table">The MySQL user password to use.</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><em>database</em></p></td>
+<td align="left" valign="top"><p class="table">Required. The MySQL database to select upon
+                  connection.</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><em>query</em></p></td>
+<td align="left" valign="top"><p class="table">Required. The query to execute to authenticate
+                  the HTTP user.</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><em>hash</em></p></td>
+<td align="left" valign="top"><p class="table">Optional. What the passwords in the database table
+                  are hashed with. Valid options are <em>sha1</em>
+                   <em>md5</em> or <em>none</em>. Default: <em>none</em>.</p></td>
+</tr>
 </tbody>
 </table>
 </div>
-<div class="para"><p>The <tt>query</tt> parameter is given an argument <tt>${user}</tt> so you can query
+<div class="paragraph"><p>The <tt>query</tt> parameter is given an argument <tt>$\{user}</tt> so you can query
 against it.</p></div>
 <div class="listingblock">
-<div class="title">Example: Sample query</div>
+<div class="title">Sample query</div>
 <div class="content">
 <pre><tt>    SELECT password FROM auth_users WHERE username = '${user}'</tt></pre>
 </div></div>
-<div class="para"><p>The query must return one row with one column as the password.  The name of the
+<div class="paragraph"><p>The query must return one row with one column as the password.  The name of the
 column does not matter.</p></div>
 <h4 id="compatibility">Compatibility</h4>
-<div class="para"><p>This validator is compatible with both <strong>basic</strong> and <strong>digest</strong> schemes.</p></div>
+<div class="paragraph"><p>This validator is compatible with both <strong>basic</strong> and <strong>digest</strong> schemes.</p></div>
 </div>
 <div id="footer">
 <div id="footer-text">

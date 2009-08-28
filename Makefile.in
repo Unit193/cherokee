@@ -224,6 +224,7 @@ PACKAGE_NAME = @PACKAGE_NAME@
 PACKAGE_PATCH_VERSION = @PACKAGE_PATCH_VERSION@
 PACKAGE_STRING = @PACKAGE_STRING@
 PACKAGE_TARNAME = @PACKAGE_TARNAME@
+PACKAGE_URL = @PACKAGE_URL@
 PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
 PHPCGI = @PHPCGI@
@@ -237,7 +238,9 @@ SHELL = @SHELL@
 STRIP = @STRIP@
 USE_NLS = @USE_NLS@
 VERSION = @VERSION@
+WWW_GROUP = @WWW_GROUP@
 WWW_ROOT = @WWW_ROOT@
+WWW_USER = @WWW_USER@
 XGETTEXT = @XGETTEXT@
 XGETTEXT_015 = @XGETTEXT_015@
 XGETTEXT_EXTRA_OPTIONS = @XGETTEXT_EXTRA_OPTIONS@
@@ -294,7 +297,7 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-SUBDIRS = po m4 www icons themes qa doc . admin contrib cherokee cget windows dbslayer
+SUBDIRS = po m4 www icons themes qa doc . admin contrib cherokee cget packages dbslayer
 SUFFIXES = .sample.pre .sample .h.pre .h .xml.pre .xml
 ACLOCAL_AMFLAGS = -I m4
 bin_SCRIPTS = cherokee-config
@@ -1016,7 +1019,21 @@ uninstall-man: uninstall-man1
 .xml.pre.xml:
 	sed -e "s|%sysconfdir%|${sysconfdir}|g; s|%sbindir%|${sbindir}|g; s|%docdir%|${docdir}|g; s|%prefix%|${prefix}|g; s|%localstatedir%|${localstatedir}|g; s|%libdir%|${libdir}|g; s|%wwwroot%|${WWW_ROOT}|g; s|%version%|${PACKAGE_VERSION}|g; s|%phpcgi%|${PHPCGI}|g; s|%datadir%|${datadir}|g; s|%localedir%|${localedir}|g" $< > $@
 
-all-local: $(CONSTANTS) $(CONFS) $(XMLS)
+all-local: $(CONSTANTS) $(CONFS) $(XMLS) add_user_group
+
+add_user_group: cherokee.conf.sample
+	@if test "x$(WWW_USER)" != "x" ; then \
+		grep -e '^server.user' cherokee.conf.sample >/dev/null 2>/dev/null || ( \
+			echo "Adding default user '$(WWW_USER)' to cherokee.conf.sample.."; \
+			echo 'server!user = '$(WWW_USER) >> cherokee.conf.sample; \
+		); \
+	fi
+	@if test "x$(WWW_GROUP)" != "x" ; then \
+		grep -e '^server.group' cherokee.conf.sample >/dev/null 2>/dev/null || ( \
+			echo "Adding default group '$(WWW_GROUP)' to cherokee.conf.sample.."; \
+			echo 'server!group = '$(WWW_GROUP) >> cherokee.conf.sample; \
+		); \
+	fi
 
 install-data-local-config:
 	@$(mkinstalldirs) $(DESTDIR)$(pkgincludedir);
@@ -1034,7 +1051,6 @@ install-data-local: $(CONFS) install-data-local-config
 	@$(mkinstalldirs) $(DESTDIR)$(localstatedir)/log
 	@$(mkinstalldirs) $(DESTDIR)$(localstatedir)/lib/cherokee/graphs/images
 	@$(mkinstalldirs) $(DESTDIR)$(cherokeeconfdir)
-	@$(mkinstalldirs) $(DESTDIR)$(cherokeeconfdir)/ssl
 	@$(mkinstalldirs) $(DESTDIR)$(cherokeeadmindir)
 	@if test -f $(DESTDIR)$(cherokeeconfdir)/cherokee.conf ; then \
 		echo "$@ will not overwrite existing $(DESTDIR)$(cherokeeconfdir)/cherokee.conf"; \
@@ -1066,6 +1082,7 @@ uninstall-local: uninstall-local-config
 	$(RM) -f $(DESTDIR)$(cherokeeadmindir)/performance.conf.sample
 
 test:
+	$(MAKE) -C doc test
 	$(MAKE) -C qa test
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.

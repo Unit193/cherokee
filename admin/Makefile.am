@@ -65,12 +65,12 @@ ModuleServerInfo.py \
 ModuleCgi.py \
 ModuleFcgi.py \
 ModuleScgi.py \
+ModuleUwsgi.py \
 ModuleBalancer.py \
 ModuleSsi.py \
 ModuleSecdownload.py \
 ModuleEmptyGif.py \
 ModuleProxy.py \
-ModuleMirror.py \
 ModuleDbslayer.py \
 ModuleStreaming.py \
 ModuleErrorNn.py \
@@ -120,7 +120,8 @@ Wizard_Drupal.py \
 Wizard_RoR.py \
 Wizard_Mailman.py \
 Wizard_Icons.py \
-Wizard_CommonStatic.py
+Wizard_CommonStatic.py \
+Wizard_Streaming.py 
 endif
 
 adminpy_DATA = $(admin_data)

@@ -17,62 +17,43 @@
 </div>
 <h2 id="_other_signals">Other: Signals</h2>
 <div class="sectionbody">
-<div class="para"><p><a href="bundle_cherokee-admin.html">Cherokee-Admin</a> is all you need to
+<div class="paragraph"><p><a href="bundle_cherokee-admin.html">Cherokee-Admin</a> is all you need to
 interact with Cherokee. However, should you want to tap directly into
 the underlying communication mechanism you would need to send the
 supported signals to the  <a href="bundle_cherokee.html">cherokee</a> process.</p></div>
-<div class="para"><p>If needed it will relay the appropriate signals to any
+<div class="paragraph"><p>If needed it will relay the appropriate signals to any
 <a href="bundle_cherokee-worker.html">cherokee-worker</a> instances.</p></div>
-<div class="para"><p>The following signals are supported by Cherokee:</p></div>
+<div class="paragraph"><p>The following signals are supported by Cherokee:</p></div>
 <div class="tableblock">
-<table rules="rows"
-frame="hsides"
+<table rules="all"
+width="100%"
+frame="border"
 cellspacing="0" cellpadding="4">
-<col width="114" />
-<col width="685" />
+<col width="20%" />
+<col width="80%" />
 <thead>
-  <tr>
-    <th align="left">
-    Parameters 
-    </th>
-    <th align="left">
-    Description
-    </th>
-  </tr>
+<tr>
+<th align="left" valign="top">Parameters </th>
+<th align="left" valign="top">Description</th>
+</tr>
 </thead>
-<tbody valign="top">
-  <tr>
-    <td align="left">
-    SIGHUP     
-    </td>
-    <td align="left">
-    Restarts the server gracefully
-    </td>
-  </tr>
-  <tr>
-    <td align="left">
-    SIGUSR1    
-    </td>
-    <td align="left">
-    Restarts the server closing all the opened connections
-    </td>
-  </tr>
-  <tr>
-    <td align="left">
-    SIGUSR2    
-    </td>
-    <td align="left">
-    Reopens the log files
-    </td>
-  </tr>
-  <tr>
-    <td align="left">
-    SIGTERM    
-    </td>
-    <td align="left">
-    Exits
-    </td>
-  </tr>
+<tbody>
+<tr>
+<td align="left" valign="top"><p class="table">SIGHUP</p></td>
+<td align="left" valign="top"><p class="table">Restarts the server gracefully</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">SIGUSR1</p></td>
+<td align="left" valign="top"><p class="table">Restarts the server closing all the opened connections</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">SIGUSR2</p></td>
+<td align="left" valign="top"><p class="table">Reopens the log files</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">SIGTERM</p></td>
+<td align="left" valign="top"><p class="table">Exits</p></td>
+</tr>
 </tbody>
 </table>
 </div>

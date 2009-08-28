@@ -1,6 +1,6 @@
 ## Cherokee: Makefile.am  -*- makefile -*-
 
-SUBDIRS = po m4 www icons themes qa doc . admin contrib cherokee cget windows dbslayer
+SUBDIRS = po m4 www icons themes qa doc . admin contrib cherokee cget packages dbslayer
 SUFFIXES = .sample.pre .sample .h.pre .h .xml.pre .xml
 ACLOCAL_AMFLAGS = -I m4
 
@@ -87,7 +87,21 @@ $(man_MANS)           \
 $(WINDOWS_PORT_FILES) \
 $(COMPILATION_TESTS)
 
-all-local: $(CONSTANTS) $(CONFS) $(XMLS)
+all-local: $(CONSTANTS) $(CONFS) $(XMLS) add_user_group
+
+add_user_group: cherokee.conf.sample
+	@if test "x$(WWW_USER)" != "x" ; then \
+		grep -e '^server.user' cherokee.conf.sample >/dev/null 2>/dev/null || ( \
+			echo "Adding default user '$(WWW_USER)' to cherokee.conf.sample.."; \
+			echo 'server!user = '$(WWW_USER) >> cherokee.conf.sample; \
+		); \
+	fi
+	@if test "x$(WWW_GROUP)" != "x" ; then \
+		grep -e '^server.group' cherokee.conf.sample >/dev/null 2>/dev/null || ( \
+			echo "Adding default group '$(WWW_GROUP)' to cherokee.conf.sample.."; \
+			echo 'server!group = '$(WWW_GROUP) >> cherokee.conf.sample; \
+		); \
+	fi
 
 install-data-local-config:
 	@$(mkinstalldirs) $(DESTDIR)$(pkgincludedir);
@@ -105,7 +119,6 @@ install-data-local: $(CONFS) install-data-local-config
 	@$(mkinstalldirs) $(DESTDIR)$(localstatedir)/log
 	@$(mkinstalldirs) $(DESTDIR)$(localstatedir)/lib/cherokee/graphs/images
 	@$(mkinstalldirs) $(DESTDIR)$(cherokeeconfdir)
-	@$(mkinstalldirs) $(DESTDIR)$(cherokeeconfdir)/ssl
 	@$(mkinstalldirs) $(DESTDIR)$(cherokeeadmindir)
 	@if test -f $(DESTDIR)$(cherokeeconfdir)/cherokee.conf ; then \
 		echo "$@ will not overwrite existing $(DESTDIR)$(cherokeeconfdir)/cherokee.conf"; \
@@ -137,4 +150,5 @@ uninstall-local: uninstall-local-config
 	$(RM) -f $(DESTDIR)$(cherokeeadmindir)/performance.conf.sample
 
 test:
+	$(MAKE) -C doc test
 	$(MAKE) -C qa test
