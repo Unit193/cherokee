@@ -1,3 +1,106 @@
+2009-08-31  Antonio Perez  <aperez@skarcha.com>
+            SVN: r3609, aperez - 15:48:15
+	* Adds a new wizard to set up XMLRPC for rTorrent.
+	
+	
+	A /cherokee/trunk/admin/static/images/wizards/rtorrent.png
+	M /cherokee/trunk/admin/util.py
+	A /cherokee/trunk/admin/Wizard_rTorrent.py
+	M /cherokee/trunk/admin/static/images/wizards/Makefile.am
+	M /cherokee/trunk/admin/Makefile.am
+
+2009-08-31  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3608, alo - 13:24:42
+	* We are using Twitter, actually.
+	
+	M /cherokee/trunk/doc/other_community.txt
+
+2009-08-31  Antonio Perez  <aperez@skarcha.com>
+            SVN: r3607, aperez - 00:24:59
+	* Update translation files.
+	
+	M /cherokee/trunk/po/admin/es.po
+	M /cherokee/trunk/po/admin/de.po
+	M /cherokee/trunk/po/admin/nl.po
+	M /cherokee/trunk/po/admin/sv_SE.po
+	M /cherokee/trunk/po/admin/zh_CN.po
+	M /cherokee/trunk/po/admin/en.po
+
+2009-08-30  Antonio Perez  <aperez@skarcha.com>
+            SVN: r3606, aperez - 23:02:50
+	* Makes available the new uWSGI handler.
+	
+	
+	M /cherokee/trunk/admin/consts.py
+
+2009-08-30  Antonio Perez  <aperez@skarcha.com>
+            SVN: r3605, aperez - 18:36:04
+	* Optional properties in Cherokee-admin are now marked when they have no value.
+	
+	
+	M /cherokee/trunk/admin/PageVServer.py
+	M /cherokee/trunk/admin/ModuleRrd.py
+	M /cherokee/trunk/admin/PageEntry.py
+	M /cherokee/trunk/admin/ModuleStreaming.py
+	M /cherokee/trunk/admin/Entry.py
+	M /cherokee/trunk/admin/PageAdvanced.py
+	M /cherokee/trunk/admin/static/css/cherokee.css
+	M /cherokee/trunk/admin/ModuleAuth.py
+	M /cherokee/trunk/admin/ModuleSecdownload.py
+	M /cherokee/trunk/admin/ModuleCgi.py
+	M /cherokee/trunk/admin/PageInfoSource.py
+	M /cherokee/trunk/admin/default.template.html
+	M /cherokee/trunk/admin/PageGeneral.py
+	M /cherokee/trunk/admin/ModuleDbslayer.py
+	M /cherokee/trunk/admin/Page.py
+	A /cherokee/trunk/admin/static/js/jquery.form-defaults.js
+	M /cherokee/trunk/admin/static/js/common.js
+	M /cherokee/trunk/admin/ModuleDirlist.py
+	M /cherokee/trunk/admin/static/js/Makefile.am
+
+2009-08-30  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3604, alo - 11:23:09
+	* Removes a few unnecessary image files.
+	
+	D /cherokee/trunk/doc/media/images/cookbook_wp_default1.png
+	M /cherokee/trunk/doc/Makefile.am
+	D /cherokee/trunk/doc/media/images/cookbook_wp_example1.png
+	D /cherokee/trunk/doc/media/images/cookbook_wp_example2.png
+	D /cherokee/trunk/doc/media/images/cookbook_wp_example3.png
+
+2009-08-29  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3603, alo - 10:12:24
+	* Update translation files. The Spanish translation has been finished,
+	it's completely translated and "de-fuzzied" now.
+	
+	M /cherokee/trunk/po/admin/es.po
+	M /cherokee/trunk/po/admin/de.po
+	M /cherokee/trunk/po/admin/nl.po
+	M /cherokee/trunk/po/admin/sv_SE.po
+	M /cherokee/trunk/po/admin/zh_CN.po
+	M /cherokee/trunk/po/admin/en.po
+
+2009-08-29  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3602, alo - 09:18:06
+	* Fixes a potential issue. There was corner situation on which I/O cache
+	could read a couple of uninitialized bytes of memory while turning
+	'File not found' error codes.
+	
+	M /cherokee/trunk/cherokee/iocache.c
+
+2009-08-29  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3601, alo - 09:10:21
+	* Fixes a regression. Help pages were not being displayed in
+	Cherokee-Admin.
+	
+	M /cherokee/trunk/cherokee/main_admin.c
+
+2009-08-29  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3600, alo - 09:10:04
+	* 0.99.23 released
+	
+	M /cherokee/trunk/configure.in
+
 2009-08-28  Alvaro Lopez Ortega  <alvaro@octality.com>
             SVN: r3598, alo - 14:14:44
 	* Three minor, misc code fixes.
