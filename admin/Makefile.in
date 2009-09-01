@@ -379,7 +379,8 @@ adminpy_SCRIPTS = $(admin_scripts)
 @INSTALL_ADMIN_TRUE@Wizard_Mailman.py \
 @INSTALL_ADMIN_TRUE@Wizard_Icons.py \
 @INSTALL_ADMIN_TRUE@Wizard_CommonStatic.py \
-@INSTALL_ADMIN_TRUE@Wizard_Streaming.py 
+@INSTALL_ADMIN_TRUE@Wizard_Streaming.py \
+@INSTALL_ADMIN_TRUE@Wizard_rTorrent.py
 
 adminpy_DATA = $(admin_data)
 @INSTALL_ADMIN_TRUE@template_data = \
