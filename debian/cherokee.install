@@ -1,0 +1,7 @@
+/usr/sbin/cherokee-worker	/usr/sbin
+/usr/sbin/cherokee-admin 	/usr/sbin
+/usr/sbin/cherokee		/usr/sbin
+/usr/bin/cherokee-panic	  	/usr/share/cherokee
+/usr/share/cherokee/*		/usr/share/cherokee
+/usr/share/locale/*		/usr/share/locale
+/etc/*				/etc

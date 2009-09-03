@@ -1,0 +1,2 @@
+debian/shlibs.libcherokee-client0	/DEBIAN/shlibs
+/usr/lib/libcherokee-client.so.*	/usr/lib

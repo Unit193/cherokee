@@ -1,3 +1,11 @@
+cherokee (0.99.24-2) UNRELEASED; urgency=low
+
+  * Reworked the build system to have a cleaner debian/rules, following
+    dh7 conventions
+  * Moved /var/lib/cherokee/graphs to the rrdtool binary package
+
+ -- Gunnar Wolf <gwolf@debian.org>  Wed, 12 Aug 2009 00:07:49 -0500
+
 cherokee (0.99.24-1) unstable; urgency=low
 
   * New Upstream Version
@@ -9,12 +17,6 @@ cherokee (0.99.23-1) unstable; urgency=low
   * New Upstream Version
 
  -- Leonel Nunez <leonel@enelserver.com>  Fri, 27 Aug 2009 12:05:21 -0600
-
-cherokee (0.99.22-2) UNRELEASED; urgency=low
-
-  * Moved /var/lib/cherokee/graphs to the rrdtool binary package
-
- -- Gunnar Wolf <gwolf@debian.org>  Wed, 12 Aug 2009 00:07:49 -0500
 
 cherokee (0.99.22-1) unstable; urgency=low
 
