@@ -38,20 +38,39 @@ endif
 %:
 	dh --with-quilt $@
 
-config.status: configure
-	dh_testdir
-	./configure  --host=$(DEB_HOST_GNU_TYPE)           \
+clean:
+	dh clean --before autoclean
+	# the distclean target in the doc directory seems broken, replace the 
+	# makefile with a dummy so it's broken distclean target doesn't get run
+	rm -f doc/Makefile
+	echo distclean: > doc/Makefile
+	[ ! -f Makefile ] || $(MAKE) distclean
+	# now get rid of the dummy makefile
+	rm -fr cherokee/mime_grammar.output cherokee/icons_grammar.output cherokee/config_protocol_grammar.output www/cherokee-images
+	rm -f cherokee/loader.autoconf.h
+	rm -f cherokee/loader.autoconf.inc
+	rm -f cherokee/Makefile.MingW
+	rm -f cherokee.spec
+	rm -f windows/cherokee.nsi
+	rm -f config.log
+	rm -rf $(BUILD_DIR)
+	dh_clean
+
+build:
+	dh_auto_configure -- --host=$(DEB_HOST_GNU_TYPE)         \
 			   --build=$(DEB_BUILD_GNU_TYPE)         \
 			   --enable-os-string="Debian GNU/Linux" \
-	 		   --enable-pthreads                     \
 			   --prefix=/usr                         \
 			   --localstatedir=/var                  \
-			   --mandir=\$${prefix}/share/man        \
-			   --infodir=\$${prefix}/share/info      \
+			   --mandir=/usr/share/man               \
+			   --infodir=/usr/share/info             \
 			   --sysconfdir=/etc                     \
 	                   --docdir=/usr/share/doc/cherokee-doc  \
 			   --with-wwwroot=/var/www               \
-			   --with-included-gettext
+	 		   --enable-pthread                     
+	dh_auto_build
+	# dh_auto_test skipped, as it dies (and always has :-( )
+
 install-arch: 
 	dh_testdir
 	dh_testroot
@@ -71,5 +90,3 @@ install-arch:
 
 	# Add the Debian logo for the default page
 	/usr/bin/uudecode -o $(BUILD_DIR)/usr/share/cherokee/default-site/cherokee-images/powered_by_debian.png $(CURDIR)/debian/powered_by_debian.png.uu
-
-.PHONY: build clean binary-indep binary-arch binary install install-indep install-arch
