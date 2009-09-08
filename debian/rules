@@ -38,25 +38,7 @@ endif
 %:
 	dh --with-quilt $@
 
-clean:
-	dh clean --before autoclean
-	# the distclean target in the doc directory seems broken, replace the 
-	# makefile with a dummy so it's broken distclean target doesn't get run
-	rm -f doc/Makefile
-	echo distclean: > doc/Makefile
-	[ ! -f Makefile ] || $(MAKE) distclean
-	# now get rid of the dummy makefile
-	rm -fr cherokee/mime_grammar.output cherokee/icons_grammar.output cherokee/config_protocol_grammar.output www/cherokee-images
-	rm -f cherokee/loader.autoconf.h
-	rm -f cherokee/loader.autoconf.inc
-	rm -f cherokee/Makefile.MingW
-	rm -f cherokee.spec
-	rm -f windows/cherokee.nsi
-	rm -f config.log
-	rm -rf $(BUILD_DIR)
-	dh_clean
-
-build:
+override_dh_auto_configure:
 	dh_auto_configure -- --host=$(DEB_HOST_GNU_TYPE)         \
 			   --build=$(DEB_BUILD_GNU_TYPE)         \
 			   --enable-os-string="Debian GNU/Linux" \
@@ -67,14 +49,37 @@ build:
 			   --sysconfdir=/etc                     \
 	                   --docdir=/usr/share/doc/cherokee-doc  \
 			   --with-wwwroot=/var/www               \
-	 		   --enable-pthread                     
-	dh_auto_build
-	# dh_auto_test skipped, as it dies (and always has :-( )
+	 		   --enable-pthread
+
+override_dh_auto_test:
+	# dh_auto_test skipped, as tests die (and always have :-( )
+	true
+
+clean:
+	dh clean --before auto_clean
+	# the distclean target in the doc directory seems broken, replace the 
+	# makefile with a dummy so it's broken distclean target doesn't get run
+	echo distclean: > doc/Makefile
+	[ ! -f Makefile ] || $(MAKE) distclean
+	# Deal with several files that should be cleaned but are left
+	# around
+	rm -fr cherokee/mime_grammar.output \
+		cherokee/icons_grammar.output \
+		cherokee/config_protocol_grammar.output \
+		www/cherokee-images \
+		cherokee/loader.autoconf.h \
+		cherokee/loader.autoconf.inc \
+		cherokee/Makefile.MingW \
+		cherokee.spec \
+		windows/cherokee.nsi \
+		config.log \
+		$(BUILD_DIR)
+	dh_clean
 
 install-arch: 
 	dh_testdir
 	dh_testroot
-	dh_clean -k -s
+	dh_prep
 	dh_installdirs -s
 
 	install -d $(BUILD_DIR) 	

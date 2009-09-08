@@ -4,7 +4,7 @@ cherokee (0.99.24-2) UNRELEASED; urgency=low
     dh7 conventions
   * Moved /var/lib/cherokee/graphs to the rrdtool binary package
 
- -- Gunnar Wolf <gwolf@debian.org>  Wed, 12 Aug 2009 00:07:49 -0500
+ -- Gunnar Wolf <gwolf@debian.org>  Wed, 07 Sep 2009 00:07:49 -0500
 
 cherokee (0.99.24-1) unstable; urgency=low
 

@@ -3,8 +3,8 @@ Section: httpd
 Priority: optional
 Maintainer: Gunnar Wolf <gwolf@debian.org>
 Uploaders: Alvaro Lopez Ortega <alvaro@gnu.org>, Leonel Nunez <leonel@enelserver.com>
-Build-Depends: bison, flex, debhelper (>= 7), autotools-dev, sharutils, libpam0g-dev, quilt, python-support, libssl-dev, libldap-dev, libmysqlclient-dev,  libavformat-dev, libavcodec-dev, libavutil-dev, libgeoip-dev
-Standards-Version: 3.8.2
+Build-Depends: bison, flex, debhelper (>= 7.0.50), autotools-dev, sharutils, libpam0g-dev, quilt, python-support, libssl-dev, libldap-dev, libmysqlclient-dev,  libavformat-dev, libavcodec-dev, libavutil-dev, libgeoip-dev
+Standards-Version: 3.8.3
 Homepage: http://cherokee-project.org/
 Vcs-Git: git://git.debian.org/git/collab-maint/cherokee.git
 Vcs-Browser: http://git.debian.org/git/collab-maint/cherokee.git
@@ -12,7 +12,7 @@ Vcs-Browser: http://git.debian.org/git/collab-maint/cherokee.git
 Package: cherokee
 Architecture: any
 Pre-Depends: libcherokee-config0 (= ${binary:Version})
-Depends: ${shlibs:Depends}, logrotate, libcherokee-base0 (= ${binary:Version}), libcherokee-server0 (= ${binary:Version}), libcherokee-mod-server-info
+Depends: ${misc:Depends}, ${shlibs:Depends}, logrotate, libcherokee-base0 (= ${binary:Version}), libcherokee-server0 (= ${binary:Version}), libcherokee-mod-server-info
 Recommends: libcherokee-mod-admin, spawn-fcgi
 Suggests: cherokee-doc, libcherokee-mod-geoip, libcherokee-mod-ldap, libcherokee-mod-libssl, libcherokee-mod-mysql, libcherokee-mod-rrd, libcherokee-mod-streaming
 Provides: httpd, httpd-cgi
@@ -32,7 +32,7 @@ Description: Very fast, flexible and easy to configure web server
 Package: libcherokee-base0
 Section: httpd
 Architecture: any
-Depends: ${shlibs:Depends}
+Depends: ${misc:Depends}, ${shlibs:Depends}
 Description: Cherokee web server - Base libraries
  Cherokee is a very fast, flexible and easy to configure Web Server.
  It supports the widespread technologies nowadays: FastCGI, SCGI, PHP,
@@ -49,7 +49,7 @@ Description: Cherokee web server - Base libraries
 Package: libcherokee-base0-dev
 Section: httpd
 Architecture: any
-Depends: libcherokee-base0 (= ${binary:Version})
+Depends: ${misc:Depends}, libcherokee-base0 (= ${binary:Version})
 Description: Cherokee web server - base libraries' development files
  Cherokee is a very fast, flexible and easy to configure Web Server.
  It supports the widespread technologies nowadays: FastCGI, SCGI, PHP,
@@ -66,7 +66,7 @@ Description: Cherokee web server - base libraries' development files
 Package: libcherokee-client0
 Section: httpd
 Architecture: any
-Depends: ${shlibs:Depends}
+Depends: ${misc:Depends}, ${shlibs:Depends}
 Description: Cherokee web server - Client libraries
  Cherokee is a very fast, flexible and easy to configure Web Server.
  It supports the widespread technologies nowadays: FastCGI, SCGI, PHP,
@@ -83,7 +83,7 @@ Description: Cherokee web server - Client libraries
 Package: libcherokee-client0-dev
 Section: httpd
 Architecture: any
-Depends: libcherokee-client0 (= ${binary:Version}), libcherokee-base0-dev (= ${binary:Version})
+Depends: ${misc:Depends}, libcherokee-client0 (= ${binary:Version}), libcherokee-base0-dev (= ${binary:Version})
 Description: Cherokee web server - Client libraries' development files
  Cherokee is a very fast, flexible and easy to configure Web Server.
  It supports the widespread technologies nowadays: FastCGI, SCGI, PHP,
@@ -101,7 +101,7 @@ Description: Cherokee web server - Client libraries' development files
 Package: libcherokee-config0
 Section: httpd
 Architecture: any
-Depends: ${shlibs:Depends}, python, python-support
+Depends: ${misc:Depends}, ${shlibs:Depends}, python, python-support
 Replaces: libcherokee-server0 (<< 0.8.1-1)
 Description: Cherokee web server - Configuration libraries
  Cherokee is a very fast, flexible and easy to configure Web Server.
@@ -119,7 +119,7 @@ Description: Cherokee web server - Configuration libraries
 Package: libcherokee-config0-dev
 Section: httpd
 Architecture: any
-Depends: libcherokee-config0 (= ${binary:Version}), libcherokee-base0-dev (= ${binary:Version})
+Depends: ${misc:Depends}, libcherokee-config0 (= ${binary:Version}), libcherokee-base0-dev (= ${binary:Version})
 Description: Cherokee web server - Configuration libraries' development files
  Cherokee is a very fast, flexible and easy to configure Web Server.
  It supports the widespread technologies nowadays: FastCGI, SCGI, PHP,
@@ -137,7 +137,7 @@ Description: Cherokee web server - Configuration libraries' development files
 Package: libcherokee-server0
 Section: httpd
 Architecture: any
-Depends: ${shlibs:Depends}
+Depends: ${misc:Depends}, ${shlibs:Depends}
 Description: Cherokee web server - Server libraries
  Cherokee is a very fast, flexible and easy to configure Web Server.
  It supports the widespread technologies nowadays: FastCGI, SCGI, PHP,
@@ -154,7 +154,7 @@ Description: Cherokee web server - Server libraries
 Package: libcherokee-server0-dev
 Section: httpd
 Architecture: any
-Depends: libcherokee-server0 (= ${binary:Version}), libcherokee-base0-dev (= ${binary:Version})
+Depends: ${misc:Depends}, libcherokee-server0 (= ${binary:Version}), libcherokee-base0-dev (= ${binary:Version})
 Description: Cherokee web server - Server librardevelopment files
  Cherokee is a very fast, flexible and easy to configure Web Server.
  It supports the widespread technologies nowadays: FastCGI, SCGI, PHP,
@@ -172,7 +172,7 @@ Description: Cherokee web server - Server librardevelopment files
 Package: libcherokee-mod-admin
 Section: httpd
 Architecture: any
-Depends: ${shlibs:Depends}, libcherokee-server0 (= ${binary:Version})
+Depends: ${misc:Depends}, ${shlibs:Depends}, libcherokee-server0 (= ${binary:Version})
 Description: Cherokee web server - Administrative plugin
  Cherokee is a very fast, flexible and easy to configure Web Server.
  It supports the widespread technologies nowadays: FastCGI, SCGI, PHP,
@@ -192,7 +192,7 @@ Description: Cherokee web server - Administrative plugin
 Package: libcherokee-mod-server-info
 Section: httpd
 Architecture: any
-Depends: ${shlibs:Depends}, libcherokee-server0 (= ${binary:Version})
+Depends: ${misc:Depends}, ${shlibs:Depends}, libcherokee-server0 (= ${binary:Version})
 Enhances: cherokee
 Description: Cherokee web server - Server information plugin
  Cherokee is a very fast, flexible and easy to configure Web Server.
@@ -210,7 +210,7 @@ Description: Cherokee web server - Server information plugin
 Package: libcherokee-mod-mysql
 Section: httpd
 Architecture: any
-Depends: ${shlibs:Depends}, libcherokee-server0 (= ${binary:Version})
+Depends: ${misc:Depends}, ${shlibs:Depends}, libcherokee-server0 (= ${binary:Version})
 Enhances: cherokee
 Description: Cherokee web server - MySQL user validator plugin
  Cherokee is a very fast, flexible and easy to configure Web Server.
@@ -228,7 +228,7 @@ Description: Cherokee web server - MySQL user validator plugin
 Package: libcherokee-mod-ldap
 Section: httpd
 Architecture: any
-Depends: ${shlibs:Depends}, libcherokee-server0 (= ${binary:Version})
+Depends: ${misc:Depends}, ${shlibs:Depends}, libcherokee-server0 (= ${binary:Version})
 Enhances: cherokee
 Description: Cherokee web server - LDAP user validator plugin
  Cherokee is a very fast, flexible and easy to configure Web Server.
@@ -246,7 +246,7 @@ Description: Cherokee web server - LDAP user validator plugin
 Package: libcherokee-mod-libssl
 Section: httpd
 Architecture: any
-Depends: ${shlibs:Depends}, libcherokee-server0 (= ${binary:Version})
+Depends: ${misc:Depends}, ${shlibs:Depends}, libcherokee-server0 (= ${binary:Version})
 Enhances: cherokee
 Description: Cherokee web server - SSL crypto functions plugin
  Cherokee is a very fast, flexible and easy to configure Web Server.
@@ -264,7 +264,7 @@ Description: Cherokee web server - SSL crypto functions plugin
 Package: libcherokee-mod-streaming
 Section: httpd
 Architecture: any
-Depends: ${shlibs:Depends}, libcherokee-server0 (= ${binary:Version})
+Depends: ${misc:Depends}, ${shlibs:Depends}, libcherokee-server0 (= ${binary:Version})
 Enhances: cherokee
 Description: Cherokee web server - Media streaming functions plugin
  Cherokee is a very fast, flexible and easy to configure Web Server.
@@ -285,7 +285,7 @@ Description: Cherokee web server - Media streaming functions plugin
 Package: libcherokee-mod-geoip
 Section: httpd
 Architecture: any
-Depends: ${shlibs:Depends}, libcherokee-server0 (= ${binary:Version})
+Depends: ${misc:Depends}, ${shlibs:Depends}, libcherokee-server0 (= ${binary:Version})
 Enhances: cherokee
 Description: Cherokee web server - GeoIP-based IP resolution functionality
  Cherokee is a very fast, flexible and easy to configure Web Server.
@@ -305,7 +305,7 @@ Description: Cherokee web server - GeoIP-based IP resolution functionality
 Package: libcherokee-mod-rrd
 Section: httpd
 Architecture: any
-Depends: ${shlibs:Depends}, libcherokee-server0 (= ${binary:Version}), rrdtool
+Depends: ${misc:Depends}, ${shlibs:Depends}, libcherokee-server0 (= ${binary:Version}), rrdtool
 Enhances: cherokee
 Description: Cherokee web server - RRDtool based information collector
  Cherokee is a very fast, flexible and easy to configure Web Server.
@@ -325,14 +325,14 @@ Description: Cherokee web server - RRDtool based information collector
 Package: cget
 Section: web
 Architecture: any
-Depends: ${shlibs:Depends}, libcherokee-client0 (= ${binary:Version})
+Depends: ${misc:Depends}, ${shlibs:Depends}, libcherokee-client0 (= ${binary:Version})
 Description: web page downloader
  CGet is a small downloader based in the Cherokee client library
 
 Package: cherokee-doc
 Section: doc
 Architecture: all
-Depends: ${shlibs:Depends}
+Depends: ${misc:Depends}, ${shlibs:Depends}
 Recommends: cherokee
 Description: Very fast, flexible and easy to configure web server
  Cherokee is a very fast, flexible and easy to configure Web Server.

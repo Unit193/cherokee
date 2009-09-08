@@ -1,4 +1,3 @@
-debian/shlibs.libcherokee-config0	/DEBIAN/shlibs
 /usr/lib/libcherokee-config.so.*	/usr/lib
 /usr/share/cherokee/admin/*		/usr/share/cherokee/admin
 contrib/0*to0*.py			/usr/share/cherokee
