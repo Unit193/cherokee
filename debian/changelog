@@ -3,8 +3,10 @@ cherokee (0.99.24-2) UNRELEASED; urgency=low
   * Reworked the build system to have a cleaner debian/rules, following
     dh7 conventions
   * Moved /var/lib/cherokee/graphs to the rrdtool binary package
+  * Fixed incorrect dependency information in cherokee.init - Thanks to
+    Petter Reinholdtsen for pointing it out! (Closes: #541861)
 
- -- Gunnar Wolf <gwolf@debian.org>  Wed, 07 Sep 2009 00:07:49 -0500
+ -- Gunnar Wolf <gwolf@debian.org>  Thu, 10 Sep 2009 12:42:05 -0500
 
 cherokee (0.99.24-1) unstable; urgency=low
 
