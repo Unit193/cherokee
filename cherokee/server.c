@@ -1760,11 +1760,7 @@ cherokee_server_handle_HUP (cherokee_server_t *srv)
 	srv->keepalive_max    = 0;
 
 	list_for_each (i, &srv->listeners) {
-		/* Do not call cherokee_socket_close(). It'd close the
-		 * fd and set it to -1. If a thread added it to its
-		 * fdpoll, it couldn't take the fd out of the poll.
-		 */
-		close (BIND(i)->socket.socket);
+		cherokee_socket_close (&BIND(i)->socket);
 	}
 
 	return ret_ok;

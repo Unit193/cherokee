@@ -330,7 +330,6 @@ do_spawn (void)
 	int          size;
 	uid_t        uid;
 	gid_t        gid;
-	int          env_inherit;
 	int          envs;
 	pid_t        child;
 	char        *interpreter;
@@ -371,9 +370,6 @@ do_spawn (void)
 	p += sizeof(gid_t);
 
 	/* 3.- Environment */
-	env_inherit = *((int *)p);
-	p += sizeof(int);
-
 	envs = *((int *)p);
 	p += sizeof(int);
 
@@ -464,12 +460,7 @@ do_spawn (void)
 
 		/* Execute the interpreter */
 		argv[2] = interpreter;
-		
-		if (env_inherit) {
-			execv ("/bin/sh", (char **)argv);
-		} else {
-			execve ("/bin/sh", (char **)argv, envp);
-		}
+		execve ("/bin/sh", (char **)argv, envp);
 
 		PRINT_MSG ("(critical) Couldn't spawn: sh -c %s\n", interpreter);
 		exit (1);
@@ -479,7 +470,7 @@ do_spawn (void)
 	default:
 		/* Return the PID */
 		memcpy (p, (char *)&child, sizeof(int));
-		printf ("PID %d: launched '/bin/sh -c %s' with uid=%d, gid=%d, env=%s\n", child, interpreter, uid, gid, env_inherit ? "inherited":"custom");
+		printf ("PID %d: launched '/bin/sh -c %s' with uid=%d, gid=%d\n", child, interpreter, uid, gid);
 		break;
 	}
 	

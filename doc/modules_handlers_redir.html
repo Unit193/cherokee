@@ -17,15 +17,17 @@
 </div>
 <h2 id="_handler_redirection">Handler: Redirection</h2>
 <div class="sectionbody">
-<div class="paragraph"><p>The main idea of a redirection is telling the web client to go to
+<div class="para"><p>The main idea of a redirection is telling the web client to go to
 another URL when the requested URL matches a rule. It could happen
 that this is not precisely what you are looking for. Check the
-<a href="modules_handlers_proxy.html">reverse proxy</a> handler if you are
-looking for more complex layer 7 operations.  However, for URL
-redirections this handler is the place to go. A very common scenario
-would be rewriting URLS.</p></div>
-<div class="dlist"><dl>
-<dt class="hdlist1">
+<a href="modules_handlers_mirror.html">generic balancer</a> for layer 4
+connection forwarding instead, or if you are looking for more complex
+layer 7 operations take a look at the
+<a href="modules_handlers_proxy.html">reverse proxy</a> handler. However, for
+URL redirections this handler is the place to go. A very common
+scenario would be rewriting URLS.</p></div>
+<div class="vlist"><dl>
+<dt>
 Lets suppose you have URLs like
 </dt>
 <dd>
@@ -36,7 +38,7 @@ Lets suppose you have URLs like
     http://example.com/inst/photogallery/admin?photoid=1235&amp;method=delete</tt></pre>
 </div></div>
 </dd>
-<dt class="hdlist1">
+<dt>
 You probably would prefer URLs like
 </dt>
 <dd>
@@ -49,14 +51,14 @@ You probably would prefer URLs like
 </dd>
 </dl></div>
 <h3 id="parameters">Parameters</h3><div style="clear:left"></div>
-<div class="paragraph"><p>This directive uses PCRE (Perl Compatible Regular Expressions) to make
+<div class="para"><p>This directive uses PCRE (Perl Compatible Regular Expressions) to make
 the substitution.</p></div>
-<div class="ulist"><ul>
+<div class="ilist"><ul>
 <li>
 <p>
 Type: [External | Internal]
 </p>
-<div class="ulist"><ul>
+<div class="ilist"><ul>
 <li>
 <p>
 <strong>Internal</strong>:
@@ -84,24 +86,24 @@ Type: [External | Internal]
 </li>
 </ul></div>
 <h3 id="vhosts">Virtual hosts and redirections</h3><div style="clear:left"></div>
-<div class="paragraph"><p>The internal redirections, using the <tt>internal</tt> keyword, are limited to
+<div class="para"><p>The internal redirections, using the <tt>internal</tt> keyword, are limited to
 work in the same virtual host. All the internal redirections will be
 processed in the original virtual host, which makes a lot of sense in
 terms of security.</p></div>
-<div class="paragraph"><p>In case you do need to redirect a resource to another virtual host
+<div class="para"><p>In case you do need to redirect a resource to another virtual host
 and/or domain, you will have to use an explicit redirection using the
 <tt>external</tt> keyword.</p></div>
 <h3 id="rule_type">The influence of the rule type</h3><div style="clear:left"></div>
-<div class="paragraph"><p>Any rule type can be used with the redirection handler: Directory,
+<div class="para"><p>Any rule type can be used with the redirection handler: Directory,
 Extensions, Regular Expression, etc. Only the case where the type is
 <strong>Regular Expression</strong> will require some more extra information.
-Because of Cherokee&#8217;s design, modularity and inheritance is heavily
+Because of Cherokee's design, modularity and inheritance is heavily
 used throughout the code base. This one is a special case because the
 regex entry of the redirection handler can be empty whenever the
 matching rule used is a regular expression (because it is inherited by
 it).</p></div>
-<div class="paragraph"><p>The logic behind this is that you can set up a regular expression to
-match the rule, but once you&#8217;re in the redirection handler you could
+<div class="para"><p>The logic behind this is that you can set up a regular expression to
+match the rule, but once you're in the redirection handler you could
 or could not be needing another matching to be performed. If not, the
 original one (the one from the rule) will be enough. If you do, you
 can specify a completely different expression to be matched. For
@@ -109,64 +111,94 @@ instance, you could match the rule taking just the beginning part of
 the request as meaningful, and once you are into the handler you might
 want to consider just the end of it before making the substitution.</p></div>
 <h3 id="examples">Examples</h3><div style="clear:left"></div>
-<div class="paragraph"><p>This example will perform internal redirections:</p></div>
+<div class="para"><p>This example will perform internal redirections:</p></div>
 <div class="tableblock">
-<table rules="all"
-width="100%"
-frame="border"
+<table rules="none"
+frame="hsides"
 cellspacing="0" cellpadding="4">
-<col width="30%" />
-<col width="70%" />
+<col width="186" />
+<col width="613" />
 <thead>
-<tr>
-<th align="left" valign="top">Regular Expression </th>
-<th align="left" valign="top">Substitution</th>
-</tr>
+  <tr>
+    <th align="left">
+    Regular Expression   
+    </th>
+    <th align="left">
+    Substitution
+    </th>
+  </tr>
 </thead>
-<tbody>
-<tr>
-<td align="left" valign="top"><p class="table"><em>/(\d+)$</em></p></td>
-<td align="left" valign="top"><p class="table"><a href="http://example.com/inst/photogallery/viewphoto?photoid=$1">http://example.com/inst/photogallery/viewphoto?photoid=$1</a></p></td>
-</tr>
-<tr>
-<td align="left" valign="top"><p class="table"><em>/(\d+)/cmts</em></p></td>
-<td align="left" valign="top"><p class="table"><a href="http://example.com/viewcomments?photoid=$1">http://example.com/viewcomments?photoid=$1</a></p></td>
-</tr>
-<tr>
-<td align="left" valign="top"><p class="table"><em>/(\d+)/delete</em></p></td>
-<td align="left" valign="top"><p class="table"><a href="http://example.com/inst/photogallery/admin?photoid=$1&amp;method=delete">http://example.com/inst/photogallery/admin?photoid=$1&amp;method=delete</a></p></td>
-</tr>
+<tbody valign="top">
+  <tr>
+    <td align="left">
+    <em>/(\d+)$</em>          
+    </td>
+    <td align="left">
+    <a href="http://example.com/inst/photogallery/viewphoto?photoid=$1">http://example.com/inst/photogallery/viewphoto?photoid=$1</a>
+    </td>
+  </tr>
+  <tr>
+    <td align="left">
+    <em>/(\d+)/cmts</em>      
+    </td>
+    <td align="left">
+    <a href="http://example.com/viewcomments?photoid=$1">http://example.com/viewcomments?photoid=$1</a>
+    </td>
+  </tr>
+  <tr>
+    <td align="left">
+    <em>/(\d+)/delete</em>    
+    </td>
+    <td align="left">
+    <a href="http://example.com/inst/photogallery/admin?photoid=$1&amp;method=delete">http://example.com/inst/photogallery/admin?photoid=$1&amp;method=delete</a>
+    </td>
+  </tr>
 </tbody>
 </table>
 </div>
-<div class="paragraph"><p>Which would translate into the following redirections for the listed
+<div class="para"><p>Which would translate into the following redirections for the listed
 matching requests:</p></div>
 <div class="tableblock">
-<table rules="all"
-width="100%"
-frame="border"
+<table rules="none"
+frame="hsides"
 cellspacing="0" cellpadding="4">
-<col width="30%" />
-<col width="70%" />
+<col width="195" />
+<col width="604" />
 <thead>
-<tr>
-<th align="left" valign="top">Request               </th>
-<th align="left" valign="top">Internal translation</th>
-</tr>
+  <tr>
+    <th align="left">
+    Request               
+    </th>
+    <th align="left">
+    Internal translation
+    </th>
+  </tr>
 </thead>
-<tbody>
-<tr>
-<td align="left" valign="top"><p class="table"><em>/photo/123</em></p></td>
-<td align="left" valign="top"><p class="table"><a href="http://example.com/inst/photogallery/viewphoto?photoid=123">http://example.com/inst/photogallery/viewphoto?photoid=123</a></p></td>
-</tr>
-<tr>
-<td align="left" valign="top"><p class="table"><em>/photo/213/cmts</em></p></td>
-<td align="left" valign="top"><p class="table"><a href="http://example.com/viewcomments?photoid=213">http://example.com/viewcomments?photoid=213</a></p></td>
-</tr>
-<tr>
-<td align="left" valign="top"><p class="table"><em>/photo/501/delete</em></p></td>
-<td align="left" valign="top"><p class="table"><a href="http://example.com/inst/photogallery/admin?photoid=501&amp;method=delete">http://example.com/inst/photogallery/admin?photoid=501&amp;method=delete</a></p></td>
-</tr>
+<tbody valign="top">
+  <tr>
+    <td align="left">
+    <em>/photo/123</em>        
+    </td>
+    <td align="left">
+    <a href="http://example.com/inst/photogallery/viewphoto?photoid=123">http://example.com/inst/photogallery/viewphoto?photoid=123</a>
+    </td>
+  </tr>
+  <tr>
+    <td align="left">
+    <em>/photo/213/cmts</em>   
+    </td>
+    <td align="left">
+    <a href="http://example.com/viewcomments?photoid=213">http://example.com/viewcomments?photoid=213</a>
+    </td>
+  </tr>
+  <tr>
+    <td align="left">
+    <em>/photo/501/delete</em> 
+    </td>
+    <td align="left">
+    <a href="http://example.com/inst/photogallery/admin?photoid=501&amp;method=delete">http://example.com/inst/photogallery/admin?photoid=501&amp;method=delete</a>
+    </td>
+  </tr>
 </tbody>
 </table>
 </div>

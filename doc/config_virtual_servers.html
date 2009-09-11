@@ -17,17 +17,17 @@
 </div>
 <h2 id="_virtual_server">Virtual Server</h2>
 <div class="sectionbody">
-<div class="paragraph"><p><em>Virtual Server</em> is an abstraction mechanism that allows you to define
+<div class="para"><p><em>Virtual Server</em> is an abstraction mechanism that allows you to define
 a custom number of parameters and rules that have to be applied to one
 or more domains.</p></div>
-<div class="paragraph"><p>In a Cherokee server there must be at least one virtual server named
+<div class="para"><p>In a Cherokee server there must be at least one virtual server named
 default, and there is no maximum number. It is important to know that
 this server cannot be deleted.</p></div>
-<div class="paragraph"><p>When the server receives a request it will try to match the domain
+<div class="para"><p>When the server receives a request it will try to match the domain
 name specified in the virtual server that should handle it. In case no
 virtual server matches the request, default will be used.</p></div>
-<div class="paragraph"><p>Three main options are accessible through this menu:</p></div>
-<div class="olist arabic"><ol class="arabic">
+<div class="para"><p>Three main options are accessible through this menu:</p></div>
+<div class="olist"><ol>
 <li>
 <p>
 Virtual Server List
@@ -44,28 +44,26 @@ Clone Virtual Server
 </p>
 </li>
 </ol></div>
-<div class="paragraph"><p><strong>Cloning a Virtual Server</strong> is simply a matter of selecting a target name
+<div class="para"><p><strong>Cloning a Virtual Server</strong> is simply a matter of selecting a target name
 and a source virtual server currently present. Every setting will be
 duplicated. From then onwards changes applied to any of them, be it
 the original or the copied Virtual Servers, will only apply to the
 implicated one. This is a great way to set up complex domains,
 since you can use the existing ones as templates to be refined with
 further work.</p></div>
-<div class="paragraph"><p><strong>To add a new Virtual Server</strong> you have to enter the server name and a
+<div class="para"><p><strong>To add a new Virtual Server</strong> you have to enter the server name and a
 valid Document Root directory.</p></div>
 <div class="imageblock">
 <div class="content">
-<img src="media/images/admin_vserver.png" alt="media/images/admin_vserver.png" />
+<img src="media/images/admin_vserver.png" alt="Virtual server" title="Virtual server"/>
 </div>
 </div>
-<div class="ulist"><ul>
+<div class="ilist"><ul>
 <li>
 <p>
 <strong>Document Root</strong>
 </p>
-</li>
-</ul></div>
-<div class="paragraph"><p>This directive sets the directory from which Cherokee will serve
+<div class="para"><p>This directive sets the directory from which Cherokee will serve
 files. The set of rules is checked from the highest to the lowest
 possible priority. Once a rule is matched, the server appends the path
 from the requested URL to the document root to make the path to the
@@ -76,92 +74,86 @@ overwriting the original behavior:</p></div>
 <div class="content">
 <pre><tt>        http://www.example.com/index.html refers to /var/www/index.html</tt></pre>
 </div></div>
-<div class="paragraph"><p>This might seem complicated but it&#8217;s actually simple to
+<div class="para"><p>This might seem complicated but it's actually simple to
 understand. For example suppose you had a directory called /secret
 that was protected with authentication, and there was also a rule with
 higher priority for /secret/cgi that only specified to use the CGI
 handler. Under these circumstances, if a request was received for
 /secret/cgi/something then the CGI handler would be taken and it would
 inherit the authentication specified for /secret.</p></div>
-<div class="ulist"><ul>
+</li>
 <li>
 <p>
 <strong>Name</strong>
 </p>
+<div class="para"><p>Name is an alias. The domain names handled by the virtual server
+should be specified later in the virtual server details page.</p></div>
 </li>
 </ul></div>
-<div class="paragraph"><p>Name is an alias. The domain names handled by the virtual server
-should be specified later in the virtual server details page.</p></div>
-<div class="paragraph"><p>The <strong>Virtual Server List</strong> is by far the most interesting of these
+<div class="para"><p>The <strong>Virtual Server List</strong> is by far the most interesting of these
 three main options. It gives an overview of the existing virtual
 servers, and allows to configure in detail every possible setting.</p></div>
 <div class="imageblock">
 <div class="content">
-<img src="media/images/admin_vserver_vserver.png" alt="media/images/admin_vserver_vserver.png" />
+<img src="media/images/admin_vserver_vserver.png" alt="Virtual server overview" title="Virtual server overview"/>
 </div>
 </div>
-<div class="paragraph"><p>A detailed explanation of every tab follows.</p></div>
+<div class="para"><p>A detailed explanation of every tab follows.</p></div>
 <h3 id="basics">Basics</h3><div style="clear:left"></div>
-<div class="ulist"><ul>
+<div class="ilist"><ul>
 <li>
 <p>
 <strong>Virtual Server nickname</strong>
 </p>
+<div class="para"><p>The name that will be used to identify the virtual server.</p></div>
 </li>
-</ul></div>
-<div class="paragraph"><p>The name that will be used to identify the virtual server.</p></div>
-<div class="ulist"><ul>
 <li>
 <p>
 <strong>Document Root</strong>
 </p>
+<div class="para"><p>Path to use as root directory for the virtual server.</p></div>
 </li>
-</ul></div>
-<div class="paragraph"><p>Path to use as root directory for the virtual server.</p></div>
-<div class="ulist"><ul>
 <li>
 <p>
 <strong>Directory Indexes</strong>
 </p>
-</li>
-</ul></div>
-<div class="paragraph"><p>The DirectoryIndex directive sets the list of resources to look for
+<div class="para"><p>The DirectoryIndex directive sets the list of resources to look for
 when the client requests an index of the directory by specifying a /
 at the end of the directory name. Several URLs may be given, in which
 case the server will return the first one that it finds. If none of
 the resources exist, the server will reply according to the handler
 behavior.</p></div>
-<div class="paragraph"><p>Note that the documents do not need to be relative to the directory:</p></div>
+<div class="para"><p>Note that the documents do not need to be relative to the directory:</p></div>
 <div class="listingblock">
 <div class="content">
 <pre><tt>        index.html,index.txt,/cgi-bin/index.pl</tt></pre>
 </div></div>
-<div class="paragraph"><p>would cause the CGI script /cgi-bin/index.pl to be executed if neither
+<div class="para"><p>would cause the CGI script /cgi-bin/index.pl to be executed if neither
 index.html nor index.txt existed in a directory.</p></div>
-<div class="paragraph"><p>There is a special case in which the directory index entry starts with
+<div class="para"><p>There is a special case in which the directory index entry starts with
 a slash. For example, /cgi-bin/index.pl. In that case, it will use it
 as the object accessible under that public address of the same virtual
 server, so it will take care about the possible configuration of the
 /cgi-bin/ directory and/or the pl extension.</p></div>
-<div class="ulist"><ul>
+</li>
 <li>
 <p>
 <strong>Keep-alive</strong>
 </p>
-</li>
-</ul></div>
-<div class="paragraph"><p>This flag is enabled by default. It is used to enable or disable
+<div class="para"><p>This flag is enabled by default. It is used to enable or disable
 Keep-alive connections on a per-virtual-server basis. Keeping
 persisting connections has dramatic effects both in speed, but very
 high traffic loads can suffer because less connections are available
 for any given moment.</p></div>
+</li>
+</ul></div>
 <h3 id="domain_names">Domain names</h3><div style="clear:left"></div>
-<div class="paragraph"><p>This section allows to define the list of domains that the virtual
+<div class="para"><p>This section allows to define the list of domains that the virtual
 server implements.</p></div>
-<div class="paragraph"><p>It can accept either FQDN (Fully Qualified Domain Names) or wild
+<div class="para"><p>It can accept either FQDN (Fully Qualified Domain Names) or wild
 card entries.</p></div>
-<div class="dlist"><dl>
-<dt class="hdlist1">
+<div class="vlist"><dl>
+<dt>
 For instance
 </dt>
 <dd>
@@ -172,23 +164,23 @@ For instance
 </div></div>
 </dd>
 </dl></div>
-<div class="paragraph"><p>Note that you should probably keep in mind the way this list is
+<div class="para"><p>Note that you should probably keep in mind the way this list is
 interpreted in order to avoid future problems. Whenever Cherokee
 recieves a request for a specific domain, it evaluates the <tt>Domain
 list</tt> of every defined virtual host in the order defined by the
 priorities of such hosts. When it finds a match, it stops the
 evaluation and starts matching the specific rules from that virtual
 host to send the apropriate response.</p></div>
-<div class="paragraph"><p>If no domain name matches the request, Cherokee re-evaluates the list
+<div class="para"><p>If no domain name matches the request, Cherokee re-evaluates the list
 of virtual hosts trying to match the request against the <tt>Nicknames</tt>,
 also using the priorities defined by the virtual host order.</p></div>
-<div class="paragraph"><p>Only after failing both with the domain names and the nicknames will
+<div class="para"><p>Only after failing both with the domain names and the nicknames will
 Cherokee issue the failure.</p></div>
 <h3 id="behavior">Behavior</h3><div style="clear:left"></div>
-<div class="paragraph"><p>This sections allows to define a set of rules to define how the server
+<div class="para"><p>This sections allows to define a set of rules to define how the server
 should handle the different requests. A summary of the existing rules is
 presented, containing several fields of information:</p></div>
-<div class="olist arabic"><ol class="arabic">
+<div class="olist"><ol>
 <li>
 <p>
 <strong>Target</strong>: web target of the rule, be it a path, a file type, etc.
@@ -231,11 +223,11 @@ presented, containing several fields of information:</p></div>
 </p>
 </li>
 </ol></div>
-<div class="paragraph"><p>These rules can be defined based on the directory that the request
+<div class="para"><p>These rules can be defined based on the directory that the request
 targets, the extension of the file that it is requesting, or a regular
 expression that may match the request. This is the list of available
 rule types:</p></div>
-<div class="ulist"><ul>
+<div class="ilist"><ul>
 <li>
 <p>
 <strong>Directory</strong>: The entry Directory encloses a group of directives which will
@@ -244,7 +236,7 @@ rule types:</p></div>
 </li>
 <li>
 <p>
-<strong>Extensions</strong>: The entry Extensions doesn&#8217;t care about directories, it will
+<strong>Extensions</strong>: The entry Extensions doesn't care about directories, it will
     just look for the extension of the object requested.
 </p>
 </li>
@@ -254,7 +246,7 @@ rule types:</p></div>
     custom options to requests. It is a complement for the Directory and Extension
     entries. Basically, there are two differences between them:
 </p>
-<div class="ulist"><ul>
+<div class="ilist"><ul>
 <li>
 <p>
 It uses regular expressions to define the requests in which the configuration
@@ -318,31 +310,31 @@ These entries are able to use the connection parameters (both pathinfo
 </p>
 </li>
 </ul></div>
-<div class="paragraph"><p>It is very important to know that these rules are prioritized. The
+<div class="para"><p>It is very important to know that these rules are prioritized. The
 higher its priority is, the sooner they are checked. You could
 think of a network routing table, it is quite similar. You can set the
 relative priorities among the rules by simply dragging and dropping
 them in the desired position (if you click on the rule name, you will be
-redirected to the rule&#8217;s configuration options; if you click anywhere
+redirected to the rule's configuration options; if you click anywhere
 else, you will be able to drag and drop it into the desired position).</p></div>
 <div class="imageblock">
 <div class="content">
-<img src="media/images/admin_behaviour.png" alt="media/images/admin_behaviour.png" />
+<img src="media/images/admin_behaviour.png" alt="Virtual server" title="Virtual server"/>
 </div>
 </div>
-<div class="paragraph"><p>Each of these behavior rules must specify which is the handler that
+<div class="para"><p>Each of these behavior rules must specify which is the handler that
 the server should use to reply to the requests that match the rule.
 Handlers are the modules that generate the information with which the
-server responds a client&#8217;s request. By default Cherokee provides a
+server responds a client's request. By default Cherokee provides a
 number of them:</p></div>
 <div class="sidebarblock">
 <div class="sidebar-content">
-<div class="ulist"><ul>
+<div class="ilist"><ul>
 <li>
 <p>
 <a href="modules_handlers_common.html">common</a> - <strong>List &amp; Send</strong>
 </p>
-<div class="paragraph"><p>Combines both <tt>Static Content</tt> and <tt>Only listing</tt> handlers
+<div class="para"><p>Combines both <tt>Static Content</tt> and <tt>Only listing</tt> handlers
 functionality to behave similarly to common web servers, it will
 display directory listings when a directory is requested and serve the
 requested files.</p></div>
@@ -351,77 +343,85 @@ requested files.</p></div>
 <p>
 <a href="modules_handlers_file.html">Static Content</a> - <strong>Static Content</strong>
 </p>
-<div class="paragraph"><p>This is the file handler and it serves files straight from the
+<div class="para"><p>This is the file handler and it serves files straight from the
 file system.</p></div>
 </li>
 <li>
 <p>
 <a href="modules_handlers_dirlist.html">dirlist</a> - <strong>Only listing</strong>:
 </p>
-<div class="paragraph"><p>Displays a directory content list when a directory is requested,
+<div class="para"><p>Displays a directory content list when a directory is requested,
 but it does not allow to download any content.</p></div>
 </li>
 <li>
 <p>
 <a href="modules_handlers_redir.html">redir</a> - <strong>Redirection</strong>
 </p>
-<div class="paragraph"><p>Perform simple and/or complex redirections using regexes.</p></div>
+<div class="para"><p>Perform simple and/or complex redirections using regexes.</p></div>
 </li>
 <li>
 <p>
 <a href="modules_handlers_cgi.html">cgi</a> - <strong>CGI Execution</strong>
 </p>
-<div class="paragraph"><p>Executes CGI programs.</p></div>
+<div class="para"><p>Executes CGI programs.</p></div>
 </li>
 <li>
 <p>
 <a href="modules_handlers_fcgi.html">fcgi</a> - <strong>FastCGI Server Support</strong>
 </p>
-<div class="paragraph"><p>Communicates with FastCGI servers.</p></div>
+<div class="para"><p>Communicates with FastCGI servers.</p></div>
 </li>
 <li>
 <p>
 <a href="modules_handlers_scgi.html">scgi</a> - <strong>SCGI Server Support</strong>
 </p>
-<div class="paragraph"><p>Communicates with SCGI servers.</p></div>
+<div class="para"><p>Communicates with SCGI servers.</p></div>
 </li>
 <li>
 <p>
 <a href="modules_handlers_server_info.html">Server Info</a> - <strong>Server
   Info</strong>
 </p>
-<div class="paragraph"><p>Provide some configurable information about the server.</p></div>
+<div class="para"><p>Provide some configurable information about the server.</p></div>
+</li>
+<li>
+<p>
+<a href="modules_handlers_mirror.html">Generic balancer</a> - <strong>Generic
+  balancer</strong>
+</p>
+<div class="para"><p>Select one of the available mechanisms to distribute the load (locally
+or remotely).</p></div>
 </li>
 <li>
 <p>
 <a href="modules_handlers_admin.html">Remote Administration</a> - <strong>Remote
   Administration</strong>
 </p>
-<div class="paragraph"><p>Implements an administration interface to work with
+<div class="para"><p>Implements an administration interface to work with
 <a href="bundle_cherokee-tweak.html">cherokee-tweak</a>.</p></div>
 </li>
 </ul></div>
 </div></div>
-<div class="paragraph"><p>The selection of any one of the rule targets will offer new
+<div class="para"><p>The selection of any one of the rule targets will offer new
 configuration options through the
 <a href="config_virtual_servers_rule.html">Rule Entry</a> menu.</p></div>
-<div class="paragraph"><p>Each of the mentioned handlers can be fine-tuned through that
-menu. Refer to each handler&#8217;s documentation if you are interested in
+<div class="para"><p>Each of the mentioned handlers can be fine-tuned through that
+menu. Refer to each handler's documentation if you are interested in
 the available settings.</p></div>
 <div class="admonitionblock">
 <table><tr>
 <td class="icon">
 <div class="title">Note</div>
 </td>
-<td class="content">It is quite easy to fully specify a virtual server&#8217;s behavior having
-just some notions of Cherokee&#8217;s way of working. However, there might
+<td class="content">It is quite easy to fully specify a virtual server's behavior having
+just some notions of Cherokee's way of working. However, there might
 be some corner cases where Cherokee will behave in a manner that could
 not seem obvious at first. Every doubt can be easily cleared by simple
 understanding in full detail the way a rule is applied. For instance
 lets suppose there is an <tt>Extension</tt> type rule configured to handle
 PHP files. If a request is made for
 <tt>http://example.com/index.php/what/ever</tt>, this rule <strong>WOULD NOT</strong> be
-applied at first because the request doesn&#8217;t end with the appropriate
+applied at first because the request doesn't end with the appropriate
 extension: it has some adittional path information. However, if there
 is a <tt>Default</tt> rule configured that is managed by the <tt>List and Send</tt>
 handler, things would work. This is because the <tt>Default</tt> rule would
@@ -434,14 +434,14 @@ time the request would end in <tt>.php</tt> and thus it would match the
 </tr></table>
 </div>
 <h3 id="personal_webs">Personal Webs</h3><div style="clear:left"></div>
-<div class="paragraph"><p>This options allows to setup the name of a subdirectory inside the
+<div class="para"><p>This options allows to setup the name of a subdirectory inside the
 users' home directory that will be used as document root for personal
 web content. For instance, if <tt>/foo</tt> was specified, a user <tt>bar</tt> could
 publish the content of <sub>/foo at the relative URL /</sub>bar
 This option is disabled if the <em>Directory name</em> field is empty.</p></div>
 <h3 id="error_handler">Error Handler</h3><div style="clear:left"></div>
-<div class="paragraph"><p>Several mechanisms exist to handle errors.</p></div>
-<div class="olist arabic"><ol class="arabic">
+<div class="para"><p>Several mechanisms exist to handle errors.</p></div>
+<div class="olist"><ol>
 <li>
 <p>
 Default errors
@@ -458,22 +458,22 @@ Closest match
 </p>
 </li>
 </ol></div>
-<div class="paragraph"><p>Using the <em>Custom redirections</em> error handler we can easily redirect
+<div class="para"><p>Using the <em>Custom redirections</em> error handler we can easily redirect
 errors to a custom path or website.</p></div>
 <div class="imageblock">
 <div class="content">
-<img src="media/images/admin_vserver_errors.png" alt="media/images/admin_vserver_errors.png" />
+<img src="media/images/admin_vserver_errors.png" alt="Virtual server" title="Virtual server"/>
 </div>
 </div>
-<div class="paragraph"><p>The <em>Closest match</em> error handler should never fail to deliver
+<div class="para"><p>The <em>Closest match</em> error handler should never fail to deliver
 something. If a requested resource is not available, the closest match
 will be sent. The only exception to this is when nothing at all is at
-Cherokee&#8217;s disposal, in which case a standard http error is sent.</p></div>
+Cherokee's disposal, in which case a standard http error is sent.</p></div>
 <h3 id="logging">Logging</h3><div style="clear:left"></div>
-<div class="paragraph"><p>The <a href="modules_loggers.html">loggers</a> are a type of Cherokee modules
+<div class="para"><p>The <a href="modules_loggers.html">loggers</a> are a type of Cherokee modules
 to write the server log information using different destinations
 and/or formats:</p></div>
-<div class="ulist"><ul>
+<div class="ilist"><ul>
 <li>
 <p>
 Destination: File, syslog, program execution and standard error output.
@@ -485,54 +485,50 @@ Format: Combined (Apache compatible), NCSA or custom.
 </p>
 </li>
 </ul></div>
-<div class="paragraph"><p>If a virtual server doesn&#8217;t have a logger set up it will not log anything.</p></div>
+<div class="para"><p>If a virtual server doesn't have a logger set up it will not log anything.</p></div>
 <div class="imageblock">
 <div class="content">
-<img src="media/images/admin_vserver_loggers.png" alt="media/images/admin_vserver_loggers.png" />
+<img src="media/images/admin_vserver_loggers.png" alt="Virtual server" title="Virtual server"/>
 </div>
 </div>
-<div class="paragraph"><p>By default Cherokee ships three loggers implementing three different
+<div class="para"><p>By default Cherokee ships three loggers implementing three different
 logging formats:</p></div>
-<div class="ulist"><ul>
+<div class="ilist"><ul>
 <li>
 <p>
 combined - <a href="modules_loggers_combined.html">Combined Log Format</a>
 </p>
+<div class="para"><p>Logging using the Apache log format. It is the <tt>de facto standard</tt> nowadays.</p></div>
 </li>
-</ul></div>
-<div class="paragraph"><p>Logging using the Apache log format. It is the <tt>de facto standard</tt> nowadays.</p></div>
-<div class="ulist"><ul>
 <li>
 <p>
 ncsa - <a href="modules_loggers_ncsa.html">NCSA Log Format</a>
 </p>
+<div class="para"><p>Logging using the NCSA log format.</p></div>
 </li>
-</ul></div>
-<div class="paragraph"><p>Logging using the NCSA log format.</p></div>
-<div class="ulist"><ul>
 <li>
 <p>
 custom - <a href="modules_loggers_custom.html">Customizable Log Format</a>
 </p>
+<div class="para"><p>Logging using a user-specified format.</p></div>
 </li>
 </ul></div>
-<div class="paragraph"><p>Logging using a user-specified format.</p></div>
 <h3 id="security">Security</h3><div style="clear:left"></div>
-<div class="paragraph"><p>The virtual server must be configured with the path to the certificate
+<div class="para"><p>The virtual server must be configured with the path to the certificate
 before using secure connections (https). There is a document which
 might help to generate SSL <a href="cookbook_ssl.html">keys</a> and that
 should provide tips and information on how to configure SSL, TLS and
 certificates.</p></div>
-<div class="paragraph"><p>Cherokee fully supports the usage of different certificates for each
+<div class="para"><p>Cherokee fully supports the usage of different certificates for each
 virtual server in a given host by it using SNI as defined in
 <a href="http://www.rfc-archive.org/getrfc.php?rfc=3546">RFC 3546</a>.</p></div>
 <div class="imageblock">
 <div class="content">
-<img src="media/images/admin_vserver_security.png" alt="media/images/admin_vserver_security.png" />
+<img src="media/images/admin_vserver_security.png" alt="Certificates" title="Certificates"/>
 </div>
 </div>
-<div class="paragraph"><p>If you want HTTPS to work, you must remember this:</p></div>
-<div class="olist arabic"><ol class="arabic">
+<div class="para"><p>If you want HTTPS to work, you must remember this:</p></div>
+<div class="olist"><ol>
 <li>
 <p>
 Providing the PEM-encoded files is mandatory for both <tt>Certificate</tt>

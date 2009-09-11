@@ -11,9 +11,7 @@ drupal.png \
 ror.png \
 mailman.png \
 icons.png \
-common_static.png \
-streaming.png \
-rtorrent.png
+common_static.png
 
 EXTRA_DIST = \
 $(wizards_DATA)

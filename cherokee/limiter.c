@@ -75,11 +75,11 @@ cherokee_limiter_add_conn (cherokee_limiter_t *limiter,
 }
 
 
-cherokee_msec_t
+int
 cherokee_limiter_get_time_limit (cherokee_limiter_t *limiter,
 				 cherokee_msec_t     fdwatch_msecs)
 {
-	long long              time_delta;
+	cint_t                 time_delta;
 	cherokee_connection_t *conn;
 
 	/* Shortcut
@@ -98,12 +98,10 @@ cherokee_limiter_get_time_limit (cherokee_limiter_t *limiter,
 	 * connection that will be enabled sooner)
 	 */
 	time_delta = conn->limit_blocked_until - cherokee_bogonow_msec;
-	if (unlikely (time_delta <= 0)) {
+	if (unlikely (time_delta <= 0))
 		return 0;
-	}
 	
-	/* Check as 'signed long long' */
-	return MIN(time_delta, (long long)fdwatch_msecs);
+	return MIN((cuint_t)time_delta, fdwatch_msecs);
 }
 
 

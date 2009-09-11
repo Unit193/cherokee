@@ -75,7 +75,7 @@ _add (cherokee_fdpoll_poll_t *fdp, int fd, int rw)
 	/* Check the fd limit
 	 */
 	if (cherokee_fdpoll_is_full(nfd)) {
-		LOG_WARNING_S("fdpoll is full !\n");
+		PRINT_ERROR_S("poll_add: fdpoll is full !\n");
 		return ret_error;
 	}
 
@@ -116,7 +116,7 @@ _del (cherokee_fdpoll_poll_t *fdp, int fd)
 	cherokee_fdpoll_t *nfd = FDPOLL(fdp);
 
 	if (idx < 0 || idx >= nfd->nfiles) {
-		LOG_ERROR ("Dropping socket '%d' from fdpoll\n", idx);
+		PRINT_ERROR ("Error dropping socket '%d' from fdpoll\n", idx);
 		return ret_error;
 	}
 

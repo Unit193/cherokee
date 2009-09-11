@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: cherokee 0.99.24\n"
+"Project-Id-Version: cherokee 0.99.22\n"
 "Report-Msgid-Bugs-To: http://bugs.cherokee-project.com/\n"
-"POT-Creation-Date: 2009-09-01 10:32+0200\n"
+"POT-Creation-Date: 2009-08-05 10:27+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -25,7 +25,7 @@ msgstr ""
 msgid "ERROR: Couldn't execute '%s -i'"
 msgstr ""
 
-#: admin/Entry.py:48
+#: admin/Entry.py:43
 msgid " Enabled"
 msgstr ""
 
@@ -113,14 +113,14 @@ msgid ""
 "A load balancer must be configured to use at least one information source."
 msgstr ""
 
-#: admin/ModuleBalancer.py:55 admin/Page.py:157 admin/PageInfoSource.py:33
-#: admin/PageInfoSource.py:88
+#: admin/ModuleBalancer.py:55 admin/Page.py:154 admin/PageInfoSource.py:32
+#: admin/PageInfoSource.py:84
 msgid "Information Sources"
 msgstr ""
 
-#: admin/ModuleBalancer.py:57 admin/PageInfoSource.py:183
-#: admin/PageInfoSource.py:211 admin/PageInfoSource.py:239
-#: admin/PageInfoSource.py:291
+#: admin/ModuleBalancer.py:57 admin/PageInfoSource.py:167
+#: admin/PageInfoSource.py:194 admin/PageInfoSource.py:222
+#: admin/PageInfoSource.py:274
 msgid "Nick"
 msgstr ""
 
@@ -187,9 +187,8 @@ msgid "Assign new port"
 msgstr ""
 
 #: admin/ModuleBind.py:97 admin/ModuleExists.py:71
-#: admin/ModuleExtensions.py:32 admin/ModuleFrom.py:64
-#: admin/ModuleFullpath.py:61 admin/ModuleGeoip.py:65 admin/ModuleMethod.py:61
-#: admin/ModuleRequest.py:32
+#: admin/ModuleExtensions.py:32 admin/ModuleGeoip.py:65
+#: admin/ModuleMethod.py:61 admin/ModuleRequest.py:32
 msgid "ERROR, a 'value' entry is needed!"
 msgstr ""
 
@@ -258,7 +257,7 @@ msgid "Name"
 msgstr ""
 
 #: admin/ModuleCgi.py:75 admin/ModuleProxy.py:100 admin/ModuleProxy.py:116
-#: admin/PageInfoSource.py:156
+#: admin/PageInfoSource.py:149
 msgid "Value"
 msgstr ""
 
@@ -311,7 +310,7 @@ msgid "Password for the user accessing the database."
 msgstr ""
 
 #: admin/ModuleDbslayer.py:22
-msgid "Database to connect to."
+msgid "Optionally specifies a database to connect to."
 msgstr ""
 
 #: admin/ModuleDbslayer.py:25
@@ -346,8 +345,8 @@ msgstr ""
 msgid "Data base balancing"
 msgstr ""
 
-#: admin/ModuleDbslayer.py:52 admin/ModuleFcgi.py:34 admin/ModuleProxy.py:49
-#: admin/ModuleScgi.py:36
+#: admin/ModuleDbslayer.py:52 admin/ModuleFcgi.py:34 admin/ModuleMirror.py:28
+#: admin/ModuleProxy.py:49 admin/ModuleScgi.py:36
 msgid "Balancer"
 msgstr ""
 
@@ -357,8 +356,6 @@ msgid ""
 msgstr ""
 
 #: admin/ModuleDirectory.py:22 admin/ModuleDirectory.py:24
-#: admin/Wizard_Django.py:147 admin/Wizard_Drupal.py:191
-#: admin/Wizard_RoR.py:233 admin/Wizard_WordPress.py:180
 msgid "Web Directory"
 msgstr ""
 
@@ -382,59 +379,55 @@ msgstr ""
 msgid "Only listing"
 msgstr ""
 
-#: admin/ModuleDirlist.py:43
+#: admin/ModuleDirlist.py:42
 msgid "Listing"
 msgstr ""
 
-#: admin/ModuleDirlist.py:45
+#: admin/ModuleDirlist.py:44
 msgid "Show Size"
 msgstr ""
 
-#: admin/ModuleDirlist.py:46
+#: admin/ModuleDirlist.py:45
 msgid "Show Date"
 msgstr ""
 
-#: admin/ModuleDirlist.py:47
+#: admin/ModuleDirlist.py:46
 msgid "Show User"
 msgstr ""
 
-#: admin/ModuleDirlist.py:48
+#: admin/ModuleDirlist.py:47
 msgid "Show Group"
 msgstr ""
 
-#: admin/ModuleDirlist.py:49
+#: admin/ModuleDirlist.py:48
 msgid "Show Backup files"
 msgstr ""
 
-#: admin/ModuleDirlist.py:50
+#: admin/ModuleDirlist.py:49
 msgid "Show Hidden files"
 msgstr ""
 
-#: admin/ModuleDirlist.py:51
+#: admin/ModuleDirlist.py:50
 msgid "Allow symbolic links"
 msgstr ""
 
-#: admin/ModuleDirlist.py:52
-msgid "Redirect symbolic links"
-msgstr ""
-
-#: admin/ModuleDirlist.py:55
+#: admin/ModuleDirlist.py:53
 msgid "Theming"
 msgstr ""
 
-#: admin/ModuleDirlist.py:58
+#: admin/ModuleDirlist.py:56
 msgid "Theme"
 msgstr ""
 
-#: admin/ModuleDirlist.py:59
+#: admin/ModuleDirlist.py:57
 msgid "Icons dir"
 msgstr ""
 
-#: admin/ModuleDirlist.py:60
+#: admin/ModuleDirlist.py:58
 msgid "Notice files"
 msgstr ""
 
-#: admin/ModuleDirlist.py:61
+#: admin/ModuleDirlist.py:59
 msgid "Hidden files"
 msgstr ""
 
@@ -459,13 +452,13 @@ msgid "Error"
 msgstr ""
 
 #: admin/ModuleErrorRedir.py:41 admin/ModuleErrorRedir.py:52
-#: admin/Wizard_HotLinking.py:74 admin/consts.py:18
+#: admin/consts.py:18
 msgid "Redirection"
 msgstr ""
 
 #: admin/ModuleErrorRedir.py:41 admin/ModuleErrorRedir.py:52
-#: admin/ModuleRedir.py:35 admin/PageInfoSource.py:182
-#: admin/PageInfoSource.py:210 admin/PageInfoSource.py:239
+#: admin/ModuleRedir.py:35 admin/PageInfoSource.py:166
+#: admin/PageInfoSource.py:193 admin/PageInfoSource.py:222
 #: admin/PageVServer.py:349
 msgid "Type"
 msgstr ""
@@ -584,40 +577,6 @@ msgstr ""
 
 #: admin/ModuleFile.py:28
 msgid "File Sending"
-msgstr ""
-
-#: admin/ModuleFrom.py:9
-msgid "IP or SubNet to check the connection origin against."
-msgstr ""
-
-#: admin/ModuleFrom.py:27 admin/ModuleFrom.py:76 admin/consts.py:134
-msgid "Connected from"
-msgstr ""
-
-#: admin/ModuleFrom.py:35
-msgid "IP or SubNet"
-msgstr ""
-
-#: admin/ModuleFrom.py:54
-msgid "Add new entry"
-msgstr ""
-
-#: admin/ModuleFullpath.py:9
-msgid ""
-"Full path request to which content the configuration will be applied. (Eg: /"
-"favicon.ico)"
-msgstr ""
-
-#: admin/ModuleFullpath.py:22 admin/ModuleFullpath.py:52 admin/consts.py:133
-msgid "Full Path"
-msgstr ""
-
-#: admin/ModuleFullpath.py:40
-msgid "Full Web Paths"
-msgstr ""
-
-#: admin/ModuleFullpath.py:43
-msgid "Add another path"
 msgstr ""
 
 #: admin/ModuleGeoip.py:12
@@ -768,6 +727,14 @@ msgstr ""
 
 #: admin/ModuleMethod.py:48 admin/ModuleMethod.py:51 admin/PageVServer.py:523
 msgid "Method"
+msgstr ""
+
+#: admin/ModuleMirror.py:12
+msgid "TCP balancer"
+msgstr ""
+
+#: admin/ModuleMirror.py:33
+msgid "Load balancing options"
 msgstr ""
 
 #: admin/ModuleMysql.py:7
@@ -972,8 +939,8 @@ msgstr ""
 msgid "New Regular Expression"
 msgstr ""
 
-#: admin/ModuleRehost.py:60 admin/ModuleTargetIp.py:62
-#: admin/ModuleWildcard.py:60 admin/PageInfoSource.py:255
+#: admin/ModuleRehost.py:60 admin/ModuleWildcard.py:60
+#: admin/PageInfoSource.py:238
 msgid "Add new"
 msgstr ""
 
@@ -985,31 +952,6 @@ msgstr ""
 msgid ""
 "The <i>Round Robin</i> balancer can either access remote servers or\n"
 "launch local application servers and connect to them."
-msgstr ""
-
-#: admin/ModuleRrd.py:7
-msgid "Directory where the RRDtool databases should be written."
-msgstr ""
-
-#: admin/ModuleRrd.py:8
-msgid ""
-"Path to the rrdtool binary. By default the server will look in the PATH."
-msgstr ""
-
-#: admin/ModuleRrd.py:9
-msgid "How often usage graphics should be regenerated. (Default: 60 seconds)"
-msgstr ""
-
-#: admin/ModuleRrd.py:26
-msgid "RRD Database directory"
-msgstr ""
-
-#: admin/ModuleRrd.py:27
-msgid "Custom rrdtool binary"
-msgstr ""
-
-#: admin/ModuleRrd.py:28
-msgid "Rendering interval (<i>secs</i>)"
 msgstr ""
 
 #: admin/ModuleScgi.py:32
@@ -1072,7 +1014,7 @@ msgstr ""
 msgid "Show Information"
 msgstr ""
 
-#: admin/ModuleSsi.py:5 admin/consts.py:25
+#: admin/ModuleSsi.py:5 admin/consts.py:24
 msgid "Server Side Includes"
 msgstr ""
 
@@ -1105,28 +1047,6 @@ msgstr ""
 msgid "Initial Boost"
 msgstr ""
 
-#: admin/ModuleTargetIp.py:9
-msgid ""
-"IP or Subnet of the NIC that accepted the request. Example: ::1, or "
-"10.0.0.0/8"
-msgstr ""
-
-#: admin/ModuleTargetIp.py:10
-msgid "At least one IP or Subnet entry must be defined."
-msgstr ""
-
-#: admin/ModuleTargetIp.py:30
-msgid "Accepted Server IP addresses and subnets"
-msgstr ""
-
-#: admin/ModuleTargetIp.py:34
-msgid "IP or Subnet"
-msgstr ""
-
-#: admin/ModuleTargetIp.py:61
-msgid "New IP/Subnet"
-msgstr ""
-
 #: admin/ModuleWildcard.py:9
 msgid ""
 "Accepted host name. Wildcard characters (* and ?) are allowed. Eg: *example."
@@ -1149,73 +1069,69 @@ msgstr ""
 msgid "New host name"
 msgstr ""
 
-#: admin/Page.py:102
+#: admin/Page.py:99
 msgid "Version:"
 msgstr ""
 
-#: admin/Page.py:131
+#: admin/Page.py:128
 msgid "Help"
 msgstr ""
 
-#: admin/Page.py:154 admin/PageAdvanced.py:108 admin/PageStatus.py:60
+#: admin/Page.py:151 admin/PageAdvanced.py:108 admin/PageStatus.py:60
 #: admin/PageVServer.py:492
 msgid "Status"
 msgstr ""
 
-#: admin/Page.py:155
+#: admin/Page.py:152
 msgid "General"
 msgstr ""
 
-#: admin/Page.py:156 admin/PageVServer.py:69 admin/PageVServers.py:25
+#: admin/Page.py:153 admin/PageVServer.py:69 admin/PageVServers.py:25
 #: admin/PageVServers.py:130
 msgid "Virtual Servers"
 msgstr ""
 
-#: admin/Page.py:158 admin/PageIcon.py:12
+#: admin/Page.py:155 admin/PageIcon.py:12
 msgid "Icons"
 msgstr ""
 
-#: admin/Page.py:159
+#: admin/Page.py:156
 msgid "Mime Types"
 msgstr ""
 
-#: admin/Page.py:160 admin/PageAdvanced.py:65
+#: admin/Page.py:157 admin/PageAdvanced.py:65
 msgid "Advanced"
 msgstr ""
 
-#: admin/Page.py:161
+#: admin/Page.py:158
 msgid "Save Changes"
 msgstr ""
 
-#: admin/Page.py:162
+#: admin/Page.py:159
 msgid "Save"
 msgstr ""
 
-#: admin/Page.py:163
+#: admin/Page.py:160
 msgid "Apply"
 msgstr ""
 
 #: admin/Page.py:164
-msgid "Optional"
-msgstr ""
-
-#: admin/Page.py:168
 msgid "Graceful restart"
 msgstr ""
 
-#: admin/Page.py:169
+#: admin/Page.py:165
 msgid "Hard restart"
 msgstr ""
 
-#: admin/Page.py:170
+#: admin/Page.py:166
 msgid "Do not restart"
 msgstr ""
 
-#: admin/Page.py:173
+#: admin/Page.py:169
 msgid "Commit to disk and apply changes to the running server"
 msgstr ""
 
-#: admin/Page.py:176
+#: admin/Page.py:172
 msgid "Commit all the changes permanently"
 msgstr ""
 
@@ -1495,7 +1411,7 @@ msgstr ""
 msgid "Behavior rules"
 msgstr ""
 
-#: admin/PageEntry.py:152 admin/PageInfoSource.py:291
+#: admin/PageEntry.py:152 admin/PageInfoSource.py:274
 msgid "Rule"
 msgstr ""
 
@@ -1505,7 +1421,6 @@ msgid "Handler"
 msgstr ""
 
 #: admin/PageEntry.py:161 admin/PageVServer.py:511 admin/PageVServers.py:275
-#: admin/Wizard_Django.py:85
 msgid "Document Root"
 msgstr ""
 
@@ -1889,74 +1804,64 @@ msgid ""
 "new process UID."
 msgstr ""
 
-#: admin/PageInfoSource.py:21
-msgid ""
-"Whether the new child process should inherit the environment variables from "
-"the server process. Default: yes."
-msgstr ""
-
-#: admin/PageInfoSource.py:135
+#: admin/PageInfoSource.py:129
 msgid "Environment variables"
 msgstr ""
 
-#: admin/PageInfoSource.py:151
+#: admin/PageInfoSource.py:144
 msgid "Add new Environment variable"
 msgstr ""
 
-#: admin/PageInfoSource.py:156
+#: admin/PageInfoSource.py:149
 msgid "Variable"
 msgstr ""
 
-#: admin/PageInfoSource.py:184 admin/PageInfoSource.py:212
-#: admin/PageInfoSource.py:239
+#: admin/PageInfoSource.py:168 admin/PageInfoSource.py:195
+#: admin/PageInfoSource.py:222
 msgid "Connection"
 msgstr ""
 
-#: admin/PageInfoSource.py:186 admin/PageInfoSource.py:214
+#: admin/PageInfoSource.py:170 admin/PageInfoSource.py:197
 msgid "Interpreter"
 msgstr ""
 
-#: admin/PageInfoSource.py:187 admin/PageInfoSource.py:215
+#: admin/PageInfoSource.py:171 admin/PageInfoSource.py:198
 msgid "Spawning timeout"
 msgstr ""
 
-#: admin/PageInfoSource.py:188 admin/PageInfoSource.py:216
+#: admin/PageInfoSource.py:172 admin/PageInfoSource.py:199
 msgid "Execute as User"
 msgstr ""
 
-#: admin/PageInfoSource.py:189 admin/PageInfoSource.py:217
+#: admin/PageInfoSource.py:173 admin/PageInfoSource.py:200
 msgid "Execute as Group"
 msgstr ""
 
-#: admin/PageInfoSource.py:190
-msgid "Inherit Environment"
-msgstr ""
-
-#: admin/PageInfoSource.py:224
+#: admin/PageInfoSource.py:207
 msgid "Information Sources Settings"
 msgstr ""
 
-#: admin/PageInfoSource.py:236
+#: admin/PageInfoSource.py:219
 msgid "Known sources"
 msgstr ""
 
-#: admin/PageInfoSource.py:249
+#: admin/PageInfoSource.py:232
 msgid "Deletion forbidden. Check source usage."
 msgstr ""
 
-#: admin/PageInfoSource.py:264
+#: admin/PageInfoSource.py:247
 msgid "Details:"
 msgstr ""
 
-#: admin/PageInfoSource.py:270
+#: admin/PageInfoSource.py:253
 msgid "Add a new"
 msgstr ""
 
-#: admin/PageInfoSource.py:279
+#: admin/PageInfoSource.py:262
 msgid "Source usage"
 msgstr ""
 
-#: admin/PageInfoSource.py:291
+#: admin/PageInfoSource.py:274
 msgid "Virtual server"
 msgstr ""
 
@@ -2197,8 +2102,8 @@ msgstr ""
 
 #: admin/PageVServer.py:41
 msgid ""
-"File containing the trusted CA certificates, utilized for checking the "
-"client certificates (Full path to the file)"
+"Optional: File containing the trusted CA certificates, utilized for checking "
+"the client certificates (Full path to the file)"
 msgstr ""
 
 #: admin/PageVServer.py:42
@@ -2209,7 +2114,7 @@ msgid ""
 msgstr ""
 
 #: admin/PageVServer.py:43
-msgid "Skip, Accept or Require client certificates."
+msgid "Optional: Skip, Accept or Require client certificates."
 msgstr ""
 
 #: admin/PageVServer.py:44
@@ -2628,225 +2533,6 @@ msgstr ""
 msgid "Clone"
 msgstr ""
 
-#: admin/Wizard.py:203
-msgid "Same logs as vserver"
-msgstr ""
-
-#: admin/Wizard_Django.py:8
-msgid "Local path to the Django based project."
-msgstr ""
-
-#: admin/Wizard_Django.py:9 admin/Wizard_Mailman.py:11 admin/Wizard_RoR.py:12
-msgid "Name of the new domain that will be created."
-msgstr ""
-
-#: admin/Wizard_Django.py:11
-msgid "It does not look like a Django based project directory."
-msgstr ""
-
-#: admin/Wizard_Django.py:12 admin/Wizard_RoR.py:20
-msgid "The document root directory does not exist."
-msgstr ""
-
-#: admin/Wizard_Django.py:55
-msgid "Directory doesn't look like a Django based project."
-msgstr ""
-
-#: admin/Wizard_Django.py:73 admin/Wizard_Django.py:136
-msgid "Django Wizard"
-msgstr ""
-
-#: admin/Wizard_Django.py:84 admin/Wizard_Drupal.py:119
-#: admin/Wizard_Mailman.py:122 admin/Wizard_RoR.py:158
-#: admin/Wizard_WordPress.py:108
-msgid "New Host Name"
-msgstr ""
-
-#: admin/Wizard_Django.py:90 admin/Wizard_Django.py:152
-#: admin/Wizard_RoR.py:165 admin/Wizard_RoR.py:240
-msgid "Project Directory"
-msgstr ""
-
-#: admin/Wizard_Drupal.py:9
-msgid ""
-"Path to the directory where the Drupal source code is located. (Example: /"
-"usr/share/drupal)"
-msgstr ""
-
-#: admin/Wizard_Drupal.py:10
-msgid "Web directory where you want Drupal to be accessible. (Example: /blog)"
-msgstr ""
-
-#: admin/Wizard_Drupal.py:11 admin/Wizard_WordPress.py:11
-msgid "Host name of the virtual host that is about to be created."
-msgstr ""
-
-#: admin/Wizard_Drupal.py:12
-msgid "Does not look like a Drupal source directory."
-msgstr ""
-
-#: admin/Wizard_Drupal.py:13 admin/Wizard_WordPress.py:13
-msgid "A web directory must be provided."
-msgstr ""
-
-#: admin/Wizard_Drupal.py:14 admin/Wizard_WordPress.py:14
-msgid "A host name must be provided."
-msgstr ""
-
-#: admin/Wizard_Drupal.py:107 admin/Wizard_Drupal.py:176
-msgid "Drupal Wizard"
-msgstr ""
-
-#: admin/Wizard_Drupal.py:120 admin/Wizard_Drupal.py:192
-#: admin/Wizard_WordPress.py:109 admin/Wizard_WordPress.py:181
-msgid "Source Directory"
-msgstr ""
-
-#: admin/Wizard_HotLinking.py:51
-msgid "Hot Linking Prevention Wizard"
-msgstr ""
-
-#: admin/Wizard_HotLinking.py:65
-msgid "Domain Name"
-msgstr ""
-
-#: admin/Wizard_HotLinking.py:70
-msgid "Reply type"
-msgstr ""
-
-#: admin/Wizard_Mailman.py:8
-msgid "Local path to the Mailman CGI directory."
-msgstr ""
-
-#: admin/Wizard_Mailman.py:9
-msgid "Local path to the Mailman data directory."
-msgstr ""
-
-#: admin/Wizard_Mailman.py:10
-msgid "Local path to the Mailman mail archive directory."
-msgstr ""
-
-#: admin/Wizard_Mailman.py:74
-msgid "It doesn't look like a Mailman data directory."
-msgstr ""
-
-#: admin/Wizard_Mailman.py:81
-msgid "It doesn't look like a Mailman CGI directory."
-msgstr ""
-
-#: admin/Wizard_Mailman.py:88
-msgid "It doesn't look like a Mailman archive directory."
-msgstr ""
-
-#: admin/Wizard_Mailman.py:108
-msgid "Mailman Wizard"
-msgstr ""
-
-#: admin/Wizard_Mailman.py:127
-msgid "Mailman CGI directory"
-msgstr ""
-
-#: admin/Wizard_Mailman.py:128
-msgid "Mailman Data directory"
-msgstr ""
-
-#: admin/Wizard_Mailman.py:129
-msgid "Mail Archive directory"
-msgstr ""
-
-#: admin/Wizard_Redirect.py:7
-msgid ""
-"This domain name will be used as nickname for the new virtual server. More "
-"domains names can be added to the virtual server later on."
-msgstr ""
-
-#: admin/Wizard_Redirect.py:8
-msgid "Domain name to which requests will be redirected."
-msgstr ""
-
-#: admin/Wizard_Redirect.py:9
-msgid "This field can not be empty."
-msgstr ""
-
-#: admin/Wizard_Redirect.py:34
-msgid "Redirection Wizard"
-msgstr ""
-
-#: admin/Wizard_Redirect.py:44
-msgid "Origin Domain"
-msgstr ""
-
-#: admin/Wizard_Redirect.py:45
-msgid "Target Domain"
-msgstr ""
-
-#: admin/Wizard_RoR.py:11
-msgid "Local path to the Ruby on Rails based project."
-msgstr ""
-
-#: admin/Wizard_RoR.py:13
-msgid ""
-"Directory of the web directory where the Ruby on Rails project will live in."
-msgstr ""
-
-#: admin/Wizard_RoR.py:14
-msgid "Value of the RAILS_ENV variable."
-msgstr ""
-
-#: admin/Wizard_RoR.py:16
-msgid ""
-"<p>Even though the directory looks like a Ruby on Rails project, the public/"
-"dispatch.fcgi file wasn't found.</p>"
-msgstr ""
-
-#: admin/Wizard_RoR.py:17
-msgid ""
-"<p>However a <b>public/dispatch.fcgi.example</b> file is present, so you "
-"might want to rename it.</p>"
-msgstr ""
-
-#: admin/Wizard_RoR.py:18
-msgid ""
-"<p>If you are using Rails >= 2.3.0, you will have to execute the following "
-"command from the project directory in order to add the missing file:</"
-"p><p><pre>rake rails:update:generate_dispatchers</pre></p>"
-msgstr ""
-
-#: admin/Wizard_RoR.py:19
-msgid "It does not look like a Ruby on Rails based project directory."
-msgstr ""
-
-#: admin/Wizard_RoR.py:150 admin/Wizard_RoR.py:225
-msgid "Ruby on Rails Wizard"
-msgstr ""
-
-#: admin/Wizard_RoR.py:166 admin/Wizard_RoR.py:241
-msgid "RAILS_ENV environment"
-msgstr ""
-
-#: admin/Wizard_WordPress.py:9
-msgid ""
-"Path to the directory where the Wordpress source code is located. (Example: /"
-"usr/share/wordpress)"
-msgstr ""
-
-#: admin/Wizard_WordPress.py:10
-msgid ""
-"Web directory where you want Wordpress to be accessible. (Example: /blog)"
-msgstr ""
-
-#: admin/Wizard_WordPress.py:12
-msgid "Does not look like a WordPress source directory."
-msgstr ""
-
-#: admin/Wizard_WordPress.py:97
-msgid "WordPress Wizard"
-msgstr ""
-
-#: admin/Wizard_WordPress.py:165
-msgid "Wordpress Wizard: Location"
-msgstr ""
-
 #: admin/config.py:184
 #, python-format
 msgid "ERROR: Couldn't unpack '%s'"
@@ -2893,31 +2579,31 @@ msgid "SCGI"
 msgstr ""
 
 #: admin/consts.py:21
-msgid "uWSGI"
-msgstr ""
-
-#: admin/consts.py:22
 msgid "HTTP reverse proxy"
 msgstr ""
 
-#: admin/consts.py:23
+#: admin/consts.py:22
 msgid "Audio/Video streaming"
 msgstr ""
 
-#: admin/consts.py:24
+#: admin/consts.py:23
 msgid "CGI"
 msgstr ""
 
-#: admin/consts.py:26
+#: admin/consts.py:25
 msgid "Hidden Downloads"
 msgstr ""
 
-#: admin/consts.py:27
+#: admin/consts.py:26
 msgid "Server Info"
 msgstr ""
 
-#: admin/consts.py:28
+#: admin/consts.py:27
 msgid "MySQL bridge"
+msgstr ""
+
+#: admin/consts.py:28
+msgid "Generic balancer"
 msgstr ""
 
 #: admin/consts.py:29
@@ -3038,6 +2724,14 @@ msgstr ""
 
 #: admin/consts.py:131
 msgid "HTTP Method"
+msgstr ""
+
+#: admin/consts.py:133
+msgid "Full Path"
+msgstr ""
+
+#: admin/consts.py:134
+msgid "Connected from"
 msgstr ""
 
 #: admin/consts.py:135

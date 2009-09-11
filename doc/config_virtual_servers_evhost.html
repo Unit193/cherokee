@@ -17,59 +17,94 @@
 </div>
 <h2 id="_advanced_virtual_hosting">Advanced Virtual Hosting</h2>
 <div class="sectionbody">
-<div class="paragraph"><p>Cherokee currently support a mechanism by which a single virtual
+<div class="para"><p>Cherokee currently support a mechanism by which a single virtual
 server can handle many different domains. The document root of this
 virtual server is built dynamically, so even if the domains share a
 common configuration they can use a number of different Document Root
 directories.</p></div>
 <div class="imageblock">
 <div class="content">
-<img src="media/images/admin_vserver_evhost.png" alt="media/images/admin_vserver_evhost.png" />
+<img src="media/images/admin_vserver_evhost.png" alt="Advanced Virtual Hosting" title="Advanced Virtual Hosting"/>
 </div>
 </div>
-<div class="paragraph"><p>The following replacement variables are supported. Let&#8217;s suppose a
+<div class="para"><p>The following replacement variables are supported. Let's suppose a
 request to the <tt>alo.users.example.com</tt> domain for the examples:</p></div>
 <div class="tableblock">
-<table rules="all"
-width="100%"
-frame="border"
+<table rules="rows"
+frame="hsides"
 cellspacing="0" cellpadding="4">
-<col width="33%" />
-<col width="33%" />
-<col width="33%" />
+<col width="247" />
+<col width="276" />
+<col width="276" />
 <thead>
-<tr>
-<th align="left" valign="top">Variable           </th>
-<th align="left" valign="top">Example               </th>
-<th align="left" valign="top">Description</th>
-</tr>
+  <tr>
+    <th align="left">
+    Variable                  
+    </th>
+    <th align="left">
+    Example                    
+    </th>
+    <th align="left">
+    Description
+    </th>
+  </tr>
 </thead>
-<tbody>
-<tr>
-<td align="left" valign="top"><p class="table"><tt>${domain}</tt></p></td>
-<td align="left" valign="top"><p class="table">alo.users.example.com</p></td>
-<td align="left" valign="top"><p class="table">Full domain name</p></td>
-</tr>
-<tr>
-<td align="left" valign="top"><p class="table"><tt>${tld}</tt></p></td>
-<td align="left" valign="top"><p class="table">com</p></td>
-<td align="left" valign="top"><p class="table">Top Level Domain</p></td>
-</tr>
-<tr>
-<td align="left" valign="top"><p class="table"><tt>${domain_no_tld}</tt></p></td>
-<td align="left" valign="top"><p class="table">alo.users.example</p></td>
-<td align="left" valign="top"><p class="table">Domain without the TLD</p></td>
-</tr>
-<tr>
-<td align="left" valign="top"><p class="table"><tt>${subdomain1}</tt></p></td>
-<td align="left" valign="top"><p class="table">users</p></td>
-<td align="left" valign="top"><p class="table">First sub-domain</p></td>
-</tr>
-<tr>
-<td align="left" valign="top"><p class="table"><tt>${subdomain2}</tt></p></td>
-<td align="left" valign="top"><p class="table">alo</p></td>
-<td align="left" valign="top"><p class="table">Second sub-domain</p></td>
-</tr>
+<tbody valign="top">
+  <tr>
+    <td align="left">
+    <tt>${domain}</tt>             
+    </td>
+    <td align="left">
+    alo.users.example.com      
+    </td>
+    <td align="left">
+    Full domain name
+    </td>
+  </tr>
+  <tr>
+    <td align="left">
+    <tt>${tld}</tt>                
+    </td>
+    <td align="left">
+    com                        
+    </td>
+    <td align="left">
+    Top Level Domain
+    </td>
+  </tr>
+  <tr>
+    <td align="left">
+    <tt>${domain_no_tld}</tt>      
+    </td>
+    <td align="left">
+    alo.users.example          
+    </td>
+    <td align="left">
+    Domain without the TLD
+    </td>
+  </tr>
+  <tr>
+    <td align="left">
+    <tt>${subdomain1}</tt>         
+    </td>
+    <td align="left">
+    users                      
+    </td>
+    <td align="left">
+    First sub-domain
+    </td>
+  </tr>
+  <tr>
+    <td align="left">
+    <tt>${subdomain2}</tt>         
+    </td>
+    <td align="left">
+    alo                        
+    </td>
+    <td align="left">
+    Second sub-domain
+    </td>
+  </tr>
 </tbody>
 </table>
 </div>

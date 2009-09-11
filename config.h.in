@@ -3,9 +3,6 @@
 /* Define if building universal (internal helper macro) */
 #undef AC_APPLE_UNIVERSAL_BUILD
 
-/* Backtracing facility */
-#undef BACKTRACES_ENABLED
-
 /* configure arguments */
 #undef CHEROKEE_CONFIG_ARGS
 
@@ -29,9 +26,6 @@
 
 /* Define to 1 if you have the <arpa/inet.h> header file. */
 #undef HAVE_ARPA_INET_H
-
-/* Define to 1 if you have the `backtrace' function. */
-#undef HAVE_BACKTRACE
 
 /* Define to 1 if you have the `bcopy' function. */
 #undef HAVE_BCOPY
@@ -70,9 +64,6 @@
 
 /* Define to 1 if you have the <error.h> header file. */
 #undef HAVE_ERROR_H
-
-/* Define to 1 if you have the <execinfo.h> header file. */
-#undef HAVE_EXECINFO_H
 
 /* Define to 1 if you have the <fcntl.h> header file. */
 #undef HAVE_FCNTL_H
@@ -397,13 +388,13 @@
 /* Define to 1 if you have the `strsep' function. */
 #undef HAVE_STRSEP
 
-/* Define to 1 if `struct stat' is a member of `st_rdev'. */
+/* Define to 1 if `st_rdev' is member of `struct stat'. */
 #undef HAVE_STRUCT_STAT_ST_RDEV
 
 /* gmtoff in struct tm */
 #undef HAVE_STRUCT_TM_GMTOFF
 
-/* Define to 1 if `struct tm' is a member of `tm_zone'. */
+/* Define to 1 if `tm_zone' is member of `struct tm'. */
 #undef HAVE_STRUCT_TM_TM_ZONE
 
 /* Define to 1 if your `struct stat' has `st_rdev'. Deprecated, use
@@ -579,9 +570,6 @@
 
 /* Define to the one symbol short name of this package. */
 #undef PACKAGE_TARNAME
-
-/* Define to the home page for this package. */
-#undef PACKAGE_URL
 
 /* Package version */
 #undef PACKAGE_VERSION

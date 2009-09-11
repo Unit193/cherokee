@@ -1,4 +1,4 @@
-import os, imp, sys
+import imp, sys
 from CherokeeManagement import cherokee_has_plugin
 
 class Module:

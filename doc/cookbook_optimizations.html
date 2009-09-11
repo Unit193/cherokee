@@ -17,11 +17,11 @@
 </div>
 <h2 id="_cookbook_optimizing_cherokee">Cookbook: Optimizing Cherokee</h2>
 <div class="sectionbody">
-<div class="paragraph"><p>Cherokee&#8217;s default parameters are suitable for most cases. However,
+<div class="para"><p>Cherokee's default parameters are suitable for most cases. However,
 there are a number of things that can be tweaked in order to improve
 the behavior of Cherokee under special circumstances.</p></div>
 <h3 id="compiled">Compiled capabilities</h3><div style="clear:left"></div>
-<div class="paragraph"><p>First of all you should check the capabilities that have been built
+<div class="para"><p>First of all you should check the capabilities that have been built
 into your specific Cherokee build. This can be done by:</p></div>
 <div class="listingblock">
 <div class="content">
@@ -39,7 +39,7 @@ Support
  syslog(): yes
  Polling methods: select poll epoll</tt></pre>
 </div></div>
-<div class="paragraph"><p>The last section is interesting. If you see that any siginficant
+<div class="para"><p>The last section is interesting. If you see that any siginficant
 capability supported by your platform is missing, you should really
 build another binary or check if something is wrong with your
 system. Note that not every single capability is present in every
@@ -53,29 +53,29 @@ follow the POSIX standard. From the list above, the capabilities that
 have a dramatic impact in the speed of Cherokee are the polling
 methods, the existence of sendfile() and the Pthreads support.</p></div>
 <h3 id="tweaks">Tweaks</h3><div style="clear:left"></div>
-<div class="paragraph"><p>There is no general recomendation that is the best for everybody. In
-general Cherokee&#8217;s default values try to offer a good compromise
+<div class="para"><p>There is no general recomendation that is the best for everybody. In
+general Cherokee's default values try to offer a good compromise
 between resources and performance, but for specific cases you will be
 able to tweak somethings that may (or may not) improve the overall
 performance. Some of the things to keep in mind are mentioned here.</p></div>
-<div class="dlist"><dl>
-<dt class="hdlist1">
+<div class="vlist"><dl>
+<dt>
 Encoding
 </dt>
 <dd>
 <p>
 As it is explained in the <a href="modules_encoders.html">Encoders'</a>
 documentation, compressing the information to be sent makes a lot of
-sense for specific file types. It&#8217;s Not that much processing power is
+sense for specific file types. It's Not that much processing power is
 used to compress a text file, for instance, and hardware is cheaper
 than bandwidth, so you should encode files whenever it makes sense.
 </p>
 </dd>
-<dt class="hdlist1">
+<dt>
 Handler specific
 </dt>
 <dd>
-<div class="ulist"><ul>
+<div class="ilist"><ul>
 <li>
 <p>
 <strong>CGI, SCGI, FastCGI</strong>: <a href="other_goodies.html#x-sendfile">X-Sendfile</a>
@@ -96,16 +96,16 @@ Handler specific
  all cases except when the contents of the files are changed
  frequently. Note that the global <em>IO Cache</em> setting from the
  <em>Advanced</em> section (see bellow) must be enabled for each individual
- handler&#8217;s setting to be taken into account.
+ handler's setting to be taken into account.
 </p>
 </li>
 </ul></div>
 </dd>
-<dt class="hdlist1">
+<dt>
 General
 </dt>
 <dd>
-<div class="ulist"><ul>
+<div class="ilist"><ul>
 <li>
 <p>
 <strong>Timeout</strong>: The lower your timeout interval is, the faster you will
@@ -128,11 +128,11 @@ General
 </li>
 </ul></div>
 </dd>
-<dt class="hdlist1">
+<dt>
 Advanced
 </dt>
 <dd>
-<div class="ulist"><ul>
+<div class="ilist"><ul>
 <li>
 <p>
 <strong>Threads</strong>: The default value is chosen so that it is more than enough
@@ -161,14 +161,14 @@ Advanced
   static content handlers will also be disabled, no matter what
   behavior is desired in their specific configuration. This global
   setting is essential if you are trying to debug a cache-related
-  bug in your server&#8217;s configuration.
+  bug in your server's configuration.
 </p>
 </li>
 </ul></div>
 </dd>
 </dl></div>
 <h3 id="trace">Debug: Disable TRACE</h3><div style="clear:left"></div>
-<div class="paragraph"><p>When compiled with debugging support, Cherokee&#8217;s performance is
+<div class="para"><p>When compiled with debugging support, Cherokee's performance is
 heavily penalized. Being able to trace the state of the web server at
 a very low level is quite useful when you have to fine tune your
 infrastructure, but once it is done you should disable this feature.

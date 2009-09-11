@@ -28,12 +28,6 @@ CONFIG_DIR = """
 %(pre_rule_minus2)s!match!right!match_any = 1
 %(pre_rule_minus2)s!handler = file
 %(pre_rule_minus2)s!handler!iocache = 1
-
-%(pre_rule_minus3)s!match = request
-%(pre_rule_minus3)s!match!request = %(web_dir)s/(.+)
-%(pre_rule_minus3)s!handler = redir
-%(pre_rule_minus3)s!handler!rewrite!1!show = 0
-%(pre_rule_minus3)s!handler!rewrite!1!substring = %(web_dir)s/index.php?/$1
 """
 
 CONFIG_VSRV = """
@@ -59,10 +53,7 @@ CONFIG_VSRV = """
 %(pre_rule_minus3)s!handler!iocache = 1
 
 %(pre_vsrv)s!rule!1!match = default
-%(pre_vsrv)s!rule!1!handler = redir
-%(pre_vsrv)s!rule!1!handler!rewrite!1!show = 0
-%(pre_vsrv)s!rule!1!handler!rewrite!1!regex = /(.+)
-%(pre_vsrv)s!rule!1!handler!rewrite!1!substring = /index.php?/$1
+%(pre_vsrv)s!rule!1!handler = common
 """
 
 SRC_PATHS = [
@@ -140,7 +131,6 @@ class Wizard_VServer_WordPress (WizardPage):
         php_info = wizard_php_get_info (self._cfg, pre_vsrv)
         php_rule = int (php_info['rule'].split('!')[-1])
 
-        pre_rule_minus1 = "%s!rule!%d" % (pre_vsrv, php_rule - 1)
         pre_rule_minus2 = "%s!rule!%d" % (pre_vsrv, php_rule - 2)
         pre_rule_minus3 = "%s!rule!%d" % (pre_vsrv, php_rule - 3)
 
@@ -205,7 +195,6 @@ class Wizard_Rules_WordPress (WizardPage):
 
         pre_rule_minus1 = "%s!rule!%d" % (self._pre, php_rule - 1)
         pre_rule_minus2 = "%s!rule!%d" % (self._pre, php_rule - 2)
-        pre_rule_minus3 = "%s!rule!%d" % (self._pre, php_rule - 3)
 
         # Add the new rules
         config = CONFIG_DIR % (locals())

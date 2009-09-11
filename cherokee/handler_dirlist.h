@@ -80,7 +80,6 @@ typedef struct {
 
 	/* Paths
 	 */
-	cherokee_boolean_t       redir_symlinks;
 	cherokee_buffer_t        icon_web_dir;
 } cherokee_handler_dirlist_props_t;
 

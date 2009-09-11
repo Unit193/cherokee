@@ -153,12 +153,12 @@ class PageEntry (PageMenu, FormHelper):
 
         # Handler
         table = TableProps()
-        e = self.AddPropOptions_Reload_Module (table, _('Handler'), '%s!handler'%(pre),
-                                               modules_available(HANDLERS), _(NOTE_HANDLER))
+        e = self.AddPropOptions_Reload (table, _('Handler'), '%s!handler'%(pre),
+                                        modules_available(HANDLERS), _(NOTE_HANDLER))
 
         props = self._get_handler_properties()
         if not props or props.show_document_root:
-            self.AddPropEntry (table, _('Document Root'), '%s!document_root'%(pre), _(NOTE_DOCUMENT_ROOT), optional=True)
+            self.AddPropEntry (table, _('Document Root'), '%s!document_root'%(pre), _(NOTE_DOCUMENT_ROOT))
 
         if e:
             tabs += [(_('Handler'), str(table) + e)]
@@ -208,7 +208,7 @@ class PageEntry (PageMenu, FormHelper):
         txt = ''
 
         table = TableProps()
-        self.AddPropEntry (table, _('Limit traffic to'), '%s!rate'%(self._conf_prefix), _(NOTE_RATE), optional=True)
+        self.AddPropEntry (table, _('Limit traffic to'), '%s!rate'%(self._conf_prefix), _(NOTE_RATE))
 
         txt += "<h2>%s</h2>" % (_('Traffic Shaping'))
         txt += self.Indent(table)
@@ -244,13 +244,13 @@ class PageEntry (PageMenu, FormHelper):
         txt  += "<h2>%s</h2>" % (_('Access Restrictions'))
         table = TableProps()
         self.AddPropCheck (table, _('Only https'), '%s!only_secure'%(pre), False, _(NOTE_HTTPS_ONLY))
-        self.AddPropEntry (table, _('Allow From'),  '%s!allow_from' %(pre), _(NOTE_ALLOW_FROM), optional=True)
+        self.AddPropEntry (table, _('Allow From'),  '%s!allow_from' %(pre), _(NOTE_ALLOW_FROM))
         txt += self.Indent(table)
 
         txt += "<h2>%s</h2>" % (_('Authentication'))
         table = TableProps()
-        e = self.AddPropOptions_Reload_Module (table, _('Validation Mechanism'), '%s!auth'%(pre),
-                                               modules_available(VALIDATORS), _(NOTE_VALIDATOR))
+        e = self.AddPropOptions_Reload (table, _('Validation Mechanism'), '%s!auth'%(pre),
+                                        modules_available(VALIDATORS), _(NOTE_VALIDATOR))
         txt += self.Indent (table)
         txt += e
 

@@ -17,70 +17,52 @@
 </div>
 <h2 id="_cookbook_setting_up_php">Cookbook: Setting up PHP</h2>
 <div class="sectionbody">
-<div class="paragraph"><p>There is not much to learn to configure PHP with Cherokee.
-Cherokee-admin ships a one-click wizard that will do everything for
-you. It will look for the PHP interpreter, it will check whether it
-support FastCGI, and then it&#8217;ll perform all the necessary operations
-to set it up on Cherokee. It is a piece of cake.</p></div>
-<div class="paragraph"><p>It requires a single operation to get PHP configured on a Virtual
-Server: Choose the virtual server your want to configure, and click on
-the <tt>Behavior</tt> tab. Once in there, click on <tt>Wizards</tt>:</p></div>
+<div class="para"><p>There is not much to learn to configure PHP with Cherokee.
+The default configuration (the one created by <tt>cherokee-admin</tt> from
+scratch when there is no <tt>cherokee.conf</tt> present) already supports
+PHP.</p></div>
+<div class="para"><p>This example shows a typical usage of FastCGI. It only uses one
+<a href="config_info_sources.html">information source</a> nicknamed <tt>php</tt> in
+this case. This connects to a FastCGI server located in localhost in
+port 1234. If no server is running, the webserver will run the FastCGI
+server by issuing the command defined as the <strong>Interpreter</strong>
+sub-parameter:</p></div>
 <div class="imageblock">
 <div class="content">
-<img src="media/images/admin_vserver_wizard.png" alt="media/images/admin_vserver_wizard.png" />
+<img src="media/images/admin_handler_fastcgi1.png" alt="Fastcgi" title="Fastcgi"/>
 </div>
 </div>
-<div class="paragraph"><p>Now select <tt>Languages</tt> and run the PHP wizard. And, that&#8217;s it. If you
-had <tt>php-cgi</tt> installed in your system, PHP should be configured now.</p></div>
-<h3 id="php_fastcgi">PHP FastCGI support</h3><div style="clear:left"></div>
-<div class="paragraph"><p>Note that only FastCGI-enabled binaries of PHP will work with the
+<div class="para"><p>This other example shows a typical usage of multiple FastCGI
+servers. It connects to FastCGI servers in several locations. If no
+server is running in the local computer, the webserver will run the
+FastCGI server by issuing the specified command. Note that for <strong>remote</strong>
+FastCGI servers, you are responsible of running the FastCGI services
+there manually:</p></div>
+<div class="imageblock">
+<div class="content">
+<img src="media/images/admin_handler_fastcgi2.png" alt="Fastcgi" title="Fastcgi"/>
+</div>
+</div>
+<div class="para"><p>The <strong>PHP_FCGI_CHILDREN</strong> environment variable is mandatory for PHP
+FastCGI servers.  It defines how much children should serve the
+requests coming from the webserver.</p></div>
+<div class="para"><p>If you define <strong>PHP_FCGI_MAX_REQUESTS</strong>, the value must be negative if
+you do not want the PHP process to ever be restarted. If you leave it
+unset, PHP will take the default value (500), after which it will be
+restarted. It is generally a good idea to let PHP be restarted to free
+up resources and possible memory leaks.</p></div>
+<div class="para"><p>Note that only FastCGI-enabled binaries of PHP will work with the
 FastCGI handler. Many prepackaged versions already enable this by
 default. If yours does not, you will need to build a suitable
 binary. You can check this with the <tt>-v</tt> parameter:</p></div>
 <div class="listingblock">
 <div class="content">
 <pre><tt>$ php-cgi -v
-PHP 5.2.10 (cgi-fcgi) (built: Jul 11 2009 15:33:11)
-Copyright (c) 1997-2009 The PHP Group
-Zend Engine v2.2.0, Copyright (c) 1998-2009 Zend Technologies</tt></pre>
+PHP 5.2.5 (cgi-fcgi) (built: Apr 20 2008 17:11:05)
+Copyright (c) 1997-2007 The PHP Group
+Zend Engine v2.2.0, Copyright (c) 1998-2007 Zend Technologies</tt></pre>
 </div></div>
-<div class="paragraph"><p>You cannot proceed unless the <strong>"cgi-fcgi"</strong> string is present.</p></div>
-<h3 id="php_env">PHP process Environment Variables</h3><div style="clear:left"></div>
-<div class="paragraph"><p>The <strong>PHP_FCGI_CHILDREN</strong> environment variable is mandatory for PHP
-FastCGI servers.  It defines how much children should serve the
-requests coming from the webserver.</p></div>
-<div class="paragraph"><p>If you define <strong>PHP_FCGI_MAX_REQUESTS</strong>, the value must be negative if
-you do not want the PHP process to ever be restarted. If you leave it
-unset, PHP will take the default value (500), after which it will be
-restarted. It is generally a good idea to let PHP be restarted to free
-up resources and possible memory leaks.</p></div>
-<h3 id="advanced">Advanced configuration</h3><div style="clear:left"></div>
-<div class="paragraph"><p>Once PHP is configured, you are free to tweak the configuration to
-adapt it to your specific needs. You may want to change some of the
-php-cgi parameters, or even point Cherokee to use distributed PHP
-execution.</p></div>
-<div class="paragraph"><p>This example shows a typical usage of FastCGI. It only uses one
-<a href="config_info_sources.html">information source</a> nicknamed <tt>php</tt> in
-this case. This connects to a FastCGI server located in localhost in
-port 47990. If no server is running, the webserver will run the
-FastCGI server by issuing the command defined as the <strong>Interpreter</strong>
-sub-parameter:</p></div>
-<div class="imageblock">
-<div class="content">
-<img src="media/images/admin_handler_fastcgi1.png" alt="media/images/admin_handler_fastcgi1.png" />
-</div>
-</div>
-<div class="paragraph"><p>This other example shows a typical usage of multiple FastCGI servers.
-It connects to FastCGI servers in several locations. If no server is
-running in the local computer, the webserver will run the FastCGI
-server by issuing the specified command. Note that for <strong>remote</strong>
-FastCGI servers, you are responsible of running the FastCGI services
-there manually:</p></div>
-<div class="imageblock">
-<div class="content">
-<img src="media/images/admin_handler_fastcgi2.png" alt="media/images/admin_handler_fastcgi2.png" />
-</div>
-</div>
+<div class="para"><p>You cannot proceed unless the <strong>"cgi-fcgi"</strong> string is present.</p></div>
 </div>
 <div id="footer">
 <div id="footer-text">

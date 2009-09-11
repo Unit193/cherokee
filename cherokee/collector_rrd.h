@@ -44,13 +44,6 @@ typedef struct {
 
 	/* Internals */
 	cherokee_buffer_t    tmp;
-	
-	/* Asynchronous */
-	pthread_t            thread;
-	cherokee_list_t      collectors_vsrv;
-
-	time_t               next_render;
-	time_t               next_update;
 } cherokee_collector_rrd_t;
 
 typedef struct {
@@ -63,10 +56,6 @@ typedef struct {
 	/* Internals */
 	void                      *vsrv_ref;
 	cherokee_buffer_t          tmp;
-
-	/* Asynchronous */
-	time_t                     next_render;
-	time_t                     next_update;
 } cherokee_collector_vsrv_rrd_t;
 
 #define COLLECTOR_RRD(c)          ((cherokee_collector_rrd_t *)(c))

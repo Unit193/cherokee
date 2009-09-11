@@ -18,7 +18,6 @@ HANDLERS = [
     ('redir',        N_('Redirection')),
     ('fcgi',         N_('FastCGI')),
     ('scgi',         N_('SCGI')),
-    ('uwsgi',        N_('uWSGI')),
     ('proxy',        N_('HTTP reverse proxy')),
     ('streaming',    N_('Audio/Video streaming')),
     ('cgi',          N_('CGI')),
@@ -26,6 +25,7 @@ HANDLERS = [
     ('secdownload',  N_('Hidden Downloads')),
     ('server_info',  N_('Server Info')),
     ('dbslayer',     N_('MySQL bridge')),
+    ('mirror',       N_('Generic balancer')),
     ('custom_error', N_('HTTP error')),
     ('admin',        N_('Remote Administration')),
     ('empty_gif',    N_('1x1 Transparent GIF'))

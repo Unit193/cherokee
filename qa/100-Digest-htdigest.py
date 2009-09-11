@@ -50,7 +50,7 @@ class Test (TestBase):
 
 
     def Prepare (self, www):
-        from hashlib import md5
+        from md5 import md5
 
         # Create the infrastructure
         #

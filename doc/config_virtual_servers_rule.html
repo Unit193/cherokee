@@ -17,10 +17,10 @@
 </div>
 <h2 id="_virtual_server_rules">Virtual Server: Rules</h2>
 <div class="sectionbody">
-<div class="paragraph"><p>Besides the connection handler set for the rule, there are other
+<div class="para"><p>Besides the connection handler set for the rule, there are other
 parameters that can be set in order to customize the rule behavior.
 This menu offers the following tabs:</p></div>
-<div class="olist arabic"><ol class="arabic">
+<div class="olist"><ol>
 <li>
 <p>
 Rule: this is the <strong>rule type</strong>, as explained in the
@@ -54,21 +54,21 @@ Security: in this section one can configure <strong>Access Restrictions</strong>
 </li>
 </ol></div>
 <h3 id="encoding">Encoding</h3><div style="clear:left"></div>
-<div class="paragraph"><p>The content sent by Cherokee can be encoded or not.
+<div class="para"><p>The content sent by Cherokee can be encoded or not.
 This tab is used to configure, on a per-rule basis,  what
 <a href="modules_encoders.html">encoders</a>, if any, are to be applied.</p></div>
-<div class="paragraph"><p>You can set up the encoding method to use, and it shall be applied to
+<div class="para"><p>You can set up the encoding method to use, and it shall be applied to
 whatever content is handled by the parent rule.</p></div>
-<div class="paragraph"><p>Whenever you set up a virtual server, creating a rule where
+<div class="para"><p>Whenever you set up a virtual server, creating a rule where
 <a href="modules_encoders_gzip.html">gzip</a> is enabled by default for the
 following file types: <tt>html</tt>, <tt>htm</tt>, <tt>txt</tt>, <tt>css</tt> and <tt>js</tt> is a good
 idea. You are encouraged to use this. Hardware is cheap. Bandwidth is
 not.</p></div>
 <h3 id="expiration">Expiration</h3><div style="clear:left"></div>
-<div class="paragraph"><p>HTTP/1.1 defines caching methods in HTTP. Cherokee-Admin can
+<div class="para"><p>HTTP/1.1 defines caching methods in HTTP. Cherokee-Admin can
 automatically adjust the <tt>Cache-Control</tt> and <tt>Expire</tt> headers depending
 on the values you have configured. The available options are:</p></div>
-<div class="olist arabic"><ol class="arabic">
+<div class="olist"><ol>
 <li>
 <p>
 Not set: Does not write the caching headers.
@@ -91,7 +91,7 @@ Custom Value: set a value by hand.
 </li>
 </ol></div>
 <h3 id="restrictions">Access Restrictions</h3><div style="clear:left"></div>
-<div class="ulist"><ul>
+<div class="ilist"><ul>
 <li>
 <p>
 Only https::
@@ -119,7 +119,7 @@ addresses are valid entries.</tt></pre>
 </li>
 </ul></div>
 <h4 id="examples">Examples</h4>
-<div class="ulist"><ul>
+<div class="ilist"><ul>
 <li>
 <p>
 Allow access only from the IPv6 localhost address
@@ -160,56 +160,56 @@ addresses and networks if you want
 </li>
 </ul></div>
 <h3 id="authentication">Authentication</h3><div style="clear:left"></div>
-<div class="paragraph"><p>This parameter allows to configure user/password protected entries. A
+<div class="para"><p>This parameter allows to configure user/password protected entries. A
 validator has to be used in each Auth entry in order to specify the
 validaton mechanism. The following <tt>validators</tt> are available:</p></div>
-<div class="ulist"><ul>
+<div class="ilist"><ul>
 <li>
 <p>
 <a href="modules_validators_plain.html">plain</a> - <strong>Plain text file</strong>
 </p>
-<div class="paragraph"><p>Uses a plain flat file to perform HTTP authentication.</p></div>
+<div class="para"><p>Uses a plain flat file to perform HTTP authentication.</p></div>
 </li>
 <li>
 <p>
 <a href="modules_validators_htpasswd.html">htpasswd</a> - <strong>Htpasswd file</strong>
 </p>
-<div class="paragraph"><p>Uses an htpasswd file to perform HTTP authentication.</p></div>
+<div class="para"><p>Uses an htpasswd file to perform HTTP authentication.</p></div>
 </li>
 <li>
 <p>
 <a href="modules_validators_htdigest.html">htdigest</a> - <strong>Htdigest file</strong>
 </p>
-<div class="paragraph"><p>Uses an htdigest-generated file to perform HTTP authentication.</p></div>
+<div class="para"><p>Uses an htdigest-generated file to perform HTTP authentication.</p></div>
 </li>
 <li>
 <p>
 <a href="modules_validators_ldap.html">ldap</a> - <strong>LDAP server</strong>
 </p>
-<div class="paragraph"><p>Uses an LDAP directory to perform HTTP authentication.</p></div>
+<div class="para"><p>Uses an LDAP directory to perform HTTP authentication.</p></div>
 </li>
 <li>
 <p>
 <a href="modules_validators_mysql.html">mysql</a> - <strong>MySQL server</strong>
 </p>
-<div class="paragraph"><p>Uses a MySQL database to perform HTTP authentication.</p></div>
+<div class="para"><p>Uses a MySQL database to perform HTTP authentication.</p></div>
 </li>
 <li>
 <p>
 <a href="modules_validators_pam.html">PAM</a> - <strong>PAM Authentication</strong>
 </p>
-<div class="paragraph"><p>Uses PAM to perform HTTP authentication.</p></div>
+<div class="para"><p>Uses PAM to perform HTTP authentication.</p></div>
 </li>
 <li>
 <p>
 <a href="modules_validators_authlist.html">Fixed list</a> - <strong> Authentication lists</strong>
 </p>
-<div class="paragraph"><p>Uses lists of users and passwords to perform HTTP authentication.</p></div>
+<div class="para"><p>Uses lists of users and passwords to perform HTTP authentication.</p></div>
 </li>
 </ul></div>
-<div class="paragraph"><p>It is important to take into consideration that there are two different
+<div class="para"><p>It is important to take into consideration that there are two different
 authentication mechanisms:</p></div>
-<div class="ulist"><ul>
+<div class="ilist"><ul>
 <li>
 <p>
 Basic
@@ -221,7 +221,7 @@ Digest
 </p>
 </li>
 </ul></div>
-<div class="paragraph"><p>Some <a href="modules_validators.html">validators</a> can only handle one of
+<div class="para"><p>Some <a href="modules_validators.html">validators</a> can only handle one of
 those mechanisms because of techical  limitations. In case the module supports
 both of them, the interface allows to choose whether one or both are
 to be used.</p></div>

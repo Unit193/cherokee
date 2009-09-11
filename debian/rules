@@ -79,6 +79,9 @@ build-arch: build-arch-stamp
 
 build-arch-stamp: config.status
 	$(MAKE)
+	echo >> $(CURDIR)/cherokee.conf.sample
+	echo '# Please always leave a trailing newline or otherwise the parser fails' >> $(CURDIR)/cherokee.conf.sample
+	echo '# See http://bugs.debian.org/528160' >> $(CURDIR)/cherokee.conf.sample
 	# $(MAKE) test
 	touch build-arch-stamp
 
@@ -268,11 +271,9 @@ install-arch:
 	install -d $(MOD_GEOIP_DIR)/usr/lib/cherokee
 	mv $(BUILD_DIR)/usr/lib/cherokee/libplugin_geoip.* $(MOD_GEOIP_DIR)/usr/lib/cherokee
 
-# libcherokee-mod-rrd - RDD Graph functions
+# libcherokee-mod-rrd - GeoIP resolution functions
 	install -d $(MOD_RRD_DIR)/DEBIAN
 	install -d $(MOD_RRD_DIR)/usr/lib/cherokee
-	install -d $(MOD_RRD_DIR)/var/lib/cherokee/graphs/images
-	rm -rf $(BUILD_DIR)/var/lib/cherokee/graphs
 	mv $(BUILD_DIR)/usr/lib/cherokee/libplugin_rrd.* $(MOD_RRD_DIR)/usr/lib/cherokee
 
 # libcherokee-server0 - Runtime library

@@ -17,16 +17,16 @@
 </div>
 <h2 id="_cherokee_bundle_cherokee">Cherokee Bundle: cherokee</h2>
 <div class="sectionbody">
-<div class="paragraph"><p>This command-line tool is the main Cherokee executable. It is used as
+<div class="para"><p>This command-line tool is the main Cherokee executable. It is used as
 a safety net to invoke <tt>cherokee-worker</tt> and to ensure it is always
 functioning. It also plays an important role in the
 <a href="other_goodies.html#zero-downtime">zero-downtime</a> mechanism
 implemented to allow graceful restarts of the server.</p></div>
-<div class="paragraph"><p>This is the full information provided by the manpage.</p></div>
+<div class="para"><p>This is the full information provided by the manpage.</p></div>
 <div class="sidebarblock">
 <div class="sidebar-content">
-<div class="dlist"><dl>
-<dt class="hdlist1">
+<div class="vlist"><dl>
+<dt>
 <strong>NAME</strong>
 </dt>
 <dd>
@@ -34,7 +34,7 @@ implemented to allow graceful restarts of the server.</p></div>
        cherokee - Cherokee Web Server
 </p>
 </dd>
-<dt class="hdlist1">
+<dt>
 <strong>SYNOPSIS</strong>
 </dt>
 <dd>
@@ -42,7 +42,7 @@ implemented to allow graceful restarts of the server.</p></div>
        cherokee [options]
 </p>
 </dd>
-<dt class="hdlist1">
+<dt>
 <strong>DESCRIPTION</strong>
 </dt>
 <dd>
@@ -50,72 +50,72 @@ implemented to allow graceful restarts of the server.</p></div>
        <tt>cherokee</tt> is an extremely fast, flexible and embeddable web server.
 </p>
 </dd>
-<dt class="hdlist1">
+<dt>
 <strong>OPTIONS</strong>
 </dt>
 <dd>
 <p>
        This command will launch the Cherokee webserver. It accepts the following options:
 </p>
-<div class="dlist"><dl>
-<dt class="hdlist1">
--h, --help
+<div class="vlist"><dl>
+<dt>
+-h, &#8212;help
 </dt>
 <dd>
 <p>
                Prints a brief help message and terminates execution
 </p>
 </dd>
-<dt class="hdlist1">
--V, --version
+<dt>
+-V, &#8212;version
 </dt>
 <dd>
 <p>
                Prints Cherokee’s version and terminates execution
 </p>
 </dd>
-<dt class="hdlist1">
--t, --test
+<dt>
+-t, &#8212;test
 </dt>
 <dd>
 <p>
                Perform a sanity check on the configuration  file. The  server will not run.
 </p>
 </dd>
-<dt class="hdlist1">
--d, --detach
+<dt>
+-d, &#8212;detach
 </dt>
 <dd>
 <p>
                Launches  the server as a background process (default behaviour is to stay attached to the controlling terminal).
 </p>
 </dd>
-<dt class="hdlist1">
--C, --config=PATH
+<dt>
+-C, &#8212;config=PATH
 </dt>
 <dd>
 <p>
                Specifies an alternative path for the configuration file to use instead of the default cherokee.conf
 </p>
 </dd>
-<dt class="hdlist1">
--p, --port=PORT
+<dt>
+-p, &#8212;port=PORT
 </dt>
 <dd>
 <p>
                TCP port number to which the server will listen.
 </p>
 </dd>
-<dt class="hdlist1">
--r, --documentroot=PATH
+<dt>
+-r, &#8212;documentroot=PATH
 </dt>
 <dd>
 <p>
                Launches  a server exposing statically the specified directory. When launched with -r, the configuration file is  ignored,  and the Cherokee instance runs with its default values.
 </p>
 </dd>
-<dt class="hdlist1">
--i, --print
+<dt>
+-i, &#8212;print
 </dt>
 <dd>
 <p>
@@ -124,49 +124,49 @@ implemented to allow graceful restarts of the server.</p></div>
 </dd>
 </dl></div>
 </dd>
-<dt class="hdlist1">
+<dt>
 <strong>SIGNALS</strong>
 </dt>
 <dd>
 <p>
        The following signals are supported by Cherokee:
 </p>
-<div class="dlist"><dl>
-<dt class="hdlist1">
+<div class="hlist"><table>
+<tr>
+<td class="hlist1">
 SIGHUP
-</dt>
-<dd>
-<p>
+</td>
+<td class="hlist2">
 Restarts the server gracefully
-</p>
-</dd>
-<dt class="hdlist1">
+</td>
+</tr>
+<tr>
+<td class="hlist1">
 SIGUSR1
-</dt>
-<dd>
-<p>
+</td>
+<td class="hlist2">
 Restarts the server closing all the opened connections
-</p>
-</dd>
-<dt class="hdlist1">
+</td>
+</tr>
+<tr>
+<td class="hlist1">
 SIGUSR2
-</dt>
-<dd>
-<p>
+</td>
+<td class="hlist2">
 Reopens the log files
-</p>
-</dd>
-<dt class="hdlist1">
+</td>
+</tr>
+<tr>
+<td class="hlist1">
 SIGTERM
-</dt>
-<dd>
-<p>
+</td>
+<td class="hlist2">
 Exits
-</p>
+</td>
+</tr>
+</table></div>
 </dd>
-</dl></div>
-</dd>
-<dt class="hdlist1">
+<dt>
 <strong>SEE ALSO</strong>
 </dt>
 <dd>

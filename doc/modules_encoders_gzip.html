@@ -17,24 +17,24 @@
 </div>
 <h2 id="_encoder_gzip">Encoder: Gzip</h2>
 <div class="sectionbody">
-<div class="paragraph"><p>This is a compression encoder. It is used to reduce the outgoing
+<div class="para"><p>This is a compression encoder. It is used to reduce the outgoing
 bandwidth consumed by the server and speed up things for the client.</p></div>
-<div class="paragraph"><p>Remember that the encoding support is based on modules. If the
+<div class="para"><p>Remember that the encoding support is based on modules. If the
 configuration file tells the server to load a module, it will get it
-ready to use.  Otherwise there won&#8217;t be any kind of support in memory.</p></div>
-<div class="paragraph"><p>For example, let&#8217;s see how it works when the encoder is configured to
+ready to use.  Otherwise there won't be any kind of support in memory.</p></div>
+<div class="para"><p>For example, let's see how it works when the encoder is configured to
 handle html files.</p></div>
 <div class="listingblock">
 <div class="content">
 <pre><tt>$ wget -q -O - http://localhost/example.html</tt></pre>
 </div></div>
-<div class="paragraph"><p>It works!</p></div>
+<div class="para"><p>It works!</p></div>
 <div class="listingblock">
 <div class="content">
 <pre><tt>$ wget -q -O - --header="Accept-encoding: gzip"  \
   http://localhost/example.html | gzip -dc -</tt></pre>
 </div></div>
-<div class="paragraph"><p>It works!</p></div>
+<div class="para"><p>It works!</p></div>
 </div>
 <div id="footer">
 <div id="footer-text">

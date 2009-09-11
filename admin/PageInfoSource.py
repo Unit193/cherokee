@@ -18,7 +18,6 @@ NOTE_TIMEOUT     = N_('How long should the server wait when spawning an interpre
 NOTE_USAGE       = N_('Sources currently in use. Note that the last source of any rule cannot be deleted until the rule has been manually edited.')
 NOTE_USER        = N_('Execute the interpreter under a different user. Default: Same UID as the server.')
 NOTE_GROUP       = N_('Execute the interpreter under a different group. Default: Default GID of the new process UID.')
-NOTE_ENV_INHETIR = N_('Whether the new child process should inherit the environment variables from the server process. Default: yes.')
 
 TABLE_JS = """
 <script type="text/javascript">
@@ -43,8 +42,6 @@ DATA_VALIDATION = [
 RULE_NAME_LEN_LIMIT = 35
 
 class PageInfoSource (PageMenu, FormHelper):
-    check_boxes = ['env_inherited']
-
     def __init__ (self, cfg):
         FormHelper.__init__ (self, 'source', cfg)
         PageMenu.__init__ (self, 'source', cfg, HELPS)
@@ -71,8 +68,7 @@ class PageInfoSource (PageMenu, FormHelper):
                     post.get_val ('new_env_value')):
                     self._apply_add_new_env_var(post, source)
 
-                checkboxes = ['source!%s!%s'%(source,x) for x in self.check_boxes]
-                self.ApplyChanges (checkboxes, post, validation = DATA_VALIDATION)
+                self.ApplyChanges ([], post, validation = DATA_VALIDATION)
                 return "/%s/%s" % (self._id, source)
 
         tmp = uri.split('/')
@@ -128,8 +124,6 @@ class PageInfoSource (PageMenu, FormHelper):
 
     def _render_source_details_env (self, s):
         txt = ''
-
-        # Env list
         envs = self._cfg.keys('source!%s!env'%(s))
         if envs:
             txt += '<h3>%s</h3>' % (_('Environment variables'))
@@ -147,7 +141,6 @@ class PageInfoSource (PageMenu, FormHelper):
         fo = Form ("/%s"%(self._id), add_submit=False, auto=True)
         render=fo.Render(txt)
 
-        # New Env
         txt = '<h3>%s</h3>' % (_('Add new Environment variable'))
         name  = self.InstanceEntry('new_env_name',  'text', size=25)
         value = self.InstanceEntry('new_env_value', 'text', size=25)
@@ -165,29 +158,19 @@ class PageInfoSource (PageMenu, FormHelper):
 
     def _render_source_details (self, s):
         txt = ''
-        nick    = self._cfg.get_val('source!%s!nick'%(s))
-        type    = self._cfg.get_val('source!%s!type'%(s))
-
-        # Inherit variables
-        if self._cfg.get_val('source!%s!env_inherited'%(s)) == None:
-            if self._cfg.keys ('source!%s!env'%(s)):
-                self._cfg['source!%s!env_inherited'%(s)] = '0'
-            else:
-                self._cfg['source!%s!env_inherited'%(s)] = '1'
-
-        inherit = int(self._cfg.get_val('source!%s!env_inherited'%(s)))
-
+        nick = self._cfg.get_val('source!%s!nick'%(s))
+        type = self._cfg.get_val('source!%s!type'%(s))
+        
         # Properties
         table = TableProps()
-        self.AddPropOptions_Reload_Plain (table, _('Type'),'source!%s!type'%(s), SOURCE_TYPES, _(NOTE_TYPE))
-        self.AddPropEntry (table, _('Nick'),       'source!%s!nick'%(s), _(NOTE_NICK), req=True)
-        self.AddPropEntry (table, _('Connection'), 'source!%s!host'%(s), _(NOTE_HOST), req=True)
+        self.AddPropOptions_Reload (table, _('Type'),'source!%s!type'%(s), SOURCE_TYPES, _(NOTE_TYPE))
+        self.AddPropEntry   (table, _('Nick'),       'source!%s!nick'%(s), _(NOTE_NICK), req=True)
+        self.AddPropEntry   (table, _('Connection'), 'source!%s!host'%(s), _(NOTE_HOST), req=True)
         if type == 'interpreter':
-            self.AddPropEntry (table, _('Interpreter'),        'source!%s!interpreter'%(s),  _(NOTE_INTERPRETER), req=True)
-            self.AddPropEntry (table, _('Spawning timeout'),   'source!%s!timeout'%(s), _(NOTE_TIMEOUT), optional=True)
-            self.AddPropEntry (table, _('Execute as User'),    'source!%s!user'%(s), _(NOTE_USER), optional=True)
-            self.AddPropEntry (table, _('Execute as Group'),   'source!%s!group'%(s), _(NOTE_GROUP), optional=True)
-            self.AddPropCheck (table, _('Inherit Environment'),'source!%s!env_inherited'%(s), True, _(NOTE_ENV_INHETIR))
+            self.AddPropEntry (table, _('Interpreter'),      'source!%s!interpreter'%(s),  _(NOTE_INTERPRETER), req=True)
+            self.AddPropEntry (table, _('Spawning timeout'), 'source!%s!timeout'%(s), _(NOTE_TIMEOUT))
+            self.AddPropEntry (table, _('Execute as User'),  'source!%s!user'%(s), _(NOTE_USER))
+            self.AddPropEntry (table, _('Execute as Group'), 'source!%s!group'%(s), _(NOTE_GROUP))
 
         tmp  = self.HiddenInput ('source_num', s)
         tmp += str(table)
@@ -196,7 +179,7 @@ class PageInfoSource (PageMenu, FormHelper):
         txt = fo.Render(tmp)
 
         # Environment variables
-        if type == 'interpreter' and not inherit:
+        if type == 'interpreter':
             tmp = self._render_source_details_env (s)
             txt += self.Indent(tmp)
 
@@ -207,14 +190,14 @@ class PageInfoSource (PageMenu, FormHelper):
         type = self._cfg.get_val('tmp!new_source_type')
 
         table = TableProps()
-        self.AddPropOptions_Reload_Plain (table, _('Type'),       'tmp!new_source_type', SOURCE_TYPES, _(NOTE_TYPE))
-        self.AddPropEntry (table, _('Nick'),       'tmp!new_source_nick', _(NOTE_NICK), req=True)
-        self.AddPropEntry (table, _('Connection'), 'tmp!new_source_host', _(NOTE_HOST), req=True)
+        self.AddPropOptions_Reload (table, _('Type'),       'tmp!new_source_type', SOURCE_TYPES, _(NOTE_TYPE))
+        self.AddPropEntry          (table, _('Nick'),       'tmp!new_source_nick', _(NOTE_NICK), req=True)
+        self.AddPropEntry          (table, _('Connection'), 'tmp!new_source_host', _(NOTE_HOST), req=True)
         if type == 'interpreter' or not type:
             self.AddPropEntry (table, _('Interpreter'),      'tmp!new_source_interpreter', _(NOTE_INTERPRETER), req=True)
-            self.AddPropEntry (table, _('Spawning timeout'), 'tmp!new_source_timeout', _(NOTE_TIMEOUT), optional=True)
-            self.AddPropEntry (table, _('Execute as User'),  'tmp!new_source_user', _(NOTE_USER), optional=True)
-            self.AddPropEntry (table, _('Execute as Group'), 'tmp!new_source_group', _(NOTE_GROUP), optional=True)
+            self.AddPropEntry (table, _('Spawning timeout'), 'tmp!new_source_timeout', _(NOTE_TIMEOUT))
+            self.AddPropEntry (table, _('Execute as User'),  'tmp!new_source_user', _(NOTE_USER))
+            self.AddPropEntry (table, _('Execute as Group'), 'tmp!new_source_group', _(NOTE_GROUP))
 
         txt += self.Indent(table)
         return txt

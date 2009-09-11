@@ -17,28 +17,28 @@
 </div>
 <h2 id="_cookbook_setting_up_kumbia_php_framework">Cookbook: Setting up Kumbia PHP Framework</h2>
 <div class="sectionbody">
-<div class="paragraph"><p><a href="http://www.kumbiaphp.com/">Kumbia</a> is a free web framework written
+<div class="para"><p><a href="http://www.kumbiaphp.com/">Kumbia</a> is a free web framework written
 in PHP5. Configuring Cherokee to run with Kumbia is almost trivial.</p></div>
-<div class="paragraph"><p>Translated from the projects
+<div class="para"><p>Translated from the projects
 <a href="http://www.kumbiaphp.com/blog/about/">About</a> page:</p></div>
 <div class="sidebarblock">
 <div class="sidebar-content">
-<div class="paragraph"><p>Kumbia is a free web framework written in PHP5. Based on the best web
+<div class="para"><p>Kumbia is a free web framework written in PHP5. Based on the best web
 developing practices, used in comercial and educational software,
 Kumbia encourages speed and efficiency in web application creation and
 maintainment, substituting repetitive coding tasks for power, control
 and pleasure.</p></div>
 </div></div>
-<div class="paragraph"><p>First you have to unpack the package into your web hierarchy,
+<div class="para"><p>First you have to unpack the package into your web hierarchy,
 <tt>/var/www/kumbia_demo</tt> for example.</p></div>
-<div class="paragraph"><p>Then you have to set the <tt>public</tt> subdirectory as your document web
+<div class="para"><p>Then you have to set the <tt>public</tt> subdirectory as your document web
 root.</p></div>
-<div class="paragraph"><p>Then, you have to set up several rules in Cherokee to rewrite the
+<div class="para"><p>Then, you have to set up several rules in Cherokee to rewrite the
 requests. To do that, proceed to the
 <a href="config_virtual_servers.html">Virtual servers</a> section. Select the
 virtual server that you will be configuring and go to the <tt>Behavior</tt>
 tab to set up the rules.</p></div>
-<div class="olist arabic"><div class="title">Steps</div><ol class="arabic">
+<div class="olist"><div class="title">Steps</div><ol>
 <li>
 <p>
 You will need to keep the rule for the <tt>php</tt> extension.
@@ -60,33 +60,44 @@ And last, modify your <tt>Default</tt> rule by configuring the
   <tt>Handler</tt> tab.
 </p>
 <div class="tableblock">
-<table rules="all"
-width="100%"
-frame="border"
+<table rules="none"
+frame="hsides"
 cellspacing="0" cellpadding="4">
-<col width="33%" />
-<col width="33%" />
-<col width="33%" />
+<col width="144" />
+<col width="320" />
+<col width="336" />
 <thead>
-<tr>
-<th align="left" valign="top">Type     </th>
-<th align="left" valign="top">Regular Expression </th>
-<th align="left" valign="top">Substitution</th>
-</tr>
+  <tr>
+    <th align="left">
+    Type     
+    </th>
+    <th align="left">
+    Regular Expression
+    </th>
+    <th align="left">
+    Substitution
+    </th>
+  </tr>
 </thead>
-<tbody>
-<tr>
-<td align="left" valign="top"><p class="table">Internal</p></td>
-<td align="left" valign="top"><p class="table">^(.*)$</p></td>
-<td align="left" valign="top"><p class="table">/index.php?url=$1</p></td>
-</tr>
+<tbody valign="top">
+  <tr>
+    <td align="left">
+    Internal 
+    </td>
+    <td align="left">
+    ^(.*)$              
+    </td>
+    <td align="left">
+    /index.php?url=$1
+    </td>
+  </tr>
 </tbody>
 </table>
 </div>
 </li>
 </ol></div>
-<div class="paragraph"><p>This will take care of redirecting the requests to Kumbia.</p></div>
-<div class="paragraph"><p>You are done with the configuration! You can now access your
+<div class="para"><p>This will take care of redirecting the requests to Kumbia.</p></div>
+<div class="para"><p>You are done with the configuration! You can now access your
 application.</p></div>
 </div>
 <div id="footer">

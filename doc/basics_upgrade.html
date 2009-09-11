@@ -17,28 +17,28 @@
 </div>
 <h2 id="_upgrading_cherokee">Upgrading Cherokee</h2>
 <div class="sectionbody">
-<div class="paragraph"><p>The current mechanism of choice to configure Cherokee did not exist
+<div class="para"><p>The current mechanism of choice to configure Cherokee did not exist
 prior to release 0.6. A lot has happened since then, and Cherokee has
 been constantly improving in terms of stability, efficiency and
 features.</p></div>
-<div class="paragraph"><p>If you happen to be running an old version of Cherokee and would like
+<div class="para"><p>If you happen to be running an old version of Cherokee and would like
 to keep your current configuration settings, you can upgrade your
 cherokee.conf file through the Python scripts provided under
 <tt>contrib</tt>.</p></div>
-<div class="paragraph"><p>The usage is quite simple, and works the same way for all the
+<div class="para"><p>The usage is quite simple, and works the same way for all the
 scripts:</p></div>
 <div class="listingblock">
 <div class="content">
 <pre><tt>    cp /etc/cherokee/cherokee.conf /etc/cherokee/cherokee.conf-0.99.9
     contrib/0999to09910.py /etc/cherokee/cherokee.conf-0.99.9 /etc/cherokee/cherokee.conf</tt></pre>
 </div></div>
-<div class="paragraph"><p>If you need to upgrade from a really old release, simply apply the
+<div class="para"><p>If you need to upgrade from a really old release, simply apply the
 whole chain of conversions.</p></div>
-<div class="paragraph"><p>Note that some of the available prepackaged versions of Cherokee
+<div class="para"><p>Note that some of the available prepackaged versions of Cherokee
 are set to offer the possibillity of automatically running these scripts
 to upgrade the configuration if files from a prior release are detected
 in the system.</p></div>
-<div class="paragraph"><p>Every effort is made to bulletproof the upgrade scripts. If any of
+<div class="para"><p>Every effort is made to bulletproof the upgrade scripts. If any of
 them does not work for you, do not hesitate to send a bug report.
 However, Cherokee is a very active project and has been steadily
 advancing and incorporating technical improvements. You should really be

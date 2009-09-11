@@ -40,8 +40,7 @@ ret_t cherokee_limiter_mrproper (cherokee_limiter_t *limiter);
 ret_t cherokee_limiter_add_conn       (cherokee_limiter_t *limiter,
 				       void               *conn);
 
-cherokee_msec_t
-      cherokee_limiter_get_time_limit (cherokee_limiter_t *limiter,
+int   cherokee_limiter_get_time_limit (cherokee_limiter_t *limiter,
 				       cherokee_msec_t     fdwatch_msecs);
 
 ret_t cherokee_limiter_reactive       (cherokee_limiter_t *limiter,

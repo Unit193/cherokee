@@ -307,8 +307,6 @@ cherokee_validator_htpasswd_check (cherokee_validator_htpasswd_t *htpasswd,
 		return ret_error;
 	}
 
-	cherokee_fd_set_closexec (fileno(f));
-
 	ret      = ret_error;
 	ret_auth = ret_error;
 

@@ -17,21 +17,21 @@
 </div>
 <h2 id="_cookbook_ssl_tls_and_certificates">Cookbook: SSL, TLS and certificates</h2>
 <div class="sectionbody">
-<div class="paragraph"><p>This section answers some general questions and details the procedure
+<div class="para"><p>This section answers some general questions and details the procedure
 to generate SSL keys.</p></div>
 <h3 id="general">General questions</h3><div style="clear:left"></div>
-<div class="paragraph"><div class="title">Can the same server provide HTTP and HTTPS?</div><p>Yes. HTTP and HTTPS use different server ports. The former binds to
+<div class="para"><div class="title">Can the same server provide HTTP and HTTPS?</div><p>Yes. HTTP and HTTPS use different server ports. The former binds to
 port 80 and the latter to port 443, so there is no conflict between
 them. To provide HTTPS you will need matching certificates.</p></div>
-<div class="paragraph"><p>Keep in mind that to have one of your virtual servers with HTTPS
+<div class="para"><p>Keep in mind that to have one of your virtual servers with HTTPS
 enabled you will need to configure HTTPS settings for all of them.</p></div>
-<div class="paragraph"><div class="title">Which port does HTTPS use?</div><p>HTTPS can run on any port, but the standards specify port 443. That&#8217;s
+<div class="para"><div class="title">Which port does HTTPS use?</div><p>HTTPS can run on any port, but the standards specify port 443. That's
 where any HTTPS compliant browser will look by default. You can change
 that by specifying another port in the URL. For example,
 <a href="https://example.com:8080/">https://example.com:8080/</a> would look for an HTTPS server on port 8080.</p></div>
-<div class="paragraph"><div class="title">How to enable the SSL support?</div><p>SSL support is not enabled by default. You will have to perform three
+<div class="para"><div class="title">How to enable the SSL support?</div><p>SSL support is not enabled by default. You will have to perform three
 straightforward actions is order to enable it:</p></div>
-<div class="olist arabic"><ol class="arabic">
+<div class="olist"><ol>
 <li>
 <p>
 The first step is to enable a TLS/SSL engine. The option is
@@ -56,23 +56,23 @@ The last step would be to assign SSL certificates to the virtual
 </p>
 </li>
 </ol></div>
-<div class="paragraph"><div class="title">How to manually test HTTP/HTTPS?</div><p>HTTP can easily be tested like this:</p></div>
+<div class="para"><div class="title">How to manually test HTTP/HTTPS?</div><p>HTTP can easily be tested like this:</p></div>
 <div class="listingblock">
 <div class="content">
 <pre><tt>$ telnet localhost 80
  GET / HTTP/1.0</tt></pre>
 </div></div>
-<div class="paragraph"><p>For HTTPS it is not so easy because of the SSL protocol between TCP
+<div class="para"><p>For HTTPS it is not so easy because of the SSL protocol between TCP
 and HTTP. However you can do a similar check with the help of
-OpenSSL&#8217;s s_client command.</p></div>
+OpenSSL's s_client command.</p></div>
 <div class="listingblock">
 <div class="content">
 <pre><tt>$ openssl s_client -connect localhost:443 -state -debug
  GET / HTTP/1.0</tt></pre>
 </div></div>
-<div class="paragraph"><p>You will receive detailed information about the SSL handshake before
+<div class="para"><p>You will receive detailed information about the SSL handshake before
 the actual HTTP response.</p></div>
-<div class="paragraph"><p>A more general command line client is probably a better choice.
+<div class="para"><p>A more general command line client is probably a better choice.
 <a href="http://curl.haxx.se/">cURL</a> deals with both HTTP and HTTPS, and
 performs a bunch of other interesting stuff.</p></div>
 <div class="listingblock">
@@ -81,8 +81,8 @@ performs a bunch of other interesting stuff.</p></div>
 $ curl https://localhost/</tt></pre>
 </div></div>
 <h3 id="overview">Private keys and Certificates overview</h3><div style="clear:left"></div>
-<div class="paragraph"><p>First some terminology:</p></div>
-<div class="olist arabic"><ol class="arabic">
+<div class="para"><p>First some terminology:</p></div>
+<div class="olist"><ol>
 <li>
 <p>
 RSA private key file: a digital file that can be used to decrypt
@@ -107,26 +107,26 @@ Certificate: contains your RSA public key and name, the name of the
 </p>
 </li>
 </ol></div>
-<div class="paragraph"><div class="title">Does the startup between a non-SSL and an SSL-aware web server differ?</div><p>Yes. Although in essence it is exactly the same, if you have a
+<div class="para"><div class="title">Does the startup between a non-SSL and an SSL-aware web server differ?</div><p>Yes. Although in essence it is exactly the same, if you have a
 passphrase on your SSL private key file, a startup dialog will asks
 you to enter it. This can be problematic if the web server needs to be
 started automatically. In this case, the <a href="#passphrase">passphrase</a>
 can be removed from your private key at the cost of erasing a security
 layer, which brings additional security risks.</p></div>
-<div class="paragraph"><div class="title">Does Cherokee offer any help for Certificate Generation?</div><p>Yes. A script is provided to assist you with Certificate Generation.</p></div>
-<div class="paragraph"><p>Just locate the <tt>contrib</tt> subdirectory and type:</p></div>
+<div class="para"><div class="title">Does Cherokee offer any help for Certificate Generation?</div><p>Yes. A script is provided to assist you with Certificate Generation.</p></div>
+<div class="para"><p>Just locate the <tt>contrib</tt> subdirectory and type:</p></div>
 <div class="listingblock">
 <div class="content">
 <pre><tt>make-cert.sh</tt></pre>
 </div></div>
-<div class="paragraph"><p>And follow the instructions. It will generate the required files, but
+<div class="para"><p>And follow the instructions. It will generate the required files, but
 you will have to install them manually.</p></div>
-<div class="paragraph"><p>It has been tested and has worked fine every time, but if you don&#8217;t find
-the script or it doesn&#8217;t work for you can always follow the rest of
+<div class="para"><p>It has been tested and has worked fine every time, but if you don't find
+the script or it doesn't work for you can always follow the rest of
 the procedure described in this recipe to manually generate the
 certificates.</p></div>
 <h3 id="locate">Locate CA.pl or CA.sh</h3><div style="clear:left"></div>
-<div class="ulist"><ul>
+<div class="ilist"><ul>
 <li>
 <p>
 On Debian or Ubuntu those are usually located under /usr/lib/ssl/misc/
@@ -138,7 +138,7 @@ On MacOS X, you will find them in /System/Library/OpenSSL/misc/
 </p>
 </li>
 </ul></div>
-<div class="paragraph"><p>In any other case <tt>`find / -iname CA.pl -print</tt>` will help you to locate it.</p></div>
+<div class="para"><p>In any other case <tt>`find / -iname CA.pl -print</tt>` will help you to locate it.</p></div>
 <h3 id="create">Create a new CA</h3><div style="clear:left"></div>
 <div class="listingblock">
 <div class="content">
@@ -239,7 +239,7 @@ On MacOS X, you will find them in /System/Library/OpenSSL/misc/
   Signed certificate is in newcert.pem</tt></pre>
 </div></div>
 <h3 id="self_sign">Self signed certificates</h3><div style="clear:left"></div>
-<div class="paragraph"><p>It is another way to generate certificate files. Ramon Pons sent this
+<div class="para"><p>It is another way to generate certificate files. Ramon Pons sent this
 little script to create self signed certificates::</p></div>
 <div class="listingblock">
 <div class="content">
@@ -252,14 +252,14 @@ if [ $? != 0 ]; then
     \mv $CERTNAME $CERTNAME.not_valid
 fi</tt></pre>
 </div></div>
-<div class="paragraph"><p>You can see that, in essence, it issues the folowing command:</p></div>
+<div class="para"><p>You can see that, in essence, it issues the folowing command:</p></div>
 <div class="listingblock">
 <div class="content">
 <pre><tt>$ openssl req -new -x509 -nodes -out server.crt -keyout server.key</tt></pre>
 </div></div>
-<div class="paragraph"><p>Which would produce a couple of files: the SSL Certificate File
+<div class="para"><p>Which would produce a couple of files: the SSL Certificate File
 (server.crt) and the SSL Certificate key file (server.key).</p></div>
-<div class="paragraph"><p>This server.key does not have any passphrase. To add a passphrase to
+<div class="para"><p>This server.key does not have any passphrase. To add a passphrase to
 the key, you should run the following command, and enter &amp; verify the
 passphrase as requested.</p></div>
 <div class="listingblock">
@@ -267,21 +267,21 @@ passphrase as requested.</p></div>
 <pre><tt>$ openssl rsa -des3 -in server.key -out server.key.new
 $ mv server.key.new server.key</tt></pre>
 </div></div>
-<div class="paragraph"><p>You should probably backup the key file and the entered passphrase in
+<div class="para"><p>You should probably backup the key file and the entered passphrase in
 a secure location.</p></div>
 <h3 id="passphrase">Pass-phrase issues</h3><div style="clear:left"></div>
-<div class="paragraph"><p>As noted above, if you have a pass-phrase on your SSL private key file,
+<div class="para"><p>As noted above, if you have a pass-phrase on your SSL private key file,
 the web-server start up will remain on hold until you enter it. Here
 is the information needed to change it or even remove it, but bare in
 mind the security implications.</p></div>
-<div class="paragraph"><div class="title">How to change the pass-phrase on a private key file?</div><p>Simply read it with the old pass-phrase and write it again, specifying
+<div class="para"><div class="title">How to change the pass-phrase on a private key file?</div><p>Simply read it with the old pass-phrase and write it again, specifying
 a new pass-phrase.  This can be done withe these commands:</p></div>
 <div class="listingblock">
 <div class="content">
 <pre><tt>$ openssl rsa -des3 -in server.key -out server.key.new
 $ mv server.key.new server.key</tt></pre>
 </div></div>
-<div class="paragraph"><div class="title">How to get rid of the pass-phrase?</div><p>The RSA private key inside the server.key file is stored in encrypted
+<div class="para"><div class="title">How to get rid of the pass-phrase?</div><p>The RSA private key inside the server.key file is stored in encrypted
 format for security reasons. The pass-phrase is needed to decrypt this
 file, so it can be read and parsed. Thus, removing it removes a layer
 of security from the web server. It is advised to keep a backup copy
@@ -292,16 +292,16 @@ of the original file before proceeding.</p></div>
  $ openssl rsa -in server.key.org -out server.key
  $ chmod 400 server.key</tt></pre>
 </div></div>
-<div class="paragraph"><p>Since the server.key now contains an unencrypted copy of the key, if
+<div class="para"><p>Since the server.key now contains an unencrypted copy of the key, if
 anyone gets it they will be able to impersonate you on the net.</p></div>
 <h3 id="verification">Verifying that a private key matches its Certificate</h3><div style="clear:left"></div>
-<div class="paragraph"><p>To view the Certificate and the key run the commands:</p></div>
+<div class="para"><p>To view the Certificate and the key run the commands:</p></div>
 <div class="listingblock">
 <div class="content">
 <pre><tt>$ openssl x509 -noout -text -in server.crt
 $ openssl rsa  -noout -text -in server.key</tt></pre>
 </div></div>
-<div class="paragraph"><p>The <tt>modulus</tt> and the <tt>public exponent</tt> portions in the key and the
+<div class="para"><p>The <tt>modulus</tt> and the <tt>public exponent</tt> portions in the key and the
 Certificate must match. It is difficult to visually check that the
 long modulus numbers are the same, so this approach can be used
 instead to obtain the numbers to compare (though it is mathematically
@@ -311,7 +311,7 @@ less rigorous).</p></div>
 <pre><tt>$ openssl x509 -noout -modulus -in server.crt | openssl md5
 $ openssl  rsa -noout -modulus -in server.key | openssl md5</tt></pre>
 </div></div>
-<div class="paragraph"><p>To check to which key or certificate a particular CSR belongs you can
+<div class="para"><p>To check to which key or certificate a particular CSR belongs you can
 perform the same calculation on the CSR as follows:</p></div>
 <div class="listingblock">
 <div class="content">

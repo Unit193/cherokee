@@ -32,8 +32,7 @@ class ModuleDirlist (ModuleHandler):
         'user', 'group',
         'theme', 'icon_dir',
         'notice_files', 'symlinks',
-        'redir_symlinks', 'hidden', 
-        'backup'
+        'hidden', 'backup'
     ]
 
     def __init__ (self, cfg, prefix, submit_url):
@@ -49,22 +48,21 @@ class ModuleDirlist (ModuleHandler):
         self.AddPropCheck (table, _("Show Backup files"), "%s!backup"%(self._prefix), False, '')
         self.AddPropCheck (table, _("Show Hidden files"), "%s!hidden"%(self._prefix), False, '')
         self.AddPropCheck (table, _("Allow symbolic links"), "%s!symlinks"%(self._prefix), True, '')
-        self.AddPropCheck (table, _("Redirect symbolic links"), "%s!redir_symlinks"%(self._prefix), False, '')
         txt += self.Indent(table)
 
         txt += '<h2>%s</h2>' % (_('Theming'))
         table  = TableProps()
         themes = self._get_theme_list()
-        self.AddPropOptions_Reload_Plain (table, _('Theme'), "%s!theme" % (self._prefix), themes, _(NOTE_THEME))
-        self.AddPropEntry (table, _('Icons dir'),    "%s!icon_dir" % (self._prefix), _(NOTE_ICON_DIR), optional=True)
-        self.AddPropEntry (table, _('Notice files'), "%s!notice_files" % (self._prefix), _(NOTE_NOTICE_FILES), optional=True)
-        self.AddPropEntry (table, _('Hidden files'), "%s!hidden_files" % (self._prefix), _(NOTE_HIDDEN_FILES), optional=True)
+        self.AddPropOptions_Reload (table, _('Theme'), "%s!theme" % (self._prefix), themes, _(NOTE_THEME))
+        self.AddPropEntry (table, _('Icons dir'),    "%s!icon_dir" % (self._prefix), _(NOTE_ICON_DIR))
+        self.AddPropEntry (table, _('Notice files'), "%s!notice_files" % (self._prefix), _(NOTE_NOTICE_FILES))
+        self.AddPropEntry (table, _('Hidden files'), "%s!hidden_files" % (self._prefix), _(NOTE_HIDDEN_FILES))
         txt += self.Indent(table)
 
         return txt
 
     def _op_apply_changes (self, uri, post):
-        checkboxes = ['size', 'date', 'user', 'group', 'symlinks', 'redir_symlinks', 'backup', 'hidden']
+        checkboxes = ['size', 'date', 'user', 'group', 'symlinks', 'backup', 'hidden']
         self.ApplyChangesPrefix (self._prefix, checkboxes, post, DATA_VALIDATION)
 
     def _get_theme_list (self):

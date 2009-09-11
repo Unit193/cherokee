@@ -11,7 +11,6 @@ jquery.cookie.js \
 jquery.easing.js \
 jquery.dimensions.js \
 jquery.tablednd.js \
-jquery.form-defaults.js \
 thickbox.js
 
 adminstaticdir = "$(datadir)/cherokee/admin/static/js"

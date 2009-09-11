@@ -17,7 +17,7 @@
 </div>
 <h2 id="_other_frequently_asked_questions">Other: Frequently Asked Questions</h2>
 <div class="sectionbody">
-<div class="paragraph"><p>Here is a list of the most frequently asked questions. Please refer to
+<div class="para"><p>Here is a list of the most frequently asked questions. Please refer to
 the appropiate section of the documentation for more details.</p></div>
 <h3 id="faq01">How to compile it</h3><div style="clear:left"></div>
 <div class="listingblock">
@@ -26,7 +26,7 @@ the appropiate section of the documentation for more details.</p></div>
 make</tt></pre>
 </div></div>
 <h3 id="faq02">How to create dynamic modules</h3><div style="clear:left"></div>
-<div class="paragraph"><p>It&#8217;s the default way.</p></div>
+<div class="para"><p>It's the default way.</p></div>
 <h3 id="faq03">How to configure the module xyz to be linked statically</h3><div style="clear:left"></div>
 <div class="listingblock">
 <div class="content">
@@ -49,9 +49,9 @@ make</tt></pre>
   -keyout /etc/cherokee/ssl/cherokee.pem</tt></pre>
 </div></div>
 <h3 id="faq06">How to access cherokee-admin from a remote machine</h3><div style="clear:left"></div>
-<div class="paragraph"><p>cherokee-admin binds only to local loopback by default. There are some
+<div class="para"><p>cherokee-admin binds only to local loopback by default. There are some
 workarounds:</p></div>
-<div class="ulist"><ul>
+<div class="ilist"><ul>
 <li>
 <p>
 Create an SSH tunnel. This is the recommended way. In order to do so
@@ -61,7 +61,7 @@ Create an SSH tunnel. This is the recommended way. In order to do so
 <div class="content">
 <pre><tt>ssh -L 9090:localhost:9090 remote_IP</tt></pre>
 </div></div>
-<div class="paragraph"><p>After that you can access the remote interface through
+<div class="para"><p>After that you can access the remote interface through
   <a href="http://localhost:9090">http://localhost:9090</a> and every request will be forwarded to the
   remote IP running cherokee-admin.</p></div>
 </li>
@@ -80,23 +80,23 @@ Finally you could always install cherokee on your local host,
 </li>
 </ul></div>
 <h3 id="faq07">How to manually write configuration files without cherokee-admin</h3><div style="clear:left"></div>
-<div class="paragraph"><p>The configuration file is a plain text file and its syntax is well
+<div class="para"><p>The configuration file is a plain text file and its syntax is well
 documented. Check the <a href="dev_cherokee.conf.html">cherokee.conf</a>
 internal format information. Notice that manually editing the
 configuration is not the recommended method, but the format will
 always be kept updated to facilitate scripting tasks, working with
 embedded devices and other similar situations.</p></div>
 <h3 id="faq08">Does Cherokee speak WSGI natively like <tt>mod_wsgi</tt> does?</h3><div style="clear:left"></div>
-<div class="paragraph"><p>In short: no. We believe that we should not implement anything like
+<div class="para"><p>In short: no. We believe that we should not implement anything like
 <tt>mod_wsgi</tt> for a number of reasons.</p></div>
-<div class="ulist"><ul>
+<div class="ilist"><ul>
 <li>
 <p>
 First, and purely from an architectural point, embedding an
-interpreter into the web server doesn&#8217;t feel quite right. Be it a huge
+interpreter into the web server doesn't feel quite right. Be it a huge
 interpreter linked against dozens of libraries or be it something
-using Python&#8217;s shared libraries, it doesn&#8217;t fit with the design
-principles applied throughout Cherokee&#8217;s code base.
+using Python's shared libraries, it doesn't fit with the design
+principles applied throughout Cherokee's code base.
 </p>
 </li>
 <li>
@@ -109,35 +109,35 @@ supported by Cherokee.
 </p>
 </li>
 </ul></div>
-<div class="paragraph"><p>We believe Cherokee should be as fast, light, clean and secure as
+<div class="para"><p>We believe Cherokee should be as fast, light, clean and secure as
 possible, and to this end we tend to disregard bulky and monolithic
 solutions. At least until we are given very, VERY, good reasons to
 give it further consideration.</p></div>
-<div class="paragraph"><p>Give Cherokee (SCGI|FastCGI) a try with your WSGI application.  We
+<div class="para"><p>Give Cherokee (SCGI|FastCGI) a try with your WSGI application.  We
 believe that besides fixing both the architectural and security flaws
 you will improve performance.</p></div>
 <h3 id="faq09">I need to make an administration script: What signals are supported by Cherokee?</h3><div style="clear:left"></div>
-<div class="paragraph"><p>The list is documented in the <a href="other_signals.html">Signals</a> entry.</p></div>
+<div class="para"><p>The list is documented in the <a href="other_signals.html">Signals</a> entry.</p></div>
 <h3 id="faq10">Is there a clean way of switching Cherokee to Maintenance mode?</h3><div style="clear:left"></div>
-<div class="paragraph"><p>Check the <a href="cookbook.html">Cookbook</a>, there is a
+<div class="para"><p>Check the <a href="cookbook.html">Cookbook</a>, there is a
 <a href="cookbook_maintenance.html">recipe on the subject</a>.</p></div>
 <h3 id="faq11">What licensing is used by the Cherokee web server?</h3><div style="clear:left"></div>
-<div class="paragraph"><p>Cherokee is licensed under the GNU General Public License, version 2,
+<div class="para"><p>Cherokee is licensed under the GNU General Public License, version 2,
 which can be found in the file <strong>COPYING</strong> distributed with the source
 code. For more details, read the
 <a href="http://svn.cherokee-project.com/browser/cherokee/trunk/COPYING">full
-license</a> in the project&#8217;s SVN repository.</p></div>
-<div class="paragraph"><p>If for whatever reason this license does not suit your needs, other
+license</a> in the project's SVN repository.</p></div>
+<div class="para"><p>If for whatever reason this license does not suit your needs, other
 licensing schemes can be negotiated on a particular basis. Contact
 <a href="http://www.octality.com/">Octality</a> if this is your case.</p></div>
 <h3 id="faq12">And what about the documentation?</h3><div style="clear:left"></div>
-<div class="paragraph"><p>The documentation is distributed under a
+<div class="para"><p>The documentation is distributed under a
 <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons
 Attribution (by)</a> license, which is the most accommodating in terms of
 what others can do with it. It lets others distribute, remix, tweak,
 and build upon the work, even commercially.</p></div>
 <h3 id="faq13">How can I contribute contents to the documentation?</h3><div style="clear:left"></div>
-<div class="paragraph"><p>The documentation is written and maintained using
+<div class="para"><p>The documentation is written and maintained using
 <a href="http://www.methods.co.nz/asciidoc/">AsciiDoc</a>, a text document
 format for writing short documents, articles, books and UNIX man pages
 that can be easily translated to HTML and DocBook markups. It is
@@ -146,10 +146,10 @@ please take a look at the
 <a href="http://powerman.name/doc/asciidoc">AsciiDoc Cheatsheet</a> and start
 editing the documentation sources right ahead. They are distributed
 with the source code and are located under <tt>./doc</tt> of the source tree.
-If you don&#8217;t have SVN access, simply mail your contributions to
+If you don't have SVN access, simply mail your contributions to
 <a href="mailto:feedback@cherokee-project.com">feedback@cherokee-project.com</a>.</p></div>
 <h3 id="faq14">Can encoders be set for specfic file types?</h3><div style="clear:left"></div>
-<div class="paragraph"><p>Yes. Since content encoding is set on a per-rule basis, simply add a
+<div class="para"><p>Yes. Since content encoding is set on a per-rule basis, simply add a
 rule at the beginning of the virtual server that matches the specific
 file extensions and has the encoding enabled. Set the rule to be
 non-final. That should do the trick.</p></div>

@@ -37,9 +37,9 @@ class ModuleAuthBase (Module, FormHelper):
             methods = filter (lambda x,m=method: x[0] == method, VALIDATOR_METHODS)
 
         table = TableProps()
-        self.AddPropOptions_Reload_Plain (table, _("Methods"), "%s!methods"%(self._prefix), methods, _(NOTE_METHODS))
+        self.AddPropOptions_Reload (table, _("Methods"), "%s!methods"%(self._prefix), methods, _(NOTE_METHODS))
         self.AddPropEntry (table, _("Realm"), "%s!realm" %(self._prefix), _(NOTE_REALM))
-        self.AddPropEntry (table, _("Users"), "%s!users" %(self._prefix), _(NOTE_USERS), optional=True)
+        self.AddPropEntry (table, _("Users"), "%s!users" %(self._prefix), _(NOTE_USERS))
 
         txt += "<h2>%s</h2>" % (_('Authentication Details'))
         txt += self.Indent(table)

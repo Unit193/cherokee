@@ -162,7 +162,6 @@ PACKAGE_NAME = @PACKAGE_NAME@
 PACKAGE_PATCH_VERSION = @PACKAGE_PATCH_VERSION@
 PACKAGE_STRING = @PACKAGE_STRING@
 PACKAGE_TARNAME = @PACKAGE_TARNAME@
-PACKAGE_URL = @PACKAGE_URL@
 PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
 PHPCGI = @PHPCGI@
@@ -176,9 +175,7 @@ SHELL = @SHELL@
 STRIP = @STRIP@
 USE_NLS = @USE_NLS@
 VERSION = @VERSION@
-WWW_GROUP = @WWW_GROUP@
 WWW_ROOT = @WWW_ROOT@
-WWW_USER = @WWW_USER@
 XGETTEXT = @XGETTEXT@
 XGETTEXT_015 = @XGETTEXT_015@
 XGETTEXT_EXTRA_OPTIONS = @XGETTEXT_EXTRA_OPTIONS@
@@ -235,7 +232,7 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-ASCIIDOC = python $(top_srcdir)/doc/build/asciidoc.py --conf-file=$(top_srcdir)/doc/build/doc.conf
+ASCIIDOC = python $(top_srcdir)/doc/build/asciidoc.py --unsafe --conf-file=$(top_srcdir)/doc/build/doc.conf
 SUFFIXES = .txt .html
 doc_DATA = \
 index.html \
@@ -299,7 +296,6 @@ cookbook_trac.html \
 cookbook_phpbb.html \
 cookbook_phpmyadmin.html \
 cookbook_managing_logs.html \
-cookbook_streaming.html \
 modules.html \
 modules_balancers.html \
 modules_balancers_ip_hash.html \
@@ -320,6 +316,7 @@ modules_handlers_scgi.html \
 modules_handlers_server_info.html \
 modules_handlers_ssi.html \
 modules_handlers_streaming.html \
+modules_handlers_mirror.html \
 modules_handlers_admin.html \
 modules_handlers_proxy.html \
 modules_handlers_secdownload.html \
@@ -357,6 +354,7 @@ media/images/admin_advanced2.png \
 media/images/admin_advanced3.png \
 media/images/admin_advanced4.png \
 media/images/admin_behaviour.png \
+media/images/admin_dirlist_cherokee.png \
 media/images/admin_general.png \
 media/images/admin_general_networking.png \
 media/images/admin_general_permissions.png \
@@ -387,8 +385,6 @@ media/images/admin_validators_pam.png \
 media/images/admin_validators_plain.png \
 media/images/admin_validators_authlist.png \
 media/images/admin_validators_ldap.png \
-media/images/admin_vservers_wizard.png \
-media/images/admin_vserver_wizard.png \
 media/images/admin_vserver_errors.png \
 media/images/admin_vserver_loggers.png \
 media/images/admin_vserver.png \
@@ -424,11 +420,23 @@ media/images/cookbook_ror.png \
 media/images/cookbook_mailman.png \
 media/images/cookbook_glassfish.png \
 media/images/cookbook_drupal.png \
+media/images/cookbook_drupal_default1.png \
+media/images/cookbook_drupal_default2.png \
+media/images/cookbook_drupal_default3.png \
+media/images/cookbook_drupal_example1.png \
+media/images/cookbook_drupal_example2.png \
+media/images/cookbook_drupal_example3.png \
+media/images/cookbook_drupal_example4.png \
+media/images/cookbook_drupal_rules.png \
 media/images/cookbook_wp1.png \
 media/images/cookbook_wp2.png \
 media/images/cookbook_wp3.png \
 media/images/cookbook_wp4.png \
 media/images/cookbook_wp5.png \
+media/images/cookbook_wp_default1.png \
+media/images/cookbook_wp_example1.png \
+media/images/cookbook_wp_example2.png \
+media/images/cookbook_wp_example3.png \
 media/images/cookbook_nagios1.png \
 media/images/cookbook_nagios2.png \
 media/images/cookbook_nagios3.png \
@@ -472,8 +480,6 @@ media/images/cookbook_phpmyadmin_denied.png \
 media/images/cookbook_managing_logs_security.png \
 media/images/cookbook_managing_logs_rules.png \
 media/images/cookbook_managing_logs_handler.png \
-media/images/cookbook_zend1.png \
-media/images/cookbook_joomla.png \
 media/images/proxy_phase1.png \
 media/images/proxy_phase2.png \
 media/images/tracelor.png
@@ -481,11 +487,7 @@ media/images/tracelor.png
 EXTRA_DIST = \
 $(doc_DATA) \
 $(docmediacss_DATA) \
-$(docmediaimages_DATA) \
-test_images.py
-
-CLEANFILES = \
-$(doc_DATA)
+$(docmediaimages_DATA)
 
 all: all-am
 
@@ -648,7 +650,6 @@ install-strip:
 mostlyclean-generic:
 
 clean-generic:
-	-test -z "$(CLEANFILES)" || rm -f $(CLEANFILES)
 
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
@@ -747,9 +748,6 @@ uninstall-am: uninstall-docDATA uninstall-docmediacssDATA \
 
 serve:
 	../cherokee/cherokee -r .
-
-test:
-	./test_images.py
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

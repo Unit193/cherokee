@@ -17,107 +17,169 @@
 </div>
 <h2 id="_handler_http_error">Handler: HTTP Error</h2>
 <div class="sectionbody">
-<div class="paragraph"><p>The <strong>HTTP Error</strong> (<tt>`custom_error</tt>` internally) handler is used to
+<div class="para"><p>The <strong>HTTP Error</strong> (<tt>`custom_error</tt>` internally) handler is used to
 generate errors when certain rules are matched. For instance it can be
 used to deny access to specific files, such as those containing
 passwords.</p></div>
 <h3 id="parameters">Parameters</h3><div style="clear:left"></div>
 <div class="tableblock">
-<table rules="all"
-width="100%"
-frame="border"
+<table rules="rows"
+frame="hsides"
 cellspacing="0" cellpadding="4">
-<col width="33%" />
-<col width="33%" />
-<col width="33%" />
+<col width="150" />
+<col width="125" />
+<col width="525" />
 <thead>
-<tr>
-<th align="left" valign="top">Parameters </th>
-<th align="left" valign="top">Type    </th>
-<th align="left" valign="top">Description</th>
-</tr>
+  <tr>
+    <th align="left">
+    Parameters  
+    </th>
+    <th align="left">
+    Type    
+    </th>
+    <th align="left">
+    Description
+    </th>
+  </tr>
 </thead>
-<tbody>
-<tr>
-<td align="left" valign="top"><p class="table"><tt>error</tt></p></td>
-<td align="left" valign="top"><p class="table">number</p></td>
-<td align="left" valign="top"><p class="table">HTTP error code return.</p></td>
-</tr>
+<tbody valign="top">
+  <tr>
+    <td align="left">
+    <tt>error</tt>     
+    </td>
+    <td align="left">
+    number  
+    </td>
+    <td align="left">
+    HTTP error code return.
+    </td>
+  </tr>
 </tbody>
 </table>
 </div>
-<div class="imageblock">
-<div class="content">
-<img src="media/images/admin_handler_custom_error.png" alt="media/images/admin_handler_custom_error.png" />
-</div>
-</div>
+<div class="para"><p>image::media/images/admin_custom_error.png</p></div>
 <div class="tableblock">
-<table rules="all"
-width="100%"
-frame="border"
+<table rules="rows"
+frame="hsides"
 cellspacing="0" cellpadding="4">
-<caption class="title">Available errors in <tt>cherokee-admin</tt></caption>
-<col width="10%" />
-<col width="90%" />
+<caption class="title">Table: Available errors in <tt>cherokee-admin</tt></caption>
+<col width="62" />
+<col width="737" />
 <thead>
-<tr>
-<th align="left" valign="top">Code </th>
-<th align="left" valign="top">Description</th>
-</tr>
+  <tr>
+    <th align="left">
+    Code 
+    </th>
+    <th align="left">
+    Description
+    </th>
+  </tr>
 </thead>
-<tbody>
-<tr>
-<td align="left" valign="top"><p class="table">400</p></td>
-<td align="left" valign="top"><p class="table">Bad Request</p></td>
-</tr>
-<tr>
-<td align="left" valign="top"><p class="table">403</p></td>
-<td align="left" valign="top"><p class="table">Forbidden</p></td>
-</tr>
-<tr>
-<td align="left" valign="top"><p class="table">404</p></td>
-<td align="left" valign="top"><p class="table">Not Found</p></td>
-</tr>
-<tr>
-<td align="left" valign="top"><p class="table">405</p></td>
-<td align="left" valign="top"><p class="table">Method Not Allowed</p></td>
-</tr>
-<tr>
-<td align="left" valign="top"><p class="table">413</p></td>
-<td align="left" valign="top"><p class="table">Request Entity too large</p></td>
-</tr>
-<tr>
-<td align="left" valign="top"><p class="table">414</p></td>
-<td align="left" valign="top"><p class="table">Request-URI too long</p></td>
-</tr>
-<tr>
-<td align="left" valign="top"><p class="table">416</p></td>
-<td align="left" valign="top"><p class="table">Requested range not satisfiable</p></td>
-</tr>
-<tr>
-<td align="left" valign="top"><p class="table">500</p></td>
-<td align="left" valign="top"><p class="table">Internal Server Error</p></td>
-</tr>
-<tr>
-<td align="left" valign="top"><p class="table">501</p></td>
-<td align="left" valign="top"><p class="table">Not Implemented</p></td>
-</tr>
-<tr>
-<td align="left" valign="top"><p class="table">502</p></td>
-<td align="left" valign="top"><p class="table">Bad gateway</p></td>
-</tr>
-<tr>
-<td align="left" valign="top"><p class="table">503</p></td>
-<td align="left" valign="top"><p class="table">Service Unavailable</p></td>
-</tr>
-<tr>
-<td align="left" valign="top"><p class="table">504</p></td>
-<td align="left" valign="top"><p class="table">Gatewat Timeout</p></td>
-</tr>
-<tr>
-<td align="left" valign="top"><p class="table">505</p></td>
-<td align="left" valign="top"><p class="table">HTTP Version Not Supported</p></td>
-</tr>
+<tbody valign="top">
+  <tr>
+    <td align="left">
+    400  
+    </td>
+    <td align="left">
+    Bad Request
+    </td>
+  </tr>
+  <tr>
+    <td align="left">
+    403  
+    </td>
+    <td align="left">
+    Forbidden
+    </td>
+  </tr>
+  <tr>
+    <td align="left">
+    404  
+    </td>
+    <td align="left">
+    Not Found
+    </td>
+  </tr>
+  <tr>
+    <td align="left">
+    405  
+    </td>
+    <td align="left">
+    Method Not Allowed
+    </td>
+  </tr>
+  <tr>
+    <td align="left">
+    413  
+    </td>
+    <td align="left">
+    Request Entity too large
+    </td>
+  </tr>
+  <tr>
+    <td align="left">
+    414  
+    </td>
+    <td align="left">
+    Request-URI too long
+    </td>
+  </tr>
+  <tr>
+    <td align="left">
+    416  
+    </td>
+    <td align="left">
+    Requested range not satisfiable
+    </td>
+  </tr>
+  <tr>
+    <td align="left">
+    500  
+    </td>
+    <td align="left">
+    Internal Server Error
+    </td>
+  </tr>
+  <tr>
+    <td align="left">
+    501  
+    </td>
+    <td align="left">
+    Not Implemented
+    </td>
+  </tr>
+  <tr>
+    <td align="left">
+    502  
+    </td>
+    <td align="left">
+    Bad gateway
+    </td>
+  </tr>
+  <tr>
+    <td align="left">
+    503  
+    </td>
+    <td align="left">
+    Service Unavailable
+    </td>
+  </tr>
+  <tr>
+    <td align="left">
+    504  
+    </td>
+    <td align="left">
+    Gatewat Timeout
+    </td>
+  </tr>
+  <tr>
+    <td align="left">
+    505  
+    </td>
+    <td align="left">
+    HTTP Version Not Supported
+    </td>
+  </tr>
 </tbody>
 </table>
 </div>

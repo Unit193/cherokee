@@ -33,13 +33,11 @@ PHP_FCGI_PORT     = 1980
 PHP_DIRS          = ["/usr/lib/cgi-bin/",
                      "/usr/bin/",
                      "/usr/local/bin/",
-                     "/opt/csw/php5/bin/",
-                     "/opt/local/bin"]
+                     "/opt/csw/php5/bin/"]
 
 PYTHON_DIRS       = ["/usr/bin",
                      "/usr/local/bin",
-                     "/opt/csw/bin",
-                     "/opt/local/bin"]
+                     "/opt/csw/bin"]
 
 PHP_NAMES         = ["php5-cgi",
                      "php-cgi",

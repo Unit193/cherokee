@@ -176,7 +176,6 @@ cherokee_spawner_spawn (cherokee_buffer_t  *binary,
 			cherokee_buffer_t  *user,
 			uid_t               uid,
 			gid_t               gid,
-			int                 env_inherited,
 			char              **envp,
 			cherokee_logger_t  *logger,
 			pid_t              *pid_ret)
@@ -227,7 +226,6 @@ cherokee_spawner_spawn (cherokee_buffer_t  *binary,
 		envs ++;
 	}
 
-	cherokee_buffer_add (&tmp, (char *)&env_inherited, sizeof(int));
 	cherokee_buffer_add (&tmp, (char *)&envs, sizeof(int));
 
 	for (n=envp; *n; n++) {
