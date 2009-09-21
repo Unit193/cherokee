@@ -5,8 +5,11 @@ cherokee (0.99.24-2) UNRELEASED; urgency=low
   * Moved /var/lib/cherokee/graphs to the rrdtool binary package
   * Fixed incorrect dependency information in cherokee.init - Thanks to
     Petter Reinholdtsen for pointing it out! (Closes: #541861)
+  * Moved the lib.*-dev packages to section:libdevel
+  * Added a postinst script for libcherokee-mod-rrd to chown the
+    directory to the user running Cherokee
 
- -- Gunnar Wolf <gwolf@debian.org>  Thu, 10 Sep 2009 12:42:05 -0500
+ -- Gunnar Wolf <gwolf@debian.org>  Mon, 21 Sep 2009 00:21:55 -0500
 
 cherokee (0.99.24-1) unstable; urgency=low
 
