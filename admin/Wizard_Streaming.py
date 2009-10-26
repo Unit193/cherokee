@@ -16,26 +16,30 @@ CONFIG = """
 
 class Wizard_Rules_Streaming (Wizard):
     ICON = "streaming.png"
-    DESC = "Adds a rule to stream media files."
+    DESC = _("Adds a rule to stream media files.")
 
     def __init__ (self, cfg, pre):
         Wizard.__init__ (self, cfg, pre)
         self.name = "Media Streaming"
 
     def show (self):
+        if not cherokee_has_plugin ('streaming'):
+            self.no_show = _("The media streaming plug-in is not installed.")
+            return False
+
         rules = self._cfg.keys('%s!rule'%(self._pre))
         for r in rules:
             if self._cfg.get_val ('%s!rule!%s!match'%(self._pre, r)) != 'extensions':
                 continue
             if self._cfg.get_val ('%s!rule!%s!match!extensions'%(self._pre, r)) == EXTENSIONS:
-                self.no_show = "Media streaming is already configured."                
+                self.no_show = _("Media streaming is already configured.")
                 return False
         return True
 
     def _run (self, uri, post):
-        _, rule_pre = cfg_vsrv_rule_get_next (self._cfg, self._pre)
+        x, rule_pre = cfg_vsrv_rule_get_next (self._cfg, self._pre)
         if not rule_pre:
-            return self.report_error ("Couldn't add a new rule.")
+            return self.report_error (_("Couldn't add a new rule."))
 
         extensions = EXTENSIONS
         config = CONFIG % (locals())

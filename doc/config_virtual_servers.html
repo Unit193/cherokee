@@ -26,7 +26,12 @@ this server cannot be deleted.</p></div>
 <div class="paragraph"><p>When the server receives a request it will try to match the domain
 name specified in the virtual server that should handle it. In case no
 virtual server matches the request, default will be used.</p></div>
-<div class="paragraph"><p>Three main options are accessible through this menu:</p></div>
+<div class="imageblock">
+<div class="content">
+<img src="media/images/admin_vserver.png" alt="media/images/admin_vserver.png" />
+</div>
+</div>
+<div class="paragraph"><p>Four main options are accessible through this menu:</p></div>
 <div class="olist arabic"><ol class="arabic">
 <li>
 <p>
@@ -43,6 +48,11 @@ Add new Virtual Server
 Clone Virtual Server
 </p>
 </li>
+<li>
+<p>
+Wizards
+</p>
+</li>
 </ol></div>
 <div class="paragraph"><p><strong>Cloning a Virtual Server</strong> is simply a matter of selecting a target name
 and a source virtual server currently present. Every setting will be
@@ -51,20 +61,21 @@ the original or the copied Virtual Servers, will only apply to the
 implicated one. This is a great way to set up complex domains,
 since you can use the existing ones as templates to be refined with
 further work.</p></div>
-<div class="paragraph"><p><strong>To add a new Virtual Server</strong> you have to enter the server name and a
-valid Document Root directory.</p></div>
-<div class="imageblock">
-<div class="content">
-<img src="media/images/admin_vserver.png" alt="media/images/admin_vserver.png" />
-</div>
-</div>
+<div class="paragraph"><p><strong>Wizards</strong> are configuration assistants that will allow you to set up a
+new virtual server tailored to some application&#8217;s specific needs. The
+wizard will ask for some basic values, such as the name of the new
+virtual server or anything that might be needed to make its job, like
+deploying a Django application, installing Wordpress or whatever task
+you might have chosen. The wizards can also be run on a per-server
+basis, in which case instead of creating a new dedicated virtual
+server, the required changes will be added to the existing one.</p></div>
+<div class="paragraph"><p><strong>Add a new Virtual Server</strong> allows you to do that by entering the
+server name and a valid Document Root directory.</p></div>
 <div class="ulist"><ul>
 <li>
 <p>
 <strong>Document Root</strong>
 </p>
-</li>
-</ul></div>
 <div class="paragraph"><p>This directive sets the directory from which Cherokee will serve
 files. The set of rules is checked from the highest to the lowest
 possible priority. Once a rule is matched, the server appends the path
@@ -83,15 +94,15 @@ higher priority for /secret/cgi that only specified to use the CGI
 handler. Under these circumstances, if a request was received for
 /secret/cgi/something then the CGI handler would be taken and it would
 inherit the authentication specified for /secret.</p></div>
-<div class="ulist"><ul>
+</li>
 <li>
 <p>
 <strong>Name</strong>
 </p>
-</li>
-</ul></div>
 <div class="paragraph"><p>Name is an alias. The domain names handled by the virtual server
 should be specified later in the virtual server details page.</p></div>
+</li>
+</ul></div>
 <div class="paragraph"><p>The <strong>Virtual Server List</strong> is by far the most interesting of these
 three main options. It gives an overview of the existing virtual
 servers, and allows to configure in detail every possible setting.</p></div>
@@ -155,6 +166,15 @@ Keep-alive connections on a per-virtual-server basis. Keeping
 persisting connections has dramatic effects both in speed, but very
 high traffic loads can suffer because less connections are available
 for any given moment.</p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+<strong>Advanced Virtual Hosting</strong>
+</p>
+</li>
+</ul></div>
+<div class="paragraph"><p>Settings to <a href="config_virtual_servers_evhost.html">host many
+domains</a>.</p></div>
 <h3 id="domain_names">Domain names</h3><div style="clear:left"></div>
 <div class="paragraph"><p>This section allows to define the list of domains that the virtual
 server implements.</p></div>
@@ -204,6 +224,12 @@ presented, containing several fields of information:</p></div>
 <p>
 <strong>Handler</strong>: The handler that manages the requests that match this
     rule. Read on for further details.
+</p>
+</li>
+<li>
+<p>
+<strong>Root</strong>: Indicates if the rule defines an alternative document root
+    path.
 </p>
 </li>
 <li>
@@ -317,6 +343,27 @@ These entries are able to use the connection parameters (both pathinfo
       rule, and more selections can be added in further steps.
 </p>
 </li>
+<li>
+<p>
+<strong>Incoming IP/Port</strong>: If the server is running on several ports,
+      this rule type will let you specify to which port&#8217;s pettitions
+      will it apply.
+</p>
+</li>
+<li>
+<p>
+<strong>Full Path</strong>: Full path request to which content the
+      configuration will be applied. This means you can pinpoint a
+      list of files that will be specifcally targetted by this rule
+      type.
+</p>
+</li>
+<li>
+<p>
+<strong>Connected from</strong>: will let you discriminate connections based on
+      the IP or SubNet from which these are originated.
+</p>
+</li>
 </ul></div>
 <div class="paragraph"><p>It is very important to know that these rules are prioritized. The
 higher its priority is, the sooner they are checked. You could
@@ -387,6 +434,54 @@ but it does not allow to download any content.</p></div>
 </li>
 <li>
 <p>
+<a href="modules_handlers_uwsgi.html">uwsgi</a> - <strong>uWSGI Server Support</strong>
+</p>
+<div class="paragraph"><p>Communicates with the uWSGI server.</p></div>
+</li>
+<li>
+<p>
+<a href="modules_handlers_proxy.html">proxy</a> - <strong>HTTP Reverse Proxy</strong>
+</p>
+<div class="paragraph"><p>Advanced proxy services.</p></div>
+</li>
+<li>
+<p>
+<a href="modules_handlers_streaming.html">streaming</a> - <strong>Audio/Video streaming</strong>
+</p>
+<div class="paragraph"><p>Media streaming directly within Cherokee.</p></div>
+</li>
+<li>
+<p>
+<a href="modules_handlers_ssi.html">ssi</a> - <strong>Server Side Includes</strong>
+</p>
+<div class="paragraph"><p>Enables Server Side Includes.</p></div>
+</li>
+<li>
+<p>
+<a href="modules_handlers_secdownload.html">secdownload</a> - <strong>Hidden Downloads</strong>
+</p>
+<div class="paragraph"><p>Creates one-time, secure, time-expiring downloads.</p></div>
+</li>
+<li>
+<p>
+<a href="modules_handlers_dbslayer.html">dbslayer</a> - <strong>MySQL Bridge</strong>
+</p>
+<div class="paragraph"><p>MySQL load-balancing database abstraction layer.</p></div>
+</li>
+<li>
+<p>
+<a href="modules_handlers_custom_error.html">custom_error</a> - <strong>HTTP Error</strong>
+</p>
+<div class="paragraph"><p>Generates customizable HTTP errors.</p></div>
+</li>
+<li>
+<p>
+<a href="modules_handlers_empty_gif.html">empty_gif</a> - <strong>1x1 Transparent GIF</strong>
+</p>
+<div class="paragraph"><p>Returns a 1 pixel transparent image.</p></div>
+</li>
+<li>
+<p>
 <a href="modules_handlers_server_info.html">Server Info</a> - <strong>Server
   Info</strong>
 </p>
@@ -408,6 +503,9 @@ configuration options through the
 <div class="paragraph"><p>Each of the mentioned handlers can be fine-tuned through that
 menu. Refer to each handler&#8217;s documentation if you are interested in
 the available settings.</p></div>
+<div class="paragraph"><p>These rules can also be combined with boolean operators, so you can
+apply AND to require two rules, NOT to negate and so forth. These can
+be nested as much as necessary.</p></div>
 <div class="admonitionblock">
 <table><tr>
 <td class="icon">

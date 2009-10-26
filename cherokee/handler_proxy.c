@@ -480,7 +480,7 @@ build_request (cherokee_handler_proxy_t *hdl,
 			while ((*XFF == ' ') && (XFF < end))
 				XFF++;
 
-			XFF_len = end - begin;
+			XFF_len = end - XFF;
 			goto next;
 		}
 		else if (! strncasecmp (begin, "X-Forwarded-Host:", 17))
@@ -552,6 +552,15 @@ build_request (cherokee_handler_proxy_t *hdl,
 
 		cherokee_buffer_add_str    (buf, CRLF);
 	}
+
+	/* X-Forwarded-SSL */
+	cherokee_buffer_add_str (buf, "X-Forwarded-SSL: ");
+	if(conn->socket.is_tls) {
+		cherokee_buffer_add_str (buf, "on");
+	} else {
+		cherokee_buffer_add_str (buf, "off");
+	}
+	cherokee_buffer_add_str (buf, CRLF);
 
 	/* Additional headers */
 	list_for_each (i, &props->in_headers_add) {

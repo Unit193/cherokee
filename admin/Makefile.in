@@ -380,7 +380,21 @@ adminpy_SCRIPTS = $(admin_scripts)
 @INSTALL_ADMIN_TRUE@Wizard_Icons.py \
 @INSTALL_ADMIN_TRUE@Wizard_CommonStatic.py \
 @INSTALL_ADMIN_TRUE@Wizard_Streaming.py \
-@INSTALL_ADMIN_TRUE@Wizard_rTorrent.py
+@INSTALL_ADMIN_TRUE@Wizard_rTorrent.py \
+@INSTALL_ADMIN_TRUE@Wizard_Joomla.py \
+@INSTALL_ADMIN_TRUE@Wizard_Moodle.py \
+@INSTALL_ADMIN_TRUE@Wizard_Sugar.py \
+@INSTALL_ADMIN_TRUE@Wizard_phpBB.py \
+@INSTALL_ADMIN_TRUE@Wizard_phpMyAdmin.py \
+@INSTALL_ADMIN_TRUE@Wizard_Symfony.py \
+@INSTALL_ADMIN_TRUE@Wizard_Zend.py \
+@INSTALL_ADMIN_TRUE@Wizard_Trac.py \
+@INSTALL_ADMIN_TRUE@Wizard_Liferay.py \
+@INSTALL_ADMIN_TRUE@Wizard_Alfresco.py \
+@INSTALL_ADMIN_TRUE@Wizard_Glassfish.py \
+@INSTALL_ADMIN_TRUE@Wizard_uWSGI.py \
+@INSTALL_ADMIN_TRUE@Wizard_Mono.py \
+@INSTALL_ADMIN_TRUE@Wizard_ColdFusion.py
 
 adminpy_DATA = $(admin_data)
 @INSTALL_ADMIN_TRUE@template_data = \
