@@ -36,6 +36,7 @@ config_mime_types.html \
 config_advanced.html \
 config_info_sources.html \
 config_status.html \
+config_wizards.html \
 cookbook.html \
 cookbook_managing_logs.html \
 cookbook_optimizations.html \
@@ -68,6 +69,8 @@ cookbook_phpbb.html \
 cookbook_phpmyadmin.html \
 cookbook_managing_logs.html \
 cookbook_streaming.html \
+cookbook_uwsgi.html \
+cookbook_coldfusion.html \
 modules.html \
 modules_balancers.html \
 modules_balancers_ip_hash.html \
@@ -91,6 +94,8 @@ modules_handlers_streaming.html \
 modules_handlers_admin.html \
 modules_handlers_proxy.html \
 modules_handlers_secdownload.html \
+modules_handlers_uwsgi.html \
+modules_handlers_empty_gif.html \
 modules_loggers.html \
 modules_loggers_combined.html \
 modules_loggers_ncsa.html \
@@ -108,6 +113,7 @@ other_faq.html \
 other_goodies.html \
 other_signals.html \
 other_community.html \
+other_errors.html \
 dev.html \
 dev_debug.html \
 dev_cherokee.conf.html \
@@ -124,6 +130,7 @@ media/images/admin_advanced1.png \
 media/images/admin_advanced2.png \
 media/images/admin_advanced3.png \
 media/images/admin_advanced4.png \
+media/images/admin_advanced5.png \
 media/images/admin_behaviour.png \
 media/images/admin_general.png \
 media/images/admin_general_networking.png \
@@ -157,6 +164,8 @@ media/images/admin_validators_authlist.png \
 media/images/admin_validators_ldap.png \
 media/images/admin_vservers_wizard.png \
 media/images/admin_vserver_wizard.png \
+media/images/admin_vservers_wizard_misc.png \
+media/images/admin_vserver_wizard_misc.png \
 media/images/admin_vserver_errors.png \
 media/images/admin_vserver_loggers.png \
 media/images/admin_vserver.png \
@@ -251,9 +260,6 @@ $(doc_DATA) \
 $(docmediacss_DATA) \
 $(docmediaimages_DATA) \
 test_images.py
-
-CLEANFILES = \
-$(doc_DATA)
 
 serve:
 	../cherokee/cherokee -r .

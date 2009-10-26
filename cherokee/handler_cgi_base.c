@@ -267,8 +267,7 @@ cherokee_handler_cgi_base_build_basic_env (
 		 bind->server_string.buf,
 		 bind->server_string.len);
 
-	set_env (cgi, "SERVER_NAME",       "Cherokee", 8);
-	set_env (cgi, "SERVER_SIGNATURE",  "<address>Cherokee web server</address>", 38);
+	set_env (cgi, "SERVER_SIGNATURE",  "<address>Cherokee Web Server</address>", 38);
 	set_env (cgi, "GATEWAY_INTERFACE", "CGI/1.1", 7);
 	set_env (cgi, "PATH",              "/bin:/usr/bin:/sbin:/usr/sbin", 29);
 
@@ -298,12 +297,19 @@ cherokee_handler_cgi_base_build_basic_env (
 	cherokee_header_copy_known (&conn->header, header_host, tmp);
 	if (! cherokee_buffer_is_empty(tmp)) {
 		set_env (cgi, "HTTP_HOST", tmp->buf, tmp->len);
-		
+
 		p = strchr (tmp->buf, ':');
 		if (p != NULL) {
 			set_env (cgi, "SERVER_NAME", tmp->buf, p - tmp->buf);
 		} else {
 			set_env (cgi, "SERVER_NAME", tmp->buf, tmp->len);
+		}
+	} else {
+		ret = cherokee_gethostname (tmp);
+		if (ret == ret_ok) {
+			set_env (cgi, "SERVER_NAME", tmp->buf, tmp->len);
+		} else {
+			LOG_WARNING_S ("Error getting host name.\n");
 		}
 	}
 

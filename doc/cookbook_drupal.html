@@ -92,6 +92,20 @@ are through.</p></div>
 <img src="media/images/cookbook_drupal.png" alt="media/images/cookbook_drupal.png" />
 </div>
 </div>
+<div class="admonitionblock">
+<table><tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">As of Drupal 6.14, a problem has been reported related to gzip
+compression of multilingual contents. Since the Wizard is meant to
+work out of the box, Cherokee disables gzip compression for the rule
+that manages PHP in your Drupal <tt>Virtual Server</tt>. If you are not using
+a multilingual Drupal or find another workaround for the issue, you
+will probably want to enable gzip encoding on the PHP rule to increase
+performance.</td>
+</tr></table>
+</div>
 </div>
 <div id="footer">
 <div id="footer-text">

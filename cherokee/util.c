@@ -80,6 +80,14 @@
 # include <execinfo.h>
 #endif
 
+#ifdef HAVE_SYS_UTSNAME_H
+# include <sys/utsname.h>
+#endif
+
+#ifndef HOST_NAME_MAX
+# define HOST_NAME_MAX 255
+#endif
+
 #define ENTRIES "util"
 
 const char *cherokee_version    = PACKAGE_VERSION;
@@ -293,51 +301,17 @@ rpl_malloc (size_t n)
 #endif
 
 
+
+/* The following few lines has been copy and pasted from Todd
+ * C. Miller <Todd.Miller@courtesan.com> code. BSD licensed.
+ */
+
 /* Appends src to string dst of size siz (unlike strncat, siz is the
  * full size of dst, not space left).  At most siz-1 characters
  * will be copied.  Always NUL terminates (unless siz <= strlen(dst)).
  * Returns strlen(src) + MIN(siz, strlen(initial dst)).
  * If retval >= siz, truncation occurred.
  */
-size_t
-cherokee_strlcat (char *dst, const char *src, size_t siz)
-{
-#ifdef HAVE_STRLCAT
-	return strlcat (dst, src, siz);
-#else
-	/* The following few lines has been copy and pasted from Todd
-	 * C. Miller <Todd.Miller@courtesan.com> code. BSD licensed.
-	 */
-	register char *d = dst;
-        register const char *s = src;
-        register size_t n = siz;
-        size_t dlen;
-
-        /* Find the end of dst and adjust bytes left but do not go
-	 * past end.
-	 */
-        while (n-- != 0 && *d != '\0')
-                d++;
-        dlen = d - dst;
-        n = siz - dlen;
-
-        if (n == 0)
-                return(dlen + strlen(s));
-        while (*s != '\0') {
-                if (n != 1) {
-                        *d++ = *s;
-                        n--;
-                }
-                s++;
-        }
-        *d = '\0';
-
-	 /* Count does not include NUL 
-	  */
-        return(dlen + (s - src));      
-#endif
-}
-
 
 #ifndef HAVE_STRLCAT
 size_t
@@ -723,10 +697,16 @@ cherokee_gethostbyname (const char *hostname, void *_addr)
 	struct hostent *host;
 
 	CHEROKEE_MUTEX_LOCK (&__global_gethostbyname_mutex);
+
 	/* Resolv the host name
 	*/
 	host = gethostbyname (hostname);
 	if (host == NULL) {
+		if (h_errno == TRY_AGAIN) {
+			CHEROKEE_MUTEX_UNLOCK (&__global_gethostbyname_mutex);
+			return ret_eagain;
+		}
+
 		CHEROKEE_MUTEX_UNLOCK (&__global_gethostbyname_mutex);
 		return ret_error;
 	}
@@ -745,11 +725,10 @@ cherokee_gethostbyname (const char *hostname, void *_addr)
 # define GETHOSTBYNAME_R_BUF_LEN 512
 
 	int             r;
-	int             h_errnop;
 	struct hostent  hs;
-	struct hostent *hp = NULL;
+	int             h_errnop = 0;
+	struct hostent *hp       = NULL;
 	char   tmp[GETHOSTBYNAME_R_BUF_LEN];
-        
 
 # if defined(SOLARIS) || defined(IRIX)
 	/* Solaris 10:
@@ -757,11 +736,14 @@ cherokee_gethostbyname (const char *hostname, void *_addr)
 	 *        (const char *, struct hostent *, char *, int, int *h_errnop);
 	 */
 	hp = gethostbyname_r (hostname, &hs, tmp, 
-			GETHOSTBYNAME_R_BUF_LEN - 1, &h_errnop);
+			      GETHOSTBYNAME_R_BUF_LEN - 1, &h_errnop);
 
-	if (hp == NULL)
+	if (hp == NULL) {
+		if (h_errnop == TRY_AGAIN) {
+			return ret_eagain;
+		}
 		return ret_error;
-
+	}
 # else
 	/* Linux glibc2:
 	 *  int gethostbyname_r (const char *name,
@@ -771,23 +753,62 @@ cherokee_gethostbyname (const char *hostname, void *_addr)
 	r = gethostbyname_r (hostname, 
 			&hs, tmp, GETHOSTBYNAME_R_BUF_LEN - 1, 
 			&hp, &h_errnop);
-	if (r != 0)
+	if (r != 0) {
+		if (h_errnop == TRY_AGAIN) {
+			return ret_eagain;
+		}
 		return ret_error;
+	}
 # endif  
 	/* Copy the address
 	 */
-	if (hp == NULL)
+	if (hp == NULL) {
 		return ret_not_found;
+	}
 
 	memcpy (addr, hp->h_addr, hp->h_length);
-
 	return ret_ok;
+
 #else
 	/* Bad case !
 	 */
 	SHOULDNT_HAPPEN;
 	return ret_error;
 #endif
+}
+
+
+ret_t
+cherokee_gethostname (cherokee_buffer_t *buf)
+{
+	int  re;
+
+#ifdef HAVE_GETHOSTNAME
+	char host_name[HOST_NAME_MAX + 1];
+
+	re = gethostname (host_name, HOST_NAME_MAX);
+	if (re) {
+		return ret_error;
+	}
+
+	cherokee_buffer_add (buf, host_name, strlen(host_name));
+
+	return ret_ok;
+
+#elif defined(HAVE_SYS_UTSNAME_H) && defined(HAVE_UNAME)
+	struct utsname info;
+
+	re = uname (&info);
+	if (re) {
+		return ret_error;
+	}
+
+	cherokee_buffer_add (buf, info.nodename, sizeof(info.nodename));
+
+	return ret_ok;
+#endif
+
+	return ret_error;
 }
 
 
@@ -1329,7 +1350,7 @@ cherokee_buf_add_bogonow (cherokee_buffer_t  *buf,
 
 	cherokee_buffer_add_va (buf, "[%02d/%02d/%d %02d:%02d:%02d.%03d]",
 				cherokee_bogonow_tmloc.tm_mday, 
-				cherokee_bogonow_tmloc.tm_mon, 
+				cherokee_bogonow_tmloc.tm_mon + 1,
 				cherokee_bogonow_tmloc.tm_year + 1900,
 				cherokee_bogonow_tmloc.tm_hour, 
 				cherokee_bogonow_tmloc.tm_min, 

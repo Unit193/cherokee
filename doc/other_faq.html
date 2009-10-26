@@ -87,35 +87,12 @@ configuration is not the recommended method, but the format will
 always be kept updated to facilitate scripting tasks, working with
 embedded devices and other similar situations.</p></div>
 <h3 id="faq08">Does Cherokee speak WSGI natively like <tt>mod_wsgi</tt> does?</h3><div style="clear:left"></div>
-<div class="paragraph"><p>In short: no. We believe that we should not implement anything like
-<tt>mod_wsgi</tt> for a number of reasons.</p></div>
-<div class="ulist"><ul>
-<li>
-<p>
-First, and purely from an architectural point, embedding an
-interpreter into the web server doesn&#8217;t feel quite right. Be it a huge
-interpreter linked against dozens of libraries or be it something
-using Python&#8217;s shared libraries, it doesn&#8217;t fit with the design
-principles applied throughout Cherokee&#8217;s code base.
-</p>
-</li>
-<li>
-<p>
-Second, it sounds hard to believe that <tt>mod_wsgi</tt> is faster than a
-plain and simple SCGI application writing to a Unix socket: WSGI
-applications can also use <a href="modules_handlers_fcgi.html">FastCGI</a> and
-<a href="modules_handlers_scgi.html">SCGI</a> backends, which are fully
-supported by Cherokee.
-</p>
-</li>
-</ul></div>
-<div class="paragraph"><p>We believe Cherokee should be as fast, light, clean and secure as
-possible, and to this end we tend to disregard bulky and monolithic
-solutions. At least until we are given very, VERY, good reasons to
-give it further consideration.</p></div>
-<div class="paragraph"><p>Give Cherokee (SCGI|FastCGI) a try with your WSGI application.  We
-believe that besides fixing both the architectural and security flaws
-you will improve performance.</p></div>
+<div class="paragraph"><p>In short: not like <tt>mod_wsgi</tt> at all. There is native support for the
+<a href="http://projects.unbit.it/uwsgi/">uWSGI server</a>, which is a fast
+(pure C), self-healing, developer-friendly WSGI server aimed for
+professional python webapps deployment and development. Cherokee also
+provides a wizard to adjust its settings to those defined in the uWSGI
+configuration file of your project.</p></div>
 <h3 id="faq09">I need to make an administration script: What signals are supported by Cherokee?</h3><div style="clear:left"></div>
 <div class="paragraph"><p>The list is documented in the <a href="other_signals.html">Signals</a> entry.</p></div>
 <h3 id="faq10">Is there a clean way of switching Cherokee to Maintenance mode?</h3><div style="clear:left"></div>
@@ -153,6 +130,10 @@ If you don&#8217;t have SVN access, simply mail your contributions to
 rule at the beginning of the virtual server that matches the specific
 file extensions and has the encoding enabled. Set the rule to be
 non-final. That should do the trick.</p></div>
+<h3 id="faq15">I can&#8217;t set TLS/SSL in Cherokee-Admin. There&#8217;s no TLS/SSL (and</h3><div style="clear:left"></div>
+<div class="paragraph"><p>nothing in the pulldown) for me.</p></div>
+<div class="paragraph"><p>First, make sure openssl in installed. If you are not installing from
+source, most likely you&#8217;ve missed installing libcherokee-mod-libssl</p></div>
 </div>
 <div id="footer">
 <div id="footer-text">

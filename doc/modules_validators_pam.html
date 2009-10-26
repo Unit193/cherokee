@@ -30,6 +30,28 @@ username/password combination.</p></div>
 <div class="paragraph"><p>Requires a valid user and password system pair to access the protected
 directory. It will be available for all local users, unless a
 restriction list is provided.</p></div>
+<h4 id="notes">Notes</h4>
+<div class="paragraph"><p>The PAM approach ensures a dynamic configuration for how the
+authentication is performed. This dynamic configuration must be
+specified. This means that a /etc/pam.d/cherokee file must define the
+connection between Cherokee and the pluggable authentication modules
+that perform the actual authentication tasks.</p></div>
+<div class="paragraph"><p>Cherokee&#8217;s installation procedure already takes care of the creation
+of such file (under /etc or whatever system configuration directory is
+used in your platform of choice). If you consistently fail to use the
+PAM validator, make sure that such configuration deffinitions are set.</p></div>
+<div class="listingblock">
+<div class="title">Sample: /etc/pam.d/cherokee</div>
+<div class="content">
+<pre><tt>#
+# The PAM configuration file for Cherokee
+#
+
+account    required   pam_unix.so
+auth       required   pam_unix.so nullok
+auth       required   pam_env.so
+session    required   pam_unix.so</tt></pre>
+</div></div>
 </div>
 <div id="footer">
 <div id="footer-text">

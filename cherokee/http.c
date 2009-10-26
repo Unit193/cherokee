@@ -63,6 +63,7 @@ cherokee_http_method_to_string (cherokee_http_method_t method, const char **str,
 		entry (http_subscribe, "SUBSCRIBE");
 		entry (http_unlock, "UNLOCK");
 		entry (http_unsubscribe, "UNSUBSCRIBE");
+		entry (http_report, "REPORT");
 
 	default:
 		break;
@@ -118,6 +119,8 @@ cherokee_http_string_to_method (cherokee_buffer_t      *string,
 		*method = http_unlock;
 	else if (cherokee_buffer_case_cmp_str (string, "unsubscribe") == 0) 
 		*method = http_unsubscribe;
+	else if (cherokee_buffer_case_cmp_str (string, "report") == 0) 
+		*method = http_report;
 	else {
 		*method = http_unknown;
 		return ret_not_found;
@@ -156,6 +159,7 @@ cherokee_http_code_to_string (cherokee_http_t code, const char **str)
 	case http_accepted:                 *str = http_accepted_string; break;
 	case http_no_content:               *str = http_no_content_string; break;
 	case http_partial_content:          *str = http_partial_content_string; break;
+	case http_multi_status:             *str = http_multi_status_string; break;
 
 	/* 3xx
 	 */
@@ -221,6 +225,7 @@ cherokee_http_code_copy (cherokee_http_t code, cherokee_buffer_t *buf)
 		entry_code (accepted);
 		entry_code (no_content);
 		entry_code (partial_content);
+		entry_code (multi_status);
 
 		/* 3xx
 		 */

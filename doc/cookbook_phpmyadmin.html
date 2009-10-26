@@ -75,8 +75,11 @@ Web browser with cookies enabled.
 </li>
 </ul></div>
 <div class="paragraph"><p>This means that you don&#8217;t need to modify Cherokee at all provided you
-have PHP with MySQL support and you are using a default Cherokee
-configuration.</p></div>
+have PHP with MySQL support.</p></div>
+<div class="paragraph"><p>Simply use Cherokee-Admin&#8217;s phpMyAdmin Wizard, located under the
+<tt>Database</tt> category. It checks for the presence of phpMyAdmin, so you
+better have the package installed prior to using the Wizard, or else
+the Wizard will not let you proceed.</p></div>
 <h3 id="_express_setup">Express setup</h3><div style="clear:left"></div>
 <div class="paragraph"><p>The only thing you need to do is make phpMyAdmin accessible by
 Cherokee and all the script files must have permissions suitable for
@@ -88,8 +91,7 @@ of seconds.</p></div>
 <div class="listingblock">
 <div class="title">Debian installation</div>
 <div class="content">
-<pre><tt># apt-get install php5-cgi php5-mysql mysql-server-5.0 phpmyadmin
-# ln -s /usr/share/phpmyadmin/ /var/www/phpmyadmin</tt></pre>
+<pre><tt># apt-get install php5-cgi php5-mysql mysql-server-5.0 phpmyadmin</tt></pre>
 </div></div>
 <div class="paragraph"><p>Since Cherokee doesn&#8217;t appear in the list of web servers provided by
 the package installation script, select any of them to proceed with
@@ -116,8 +118,9 @@ the MySQL user information to access the databases.</p></div>
 site</a> and follow the <tt>Quick Install</tt> notes in the
 <a href="http://www.phpmyadmin.net/documentation/">phpMyAdmin
 documentation</a>. As before, you simply need to make the program
-accessible to your web server, so either install directly under your
-<tt>document root</tt> or make a symbolic link.</p></div>
+accessible to your web server, so simply use the Wizard and fill in
+the required information. Alternatively you can either install
+directly under your <tt>document root</tt> or make a symbolic link.</p></div>
 <h3 id="_considerations">Considerations</h3><div style="clear:left"></div>
 <div class="ulist"><ul>
 <li>
@@ -138,7 +141,7 @@ If you are using the auth_type <tt>config</tt>, it is suggested that you
   or alternatively by using Cherokee&#8217;s authentication features.  Refer
   to the <a href="http://www.phpmyadmin.net/documentation/">phpMyAdmin
   documentation</a> for more details on the former, or to our
-  link;cookbook_authentication.html[authentication recipe] for the
+  <a href="cookbook_authentication.html">authentication recipe</a> for the
   latter.
 </p>
 </li>
@@ -151,7 +154,8 @@ It is generally good idea to protect public phpMyAdmin installation
 </li>
 <li>
 <p>
-You should deny access to the <tt>./libraries</tt> and <tt>./setup/lib</tt>
+The Wizard already takes care of this, but if you have installed it
+  manually you should deny access to the <tt>./libraries</tt> and <tt>./setup/lib</tt>
   subfolders in Cherokee&#8217;s configuration. Such configuration prevents
   from possible path exposure and cross side scripting vulnerabilities
   that might happen to be found in that code. To do so, configure

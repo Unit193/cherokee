@@ -84,15 +84,21 @@ cellspacing="0" cellpadding="4">
 <div class="image-title">Accessing Liferay</div>
 </div>
 <h3 id="Cherokee">Phase two: Cherokee</h3><div style="clear:left"></div>
-<div class="paragraph"><p>Now to set up Cherokee as reverse proxy. You can either create a new
-virtual server with a matching rule (be it <tt>default</tt> or anything else)
-if you are sharing the proxy machine, or dedicate another machine
-to the Proxy Handler. This will be our choice, since typically you
-will be wanting to get the best possible performance, the Java
-application server is heavy by definition, and you could be using the
-proxy machine also to serve other contents. We are only going to set
-Cherokee&#8217;s HTTP reverse proxy handler to hit the server running
-Lifreay at port 8080.</p></div>
+<div class="paragraph"><p>Now to set up Cherokee. To do this, use the provided <tt>Wizard</tt>. Launch
+Cherokee-Admin on your proxy machine and then you will find this
+assistant under the <tt>CMS</tt> category of the Wizards. Click, answer a few
+questions and you are done. You can then skip the rest of this
+document.</p></div>
+<div class="paragraph"><p>Should you have any problem with the assitant, you can perform the
+same tasks manually. Simply set up Cherokee as reverse proxy. You can
+either create a new virtual server with a matching rule (be it
+<tt>default</tt> or anything else) if you are sharing the proxy machine, or
+dedicate another machine to the Proxy Handler. This will be our
+choice, since typically you will be wanting to get the best possible
+performance, the Java application server is heavy by definition, and
+you could be using the proxy machine also to serve other contents. We
+are only going to set Cherokee&#8217;s HTTP reverse proxy handler to hit the
+server running Lifreay at port 8080.</p></div>
 <div class="paragraph"><p>Launch Cherokee-Admin on your proxy machine, create a rule that
 matches the desired path on your web server hierarchy -<tt>/liferay</tt> for
 instance- in your virtual server of choice, and define the <tt>HTTP

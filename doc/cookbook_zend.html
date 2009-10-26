@@ -26,9 +26,9 @@ default. However, you can follow the <a href="cookbook_php.html">setting up
 PHP</a> recipe for further hints on fine tuning this feature.</p></div>
 <div class="paragraph"><p>To make sure the recipe works, we&#8217;ll be using the demo provided by the
 <a href="http://framework.zend.com/docs/quickstart">Zend Framework
-Quickstart</a>. At the time of writing, it was
-<a href="http://framework.zend.com/demos/ZendFrameworkQuickstart-20080915.tar.gz">demo
-20080915</a>.</p></div>
+Quickstart</a>. Last time this document was edited, it was
+<a href="http://framework.zend.com/demos/ZendFrameworkQuickstart-20090430.tar.gz">demo
+20090430</a>.</p></div>
 <div class="paragraph"><p>Uncompress its contents to a directory and set up the <tt>public</tt>
 subdirectory as your web document root. In our example, it will be
 <tt>/var/www/demo/public</tt>.</p></div>
@@ -54,64 +54,19 @@ rewritten to our index.php script. Since all requests for non-static
 content will be rewritten to it, the index.php script serves as the
 entry point to our application.</p></div>
 </div></div>
+<h3 id="wizard_configuration">Configure Cheroke using the Wizard</h3><div style="clear:left"></div>
+<h3 id="manual_configuration">Configure Cheroke using the Wizard</h3><div style="clear:left"></div>
+<div class="paragraph"><p>Cherokee is shipped with a configuration <tt>Wizard</tt> that can be used
+both to deploy the application under a dedicated <tt>Virtual Server</tt> and
+under a web folder from one already existent.</p></div>
 <div class="paragraph"><p>Launch cherokee-admin, and proceed to the
-<a href="config_virtual_servers.html">Virtual servers</a> section. Select the
-virtual server that you will be configuring and go to the <tt>Behavior</tt>
-tab to set up the rules.</p></div>
-<div class="olist arabic"><div class="title">Steps</div><ol class="arabic">
-<li>
-<p>
-You will need to keep the rule for the <tt>php</tt> extension.
-</p>
-</li>
-<li>
-<p>
-Next, configure a rule with the handler <tt>File Exists</tt> that should be
-  set to a priority lower than that of the <tt>php</tt> rule.  This one can
-  be set to match whatever files you like, but the important thing is
-  to check the <tt>Match any file</tt> checkbox. Let this rule be handled by
-  the <a href="modules_handlers_common.html">List &amp; Send</a> handler. Note that
-  we&#8217;re not using the <a href="modules_handlers_file.html">Static Content</a>
-  handler. This is because it doesn&#8217;t support indexes, so it wouldn&#8217;t
-  allow you to browse the website at <a href="http://hostname.tld/">http://hostname.tld/</a>, but only at
-  <a href="http://hostname.tld/index.php">http://hostname.tld/index.php</a>.
-</p>
-</li>
-<li>
-<p>
-And last, modify your <tt>Default</tt> rule by configuring the
-  <a href="modules_handlers_redir.html">redirection handler</a>, through the
-  <tt>Handler</tt> tab.
-</p>
-<div class="tableblock">
-<table rules="all"
-width="100%"
-frame="border"
-cellspacing="0" cellpadding="4">
-<col width="33%" />
-<col width="33%" />
-<col width="33%" />
-<thead>
-<tr>
-<th align="left" valign="top">Type     </th>
-<th align="left" valign="top">Regular Expression </th>
-<th align="left" valign="top">Substitution</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td align="left" valign="top"><p class="table">Internal</p></td>
-<td align="left" valign="top"><p class="table">^.*$</p></td>
-<td align="left" valign="top"><p class="table">/index.php</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-</li>
-</ol></div>
-<div class="paragraph"><p>This will take care of redirecting the requests to Zend.</p></div>
-<div class="paragraph"><p>You are done with the configuration! You can now access your
-application. The demo provided by Zend will look like this:</p></div>
+<a href="config_virtual_servers.html">Virtual servers</a> section.</p></div>
+<div class="paragraph"><p>Now you can either enter the chosen one to install under a web folder,
+or directly click on the <tt>Symfony Wizard</tt> to create a customised one.</p></div>
+<div class="paragraph"><p>After that you will be asked for the minimal information required to
+correctly configure your server in a totally transparent way.</p></div>
+<div class="paragraph"><p>And that&#8217;s it. You are done with the configuration! You can now access
+your application. The demo provided by Zend will look like this:</p></div>
 <div class="imageblock">
 <div class="content">
 <img src="media/images/cookbook_zend1.png" alt="media/images/cookbook_zend1.png" />
