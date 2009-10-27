@@ -17,22 +17,28 @@
 </div>
 <h2 id="_cookbook_setting_up_symfony_framework">Cookbook: Setting up Symfony Framework</h2>
 <div class="sectionbody">
-<div class="para"><p>The <a href="http://www.symfony-project.org/">Symfony Framework</a> is a PHP
+<div class="paragraph"><p>If you need to deploy a Symfony application with Cherokee, the
+configuration is trivial. You will find a <tt>Wizard</tt> that can be used
+both to deploy the application under a dedicated <tt>Virtual Server</tt> and
+under a web folder from one already existent.</p></div>
+<h3 id="package_configuration">Prepare your Symfony project</h3><div style="clear:left"></div>
+<div class="paragraph"><p>The <a href="http://www.symfony-project.org/">Symfony Framework</a> is a PHP
 framework focused on building more secure, reliable, and modern Web
 2.0 applications.</p></div>
-<div class="para"><p>It is essential that Cherokee supports PHP before starting with this
-recipe. That should not be a problem since it comes preconfigured by
-default. However, you can follow the <a href="cookbook_php.html">setting up
-PHP</a> recipe for further hints on fine tuning this feature.</p></div>
-<div class="para"><p>To make sure the recipe works, we'll initialize a simple symfony
+<div class="paragraph"><p>It is essential that Cherokee supports PHP before starting with this
+recipe. That should not be a problem since Cherokee-Admin provides a
+PHP configuration Wizard. However, you can follow the
+<a href="cookbook_php.html">setting up PHP</a> recipe for further hints on
+fine tuning this feature.</p></div>
+<div class="paragraph"><p>To make sure the recipe works, we&#8217;ll initialize a simple symfony
 application.</p></div>
-<div class="para"><p>This assumes that you already have symfony installed and configured.
+<div class="paragraph"><p>This assumes that you already have symfony installed and configured.
 You can find information about installation here:
 <a href="http://www.symfony-project.org/installation">Symfony
 Installation</a>. At the time of writing, symfony stable version is 1.2.</p></div>
-<div class="para"><p>Now that you have symfony installed, we shall create a symfony
+<div class="paragraph"><p>Now that you have symfony installed, we shall create a symfony
 application in the folder <tt>~/demo</tt></p></div>
-<div class="para"><p>Open a terminal, and execute the following commands (note that if
+<div class="paragraph"><p>Open a terminal, and execute the following commands (note that if
 symfony is not in your $PATH, you need to prefix <em>symfony</em> with the
 actual path to the script):</p></div>
 <div class="listingblock">
@@ -43,19 +49,45 @@ symfony generate:project demo
 symfony generate:app demo
 symfony generate:module demo demo</tt></pre>
 </div></div>
-<div class="para"><p>The above commands will create a symfony project called <tt>demo</tt> inside
+<div class="paragraph"><p>The above commands will create a symfony project called <tt>demo</tt> inside
 the demo folder we just created. Next, it will create an application
 called <tt>demo</tt> as well, and then create a module, also called <tt>demo</tt>.</p></div>
-<div class="para"><p>So now that we have the files in place, we'll just create the needed
+<div class="paragraph"><p>So now that we have the files in place, we&#8217;ll just create the needed
 rules for the web server. Specially important will be the rewrite
 rules.</p></div>
-<div class="para"><p>Launch cherokee-admin, and proceed to the
-<a href="config_virtual_servers.html">Virtual servers</a> section. Select or
-create the virtual server that you will be configuring and go to the
-<tt>Behavior</tt> tab to set up the rules.  Remember that the document root
-for this virtual server should be the <tt>web</tt> folder in your demo
-project.</p></div>
-<div class="olist"><div class="title">Steps</div><ol>
+<h3 id="wizard_configuration">Configure Cheroke using the Wizard</h3><div style="clear:left"></div>
+<div class="paragraph"><p>Launch cherokee-admin, and proceed to the
+<a href="config_virtual_servers.html">Virtual servers</a> section and either
+enter the chosen one to install under a web folder, or directly click
+on the <tt>Symfony Wizard</tt> to create a customised one.</p></div>
+<div class="paragraph"><p>In either case you will be asked for the basic information and
+everything will be handled for you. The two main data pieces will be
+the location of the public web folder of your Symfony project (that
+is, the part that you wish to make publicly accesible, not the whole
+project), and the path to the installed release of Symfony in your
+system.</p></div>
+<div class="paragraph"><p>There is nothing else you need to do on Cherokee.</p></div>
+<div class="paragraph"><p>You may need to edit your "hosts" file to include the domain name you
+call the virtual server. Your symfony application should then be
+accessible. You can find more information about setting up symfony
+applications in the symfony manual.</p></div>
+<div class="imageblock">
+<div class="content">
+<img src="media/images/cookbook_symfony.png" alt="media/images/cookbook_symfony.png" />
+</div>
+<div class="image-title">Running application</div>
+</div>
+<div class="paragraph"><p>Note that the Wizard configures Cherokee for your project&#8217;s production
+frontend. Should you wish to access the development environment simply
+adjust the redirection to the appropriate forntend.</p></div>
+<h3 id="manual_configuration">Configure Cheroke manually</h3><div style="clear:left"></div>
+<div class="paragraph"><p>In case you are wondering, these are manual steps you would have to
+follow if you opted for not using the configuration Wizard.</p></div>
+<div class="paragraph"><p>Select or create the virtual server that you will be configuring and
+go to the <tt>Behavior</tt> tab to set up the rules.  Remember that the
+document root for this virtual server should be the <tt>web</tt> folder in
+your demo project.</p></div>
+<div class="olist arabic"><div class="title">Steps</div><ol class="arabic">
 <li>
 <p>
 You will need to keep the rule for the <tt>php</tt> extension. If this rule
@@ -79,37 +111,26 @@ Afterwards, modify your <tt>Default</tt> rule by configuring the
   <tt>Handler</tt> tab.
 </p>
 <div class="tableblock">
-<table rules="none"
-frame="hsides"
+<table rules="all"
+width="100%"
+frame="border"
 cellspacing="0" cellpadding="4">
-<col width="163" />
-<col width="363" />
-<col width="272" />
+<col width="33%" />
+<col width="33%" />
+<col width="33%" />
 <thead>
-  <tr>
-    <th align="left">
-    Type     
-    </th>
-    <th align="left">
-    Regular Expression
-    </th>
-    <th align="left">
-    Substitution
-    </th>
-  </tr>
+<tr>
+<th align="left" valign="top">Type     </th>
+<th align="left" valign="top">Regular Expression </th>
+<th align="left" valign="top">Substitution</th>
+</tr>
 </thead>
-<tbody valign="top">
-  <tr>
-    <td align="left">
-    Internal 
-    </td>
-    <td align="left">
-    ^.*$              
-    </td>
-    <td align="left">
-    /index.php
-    </td>
-  </tr>
+<tbody>
+<tr>
+<td align="left" valign="top"><p class="table">Internal</p></td>
+<td align="left" valign="top"><p class="table">^.*$</p></td>
+<td align="left" valign="top"><p class="table">/index.php</p></td>
+</tr>
 </tbody>
 </table>
 </div>
@@ -135,37 +156,26 @@ A slight adition must be added to fix an issue with how requests for
   expression:
 </p>
 <div class="tableblock">
-<table rules="none"
-frame="hsides"
+<table rules="all"
+width="100%"
+frame="border"
 cellspacing="0" cellpadding="4">
-<col width="156" />
-<col width="347" />
-<col width="295" />
+<col width="33%" />
+<col width="33%" />
+<col width="33%" />
 <thead>
-  <tr>
-    <th align="left">
-    Type     
-    </th>
-    <th align="left">
-    Regular Expression
-    </th>
-    <th align="left">
-    Redirection
-    </th>
-  </tr>
+<tr>
+<th align="left" valign="top">Type     </th>
+<th align="left" valign="top">Regular Expression </th>
+<th align="left" valign="top">Redirection</th>
+</tr>
 </thead>
-<tbody valign="top">
-  <tr>
-    <td align="left">
-    Internal 
-    </td>
-    <td align="left">
-    ^/$              
-    </td>
-    <td align="left">
-    /index.php
-    </td>
-  </tr>
+<tbody>
+<tr>
+<td align="left" valign="top"><p class="table">Internal</p></td>
+<td align="left" valign="top"><p class="table">^/$</p></td>
+<td align="left" valign="top"><p class="table">/index.php</p></td>
+</tr>
 </tbody>
 </table>
 </div>
@@ -175,62 +185,37 @@ cellspacing="0" cellpadding="4">
 Finally, you need to set up a rule for the "/sf" directory.
 </p>
 <div class="tableblock">
-<table rules="none"
-frame="hsides"
+<table rules="all"
+width="100%"
+frame="border"
 cellspacing="0" cellpadding="4">
-<col width="103" />
-<col width="155" />
-<col width="93" />
-<col width="446" />
+<col width="25%" />
+<col width="25%" />
+<col width="25%" />
+<col width="25%" />
 <thead>
-  <tr>
-    <th align="left">
-    Type      
-    </th>
-    <th align="left">
-    Web Directory
-    </th>
-    <th align="left">
-    Handler
-    </th>
-    <th align="left">
-    Document Root
-    </th>
-  </tr>
+<tr>
+<th align="left" valign="top">Type      </th>
+<th align="left" valign="top">Web Directory </th>
+<th align="left" valign="top">Handler        </th>
+<th align="left" valign="top">Document Root</th>
+</tr>
 </thead>
-<tbody valign="top">
-  <tr>
-    <td align="left">
-    Directory 
-    </td>
-    <td align="left">
-    /sf          
-    </td>
-    <td align="left">
-    Static content
-    </td>
-    <td align="left">
-    /usr/share/php/data/symfony/web/sf
-    </td>
-  </tr>
+<tbody>
+<tr>
+<td align="left" valign="top"><p class="table">Directory</p></td>
+<td align="left" valign="top"><p class="table">/sf</p></td>
+<td align="left" valign="top"><p class="table">Static content</p></td>
+<td align="left" valign="top"><p class="table">/usr/share/php/data/symfony/web/sf</p></td>
+</tr>
 </tbody>
 </table>
 </div>
 </li>
 </ol></div>
-<div class="para"><p>Note that the document root for the /sf directory depends on your
+<div class="paragraph"><p>Note that the document root for the /sf directory depends on your
 installation. The value given above corresponds to a pear installation
 of symfony on an Ubuntu 8.10 (Intrepid Ibex) system.</p></div>
-<div class="para"><p>You may need to edit your "hosts" file to include the domain name you
-call the virtual server. Your symfony application should then be
-accessible. You can find more information about setting up symfony
-applications in the symfony manual.</p></div>
-<div class="imageblock">
-<div class="content">
-<img src="media/images/cookbook_symfony.png" alt="Symfony Application" title="Symfony Application"/>
-</div>
-<div class="image-title">Figure: Running application</div>
-</div>
 </div>
 <div id="footer">
 <div id="footer-text">

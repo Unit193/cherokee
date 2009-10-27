@@ -1,4 +1,4 @@
-ASCIIDOC=python $(top_srcdir)/doc/build/asciidoc.py --unsafe --conf-file=$(top_srcdir)/doc/build/doc.conf
+ASCIIDOC=python $(top_srcdir)/doc/build/asciidoc.py --conf-file=$(top_srcdir)/doc/build/doc.conf
 
 SUFFIXES = .txt .html
 
@@ -36,6 +36,7 @@ config_mime_types.html \
 config_advanced.html \
 config_info_sources.html \
 config_status.html \
+config_wizards.html \
 cookbook.html \
 cookbook_managing_logs.html \
 cookbook_optimizations.html \
@@ -67,6 +68,9 @@ cookbook_trac.html \
 cookbook_phpbb.html \
 cookbook_phpmyadmin.html \
 cookbook_managing_logs.html \
+cookbook_streaming.html \
+cookbook_uwsgi.html \
+cookbook_coldfusion.html \
 modules.html \
 modules_balancers.html \
 modules_balancers_ip_hash.html \
@@ -87,10 +91,11 @@ modules_handlers_scgi.html \
 modules_handlers_server_info.html \
 modules_handlers_ssi.html \
 modules_handlers_streaming.html \
-modules_handlers_mirror.html \
 modules_handlers_admin.html \
 modules_handlers_proxy.html \
 modules_handlers_secdownload.html \
+modules_handlers_uwsgi.html \
+modules_handlers_empty_gif.html \
 modules_loggers.html \
 modules_loggers_combined.html \
 modules_loggers_ncsa.html \
@@ -108,6 +113,7 @@ other_faq.html \
 other_goodies.html \
 other_signals.html \
 other_community.html \
+other_errors.html \
 dev.html \
 dev_debug.html \
 dev_cherokee.conf.html \
@@ -124,8 +130,8 @@ media/images/admin_advanced1.png \
 media/images/admin_advanced2.png \
 media/images/admin_advanced3.png \
 media/images/admin_advanced4.png \
+media/images/admin_advanced5.png \
 media/images/admin_behaviour.png \
-media/images/admin_dirlist_cherokee.png \
 media/images/admin_general.png \
 media/images/admin_general_networking.png \
 media/images/admin_general_permissions.png \
@@ -156,6 +162,10 @@ media/images/admin_validators_pam.png \
 media/images/admin_validators_plain.png \
 media/images/admin_validators_authlist.png \
 media/images/admin_validators_ldap.png \
+media/images/admin_vservers_wizard.png \
+media/images/admin_vserver_wizard.png \
+media/images/admin_vservers_wizard_misc.png \
+media/images/admin_vserver_wizard_misc.png \
 media/images/admin_vserver_errors.png \
 media/images/admin_vserver_loggers.png \
 media/images/admin_vserver.png \
@@ -191,23 +201,11 @@ media/images/cookbook_ror.png \
 media/images/cookbook_mailman.png \
 media/images/cookbook_glassfish.png \
 media/images/cookbook_drupal.png \
-media/images/cookbook_drupal_default1.png \
-media/images/cookbook_drupal_default2.png \
-media/images/cookbook_drupal_default3.png \
-media/images/cookbook_drupal_example1.png \
-media/images/cookbook_drupal_example2.png \
-media/images/cookbook_drupal_example3.png \
-media/images/cookbook_drupal_example4.png \
-media/images/cookbook_drupal_rules.png \
 media/images/cookbook_wp1.png \
 media/images/cookbook_wp2.png \
 media/images/cookbook_wp3.png \
 media/images/cookbook_wp4.png \
 media/images/cookbook_wp5.png \
-media/images/cookbook_wp_default1.png \
-media/images/cookbook_wp_example1.png \
-media/images/cookbook_wp_example2.png \
-media/images/cookbook_wp_example3.png \
 media/images/cookbook_nagios1.png \
 media/images/cookbook_nagios2.png \
 media/images/cookbook_nagios3.png \
@@ -251,6 +249,8 @@ media/images/cookbook_phpmyadmin_denied.png \
 media/images/cookbook_managing_logs_security.png \
 media/images/cookbook_managing_logs_rules.png \
 media/images/cookbook_managing_logs_handler.png \
+media/images/cookbook_zend1.png \
+media/images/cookbook_joomla.png \
 media/images/proxy_phase1.png \
 media/images/proxy_phase2.png \
 media/images/tracelor.png
@@ -258,8 +258,11 @@ media/images/tracelor.png
 EXTRA_DIST = \
 $(doc_DATA) \
 $(docmediacss_DATA) \
-$(docmediaimages_DATA)
-
+$(docmediaimages_DATA) \
+test_images.py
 
 serve:
 	../cherokee/cherokee -r .
+
+test:
+	./test_images.py

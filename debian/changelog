@@ -1,3 +1,25 @@
+cherokee (0.99.25-1) unstable; urgency=low
+
+  * New upstream version
+
+ -- Gunnar Wolf <gwolf@debian.org>  Mon, 26 Oct 2009 14:38:10 -0600
+
+cherokee (0.99.24-1) unstable; urgency=low
+
+  * New Upstream Version
+
+ -- Leonel Nunez <leonel@enelserver.com>  Tue, 01 Sep 2009 04:41:31 -0600
+
+cherokee (0.99.23-1) unstable; urgency=low
+
+  [ Leonel Nunez ]
+  * New Upstream Version
+
+  [ Gunnar Wolf ]
+  * Moved /var/lib/cherokee/graphs to the rrdtool binary package
+  
+ -- Leonel Nunez <leonel@enelserver.com>  Fri, 27 Aug 2009 12:05:21 -0600
+
 cherokee (0.99.22-1.1) unstable; urgency=low
 
   * Non-maintainer upload.

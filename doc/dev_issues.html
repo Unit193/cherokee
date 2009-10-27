@@ -17,50 +17,29 @@
 </div>
 <h2 id="_development_open_issues">Development: Open issues</h2>
 <div class="sectionbody">
-<div class="para"><p>This section of the documentation comprehends a variety of topics. It
+<div class="paragraph"><p>This section of the documentation comprehends a variety of topics. It
 is mainly intended as a repository of notes, tips, issues and
 documentation concerning parts of Cherokee that are currently under
 development -or are full developed- but are not yet included for
 mainstream usage.</p></div>
-<div class="para"><p>As these features get properly integrated into the Cherokee
+<div class="paragraph"><p>As these features get properly integrated into the Cherokee
 infrastructure, the notes regarding the subject should be moved to
 their specific section of the docmentation.</p></div>
-<div class="para"><p>For now, this document mantains a list of currently open issues. It
+<div class="paragraph"><p>For now, this document mantains a list of currently open issues. It
 mostly is useful to list things of the Cherokee Project that are known
 to be half-baked, and as such are only of interest for developers.</p></div>
 <h3 id="fastcgi">FastCGI Handler</h3><div style="clear:left"></div>
-<div class="para"><p>There are two handlers currently implementing the FastCGI protocol:
+<div class="paragraph"><p>There are two handlers currently implementing the FastCGI protocol:
 "fcgi" and "fastcgi".</p></div>
-<div class="para"><p>The "fastcgi" module also implements the FastCGI protocol. It is a
+<div class="paragraph"><p>The "fastcgi" module also implements the FastCGI protocol. It is a
 more complete implementation than "fcgi" although it is also more
 complex. Actually, fcgi became the standard choice because the PHP
 interpreter is kind of buggy when it has to demultiplex multiple
 requests from the same socket. As such, it is the only one supported
 by Cherokee-Admin.</p></div>
-<div class="para"><p>The "fastcgi" handler will eventually become the default option
+<div class="paragraph"><p>The "fastcgi" handler will eventually become the default option
 because it is faster and more standard-compliant. However, at the
 moment "fcgi" is a better option.</p></div>
-<h3 id="reverse_proxy">Reverse Proxy</h3><div style="clear:left"></div>
-<div class="para"><p>The reverse proxy has been one of the most demanded features and is
-under heavy development. It is currently released as a standard
-handler, so check out the <a href="modules_handlers_proxy.html">HTTP
-reverse proxy</a> handler documentation.</p></div>
-<h3 id="wizards">Configuration Wizards</h3><div style="clear:left"></div>
-<div class="para"><p>Another interesting feature -not yet reflected in the repository- is a
-project aimed at providing configuration wizards as an easy way to
-deploy a set of standard applications. The idea is to select an
-application from the list and let the wizard configure Cherokee to be
-able to run one such application -say Wordpress, for instance-.</p></div>
-<div class="para"><p>Even though the obtained configuration will most probably not be
-perfect, it will always be a good starting point to play with for
-further tuning.</p></div>
-<h3 id="boolean_rules">AND, OR and NOT rule types</h3><div style="clear:left"></div>
-<div class="para"><p>These rule types are fully implemented, but the feature is not yet
-supported in Cherokee Admin. Some GUI issues remain to be solved, as
-the things achievable by these rules are at the same time very
-powerful and very complex. This is said in the sense that one can
-combine them with so much flexibility that dealing with it from the
-GUI could get really messy.</p></div>
 </div>
 <div id="footer">
 <div id="footer-text">

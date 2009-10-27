@@ -1,6 +1,7 @@
 import os
 import sys
 import glob
+import socket
 
 #
 # Virtual Server
@@ -31,6 +32,13 @@ def cfg_vsrv_rule_find_extension (cfg, pre, extension):
             if extension in cfg.get_val ("%s!match!extensions"%(p)):
                 return p
 
+def cfg_vsrv_rule_find_regexp (cfg, pre, regexp):
+    """Find a regular expresion rule in a virtual server """
+    for r in cfg.keys("%s!rule"%(pre)):
+        p = "%s!rule!%s" % (pre, r)
+        if cfg.get_val ("%s!match"%(p)) == "request":
+            if regexp == cfg.get_val ("%s!match!request"%(p)):
+                return p
 
 #
 # Information Sources
@@ -44,7 +52,7 @@ def cfg_source_get_next (cfg):
     next = tmp[-1] + 10
     return (next, "source!%d" % (next))
 
-def cfg_source_find_interpreter (cfg, 
+def cfg_source_find_interpreter (cfg,
                                  in_interpreter = None,
                                  in_nick        = None):
     for i in cfg.keys("source"):
@@ -67,7 +75,7 @@ def cfg_source_find_empty_port (cfg, n_ports=1):
 
         colon = host.rfind(':')
         if colon < 0: continue
-        
+
         port = int (host[colon+1:])
         if port < 1024: continue
 
@@ -80,6 +88,19 @@ def cfg_source_find_empty_port (cfg, n_ports=1):
 
     assert (False)
 
+def cfg_source_find_free_port (host_name='localhost'):
+    """Return a port not currently running anything"""
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.bind((host_name, 0))
+    addr, port = s.getsockname()
+    s.close()
+    return port
+
+def cfg_source_get_localhost_addr ():
+    _, _, addrs = socket.gethostbyname_ex('localhost')
+    if addrs:
+        return addrs[0]
+    return None
 
 #
 # Paths

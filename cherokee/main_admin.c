@@ -202,10 +202,10 @@ config_server (cherokee_server_t *srv)
 					 "source!1!timeout = 25\n"
 					 "source!1!host = %s\n"
 					 "source!1!interpreter = %s/server.py %s %s\n"
-					 "source!1!env!PATH = %s\n",
+					 "source!1!env_inherited = 1\n",
 					 DEFAULT_UNIX_SOCKET, document_root,
-					 DEFAULT_UNIX_SOCKET,
-					 config_file, getenv("PATH"));
+					 DEFAULT_UNIX_SOCKET, config_file);
+					 
 	} else {
 		cherokee_buffer_add_va  (&buf,
 					 "source!1!nick = app-logic\n"
@@ -213,9 +213,8 @@ config_server (cherokee_server_t *srv)
 					 "source!1!timeout = 25\n"
 					 "source!1!host = localhost:%d\n"
 					 "source!1!interpreter = %s/server.py %d %s\n"
-					 "source!1!env!PATH = %s\n",
-					 scgi_port, document_root, scgi_port, 
-					 config_file, getenv("PATH"));
+					 "source!1!env_inherited = 1\n",
+					 scgi_port, document_root, scgi_port, config_file);
 	}
 
 	if (debug) {
@@ -300,16 +299,16 @@ config_server (cherokee_server_t *srv)
 	}
 
 	cherokee_buffer_add_va  (&buf, 
-				 RULE_PRE "6!match = directory\n"
-				 RULE_PRE "6!match!directory = /graphs\n"
-				 RULE_PRE "6!handler = file\n"
-				 RULE_PRE "6!handler!iocache = 0\n"
-				 RULE_PRE "6!document_root = %s\n",
+				 RULE_PRE "7!match = directory\n"
+				 RULE_PRE "7!match!directory = /graphs\n"
+				 RULE_PRE "7!handler = file\n"
+				 RULE_PRE "7!handler!iocache = 0\n"
+				 RULE_PRE "7!document_root = %s\n",
 				 rrd_dir.buf ? rrd_dir.buf : CHEROKEE_GRAPHS_DIR);
 
 	if (! debug) {
-		cherokee_buffer_add_str (&buf, RULE_PRE "6!expiration = time\n");
-		cherokee_buffer_add_str (&buf, RULE_PRE "6!expiration!time = 60\n");
+		cherokee_buffer_add_str (&buf, RULE_PRE "7!expiration = time\n");
+		cherokee_buffer_add_str (&buf, RULE_PRE "7!expiration!time = 60\n");
 	}
 
 	cherokee_buffer_add_str (&buf,

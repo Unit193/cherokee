@@ -377,7 +377,7 @@ cherokee_socket_accept_fd (cherokee_socket_t *server_socket, int *new_fd, cherok
 	re = setsockopt (new_socket, SOL_SOCKET, SO_KEEPALIVE, &re, sizeof(re));
 	if (re == -1) {
 		LOG_ERRNO (errno, cherokee_err_warning,
-			   "Couldn't set SO_KEEPALIVE on fd=%d: ${errno}", new_socket);
+			   "Couldn't set SO_KEEPALIVE on fd=%d: ${errno}\n", new_socket);
 	}	
 
 	linger.l_onoff  = 1;
@@ -386,7 +386,7 @@ cherokee_socket_accept_fd (cherokee_socket_t *server_socket, int *new_fd, cherok
 	re = setsockopt (new_socket, SOL_SOCKET, SO_LINGER, &linger, sizeof(linger));
 	if (re == -1) {
 		LOG_ERRNO (errno, cherokee_err_warning,
-			   "Couldn't set SO_LINGER on fd=%d: ${errno}", new_socket);
+			   "Couldn't set SO_LINGER on fd=%d: ${errno}\n", new_socket);
 	}
 
 	/* Close-on-exec: Child processes won't inherit this fd
@@ -423,6 +423,7 @@ cherokee_socket_set_client (cherokee_socket_t *sock, unsigned short int type)
 	 */
 	sock->socket = socket (type, SOCK_STREAM, 0);
 	if (sock->socket < 0) {
+		LOG_ERRNO (errno, cherokee_err_error, "Could not create socket: ${errno}\n");
 		return ret_error;
 	}
 
@@ -640,7 +641,7 @@ cherokee_socket_write (cherokee_socket_t *socket,
 			}
 
 			LOG_ERRNO (errno, cherokee_err_error,
-				   "write(%d, ..): '${errno}'", SOCKET_FD(socket));
+				   "write(%d, ..): '${errno}'\n", SOCKET_FD(socket));
 		}
 		return ret_error;
 
@@ -730,7 +731,7 @@ cherokee_socket_read (cherokee_socket_t *socket,
 			}
 
 			LOG_ERRNO (errno, cherokee_err_error,
-				   "read(%d, ..): '${errno}'", SOCKET_FD(socket));
+				   "read(%d, ..): '${errno}'\n", SOCKET_FD(socket));
 		}
 		return ret_error;
 
@@ -935,7 +936,7 @@ cherokee_socket_writev (cherokee_socket_t  *socket,
 			}
 
 			LOG_ERRNO (errno, cherokee_err_error,
-				   "writev(%d, ..): '${errno}'", SOCKET_FD(socket));
+				   "writev(%d, ..): '${errno}'\n", SOCKET_FD(socket));
 		}
 		return ret_error;
 
@@ -1363,7 +1364,7 @@ cherokee_socket_connect (cherokee_socket_t *sock)
 			return ret_eagain;
 		default:
 			LOG_ERRNO_S (errno, cherokee_err_error,
-				     "Cannot connect: '${errno}'");
+				     "Cannot connect: '${errno}'\n");
 			return ret_error;
 		}
 	}
@@ -1418,7 +1419,7 @@ cherokee_socket_set_cork (cherokee_socket_t *socket, cherokee_boolean_t enable)
 			
 		if (unlikely (re < 0)) {
 			LOG_ERRNO (errno, cherokee_err_error,
-				   "Removing TCP_NODELAY to fd %d: ${errno}", fd);
+				   "Removing TCP_NODELAY to fd %d: ${errno}\n", fd);
 			return ret_error;
 		}
 
@@ -1432,7 +1433,7 @@ cherokee_socket_set_cork (cherokee_socket_t *socket, cherokee_boolean_t enable)
 
 		if (unlikely (re < 0)) {
 			LOG_ERRNO (errno, cherokee_err_error,
-				   "Setting TCP_CORK to fd %d: ${errno}", fd);
+				   "Setting TCP_CORK to fd %d: ${errno}\n", fd);
 			return ret_error;
 		}
 
@@ -1449,7 +1450,7 @@ cherokee_socket_set_cork (cherokee_socket_t *socket, cherokee_boolean_t enable)
 	} while ((re == -1) && (errno == EINTR));
 	if (unlikely (re < 0)) {
 		LOG_ERRNO (errno, cherokee_err_error,
-			   "Removing TCP_CORK to fd %d: ${errno}", fd);
+			   "Removing TCP_CORK to fd %d: ${errno}\n", fd);
 		return ret_error;
 	}
 
@@ -1462,7 +1463,7 @@ cherokee_socket_set_cork (cherokee_socket_t *socket, cherokee_boolean_t enable)
 	} while ((re == -1) && (errno == EINTR));
 	if (unlikely (re < 0)) {
 		LOG_ERRNO (errno, cherokee_err_error,
-			   "Setting TCP_NODELAY to fd %d: ${errno}", fd);
+			   "Setting TCP_NODELAY to fd %d: ${errno}\n", fd);
 		return ret_error;
 	}
 

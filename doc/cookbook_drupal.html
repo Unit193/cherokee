@@ -17,340 +17,54 @@
 </div>
 <h2 id="_cookbook_setting_up_drupal">Cookbook: Setting up Drupal</h2>
 <div class="sectionbody">
-<div class="para"><p>Setting up <a href="http://drupal.org/">Drupal</a> with Cherokee is really
-easy. We will assume that our <tt>Document Root</tt> directory is
-<tt>/var/www/drupal</tt> of the server we are working on. This recipe uses
-Drupal 6.6, which is the latest release at the time of writing.</p></div>
-<div class="para"><p>You will need PHP support correctly configured in Cherokee, and PHP
-with the MySQL module installed. The default configuration already
-provides a valid PHP configuration for Cherokee if you have php-cgi
-installed, but you can follow the appropriate recipe about
-<a href="cookbook_php.html">setting up PHP</a> in case you don't have it
-available for some reason.</p></div>
-<div class="para"><p>Under these conditions, you could start Drupal's installation and you
-would already be able to have your site up and running.</p></div>
-<div class="para"><p>However, we can add several refinements to Cherokee's
-settings. Mainly:</p></div>
-<div class="olist"><ol>
-<li>
-<p>
-Forward all requests for www.example.net (or whatever domain is
-  resolved to our machine) to example.net
-</p>
-</li>
-<li>
-<p>
-Set up an appropriate url rewriting configuration for Drupal.
-</p>
-</li>
-<li>
-<p>
-Serve directly the static content speeding avoiding the
-  dynamic-processing bottle-neck.
-</p>
-</li>
-<li>
-<p>
-Use the regex from Drupal's .htaccess for denying access to certain
-  paths.
-</p>
-</li>
-</ol></div>
-<div class="para"><p>With this we should be able to do everything Drupal's supposed to do,
-and it should work with Imagecache's dynamic thumbnail generation.</p></div>
-<h3 id="cherokee">Setting up Cherokee</h3><div style="clear:left"></div>
-<h4 id="_default_virtual_server">Default virtual server</h4>
-<div class="para"><p>We'll begin by cloning the default virtual server, just to keep the
-default PHP configuration. Create a clone named <tt>example.net</tt>.</p></div>
+<div class="paragraph"><p>Setting up <a href="http://drupal.org/">Drupal</a> with Cherokee is really
+easy. This recipe describes the Drupal 6.x installation, which is the
+latest release at the time of writing.</p></div>
+<div class="paragraph"><p>There are two ways of installing Drupal: it can either be installed as
+a new virtual server or be installed inside a directory of some of the
+virtual servers that already exist.</p></div>
+<h3 id="cherokee_vserver">Setting up Drupal as a new Virtual Server</h3><div style="clear:left"></div>
+<div class="paragraph"><p>The first step would be to go to the virtual server list page. Once in
+there, you&#8217;ll have to click the <tt>Wizards</tt> button:</p></div>
 <div class="imageblock">
 <div class="content">
-<img src="media/images/cookbook_drupal_default1.png" alt="Drupal default" title="Drupal default"/>
+<img src="media/images/admin_vservers_wizard.png" alt="media/images/admin_vservers_wizard.png" />
 </div>
 </div>
-<div class="para"><p>Then, we'll delete every erasable rule in the default virtual server
-since we are going to use it to redirect every petition not matched by
-the example.net virtual server. We will set the remaining one to be
-managed by the <tt>Redirection</tt> handler, like this:</p></div>
+<div class="paragraph"><p>Now, you will have to select the <tt>CMS</tt> category, and run the Drupal
+wizard.  At this stage the Drupal wizard will ask you for some basic
+parameters about the installation. It will try to auto-fill as many
+entries of the form as possible.  For instance, if it finds Drupal
+installed in a standard location it will use that path as the default
+directory.</p></div>
+<div class="paragraph"><p>The new virtual server will be created after this form is submitted.
+The virtual server configuration will cover the vast majority of the
+cases. Most probably it will cover your needs, although you are free
+to modify it as you will.</p></div>
+<h3 id="cherokee_dir">Setting up Drupal inside a Directory</h3><div style="clear:left"></div>
+<div class="paragraph"><p>Drupal can also be configured inside a directory. Let&#8217;s suppose we
+want to set up Drupal inside the <tt>/blog</tt> directory of one of our
+virtual servers.</p></div>
+<div class="paragraph"><p>In this case, the first thing you will have to do is to enter the
+virtual server configuration you&#8217;d like to configure Drupal in. Once
+in there, click the <tt>Wizards</tt> button:</p></div>
 <div class="imageblock">
 <div class="content">
-<img src="media/images/cookbook_drupal_default2.png" alt="Drupal default" title="Drupal default"/>
+<img src="media/images/admin_vserver_wizard.png" alt="media/images/admin_vserver_wizard.png" />
 </div>
 </div>
-<div class="tableblock">
-<table rules="rows"
-frame="hsides"
-cellspacing="0" cellpadding="4">
-<col width="138" />
-<col width="307" />
-<col width="353" />
-<thead>
-  <tr>
-    <th align="left">
-    Type     
-    </th>
-    <th align="left">
-    Regular Expression
-    </th>
-    <th align="left">
-    Redirection
-    </th>
-  </tr>
-</thead>
-<tbody valign="top">
-  <tr>
-    <td align="left">
-    External 
-    </td>
-    <td align="left">
-    (.*)$             
-    </td>
-    <td align="left">
-    <a href="http://example.net/$1">http://example.net/$1</a>
-    </td>
-  </tr>
-</tbody>
-</table>
-</div>
-<div class="para"><p>After that, this is how the list of rules for this server should look
-like.</p></div>
-<div class="imageblock">
-<div class="content">
-<img src="media/images/cookbook_drupal_default3.png" alt="Drupal default" title="Drupal default"/>
-</div>
-</div>
-<div class="para"><p>This clears the first milestone. The remaining three will be
-accomplished by tweaking the <tt>example.net</tt> virtual server.</p></div>
-<h4 id="_example_net">example.net</h4>
-<h5 id="_first_step">First step</h5>
-<div class="para"><p>Remember to set up the <tt>Document root</tt> to <tt>/var/www/drupal</tt>.</p></div>
-<div class="imageblock">
-<div class="content">
-<img src="media/images/cookbook_drupal_example1.png" alt="Drupal example" title="Drupal example"/>
-</div>
-</div>
-<div class="para"><p>Delete all the rules except <tt>php</tt> and <tt>Default</tt>.</p></div>
-<div class="imageblock">
-<div class="content">
-<img src="media/images/cookbook_drupal_example2.png" alt="Drupal example" title="Drupal example"/>
-</div>
-</div>
-<div class="para"><p>As previously, we will manage the <tt>Default</tt> rule with the redirection
-handler.</p></div>
-<div class="tableblock">
-<table rules="none"
-frame="hsides"
-cellspacing="0" cellpadding="4">
-<col width="156" />
-<col width="347" />
-<col width="295" />
-<thead>
-  <tr>
-    <th align="left">
-    Type     
-    </th>
-    <th align="left">
-    Regular Expression
-    </th>
-    <th align="left">
-    Redirection
-    </th>
-  </tr>
-</thead>
-<tbody valign="top">
-  <tr>
-    <td align="left">
-    Internal 
-    </td>
-    <td align="left">
-    ^/(.*)$           
-    </td>
-    <td align="left">
-    /index.php?q=$1
-    </td>
-  </tr>
-</tbody>
-</table>
-</div>
-<div class="imageblock">
-<div class="content">
-<img src="media/images/cookbook_drupal_example3.png" alt="Drupal example" title="Drupal example"/>
-</div>
-</div>
-<h5 id="_second_step">Second step</h5>
-<div class="para"><p>Remember to set up Drupal as custom error handler for the virtual
-server. Do so in the <tt>Error Handler</tt> tab, selecting the <tt>Custom
-redirections</tt> option and sending 404 errors to Drupal.</p></div>
-<div class="imageblock">
-<div class="content">
-<img src="media/images/cookbook_drupal_example4.png" alt="Drupal example" title="Drupal example"/>
-</div>
-</div>
-<div class="tableblock">
-<table rules="rows"
-frame="hsides"
-cellspacing="0" cellpadding="4">
-<col width="416" />
-<col width="384" />
-<thead>
-  <tr>
-    <th align="left">
-    Error        
-    </th>
-    <th align="left">
-    URL
-    </th>
-  </tr>
-</thead>
-<tbody valign="top">
-  <tr>
-    <td align="left">
-    404 Not Found
-    </td>
-    <td align="left">
-    /index.php
-    </td>
-  </tr>
-</tbody>
-</table>
-</div>
-<h5 id="_third_step">Third step</h5>
-<div class="para"><p>Next, we need to address the clean URLs matter. To do so, create
-another redirection rule.</p></div>
-<div class="tableblock">
-<table rules="none"
-frame="hsides"
-cellspacing="0" cellpadding="4">
-<col width="156" />
-<col width="347" />
-<col width="295" />
-<thead>
-  <tr>
-    <th align="left">
-    Type     
-    </th>
-    <th align="left">
-    Regular Expression
-    </th>
-    <th align="left">
-    Redirection
-    </th>
-  </tr>
-</thead>
-<tbody valign="top">
-  <tr>
-    <td align="left">
-    Internal 
-    </td>
-    <td align="left">
-    ^/(.<strong>)\?(.</strong>)$    
-    </td>
-    <td align="left">
-    /index.php?q=$1&amp;$2
-    </td>
-  </tr>
-</tbody>
-</table>
-</div>
-<h5 id="_fourth_step">Fourth step</h5>
-<div class="para"><p>After this we will go straight to another milestone: directly serving
-static files, which is an easy task to accomplish.</p></div>
-<div class="para"><p>Just set up an <tt>File Exists</tt>-type rule. Check the <tt>Match any</tt>
-checkbox, and manage it with the <tt>Static file</tt> handler. Remember to
-activate the <tt>IO Cache</tt> option and to specify whatever expiration
-period you see fit for these files. If you ever edit the configuration
-just remember that this rule should be located after the PHP
-rule. Otherwise you will end up statically serving them instead of
-processing them via PHP. In fact it is a good idea to keep your rules
-for dynamic contents in a high position on your list of rules.</p></div>
-<h5 id="_fifth_step">Fifth step</h5>
-<div class="para"><p>Now to block bad paths, as specified by the htaccess file provided
-with Drupal. For this we will use an internal <tt>Regular
-expression</tt>-type rule matching the following expression:</p></div>
-<div class="listingblock">
-<div class="content">
-<pre><tt>(\.(engine|inc|info|install|module|profile|po|sh|.*sql|theme|tpl(\.php)?|xtmpl)|^(code-style\.pl|Entries.*|Repository|Root|Tag|Template))(\?.*)?$</tt></pre>
-</div></div>
-<div class="para"><p>Handle this with the <tt>HTTP error</tt> handler:</p></div>
-<div class="tableblock">
-<table rules="rows"
-frame="hsides"
-cellspacing="0" cellpadding="4">
-<col width="800" />
-<thead>
-  <tr>
-    <th align="left">
-    Error
-    </th>
-  </tr>
-</thead>
-<tbody valign="top">
-  <tr>
-    <td align="left">
-    403 Forbidden
-    </td>
-  </tr>
-</tbody>
-</table>
-</div>
-<h5 id="_sixth_step">Sixth step</h5>
-<div class="para"><p>The last thing to do on Cherokee's side is to specify a sixth rule
-that fixes an issue with how requests for the root are managed having
-the <tt>File exists</tt> handler in place. Simply define yet another
-redirection rule for this regular expression:</p></div>
-<div class="tableblock">
-<table rules="none"
-frame="hsides"
-cellspacing="0" cellpadding="4">
-<col width="156" />
-<col width="347" />
-<col width="295" />
-<thead>
-  <tr>
-    <th align="left">
-    Type     
-    </th>
-    <th align="left">
-    Regular Expression
-    </th>
-    <th align="left">
-    Redirection
-    </th>
-  </tr>
-</thead>
-<tbody valign="top">
-  <tr>
-    <td align="left">
-    Internal 
-    </td>
-    <td align="left">
-    ^/$              
-    </td>
-    <td align="left">
-    /index.php
-    </td>
-  </tr>
-</tbody>
-</table>
-</div>
-<div class="para"><p>All done. After this you should have six rules in your list. This
-configuration does work. Reorder your rules accordingly if you seem to
-have any trouble.</p></div>
-<div class="imageblock">
-<div class="content">
-<img src="media/images/cookbook_drupal_rules.png" alt="Drupal rules" title="Drupal rules"/>
-</div>
-<div class="image-title">Figure: List of rules</div>
-</div>
-<div class="para"><p>Now, to install Drupal!</p></div>
+<div class="paragraph"><p>As in the previous case, this wizard will ask some very basic
+information, including the public web directory where Drupal will be
+set up and the local Drupal source directory.</p></div>
 <h3 id="drupal">Setting up Drupal</h3><div style="clear:left"></div>
-<div class="para"><p>First download and uncompress the distributed Drupal release into
+<div class="paragraph"><p>First download and uncompress the distributed Drupal release into
 <tt>/var/www/drupal</tt>, and create a database suitable for the installation.</p></div>
-<div class="para"><p>Log in to MySQL:</p></div>
+<div class="paragraph"><p>Log in to MySQL:</p></div>
 <div class="listingblock">
 <div class="content">
 <pre><tt>mysql -u root -p</tt></pre>
 </div></div>
-<div class="para"><p>And create the database for Drupal. We will be using the name
+<div class="paragraph"><p>And create the database for Drupal. We will be using the name
 <em>drupal</em>, the user <em>drupaluser</em> and the password <em>drupalpassword</em>, but
 you should set up your own.</p></div>
 <div class="listingblock">
@@ -361,22 +75,36 @@ GRANT ALL PRIVILEGES ON drupal.* TO drupaluser@localhost.localdomain IDENTIFIED 
 FLUSH PRIVILEGES;
 quit;</tt></pre>
 </div></div>
-<div class="para"><p>Then point your web browser to <tt>http://localhost</tt> and follow the
+<div class="paragraph"><p>Then point your web browser to <tt>http://localhost</tt> and follow the
 instructions provided by the installer.</p></div>
-<div class="para"><p>You will need to copy the config file and change the permissions manually to proceed:</p></div>
+<div class="paragraph"><p>You will need to copy the config file and change the permissions manually to proceed:</p></div>
 <div class="listingblock">
 <div class="content">
 <pre><tt>cd /var/www/drupal/sites/default
 cp default.settings.php settings.php
 chmod 644 settings.php</tt></pre>
 </div></div>
-<div class="para"><p>And the installation will be almost automatic. Just fill up the
+<div class="paragraph"><p>And the installation will be almost automatic. Just fill up the
 requested values and you will obtain the following results once your
 are through.</p></div>
 <div class="imageblock">
 <div class="content">
-<img src="media/images/cookbook_drupal.png" alt="Drupal in action!" title="Drupal in action!"/>
+<img src="media/images/cookbook_drupal.png" alt="media/images/cookbook_drupal.png" />
 </div>
+</div>
+<div class="admonitionblock">
+<table><tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">As of Drupal 6.14, a problem has been reported related to gzip
+compression of multilingual contents. Since the Wizard is meant to
+work out of the box, Cherokee disables gzip compression for the rule
+that manages PHP in your Drupal <tt>Virtual Server</tt>. If you are not using
+a multilingual Drupal or find another workaround for the issue, you
+will probably want to enable gzip encoding on the PHP rule to increase
+performance.</td>
+</tr></table>
 </div>
 </div>
 <div id="footer">

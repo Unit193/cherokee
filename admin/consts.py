@@ -18,6 +18,7 @@ HANDLERS = [
     ('redir',        N_('Redirection')),
     ('fcgi',         N_('FastCGI')),
     ('scgi',         N_('SCGI')),
+    ('uwsgi',        N_('uWSGI')),
     ('proxy',        N_('HTTP reverse proxy')),
     ('streaming',    N_('Audio/Video streaming')),
     ('cgi',          N_('CGI')),
@@ -25,7 +26,6 @@ HANDLERS = [
     ('secdownload',  N_('Hidden Downloads')),
     ('server_info',  N_('Server Info')),
     ('dbslayer',     N_('MySQL bridge')),
-    ('mirror',       N_('Generic balancer')),
     ('custom_error', N_('HTTP error')),
     ('admin',        N_('Remote Administration')),
     ('empty_gif',    N_('1x1 Transparent GIF'))
@@ -129,7 +129,7 @@ RULES = [
     ('header',     N_('Header')),
     ('exists',     N_('File Exists')),
     ('method',     N_('HTTP Method')),
-    ('bind',       N_('Incoming Port')),
+    ('bind',       N_('Incoming IP/Port')),
     ('fullpath',   N_('Full Path')),
     ('from',       N_('Connected from')),
     ('geoip',      N_('GeoIP'))

@@ -17,13 +17,13 @@
 </div>
 <h2 id="_cookbook_redirections">Cookbook: Redirections</h2>
 <div class="sectionbody">
-<div class="para"><p>Every now and then a redirection example is requested in the
+<div class="paragraph"><p>Every now and then a redirection example is requested in the
 <a href="other_community.html">mailing list</a>. This recipe is meant to be a
 central archive of such examples. Remember there are some more generic
 examples both in the <a href="config_quickstart.html">quickstart</a> and in
 the <a href="modules_handlers_redir.html">redirection</a> handler sections.</p></div>
 <h3 id="_redirecting_www_example_net_to_example_net">Redirecting www.example.net to example.net</h3><div style="clear:left"></div>
-<div class="para"><p>Sometimes a site will have several domains or subdomains pointing to
+<div class="paragraph"><p>Sometimes a site will have several domains or subdomains pointing to
 the same official name. For whatever reasons (site statistics, for
 instance), having many subdomains redirected to a unique subdomain
 might be desireable. This can be accomplished farily easily. The
@@ -33,27 +33,27 @@ example, this could manage <em>*.example.net</em> and the <em>.com</em> and
 <em>.org</em> variations.</p></div>
 <div class="imageblock">
 <div class="content">
-<img src="media/images/cookbook_redir_domains.png" alt="Managed domains" title="Managed domains"/>
+<img src="media/images/cookbook_redir_domains.png" alt="media/images/cookbook_redir_domains.png" />
 </div>
 </div>
-<div class="para"><p>The official name would then be managed by another virtual host
+<div class="paragraph"><p>The official name would then be managed by another virtual host
 (just for <em>example.net</em>). The <tt>redir</tt> virtual host will have a
 <tt>Default</tt> managed by the <tt>Redirection</tt> handler.</p></div>
 <div class="imageblock">
 <div class="content">
-<img src="media/images/cookbook_redir_behavior.png" alt="Unique rule" title="Unique rule"/>
+<img src="media/images/cookbook_redir_behavior.png" alt="media/images/cookbook_redir_behavior.png" />
 </div>
 </div>
-<div class="para"><p>This in turn would define an <em>external redirection</em> with a <em>Regular
+<div class="paragraph"><p>This in turn would define an <em>external redirection</em> with a <em>Regular
 Expression</em> like <em>^/(.*)$</em> and the apropriate <em>Substitution</em>:
 <a href="http://example.net/$1">http://example.net/$1</a></p></div>
 <div class="imageblock">
 <div class="content">
-<img src="media/images/cookbook_redir_handler.png" alt="Handler configuration" title="Handler configuration"/>
+<img src="media/images/cookbook_redir_handler.png" alt="media/images/cookbook_redir_handler.png" />
 </div>
 </div>
-<div class="para"><p>Keep in mind the redirection has to be external in order for Cherokee
-to rewrite the the URL. If it wasn't, the redirection would be applied
+<div class="paragraph"><p>Keep in mind the redirection has to be external in order for Cherokee
+to rewrite the the URL. If it wasn&#8217;t, the redirection would be applied
 but no change would be displayed to the users while browsing the site.</p></div>
 </div>
 <div id="footer">

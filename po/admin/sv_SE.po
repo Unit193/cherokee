@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: cherokee-admin 0.99.16\n"
 "Report-Msgid-Bugs-To: http://bugs.cherokee-project.com/\n"
-"POT-Creation-Date: 2009-08-05 10:27+0200\n"
+"POT-Creation-Date: 2009-10-24 10:02-0500\n"
 "PO-Revision-Date: 2009-06-02 12:23+0100\n"
 "Last-Translator: Andreas Andersson <andreas@cyberdelic.org>\n"
 "Language-Team: Swedish <LL@li.org>\n"
@@ -25,7 +25,7 @@ msgstr ""
 msgid "ERROR: Couldn't execute '%s -i'"
 msgstr "FEL: Kunde inte köra '%s -i'"
 
-#: admin/Entry.py:43
+#: admin/Entry.py:48
 msgid " Enabled"
 msgstr "Aktiverad"
 
@@ -116,14 +116,14 @@ msgid ""
 msgstr ""
 "En lastbalanserare måste konfigureras att använda minst en informationskälla."
 
-#: admin/ModuleBalancer.py:55 admin/Page.py:154 admin/PageInfoSource.py:32
-#: admin/PageInfoSource.py:84
+#: admin/ModuleBalancer.py:55 admin/Page.py:157 admin/PageInfoSource.py:33
+#: admin/PageInfoSource.py:88
 msgid "Information Sources"
 msgstr "Informationskällor"
 
-#: admin/ModuleBalancer.py:57 admin/PageInfoSource.py:167
-#: admin/PageInfoSource.py:194 admin/PageInfoSource.py:222
-#: admin/PageInfoSource.py:274
+#: admin/ModuleBalancer.py:57 admin/PageInfoSource.py:183
+#: admin/PageInfoSource.py:211 admin/PageInfoSource.py:239
+#: admin/PageInfoSource.py:291
 msgid "Nick"
 msgstr "Smeknamn"
 
@@ -151,9 +151,13 @@ msgstr "Välj.."
 msgid "Application Server"
 msgstr "Applikations-server"
 
-#: admin/ModuleBind.py:21 admin/ModuleBind.py:22 admin/ModuleBind.py:47
-#: admin/ModuleLdap.py:36 admin/ModuleMysql.py:45 admin/PageGeneral.py:133
-msgid "Port"
+#: admin/ModuleBind.py:21
+msgid "IP (Port):"
+msgstr ""
+
+#: admin/ModuleBind.py:22
+#, fuzzy
+msgid "Port:"
 msgstr "Port"
 
 #: admin/ModuleBind.py:26 admin/ModuleBind.py:76 admin/ModuleMethod.py:10
@@ -162,12 +166,18 @@ msgid "Choose"
 msgstr "Välj"
 
 #: admin/ModuleBind.py:35 admin/ModuleBind.py:82 admin/consts.py:132
-msgid "Incoming Port"
+#, fuzzy
+msgid "Incoming IP/Port"
 msgstr "Inkommande port"
 
 #: admin/ModuleBind.py:45
 msgid "Selected Ports"
 msgstr "Valda portar"
+
+#: admin/ModuleBind.py:47 admin/ModuleLdap.py:36 admin/ModuleMysql.py:45
+#: admin/PageGeneral.py:133
+msgid "Port"
+msgstr "Port"
 
 #: admin/ModuleBind.py:47 admin/PageGeneral.py:133
 msgid "Bind to"
@@ -186,12 +196,14 @@ msgid "Yes"
 msgstr "Ja"
 
 #: admin/ModuleBind.py:75
-msgid "Assign new port"
+#, fuzzy
+msgid "Assign new IP/Port"
 msgstr "Tilldela ny port"
 
 #: admin/ModuleBind.py:97 admin/ModuleExists.py:71
-#: admin/ModuleExtensions.py:32 admin/ModuleGeoip.py:65
-#: admin/ModuleMethod.py:61 admin/ModuleRequest.py:32
+#: admin/ModuleExtensions.py:32 admin/ModuleFrom.py:64
+#: admin/ModuleFullpath.py:61 admin/ModuleGeoip.py:65 admin/ModuleMethod.py:61
+#: admin/ModuleRequest.py:32
 msgid "ERROR, a 'value' entry is needed!"
 msgstr "FEL, ett 'värde' behövs"
 
@@ -260,7 +272,7 @@ msgid "Name"
 msgstr "Namn"
 
 #: admin/ModuleCgi.py:75 admin/ModuleProxy.py:100 admin/ModuleProxy.py:116
-#: admin/PageInfoSource.py:149
+#: admin/PageInfoSource.py:156
 msgid "Value"
 msgstr "Värde"
 
@@ -313,8 +325,9 @@ msgid "Password for the user accessing the database."
 msgstr "Lösenord till databasen."
 
 #: admin/ModuleDbslayer.py:22
-msgid "Optionally specifies a database to connect to."
-msgstr "Välj vid behov en databas att ansluta till."
+#, fuzzy
+msgid "Database to connect to."
+msgstr "Serverport att ansluta till."
 
 #: admin/ModuleDbslayer.py:25
 msgid "MySQL balancing"
@@ -348,8 +361,8 @@ msgstr "Databas"
 msgid "Data base balancing"
 msgstr "Databas-balansering"
 
-#: admin/ModuleDbslayer.py:52 admin/ModuleFcgi.py:34 admin/ModuleMirror.py:28
-#: admin/ModuleProxy.py:49 admin/ModuleScgi.py:36
+#: admin/ModuleDbslayer.py:52 admin/ModuleFcgi.py:34 admin/ModuleProxy.py:49
+#: admin/ModuleScgi.py:36
 msgid "Balancer"
 msgstr "Balanserare"
 
@@ -359,6 +372,9 @@ msgid ""
 msgstr "Publik webkatalog som konfigurationen ska appliceras på."
 
 #: admin/ModuleDirectory.py:22 admin/ModuleDirectory.py:24
+#: admin/Wizard_Django.py:148 admin/Wizard_Django.py:150
+#: admin/Wizard_Drupal.py:211 admin/Wizard_RoR.py:234 admin/Wizard_RoR.py:236
+#: admin/Wizard_WordPress.py:185
 msgid "Web Directory"
 msgstr "Webkatalog"
 
@@ -382,56 +398,61 @@ msgstr "Lista av filer som inte bör visas."
 msgid "Only listing"
 msgstr ""
 
-#: admin/ModuleDirlist.py:42
+#: admin/ModuleDirlist.py:43
 msgid "Listing"
 msgstr ""
 
-#: admin/ModuleDirlist.py:44
+#: admin/ModuleDirlist.py:45
 msgid "Show Size"
 msgstr "Visa storlek"
 
-#: admin/ModuleDirlist.py:45
+#: admin/ModuleDirlist.py:46
 msgid "Show Date"
 msgstr "Visa datum"
 
-#: admin/ModuleDirlist.py:46
+#: admin/ModuleDirlist.py:47
 msgid "Show User"
 msgstr "Visa användare"
 
-#: admin/ModuleDirlist.py:47
+#: admin/ModuleDirlist.py:48
 msgid "Show Group"
 msgstr "Visa grupp"
 
-#: admin/ModuleDirlist.py:48
+#: admin/ModuleDirlist.py:49
 msgid "Show Backup files"
 msgstr ""
 
-#: admin/ModuleDirlist.py:49
+#: admin/ModuleDirlist.py:50
 #, fuzzy
 msgid "Show Hidden files"
 msgstr "Gömda filer"
 
-#: admin/ModuleDirlist.py:50
+#: admin/ModuleDirlist.py:51
 msgid "Allow symbolic links"
 msgstr "Tillåt symboliska länkar"
 
-#: admin/ModuleDirlist.py:53
+#: admin/ModuleDirlist.py:52
+#, fuzzy
+msgid "Redirect symbolic links"
+msgstr "Tillåt symboliska länkar"
+
+#: admin/ModuleDirlist.py:55
 msgid "Theming"
 msgstr "Teman"
 
-#: admin/ModuleDirlist.py:56
+#: admin/ModuleDirlist.py:58
 msgid "Theme"
 msgstr "Tema"
 
-#: admin/ModuleDirlist.py:57
+#: admin/ModuleDirlist.py:59
 msgid "Icons dir"
 msgstr "Ikonkatalog"
 
-#: admin/ModuleDirlist.py:58
+#: admin/ModuleDirlist.py:60
 msgid "Notice files"
 msgstr "Meddelandefiler"
 
-#: admin/ModuleDirlist.py:59
+#: admin/ModuleDirlist.py:61
 msgid "Hidden files"
 msgstr "Gömda filer"
 
@@ -456,13 +477,13 @@ msgid "Error"
 msgstr "Fel"
 
 #: admin/ModuleErrorRedir.py:41 admin/ModuleErrorRedir.py:52
-#: admin/consts.py:18
+#: admin/Wizard_HotLinking.py:77 admin/consts.py:18
 msgid "Redirection"
 msgstr "Omdirigering"
 
 #: admin/ModuleErrorRedir.py:41 admin/ModuleErrorRedir.py:52
-#: admin/ModuleRedir.py:35 admin/PageInfoSource.py:166
-#: admin/PageInfoSource.py:193 admin/PageInfoSource.py:222
+#: admin/ModuleRedir.py:35 admin/PageInfoSource.py:182
+#: admin/PageInfoSource.py:210 admin/PageInfoSource.py:239
 #: admin/PageVServer.py:349
 msgid "Type"
 msgstr "Typ"
@@ -591,6 +612,45 @@ msgstr "Statiskt innehåll"
 #: admin/ModuleFile.py:28
 msgid "File Sending"
 msgstr ""
+
+#: admin/ModuleFrom.py:9
+msgid "IP or SubNet to check the connection origin against."
+msgstr ""
+
+#: admin/ModuleFrom.py:27 admin/ModuleFrom.py:76 admin/consts.py:134
+#, fuzzy
+msgid "Connected from"
+msgstr "Anslutning"
+
+#: admin/ModuleFrom.py:35
+msgid "IP or SubNet"
+msgstr ""
+
+#: admin/ModuleFrom.py:54
+#, fuzzy
+msgid "Add new entry"
+msgstr "Lägg till nytt par"
+
+#: admin/ModuleFullpath.py:9
+#, fuzzy
+msgid ""
+"Full path request to which content the configuration will be applied. (Eg: /"
+"favicon.ico)"
+msgstr "Publik webkatalog som konfigurationen ska appliceras på."
+
+#: admin/ModuleFullpath.py:22 admin/ModuleFullpath.py:52 admin/consts.py:133
+msgid "Full Path"
+msgstr "Hela sökvägen"
+
+#: admin/ModuleFullpath.py:40
+#, fuzzy
+msgid "Full Web Paths"
+msgstr "Hela sökvägen"
+
+#: admin/ModuleFullpath.py:43
+#, fuzzy
+msgid "Add another path"
+msgstr "Lägg till nytt par"
 
 #: admin/ModuleGeoip.py:12
 msgid "Add the initial country. It's possible to add more later on."
@@ -748,14 +808,6 @@ msgstr "HTTP-metoden som ska matcha denna regel."
 msgid "Method"
 msgstr "Metod"
 
-#: admin/ModuleMirror.py:12
-msgid "TCP balancer"
-msgstr "TCP-balanserare"
-
-#: admin/ModuleMirror.py:33
-msgid "Load balancing options"
-msgstr "Lastbalanserings-inställningar"
-
 #: admin/ModuleMysql.py:7
 msgid "MySQL server IP address."
 msgstr "MySQL-serverns IP-adress."
@@ -797,7 +849,7 @@ msgstr ""
 msgid "Unix Socket"
 msgstr "Unix-socket"
 
-#: admin/ModuleMysql.py:49 admin/ModuleMysql.py:65
+#: admin/ModuleMysql.py:49 admin/ModuleMysql.py:65 admin/Wizard.py:16
 msgid "Database"
 msgstr "Databas"
 
@@ -968,8 +1020,8 @@ msgstr "Åtminstone ett reguljärt uttryck måste anges."
 msgid "New Regular Expression"
 msgstr "Nytt reguljärt uttryck"
 
-#: admin/ModuleRehost.py:60 admin/ModuleWildcard.py:60
-#: admin/PageInfoSource.py:238
+#: admin/ModuleRehost.py:60 admin/ModuleTargetIp.py:62
+#: admin/ModuleWildcard.py:60 admin/PageInfoSource.py:255
 msgid "Add new"
 msgstr "Lägg till ny"
 
@@ -984,6 +1036,33 @@ msgid ""
 msgstr ""
 "<i>Round robin</i>-balanseraren kan antingen komma åt fjärr-värdar eller "
 "starta lokala applikations-servrar och ansluta till dem."
+
+#: admin/ModuleRrd.py:7
+msgid "Directory where the RRDtool databases should be written."
+msgstr ""
+
+#: admin/ModuleRrd.py:8
+msgid ""
+"Path to the rrdtool binary. By default the server will look in the PATH."
+msgstr ""
+
+#: admin/ModuleRrd.py:9
+msgid "How often usage graphics should be regenerated. (Default: 60 seconds)"
+msgstr ""
+
+#: admin/ModuleRrd.py:26
+msgid "RRD Database directory"
+msgstr ""
+
+#: admin/ModuleRrd.py:27
+#, fuzzy
+msgid "Custom rrdtool binary"
+msgstr "Egna omdirigeringar"
+
+#: admin/ModuleRrd.py:28
+#, fuzzy
+msgid "Rendering interval (<i>secs</i>)"
+msgstr "Timeout  (<i>sekunder</i>)"
 
 #: admin/ModuleScgi.py:32
 msgid "SCGI specific"
@@ -1046,7 +1125,7 @@ msgstr "Sekretessinställningar"
 msgid "Show Information"
 msgstr "Visa information"
 
-#: admin/ModuleSsi.py:5 admin/consts.py:24
+#: admin/ModuleSsi.py:5 admin/consts.py:25
 msgid "Server Side Includes"
 msgstr "Server Side Includes"
 
@@ -1082,6 +1161,29 @@ msgstr "Accelerations-faktor"
 msgid "Initial Boost"
 msgstr ""
 
+#: admin/ModuleTargetIp.py:9
+msgid ""
+"IP or Subnet of the NIC that accepted the request. Example: ::1, or "
+"10.0.0.0/8"
+msgstr ""
+
+#: admin/ModuleTargetIp.py:10
+#, fuzzy
+msgid "At least one IP or Subnet entry must be defined."
+msgstr "Åtminstone en sträng med joker-tecken måste anges."
+
+#: admin/ModuleTargetIp.py:30
+msgid "Accepted Server IP addresses and subnets"
+msgstr ""
+
+#: admin/ModuleTargetIp.py:34
+msgid "IP or Subnet"
+msgstr ""
+
+#: admin/ModuleTargetIp.py:61
+msgid "New IP/Subnet"
+msgstr ""
+
 #: admin/ModuleWildcard.py:9
 msgid ""
 "Accepted host name. Wildcard characters (* and ?) are allowed. Eg: *example."
@@ -1104,69 +1206,74 @@ msgstr "Domän-mönster"
 msgid "New host name"
 msgstr "Nytt värdnamn"
 
-#: admin/Page.py:99
+#: admin/Page.py:102
 msgid "Version:"
 msgstr "Version"
 
-#: admin/Page.py:128
+#: admin/Page.py:131
 msgid "Help"
 msgstr "Hjälp"
 
-#: admin/Page.py:151 admin/PageAdvanced.py:108 admin/PageStatus.py:60
+#: admin/Page.py:154 admin/PageAdvanced.py:108 admin/PageStatus.py:60
 #: admin/PageVServer.py:492
 msgid "Status"
 msgstr "Status"
 
-#: admin/Page.py:152
+#: admin/Page.py:155
 msgid "General"
 msgstr "Allmänt"
 
-#: admin/Page.py:153 admin/PageVServer.py:69 admin/PageVServers.py:25
+#: admin/Page.py:156 admin/PageVServer.py:69 admin/PageVServers.py:25
 #: admin/PageVServers.py:130
 msgid "Virtual Servers"
 msgstr "Virtuella servrar"
 
-#: admin/Page.py:155 admin/PageIcon.py:12
+#: admin/Page.py:158 admin/PageIcon.py:12
 msgid "Icons"
 msgstr "Ikoner"
 
-#: admin/Page.py:156
+#: admin/Page.py:159
 msgid "Mime Types"
 msgstr "Mime-typer"
 
-#: admin/Page.py:157 admin/PageAdvanced.py:65
+#: admin/Page.py:160 admin/PageAdvanced.py:65
 msgid "Advanced"
 msgstr "Avancerat"
 
-#: admin/Page.py:158
+#: admin/Page.py:161
 msgid "Save Changes"
 msgstr "Spara ändringar"
 
-#: admin/Page.py:159
+#: admin/Page.py:162
 msgid "Save"
 msgstr "Spara"
 
-#: admin/Page.py:160
+#: admin/Page.py:163
 msgid "Apply"
 msgstr "Tillämpa"
 
 #: admin/Page.py:164
+#, fuzzy
+msgid "Optional"
+msgstr "Ytterligare inställningar"
+
+#: admin/Page.py:168
 msgid "Graceful restart"
 msgstr "Snäll omstart"
 
-#: admin/Page.py:165
+#: admin/Page.py:169
 msgid "Hard restart"
 msgstr "Hård omstart"
 
-#: admin/Page.py:166
+#: admin/Page.py:170
 msgid "Do not restart"
 msgstr "Starta inte om"
 
-#: admin/Page.py:169
+#: admin/Page.py:173
 msgid "Commit to disk and apply changes to the running server"
 msgstr "Skriv ändringar till disk och starta om den körande servern."
 
-#: admin/Page.py:172
+#: admin/Page.py:176
 msgid "Commit all the changes permanently"
 msgstr "Skriv alla ändringar permanent."
 
@@ -1387,7 +1494,7 @@ msgstr ""
 msgid "Panic action"
 msgstr "Panikåtgärd"
 
-#: admin/PageAdvanced.py:119 admin/PageStatus.py:137
+#: admin/PageAdvanced.py:119 admin/PageStatus.py:148
 msgid "PID file"
 msgstr "PID-fil"
 
@@ -1475,7 +1582,7 @@ msgstr ""
 msgid "Behavior rules"
 msgstr "Betéende-regler"
 
-#: admin/PageEntry.py:152 admin/PageInfoSource.py:274
+#: admin/PageEntry.py:152 admin/PageInfoSource.py:291
 msgid "Rule"
 msgstr "Regel"
 
@@ -1484,7 +1591,8 @@ msgstr "Regel"
 msgid "Handler"
 msgstr "Hanterare"
 
-#: admin/PageEntry.py:161 admin/PageVServer.py:511 admin/PageVServers.py:275
+#: admin/PageEntry.py:161 admin/PageVServer.py:511 admin/PageVServers.py:274
+#: admin/Wizard_Django.py:88
 msgid "Document Root"
 msgstr "Dokumentrot"
 
@@ -1525,6 +1633,9 @@ msgid "Authentication"
 msgstr "Autentisering"
 
 #: admin/PageEntry.py:239 admin/PageVServer.py:265 admin/PageVServers.py:144
+#: admin/Wizard_Django.py:96 admin/Wizard_Drupal.py:137
+#: admin/Wizard_Mailman.py:132 admin/Wizard_RoR.py:172
+#: admin/Wizard_WordPress.py:115
 msgid "Logging"
 msgstr "Loggning"
 
@@ -1887,64 +1998,74 @@ msgstr ""
 "Kör tolken med en annan grupp.  Förvalt värde: Samma GID som nytt process-"
 "UID."
 
-#: admin/PageInfoSource.py:129
+#: admin/PageInfoSource.py:21
+msgid ""
+"Whether the new child process should inherit the environment variables from "
+"the server process. Default: yes."
+msgstr ""
+
+#: admin/PageInfoSource.py:135
 msgid "Environment variables"
 msgstr "Miljövariabler"
 
-#: admin/PageInfoSource.py:144
+#: admin/PageInfoSource.py:151
 msgid "Add new Environment variable"
 msgstr "Lägg till ny miljövariabel"
 
-#: admin/PageInfoSource.py:149
+#: admin/PageInfoSource.py:156
 msgid "Variable"
 msgstr "Variabel"
 
-#: admin/PageInfoSource.py:168 admin/PageInfoSource.py:195
-#: admin/PageInfoSource.py:222
+#: admin/PageInfoSource.py:184 admin/PageInfoSource.py:212
+#: admin/PageInfoSource.py:239
 msgid "Connection"
 msgstr "Anslutning"
 
-#: admin/PageInfoSource.py:170 admin/PageInfoSource.py:197
+#: admin/PageInfoSource.py:186 admin/PageInfoSource.py:214
 msgid "Interpreter"
 msgstr "Tolk"
 
-#: admin/PageInfoSource.py:171 admin/PageInfoSource.py:198
+#: admin/PageInfoSource.py:187 admin/PageInfoSource.py:215
 msgid "Spawning timeout"
 msgstr "Tidsgräns för nya processer"
 
-#: admin/PageInfoSource.py:172 admin/PageInfoSource.py:199
+#: admin/PageInfoSource.py:188 admin/PageInfoSource.py:216
 msgid "Execute as User"
 msgstr "Kör som användare"
 
-#: admin/PageInfoSource.py:173 admin/PageInfoSource.py:200
+#: admin/PageInfoSource.py:189 admin/PageInfoSource.py:217
 msgid "Execute as Group"
 msgstr "Kör som grupp"
 
-#: admin/PageInfoSource.py:207
+#: admin/PageInfoSource.py:190
+msgid "Inherit Environment"
+msgstr ""
+
+#: admin/PageInfoSource.py:224
 msgid "Information Sources Settings"
 msgstr "Inställningar för informationskällor"
 
-#: admin/PageInfoSource.py:219
+#: admin/PageInfoSource.py:236
 msgid "Known sources"
 msgstr "Kända källor"
 
-#: admin/PageInfoSource.py:232
+#: admin/PageInfoSource.py:249
 msgid "Deletion forbidden. Check source usage."
 msgstr "Borttagning omöjlig. Kolla användandet av källan."
 
-#: admin/PageInfoSource.py:247
+#: admin/PageInfoSource.py:264
 msgid "Details:"
 msgstr "Detaljer:"
 
-#: admin/PageInfoSource.py:253
+#: admin/PageInfoSource.py:270
 msgid "Add a new"
 msgstr "Lägg till ny"
 
-#: admin/PageInfoSource.py:262
+#: admin/PageInfoSource.py:279
 msgid "Source usage"
 msgstr "Användandet av källa"
 
-#: admin/PageInfoSource.py:274
+#: admin/PageInfoSource.py:291
 msgid "Virtual server"
 msgstr "Virtuell server"
 
@@ -2117,66 +2238,67 @@ msgstr "Språk"
 msgid "Proud Cherokee Users"
 msgstr "Stolta Cherokee-användare"
 
-#: admin/PageStatus.py:127
+#: admin/PageStatus.py:138
 msgid "Version"
 msgstr "Version"
 
-#: admin/PageStatus.py:128
+#: admin/PageStatus.py:139
+#, fuzzy
+msgid "Default WWW"
+msgstr "Förvald"
+
+#: admin/PageStatus.py:140
 msgid "Prefix"
 msgstr "Prefix"
 
-#: admin/PageStatus.py:129
-msgid "WWW Root"
-msgstr "WWW-rot"
-
-#: admin/PageStatus.py:135
+#: admin/PageStatus.py:146
 msgid "Not running"
 msgstr "Körs inte"
 
-#: admin/PageStatus.py:144 admin/PageStatus.py:147
+#: admin/PageStatus.py:155 admin/PageStatus.py:158
 msgid "Configuration File"
 msgstr "Konfigurationsfil"
 
-#: admin/PageStatus.py:145
+#: admin/PageStatus.py:156
 msgid "Modified"
 msgstr "Modifierad"
 
-#: admin/PageStatus.py:147
+#: admin/PageStatus.py:158
 msgid "Not Found"
 msgstr "Hittades inte"
 
-#: admin/PageStatus.py:159 admin/PageStatus.py:160
+#: admin/PageStatus.py:170 admin/PageStatus.py:171
 #, fuzzy
 msgid "Server Traffic"
 msgstr "Serverinfo"
 
-#: admin/PageStatus.py:161
+#: admin/PageStatus.py:172
 #, fuzzy
 msgid "Accepted Connections"
 msgstr "Godkända domäner"
 
-#: admin/PageStatus.py:162
+#: admin/PageStatus.py:173
 #, fuzzy
 msgid "Connections Timeout"
 msgstr "Anslutningar"
 
-#: admin/PageStatus.py:167 admin/PageVServer.py:561
+#: admin/PageStatus.py:178 admin/PageVServer.py:561
 msgid "1 month"
 msgstr ""
 
-#: admin/PageStatus.py:168 admin/PageVServer.py:562
+#: admin/PageStatus.py:179 admin/PageVServer.py:562
 msgid "1 week"
 msgstr ""
 
-#: admin/PageStatus.py:169 admin/PageVServer.py:563
+#: admin/PageStatus.py:180 admin/PageVServer.py:563
 msgid "1 day"
 msgstr ""
 
-#: admin/PageStatus.py:170 admin/PageVServer.py:564
+#: admin/PageStatus.py:181 admin/PageVServer.py:564
 msgid "6 hours"
 msgstr ""
 
-#: admin/PageStatus.py:171 admin/PageVServer.py:565
+#: admin/PageStatus.py:182 admin/PageVServer.py:565
 msgid "1 hour"
 msgstr ""
 
@@ -2214,9 +2336,10 @@ msgid "PEM-encoded Private Key file for the server (Full path to the file)"
 msgstr "PEM-kodad privat nyckelfil för servern (Hela sökvägen till filen)"
 
 #: admin/PageVServer.py:41
+#, fuzzy
 msgid ""
-"Optional: File containing the trusted CA certificates, utilized for checking "
-"the client certificates (Full path to the file)"
+"File containing the trusted CA certificates, utilized for checking the "
+"client certificates (Full path to the file)"
 msgstr ""
 "Valbart: Fil som innehåller det betrodda  CA-certifikatet.  Används för att "
 "kolla klientcertifikat. (Hela sökvägen till filen)"
@@ -2232,7 +2355,8 @@ msgstr ""
 "alla chiffer som stöds  av  OpenSSL används)."
 
 #: admin/PageVServer.py:43
-msgid "Optional: Skip, Accept or Require client certificates."
+#, fuzzy
+msgid "Skip, Accept or Require client certificates."
 msgstr "Valbart: Använd inte, acceptera eller kräv klientcertifikat."
 
 #: admin/PageVServer.py:44
@@ -2375,7 +2499,7 @@ msgstr "Loggare"
 msgid "SSL cookbook"
 msgstr "SSL-kokbok"
 
-#: admin/PageVServer.py:204 admin/PageVServer.py:215 admin/PageVServers.py:288
+#: admin/PageVServer.py:204 admin/PageVServer.py:215 admin/PageVServers.py:287
 msgid "Virtual Server"
 msgstr "Virtuell server"
 
@@ -2383,11 +2507,11 @@ msgstr "Virtuell server"
 msgid "Basics"
 msgstr "Allmänt"
 
-#: admin/PageVServer.py:242 admin/PageVServers.py:311
+#: admin/PageVServer.py:242 admin/PageVServers.py:310
 msgid "Wizards"
 msgstr "Guider"
 
-#: admin/PageVServer.py:245
+#: admin/PageVServer.py:245 admin/Wizard_HotLinking.py:71
 msgid "Behavior"
 msgstr "Betéende"
 
@@ -2463,7 +2587,7 @@ msgstr ""
 msgid "Final"
 msgstr ""
 
-#: admin/PageVServer.py:480 admin/PageVServers.py:325
+#: admin/PageVServer.py:480 admin/PageVServers.py:324
 msgid "<h2>Wizards</h2>"
 msgstr "<h2>Guider</h2>"
 
@@ -2593,7 +2717,7 @@ msgstr ""
 msgid "Virtual Servers configuration"
 msgstr "Konfiguration för virtuella servrar."
 
-#: admin/PageVServers.py:144 admin/PageVServers.py:275
+#: admin/PageVServers.py:144 admin/PageVServers.py:274
 msgid "Nickname"
 msgstr "Smeknamn"
 
@@ -2606,19 +2730,24 @@ msgstr "Domäner"
 msgid "Stats"
 msgstr "Status"
 
-#: admin/PageVServers.py:281 admin/PageVServers.py:309
+#: admin/PageVServers.py:148
+#, fuzzy
+msgid "Offline"
+msgstr "Av"
+
+#: admin/PageVServers.py:280 admin/PageVServers.py:308
 msgid "Add new Virtual Server"
 msgstr "Lägg till ny virtuell server"
 
-#: admin/PageVServers.py:288
+#: admin/PageVServers.py:287
 msgid "Clone as.."
 msgstr "Klona som.."
 
-#: admin/PageVServers.py:300 admin/PageVServers.py:310
+#: admin/PageVServers.py:299 admin/PageVServers.py:309
 msgid "Clone Virtual Server"
 msgstr "Klona virtuell server"
 
-#: admin/PageVServers.py:356 admin/PageVServers.py:370
+#: admin/PageVServers.py:355 admin/PageVServers.py:369
 #: admin/validations.py:259
 msgid "Cannot be empty"
 msgstr "Kan inte vara tom"
@@ -2679,6 +2808,366 @@ msgstr "Ta bort"
 msgid "Clone"
 msgstr "Klona"
 
+#: admin/Wizard.py:8
+msgid "Use the same logging configuration as one of the other virtual servers."
+msgstr ""
+
+#: admin/Wizard.py:10
+msgid "Misc"
+msgstr ""
+
+#: admin/Wizard.py:11
+msgid "CMS"
+msgstr ""
+
+#: admin/Wizard.py:12
+msgid "Tasks"
+msgstr ""
+
+#: admin/Wizard.py:13
+msgid "Platforms"
+msgstr ""
+
+#: admin/Wizard.py:14
+#, fuzzy
+msgid "Languages"
+msgstr "Språk"
+
+#: admin/Wizard.py:15
+msgid "Management"
+msgstr ""
+
+#: admin/Wizard.py:22
+#, fuzzy
+msgid "Unknown wizard"
+msgstr "Okänd"
+
+#: admin/Wizard.py:208
+msgid "Same logs as vserver"
+msgstr ""
+
+#: admin/Wizard_Django.py:11
+msgid "Local path to the Django based project."
+msgstr ""
+
+#: admin/Wizard_Django.py:12 admin/Wizard_Mailman.py:11 admin/Wizard_RoR.py:15
+#, fuzzy
+msgid "Name of the new domain that will be created."
+msgstr "Sökväg till PID-filen. Är fältet tomt skapas filen inte."
+
+#: admin/Wizard_Django.py:14
+msgid "It does not look like a Django based project directory."
+msgstr ""
+
+#: admin/Wizard_Django.py:15 admin/Wizard_RoR.py:23
+msgid "The document root directory does not exist."
+msgstr ""
+
+#: admin/Wizard_Django.py:58
+msgid "Directory doesn't look like a Django based project."
+msgstr ""
+
+#: admin/Wizard_Django.py:70
+msgid "New virtual server based on a Django project."
+msgstr ""
+
+#: admin/Wizard_Django.py:76 admin/Wizard_Django.py:139
+#, fuzzy
+msgid "Django Wizard"
+msgstr "Guider"
+
+#: admin/Wizard_Django.py:85 admin/Wizard_Mailman.py:120
+#: admin/Wizard_RoR.py:159
+#, fuzzy
+msgid "New Virtual Server"
+msgstr "Virtuell server"
+
+#: admin/Wizard_Django.py:87 admin/Wizard_Drupal.py:133
+#: admin/Wizard_Mailman.py:122 admin/Wizard_RoR.py:161
+#: admin/Wizard_WordPress.py:111
+#, fuzzy
+msgid "New Host Name"
+msgstr "Nytt värdnamn"
+
+#: admin/Wizard_Django.py:91 admin/Wizard_Django.py:153
+msgid "Django Project"
+msgstr ""
+
+#: admin/Wizard_Django.py:93 admin/Wizard_Django.py:155
+#: admin/Wizard_RoR.py:168 admin/Wizard_RoR.py:243
+#, fuzzy
+msgid "Project Directory"
+msgstr "Webkatalog"
+
+#: admin/Wizard_Django.py:133
+msgid "New directory based on a Django project."
+msgstr ""
+
+#: admin/Wizard_Drupal.py:12
+msgid ""
+"Path to the directory where the Drupal source code is located. (Example: /"
+"usr/share/drupal)"
+msgstr ""
+
+#: admin/Wizard_Drupal.py:13
+msgid "Web directory where you want Drupal to be accessible. (Example: /blog)"
+msgstr ""
+
+#: admin/Wizard_Drupal.py:14 admin/Wizard_WordPress.py:14
+msgid "Host name of the virtual host that is about to be created."
+msgstr ""
+
+#: admin/Wizard_Drupal.py:15
+msgid "Does not look like a Drupal source directory."
+msgstr ""
+
+#: admin/Wizard_Drupal.py:16 admin/Wizard_WordPress.py:16
+msgid "A web directory must be provided."
+msgstr ""
+
+#: admin/Wizard_Drupal.py:17 admin/Wizard_WordPress.py:17
+msgid "A host name must be provided."
+msgstr ""
+
+#: admin/Wizard_Drupal.py:115
+msgid "Configure a new virtual server using Drupal."
+msgstr ""
+
+#: admin/Wizard_Drupal.py:121 admin/Wizard_Drupal.py:196
+#, fuzzy
+msgid "Drupal Wizard"
+msgstr "Guider"
+
+#: admin/Wizard_Drupal.py:134 admin/Wizard_Drupal.py:212
+#: admin/Wizard_WordPress.py:112 admin/Wizard_WordPress.py:186
+#, fuzzy
+msgid "Source Directory"
+msgstr "Webkatalog"
+
+#: admin/Wizard_Drupal.py:167 admin/Wizard_WordPress.py:145
+msgid "Couldn't find a suitable PHP interpreter."
+msgstr ""
+
+#: admin/Wizard_Drupal.py:190
+msgid "Configures Drupal inside a public web directory."
+msgstr ""
+
+#: admin/Wizard_Drupal.py:203 admin/Wizard_WordPress.py:177
+msgid "PHP support is required."
+msgstr ""
+
+#: admin/Wizard_HotLinking.py:11
+msgid "Domain allowed to access the files. Eg: example.com"
+msgstr ""
+
+#: admin/Wizard_HotLinking.py:12
+msgid "Path to the public to use. Eg: /images/forbidden.jpg"
+msgstr ""
+
+#: admin/Wizard_HotLinking.py:13
+msgid "How to handle hot-linking requests."
+msgstr ""
+
+#: admin/Wizard_HotLinking.py:14
+msgid "A domain name is required"
+msgstr ""
+
+#: admin/Wizard_HotLinking.py:48
+msgid "Stop other domains from hot-linking your media files."
+msgstr ""
+
+#: admin/Wizard_HotLinking.py:54
+msgid "Hot Linking Prevention Wizard"
+msgstr ""
+
+#: admin/Wizard_HotLinking.py:66
+#, fuzzy
+msgid "Local Host Name"
+msgstr "Nytt värdnamn"
+
+#: admin/Wizard_HotLinking.py:68
+#, fuzzy
+msgid "Domain Name"
+msgstr "Domän-mönster"
+
+#: admin/Wizard_HotLinking.py:73
+#, fuzzy
+msgid "Reply type"
+msgstr "Svar"
+
+#: admin/Wizard_Mailman.py:8
+msgid "Local path to the Mailman CGI directory."
+msgstr ""
+
+#: admin/Wizard_Mailman.py:9
+msgid "Local path to the Mailman data directory."
+msgstr ""
+
+#: admin/Wizard_Mailman.py:10
+msgid "Local path to the Mailman mail archive directory."
+msgstr ""
+
+#: admin/Wizard_Mailman.py:74
+msgid "It doesn't look like a Mailman data directory."
+msgstr ""
+
+#: admin/Wizard_Mailman.py:81
+msgid "It doesn't look like a Mailman CGI directory."
+msgstr ""
+
+#: admin/Wizard_Mailman.py:88
+msgid "It doesn't look like a Mailman archive directory."
+msgstr ""
+
+#: admin/Wizard_Mailman.py:102
+msgid "New virtual server based on a Mailman mailing list manager."
+msgstr ""
+
+#: admin/Wizard_Mailman.py:108
+msgid "Mailman Wizard"
+msgstr ""
+
+#: admin/Wizard_Mailman.py:127
+#, fuzzy
+msgid "Mailman CGI directory"
+msgstr "Sökvägen är inte en katalog"
+
+#: admin/Wizard_Mailman.py:128
+#, fuzzy
+msgid "Mailman Data directory"
+msgstr "Sökvägen är inte en katalog"
+
+#: admin/Wizard_Mailman.py:129
+#, fuzzy
+msgid "Mail Archive directory"
+msgstr "Rot-katalog för den virtuella servern."
+
+#: admin/Wizard_Redirect.py:11
+msgid ""
+"This domain name will be used as nickname for the new virtual server. More "
+"domains names can be added to the virtual server later on."
+msgstr ""
+
+#: admin/Wizard_Redirect.py:12
+#, fuzzy
+msgid "Domain name to which requests will be redirected."
+msgstr "Reguljärt uttryck som anropet körs mot."
+
+#: admin/Wizard_Redirect.py:13
+#, fuzzy
+msgid "This field can not be empty."
+msgstr "Realm kan inte vara tom"
+
+#: admin/Wizard_Redirect.py:43
+msgid "New virtual server redirecting every request to another domain host."
+msgstr ""
+
+#: admin/Wizard_Redirect.py:49
+#, fuzzy
+msgid "Redirection Wizard"
+msgstr "Omdirigering"
+
+#: admin/Wizard_Redirect.py:59
+#, fuzzy
+msgid "Origin Domain"
+msgstr "Domäner"
+
+#: admin/Wizard_Redirect.py:60
+#, fuzzy
+msgid "Target Domain"
+msgstr "Mål"
+
+#: admin/Wizard_RoR.py:14
+msgid "Local path to the Ruby on Rails based project."
+msgstr ""
+
+#: admin/Wizard_RoR.py:16
+msgid ""
+"Directory of the web directory where the Ruby on Rails project will live in."
+msgstr ""
+
+#: admin/Wizard_RoR.py:17
+msgid "Value of the RAILS_ENV variable."
+msgstr ""
+
+#: admin/Wizard_RoR.py:19
+msgid ""
+"<p>Even though the directory looks like a Ruby on Rails project, the public/"
+"dispatch.fcgi file wasn't found.</p>"
+msgstr ""
+
+#: admin/Wizard_RoR.py:20
+msgid ""
+"<p>However a <b>public/dispatch.fcgi.example</b> file is present, so you "
+"might want to rename it.</p>"
+msgstr ""
+
+#: admin/Wizard_RoR.py:21
+msgid ""
+"<p>If you are using Rails >= 2.3.0, you will have to execute the following "
+"command from the project directory in order to add the missing file:</"
+"p><p><pre>rake rails:update:generate_dispatchers</pre></p>"
+msgstr ""
+
+#: admin/Wizard_RoR.py:22
+msgid "It does not look like a Ruby on Rails based project directory."
+msgstr ""
+
+#: admin/Wizard_RoR.py:113
+msgid "Could not find the spawn-fcgi binary"
+msgstr ""
+
+#: admin/Wizard_RoR.py:147
+msgid "New virtual server based on a Ruby on Rails project."
+msgstr ""
+
+#: admin/Wizard_RoR.py:153 admin/Wizard_RoR.py:228
+msgid "Ruby on Rails Wizard"
+msgstr ""
+
+#: admin/Wizard_RoR.py:164 admin/Wizard_RoR.py:239
+msgid "Ruby on Rails Project"
+msgstr ""
+
+#: admin/Wizard_RoR.py:169 admin/Wizard_RoR.py:244
+msgid "RAILS_ENV environment"
+msgstr ""
+
+#: admin/Wizard_RoR.py:222
+msgid "New directory based on a Ruby of Rails project."
+msgstr ""
+
+#: admin/Wizard_WordPress.py:12
+msgid ""
+"Path to the directory where the Wordpress source code is located. (Example: /"
+"usr/share/wordpress)"
+msgstr ""
+
+#: admin/Wizard_WordPress.py:13
+msgid ""
+"Web directory where you want Wordpress to be accessible. (Example: /blog)"
+msgstr ""
+
+#: admin/Wizard_WordPress.py:15
+msgid "Does not look like a WordPress source directory."
+msgstr ""
+
+#: admin/Wizard_WordPress.py:94
+msgid "Configure a new virtual server using Wordpress."
+msgstr ""
+
+#: admin/Wizard_WordPress.py:100
+msgid "WordPress Wizard"
+msgstr ""
+
+#: admin/Wizard_WordPress.py:164
+msgid "Configures Wordpress inside a public web directory."
+msgstr ""
+
+#: admin/Wizard_WordPress.py:170
+msgid "Wordpress Wizard: Location"
+msgstr ""
+
 #: admin/config.py:184
 #, python-format
 msgid "ERROR: Couldn't unpack '%s'"
@@ -2726,32 +3215,33 @@ msgid "SCGI"
 msgstr "SCGI"
 
 #: admin/consts.py:21
+#, fuzzy
+msgid "uWSGI"
+msgstr "SCGI"
+
+#: admin/consts.py:22
 msgid "HTTP reverse proxy"
 msgstr "HTTP omvänd proxy"
 
-#: admin/consts.py:22
+#: admin/consts.py:23
 msgid "Audio/Video streaming"
 msgstr "Ljud- och video-strömmar"
 
-#: admin/consts.py:23
+#: admin/consts.py:24
 msgid "CGI"
 msgstr "CGI"
 
-#: admin/consts.py:25
+#: admin/consts.py:26
 msgid "Hidden Downloads"
 msgstr "Gömda nedladdningar"
 
-#: admin/consts.py:26
+#: admin/consts.py:27
 msgid "Server Info"
 msgstr "Serverinfo"
 
-#: admin/consts.py:27
+#: admin/consts.py:28
 msgid "MySQL bridge"
 msgstr "MySQL-brygga"
-
-#: admin/consts.py:28
-msgid "Generic balancer"
-msgstr "Generisk balanserare"
 
 #: admin/consts.py:29
 msgid "HTTP error"
@@ -2873,15 +3363,6 @@ msgstr "Automatisk"
 #: admin/consts.py:131
 msgid "HTTP Method"
 msgstr "HTTP-metod"
-
-#: admin/consts.py:133
-msgid "Full Path"
-msgstr "Hela sökvägen"
-
-#: admin/consts.py:134
-#, fuzzy
-msgid "Connected from"
-msgstr "Anslutning"
 
 #: admin/consts.py:135
 msgid "GeoIP"
@@ -3075,6 +3556,21 @@ msgstr "Felformaterad tid"
 #: admin/validations.py:318
 msgid "Virtual host nick is already being used."
 msgstr "Namnet för den virtuella värden används redan."
+
+#~ msgid "WWW Root"
+#~ msgstr "WWW-rot"
+
+#~ msgid "Optionally specifies a database to connect to."
+#~ msgstr "Välj vid behov en databas att ansluta till."
+
+#~ msgid "TCP balancer"
+#~ msgstr "TCP-balanserare"
+
+#~ msgid "Load balancing options"
+#~ msgstr "Lastbalanserings-inställningar"
+
+#~ msgid "Generic balancer"
+#~ msgstr "Generisk balanserare"
 
 #~ msgid "Path"
 #~ msgstr "Sökväg"

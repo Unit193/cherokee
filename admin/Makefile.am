@@ -65,12 +65,12 @@ ModuleServerInfo.py \
 ModuleCgi.py \
 ModuleFcgi.py \
 ModuleScgi.py \
+ModuleUwsgi.py \
 ModuleBalancer.py \
 ModuleSsi.py \
 ModuleSecdownload.py \
 ModuleEmptyGif.py \
 ModuleProxy.py \
-ModuleMirror.py \
 ModuleDbslayer.py \
 ModuleStreaming.py \
 ModuleErrorNn.py \
@@ -120,7 +120,23 @@ Wizard_Drupal.py \
 Wizard_RoR.py \
 Wizard_Mailman.py \
 Wizard_Icons.py \
-Wizard_CommonStatic.py
+Wizard_CommonStatic.py \
+Wizard_Streaming.py \
+Wizard_rTorrent.py \
+Wizard_Joomla.py \
+Wizard_Moodle.py \
+Wizard_Sugar.py \
+Wizard_phpBB.py \
+Wizard_phpMyAdmin.py \
+Wizard_Symfony.py \
+Wizard_Zend.py \
+Wizard_Trac.py \
+Wizard_Liferay.py \
+Wizard_Alfresco.py \
+Wizard_Glassfish.py \
+Wizard_uWSGI.py \
+Wizard_Mono.py \
+Wizard_ColdFusion.py
 endif
 
 adminpy_DATA = $(admin_data)

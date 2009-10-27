@@ -255,10 +255,22 @@ ioentry_update_stat (cherokee_iocache_entry_t *entry)
 	int                 re;
 	ret_t               ret;
 	cherokee_iocache_t *iocache = IOCACHE(CACHE_ENTRY(entry)->cache);
+	
+	/* Returns:
+	 * ret_ok          - Ok, updated
+	 * ret_ok_and_sent - It's still fresh
+	 * ret_deny        - No info about the file
+	 */
 
 	if (PRIV(entry)->stat_expiration >= cherokee_bogonow_now) {
 		TRACE (ENTRIES, "Update stat: %s: updated - skipped\n", 
 		       CACHE_ENTRY(entry)->key.buf);
+
+		/* Checked, but file didn't exist */
+		if (PUBL(entry)->state_ret != ret_ok) {
+			return ret_deny;
+		}
+
 		return ret_ok_and_sent;
 	}
 
@@ -334,8 +346,11 @@ ioentry_update_mmap (cherokee_iocache_entry_t *entry,
 			goto error;
 		}
 
-		if (fd != NULL)
+		cherokee_fd_set_closexec (fd_local);
+
+		if (fd != NULL) {
 			*fd = fd_local;
+		}
 	}
 
 	/* Might need to free the previous mmap

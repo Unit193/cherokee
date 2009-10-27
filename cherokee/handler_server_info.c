@@ -355,12 +355,18 @@ add_traffic (cherokee_dwriter_t *writer,
 	 */
 	cherokee_dwriter_dict_open (writer);
 	cherokee_dwriter_cstring (writer, "tx");
-	cherokee_dwriter_integer (writer,
-				    (srv->collector) ? COLLECTOR_RX(srv->collector) : -1);
+	if (srv->collector) {
+		cherokee_dwriter_integer (writer, COLLECTOR_TX(srv->collector));
+	} else {
+		cherokee_dwriter_number (writer, "-1", 2);
+	}
 
 	cherokee_dwriter_cstring (writer, "rx");
-	cherokee_dwriter_integer (writer, 
-				  (srv->collector) ? COLLECTOR_TX(srv->collector) : -1);
+	if (srv->collector) {
+		cherokee_dwriter_integer (writer, COLLECTOR_RX(srv->collector));
+	} else {
+		cherokee_dwriter_number (writer, "-1", 2);
+	}
 
 	cherokee_dwriter_cstring (writer, "tx_formatted");
 	if (srv->collector != NULL) {
@@ -375,6 +381,24 @@ add_traffic (cherokee_dwriter_t *writer,
 	if (srv->collector != NULL) {
 		cherokee_buffer_clean     (&tmp);
 		cherokee_buffer_add_fsize (&tmp, COLLECTOR_RX(srv->collector));
+		cherokee_dwriter_bstring (writer, &tmp);
+	} else {
+		cherokee_dwriter_cstring (writer, "unknown");
+	}
+
+	cherokee_dwriter_cstring (writer, "accepts");
+	if (srv->collector != NULL) {
+		cherokee_buffer_clean     (&tmp);
+		cherokee_buffer_add_fsize (&tmp, COLLECTOR(srv->collector)->accepts);
+		cherokee_dwriter_bstring (writer, &tmp);
+	} else {
+		cherokee_dwriter_cstring (writer, "unknown");
+	}
+
+	cherokee_dwriter_cstring (writer, "timeouts");
+	if (srv->collector != NULL) {
+		cherokee_buffer_clean     (&tmp);
+		cherokee_buffer_add_fsize (&tmp, COLLECTOR(srv->collector)->timeouts);
 		cherokee_dwriter_bstring (writer, &tmp);
 	} else {
 		cherokee_dwriter_cstring (writer, "unknown");

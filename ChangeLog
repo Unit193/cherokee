@@ -1,3 +1,1779 @@
+2009-10-23  Taher Shihadeh  <taher@unixwars.com>
+            SVN: r3750, taher - 17:29:15
+
+	* i18n
+	M /cherokee/trunk/admin/Wizard_Icons.py
+	M /cherokee/trunk/admin/Wizard_Mailman.py
+	M /cherokee/trunk/admin/Wizard_Moodle.py
+	M /cherokee/trunk/admin/Wizard_Sugar.py
+	M /cherokee/trunk/admin/Wizard_Joomla.py
+	M /cherokee/trunk/admin/Wizard_Glassfish.py
+	M /cherokee/trunk/admin/Wizard_Drupal.py
+	M /cherokee/trunk/admin/Wizard_WordPress.py
+	M /cherokee/trunk/admin/Wizard_Trac.py
+	M /cherokee/trunk/admin/Wizard_Liferay.py
+	M /cherokee/trunk/admin/Wizard_phpBB.py
+	M /cherokee/trunk/admin/Wizard_Alfresco.py
+	M /cherokee/trunk/admin/Wizard_uWSGI.py
+	M /cherokee/trunk/admin/Wizard_Zend.py
+	M /cherokee/trunk/admin/Wizard_Django.py
+	M /cherokee/trunk/admin/Wizard_RoR.py
+	M /cherokee/trunk/admin/Wizard_Symfony.py
+	M /cherokee/trunk/admin/Wizard_ColdFusion.py
+	M /cherokee/trunk/admin/Wizard_HotLinking.py
+	M /cherokee/trunk/admin/Wizard_Mono.py
+
+2009-10-23  Taher Shihadeh  <taher@unixwars.com>
+            SVN: r3749, taher - 16:50:56
+
+
+	M /cherokee/trunk/admin/static/images/wizards/coldfusion.png
+
+2009-10-23  Taher Shihadeh  <taher@unixwars.com>
+            SVN: r3748, taher - 16:49:20
+
+	* Something went wrong with this file previously
+	M /cherokee/trunk/admin/static/images/wizards/coldfusion.png
+
+2009-10-23  Taher Shihadeh  <taher@unixwars.com>
+            SVN: r3747, taher - 16:15:43
+
+	* Adds ColdFusion recipe
+	M /cherokee/trunk/doc/cookbook.txt
+	M /cherokee/trunk/doc/index.txt
+	A /cherokee/trunk/doc/cookbook_coldfusion.txt
+	M /cherokee/trunk/doc/Makefile.am
+
+2009-10-23  Taher Shihadeh  <taher@unixwars.com>
+            SVN: r3746, taher - 16:15:31
+
+	* Adds ColdFusion Wizard
+	A /cherokee/trunk/admin/static/images/wizards/coldfusion.png
+	M /cherokee/trunk/admin/static/images/wizards/Makefile.am
+	M /cherokee/trunk/admin/Makefile.am
+	A /cherokee/trunk/admin/Wizard_ColdFusion.py
+
+2009-10-22  Taher Shihadeh  <taher@unixwars.com>
+            SVN: r3745, taher - 16:22:42
+
+	* Fixes issue 608: PAM troubleshooting info
+	M /cherokee/trunk/doc/modules_validators_pam.txt
+
+2009-10-21  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3740, alo - 15:49:48
+
+	* Fix an issue with the X-Forwarded-For header rewriting. Patch by
+	Stefan Talpalaru. Fixes: http://bugs.cherokee-project.com/612
+	
+	M /cherokee/trunk/cherokee/handler_proxy.c
+
+2009-10-21  Taher Shihadeh  <taher@unixwars.com>
+            SVN: r3739, taher - 10:22:24
+
+	* Little addition for completeness' sake
+	M /cherokee/trunk/doc/config_status.txt
+
+2009-10-21  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3738, alo - 01:44:06
+
+	* The code that was meant to seek on MP4 files, actually seeks on MP3
+	files. Patch by Stefan de Konink <stefan@konink.de>. It fixes #580:
+	http://bugs.cherokee-project.com/580
+	
+	M /cherokee/trunk/cherokee/handler_streaming.c
+
+2009-10-19  Taher Shihadeh  <taher@unixwars.com>
+            SVN: r3737, taher - 13:08:58
+
+	* Mono/ASP.NET Wizard and docs
+	M /cherokee/trunk/admin/static/images/wizards/Makefile.am
+	M /cherokee/trunk/admin/Makefile.am
+	M /cherokee/trunk/doc/cookbook_mono.txt
+	A /cherokee/trunk/admin/static/images/wizards/mono.png
+	A /cherokee/trunk/admin/Wizard_Mono.py
+
+2009-10-19  Taher Shihadeh  <taher@unixwars.com>
+            SVN: r3736, taher - 13:08:41
+
+	* Some clarification
+	M /cherokee/trunk/doc/cookbook_django.txt
+
+2009-10-19  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3735, alo - 10:17:27
+
+	* The ./autogen.sh script was failing to regenerate the changelog file
+	on OpenSolaris. It seems that the Solaris sed had trouble parsing the
+	version string if it did not end by a new line character. As far as I
+	have tested it patch solved the problem in Solaris while it preservers
+	the functionality on Linux and MacOS X.
+	
+	M /cherokee/trunk/changelog-update.sh
+
+2009-10-19  Taher Shihadeh  <taher@unixwars.com>
+            SVN: r3734, taher - 09:07:17
+
+	* Solves Drupal bugs, issues 541 & 583. Thanks to David Becerril for his insight
+	M /cherokee/trunk/doc/cookbook_drupal.txt
+	M /cherokee/trunk/admin/Wizard_Drupal.py
+
+2009-10-19  Taher Shihadeh  <taher@unixwars.com>
+            SVN: r3733, taher - 08:22:47
+
+	* Typo
+	M /cherokee/trunk/cherokee/spawner.c
+
+2009-10-19  Taher Shihadeh  <taher@unixwars.com>
+            SVN: r3732, taher - 07:45:26
+
+	* Missing i18n
+	M /cherokee/trunk/admin/Wizard_RoR.py
+	M /cherokee/trunk/admin/Wizard_WordPress.py
+
+2009-10-18  Taher Shihadeh  <taher@unixwars.com>
+            SVN: r3731, taher - 14:22:00
+
+	* An error was preventing ASCIIDOC from correctly generating the docs
+	M /cherokee/trunk/doc/config_virtual_servers.txt
+
+2009-10-17  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3730, alo - 13:05:57
+
+	* Adds a new tracing point to inform about reiterative fails to spawn
+	new interpreters.
+	
+	M /cherokee/trunk/cherokee/source_interpreter.c
+
+2009-10-17  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3729, alo - 12:53:02
+
+	* This patch tries to address a spawning issue where the server was
+	crashing randomly while launching interpreters. It should fix (at
+	least partially): http://bugs.cherokee-project.com/598
+	
+	M /cherokee/trunk/cherokee/source_interpreter.c
+	M /cherokee/trunk/cherokee/source_interpreter.h
+	M /cherokee/trunk/cherokee/spawner.c
+
+2009-10-17  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3728, alo - 11:14:35
+
+	* Adds a new REPORT method, so SVN can checkout through the reverse
+	proxy handler. Related to: http://bugs.cherokee-project.com/599
+	
+	M /cherokee/trunk/cherokee/http.h
+	M /cherokee/trunk/cherokee/header.c
+	M /cherokee/trunk/cherokee/http.c
+
+2009-10-17  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3727, alo - 09:02:37
+
+	* The reverse proxy handler was not working with WebDAV back-ends. This
+	patch should fix it. At least "svn ls" succeed on my initial tests.
+	Further testing is required. Bug: http://bugs.cherokee-project.com/599
+	
+	M /cherokee/trunk/cherokee/http.h
+	M /cherokee/trunk/cherokee/http.c
+
+2009-10-16  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3726, alo - 17:44:05
+
+	* handler_server_info bug fix. The rx, and tx values were wrong when the
+	server run without any information collector. This patch makes them
+	report -1 bytes. Fixes bug #605: http://bugs.cherokee-project.com/605
+	
+	M /cherokee/trunk/cherokee/handler_server_info.c
+
+2009-10-16  Taher Shihadeh  <taher@unixwars.com>
+            SVN: r3725, taher - 17:26:37
+
+	* Fixes omission
+	M /cherokee/trunk/doc/config_virtual_servers.txt
+
+2009-10-16  Taher Shihadeh  <taher@unixwars.com>
+            SVN: r3724, taher - 17:23:51
+
+	* A doc entry wasn't indexed
+	M /cherokee/trunk/doc/config.txt
+	M /cherokee/trunk/doc/index.txt
+	M /cherokee/trunk/doc/config_virtual_servers.txt
+
+2009-10-16  Taher Shihadeh  <taher@unixwars.com>
+            SVN: r3723, taher - 17:15:34
+
+	* Many new features were undocumented
+	M /cherokee/trunk/doc/index.txt
+	M /cherokee/trunk/doc/modules.txt
+	M /cherokee/trunk/doc/modules_handlers.txt
+	M /cherokee/trunk/doc/other_faq.txt
+	M /cherokee/trunk/doc/config_advanced.txt
+	A /cherokee/trunk/doc/modules_handlers_empty_gif.txt
+	M /cherokee/trunk/doc/Makefile.am
+	M /cherokee/trunk/doc/config_virtual_servers_rule.txt
+	M /cherokee/trunk/doc/config_info_sources.txt
+	M /cherokee/trunk/doc/config_virtual_servers.txt
+
+2009-10-16  Taher Shihadeh  <taher@unixwars.com>
+            SVN: r3722, taher - 17:12:44
+
+	* New documentation images
+	M /cherokee/trunk/doc/media/images/admin_behaviour.png
+	M /cherokee/trunk/doc/media/images/admin_advanced1.png
+	M /cherokee/trunk/doc/media/images/admin_advanced2.png
+	M /cherokee/trunk/doc/media/images/admin_advanced3.png
+	M /cherokee/trunk/doc/media/images/admin_advanced4.png
+	A /cherokee/trunk/doc/media/images/admin_advanced5.png
+	M /cherokee/trunk/doc/media/images/admin_vserver.png
+
+2009-10-16  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3719, alo - 05:26:38
+
+	* Bugfix: Cherokee was not printing the right month when reporting
+	error. It was using one month in the past. Thanks to Jorge Sarmiento
+	for catching this bug.
+	
+	M /cherokee/trunk/cherokee/util.c
+
+2009-10-15  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3718, alo - 21:33:14
+
+	* Ensure handler_streaming is installed from the precondition checking
+	of the Streaming wizard. Fixes: http://bugs.cherokee-project.com/604
+	
+	M /cherokee/trunk/admin/Wizard_Streaming.py
+
+2009-10-15  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3717, alo - 19:37:39
+
+	* Do not clean the doc/*.html files on 'make clean'. As long as we do
+	not ship asciidoc with Cherokee, it would not be able to regenerate
+	the HTML documentation files: http://bugs.cherokee-project.com/603
+	
+	M /cherokee/trunk/doc/Makefile.am
+
+2009-10-15  Taher Shihadeh  <taher@unixwars.com>
+            SVN: r3714, taher - 14:39:16
+
+	* Fixes lacking i18n support on Wizards
+	M /cherokee/trunk/admin/Wizard_Icons.py
+	M /cherokee/trunk/admin/Wizard_Mailman.py
+	M /cherokee/trunk/admin/Wizard_Moodle.py
+	M /cherokee/trunk/admin/Wizard_rTorrent.py
+	M /cherokee/trunk/admin/Wizard.py
+	M /cherokee/trunk/admin/Wizard_Joomla.py
+	M /cherokee/trunk/admin/Wizard_Sugar.py
+	M /cherokee/trunk/admin/Wizard_Glassfish.py
+	M /cherokee/trunk/admin/Wizard_PHP.py
+	M /cherokee/trunk/admin/Wizard_Drupal.py
+	M /cherokee/trunk/admin/Wizard_WordPress.py
+	M /cherokee/trunk/admin/Wizard_Streaming.py
+	M /cherokee/trunk/admin/Wizard_Trac.py
+	M /cherokee/trunk/admin/Wizard_Liferay.py
+	M /cherokee/trunk/admin/Wizard_phpBB.py
+	M /cherokee/trunk/admin/Wizard_Alfresco.py
+	M /cherokee/trunk/admin/Wizard_uWSGI.py
+	M /cherokee/trunk/admin/Wizard_CommonStatic.py
+	M /cherokee/trunk/admin/Wizard_Zend.py
+	M /cherokee/trunk/admin/Wizard_Redirect.py
+	M /cherokee/trunk/admin/Wizard_RoR.py
+	M /cherokee/trunk/admin/Wizard_Django.py
+	M /cherokee/trunk/admin/Wizard_Symfony.py
+	M /cherokee/trunk/admin/Wizard_HotLinking.py
+	M /cherokee/trunk/admin/Wizard_phpMyAdmin.py
+
+2009-10-15  Taher Shihadeh  <taher@unixwars.com>
+            SVN: r3713, taher - 14:37:16
+
+	* An icon was not being installed
+	M /cherokee/trunk/admin/static/images/wizards/Makefile.am
+
+2009-10-15  Taher Shihadeh  <taher@unixwars.com>
+            SVN: r3712, taher - 14:36:44
+
+	* Updates translation files
+	M /cherokee/trunk/po/admin/es.po
+	M /cherokee/trunk/po/admin/de.po
+	M /cherokee/trunk/po/admin/nl.po
+	M /cherokee/trunk/po/admin/sv_SE.po
+	M /cherokee/trunk/po/admin/zh_CN.po
+	M /cherokee/trunk/po/admin/en.po
+
+2009-10-15  Taher Shihadeh  <taher@unixwars.com>
+            SVN: r3711, taher - 11:36:03
+
+	* Improvement in case uWSGI cannot be found
+	M /cherokee/trunk/admin/Wizard_uWSGI.py
+
+2009-10-15  Taher Shihadeh  <taher@unixwars.com>
+            SVN: r3710, taher - 11:19:38
+
+	* Documents uWSGI module/wizard
+	M /cherokee/trunk/doc/cookbook.txt
+	M /cherokee/trunk/doc/index.txt
+	M /cherokee/trunk/doc/other_faq.txt
+	M /cherokee/trunk/doc/Makefile.am
+	A /cherokee/trunk/doc/cookbook_uwsgi.txt
+
+2009-10-15  Taher Shihadeh  <taher@unixwars.com>
+            SVN: r3709, taher - 11:14:10
+
+	* Adds a wizard for uWSGI apps
+	A /cherokee/trunk/admin/static/images/wizards/uwsgi.png
+	A /cherokee/trunk/admin/Wizard_uWSGI.py
+	M /cherokee/trunk/admin/Makefile.am
+
+2009-10-15  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3708, alo - 07:56:38
+
+	* Exports the number of accepts and timeouts. Those values were missing
+	from the statistics data reported from the server_info handler.
+	
+	M /cherokee/trunk/cherokee/handler_server_info.c
+
+2009-10-14  Taher Shihadeh  <taher@unixwars.com>
+            SVN: r3707, taher - 22:43:36
+
+	* Fixes incorrect stats notification. http://bugs.cherokee-project.com/592
+	A /cherokee/trunk/admin/static/images/exclamation.png
+	M /cherokee/trunk/admin/PageVServers.py
+	M /cherokee/trunk/admin/static/images/Makefile.am
+
+2009-10-14  Taher Shihadeh  <taher@unixwars.com>
+            SVN: r3703, taher - 12:16:40
+
+	* Contribution documenting some errors
+	M /cherokee/trunk/doc/index.txt
+	M /cherokee/trunk/doc/Makefile.am
+	A /cherokee/trunk/doc/other_errors.txt
+	M /cherokee/trunk/doc/other.txt
+
+2009-10-14  Taher Shihadeh  <taher@unixwars.com>
+            SVN: r3702, taher - 02:06:56
+
+	* Some wizard polishment
+	M /cherokee/trunk/admin/Wizard_Trac.py
+	M /cherokee/trunk/admin/Wizard_PHP.py
+
+2009-10-14  Antonio Perez  <aperez@skarcha.com>
+            SVN: r3701, aperez - 01:32:29
+
+	* Better "localhost" IP address detection.
+	
+	M /cherokee/trunk/admin/util.py
+	M /cherokee/trunk/admin/Wizard_PHP.py
+
+2009-10-14  Taher Shihadeh  <taher@unixwars.com>
+            SVN: r3699, taher - 00:22:50
+
+	* Some strings weren't gettexted
+	M /cherokee/trunk/admin/Wizard_PHP.py
+
+2009-10-13  Taher Shihadeh  <taher@unixwars.com>
+            SVN: r3696, taher - 21:43:37
+
+	* Adds extra rule to the wizard. RFE http://bugs.cherokee-project.com/586
+	M /cherokee/trunk/admin/Wizard_Drupal.py
+
+2009-10-10  Taher Shihadeh  <taher@unixwars.com>
+            SVN: r3695, taher - 02:38:16
+
+	* Fixes slight CSS mismatch between the site and the documentation
+	M /cherokee/trunk/doc/media/css/cherokee_doc.css
+
+2009-10-09  Taher Shihadeh  <taher@unixwars.com>
+            SVN: r3694, taher - 17:34:09
+
+	* uWSGI handler was undocumented.
+	A /cherokee/trunk/doc/modules_handlers_uwsgi.txt
+	M /cherokee/trunk/doc/index.txt
+	M /cherokee/trunk/doc/modules.txt
+	M /cherokee/trunk/doc/modules_handlers.txt
+	M /cherokee/trunk/doc/Makefile.am
+
+2009-10-09  Taher Shihadeh  <taher@unixwars.com>
+            SVN: r3693, taher - 17:12:54
+
+	* typo
+	M /cherokee/trunk/doc/cookbook_sugarcrm.txt
+
+2009-10-09  Taher Shihadeh  <taher@unixwars.com>
+            SVN: r3692, taher - 17:07:13
+
+	* remove two superfluous files
+	D /cherokee/trunk/admin/static/images/wizards/Makefile.in
+	D /cherokee/trunk/admin/static/images/wizards/Makefile
+
+2009-10-09  Taher Shihadeh  <taher@unixwars.com>
+            SVN: r3691, taher - 16:56:47
+
+	* Documentation needed some more serious updating
+	M /cherokee/trunk/doc/config.txt
+	M /cherokee/trunk/doc/cookbook_zend.txt
+	M /cherokee/trunk/doc/cookbook_joomla.txt
+	M /cherokee/trunk/doc/index.txt
+	A /cherokee/trunk/doc/config_wizards.txt
+	M /cherokee/trunk/doc/cookbook_glassfish.txt
+	M /cherokee/trunk/doc/cookbook_sugarcrm.txt
+	M /cherokee/trunk/doc/cookbook_symfony.txt
+	M /cherokee/trunk/doc/Makefile.am
+	M /cherokee/trunk/doc/cookbook_dbslayer.txt
+	M /cherokee/trunk/doc/cookbook_phpmyadmin.txt
+	M /cherokee/trunk/doc/cookbook_trac.txt
+	M /cherokee/trunk/doc/cookbook_liferay.txt
+	M /cherokee/trunk/doc/cookbook_phpbb.txt
+	M /cherokee/trunk/doc/cookbook_alfresco.txt
+
+2009-10-09  Taher Shihadeh  <taher@unixwars.com>
+            SVN: r3690, taher - 16:55:44
+
+	* Wizards mega commit
+	A /cherokee/trunk/admin/static/images/wizards/moodle.png
+	A /cherokee/trunk/admin/static/images/wizards/nagios.png
+	A /cherokee/trunk/admin/static/images/wizards/glassfish.png
+	M /cherokee/trunk/admin/Wizard.py
+	M /cherokee/trunk/admin/static/images/wizards/Makefile.am
+	A /cherokee/trunk/admin/Wizard_Joomla.py
+	A /cherokee/trunk/admin/Wizard_Glassfish.py
+	A /cherokee/trunk/admin/static/images/wizards/trac.png
+	A /cherokee/trunk/admin/static/images/wizards/aspnet.png
+	A /cherokee/trunk/admin/static/images/wizards/phpbb.png
+	A /cherokee/trunk/admin/static/images/wizards/liferay.png
+	A /cherokee/trunk/admin/static/images/wizards/Makefile.in
+	A /cherokee/trunk/admin/Wizard_Liferay.py
+	M /cherokee/trunk/admin/util.py
+	A /cherokee/trunk/admin/Wizard_Symfony.py
+	A /cherokee/trunk/admin/Wizard_phpMyAdmin.py
+	A /cherokee/trunk/admin/static/images/wizards/joomla.png
+	A /cherokee/trunk/admin/static/images/wizards/sugarcrm.png
+	A /cherokee/trunk/admin/Wizard_Moodle.py
+	A /cherokee/trunk/admin/Wizard_Sugar.py
+	A /cherokee/trunk/admin/static/images/wizards/Makefile
+	M /cherokee/trunk/admin/Wizard_Drupal.py
+	M /cherokee/trunk/admin/Wizard_WordPress.py
+	A /cherokee/trunk/admin/static/images/wizards/alfresco.png
+	A /cherokee/trunk/admin/Wizard_Trac.py
+	A /cherokee/trunk/admin/Wizard_phpBB.py
+	A /cherokee/trunk/admin/static/images/wizards/zend.png
+	A /cherokee/trunk/admin/Wizard_Alfresco.py
+	A /cherokee/trunk/admin/static/images/wizards/symfony.png
+	A /cherokee/trunk/admin/static/images/wizards/dbslayer.png
+	A /cherokee/trunk/admin/Wizard_Zend.py
+	A /cherokee/trunk/admin/static/images/wizards/phpmyadmin.png
+	M /cherokee/trunk/admin/Makefile.am
+
+2009-10-08  Taher Shihadeh  <taher@unixwars.com>
+            SVN: r3689, taher - 16:06:25
+
+	* Typo
+	M /cherokee/trunk/po/admin/es.po
+
+2009-10-07  Taher Shihadeh  <taher@unixwars.com>
+            SVN: r3688, taher - 18:58:23
+
+	* New category
+	
+	
+	M /cherokee/trunk/admin/Wizard.py
+
+2009-10-07  Taher Shihadeh  <taher@unixwars.com>
+            SVN: r3687, taher - 18:57:41
+
+	* Style fixes
+	
+	
+	M /cherokee/trunk/po/admin/es.po
+
+2009-10-07  Taher Shihadeh  <taher@unixwars.com>
+            SVN: r3686, taher - 18:56:48
+
+	* Some more docs needed to mention the new wizards.
+	M /cherokee/trunk/doc/cookbook_moodle.txt
+	M /cherokee/trunk/doc/cookbook_joomla.txt
+	A /cherokee/trunk/doc/media/images/admin_vserver_wizard_misc.png
+	M /cherokee/trunk/doc/cookbook_sugarcrm.txt
+	A /cherokee/trunk/doc/media/images/admin_vservers_wizard_misc.png
+	M /cherokee/trunk/doc/Makefile.am
+	M /cherokee/trunk/doc/cookbook_drupal.txt
+	M /cherokee/trunk/doc/cookbook_wordpress.txt
+
+2009-10-07  Taher Shihadeh  <taher@unixwars.com>
+            SVN: r3685, taher - 10:25:32
+
+	* Reduced the icon size
+	M /cherokee/trunk/admin/static/images/wizards/mailman.png
+	M /cherokee/trunk/admin/static/images/wizards/common_static.png
+	M /cherokee/trunk/admin/static/images/wizards/rtorrent.png
+	M /cherokee/trunk/admin/static/images/wizards/django.png
+	M /cherokee/trunk/admin/static/images/wizards/ror.png
+	M /cherokee/trunk/admin/static/images/wizards/hotlinking.png
+	M /cherokee/trunk/admin/static/images/wizards/drupal.png
+	M /cherokee/trunk/admin/static/images/wizards/wordpress.png
+	M /cherokee/trunk/admin/static/images/wizards/streaming.png
+	M /cherokee/trunk/admin/static/images/wizards/icons.png
+
+2009-10-07  Taher Shihadeh  <taher@unixwars.com>
+            SVN: r3682, taher - 07:32:55
+
+	* Reverting bad change on last commit
+	M /cherokee/trunk/cherokee/validator_htpasswd.c
+
+2009-10-06  Taher Shihadeh  <taher@unixwars.com>
+            SVN: r3681, taher - 17:56:41
+
+	* Adds a missing check. Thanks to Stefan de Konink for catching this one.
+	M /cherokee/trunk/cherokee/validator_htpasswd.c
+
+2009-09-29  Taher Shihadeh  <taher@unixwars.com>
+            SVN: r3680, taher - 16:30:34
+
+	* Mark SSL connections in the reverse proxy module. Solves issue 581. Thanks to Stefan Talpalaru for the patch.
+	M /cherokee/trunk/cherokee/handler_proxy.c
+
+2009-09-25  Antonio Perez  <aperez@skarcha.com>
+            SVN: r3679, aperez - 12:07:41
+
+	* We should use cherokee_mkdir. Thanks to Stefan de Konink for the patch.
+	Fixes bug #585: http://bugs.cherokee-project.com/585
+	
+	
+	M /cherokee/trunk/cherokee/collector_rrd.c
+
+2009-09-24  Taher Shihadeh  <taher@unixwars.com>
+            SVN: r3678, taher - 13:51:35
+
+	* Fix typos in translations. Closes issue 561
+	M /cherokee/trunk/po/admin/de.po
+
+2009-09-24  Taher Shihadeh  <taher@unixwars.com>
+            SVN: r3677, taher - 13:32:24
+
+	* Documentation images needed a clean up
+	M /cherokee/trunk/doc/media/images/admin_general_networking.png
+	M /cherokee/trunk/doc/media/images/cookbook_wp1.png
+	M /cherokee/trunk/doc/media/images/admin_advanced0.png
+	M /cherokee/trunk/doc/media/images/admin_validators_authlist.png
+	M /cherokee/trunk/doc/media/images/cookbook_wp2.png
+	M /cherokee/trunk/doc/media/images/admin_advanced1.png
+	M /cherokee/trunk/doc/media/images/cookbook_wp3.png
+	M /cherokee/trunk/doc/media/images/admin_mime.png
+	M /cherokee/trunk/doc/media/images/admin_advanced2.png
+	M /cherokee/trunk/doc/media/images/cookbook_wp4.png
+	M /cherokee/trunk/doc/media/images/admin_advanced3.png
+	M /cherokee/trunk/doc/media/images/cookbook_django_common.png
+	M /cherokee/trunk/doc/media/images/cookbook_wp5.png
+	M /cherokee/trunk/doc/media/images/admin_advanced4.png
+	M /cherokee/trunk/doc/media/images/admin_icons1.png
+	M /cherokee/trunk/doc/media/images/admin_icons2.png
+	M /cherokee/trunk/doc/media/images/admin_icons3.png
+	M /cherokee/trunk/doc/media/images/cookbook_joomla.png
+	M /cherokee/trunk/doc/media/images/admin_handler_cgi.png
+	M /cherokee/trunk/doc/media/images/cookbook_maintenance_advanced_rules.png
+	M /cherokee/trunk/doc/media/images/admin_notrunning.png
+	M /cherokee/trunk/doc/media/images/cookbook_alfresco_install.png
+	M /cherokee/trunk/doc/media/images/admin_handler_dirlist_ex.png
+	M /cherokee/trunk/doc/media/images/cookbook_dbslayer1.png
+	M /cherokee/trunk/doc/media/images/cookbook_dbslayer2.png
+	M /cherokee/trunk/doc/media/images/cookbook_dbslayer3.png
+	M /cherokee/trunk/doc/media/images/cookbook_dbslayer4.png
+	M /cherokee/trunk/doc/media/images/admin_index.png
+	M /cherokee/trunk/doc/media/images/admin_validators_ldap.png
+	M /cherokee/trunk/doc/media/images/admin_general_permissions.png
+	M /cherokee/trunk/doc/media/images/admin_vserver_wizard.png
+	M /cherokee/trunk/doc/media/images/admin_handler_custom_error.png
+	M /cherokee/trunk/doc/media/images/cookbook_django.png
+	M /cherokee/trunk/doc/media/images/cookbook_trac_rules.png
+	M /cherokee/trunk/doc/media/images/cookbook_sugarcrm_running0.png
+	M /cherokee/trunk/doc/media/images/cookbook_sugarcrm_running1.png
+	M /cherokee/trunk/doc/media/images/cookbook_phpbb_6_advanced.png
+	M /cherokee/trunk/doc/media/images/cookbook_mono_handler.png
+	M /cherokee/trunk/doc/media/images/admin_vserver_security.png
+	M /cherokee/trunk/doc/media/images/admin_behaviour.png
+	M /cherokee/trunk/doc/media/images/cookbook_moodle.png
+	M /cherokee/trunk/doc/media/images/cookbook_moodle_document_root.png
+	M /cherokee/trunk/doc/media/images/admin_info_sources.png
+	M /cherokee/trunk/doc/media/images/admin_handler_secdownload.png
+	M /cherokee/trunk/doc/media/images/cookbook_django_infosources.png
+	M /cherokee/trunk/doc/media/images/admin_noconfig.png
+	M /cherokee/trunk/doc/media/images/admin_validators_pam.png
+	M /cherokee/trunk/doc/media/images/cookbook_alfresco_assistant.png
+	M /cherokee/trunk/doc/media/images/cookbook_trac.png
+	M /cherokee/trunk/doc/media/images/cookbook_sugarcrm_install0.png
+	M /cherokee/trunk/doc/media/images/cookbook_sugarcrm_install1.png
+	M /cherokee/trunk/doc/media/images/admin_vserver_vserver.png
+	M /cherokee/trunk/doc/media/images/cookbook_liferay.png
+	M /cherokee/trunk/doc/media/images/cookbook_mysql_rule.png
+	M /cherokee/trunk/doc/media/images/cookbook_alfresco_soffice.png
+	M /cherokee/trunk/doc/media/images/cookbook_trac_static.png
+	M /cherokee/trunk/doc/media/images/admin_handler_proxy.png
+	M /cherokee/trunk/doc/media/images/admin_vserver_evhost.png
+	M /cherokee/trunk/doc/media/images/cookbook_moodle_modules.png
+	M /cherokee/trunk/doc/media/images/cookbook_alfresco_path.png
+	M /cherokee/trunk/doc/media/images/cookbook_ror_common.png
+	M /cherokee/trunk/doc/media/images/cookbook_alfresco_alfresco.png
+	M /cherokee/trunk/doc/media/images/cookbook_maintenance_copy.png
+	M /cherokee/trunk/doc/media/images/cookbook_mono_demo.png
+	M /cherokee/trunk/doc/media/images/admin_validators_plain.png
+	M /cherokee/trunk/doc/media/images/cookbook_mailman.png
+	M /cherokee/trunk/doc/media/images/cookbook_managing_logs_rules.png
+	M /cherokee/trunk/doc/media/images/admin_handler_fastcgi1.png
+	M /cherokee/trunk/doc/media/images/admin_handler_fastcgi2.png
+	M /cherokee/trunk/doc/media/images/admin_vservers_wizard.png
+	M /cherokee/trunk/doc/media/images/cookbook_maintenance_advanced_domains.png
+	M /cherokee/trunk/doc/media/images/cookbook_phpbb_3_db.png
+	M /cherokee/trunk/doc/media/images/cookbook_phpbb_2_req.png
+	M /cherokee/trunk/doc/media/images/admin_handler_dbslayer.png
+	M /cherokee/trunk/doc/media/images/cookbook_moodle_db.png
+	M /cherokee/trunk/doc/media/images/cookbook_redir_behavior.png
+	M /cherokee/trunk/doc/media/images/cookbook_phpbb_1_intro.png
+	M /cherokee/trunk/doc/media/images/cookbook_phpbb_4_admin.png
+	M /cherokee/trunk/doc/media/images/cookbook_ror_fcgi.png
+	M /cherokee/trunk/doc/media/images/cookbook_phpbb_running.png
+	M /cherokee/trunk/doc/media/images/admin_launch.png
+	M /cherokee/trunk/doc/media/images/proxy_phase1.png
+	M /cherokee/trunk/doc/media/images/proxy_phase2.png
+	M /cherokee/trunk/doc/media/images/admin_general.png
+	M /cherokee/trunk/doc/media/images/admin_vserver_loggers.png
+	M /cherokee/trunk/doc/media/images/cookbook_redir_handler.png
+	M /cherokee/trunk/doc/media/images/cookbook_ror.png
+	M /cherokee/trunk/doc/media/images/cookbook_symfony.png
+	M /cherokee/trunk/doc/media/images/cookbook_trac_info.png
+	M /cherokee/trunk/doc/media/images/cookbook_phpbb_rules.png
+	M /cherokee/trunk/doc/media/images/cookbook_phpmyadmin.png
+	M /cherokee/trunk/doc/media/images/admin_handler_admin.png
+	M /cherokee/trunk/doc/media/images/cookbook_maintenance_rule.png
+	M /cherokee/trunk/doc/media/images/cookbook_maintenance_domain.png
+	M /cherokee/trunk/doc/media/images/cookbook_mysql_validator.png
+	M /cherokee/trunk/doc/media/images/admin_vserver_errors.png
+	M /cherokee/trunk/doc/media/images/cookbook_phpbb_adm.png
+	M /cherokee/trunk/doc/media/images/cookbook_phpmyadmin_denied.png
+	M /cherokee/trunk/doc/media/images/cookbook_moodle_paths.png
+	M /cherokee/trunk/doc/media/images/admin_vserver.png
+	M /cherokee/trunk/doc/media/images/cookbook_redir_domains.png
+	M /cherokee/trunk/doc/media/images/cookbook_maintenance_result.png
+	M /cherokee/trunk/doc/media/images/cookbook_alfresco_share.png
+	M /cherokee/trunk/doc/media/images/cookbook_zend1.png
+	M /cherokee/trunk/doc/media/images/admin_rule_regex.png
+	M /cherokee/trunk/doc/media/images/cookbook_glassfish.png
+	M /cherokee/trunk/doc/media/images/admin_handler_onlylisting_ex.png
+	M /cherokee/trunk/doc/media/images/admin_general_ports.png
+	M /cherokee/trunk/doc/media/images/cookbook_drupal.png
+	M /cherokee/trunk/doc/media/images/admin_handler_dirlist.png
+	M /cherokee/trunk/doc/media/images/admin_handler_onlylisting.png
+	M /cherokee/trunk/doc/media/images/cookbook_phpbb_8_final.png
+	M /cherokee/trunk/doc/media/images/cookbook_maintenance_error.png
+	M /cherokee/trunk/doc/media/images/cookbook_managing_logs_security.png
+	M /cherokee/trunk/doc/media/images/cookbook_maintenance_advanced_redir.png
+	M /cherokee/trunk/doc/media/images/cookbook_trac_scgi.png
+	M /cherokee/trunk/doc/media/images/admin_handler_file.png
+	M /cherokee/trunk/doc/media/images/cookbook_phpbb_adm_warning.png
+	M /cherokee/trunk/doc/media/images/cookbook_nagios1.png
+	M /cherokee/trunk/doc/media/images/cookbook_nagios2.png
+	M /cherokee/trunk/doc/media/images/cookbook_managing_logs_handler.png
+	M /cherokee/trunk/doc/media/images/cookbook_nagios3.png
+	M /cherokee/trunk/doc/media/images/cookbook_nagios4.png
+	M /cherokee/trunk/doc/media/images/cookbook_phpbb_5_config.png
+	M /cherokee/trunk/doc/media/images/cookbook_phpbb_7_create.png
+
+2009-09-24  Taher Shihadeh  <taher@unixwars.com>
+            SVN: r3676, taher - 13:29:43
+
+	* Documentation updates
+	M /cherokee/trunk/doc/cookbook_django.txt
+	M /cherokee/trunk/doc/cookbook_ror.txt
+	M /cherokee/trunk/doc/cookbook_mailman.txt
+
+2009-09-24  Taher Shihadeh  <taher@unixwars.com>
+            SVN: r3675, taher - 11:55:35
+
+
+	M /cherokee/trunk/doc/media/images/cookbook_django_common.png
+
+2009-09-24  Taher Shihadeh  <taher@unixwars.com>
+            SVN: r3674, taher - 11:37:04
+
+	* Recipe needed an update. Based on a wizard now.
+	M /cherokee/trunk/doc/cookbook_django.txt
+
+2009-09-23  Antonio Perez  <aperez@skarcha.com>
+            SVN: r3673, aperez - 23:31:47
+
+	* Renames Bind Rule from "Incoming Port" to "Incoming IP/Port" to avoid confusion.
+	Fixes bug #575: http://bugs.cherokee-project.com/575
+	
+	
+	M /cherokee/trunk/admin/consts.py
+	M /cherokee/trunk/admin/ModuleBind.py
+
+2009-09-23  Taher Shihadeh  <taher@unixwars.com>
+            SVN: r3669, taher - 15:36:04
+
+	* Fixes issue 584. Uninitialized property would cause failure
+	M /cherokee/trunk/cherokee/handler_secdownload.c
+
+2009-09-16  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3665, alo - 18:39:38
+
+	* Print an error if socket() fails. It should shed some light on the 503
+	proxy responses.
+	
+	M /cherokee/trunk/cherokee/socket.c
+
+2009-09-15  Antonio Perez  <aperez@skarcha.com>
+            SVN: r3664, aperez - 13:48:42
+
+	* Regular expression is optional.
+	
+	
+	M /cherokee/trunk/admin/ModuleRedir.py
+
+2009-09-14  Antonio Perez  <aperez@skarcha.com>
+            SVN: r3663, aperez - 16:31:01
+
+	* Removes unneeded buffer clean.
+	
+	
+	M /cherokee/trunk/cherokee/handler_cgi_base.c
+
+2009-09-14  Antonio Perez  <aperez@skarcha.com>
+            SVN: r3662, aperez - 15:53:16
+
+	* Implements a new function (cherokee_gethostname) and use it in handler_cgi_base.c when no "Host:" header is present.
+	
+	
+	M /cherokee/trunk/cherokee/util.h
+	M /cherokee/trunk/cherokee/handler_cgi_base.c
+	M /cherokee/trunk/cherokee/util.c
+	M /cherokee/trunk/qa/141-FastCGI-EmptyVars.py
+	M /cherokee/trunk/configure.in
+
+2009-09-14  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3661, alo - 13:25:30
+
+	* This patch improves the gethostbyname() usage in Cherokee. Besides, it
+	set the proxy handler to use the "resolve_cache" of the server.
+	
+	M /cherokee/trunk/cherokee/resolv_cache.h
+	M /cherokee/trunk/cherokee/resolv_cache.c
+	M /cherokee/trunk/cherokee/util.c
+	M /cherokee/trunk/cherokee/source.c
+	M /cherokee/trunk/cherokee/access.c
+	M /cherokee/trunk/cherokee/proxy_hosts.c
+
+2009-09-14  Antonio Perez  <aperez@skarcha.com>
+            SVN: r3660, aperez - 10:33:47
+
+	* Adds "strlcat" declaration.
+	
+	
+	M /cherokee/trunk/cherokee/util.h
+
+2009-09-13  Antonio Perez  <aperez@skarcha.com>
+            SVN: r3659, aperez - 23:48:41
+
+	* Removes "cherokee_strlcat" function. "strlcat" is defined when it is not present in the system.
+	
+	
+	M /cherokee/trunk/cherokee/util.h
+	M /cherokee/trunk/cherokee/md5crypt.c
+	M /cherokee/trunk/cherokee/util.c
+
+2009-09-12  Antonio Perez  <aperez@skarcha.com>
+            SVN: r3658, aperez - 14:50:12
+
+	* Forces the use of IPv4 address of local loopback interface (127.0.0.1) to avoid problems with systems that have more than one address defined for "localhost".
+	Reference: http://bugs.cherokee-project.com/554
+	
+	
+	M /cherokee/trunk/admin/Wizard_PHP.py
+
+2009-09-12  Antonio Perez  <aperez@skarcha.com>
+            SVN: r3657, aperez - 10:27:39
+
+	* Fixes bug #573: http://bugs.cherokee-project.com/573
+	
+	
+	M /cherokee/trunk/cherokee/thread.c
+
+2009-09-11  Antonio Perez  <aperez@skarcha.com>
+            SVN: r3655, aperez - 11:06:22
+
+	* Ensures that length POST data is equal to Content-Length.
+	
+	
+	M /cherokee/trunk/cherokee/post.c
+	M /cherokee/trunk/cherokee/admin_client.c
+	M /cherokee/trunk/cherokee/thread.c
+	M /cherokee/trunk/cherokee/post.h
+	M /cherokee/trunk/cherokee/connection.c
+
+2009-09-11  Antonio Perez  <aperez@skarcha.com>
+            SVN: r3654, aperez - 11:02:28
+
+	* Host header is required to send SERVER_NAME env. variable, and it's required by WSGI.
+	
+	
+	M /cherokee/trunk/qa/141-FastCGI-EmptyVars.py
+
+2009-09-11  Antonio Perez  <aperez@skarcha.com>
+            SVN: r3653, aperez - 11:00:03
+
+	* Removes duplicated SERVER_SOFTWARE environment variable.
+	
+	
+	M /cherokee/trunk/cherokee/handler_cgi_base.c
+
+2009-09-10  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3651, alo - 13:19:53
+
+	* Reorder the configuration. Higher priority rules are first now.
+	This is simply an aesthetic change.
+	
+	M /cherokee/trunk/cherokee/main_worker.c
+
+2009-09-09  Roberto De Ioris <roberto@unbit.it>
+            SVN: r3647, robertounbit - 17:11:56
+
+	* fix for CONTENT_LENGTH
+	
+	M /cherokee/trunk/cherokee/handler_uwsgi.c
+
+2009-09-09  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3635, alo - 08:46:07
+
+	* Fixes the error management, so 3xx, 404, and 410 HTTP responses can
+	preserve the keep-alive connection (whenever the server is responding
+	a HTTP/1.1 request). It also takes care of disabling and freeing the
+	encoder objects that the connection might had instanced previously.
+	
+	M /cherokee/trunk/cherokee/connection.c
+
+2009-09-09  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3634, alo - 05:58:12
+
+	* The CGI-base class was using the environment variable SERVER_NAME as
+	SERVER_SOFTWARE. Fixes bug: http://bugs.cherokee-project.com/570
+	
+	M /cherokee/trunk/cherokee/handler_cgi_base.c
+
+2009-09-05  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3630, alo - 10:05:01
+
+	* The Redirections Wizard allows to use both wildcards and regexs in the
+	source domain name now. It allows to do adds redirections like:
+	'www.example.*' to 'www.example.com' (of course this virtual server
+	should be placed after the www.example.com one).
+	
+	M /cherokee/trunk/admin/Wizard_Redirect.py
+
+2009-09-04  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3626, alo - 09:12:34
+
+	* The Python interpreter launched from Cherokee-admin should inherit all
+	the environment variables from the parent process. In this way, custom
+	python interpreters can be used: http://bugs.cherokee-project.com/552
+	
+	M /cherokee/trunk/cherokee/main_admin.c
+
+2009-09-04  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3625, alo - 08:08:57
+
+	* Load balancing modules should send activation/deactivation messages to
+	the log instead of print it to the console.
+	
+	M /cherokee/trunk/cherokee/balancer_ip_hash.c
+	M /cherokee/trunk/cherokee/balancer_round_robin.c
+
+2009-09-04  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3624, alo - 07:56:04
+
+	* Fixes a C&P issue. Thanks to info@ppvg.nl for reporting!
+	http://bugs.cherokee-project.com/559
+	
+	M /cherokee/trunk/admin/Wizard_Django.py
+
+2009-09-04  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3623, alo - 07:29:23
+
+	* Shows the default virtual server document root directory instead of
+	the WWW root installation dir. http://bugs.cherokee-project.com/558
+	
+	M /cherokee/trunk/admin/PageStatus.py
+
+2009-09-02  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3612, alo - 14:01:49
+
+	* It was missing a new line after the date.
+	
+	M /cherokee/trunk/svnlog2changelog.py
+
+2009-09-01  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3610, alo - 08:51:53
+
+	* 0.99.24 released
+	
+	M /cherokee/trunk/configure.in
+
+2009-08-31  Antonio Perez  <aperez@skarcha.com>
+            SVN: r3609, aperez - 15:48:15
+
+	* Adds a new wizard to set up XMLRPC for rTorrent.
+	
+	
+	A /cherokee/trunk/admin/static/images/wizards/rtorrent.png
+	M /cherokee/trunk/admin/util.py
+	A /cherokee/trunk/admin/Wizard_rTorrent.py
+	M /cherokee/trunk/admin/static/images/wizards/Makefile.am
+	M /cherokee/trunk/admin/Makefile.am
+
+2009-08-31  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3608, alo - 13:24:42
+
+	* We are using Twitter, actually.
+	
+	M /cherokee/trunk/doc/other_community.txt
+
+2009-08-31  Antonio Perez  <aperez@skarcha.com>
+            SVN: r3607, aperez - 00:24:59
+
+	* Update translation files.
+	
+	M /cherokee/trunk/po/admin/es.po
+	M /cherokee/trunk/po/admin/de.po
+	M /cherokee/trunk/po/admin/nl.po
+	M /cherokee/trunk/po/admin/sv_SE.po
+	M /cherokee/trunk/po/admin/zh_CN.po
+	M /cherokee/trunk/po/admin/en.po
+
+2009-08-30  Antonio Perez  <aperez@skarcha.com>
+            SVN: r3606, aperez - 23:02:50
+
+	* Makes available the new uWSGI handler.
+	
+	
+	M /cherokee/trunk/admin/consts.py
+
+2009-08-30  Antonio Perez  <aperez@skarcha.com>
+            SVN: r3605, aperez - 18:36:04
+
+	* Optional properties in Cherokee-admin are now marked when they have no value.
+	
+	
+	M /cherokee/trunk/admin/PageVServer.py
+	M /cherokee/trunk/admin/ModuleRrd.py
+	M /cherokee/trunk/admin/PageEntry.py
+	M /cherokee/trunk/admin/ModuleStreaming.py
+	M /cherokee/trunk/admin/Entry.py
+	M /cherokee/trunk/admin/PageAdvanced.py
+	M /cherokee/trunk/admin/static/css/cherokee.css
+	M /cherokee/trunk/admin/ModuleAuth.py
+	M /cherokee/trunk/admin/ModuleSecdownload.py
+	M /cherokee/trunk/admin/ModuleCgi.py
+	M /cherokee/trunk/admin/PageInfoSource.py
+	M /cherokee/trunk/admin/default.template.html
+	M /cherokee/trunk/admin/PageGeneral.py
+	M /cherokee/trunk/admin/ModuleDbslayer.py
+	M /cherokee/trunk/admin/Page.py
+	A /cherokee/trunk/admin/static/js/jquery.form-defaults.js
+	M /cherokee/trunk/admin/static/js/common.js
+	M /cherokee/trunk/admin/ModuleDirlist.py
+	M /cherokee/trunk/admin/static/js/Makefile.am
+
+2009-08-30  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3604, alo - 11:23:09
+
+	* Removes a few unnecessary image files.
+	
+	D /cherokee/trunk/doc/media/images/cookbook_wp_default1.png
+	M /cherokee/trunk/doc/Makefile.am
+	D /cherokee/trunk/doc/media/images/cookbook_wp_example1.png
+	D /cherokee/trunk/doc/media/images/cookbook_wp_example2.png
+	D /cherokee/trunk/doc/media/images/cookbook_wp_example3.png
+
+2009-08-29  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3603, alo - 10:12:24
+
+	* Update translation files. The Spanish translation has been finished,
+	it's completely translated and "de-fuzzied" now.
+	
+	M /cherokee/trunk/po/admin/es.po
+	M /cherokee/trunk/po/admin/de.po
+	M /cherokee/trunk/po/admin/nl.po
+	M /cherokee/trunk/po/admin/sv_SE.po
+	M /cherokee/trunk/po/admin/zh_CN.po
+	M /cherokee/trunk/po/admin/en.po
+
+2009-08-29  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3602, alo - 09:18:06
+
+	* Fixes a potential issue. There was corner situation on which I/O cache
+	could read a couple of uninitialized bytes of memory while turning
+	'File not found' error codes.
+	
+	M /cherokee/trunk/cherokee/iocache.c
+
+2009-08-29  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3601, alo - 09:10:21
+
+	* Fixes a regression. Help pages were not being displayed in
+	Cherokee-Admin.
+	
+	M /cherokee/trunk/cherokee/main_admin.c
+
+2009-08-29  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3600, alo - 09:10:04
+
+	* 0.99.23 released
+	
+	M /cherokee/trunk/configure.in
+
+2009-08-28  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3598, alo - 14:14:44
+
+	* Three minor, misc code fixes.
+	
+	M /cherokee/trunk/cherokee/thread.c
+	M /cherokee/trunk/cherokee/handler_cgi_base.c
+	M /cherokee/trunk/cherokee/iocache.c
+
+2009-08-28  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3597, alo - 08:49:24
+
+	* Set a few more close-on-exec flags.
+	
+	M /cherokee/trunk/cherokee/validator_htpasswd.c
+	M /cherokee/trunk/cherokee/buffer.c
+	M /cherokee/trunk/cherokee/handler_file.c
+
+2009-08-28  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3596, alo - 07:46:12
+
+	* Just created an repository account for Roberto De Ioris.
+	
+	M /cherokee/trunk/svnlog2changelog.py
+
+2009-08-27  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3595, alo - 22:18:36
+
+	* I/O cache file FDs should not be inherited.
+	
+	M /cherokee/trunk/cherokee/iocache.c
+
+2009-08-27  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3594, alo - 12:58:29
+
+	* Adds a new uWSGI (http://projects.unbit.it/uwsgi) handler. Thanks a
+	million to Roberto De Ioris for contributing this code!
+	
+	A /cherokee/trunk/cherokee/uwsgi.deps
+	M /cherokee/trunk/cherokee/Makefile.am
+	A /cherokee/trunk/cherokee/handler_uwsgi.c
+	M /cherokee/trunk/admin/Makefile.am
+	A /cherokee/trunk/admin/ModuleUwsgi.py
+	A /cherokee/trunk/cherokee/handler_uwsgi.h
+	M /cherokee/trunk/configure.in
+
+2009-08-27  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3593, alo - 12:01:27
+
+	* Adds a new backtracing option. If enabled, the server will print a
+	code back-trace beside each error or warning message. It's enabled by
+	adding the --enable-backtraces parameter to configure.
+	
+	M /cherokee/trunk/cherokee/util.h
+	M /cherokee/trunk/README
+	M /cherokee/trunk/cherokee/error_log.c
+	M /cherokee/trunk/cherokee/util.c
+	M /cherokee/trunk/configure.in
+	M /cherokee/trunk/doc/dev_debug.txt
+
+2009-08-27  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3592, alo - 11:59:50
+
+	* Log a couple of errors.
+	
+	M /cherokee/trunk/cherokee/fdpoll-poll.c
+
+2009-08-27  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3591, alo - 11:52:21
+
+	* Fixes a warning message printed while performing a Graceful restart.
+	
+	M /cherokee/trunk/cherokee/server.c
+
+2009-08-27  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3590, alo - 09:11:06
+
+	* Run the RRD related coded from a different thread. Besides being quite
+	memory consuming, rrdtool can be somehow slow. When one of the server
+	threads executed the timed RRD updating or rendering functions its
+	connections were being stopped until the thread finished working with
+	rrdtool. The problem should be solved now.
+	
+	M /cherokee/trunk/cherokee/collector_rrd.h
+	M /cherokee/trunk/cherokee/collector_rrd.c
+
+2009-08-26  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3589, alo - 09:04:21
+
+	* Improves the Solaris support. Now it call a few Solaris utilities to
+	print as much information about the process as possible.
+	
+	M /cherokee/trunk/cherokee/cherokee-panic
+
+2009-08-26  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3588, alo - 08:55:29
+
+	* Couple of misc improvements: 1.- redirect stderr to stdout, so error
+	are sent or printed in a unique stream. 2.- Try to use share memory
+	for the temporal file (instead of /tmp).
+	
+	M /cherokee/trunk/cherokee/cherokee-panic
+
+2009-08-25  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3587, alo - 13:38:36
+
+	* Adds a new wizard to automatically set up Audio/Video streaming on
+	virtual servers. It also adds a little cookbook recommending to use
+	the wizard for setting the most common streaming configuration.
+	
+	A /cherokee/trunk/admin/Wizard_Streaming.py
+	M /cherokee/trunk/doc/cookbook.txt
+	M /cherokee/trunk/doc/index.txt
+	M /cherokee/trunk/doc/Makefile.am
+	M /cherokee/trunk/admin/static/images/wizards/Makefile.am
+	M /cherokee/trunk/admin/Makefile.am
+	A /cherokee/trunk/doc/cookbook_streaming.txt
+	A /cherokee/trunk/admin/static/images/wizards/streaming.png
+
+2009-08-25  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3586, alo - 13:31:17
+
+	* Fixes typo
+	
+	M /cherokee/trunk/admin/Wizard_CommonStatic.py
+
+2009-08-25  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3585, alo - 08:57:58
+
+	* The directory listing plug-in should generate 'url-escaped' URLs.
+	This patch fixes bug #549: http://bugs.cherokee-project.com/549
+	
+	M /cherokee/trunk/cherokee/handler_dirlist.c
+
+2009-08-24  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3584, alo - 15:24:46
+
+	* Updates the PHP cookbook.
+	
+	M /cherokee/trunk/doc/cookbook_php.txt
+	M /cherokee/trunk/doc/media/images/admin_handler_fastcgi1.png
+	M /cherokee/trunk/doc/media/images/admin_handler_fastcgi2.png
+
+2009-08-24  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3583, alo - 08:25:00
+
+	* Raise the connection timeout limit when it's trying to access a
+	interpreter (source) that is currently being launching.
+	
+	M /cherokee/trunk/cherokee/source_interpreter.c
+
+2009-08-23  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3582, alo - 18:53:13
+
+	* Removes a lingering space character.
+	
+	M /cherokee/trunk/cherokee/cherokee-panic
+
+2009-08-23  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3581, alo - 18:41:42
+
+	* Fixes a couple of 'bashisms'
+	
+	M /cherokee/trunk/cherokee/cherokee-panic
+
+2009-08-23  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3580, alo - 17:26:43
+
+	* Made a mistake in the previous commit. The 'sys' isn't required.
+	
+	M /cherokee/trunk/svnlog2changelog.py
+
+2009-08-23  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3579, alo - 17:24:23
+
+	* Log messages ought to be UTF-8 encoded.
+	
+	M /cherokee/trunk/svnlog2changelog.py
+
+2009-08-20  Taher Shihadeh  <taher@unixwars.com>
+            SVN: r3578, taher - 19:38:02
+
+	* Typo fix
+	M /cherokee/trunk/admin/Wizard_PHP.py
+
+2009-08-20  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3577, alo - 17:06:36
+
+	* Moves the PHP wizard to a new 'Languages' category.
+	
+	M /cherokee/trunk/admin/Wizard.py
+	M /cherokee/trunk/admin/Wizard_PHP.py
+
+2009-08-20  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3576, alo - 15:25:52
+
+	* Improves the Wordpress wizard, so all the different 'permalinks'
+	formats are supported. It implements Antonio PÃ©rez's idea.
+	
+	M /cherokee/trunk/doc/cookbook_wordpress.txt
+	M /cherokee/trunk/admin/Wizard_WordPress.py
+
+2009-08-19  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3575, alo - 17:54:40
+
+	* cherokee_limiter_get_time_limit(): Fixes the function prototype.
+	
+	M /cherokee/trunk/cherokee/limiter.c
+	M /cherokee/trunk/cherokee/limiter.h
+
+2009-08-19  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3574, alo - 14:49:24
+
+	* Fixes a wrong mutex acquisition in the CGI child processes. This
+	patch fixes the bug: http://bugs.cherokee-project.com/546
+	
+	M /cherokee/trunk/cherokee/handler_cgi.c
+
+2009-08-18  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3573, alo - 15:18:50
+
+	* Rewrites the QA so it stops checking whether the main QA application
+	is running more than test execution thread. I have not been able to
+	figure why I put that check in the first place; thus, it has been
+	removed. This patch also removes a trailing slash at the end of the
+	local directory path. It was causing the test to fail on the final
+	test check.  Hopefully I'm not introducing a regression here..
+	
+	M /cherokee/trunk/qa/066-DirectoryIndex3.py
+
+2009-08-18  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3572, alo - 14:22:13
+
+	* When looking for the Python and PHP interpreters, check on the $PATH
+	and only then use the hardcoded list of paths. It also adds a new path
+	entry for the default MacPorts directory (/opt/local/bin).
+	
+	M /cherokee/trunk/qa/conf.py
+	M /cherokee/trunk/qa/util.py
+
+2009-08-18  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3571, alo - 10:08:21
+
+	* The md5 python modules is deprecated. This patch updates the QA test
+	so it uses the new hashlib module.
+	
+	M /cherokee/trunk/qa/100-Digest-htdigest.py
+
+2009-08-17  Antonio Perez  <aperez@skarcha.com>
+            SVN: r3569, aperez - 18:00:43
+
+	* Fixes the load of the available balancers on DBslayer Module.
+	Bug 544: http://bugs.cherokee-project.com/544
+	
+	M /cherokee/trunk/admin/ModuleDbslayer.py
+
+2009-08-16  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3568, alo - 20:51:32
+
+	* Updates the po directory
+	
+	M /cherokee/trunk/po/admin/es.po
+	M /cherokee/trunk/po/admin/de.po
+	M /cherokee/trunk/po/admin/nl.po
+	M /cherokee/trunk/po/admin/sv_SE.po
+	M /cherokee/trunk/po/admin/zh_CN.po
+	M /cherokee/trunk/po/admin/en.po
+
+2009-08-16  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3567, alo - 19:10:20
+
+	* Updates the Wordpress cookbook. It refers to the wizard now.
+	
+	M /cherokee/trunk/doc/media/images/cookbook_wp4.png
+	M /cherokee/trunk/doc/cookbook_wordpress.txt
+
+2009-08-16  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3566, alo - 18:28:06
+
+	* Adds support for three most used permalinks formats.
+	
+	M /cherokee/trunk/admin/Wizard_WordPress.py
+
+2009-08-16  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3565, alo - 16:09:39
+
+	* 'make clean' removes the rendered documentation (.html files) now.
+	
+	M /cherokee/trunk/doc/Makefile.am
+
+2009-08-16  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3564, alo - 15:33:21
+
+	* Removes some unnecessary images.
+	
+	D /cherokee/trunk/doc/media/images/cookbook_drupal_example4.png
+	D /cherokee/trunk/doc/media/images/cookbook_drupal_default1.png
+	M /cherokee/trunk/doc/Makefile.am
+	D /cherokee/trunk/doc/media/images/cookbook_drupal_default2.png
+	D /cherokee/trunk/doc/media/images/cookbook_drupal_default3.png
+	D /cherokee/trunk/doc/media/images/cookbook_drupal_rules.png
+	D /cherokee/trunk/doc/media/images/cookbook_drupal_example1.png
+	D /cherokee/trunk/doc/media/images/cookbook_drupal_example2.png
+	D /cherokee/trunk/doc/media/images/cookbook_drupal_example3.png
+
+2009-08-16  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3563, alo - 11:06:02
+
+	* Updates a few captures of the cherokee-admin 'Status' page.
+	
+	M /cherokee/trunk/doc/media/images/admin_index.png
+	M /cherokee/trunk/doc/media/images/admin_launch.png
+	M /cherokee/trunk/doc/media/images/admin_notrunning.png
+
+2009-08-15  Taher Shihadeh  <taher@unixwars.com>
+            SVN: r3562, taher - 20:39:42
+
+	* Some updates and typo fixes
+	
+	M /cherokee/trunk/doc/dev_issues.txt
+	M /cherokee/trunk/doc/other_goodies.txt
+	M /cherokee/trunk/doc/cookbook_drupal.txt
+
+2009-08-15  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3561, alo - 18:15:04
+
+	* Updates the Drupal cookbook so it refers to the Drupal Wizard
+	rather than describing an old-school step-by-step installation.
+	
+	M /cherokee/trunk/doc/Makefile.am
+	A /cherokee/trunk/doc/media/images/admin_vserver_wizard.png
+	M /cherokee/trunk/doc/cookbook_drupal.txt
+	A /cherokee/trunk/doc/media/images/admin_vservers_wizard.png
+
+2009-08-15  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3560, alo - 18:07:57
+
+	* Removes an unnecessary image.
+	
+	M /cherokee/trunk/doc/Makefile.am
+	D /cherokee/trunk/doc/media/images/admin_dirlist_cherokee.png
+
+2009-08-15  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3559, alo - 17:32:10
+
+	* Adds a couple of missing images.
+	
+	M /cherokee/trunk/doc/Makefile.am
+
+2009-08-15  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3558, alo - 17:29:59
+
+	* Check whether the images are included in the Makefile.am file.
+	
+	M /cherokee/trunk/doc/test_images.py
+
+2009-08-15  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3557, alo - 17:00:16
+
+	* Adds a new 'test' target to the documentation Makefile.
+	
+	M /cherokee/trunk/Makefile.am
+	M /cherokee/trunk/doc/Makefile.am
+	A /cherokee/trunk/doc/test_images.py
+
+2009-08-15  Antonio Perez  <aperez@skarcha.com>
+            SVN: r3556, aperez - 12:33:05
+
+	* asciidoc.py upgraded to version 8.4.5
+	
+	Fixes documentation generation warnings because of new asciidoc.
+	
+	
+	M /cherokee/trunk/doc/modules_validators_mysql.txt
+	A /cherokee/trunk/doc/build/lang-en.conf
+	M /cherokee/trunk/doc/modules_handlers_file.txt
+	M /cherokee/trunk/doc/modules_handlers_server_info.txt
+	A /cherokee/trunk/doc/build/lang-fr.conf
+	M /cherokee/trunk/doc/cookbook_kumbia.txt
+	M /cherokee/trunk/doc/basics_installation_windows.txt
+	M /cherokee/trunk/doc/modules_validators_ldap.txt
+	M /cherokee/trunk/doc/modules_handlers_common.txt
+	M /cherokee/trunk/doc/other_signals.txt
+	M /cherokee/trunk/doc/cookbook_mailman.txt
+	M /cherokee/trunk/doc/cookbook_joomla.txt
+	M /cherokee/trunk/doc/dev_cherokee.conf.txt
+	M /cherokee/trunk/doc/cookbook_sugarcrm.txt
+	M /cherokee/trunk/doc/cookbook_embedding_cherokee.txt
+	M /cherokee/trunk/doc/modules_handlers_secdownload.txt
+	A /cherokee/trunk/doc/build/lang-de.conf
+	M /cherokee/trunk/doc/modules_handlers_dbslayer.txt
+	M /cherokee/trunk/doc/cookbook_wordpress.txt
+	M /cherokee/trunk/doc/build/xhtml11-quirks.conf
+	M /cherokee/trunk/doc/modules_handlers_dirlist.txt
+	M /cherokee/trunk/doc/cookbook_alfresco.txt
+	M /cherokee/trunk/doc/build/asciidoc.py
+	M /cherokee/trunk/doc/cookbook_zend.txt
+	M /cherokee/trunk/doc/cookbook_django.txt
+	M /cherokee/trunk/doc/basics_installation_unix.txt
+	M /cherokee/trunk/doc/cookbook_ror.txt
+	M /cherokee/trunk/doc/cookbook_symfony.txt
+	M /cherokee/trunk/doc/modules_validators_htdigest.txt
+	M /cherokee/trunk/doc/modules_handlers_custom_error.txt
+	M /cherokee/trunk/doc/cookbook_managing_logs.txt
+	A /cherokee/trunk/doc/build/lang-es.conf
+	A /cherokee/trunk/doc/build/lang-hu.conf
+	M /cherokee/trunk/doc/modules_handlers_streaming.txt
+	M /cherokee/trunk/doc/config_general.txt
+	M /cherokee/trunk/doc/build/xhtml11.conf
+	M /cherokee/trunk/doc/cookbook_nagios.txt
+	M /cherokee/trunk/doc/cookbook_glassfish.txt
+	A /cherokee/trunk/doc/build/lang-ru.conf
+	M /cherokee/trunk/doc/modules_handlers_cgi.txt
+	M /cherokee/trunk/doc/config_virtual_servers_evhost.txt
+	M /cherokee/trunk/doc/modules_validators_htpasswd.txt
+	M /cherokee/trunk/doc/cookbook_drupal.txt
+	M /cherokee/trunk/doc/modules_handlers_redir.txt
+	M /cherokee/trunk/doc/modules_validators_authlist.txt
+	M /cherokee/trunk/doc/cookbook_trac.txt
+	M /cherokee/trunk/doc/cookbook_liferay.txt
+	M /cherokee/trunk/doc/cookbook_phpbb.txt
+	M /cherokee/trunk/doc/modules_validators_plain.txt
+	M /cherokee/trunk/doc/build/asciidoc.conf
+	M /cherokee/trunk/doc/modules_loggers_custom.txt
+
+2009-08-15  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3555, alo - 10:42:40
+
+	* Fixes a broken image reference. Thanks to Yann Malet
+	<yann.malet@gmail.com> for reporting the issue.
+	
+	M /cherokee/trunk/doc/modules_handlers_custom_error.txt
+
+2009-08-14  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3554, alo - 19:23:45
+
+	* Rework r3552: Same thing, but a different and cleaner implementation.
+	
+	M /cherokee/trunk/admin/PageVServer.py
+	M /cherokee/trunk/admin/ModuleCustomError.py
+	M /cherokee/trunk/admin/ModuleScgi.py
+	M /cherokee/trunk/admin/PageEntry.py
+	M /cherokee/trunk/admin/ModuleHeader.py
+	M /cherokee/trunk/admin/PageAdvanced.py
+	M /cherokee/trunk/admin/Form.py
+	M /cherokee/trunk/admin/ModuleAuth.py
+	M /cherokee/trunk/admin/Rule.py
+	M /cherokee/trunk/admin/PageInfoSource.py
+	M /cherokee/trunk/admin/PageGeneral.py
+	M /cherokee/trunk/admin/ModuleDbslayer.py
+	M /cherokee/trunk/admin/ModuleBalancer.py
+	M /cherokee/trunk/admin/ModuleFcgi.py
+	M /cherokee/trunk/admin/ModuleDirlist.py
+	M /cherokee/trunk/admin/ModuleExists.py
+	M /cherokee/trunk/admin/Module.py
+	M /cherokee/trunk/admin/Wizard_HotLinking.py
+	M /cherokee/trunk/admin/ModuleProxy.py
+	M /cherokee/trunk/admin/ModuleServerInfo.py
+
+2009-08-14  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3553, alo - 19:21:04
+
+	* The PHP wizard should use a TCP port instead of a Unix socket for the
+	FastCGI communication. Even if it's slower, it is way safer.
+	
+	M /cherokee/trunk/admin/Wizard_PHP.py
+
+2009-08-14  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3552, alo - 17:27:22
+
+	* Fixes cherokee-admin so it doesn't print superfluous error messages
+	any longer. For instance: "ERROR: Could not load module 'foobar'".
+	
+	M /cherokee/trunk/admin/Form.py
+	M /cherokee/trunk/admin/Module.py
+
+2009-08-14  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3551, alo - 16:53:27
+
+	* A fragment of the spawning mechanism has been rewritten. This new
+	version ought to behave better under high load.
+	
+	M /cherokee/trunk/cherokee/handler_scgi.c
+	M /cherokee/trunk/cherokee/source_interpreter.c
+	M /cherokee/trunk/cherokee/handler_fcgi.c
+	M /cherokee/trunk/cherokee/handler_scgi.h
+	M /cherokee/trunk/cherokee/source_interpreter.h
+	M /cherokee/trunk/cherokee/handler_fcgi.h
+	M /cherokee/trunk/cherokee/source.c
+
+2009-08-14  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3550, alo - 16:41:54
+
+	* Adds a few missing new lines characters.
+	
+	M /cherokee/trunk/cherokee/socket.c
+
+2009-08-13  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3546, alo - 18:12:47
+
+	* Once the SHM spawning method has been successfully used once, do not
+	even try to use the local/old mechanism.  This patch also implements a
+	'grace time' for the spawned processes. It assumes the new process
+	could require as much as 5 seconds to be ready or return an error.
+	
+	M /cherokee/trunk/cherokee/source_interpreter.c
+	M /cherokee/trunk/cherokee/source_interpreter.h
+
+2009-08-13  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3545, alo - 16:56:00
+
+	* Gets rid of an unnecessary 'goto'.
+	
+	M /cherokee/trunk/cherokee/source.c
+
+2009-08-13  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3544, alo - 16:52:08
+
+	* Clean up. Nothing important.
+	
+	M /cherokee/trunk/cherokee/source_interpreter.c
+
+2009-08-13  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3543, alo - 16:50:42
+
+	* Check thread_deactive_to_polling() returned value.
+	
+	M /cherokee/trunk/cherokee/handler_fcgi.c
+
+2009-08-12  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3542, alo - 08:27:42
+
+	* Be slightly smarter when trying to figure whether to inherit the
+	server process environment variables.
+	
+	M /cherokee/trunk/cherokee/source_interpreter.c
+
+2009-08-11  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3540, alo - 19:26:37
+
+	* Set a value to source!<num>!env_inherited is not defined.
+	
+	M /cherokee/trunk/admin/PageInfoSource.py
+
+2009-08-11  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3539, alo - 18:25:40
+
+	* Fixes a misplaced call to set the close-on-exec bit.
+	
+	M /cherokee/trunk/cherokee/source.c
+
+2009-08-11  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3538, alo - 16:55:30
+
+	* MacOS X packager script adapted to use the new --with-wwwuser 
+	and --with-wwwgroup ./configure parameters
+	
+	M /cherokee/trunk/README
+	M /cherokee/trunk/packages/osx/build.py
+
+2009-08-11  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3537, alo - 13:27:19
+
+	* Adds a couple of new ./configure parameters: --with-wwwuser and
+	--with-wwwgroup, so the default user and group can be defined at
+	compilation time.. Nothing fancy, but handy for packagers.
+	
+	M /cherokee/trunk/Makefile.am
+	M /cherokee/trunk/doc/basics_installation_unix.txt
+	M /cherokee/trunk/cherokee.conf.sample.pre
+	M /cherokee/trunk/doc/basics_installation_windows.txt
+	M /cherokee/trunk/configure.in
+
+2009-08-11  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3536, alo - 10:56:13
+
+	* Adds support for the HTTP/1.1 error code 307: "Temporary Redirect".
+	Thanks to tylerdu (irc.freenode.net) for the report. It fixes:
+	http://bugs.cherokee-project.com/543
+	
+	M /cherokee/trunk/cherokee/http.h
+	M /cherokee/trunk/cherokee/http.c
+
+2009-08-11  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3535, alo - 10:48:14
+
+	* Adds a little script to auto-generate the POTFILES.in file.
+	
+	A /cherokee/trunk/po/admin/generate_POTFILESin.py
+
+2009-08-11  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3534, alo - 10:46:47
+
+	* Fixes typo
+	
+	M /cherokee/trunk/qa/run-tests.py
+
+2009-08-11  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3533, alo - 10:42:59
+
+	* Updates po/admin/POTFILES.in (the list of files from which the strings
+	for translation have to be extracted).
+	
+	M /cherokee/trunk/po/admin/POTFILES.in
+
+2009-08-11  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3532, alo - 08:47:29
+
+	* Set closexec on the file descriptors used in the connections to the
+	Information Sources (mainly FastCGI, SCGI and reverse HTTP).
+	
+	M /cherokee/trunk/cherokee/source.c
+
+2009-08-11  Taher Shihadeh  <taher@unixwars.com>
+            SVN: r3531, taher - 08:34:58
+
+	* Documentation updates. Remove references to deprecated "Generic balancer" plug-in.
+	
+	M /cherokee/trunk/doc/modules_handlers.txt
+	M /cherokee/trunk/doc/dev_issues.txt
+	M /cherokee/trunk/doc/modules_handlers_redir.txt
+	M /cherokee/trunk/doc/modules_balancers.txt
+	M /cherokee/trunk/doc/config_info_sources.txt
+	M /cherokee/trunk/doc/config_virtual_servers.txt
+
+2009-08-11  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3530, alo - 08:14:07
+
+	* Fixes couple of details regarding the MacOS packaging script.
+	
+	M /cherokee/trunk/README
+	M /cherokee/trunk/packages/osx/build.py
+
+2009-08-10  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3529, alo - 20:51:04
+
+	* Deprecates the "Generic balancer" plug-in (aka 'mirror'). Now that the
+	reverse proxy is rock solid there is no point on keeping this module
+	around.
+	
+	M /cherokee/trunk/admin/consts.py
+	M /cherokee/trunk/doc/index.txt
+	M /cherokee/trunk/doc/modules.txt
+	D /cherokee/trunk/cherokee/handler_mirror.c
+	M /cherokee/trunk/cherokee/Makefile.am
+	M /cherokee/trunk/doc/Makefile.am
+	D /cherokee/trunk/admin/ModuleMirror.py
+	M /cherokee/trunk/admin/Makefile.am
+	D /cherokee/trunk/cherokee/handler_mirror.h
+	D /cherokee/trunk/doc/modules_handlers_mirror.txt
+	M /cherokee/trunk/configure.in
+
+2009-08-10  Antonio Perez  <aperez@skarcha.com>
+            SVN: r3528, aperez - 18:40:06
+
+	* Warnings and Errors are written to "stderr" when loggers are not yet initialized.
+	
+	
+	M /cherokee/trunk/cherokee/error_log.c
+	M /cherokee/trunk/cherokee/logger_writer.c
+	M /cherokee/trunk/cherokee/logger_writer.h
+
+2009-08-10  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3527, alo - 13:25:00
+
+	* Adds a new script to build MacOS X binary packages (.dmg). Both this
+	script and the Windows one have been relocated to the /packages
+	directory.
+	
+	A /cherokee/trunk/packages/windows
+	A /cherokee/trunk/packages/osx/Description.plist.in
+	M /cherokee/trunk/Makefile.am
+	D /cherokee/trunk/windows
+	A /cherokee/trunk/packages/osx/background.tiff.gz
+	A /cherokee/trunk/packages/osx/build.py
+	A /cherokee/trunk/packages
+	A /cherokee/trunk/packages/osx/utils.py
+	M /cherokee/trunk/cherokee.conf.sample.pre
+	A /cherokee/trunk/packages/osx/Makefile.am
+	A /cherokee/trunk/packages/osx/Info.plist.in
+	A /cherokee/trunk/packages/osx/License.rtf
+	M /cherokee/trunk/configure.in
+	A /cherokee/trunk/packages/Makefile.am
+	A /cherokee/trunk/packages/osx
+
+2009-08-09  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3526, alo - 19:05:22
+
+	* Fixes QA tests so they can we run without a PHP interpreter.
+	
+	M /cherokee/trunk/qa/run-tests.py
+	M /cherokee/trunk/qa/util.py
+
+2009-08-09  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3525, alo - 16:51:01
+
+	* /etc/cherokee/ssl is no longer used
+	
+	M /cherokee/trunk/Makefile.am
+
+2009-08-09  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3523, alo - 12:18:55
+
+	* Adds a new option to allow information sources to inherit the server's
+	environment variables instead of being forced to define a new set of
+	variables for one of them. By default the environment variables are
+	inherited (to use a custom set of variables is the exception now).
+	
+	M /cherokee/trunk/admin/PageInfoSource.py
+	M /cherokee/trunk/cherokee/source_interpreter.c
+	M /cherokee/trunk/cherokee/main.c
+	M /cherokee/trunk/cherokee/spawner.h
+	M /cherokee/trunk/cherokee/source_interpreter.h
+	M /cherokee/trunk/cherokee/spawner.c
+
+2009-08-06  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3521, alo - 10:33:02
+
+	* By default, configure checks for MySQL, actually.
+	
+	M /cherokee/trunk/m4/mysql.m4
+
+2009-08-06  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3520, alo - 09:34:13
+
+	* Tries to improve how the usage graphs are refreshed in the status
+	page of cherokee-admin.
+	
+	M /cherokee/trunk/admin/static/js/graphs.js
+
+2009-08-05  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3518, alo - 20:38:59
+
+	* Graphs are properly refreshed now. It fixes bug #531:
+	http://bugs.cherokee-project.com/531
+	
+	M /cherokee/trunk/admin/static/js/graphs.js
+
+2009-08-05  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3517, alo - 16:32:54
+
+	* Adds a new configuration key 'redir_symlinks' so the dirlist handler
+	can redirect symbolic links to its original file instead of accessing
+	it as a regular file or directory.
+	
+	M /cherokee/trunk/cherokee/handler_dirlist.c
+	M /cherokee/trunk/admin/ModuleDirlist.py
+	M /cherokee/trunk/cherokee/handler_dirlist.h
+
 2009-08-05  Alvaro Lopez Ortega  <alvaro@octality.com>
             SVN: r3515, alo - 06:28:57
 
@@ -177,6 +1953,7 @@
 
 2009-07-29  Alvaro Lopez Ortega  <alvaro@octality.com>
             SVN: r3487, alo - 15:16:52
+
 
 	M /cherokee/trunk/cherokee/main.c
 
@@ -559,6 +2336,7 @@
 2009-07-15  Antonio Perez  <aperez@skarcha.com>
             SVN: r3447, aperez - 19:32:38
 
+
 	M /cherokee/trunk/svnlog2changelog.py
 	M /cherokee/trunk/changelog-update.sh
 
@@ -672,6 +2450,59 @@
 	feedback!
 	
 	M /cherokee/trunk/admin/Wizard_PHP.py
+
+2009-07-07  Taher Shihadeh  <taher@unixwars.com>
+            SVN: r3433, taher - 15:50:32
+
+	* Typo.
+	
+	M /cherokee/trunk/admin/Module.py
+
+2009-07-07  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3432, alo - 12:41:39
+
+	* Adds a reference to the identi.ca group. Thanks to Bela Hausmann
+	<post@belahausmann.name> for creating the group and sending the patch
+	for the documentation.
+	
+	M /cherokee/trunk/doc/other_community.txt
+
+2009-07-07  Taher Shihadeh  <taher@unixwars.com>
+            SVN: r3431, taher - 11:44:21
+
+	* cherokee.conf.sample does no longer include PHP.
+	
+	M /cherokee/trunk/admin/PageNewConfig.py
+
+2009-07-07  Taher Shihadeh  <taher@unixwars.com>
+            SVN: r3430, taher - 11:43:17
+
+	* Another developer added.
+	
+	M /cherokee/trunk/svnlog2changelog.py
+
+2009-07-06  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3429, alo - 20:42:48
+
+	* http-cherokee.xml is auto-generated now; SVN ought to ignore it.
+	
+	M /cherokee/trunk
+
+2009-07-06  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3428, alo - 20:38:38
+
+	* Modifies the logger so it uses the bogotime callback mechanism.
+	
+	M /cherokee/trunk/cherokee/logger_ncsa.c
+	M /cherokee/trunk/cherokee/logger_ncsa.h
+
+2009-07-06  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3427, alo - 20:29:26
+
+	* Fixes a few misc. details..
+	
+	M /cherokee/trunk/cherokee/buffer.c
+	M /cherokee/trunk/cherokee/fdpoll-epoll.c
 
 2009-07-05  Alvaro Lopez Ortega  <alvaro@octality.com>
             SVN: r3424, alo - 08:11:47
@@ -793,6 +2624,7 @@
 
 2009-07-01  Alvaro Lopez Ortega  <alvaro@octality.com>
             SVN: r3410, alo - 14:30:41
+
 
 	M /cherokee/trunk/po/admin/es.po
 	M /cherokee/trunk/po/admin/de.po
@@ -1182,6 +3014,7 @@
 2009-06-24  Alvaro Lopez Ortega  <alvaro@octality.com>
             SVN: r3378, alo - 18:01:29
 
+
 	M /cherokee/trunk/po/admin/es.po
 	M /cherokee/trunk/po/admin/de.po
 	M /cherokee/trunk/po/admin/nl.po
@@ -1216,12 +3049,13 @@
 	M /cherokee/trunk/admin/PageVServers.py
 	M /cherokee/trunk/admin/static/css/cherokee.css
 
-2009-06-22  Antonio Perez  <aperez@skarcha.com
+2009-06-22  Antonio Perez  <aperez@skarcha.com>
             SVN: r3373, aperez - 17:28:19
+
 
 	M /cherokee/trunk/svnlog2changelog.py
 
-2009-06-22  Antonio Perez  <aperez@skarcha.com
+2009-06-22  Antonio Perez  <aperez@skarcha.com>
             SVN: r3372, aperez - 17:25:46
 
 	* Wizards javascript functions was not being installed.

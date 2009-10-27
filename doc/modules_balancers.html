@@ -17,30 +17,23 @@
 </div>
 <h2 id="_modules_balancers">Modules: Balancers</h2>
 <div class="sectionbody">
-<div class="para"><p>These Cherokee modules allow to balance the load among several
+<div class="paragraph"><p>These Cherokee modules allow to balance the load among several
 servers. Cherokee is completely modular, and thus a distinction must
 be made clear.</p></div>
-<div class="para"><p>Balancer modules only implement the balancing strategy. To actually
+<div class="paragraph"><p>Balancer modules only implement the balancing strategy. To actually
 use one of these strategies you will need to select a
 <a href="modules_handlers.html">handler</a> that makes use of balancers in the
-<a href="bundle_cherokee-admin.html">cherokee-admin</a> interface. Besides
-this, balancing strategies can be utilized both directly within first level
-Cherokee handlers and as second level subsystems used by other first
-level handlers. The <a href="modules_handlers_mirror.html">Generic
-balancer</a> handler is an example of the former, while the latter would
-be the case for the <a href="modules_handlers_fcgi.html">FastCGI</a> or
-<a href="modules_handlers_scgi.html">SCGI</a> handlers that can offer load
-balancing as well.</p></div>
-<div class="para"><p>These handlers can be chosen within the
+<a href="bundle_cherokee-admin.html">cherokee-admin</a> interface.</p></div>
+<div class="paragraph"><p>These handlers can be chosen within the
 <tt>Handler</tt> tab of the <a href="config_virtual_servers_rule.html">Rule
 Options</a> section.</p></div>
-<div class="para"><p>Every balancing strategy is used to manage one or more
+<div class="paragraph"><p>Every balancing strategy is used to manage one or more
 <a href="config_info_sources.html">information sources</a>, so at least one
 has to be added to the pool managed by the balancer. To do this,
 simply choose among the available sources in the <tt>Assign Info
 Sources</tt>.</p></div>
-<div class="para"><p>This is the list of currently supported balancing strategies:</p></div>
-<div class="ilist"><ul>
+<div class="paragraph"><p>This is the list of currently supported balancing strategies:</p></div>
+<div class="ulist"><ul>
 <li>
 <p>
 <a href="modules_balancers_round_robin.html">Round Robin</a>
@@ -52,8 +45,8 @@ Sources</tt>.</p></div>
 </p>
 </li>
 </ul></div>
-<div class="para"><p>And these are the handlers that use balancing:</p></div>
-<div class="ilist"><ul>
+<div class="paragraph"><p>And these are the handlers that use balancing:</p></div>
+<div class="ulist"><ul>
 <li>
 <p>
 <a href="modules_handlers_fcgi.html">FastCGI</a>
@@ -62,11 +55,6 @@ Sources</tt>.</p></div>
 <li>
 <p>
 <a href="modules_handlers_scgi.html">SCGI</a>
-</p>
-</li>
-<li>
-<p>
-<a href="modules_handlers_mirror.html">Generic balancer</a>
 </p>
 </li>
 <li>

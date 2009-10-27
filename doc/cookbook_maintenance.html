@@ -17,14 +17,14 @@
 </div>
 <h2 id="_cookbook_maintenance">Cookbook: Maintenance</h2>
 <div class="sectionbody">
-<div class="para"><p>This recipe will show how to seamlessly switch the webserver to
+<div class="paragraph"><p>This recipe will show how to seamlessly switch the webserver to
 maintenance mode. By that it is understood that no existing
 connections should be interrupted, but new connections should be
 notified of the situation. This could be done serving some generic
 static content.</p></div>
-<div class="para"><p>All this is easily achieved by Cherokee thanks to its
+<div class="paragraph"><p>All this is easily achieved by Cherokee thanks to its
 <a href="other_goodies.html#zero-downtime">Zero Downtime</a> mechanism.</p></div>
-<div class="para"><p>We will be showing a couple of use cases. The first one is mostly to
+<div class="paragraph"><p>We will be showing a couple of use cases. The first one is mostly to
 illustrate the general process and will be set to serve a custom HTTP
 Error. It is very simple and straightforward, but is also pretty
 useless in a production environment. The second use case will be more
@@ -32,8 +32,8 @@ advanced. It will be useful to serve a static maintenance message to
 the public while the administrator will retain the ability to see the
 actual changes.</p></div>
 <h3 id="basic">Basic Example</h3><div style="clear:left"></div>
-<div class="para"><p>The steps are fairly simple:</p></div>
-<div class="ilist"><ul>
+<div class="paragraph"><p>The steps are fairly simple:</p></div>
+<div class="ulist"><ul>
 <li>
 <p>
 Create a new virtual host, a copycat, that can handle the same
@@ -41,7 +41,7 @@ Create a new virtual host, a copycat, that can handle the same
 </p>
 <div class="imageblock">
 <div class="content">
-<img src="media/images/cookbook_maintenance_copy.png" alt="Copycat" title="Copycat"/>
+<img src="media/images/cookbook_maintenance_copy.png" alt="media/images/cookbook_maintenance_copy.png" />
 </div>
 </div>
 </li>
@@ -51,7 +51,7 @@ Dont forget to set up the domains handled by the virtual host.
 </p>
 <div class="imageblock">
 <div class="content">
-<img src="media/images/cookbook_maintenance_domain.png" alt="Domain" title="Domain"/>
+<img src="media/images/cookbook_maintenance_domain.png" alt="media/images/cookbook_maintenance_domain.png" />
 </div>
 </div>
 </li>
@@ -60,11 +60,11 @@ Dont forget to set up the domains handled by the virtual host.
 Also remember setting up whatever response you will be requiring (a
   custom error, some static content, and so on). We will be setting up
   the <a href="modules_handlers_custom_error.html">HTTP error</a> handler to
-  give a `503: Service unavailable' message.
+  give a &#8216;503: Service unavailable&#8217; message.
 </p>
 <div class="imageblock">
 <div class="content">
-<img src="media/images/cookbook_maintenance_error.png" alt="HTTP Error" title="HTTP Error"/>
+<img src="media/images/cookbook_maintenance_error.png" alt="media/images/cookbook_maintenance_error.png" />
 </div>
 </div>
 </li>
@@ -74,7 +74,7 @@ After setting up this way our sole rule, it should look like this:
 </p>
 <div class="imageblock">
 <div class="content">
-<img src="media/images/cookbook_maintenance_rule.png" alt="Rule" title="Rule"/>
+<img src="media/images/cookbook_maintenance_rule.png" alt="media/images/cookbook_maintenance_rule.png" />
 </div>
 </div>
 </li>
@@ -83,11 +83,11 @@ After setting up this way our sole rule, it should look like this:
 Make sure the copycat is positioned above the original virtual host,
   effectively having a higher priority for it. By default the new
   virtual hosts are positioned on top of the rest. Just make sure you
-  don't inadvertedly change the relative priorities.
+  don&#8217;t inadvertedly change the relative priorities.
 </p>
 <div class="imageblock">
 <div class="content">
-<img src="media/images/cookbook_maintenance_result.png" alt="Final result" title="Final result"/>
+<img src="media/images/cookbook_maintenance_result.png" alt="media/images/cookbook_maintenance_result.png" />
 </div>
 </div>
 </li>
@@ -97,19 +97,19 @@ Make a <strong>graceful restart</strong>.
 </p>
 </li>
 </ul></div>
-<div class="para"><p>By doing this, the existing connections to the original virtual host
+<div class="paragraph"><p>By doing this, the existing connections to the original virtual host
 will be preserverd and will eventually end upon completion. At the
 same time, new requests will be delivered to its copycat and will be
-handled according to its specified behavior. If you don't want this
+handled according to its specified behavior. If you don&#8217;t want this
 behavior you can always make a <strong>hard restart</strong>, effectively shutting
 down every existing connection.</p></div>
-<div class="para"><p>By now you are almost done. Now you can make whatever changes were
+<div class="paragraph"><p>By now you are almost done. Now you can make whatever changes were
 needed to the original host without affecting the incoming
 connections.</p></div>
-<div class="para"><p>Remember to reverse the process once you are done. You'll only have to
+<div class="paragraph"><p>Remember to reverse the process once you are done. You&#8217;ll only have to
 delete the copycat or position it below the real virtual host.</p></div>
 <h3 id="advanced1">Advanced Example: Static message</h3><div style="clear:left"></div>
-<div class="ilist"><ul>
+<div class="ulist"><ul>
 <li>
 <p>
 The first two steps are the same: create a copycat, and make it handle
@@ -129,7 +129,7 @@ Our virtual host will have only two rules. The first one will match
 </p>
 <div class="imageblock">
 <div class="content">
-<img src="media/images/cookbook_maintenance_advanced_rules.png" alt="Rules" title="Rules"/>
+<img src="media/images/cookbook_maintenance_advanced_rules.png" alt="media/images/cookbook_maintenance_advanced_rules.png" />
 </div>
 </div>
 </li>
@@ -139,21 +139,21 @@ The <tt>Default</tt> rule should be set to redirect more or less like this:
 </p>
 <div class="imageblock">
 <div class="content">
-<img src="media/images/cookbook_maintenance_advanced_redir.png" alt="Default" title="Default"/>
+<img src="media/images/cookbook_maintenance_advanced_redir.png" alt="media/images/cookbook_maintenance_advanced_redir.png" />
 </div>
 </div>
 </li>
 </ul></div>
-<div class="para"><p>This set up will result in every request being redirected to the
+<div class="paragraph"><p>This set up will result in every request being redirected to the
 maintenance directory.</p></div>
 <h3 id="advanced2">Advanced Example: Staff review</h3><div style="clear:left"></div>
-<div class="para"><p>By now you can switch the server to and from maintenace mode.
+<div class="paragraph"><p>By now you can switch the server to and from maintenace mode.
 The next essential feature needed is to allow specific users to be
 able to access the original site, not the maintenance version, so that
 the can view the changes reflected as soon as they work on something.</p></div>
-<div class="para"><p>The tweaking here has to take place in the original vhost. The steps
+<div class="paragraph"><p>The tweaking here has to take place in the original vhost. The steps
 are also fairly simple.</p></div>
-<div class="ilist"><ul>
+<div class="ulist"><ul>
 <li>
 <p>
 In this example we will be adding a new
@@ -162,7 +162,7 @@ host. This domain should be accessible from our intranet only.
 </p>
 <div class="imageblock">
 <div class="content">
-<img src="media/images/cookbook_maintenance_advanced_domains.png" alt="Domains" title="Domains"/>
+<img src="media/images/cookbook_maintenance_advanced_domains.png" alt="media/images/cookbook_maintenance_advanced_domains.png" />
 </div>
 </div>
 <div class="admonitionblock">
@@ -191,10 +191,10 @@ And we will add this domain to our /etc/hosts file as an alias for
 <div class="content">
 <pre><tt>10.0.0.118      intranet_example</tt></pre>
 </div></div>
-<div class="para"><p>In this case we are using the IP address asigned to the server in our
+<div class="paragraph"><p>In this case we are using the IP address asigned to the server in our
 intranet, and this will grant access from our computer to the original
 site whether the copycat is present or not.</p></div>
-<div class="para"><p>You might want to reflect such configuration in a private DNS in case
+<div class="paragraph"><p>You might want to reflect such configuration in a private DNS in case
 you need more flexibility, restrict access to specific IP ranges and
 similar security measures, but the principles are the same.</p></div>
 </li>

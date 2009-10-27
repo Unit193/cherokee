@@ -83,7 +83,7 @@ cherokee_spawner_init (void)
 
 error:
 	LOG_ERRNO (errno, cherokee_err_error,
-		   "Could initialize SHM '%s': ${errno}\n", name.buf);
+		   "Couldn't initialize SHM '%s': ${errno}\n", name.buf);
 
 	cherokee_buffer_mrproper (&name);
 	return ret_error;
@@ -176,6 +176,7 @@ cherokee_spawner_spawn (cherokee_buffer_t  *binary,
 			cherokee_buffer_t  *user,
 			uid_t               uid,
 			gid_t               gid,
+			int                 env_inherited,
 			char              **envp,
 			cherokee_logger_t  *logger,
 			pid_t              *pid_ret)
@@ -184,6 +185,7 @@ cherokee_spawner_spawn (cherokee_buffer_t  *binary,
 	ret_t              ret;
 	char             **n;
 	int               *pid_shm;
+	int                pid_prev;
 	int                k;
 	int                envs     = 0;
 	cherokee_buffer_t  tmp      = CHEROKEE_BUF_INIT;
@@ -226,6 +228,7 @@ cherokee_spawner_spawn (cherokee_buffer_t  *binary,
 		envs ++;
 	}
 
+	cherokee_buffer_add (&tmp, (char *)&env_inherited, sizeof(int));
 	cherokee_buffer_add (&tmp, (char *)&envs, sizeof(int));
 
 	for (n=envp; *n; n++) {
@@ -240,7 +243,8 @@ cherokee_spawner_spawn (cherokee_buffer_t  *binary,
 
 	/* 5.- PID (will be rewritten by the other side) */
 	pid_shm = (int *) (((char *)cherokee_spawn_shared.mem) + tmp.len);
-	k = *pid_ret;
+	k        = *pid_ret;
+	pid_prev = *pid_ret;
 	cherokee_buffer_add (&tmp, (char *)&k, sizeof(int));
 
 	/* Copy it to the shared memory
@@ -262,7 +266,7 @@ cherokee_spawner_spawn (cherokee_buffer_t  *binary,
 	/* Wait for the PID
 	 */
 	k = 0;
-	while ((*pid_shm <= 0) && (k < 3)) {
+	while (((*pid_shm == pid_prev) || (*pid_shm <= 0)) && (k < 3)) {
 		k++;
 		sleep(1);
 	}

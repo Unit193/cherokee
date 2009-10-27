@@ -89,6 +89,9 @@ char *strnstr (const char *s, const char *find, size_t slen);
 #ifndef HAVE_STRCASESTR
 char *strcasestr (register char *s, register char *find);
 #endif
+#ifndef HAVE_STRLCAT
+size_t strlcat (char *dst, const char *src, size_t siz);
+#endif
 #ifndef HAVE_MALLOC
 void *rpl_malloc (size_t n);
 #endif
@@ -104,7 +107,6 @@ char   *cherokee_strerror_r         (int err, char *buf, size_t bufsize);
 int     cherokee_isbigendian        (void);
 char   *cherokee_min_str            (char *s1, char *s2);
 char   *cherokee_max_str            (char *s1, char *s2);
-size_t  cherokee_strlcat            (char *dst, const char *src, size_t siz);
 int     cherokee_estimate_va_length (const char *format, va_list ap);
 long    cherokee_eval_formated_time (cherokee_buffer_t *buf);  
 ret_t   cherokee_fix_dirpath        (cherokee_buffer_t *buf);
@@ -127,6 +129,8 @@ int     cherokee_string_is_ipv6     (cherokee_buffer_t *ip);
 ret_t   cherokee_buf_add_bogonow    (cherokee_buffer_t *buf,
 				     cherokee_boolean_t update);
 
+ret_t   cherokee_buf_add_backtrace  (cherokee_buffer_t *buf, int n_skip);
+
 ret_t   cherokee_find_exec_in_path  (const char        *bin_name,
 				     cherokee_buffer_t *fullpath);
 
@@ -140,6 +144,7 @@ long      *cherokee_get_timezone_ref (void);
  */
 int   cherokee_readdir       (DIR *dirstream, struct dirent *entry, struct dirent **result);
 ret_t cherokee_gethostbyname (const char *hostname, void *addr);
+ret_t cherokee_gethostname   (cherokee_buffer_t *buf);
 ret_t cherokee_syslog        (int priority, cherokee_buffer_t *buf);
 ret_t cherokee_getpwnam      (const char *name, struct passwd *pwbuf, char *buf, size_t buflen);
 ret_t cherokee_getgrnam      (const char *name, struct group *pwbuf, char *buf, size_t buflen);

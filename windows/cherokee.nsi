@@ -1,7 +1,11 @@
 !include "MUI.nsh"
 
 Name "Cherokee Web Server"
+<<<<<<< HEAD:windows/cherokee.nsi
 OutFile "Cherokee-setup-0.99.22.exe"
+=======
+OutFile "Cherokee-setup-0.99.25.exe"
+>>>>>>> upstream/0.99.25:packages/windows/cherokee.nsi
 InstallDir "$PROGRAMFILES\Cherokee"
 DirText "Choose a folder in which to install Cherokee"
 ShowInstDetails show

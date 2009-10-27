@@ -161,6 +161,7 @@ PACKAGE_NAME = @PACKAGE_NAME@
 PACKAGE_PATCH_VERSION = @PACKAGE_PATCH_VERSION@
 PACKAGE_STRING = @PACKAGE_STRING@
 PACKAGE_TARNAME = @PACKAGE_TARNAME@
+PACKAGE_URL = @PACKAGE_URL@
 PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
 PHPCGI = @PHPCGI@
@@ -174,7 +175,9 @@ SHELL = @SHELL@
 STRIP = @STRIP@
 USE_NLS = @USE_NLS@
 VERSION = @VERSION@
+WWW_GROUP = @WWW_GROUP@
 WWW_ROOT = @WWW_ROOT@
+WWW_USER = @WWW_USER@
 XGETTEXT = @XGETTEXT@
 XGETTEXT_015 = @XGETTEXT_015@
 XGETTEXT_EXTRA_OPTIONS = @XGETTEXT_EXTRA_OPTIONS@
@@ -233,16 +236,35 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 wizardsdir = "$(datadir)/cherokee/admin/static/images/wizards"
 wizards_DATA = \
-php.jpg \
-wordpress.png \
-redirect.jpg \
+alfresco.png \
+aspnet.png \
+common_static.png \
+dbslayer.png \
 django.png \
-hotlinking.png \
 drupal.png \
-ror.png \
-mailman.png \
+glassfish.png \
+hotlinking.png \
 icons.png \
-common_static.png
+joomla.png \
+liferay.png \
+mailman.png \
+moodle.png \
+nagios.png \
+phpbb.png \
+php.jpg \
+phpmyadmin.png \
+redirect.jpg \
+ror.png \
+rtorrent.png \
+streaming.png \
+sugarcrm.png \
+symfony.png \
+trac.png \
+wordpress.png \
+zend.png \
+uwsgi.png \
+mono.png \
+coldfusion.png
 
 EXTRA_DIST = \
 $(wizards_DATA)
