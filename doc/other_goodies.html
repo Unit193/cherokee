@@ -29,7 +29,7 @@ non authorized personnel from accessing the application, and one-time
 passwords are generated each time the program is launched. This can be
 used to give temporary access to a remote administrator.</p></div>
 <h3 id="cherokee-tweak">Cherokee-Tweak</h3><div style="clear:left"></div>
-<div class="paragraph"><p>The swiss-army knife of the Cherokee bundle. This little tool enables
+<div class="paragraph"><p>The Swiss-army knife of the Cherokee bundle. This little tool enables
 you, among other things, to rotate the logs with absolutely no
 downtime at all. No connections are lost. No delay happens. It can
 also be used to trace Cherokee&#8217;s state on the fly, even remotely and
@@ -40,7 +40,7 @@ on production servers.</p></div>
 <div class="paragraph"><p>X-Sendfile is a special, non-standard HTTP header that has been
 supported by Cherokee for a while. At first you might think it is no
 big deal, but think again.It can be enabled in any CGI, FastCGI or
-SCGI backend. Basicaly its job is to instruct the web server to ignore
+SCGI backend. Basically its job is to instruct the web server to ignore
 the content of the response and replace it by whatever is specified in
 the header. The main advantage of this is that it will be Cherokee the
 one serving the file, making use of all its optimizations. It is
@@ -54,12 +54,12 @@ faster not having to worry about a task best suited for a web server.</p></div>
 deciding anything contemplated by your backend&#8217;s logic, you speed up
 things a lot while having more resources freed, and you can even
 specify the delivery of files outside of the web server&#8217;s document
-root path. Of course, this is to be done solely in controled
+root path. Of course, this is to be done solely in controlled
 environments. In short, it offers a huge performance gain at
 absolutely no cost.</p></div>
 <div class="paragraph"><p>Note that the X-Sendfile feature also supports <tt>X-Accel-Redirect</tt>
 header, a similar feature offered by other web servers.
-This is to allow the migration of applications supporting it whithout
+This is to allow the migration of applications supporting it without
 having to make major code rewrites.</p></div>
 <h3 id="zero-downtime">Zero Downtime Updates</h3><div style="clear:left"></div>
 <div class="paragraph"><p>Cherokee has an ability hardly ever seen in any service delivering
@@ -124,7 +124,7 @@ problems like local connections overwhelming a local slave, local
 slave database failures, or replication failures.</p></div>
 <div class="paragraph"><p>This feature delivers connection pooling, database abstraction to
 enable easier migrations and administration, load balancing and
-automatic failover.</p></div>
+automatic fail over.</p></div>
 <h3 id="reverse_proxy">Reverse Proxy</h3><div style="clear:left"></div>
 <div class="paragraph"><p>Yes, that too! Cherokee also provides a state of the art
 <a href="modules_handlers_proxy.html">HTTP reverse proxy</a> module. Check the
@@ -136,7 +136,7 @@ the <a href="modules.html">modules</a> bundled with Cherokee.</p></div>
 the available bandwidth to maximize service. Are you planning on being
 the next Youtube? Take a look at the
 <a href="modules_handlers_streaming.html">Streaming handler</a>.</p></div>
-<h3 id="secure_downloads">Secure donwloads</h3><div style="clear:left"></div>
+<h3 id="secure_downloads">Secure downloads</h3><div style="clear:left"></div>
 <div class="paragraph"><p>A pretty nifty feature that has been having great acceptance is
 Cherokee&#8217;s capability of generating temporal URLs to serve hidden
 file. The <a href="modules_handlers_secdownload.html">Hidden Downloads</a>
