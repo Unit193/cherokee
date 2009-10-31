@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: cherokee '0.99.10'\n"
 "Report-Msgid-Bugs-To: http://bugs.cherokee-project.com/\n"
-"POT-Creation-Date: 2009-10-24 10:02-0500\n"
+"POT-Creation-Date: 2009-10-30 20:10-0600\n"
 "PO-Revision-Date: 2009-04-14 21:27+CEST\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -374,7 +374,7 @@ msgstr ""
 
 #: admin/ModuleDirectory.py:22 admin/ModuleDirectory.py:24
 #: admin/Wizard_Django.py:148 admin/Wizard_Django.py:150
-#: admin/Wizard_Drupal.py:211 admin/Wizard_RoR.py:234 admin/Wizard_RoR.py:236
+#: admin/Wizard_Drupal.py:226 admin/Wizard_RoR.py:234 admin/Wizard_RoR.py:236
 #: admin/Wizard_WordPress.py:185
 msgid "Web Directory"
 msgstr "Web Directory"
@@ -1628,7 +1628,7 @@ msgid "Authentication"
 msgstr "Authentication"
 
 #: admin/PageEntry.py:239 admin/PageVServer.py:265 admin/PageVServers.py:144
-#: admin/Wizard_Django.py:96 admin/Wizard_Drupal.py:137
+#: admin/Wizard_Django.py:96 admin/Wizard_Drupal.py:151
 #: admin/Wizard_Mailman.py:132 admin/Wizard_RoR.py:172
 #: admin/Wizard_WordPress.py:115
 msgid "Logging"
@@ -2872,7 +2872,7 @@ msgstr "Wildcards"
 msgid "New Virtual Server"
 msgstr "Virtual Server"
 
-#: admin/Wizard_Django.py:87 admin/Wizard_Drupal.py:133
+#: admin/Wizard_Django.py:87 admin/Wizard_Drupal.py:147
 #: admin/Wizard_Mailman.py:122 admin/Wizard_RoR.py:161
 #: admin/Wizard_WordPress.py:111
 #, fuzzy
@@ -2919,30 +2919,30 @@ msgstr ""
 msgid "A host name must be provided."
 msgstr ""
 
-#: admin/Wizard_Drupal.py:115
+#: admin/Wizard_Drupal.py:129
 msgid "Configure a new virtual server using Drupal."
 msgstr ""
 
-#: admin/Wizard_Drupal.py:121 admin/Wizard_Drupal.py:196
+#: admin/Wizard_Drupal.py:135 admin/Wizard_Drupal.py:211
 #, fuzzy
 msgid "Drupal Wizard"
 msgstr "Wildcards"
 
-#: admin/Wizard_Drupal.py:134 admin/Wizard_Drupal.py:212
+#: admin/Wizard_Drupal.py:148 admin/Wizard_Drupal.py:227
 #: admin/Wizard_WordPress.py:112 admin/Wizard_WordPress.py:186
 #, fuzzy
 msgid "Source Directory"
 msgstr "Web Directory"
 
-#: admin/Wizard_Drupal.py:167 admin/Wizard_WordPress.py:145
+#: admin/Wizard_Drupal.py:181 admin/Wizard_WordPress.py:145
 msgid "Couldn't find a suitable PHP interpreter."
 msgstr ""
 
-#: admin/Wizard_Drupal.py:190
+#: admin/Wizard_Drupal.py:205
 msgid "Configures Drupal inside a public web directory."
 msgstr ""
 
-#: admin/Wizard_Drupal.py:203 admin/Wizard_WordPress.py:177
+#: admin/Wizard_Drupal.py:218 admin/Wizard_WordPress.py:177
 msgid "PHP support is required."
 msgstr ""
 
@@ -3436,17 +3436,17 @@ msgstr " Hard restart performed."
 msgid "Incorrect parameters: PORT CONFIG_FILE"
 msgstr "Incorrect parameters: PORT CONFIG_FILE"
 
-#: admin/server.py:232
+#: admin/server.py:241
 #, fuzzy, python-format
 msgid "Server %(version)s running.. PID=%(pid)d Port=%(scgi_port)s"
 msgstr "Server %s running.. PID=%d Port=%d"
 
-#: admin/server.py:234
+#: admin/server.py:243
 #, fuzzy, python-format
 msgid "Server %(version)s running.. PID=%(pid)d Socket=%(scgi_port)s"
 msgstr "Server %s running.. PID=%d Port=%d"
 
-#: admin/server.py:241
+#: admin/server.py:250
 msgid "Server exiting.."
 msgstr "Server exiting.."
 
