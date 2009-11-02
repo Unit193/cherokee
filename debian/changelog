@@ -1,7 +1,13 @@
-cherokee (0.99.24-2) experimental; urgency=low
+cherokee (0.99.26-1) experimental; urgency=low
 
   * PENDING BEFORE RELEASE TO UNSTABLE: Should we stop providing *.a/*.la
     given there are corresponding .so files? Think so... 
+  * New upstream version
+
+ -- Gunnar Wolf <gwolf@debian.org>  Mon, 02 Nov 2009 16:20:49 -0600
+
+cherokee (0.99.24-2) experimental; urgency=low
+
   * Reworked the build system to have a cleaner debian/rules, following
     dh7 conventions
   * Moved /var/lib/cherokee/graphs to the rrdtool binary package
