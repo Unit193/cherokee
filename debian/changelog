@@ -3,8 +3,9 @@ cherokee (0.99.26-1) UNRELEASED; urgency=low
   * New upstream release
   * Fixed incorrect dependency information in cherokee.init - Thanks to
     Petter Reinholdtsen for pointing it out! (Closes: #541861)
+  * Update config.{guess,sub} before building (Closes: #549965).
 
- -- Gunnar Wolf <gwolf@debian.org>  Mon, 02 Nov 2009 16:36:44 -0600
+ -- Gunnar Wolf <gwolf@debian.org>  Mon, 02 Nov 2009 17:25:47 -0600
 
 cherokee (0.99.25-1) unstable; urgency=low
 
