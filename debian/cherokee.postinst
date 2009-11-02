@@ -59,6 +59,15 @@ case "$1" in
 		chown $RUNAS_USER $LOGDIR
 	    fi
 	done
+
+	# Upgrading from versions <= 0.99.26-1 with dependency-based
+	# boot sequencing with sysv-rc would still start cherokee in
+	# runlevel S - Not a good thing! Remove the links, they will
+	# be put back in place bythe auto-DH-generated section.
+	if dpkg --compare-versions "$2" le "0.99.26-1" && [ -e /etc/rcS.d/[SK][0-9][0-9]cherokee ]
+	then
+	    update-rc.d -f cherokee remove
+	fi
 	;;
     abort-upgrade|abort-remove|abort-deconfigure)
 	;;
