@@ -3,8 +3,9 @@ cherokee (0.99.26-1) experimental; urgency=low
   * PENDING BEFORE RELEASE TO UNSTABLE: Should we stop providing *.a/*.la
     given there are corresponding .so files? Think so... 
   * New upstream version
+  * Update config.{guess,sub} before building (Closes: #549965). 
 
- -- Gunnar Wolf <gwolf@debian.org>  Mon, 02 Nov 2009 16:20:49 -0600
+ -- Gunnar Wolf <gwolf@debian.org>  Mon, 02 Nov 2009 17:19:15 -0600
 
 cherokee (0.99.24-2) experimental; urgency=low
 
