@@ -2,7 +2,7 @@
 # Copyright (C) 2001-2007 Alvaro Lopez Ortega
 
 Name:           cherokee
-Version:        0.99.25
+Version:        0.99.26
 Release:        1
 License:        GPL
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build

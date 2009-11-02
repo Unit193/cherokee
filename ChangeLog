@@ -1,3 +1,89 @@
+2009-10-30  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3764, alo - 16:29:04
+
+	* Clarifies the bug/regression the QA is protecting against.
+	
+	M /cherokee/trunk/qa/231-POST-4extra.py
+
+2009-10-30  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3763, alo - 16:22:30
+
+	* The -r and -p parameters can only be user together. Fixes:
+	http://bugs.cherokee-project.com/588
+	
+	M /cherokee/trunk/cherokee/main_worker.c
+
+2009-10-30  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3762, alo - 16:18:35
+
+	* Adds a new TRACE point. Points when a HTTP/1.1 connection does not
+	provide a "Connection" header entry.
+	
+	M /cherokee/trunk/cherokee/connection.c
+
+2009-10-30  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3761, alo - 16:17:15
+
+	* Adds a new CHEROKEE_PRINT_BACKTRACE macro.
+	
+	M /cherokee/trunk/cherokee/macros.h
+
+2009-10-30  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3760, alo - 16:16:17
+
+	* Let user know whenever cherokee-admin removes an old Unix socket.
+	
+	M /cherokee/trunk/admin/server.py
+
+2009-10-30  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3759, alo - 16:14:44
+
+	* Adds a new QA to test http://bugs.cherokee-project.com/504
+	
+	M /cherokee/trunk/qa/Makefile.am
+	A /cherokee/trunk/qa/231-POST-4extra.py
+
+2009-10-29  Antonio Perez  <aperez@skarcha.com>
+            SVN: r3758, aperez - 23:20:30
+
+	* Fixes POST issue. My previous patch (r3655 and r3657) was bad...
+	
+	
+	M /cherokee/trunk/cherokee/thread.c
+
+2009-10-29  Taher Shihadeh  <taher@unixwars.com>
+            SVN: r3757, taher - 16:44:12
+
+	* Adds extra rule to the wizard that has been found useful
+	M /cherokee/trunk/admin/Wizard_Drupal.py
+
+2009-10-28  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3756, alo - 17:28:29
+
+	* Removes the Unix socket if it already exists while launching an
+	instance of server.py. Most probably the file is there because the
+	previous server.py died and didn't remove the old unix socket file.
+	
+	M /cherokee/trunk/admin/server.py
+
+2009-10-28  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3755, alo - 00:39:48
+
+	* Cherokee-admin was reporting wrong messages when running wizards.
+	Whenever two or more wizards could not be run only the last reason
+	(.no_show) has reported for all of them. For instance: uWSGI wizards
+	was reporting "PHP is not configured", because Symfony wizard (in the
+	same category) depended on it. The problem was with a function using a
+	variable with the wrong information.
+	
+	M /cherokee/trunk/admin/static/js/wizards.js
+
+2009-10-27  Taher Shihadeh  <taher@unixwars.com>
+            SVN: r3754, taher - 16:38:10
+
+	* Fixes some typos
+	M /cherokee/trunk/doc/other_goodies.txt
+
 2009-10-23  Taher Shihadeh  <taher@unixwars.com>
             SVN: r3750, taher - 17:29:15
 
