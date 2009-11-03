@@ -38,6 +38,21 @@ endif
 %:
 	dh --with-quilt $@
 
+binary:
+	dh binary --until dh_install
+	# We avoid manually stating each of the files to be included
+	# in libcherokee-server0 by copying over to it everything in
+	# $(BUILD_DIR)/usr/lib/cherokee that has not been copied over
+	# to any of the plugin packages (libcherokee-mod-*)
+	INSTALLED=`mktemp`; \
+		DEST=$(CURDIR)/debian/libcherokee-server0/usr/lib/cherokee; \
+		ls $(CURDIR)/debian/libcherokee-mod*/usr/lib/cherokee/* | \
+			sed 's/.*\///' > $$INSTALLED; \
+		install $$(ls $(BUILD_DIR)/usr/lib/cherokee/* | \
+			egrep -vf $$INSTALLED) $$DEST;\
+		rm -f $$INSTALLED
+	dh binary --remaining
+
 override_dh_auto_configure:
 	dh_auto_configure -- --host=$(DEB_HOST_GNU_TYPE)         \
 			   --build=$(DEB_BUILD_GNU_TYPE)         \
