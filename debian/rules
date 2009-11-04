@@ -51,6 +51,10 @@ binary:
 		install $$(ls $(BUILD_DIR)/usr/lib/cherokee/* | \
 			egrep -vf $$INSTALLED) $$DEST;\
 		rm -f $$INSTALLED
+	# Include our nice "Powered by Debian" logo alongside
+	# Cherokee's own
+	/usr/bin/uudecode $(CURDIR)/debian/powered_by_debian.png.uu -o $(CURDIR)/debian/cherokee/usr/share/cherokee/default-site/cherokee-images/powered_by_debian.png 
+	# Done, go on as usual...
 	dh binary --remaining
 
 override_dh_auto_configure:
@@ -94,23 +98,3 @@ clean:
 		config.log \
 		$(BUILD_DIR)
 	dh_clean
-
-install-arch: 
-	dh_testdir
-	dh_testroot
-	dh_prep
-	dh_installdirs -s
-
-	install -d $(BUILD_DIR) 	
-
-	$(MAKE) install INSTALL_PROGRAM=$(INSTALL_PROGRAM) CFLAGS="$(CFLAGS)" DESTDIR=$(BUILD_DIR)
-
-	# Move the generated webpage to its proper location - We will set up
-	# the symlinks, if needed, in the postinst. The package is still 
-	# generated with wwwroot=/var/www as it is mentioned in several places
-	# (i.e. configurations) useful to us.
-	install -d $(BUILD_DIR)/usr/share/cherokee/default-site
-	mv $(BUILD_DIR)/var/www/* $(BUILD_DIR)/usr/share/cherokee/default-site/
-
-	# Add the Debian logo for the default page
-	/usr/bin/uudecode -o $(BUILD_DIR)/usr/share/cherokee/default-site/cherokee-images/powered_by_debian.png $(CURDIR)/debian/powered_by_debian.png.uu
