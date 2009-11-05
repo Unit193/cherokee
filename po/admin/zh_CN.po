@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: cherokee '0.99.15' admin UI for zh_CN \n"
 "Report-Msgid-Bugs-To: http://bugs.cherokee-project.com/\n"
-"POT-Creation-Date: 2009-10-30 20:10-0600\n"
+"POT-Creation-Date: 2009-11-05 10:05-0600\n"
 "PO-Revision-Date: 2009-04-14 21:27+CEST\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: ownlinux.cn\n"
@@ -264,7 +264,7 @@ msgstr "添加新的自定义环境变量"
 msgid "Name"
 msgstr "姓名"
 
-#: admin/ModuleCgi.py:75 admin/ModuleProxy.py:100 admin/ModuleProxy.py:116
+#: admin/ModuleCgi.py:75 admin/ModuleProxy.py:103 admin/ModuleProxy.py:119
 #: admin/PageInfoSource.py:156
 msgid "Value"
 msgstr "值"
@@ -354,7 +354,7 @@ msgstr "数据库名称"
 msgid "Data base balancing"
 msgstr "数据库负载均衡"
 
-#: admin/ModuleDbslayer.py:52 admin/ModuleFcgi.py:34 admin/ModuleProxy.py:49
+#: admin/ModuleDbslayer.py:52 admin/ModuleFcgi.py:34 admin/ModuleProxy.py:51
 #: admin/ModuleScgi.py:36
 msgid "Balancer"
 msgstr "均衡器"
@@ -366,7 +366,7 @@ msgstr "公共网页目录的内容将应用于配置."
 
 #: admin/ModuleDirectory.py:22 admin/ModuleDirectory.py:24
 #: admin/Wizard_Django.py:148 admin/Wizard_Django.py:150
-#: admin/Wizard_Drupal.py:226 admin/Wizard_RoR.py:234 admin/Wizard_RoR.py:236
+#: admin/Wizard_Drupal.py:228 admin/Wizard_RoR.py:234 admin/Wizard_RoR.py:236
 #: admin/Wizard_WordPress.py:185
 msgid "Web Directory"
 msgstr "网页目录"
@@ -677,12 +677,12 @@ msgstr "符合正则表达式的将被优先应用."
 msgid "Regular expression."
 msgstr "正则表达式."
 
-#: admin/ModuleHeader.py:35 admin/ModuleHeader.py:37 admin/ModuleProxy.py:100
-#: admin/ModuleProxy.py:126 admin/consts.py:129
+#: admin/ModuleHeader.py:35 admin/ModuleHeader.py:37 admin/ModuleProxy.py:103
+#: admin/ModuleProxy.py:129 admin/consts.py:129
 msgid "Header"
 msgstr "请求头"
 
-#: admin/ModuleHeader.py:38 admin/ModuleProxy.py:156 admin/ModuleRedir.py:35
+#: admin/ModuleHeader.py:38 admin/ModuleProxy.py:159 admin/ModuleRedir.py:35
 #: admin/ModuleRedir.py:52 admin/ModuleRequest.py:22 admin/ModuleRequest.py:24
 #: admin/ModuleRequest.py:41 admin/consts.py:128
 msgid "Regular Expression"
@@ -885,69 +885,80 @@ msgstr "允许服务器使用活动连接到后台程序."
 msgid "Preserve the original \"Host:\" header sent by the client. (Default No)"
 msgstr "保留原始\"Host:\" 客户端请求. (Default No)"
 
-#: admin/ModuleProxy.py:18
+#: admin/ModuleProxy.py:16
+#, fuzzy
+msgid ""
+"Preserve the \"Server:\" header sent by the back-end server. (Default No)"
+msgstr "保留原始\"Host:\" 客户端请求. (Default No)"
+
+#: admin/ModuleProxy.py:19
 msgid "Reverse Proxy"
 msgstr "反向代理"
 
-#: admin/ModuleProxy.py:38
+#: admin/ModuleProxy.py:40
 msgid "Reverse Proxy Settings"
 msgstr "反向代理设置"
 
-#: admin/ModuleProxy.py:41
+#: admin/ModuleProxy.py:43
 msgid "Request"
 msgstr "请求"
 
-#: admin/ModuleProxy.py:43
+#: admin/ModuleProxy.py:45
 #, fuzzy
 msgid "Reply"
 msgstr "回复"
 
-#: admin/ModuleProxy.py:52
+#: admin/ModuleProxy.py:54
 msgid "Back-end Servers"
 msgstr "服务器后台程序"
 
-#: admin/ModuleProxy.py:59 admin/PageAdvanced.py:101
+#: admin/ModuleProxy.py:61 admin/PageAdvanced.py:101
 msgid "Reuse connections"
 msgstr "连接重用"
 
-#: admin/ModuleProxy.py:60
+#: admin/ModuleProxy.py:62
 msgid "Allow Keepalive"
 msgstr "允许活动连接"
 
-#: admin/ModuleProxy.py:61
+#: admin/ModuleProxy.py:63
 msgid "Preserve Host header"
 msgstr "维护主机头"
 
-#: admin/ModuleProxy.py:67 admin/ModuleProxy.py:82
+#: admin/ModuleProxy.py:64
+#, fuzzy
+msgid "Preserve Server header"
+msgstr "维护主机头"
+
+#: admin/ModuleProxy.py:70 admin/ModuleProxy.py:85
 msgid "URL Rewriting"
 msgstr "URL 重写"
 
-#: admin/ModuleProxy.py:71
+#: admin/ModuleProxy.py:74
 msgid "Header Addition"
 msgstr "头部附加文件"
 
-#: admin/ModuleProxy.py:72 admin/ModuleProxy.py:87
+#: admin/ModuleProxy.py:75 admin/ModuleProxy.py:90
 msgid "Add New Header"
 msgstr "添加新的请求头"
 
-#: admin/ModuleProxy.py:75 admin/ModuleProxy.py:90
+#: admin/ModuleProxy.py:78 admin/ModuleProxy.py:93
 msgid "Hide Headers"
 msgstr "隐藏请求头"
 
-#: admin/ModuleProxy.py:76 admin/ModuleProxy.py:91
+#: admin/ModuleProxy.py:79 admin/ModuleProxy.py:94
 msgid "Hide Header"
 msgstr "隐藏请求头"
 
-#: admin/ModuleProxy.py:86
+#: admin/ModuleProxy.py:89
 msgid "Header addition"
 msgstr "附加请求头"
 
-#: admin/ModuleProxy.py:156 admin/ModuleProxy.py:178 admin/ModuleRedir.py:35
+#: admin/ModuleProxy.py:159 admin/ModuleProxy.py:181 admin/ModuleRedir.py:35
 #: admin/ModuleRedir.py:53
 msgid "Substitution"
 msgstr "替换"
 
-#: admin/ModuleProxy.py:178
+#: admin/ModuleProxy.py:181
 msgid "Add RegEx"
 msgstr "新增正则表达式"
 
@@ -1596,7 +1607,7 @@ msgid "Authentication"
 msgstr "认证"
 
 #: admin/PageEntry.py:239 admin/PageVServer.py:265 admin/PageVServers.py:144
-#: admin/Wizard_Django.py:96 admin/Wizard_Drupal.py:151
+#: admin/Wizard_Django.py:96 admin/Wizard_Drupal.py:153
 #: admin/Wizard_Mailman.py:132 admin/Wizard_RoR.py:172
 #: admin/Wizard_WordPress.py:115
 msgid "Logging"
@@ -2815,7 +2826,7 @@ msgstr "通配符"
 msgid "New Virtual Server"
 msgstr "虚拟主机"
 
-#: admin/Wizard_Django.py:87 admin/Wizard_Drupal.py:147
+#: admin/Wizard_Django.py:87 admin/Wizard_Drupal.py:149
 #: admin/Wizard_Mailman.py:122 admin/Wizard_RoR.py:161
 #: admin/Wizard_WordPress.py:111
 #, fuzzy
@@ -2862,30 +2873,30 @@ msgstr ""
 msgid "A host name must be provided."
 msgstr ""
 
-#: admin/Wizard_Drupal.py:129
+#: admin/Wizard_Drupal.py:131
 msgid "Configure a new virtual server using Drupal."
 msgstr ""
 
-#: admin/Wizard_Drupal.py:135 admin/Wizard_Drupal.py:211
+#: admin/Wizard_Drupal.py:137 admin/Wizard_Drupal.py:213
 #, fuzzy
 msgid "Drupal Wizard"
 msgstr "通配符"
 
-#: admin/Wizard_Drupal.py:148 admin/Wizard_Drupal.py:227
+#: admin/Wizard_Drupal.py:150 admin/Wizard_Drupal.py:229
 #: admin/Wizard_WordPress.py:112 admin/Wizard_WordPress.py:186
 #, fuzzy
 msgid "Source Directory"
 msgstr "网页目录"
 
-#: admin/Wizard_Drupal.py:181 admin/Wizard_WordPress.py:145
+#: admin/Wizard_Drupal.py:183 admin/Wizard_WordPress.py:145
 msgid "Couldn't find a suitable PHP interpreter."
 msgstr ""
 
-#: admin/Wizard_Drupal.py:205
+#: admin/Wizard_Drupal.py:207
 msgid "Configures Drupal inside a public web directory."
 msgstr ""
 
-#: admin/Wizard_Drupal.py:218 admin/Wizard_WordPress.py:177
+#: admin/Wizard_Drupal.py:220 admin/Wizard_WordPress.py:177
 msgid "PHP support is required."
 msgstr ""
 
