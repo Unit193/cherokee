@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: cherokee '0.99.10'\n"
 "Report-Msgid-Bugs-To: http://bugs.cherokee-project.com/\n"
-"POT-Creation-Date: 2009-10-30 20:10-0600\n"
+"POT-Creation-Date: 2009-11-05 10:05-0600\n"
 "PO-Revision-Date: 2009-08-31 02:16+0200\n"
 "Last-Translator: Antonio Pérez Jiménez <aperez@skarcha.com>\n"
 "Language-Team: Spanish <>\n"
@@ -279,7 +279,7 @@ msgstr "Añadir nueva variable de entorno personalizada"
 msgid "Name"
 msgstr "Nombre"
 
-#: admin/ModuleCgi.py:75 admin/ModuleProxy.py:100 admin/ModuleProxy.py:116
+#: admin/ModuleCgi.py:75 admin/ModuleProxy.py:103 admin/ModuleProxy.py:119
 #: admin/PageInfoSource.py:156
 msgid "Value"
 msgstr "Valor"
@@ -368,7 +368,7 @@ msgstr "Base de datos"
 msgid "Data base balancing"
 msgstr "Balanceo de Base de datos"
 
-#: admin/ModuleDbslayer.py:52 admin/ModuleFcgi.py:34 admin/ModuleProxy.py:49
+#: admin/ModuleDbslayer.py:52 admin/ModuleFcgi.py:34 admin/ModuleProxy.py:51
 #: admin/ModuleScgi.py:36
 msgid "Balancer"
 msgstr "Balanceador"
@@ -381,7 +381,7 @@ msgstr ""
 
 #: admin/ModuleDirectory.py:22 admin/ModuleDirectory.py:24
 #: admin/Wizard_Django.py:148 admin/Wizard_Django.py:150
-#: admin/Wizard_Drupal.py:226 admin/Wizard_RoR.py:234 admin/Wizard_RoR.py:236
+#: admin/Wizard_Drupal.py:228 admin/Wizard_RoR.py:234 admin/Wizard_RoR.py:236
 #: admin/Wizard_WordPress.py:185
 msgid "Web Directory"
 msgstr "Directorio web"
@@ -696,12 +696,12 @@ msgstr "Cabecera que se evaluará con la expresión regular."
 msgid "Regular expression."
 msgstr "Expresión regular."
 
-#: admin/ModuleHeader.py:35 admin/ModuleHeader.py:37 admin/ModuleProxy.py:100
-#: admin/ModuleProxy.py:126 admin/consts.py:129
+#: admin/ModuleHeader.py:35 admin/ModuleHeader.py:37 admin/ModuleProxy.py:103
+#: admin/ModuleProxy.py:129 admin/consts.py:129
 msgid "Header"
 msgstr "Cabecera"
 
-#: admin/ModuleHeader.py:38 admin/ModuleProxy.py:156 admin/ModuleRedir.py:35
+#: admin/ModuleHeader.py:38 admin/ModuleProxy.py:159 admin/ModuleRedir.py:35
 #: admin/ModuleRedir.py:52 admin/ModuleRequest.py:22 admin/ModuleRequest.py:24
 #: admin/ModuleRequest.py:41 admin/consts.py:128
 msgid "Regular Expression"
@@ -911,68 +911,81 @@ msgstr ""
 "Mantener la cabecera \"Host:\" original enviada por el cliente. "
 "(Predeterminado: No)"
 
-#: admin/ModuleProxy.py:18
+#: admin/ModuleProxy.py:16
+#, fuzzy
+msgid ""
+"Preserve the \"Server:\" header sent by the back-end server. (Default No)"
+msgstr ""
+"Mantener la cabecera \"Host:\" original enviada por el cliente. "
+"(Predeterminado: No)"
+
+#: admin/ModuleProxy.py:19
 msgid "Reverse Proxy"
 msgstr "Proxy inverso"
 
-#: admin/ModuleProxy.py:38
+#: admin/ModuleProxy.py:40
 msgid "Reverse Proxy Settings"
 msgstr "Ajustes del proxy inverso"
 
-#: admin/ModuleProxy.py:41
+#: admin/ModuleProxy.py:43
 msgid "Request"
 msgstr "Solicitud"
 
-#: admin/ModuleProxy.py:43
+#: admin/ModuleProxy.py:45
 msgid "Reply"
 msgstr "Respuesta"
 
-#: admin/ModuleProxy.py:52
+#: admin/ModuleProxy.py:54
 msgid "Back-end Servers"
 msgstr "Servidores Back-end"
 
-#: admin/ModuleProxy.py:59 admin/PageAdvanced.py:101
+#: admin/ModuleProxy.py:61 admin/PageAdvanced.py:101
 msgid "Reuse connections"
 msgstr "Reusar conexiones"
 
-#: admin/ModuleProxy.py:60
+#: admin/ModuleProxy.py:62
 msgid "Allow Keepalive"
 msgstr "Permitir Keepalive"
 
-#: admin/ModuleProxy.py:61
+#: admin/ModuleProxy.py:63
 msgid "Preserve Host header"
 msgstr "Mantener la cabecera \"Host\""
 
-#: admin/ModuleProxy.py:67 admin/ModuleProxy.py:82
+#: admin/ModuleProxy.py:64
+#, fuzzy
+msgid "Preserve Server header"
+msgstr "Mantener la cabecera \"Host\""
+
+#: admin/ModuleProxy.py:70 admin/ModuleProxy.py:85
 msgid "URL Rewriting"
 msgstr "Reescritura de URL"
 
-#: admin/ModuleProxy.py:71
+#: admin/ModuleProxy.py:74
 msgid "Header Addition"
 msgstr "Añadir cabecera"
 
-#: admin/ModuleProxy.py:72 admin/ModuleProxy.py:87
+#: admin/ModuleProxy.py:75 admin/ModuleProxy.py:90
 msgid "Add New Header"
 msgstr "Añadir nueva cabecera"
 
-#: admin/ModuleProxy.py:75 admin/ModuleProxy.py:90
+#: admin/ModuleProxy.py:78 admin/ModuleProxy.py:93
 msgid "Hide Headers"
 msgstr "Ocultar cabeceras"
 
-#: admin/ModuleProxy.py:76 admin/ModuleProxy.py:91
+#: admin/ModuleProxy.py:79 admin/ModuleProxy.py:94
 msgid "Hide Header"
 msgstr "Ocultar cabecera"
 
-#: admin/ModuleProxy.py:86
+#: admin/ModuleProxy.py:89
 msgid "Header addition"
 msgstr "Añadir cabecera"
 
-#: admin/ModuleProxy.py:156 admin/ModuleProxy.py:178 admin/ModuleRedir.py:35
+#: admin/ModuleProxy.py:159 admin/ModuleProxy.py:181 admin/ModuleRedir.py:35
 #: admin/ModuleRedir.py:53
 msgid "Substitution"
 msgstr "Sustitución"
 
-#: admin/ModuleProxy.py:178
+#: admin/ModuleProxy.py:181
 msgid "Add RegEx"
 msgstr "Añadir Exp.Reg."
 
@@ -1642,7 +1655,7 @@ msgid "Authentication"
 msgstr "Autenticación"
 
 #: admin/PageEntry.py:239 admin/PageVServer.py:265 admin/PageVServers.py:144
-#: admin/Wizard_Django.py:96 admin/Wizard_Drupal.py:151
+#: admin/Wizard_Django.py:96 admin/Wizard_Drupal.py:153
 #: admin/Wizard_Mailman.py:132 admin/Wizard_RoR.py:172
 #: admin/Wizard_WordPress.py:115
 msgid "Logging"
@@ -2890,7 +2903,7 @@ msgstr "Asistente para Django"
 msgid "New Virtual Server"
 msgstr "Servidor Virtual"
 
-#: admin/Wizard_Django.py:87 admin/Wizard_Drupal.py:147
+#: admin/Wizard_Django.py:87 admin/Wizard_Drupal.py:149
 #: admin/Wizard_Mailman.py:122 admin/Wizard_RoR.py:161
 #: admin/Wizard_WordPress.py:111
 msgid "New Host Name"
@@ -2936,28 +2949,28 @@ msgstr "Se debe proporcionar un directorio web."
 msgid "A host name must be provided."
 msgstr "Se debe proporcionar un nombre de servidor."
 
-#: admin/Wizard_Drupal.py:129
+#: admin/Wizard_Drupal.py:131
 msgid "Configure a new virtual server using Drupal."
 msgstr ""
 
-#: admin/Wizard_Drupal.py:135 admin/Wizard_Drupal.py:211
+#: admin/Wizard_Drupal.py:137 admin/Wizard_Drupal.py:213
 msgid "Drupal Wizard"
 msgstr "Asistente para Drupal"
 
-#: admin/Wizard_Drupal.py:148 admin/Wizard_Drupal.py:227
+#: admin/Wizard_Drupal.py:150 admin/Wizard_Drupal.py:229
 #: admin/Wizard_WordPress.py:112 admin/Wizard_WordPress.py:186
 msgid "Source Directory"
 msgstr "Directorio de las fuentes"
 
-#: admin/Wizard_Drupal.py:181 admin/Wizard_WordPress.py:145
+#: admin/Wizard_Drupal.py:183 admin/Wizard_WordPress.py:145
 msgid "Couldn't find a suitable PHP interpreter."
 msgstr ""
 
-#: admin/Wizard_Drupal.py:205
+#: admin/Wizard_Drupal.py:207
 msgid "Configures Drupal inside a public web directory."
 msgstr ""
 
-#: admin/Wizard_Drupal.py:218 admin/Wizard_WordPress.py:177
+#: admin/Wizard_Drupal.py:220 admin/Wizard_WordPress.py:177
 msgid "PHP support is required."
 msgstr ""
 
