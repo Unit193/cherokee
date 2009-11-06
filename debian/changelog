@@ -1,4 +1,4 @@
-cherokee (0.99.26-1) experimental; urgency=low
+cherokee (0.99.27-1) experimental; urgency=low
 
   * PENDING BEFORE RELEASE TO UNSTABLE: Should we stop providing *.a/*.la
     given there are corresponding .so files? Think so... 
