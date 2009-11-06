@@ -1,3 +1,118 @@
+2009-11-05  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3778, alo - 01:19:24
+
+	* Removes an unnecessary TRACE entry.
+	
+	M /cherokee/trunk/cherokee/post.c
+
+2009-11-05  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3777, alo - 01:05:51
+
+	* Fixes an issue with our AVL tree implementation. This bug was causing
+	problems in the I/O-cache subsystem. This change should fix the bug
+	#625: http://bugs.cherokee-project.com/625
+	
+	M /cherokee/trunk/cherokee/avl.c
+	M /cherokee/trunk/cherokee.conf.sample.pre
+	M /cherokee/trunk/cherokee/icons.c
+
+2009-11-04  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3776, alo - 23:11:35
+
+	* Adds a missing TRACE entry. Patch by Stefan de Konink.
+	
+	M /cherokee/trunk/cherokee/post.c
+
+2009-11-04  Taher Shihadeh  <taher@unixwars.com>
+            SVN: r3775, taher - 14:50:52
+
+	* Adds extra binary name to look for
+	M /cherokee/trunk/admin/Wizard_uWSGI.py
+
+2009-11-04  Taher Shihadeh  <taher@unixwars.com>
+            SVN: r3774, taher - 14:49:56
+
+	* Fixes protection for directory based installations
+	M /cherokee/trunk/admin/Wizard_Drupal.py
+
+2009-11-03  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3773, alo - 18:54:15
+
+	* "Content-Type" is a 'known header' header now. Patch by Stefan
+	de Konink. Fixes: http://bugs.cherokee-project.com/624
+	
+	M /cherokee/trunk/cherokee/header.c
+	M /cherokee/trunk/cherokee/handler_cgi_base.c
+	M /cherokee/trunk/cherokee/header.h
+
+2009-11-02  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3772, alo - 17:23:29
+
+	* Couple of fixes so the ChangeLog can be handled without Internet
+	connection. Previously it was printing a non-sense warning.
+	
+	M /cherokee/trunk/svnlog2changelog.py
+	M /cherokee/trunk/changelog-update.sh
+
+2009-11-01  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3771, alo - 18:55:00
+
+	* Fixes Range management while serving static files. Patch by Antonio
+	Pérez (great stuff!!!). Fixes: http://bugs.cherokee-project.com/365
+	
+	M /cherokee/trunk/qa/056-ContentRange3.py
+	M /cherokee/trunk/qa/145-ContentRange3-NoIO.py
+	M /cherokee/trunk/cherokee/handler_error.c
+	M /cherokee/trunk/qa/057-ContentRange4.py
+	M /cherokee/trunk/qa/146-ContentRange4-NoIO.py
+	M /cherokee/trunk/cherokee/handler_file.c
+	M /cherokee/trunk/cherokee/connection.c
+	M /cherokee/trunk/qa/106-If-Range2.py
+	M /cherokee/trunk/cherokee/handler_file.h
+
+2009-10-31  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3770, alo - 23:01:59
+
+	* Fixes an issue with the previous patch.
+	
+	M /cherokee/trunk/admin/ModuleProxy.py
+
+2009-10-31  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3769, alo - 22:47:41
+
+	* Adds a new option to allow the reverse proxy plug-in to replace the
+	"Server:" header sent by the back-end client. This patch implements
+	both the admin and server side of things.
+	
+	M /cherokee/trunk/cherokee/handler_proxy.h
+	M /cherokee/trunk/cherokee/handler_proxy.c
+	M /cherokee/trunk/admin/ModuleProxy.py
+
+2009-10-31  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3768, alo - 19:35:55
+
+	* Improves the error management while initializing the admin handler.
+	This is blind attempt of fixing bug #623. Most probably if fixes the
+	crash but not the functionality.
+	
+	M /cherokee/trunk/cherokee/handler_admin.c
+
+2009-10-31  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3767, alo - 19:12:07
+
+	* Fixes reverse proxy so it handlers redirections (304 responses for
+	instance) without body correctly. It should fix the bug #619:
+	http://bugs.cherokee-project.com/619
+	
+	M /cherokee/trunk/cherokee/handler_proxy.c
+
+2009-10-31  Alvaro Lopez Ortega  <alvaro@octality.com>
+            SVN: r3765, alo - 02:29:12
+
+	* Cherokee 0.99.26 released.
+	
+	M /cherokee/trunk/configure.in
+
 2009-10-30  Alvaro Lopez Ortega  <alvaro@octality.com>
             SVN: r3764, alo - 16:29:04
 

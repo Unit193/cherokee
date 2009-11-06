@@ -111,9 +111,10 @@ cherokee_post_set_len (cherokee_post_t *post, off_t len)
 			return ret;
 
 		TRACE(ENTRIES, "Setting len=%d, to file='%s'\n", len, post->tmp_file.buf);
+	} else {
+		TRACE(ENTRIES, "Setting len=%d, to memory\n", len);
 	}
 
-	TRACE(ENTRIES, "Setting len=%d, to memory\n", len);
 	return ret_ok;
 }
 

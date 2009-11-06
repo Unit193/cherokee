@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: cherokee '0.99.10'\n"
 "Report-Msgid-Bugs-To: http://bugs.cherokee-project.com/\n"
-"POT-Creation-Date: 2009-10-30 20:10-0600\n"
+"POT-Creation-Date: 2009-11-05 10:05-0600\n"
 "PO-Revision-Date: 2009-05-21 22:35+0200\n"
 "Last-Translator: Stefan de Konink <stefan@konink.de>\n"
 "Language-Team: none\n"
@@ -275,7 +275,7 @@ msgstr "Voeg een eigen nieuwe omgevings variabele toe"
 msgid "Name"
 msgstr "Naam"
 
-#: admin/ModuleCgi.py:75 admin/ModuleProxy.py:100 admin/ModuleProxy.py:116
+#: admin/ModuleCgi.py:75 admin/ModuleProxy.py:103 admin/ModuleProxy.py:119
 #: admin/PageInfoSource.py:156
 msgid "Value"
 msgstr "Waarde"
@@ -365,7 +365,7 @@ msgstr "Databank"
 msgid "Data base balancing"
 msgstr "Databank verdelen"
 
-#: admin/ModuleDbslayer.py:52 admin/ModuleFcgi.py:34 admin/ModuleProxy.py:49
+#: admin/ModuleDbslayer.py:52 admin/ModuleFcgi.py:34 admin/ModuleProxy.py:51
 #: admin/ModuleScgi.py:36
 msgid "Balancer"
 msgstr "Verdeler"
@@ -377,7 +377,7 @@ msgstr "Publieke Web Map waar op de configuratie wordt uitgevoerd."
 
 #: admin/ModuleDirectory.py:22 admin/ModuleDirectory.py:24
 #: admin/Wizard_Django.py:148 admin/Wizard_Django.py:150
-#: admin/Wizard_Drupal.py:226 admin/Wizard_RoR.py:234 admin/Wizard_RoR.py:236
+#: admin/Wizard_Drupal.py:228 admin/Wizard_RoR.py:234 admin/Wizard_RoR.py:236
 #: admin/Wizard_WordPress.py:185
 msgid "Web Directory"
 msgstr "Web Map"
@@ -697,12 +697,12 @@ msgstr "Hoofdregel waar tegen de reguliere expressie wordt geevalueerd."
 msgid "Regular expression."
 msgstr "Reguliere expressie."
 
-#: admin/ModuleHeader.py:35 admin/ModuleHeader.py:37 admin/ModuleProxy.py:100
-#: admin/ModuleProxy.py:126 admin/consts.py:129
+#: admin/ModuleHeader.py:35 admin/ModuleHeader.py:37 admin/ModuleProxy.py:103
+#: admin/ModuleProxy.py:129 admin/consts.py:129
 msgid "Header"
 msgstr "Hoofdregel"
 
-#: admin/ModuleHeader.py:38 admin/ModuleProxy.py:156 admin/ModuleRedir.py:35
+#: admin/ModuleHeader.py:38 admin/ModuleProxy.py:159 admin/ModuleRedir.py:35
 #: admin/ModuleRedir.py:52 admin/ModuleRequest.py:22 admin/ModuleRequest.py:24
 #: admin/ModuleRequest.py:41 admin/consts.py:128
 msgid "Regular Expression"
@@ -912,69 +912,82 @@ msgstr ""
 "Behoud de originele \"Host: \" regel dat verzonden is door de gebruiker. "
 "(Standaard Nee)"
 
-#: admin/ModuleProxy.py:18
+#: admin/ModuleProxy.py:16
+#, fuzzy
+msgid ""
+"Preserve the \"Server:\" header sent by the back-end server. (Default No)"
+msgstr ""
+"Behoud de originele \"Host: \" regel dat verzonden is door de gebruiker. "
+"(Standaard Nee)"
+
+#: admin/ModuleProxy.py:19
 msgid "Reverse Proxy"
 msgstr "Tegengestelde Proxy"
 
-#: admin/ModuleProxy.py:38
+#: admin/ModuleProxy.py:40
 msgid "Reverse Proxy Settings"
 msgstr "Tegengestelde Proxy Instellingen"
 
-#: admin/ModuleProxy.py:41
+#: admin/ModuleProxy.py:43
 msgid "Request"
 msgstr "Verzoek"
 
-#: admin/ModuleProxy.py:43
+#: admin/ModuleProxy.py:45
 #, fuzzy
 msgid "Reply"
 msgstr "Domein"
 
-#: admin/ModuleProxy.py:52
+#: admin/ModuleProxy.py:54
 msgid "Back-end Servers"
 msgstr "Achterliggende Servers"
 
-#: admin/ModuleProxy.py:59 admin/PageAdvanced.py:101
+#: admin/ModuleProxy.py:61 admin/PageAdvanced.py:101
 msgid "Reuse connections"
 msgstr "Hergebruik verbindingen"
 
-#: admin/ModuleProxy.py:60
+#: admin/ModuleProxy.py:62
 msgid "Allow Keepalive"
 msgstr "Sta Blijf-inleven toe"
 
-#: admin/ModuleProxy.py:61
+#: admin/ModuleProxy.py:63
 msgid "Preserve Host header"
 msgstr "Bewaar Host regel"
 
-#: admin/ModuleProxy.py:67 admin/ModuleProxy.py:82
+#: admin/ModuleProxy.py:64
+#, fuzzy
+msgid "Preserve Server header"
+msgstr "Bewaar Host regel"
+
+#: admin/ModuleProxy.py:70 admin/ModuleProxy.py:85
 msgid "URL Rewriting"
 msgstr "URL Herschrijven"
 
-#: admin/ModuleProxy.py:71
+#: admin/ModuleProxy.py:74
 msgid "Header Addition"
 msgstr "Hoofdregel toevoeging"
 
-#: admin/ModuleProxy.py:72 admin/ModuleProxy.py:87
+#: admin/ModuleProxy.py:75 admin/ModuleProxy.py:90
 msgid "Add New Header"
 msgstr "Voeg nieuwe regel toe"
 
-#: admin/ModuleProxy.py:75 admin/ModuleProxy.py:90
+#: admin/ModuleProxy.py:78 admin/ModuleProxy.py:93
 msgid "Hide Headers"
 msgstr "Verberg regels"
 
-#: admin/ModuleProxy.py:76 admin/ModuleProxy.py:91
+#: admin/ModuleProxy.py:79 admin/ModuleProxy.py:94
 msgid "Hide Header"
 msgstr "Verberg regel"
 
-#: admin/ModuleProxy.py:86
+#: admin/ModuleProxy.py:89
 msgid "Header addition"
 msgstr "Regel toevoeging"
 
-#: admin/ModuleProxy.py:156 admin/ModuleProxy.py:178 admin/ModuleRedir.py:35
+#: admin/ModuleProxy.py:159 admin/ModuleProxy.py:181 admin/ModuleRedir.py:35
 #: admin/ModuleRedir.py:53
 msgid "Substitution"
 msgstr "Vervanging"
 
-#: admin/ModuleProxy.py:178
+#: admin/ModuleProxy.py:181
 msgid "Add RegEx"
 msgstr "Voeg Reguliere Expressie toe"
 
@@ -1645,7 +1658,7 @@ msgid "Authentication"
 msgstr "Authenticatie"
 
 #: admin/PageEntry.py:239 admin/PageVServer.py:265 admin/PageVServers.py:144
-#: admin/Wizard_Django.py:96 admin/Wizard_Drupal.py:151
+#: admin/Wizard_Django.py:96 admin/Wizard_Drupal.py:153
 #: admin/Wizard_Mailman.py:132 admin/Wizard_RoR.py:172
 #: admin/Wizard_WordPress.py:115
 msgid "Logging"
@@ -2891,7 +2904,7 @@ msgstr "Jokers"
 msgid "New Virtual Server"
 msgstr "Virtuele Server"
 
-#: admin/Wizard_Django.py:87 admin/Wizard_Drupal.py:147
+#: admin/Wizard_Django.py:87 admin/Wizard_Drupal.py:149
 #: admin/Wizard_Mailman.py:122 admin/Wizard_RoR.py:161
 #: admin/Wizard_WordPress.py:111
 #, fuzzy
@@ -2938,30 +2951,30 @@ msgstr ""
 msgid "A host name must be provided."
 msgstr ""
 
-#: admin/Wizard_Drupal.py:129
+#: admin/Wizard_Drupal.py:131
 msgid "Configure a new virtual server using Drupal."
 msgstr ""
 
-#: admin/Wizard_Drupal.py:135 admin/Wizard_Drupal.py:211
+#: admin/Wizard_Drupal.py:137 admin/Wizard_Drupal.py:213
 #, fuzzy
 msgid "Drupal Wizard"
 msgstr "Jokers"
 
-#: admin/Wizard_Drupal.py:148 admin/Wizard_Drupal.py:227
+#: admin/Wizard_Drupal.py:150 admin/Wizard_Drupal.py:229
 #: admin/Wizard_WordPress.py:112 admin/Wizard_WordPress.py:186
 #, fuzzy
 msgid "Source Directory"
 msgstr "Web Map"
 
-#: admin/Wizard_Drupal.py:181 admin/Wizard_WordPress.py:145
+#: admin/Wizard_Drupal.py:183 admin/Wizard_WordPress.py:145
 msgid "Couldn't find a suitable PHP interpreter."
 msgstr ""
 
-#: admin/Wizard_Drupal.py:205
+#: admin/Wizard_Drupal.py:207
 msgid "Configures Drupal inside a public web directory."
 msgstr ""
 
-#: admin/Wizard_Drupal.py:218 admin/Wizard_WordPress.py:177
+#: admin/Wizard_Drupal.py:220 admin/Wizard_WordPress.py:177
 msgid "PHP support is required."
 msgstr ""
 
