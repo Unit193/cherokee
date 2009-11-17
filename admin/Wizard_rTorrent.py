@@ -72,13 +72,13 @@ class Wizard_Rules_rTorrent (WizardPage):
 
         src_num = int(source.split('!')[-1])
 
-        rule_n, _ = cfg_vsrv_rule_get_next (self._cfg, self._pre)
+        rule_n, x = cfg_vsrv_rule_get_next (self._cfg, self._pre)
         if not rule_n:
             return self.report_error (_("Couldn't add a new rule."))
 
-        rule_pre_1   = '%s!rule!%d' % (self._pre, rule_n)
+        rule_pre_1 = '%s!rule!%d' % (self._pre, rule_n)
 
         # Add the new rules
-        config_dir    = CONFIG_DIR % (locals())
+        config_dir = CONFIG_DIR % (locals())
 
         self._apply_cfg_chunk (config_dir)

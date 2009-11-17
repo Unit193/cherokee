@@ -7,6 +7,7 @@ from subprocess import *
 
 from consts import *
 from configured import *
+from config_version import *
 
 DEFAULT_DELAY    = 2
 WAIT_SERVER_STOP = 10
@@ -82,7 +83,7 @@ class CherokeeManagement:
         if not "PATH" in environ:
             environ["PATH"] = ':'.join(DEFAULT_PATH)
 
-        p = Popen ([CHEROKEE_SERVER, '-C', self._cfg.file], 
+        p = Popen ([CHEROKEE_SERVER, '--admin_child', '-C', self._cfg.file], 
                    stdout=PIPE, stderr=PIPE, env=environ,
                    preexec_fn=daemonize, close_fds=True)
 
@@ -104,7 +105,7 @@ class CherokeeManagement:
 
             nl = stderr.find('\n')
             if nl != -1:
-                for e in ['ERROR', '(error) ', '(critical) ']:
+                for e in ["{'type': ", 'ERROR', '(error) ', '(critical) ']:
                     if e in stderr:
                         self.__stop_process (p.pid)
                         self._pid = None
@@ -136,11 +137,13 @@ class CherokeeManagement:
             except:
                 return False
 
+        content = "config!version = %s\n" %(config_version_get_current())
+
         conf_sample = os.path.join(CHEROKEE_ADMINDIR, template_file)
         if os.path.exists (conf_sample):
-            content = open(conf_sample, 'r').read()
+            content += open(conf_sample, 'r').read()
         else:
-            content = CHEROKEE_MIN_DEFAULT_CONFIG
+            content += CHEROKEE_MIN_DEFAULT_CONFIG
 
         try:
             f = open(file, 'w+')

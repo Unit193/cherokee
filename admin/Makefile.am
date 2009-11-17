@@ -24,7 +24,7 @@ generated_DATA = $(gen_data)
 
 
 if INSTALL_ADMIN
-admin_scripts = server.py
+admin_scripts = server.py upgrade_config.py
 endif
 
 adminpydir = "$(datadir)/cherokee/admin"
@@ -104,6 +104,7 @@ ModuleTargetIp.py \
 ModuleEvhost.py \
 ModuleRrd.py \
 config.py \
+config_version.py \
 pyscgi.py \
 validations.py \
 CherokeeManagement.py \
@@ -136,7 +137,8 @@ Wizard_Alfresco.py \
 Wizard_Glassfish.py \
 Wizard_uWSGI.py \
 Wizard_Mono.py \
-Wizard_ColdFusion.py
+Wizard_ColdFusion.py \
+Wizard_Concrete5.py
 endif
 
 adminpy_DATA = $(admin_data)

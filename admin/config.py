@@ -260,7 +260,7 @@ class Config:
     # Serialization
     def serialize (self):
         def sorter(x,y):
-            order = ['server', 'vserver', 'source', 'icons', 'mime']
+            order = ['config', 'server', 'vserver', 'source', 'icons', 'mime']
             a = x.split('!')
             b = y.split('!')
             try:
@@ -288,7 +288,7 @@ class Config:
 
         tmp = self.root.serialize().split('\n')
         tmp.sort(sorter)
-        return '\n'.join(tmp)
+        return '\n'.join (filter (lambda x: len(x) > 1, tmp))
 
     def save (self):
         # Try to make a copy
