@@ -492,7 +492,8 @@ _fd_set_properties (int fd, int add_flags, int remove_flags)
 	flags &= ~remove_flags;
 
 	if (fcntl (fd, F_SETFL, flags) == -1) {
-		LOG_ERRNO (errno, cherokee_err_error, "Setting pipe properties fd=%d: '${errno}'", fd);
+		LOG_ERRNO (errno, cherokee_err_error,
+			   CHEROKEE_ERROR_HANDLER_CGI_SET_PROP, fd);
 		return ret_error;
 	}	
 
@@ -510,7 +511,7 @@ manage_child_cgi_process (cherokee_handler_cgi_t *cgi, int pipe_cgi[2], int pipe
 	cherokee_connection_t       *conn          = HANDLER_CONN(cgi);
 	cherokee_handler_cgi_base_t *cgi_base      = HDL_CGI_BASE(cgi);
 	char                        *absolute_path = cgi_base->executable.buf;
-	char                        *argv[4]       = { NULL, NULL, NULL, NULL };
+	char                        *argv[2]       = { NULL, NULL };
 
 #ifdef TRACE_ENABLED
 	TRACE(ENTRIES, "About to execute: '%s'\n", absolute_path); 
@@ -595,16 +596,8 @@ manage_child_cgi_process (cherokee_handler_cgi_t *cgi, int pipe_cgi[2], int pipe
 
 	/* Build de argv array
 	 */
+	script  = absolute_path;
 	argv[0] = absolute_path;
-	
-	if (cgi_base->param.len > 0) {
-		argv[1] = cgi_base->param.buf;
-		argv[2] = cgi_base->param_extra.buf;
-		script  = cgi_base->param.buf;
-	} else {
-		argv[1] = cgi_base->param_extra.buf;
-		script  = absolute_path;
-	}
 
 	/* Change the execution user?
 	 */
@@ -615,7 +608,7 @@ manage_child_cgi_process (cherokee_handler_cgi_t *cgi, int pipe_cgi[2], int pipe
 		if (re >= 0) {
 			re = setuid (info.st_uid);
 			if (re != 0) {
-				LOG_ERROR("%s: couldn't set UID %d\n", script, info.st_uid);
+				LOG_ERROR (CHEROKEE_ERROR_HANDLER_CGI_SETID, script, info.st_uid);
 			}
 		}
 	}
@@ -657,7 +650,7 @@ manage_child_cgi_process (cherokee_handler_cgi_t *cgi, int pipe_cgi[2], int pipe
 
 		/* Don't use the logging system (concurrency issues)
 		 */
-		LOG_ERROR ("Couldn't execute '%s': %s\n",
+		LOG_ERROR (CHEROKEE_ERROR_HANDLER_CGI_EXECUTE,
 			   absolute_path, cherokee_strerror_r(err, buferr, sizeof(buferr)));
 		exit(1);
 	}
@@ -764,7 +757,7 @@ fork_and_execute_cgi_win32 (cherokee_handler_cgi_t *cgi)
 	 */
 	cmd = HDL_CGI_BASE(cgi)->executable.buf;
 	cherokee_buffer_add (&cmd_line, cmd, strlen(cmd));
-	cherokee_buffer_add_va (&cmd_line, " \"%s\"", HDL_CGI_BASE(cgi)->param.buf);
+//	cherokee_buffer_add_va (&cmd_line, " \"%s\"", HDL_CGI_BASE(cgi)->param.buf);
 
 	/* Execution directory
 	 */
@@ -838,7 +831,7 @@ fork_and_execute_cgi_win32 (cherokee_handler_cgi_t *cgi)
 	CloseHandle (hChildStdoutWr);
 
 	if (!re) {
-		LOG_ERROR ("CreateProcess error: error=%d\n", GetLastError());
+		LOG_ERROR (CHEROKEE_ERROR_HANDLER_CGI_CREATEPROCESS, GetLastError());
 
 		CloseHandle (pi.hProcess);
 		CloseHandle (pi.hThread);

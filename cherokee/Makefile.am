@@ -17,14 +17,14 @@ cherokeedeps_DATA = \
 common.deps \
 combined.deps \
 error_redir.deps \
-phpcgi.deps \
 scgi.deps \
 fcgi.deps \
 uwsgi.deps \
 fastcgi.deps \
 cgi.deps \
 streaming.deps \
-secdownload.deps
+secdownload.deps \
+render_rrd.deps
 
 #
 # External sources
@@ -57,6 +57,21 @@ getopt/getopt.h  \
 getopt/getopt.c  \
 getopt/getopt1.c \
 getopt/gettext.h
+
+
+#
+# File generation rules
+#
+BUILT_SOURCES = \
+errors.h \
+errors_defs.h
+
+errors.h: errors.py error_list.py
+	python errors.py --errors $@
+
+errors_defs.h: errors.py error_list.py
+	python errors.py --defines $@
+
 
 #
 # Check whether external libraries can be used
@@ -376,7 +391,12 @@ endif
 #
 # Collector RRD
 #
+if !STATIC_COLLECTOR_RRD
+rrd_common = rrd_tools.h rrd_tools.c
+endif
+
 collector_rrd = \
+$(rrd_common) \
 collector_rrd.c \
 collector_rrd.h
 
@@ -457,6 +477,30 @@ if STATIC_HANDLER_DIRLIST
 static_handler_dirlist_src = $(handler_dirlist)
 else
 dynamic_handler_dirlist_lib = libplugin_dirlist.la
+endif
+
+
+#
+# Handler render_rrd
+#
+if !STATIC_HANDLER_RENDER_RRD
+rrd_common = rrd_tools.h rrd_tools.c
+endif
+
+handler_render_rrd = \
+$(rrd_common) \
+handler_render_rrd.c \
+handler_render_rrd.h \
+logo.inc 
+
+libplugin_render_rrd_la_LDFLAGS = $(module_ldflags)
+libplugin_render_rrd_la_SOURCES = $(handler_render_rrd)
+libplugin_render_rrd_la_LIBADD  = $(dynamic_handler_file_lib)
+
+if STATIC_HANDLER_RENDER_RRD
+static_handler_render_rrd_src = $(handler_render_rrd)
+else
+dynamic_handler_render_rrd_lib = libplugin_render_rrd.la
 endif
 
 
@@ -578,28 +622,6 @@ if STATIC_HANDLER_FASTCGI
 static_handler_fastcgi_src = $(handler_fastcgi)
 else
 dynamic_handler_fastcgi_lib = libplugin_fastcgi.la
-endif
-
-
-#
-# Handler phpcgi
-#
-handler_phpcgi = \
-handler_phpcgi.c \
-handler_phpcgi.h
-
-if PLATFORM_WIN32
-phpcgi_ldflags_win32 = -lplugin_cgi
-endif
-
-libplugin_phpcgi_la_LDFLAGS = $(module_ldflags) $(phpcgi_ldflags_win32)
-libplugin_phpcgi_la_SOURCES = $(handler_phpcgi)
-libplugin_phpcgi_la_LIBADD  = $(dynamic_handler_file_lib)
-
-if STATIC_HANDLER_PHPCGI
-static_handler_phpcgi_src = $(handler_phpcgi)
-else
-dynamic_handler_phpcgi_lib = libplugin_phpcgi.la
 endif
 
 
@@ -1232,6 +1254,7 @@ shm.h \
 shm.c
 endif
 
+
 libcherokee_base_la_SOURCES = \
 $(zlib_src) \
 $(internal_pcre_src) \
@@ -1271,6 +1294,8 @@ util.h \
 util.c \
 error_log.h \
 error_log.c \
+errors.h \
+errors_defs.h \
 human_strcmp.h \
 human_strcmp.c \
 trace.h \
@@ -1379,6 +1404,16 @@ if STATIC_VALIDATOR_HTDIGEST
 				 validator_file.c
 endif
 
+if STATIC_COLLECTOR_RRD
+   common_rrd_tools = rrd_tools.h \
+				  rrd_tools.c
+endif
+
+if STATIC_HANDLER_RENDER_RRD
+   common_rrd_tools = rrd_tools.h \
+				  rrd_tools.c
+endif
+
 libcherokee_server_la_SOURCES = \
 $(static_rule_directory_src) \
 $(static_rule_extensions_src) \
@@ -1413,7 +1448,6 @@ $(static_handler_redir_src) \
 $(static_handler_error_redir_src) \
 $(static_handler_error_nn_src) \
 $(static_handler_cgi_src) \
-$(static_handler_phpcgi_src) \
 $(static_handler_common_src) \
 $(static_handler_proxy_src) \
 $(static_handler_ssi_src) \
@@ -1422,6 +1456,7 @@ $(static_handler_empty_gif_src) \
 $(static_handler_streaming_src) \
 $(static_handler_custom_error_src) \
 $(static_handler_server_info_src) \
+$(static_handler_render_rrd_src) \
 $(static_handler_dbslayer_src) \
 \
 $(static_logger_ncsa_src) \
@@ -1446,6 +1481,7 @@ $(static_balancer_ip_hash_src) \
 \
 $(common_cgi) \
 $(common_val_file) \
+$(common_rrd_tools) \
 \
 connection.h \
 connection-protected.h \
@@ -1585,8 +1621,8 @@ $(dynamic_collector_rrd_lib) \
 $(dynamic_gen_evhost_lib) \
 $(dynamic_handler_file_lib) \
 $(dynamic_handler_cgi_lib) \
-$(dynamic_handler_phpcgi_lib) \
 $(dynamic_handler_server_info_lib) \
+$(dynamic_handler_render_rrd_lib) \
 $(dynamic_handler_admin_lib) \
 $(dynamic_handler_dirlist_lib) \
 $(dynamic_handler_scgi_lib) \
@@ -1698,6 +1734,10 @@ win32_misc.c
 
 EXTRA_DIST = \
 pcre/LICENCE \
+errors.py \
+error_list.py \
+errors.h \
+errors_defs.h \
 $(shm_src) \
 $(pcre_src) \
 $(win32_src) \
@@ -1710,4 +1750,4 @@ $(WINDOWS_PORT_FILES) \
 $(cryptor_libssl_dist)
 
 distclean-local:
-	$(RM) -f loader.autoconf.h loader.autoconf.inc
+	$(RM) -f loader.autoconf.h loader.autoconf.inc errors.h errors_defs.h

@@ -69,17 +69,19 @@ Start <a href="bundle_cherokee-admin.html">cherokee-admin</a>
 </ol></div>
 <h3 id="advanced">Advanced parameters</h3><div style="clear:left"></div>
 <div class="paragraph"><p>If you want to learn more about <em>configure</em> you can run <tt>./configure
---help</tt>.</p></div>
+--help</tt>. The list of parameter is extensive, so you might want to take
+a look at it, particularly if you are a developer. Some of the most
+used parameters are these:</p></div>
 <div class="tableblock">
 <table rules="all"
 width="100%"
 frame="border"
 cellspacing="0" cellpadding="4">
-<col width="30%" />
-<col width="70%" />
+<col width="43%" />
+<col width="57%" />
 <thead>
 <tr>
-<th align="left" valign="top">Parameter             </th>
+<th align="left" valign="top">Parameter               </th>
 <th align="left" valign="top">Description</th>
 </tr>
 </thead>
@@ -89,11 +91,11 @@ cellspacing="0" cellpadding="4">
 <td align="left" valign="top"><p class="table">Specify the webserver root directory</p></td>
 </tr>
 <tr>
-<td align="left" valign="top"><p class="table"><tt>--with-user=USER</tt></p></td>
+<td align="left" valign="top"><p class="table"><tt>--with-wwwuser=USER</tt></p></td>
 <td align="left" valign="top"><p class="table">Custom username under which the server will run</p></td>
 </tr>
 <tr>
-<td align="left" valign="top"><p class="table"><tt>--with-user=GROUP</tt></p></td>
+<td align="left" valign="top"><p class="table"><tt>--with-wwwgroup=GROUP</tt></p></td>
 <td align="left" valign="top"><p class="table">Custom group under which the server will run</p></td>
 </tr>
 <tr>
@@ -123,6 +125,22 @@ cellspacing="0" cellpadding="4">
 <tr>
 <td align="left" valign="top"><p class="table"><tt>--disable-admin</tt></p></td>
 <td align="left" valign="top"><p class="table">Skips cherokee-admin installation</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><tt>--disable-largefile</tt></p></td>
+<td align="left" valign="top"><p class="table">omit support for large files</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><tt>--enable-internal-pcre</tt></p></td>
+<td align="left" valign="top"><p class="table">Enable internal PCRE</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><tt>--disable-nls</tt></p></td>
+<td align="left" valign="top"><p class="table">do not use Native Language Support</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><tt>--enable-static-module=MODULE</tt></p></td>
+<td align="left" valign="top"><p class="table">build listed modules as static. Accepts ALL</p></td>
 </tr>
 </tbody>
 </table>
