@@ -1,3 +1,11 @@
+cherokee (0.99.29-1) unstable; urgency=low
+
+  * New Upstream Versioni
+  * Edited debian/cherokee.logrotate removed duplicate copytruncate
+    added postrotate. Thanks to Antonio Perez
+
+ -- Leonel Nunez <leonel@enelserver.com>  Fri, 20 Nov 2009 10:05:12 -0700
+
 cherokee (0.99.28-1) unstable; urgency=low
 
   * New upstream version

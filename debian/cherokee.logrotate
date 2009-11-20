@@ -5,5 +5,8 @@
   copytruncate
   missingok
   notifempty
-  copytruncate
+  postrotate
+	[ ! -f /var/run/cherokee.pid ] || kill -USR2 `cat /var/run/cherokee.pid`
+  endscript
+
 }
