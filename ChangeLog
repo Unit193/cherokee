@@ -1,3 +1,113 @@
+2009-11-19  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=3842 git=6c4759224a56e79b6b642d2051a78a1d95011f8f
+
+    Adds support for X-Real-IP to the *CGI handlers. It implements the
+    cherokee-admin side of things of the changeset 3840.
+    
+ admin/ModuleCgi.py |   40 +++++++++++++++++++++++++++++-----------
+ 1 files changed, 29 insertions(+), 11 deletions(-)
+
+
+2009-11-19  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=3841 git=f073432b8e7fcbf3714088cc1af230da5a4da507
+
+    Reverts r3839
+    
+ admin/PageEntry.py |    4 ----
+ 1 files changed, 0 insertions(+), 4 deletions(-)
+
+
+2009-11-19  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=3840 git=d39fb715bbe280e4ad1d8610acc39af80074cd1f
+
+    Adds X-Real-IP header support to all the FastCGI, SCGI, uWSGI, and CGI
+    handlers. A new cherokee_x_real_ip class has been refactored so both
+    the logging subsystem and the handlers can use it. Three new QA tests
+    have been added as well.
+    
+ cherokee/Makefile.am        |    4 +-
+ cherokee/handler_cgi.h      |    1 -
+ cherokee/handler_cgi_base.c |   83 +++++++++++++++++++++++++------
+ cherokee/handler_cgi_base.h |    2 +
+ cherokee/logger.c           |   78 ++++++----------------------
+ cherokee/xrealip.c          |  116 +++++++++++++++++++++++++++++++++++++++++++
+ cherokee/xrealip.h          |   56 +++++++++++++++++++++
+ qa/232-X-Real-IP-CGI.py     |   44 ++++++++++++++++
+ qa/233-X-Real-IP-CGI-2.py   |   47 +++++++++++++++++
+ qa/234-X-Real-IP-CGI-3.py   |   46 +++++++++++++++++
+ qa/Makefile.am              |    6 ++-
+ 11 files changed, 404 insertions(+), 79 deletions(-)
+
+
+2009-11-18  Taher Shihadeh  <taher@unixwars.com>
+            svn=3839 git=a1d94ccecb852a507760cda9a02fdd30f5358a18
+
+    Cleans up stale config entries. Among other things, fixes issue 518
+    
+ admin/PageEntry.py |    4 ++++
+ 1 files changed, 4 insertions(+), 0 deletions(-)
+
+
+2009-11-18  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=3838 git=ca001825ede8f0e30813305f8578bb06f5e7b9d6
+
+    Now the reverse HTTP proxy can spawn new information sources as the
+    rest of the handlers do (FastCGI, SGI, uWSGI, etc). In this way, it
+    can launch new back-end HTTP servers for public web server to relay
+    on. It isn't the most common case, but it's fairly common scenario.
+    
+ cherokee/handler_proxy.c |   15 +++++++++++++++
+ 1 files changed, 15 insertions(+), 0 deletions(-)
+
+
+2009-11-18  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=3837 git=eb165c996a092f8a5197bbfbc74d99d715e63cd7
+
+    Fixes the RRD detection. Cherokee-admin was performing too many checks
+    in order to figure whether the RRD data collector was enabled.
+    
+ admin/GraphManager.py |   13 +------------
+ 1 files changed, 1 insertions(+), 12 deletions(-)
+
+
+2009-11-18  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=3836 git=6f641099c26f0828f5ca26588c720a13ae896985
+
+    Report better errors whenever something goes wrong. Now the client
+    will receive the RRD error in a 503 "Service Unavailable" response.
+    
+ cherokee/handler_render_rrd.c |   58 +++++++++++++++++++++++++++++++---------
+ cherokee/handler_render_rrd.h |    1 +
+ 2 files changed, 46 insertions(+), 13 deletions(-)
+
+2009-11-17  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=3835 git=53ab1b9d2cd18731eb78b27f84780863927d4ba1
+
+    Fixes a compilation issue on OpenSolaris 2009.06 (with gcc).
+    Thanks to Juan José Amor <jjamor@gmail.com> for the report.
+    
+ cherokee/fdpoll-port.c |    4 ++--
+ 1 files changed, 2 insertions(+), 2 deletions(-)
+
+
+2009-11-16  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=3834 git=1f607534ea3fe35d84a9355f16211bc8a5a38067
+
+    Removes a superfluous class property. It was causing the server to
+    crash while performing a graceful restart.
+    
+ cherokee/collector_rrd.c |    1 -
+ cherokee/collector_rrd.h |    1 -
+ 2 files changed, 0 insertions(+), 2 deletions(-)
+
+2009-11-16  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=3833 git=827adb4eaee0d0665220ee8f1e6d53f3ff663fcf
+
+    Cherokee 0.99.28 released
+    
+ configure.in |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
 2009-11-16  Alvaro Lopez Ortega  <alvaro@octality.com>
             svn=3831 git=84d8f271bc46fb4838ff94ec21827643c57a6a87
 
