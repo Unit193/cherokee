@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: cherokee 0.99.28\n"
+"Project-Id-Version: cherokee 0.99.29\n"
 "Report-Msgid-Bugs-To: http://bugs.cherokee-project.com/\n"
-"POT-Creation-Date: 2009-11-16 16:04+0100\n"
+"POT-Creation-Date: 2009-11-20 08:59+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -225,47 +225,77 @@ msgstr ""
 msgid "Allow the use of the non-standard X-Sendfile header."
 msgstr ""
 
-#: admin/ModuleCgi.py:42
+#: admin/ModuleCgi.py:15
+msgid ""
+"Whether the handler should read and use the X-Real-IP header and use it in "
+"REMOTE_ADDR."
+msgstr ""
+
+#: admin/ModuleCgi.py:16
+msgid ""
+"Accept all the X-Real-IP headers. WARNING: Turn it on only if you are "
+"centain of what you are doing."
+msgstr ""
+
+#: admin/ModuleCgi.py:17
+msgid ""
+"List of IP addresses and subnets that are allowed to send the X-Real-IP "
+"header."
+msgstr ""
+
+#: admin/ModuleCgi.py:49
 msgid "Common CGI options"
 msgstr ""
 
-#: admin/ModuleCgi.py:46
+#: admin/ModuleCgi.py:53
 msgid "Script Alias"
 msgstr ""
 
-#: admin/ModuleCgi.py:48
+#: admin/ModuleCgi.py:55
 msgid "Change UID"
 msgstr ""
 
-#: admin/ModuleCgi.py:50 admin/PageVServer.py:260
+#: admin/ModuleCgi.py:57 admin/PageVServer.py:260
 msgid "Error handler"
 msgstr ""
 
-#: admin/ModuleCgi.py:52
+#: admin/ModuleCgi.py:58
 msgid "Check file"
 msgstr ""
 
-#: admin/ModuleCgi.py:53
+#: admin/ModuleCgi.py:59
 msgid "Pass Request Headers"
 msgstr ""
 
-#: admin/ModuleCgi.py:54
+#: admin/ModuleCgi.py:60
 msgid "Allow X-Sendfile"
 msgstr ""
 
-#: admin/ModuleCgi.py:57
+#: admin/ModuleCgi.py:66
+msgid "Read X-Real-IP"
+msgstr ""
+
+#: admin/ModuleCgi.py:68 admin/PageVServer.py:654
+msgid "Don't check origin"
+msgstr ""
+
+#: admin/ModuleCgi.py:70 admin/PageVServer.py:656
+msgid "Accept from Hosts"
+msgstr ""
+
+#: admin/ModuleCgi.py:74
 msgid "Custom environment variables"
 msgstr ""
 
-#: admin/ModuleCgi.py:70
+#: admin/ModuleCgi.py:87
 msgid "Add new custom environment variable"
 msgstr ""
 
-#: admin/ModuleCgi.py:75 admin/PageFeedback.py:59
+#: admin/ModuleCgi.py:92 admin/PageFeedback.py:59
 msgid "Name"
 msgstr ""
 
-#: admin/ModuleCgi.py:75 admin/ModuleProxy.py:103 admin/ModuleProxy.py:119
+#: admin/ModuleCgi.py:92 admin/ModuleProxy.py:103 admin/ModuleProxy.py:119
 #: admin/PageInfoSource.py:156
 msgid "Value"
 msgstr ""
@@ -2514,14 +2544,6 @@ msgstr ""
 
 #: admin/PageVServer.py:652
 msgid "Accept Forwarded IPs"
-msgstr ""
-
-#: admin/PageVServer.py:654
-msgid "Don't check origin"
-msgstr ""
-
-#: admin/PageVServer.py:656
-msgid "Accept from Hosts"
 msgstr ""
 
 #: admin/PageVServer.py:664

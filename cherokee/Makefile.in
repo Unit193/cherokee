@@ -118,7 +118,7 @@ am__libcherokee_base_la_SOURCES_DIST = zlib/deflate.c zlib/deftree.c \
 	resolv_cache.h resolv_cache.c post.h post.c config_node.h \
 	config_node.c config_reader.h config_reader.c bogotime.h \
 	bogotime.c cache.h cache.c logger.h logger.c logger_writer.h \
-	logger_writer.c
+	logger_writer.c xrealip.h xrealip.c
 am__objects_1 = deflate.lo deftree.lo
 am__objects_2 = pcre_try_flipped.lo pcre_chartables.lo \
 	pcre_fullinfo.lo pcre_newline.lo pcre_globals.lo \
@@ -146,7 +146,7 @@ am_libcherokee_base_la_OBJECTS = $(am__objects_1) $(am__objects_3) \
 	md5crypt.lo sha1.lo match.lo dtm.lo header.lo access.lo \
 	regex.lo resolv_cache.lo post.lo config_node.lo \
 	config_reader.lo bogotime.lo cache.lo logger.lo \
-	logger_writer.lo
+	logger_writer.lo xrealip.lo
 libcherokee_base_la_OBJECTS = $(am_libcherokee_base_la_OBJECTS)
 libcherokee_base_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
@@ -2266,7 +2266,9 @@ cache.c \
 logger.h \
 logger.c \
 logger_writer.h \
-logger_writer.c
+logger_writer.c \
+xrealip.h \
+xrealip.c
 
 libcherokee_client_la_SOURCES = \
 url.h \
@@ -3203,6 +3205,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/win32_cherokeeserv.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/win32_cservice.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/win32_misc.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xrealip.Plo@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<

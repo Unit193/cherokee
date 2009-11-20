@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: cherokee '0.99.10'\n"
 "Report-Msgid-Bugs-To: http://bugs.cherokee-project.com/\n"
-"POT-Creation-Date: 2009-11-16 16:04+0100\n"
+"POT-Creation-Date: 2009-11-20 08:59+0100\n"
 "PO-Revision-Date: 2009-04-14 21:27+CEST\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -231,47 +231,88 @@ msgstr "Forward all the client headers to the CGI encoded as HTTP_*. headers."
 msgid "Allow the use of the non-standard X-Sendfile header."
 msgstr "Allow the use of the non-standard X-Sendfile header."
 
-#: admin/ModuleCgi.py:42
+#: admin/ModuleCgi.py:15
+#, fuzzy
+msgid ""
+"Whether the handler should read and use the X-Real-IP header and use it in "
+"REMOTE_ADDR."
+msgstr ""
+"Whether the logger should read and use the X-Real-IP header (send by reverse "
+"proxy front-ends)."
+
+#: admin/ModuleCgi.py:16
+#, fuzzy
+msgid ""
+"Accept all the X-Real-IP headers. WARNING: Turn it on only if you are "
+"centain of what you are doing."
+msgstr ""
+"Accept all the X-Real-IP headers. It's dangerous: turn it on only if you are "
+"centain of what you are doing."
+
+#: admin/ModuleCgi.py:17
+#, fuzzy
+msgid ""
+"List of IP addresses and subnets that are allowed to send the X-Real-IP "
+"header."
+msgstr ""
+"List of IP addresses and subnets that are allowed to send X-Real-IP headers "
+"(usually your proxy servers)."
+
+#: admin/ModuleCgi.py:49
 msgid "Common CGI options"
 msgstr "Common CGI options"
 
-#: admin/ModuleCgi.py:46
+#: admin/ModuleCgi.py:53
 msgid "Script Alias"
 msgstr "Script Alias"
 
-#: admin/ModuleCgi.py:48
+#: admin/ModuleCgi.py:55
 msgid "Change UID"
 msgstr "Change UID"
 
-#: admin/ModuleCgi.py:50 admin/PageVServer.py:260
+#: admin/ModuleCgi.py:57 admin/PageVServer.py:260
 msgid "Error handler"
 msgstr "Error handler"
 
-#: admin/ModuleCgi.py:52
+#: admin/ModuleCgi.py:58
 msgid "Check file"
 msgstr "Check file"
 
-#: admin/ModuleCgi.py:53
+#: admin/ModuleCgi.py:59
 msgid "Pass Request Headers"
 msgstr "Pass Request Headers"
 
-#: admin/ModuleCgi.py:54
+#: admin/ModuleCgi.py:60
 msgid "Allow X-Sendfile"
 msgstr "Allow X-Sendfile"
 
-#: admin/ModuleCgi.py:57
+#: admin/ModuleCgi.py:66
+#, fuzzy
+msgid "Read X-Real-IP"
+msgstr "Accept X-Real-IP"
+
+#: admin/ModuleCgi.py:68 admin/PageVServer.py:654
+msgid "Don't check origin"
+msgstr ""
+
+#: admin/ModuleCgi.py:70 admin/PageVServer.py:656
+#, fuzzy
+msgid "Accept from Hosts"
+msgstr "Accepted domains"
+
+#: admin/ModuleCgi.py:74
 msgid "Custom environment variables"
 msgstr "Custom environment variables"
 
-#: admin/ModuleCgi.py:70
+#: admin/ModuleCgi.py:87
 msgid "Add new custom environment variable"
 msgstr "Add new custom environment variable"
 
-#: admin/ModuleCgi.py:75 admin/PageFeedback.py:59
+#: admin/ModuleCgi.py:92 admin/PageFeedback.py:59
 msgid "Name"
 msgstr "Name"
 
-#: admin/ModuleCgi.py:75 admin/ModuleProxy.py:103 admin/ModuleProxy.py:119
+#: admin/ModuleCgi.py:92 admin/ModuleProxy.py:103 admin/ModuleProxy.py:119
 #: admin/PageInfoSource.py:156
 msgid "Value"
 msgstr "Value"
@@ -2665,15 +2706,6 @@ msgstr "Options"
 msgid "Accept Forwarded IPs"
 msgstr ""
 
-#: admin/PageVServer.py:654
-msgid "Don't check origin"
-msgstr ""
-
-#: admin/PageVServer.py:656
-#, fuzzy
-msgid "Accept from Hosts"
-msgstr "Accepted domains"
-
 #: admin/PageVServer.py:664
 msgid "Host names"
 msgstr "Host names"
@@ -3599,9 +3631,6 @@ msgstr ""
 
 #~ msgid "<i>Yes</i>"
 #~ msgstr "<i>Yes</i>"
-
-#~ msgid "Accept X-Real-IP"
-#~ msgstr "Accept X-Real-IP"
 
 #~ msgid "Accept all X-Real-IPs"
 #~ msgstr "Accept all X-Real-IPs"
