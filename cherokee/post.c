@@ -39,6 +39,7 @@ cherokee_post_init (cherokee_post_t *post)
 {
 	post->type              = post_undefined;
 	post->encoding          = post_enc_regular;
+	post->is_set            = false;
 
 	post->size              = 0;
 	post->received          = 0;
@@ -62,6 +63,7 @@ cherokee_post_mrproper (cherokee_post_t *post)
 
 	post->type              = post_undefined;
 	post->encoding          = post_enc_regular;
+	post->is_set            = false;
 
 	post->size              = 0;
 	post->received          = 0;
@@ -98,8 +100,9 @@ cherokee_post_set_len (cherokee_post_t *post, off_t len)
 {
 	ret_t ret;
 
-	post->type = (len > POST_SIZE_TO_DISK) ? post_in_tmp_file : post_in_memory;
-	post->size = len;
+	post->type   = (len > POST_SIZE_TO_DISK) ? post_in_tmp_file : post_in_memory;
+	post->size   = len;
+	post->is_set = true;
 
 	if (post->type == post_in_tmp_file) {
 		cherokee_buffer_add_buffer (&post->tmp_file, &cherokee_tmp_dir);
@@ -129,6 +132,8 @@ cherokee_post_set_encoding (cherokee_post_t          *post,
 
 	post->type     = post_in_memory;
 	post->encoding = enc;
+	post->is_set   = true;
+
 	return ret_ok;
 }
 
@@ -153,6 +158,7 @@ cherokee_post_got_all (cherokee_post_t *post)
 	SHOULDNT_HAPPEN;
 	return 0;
 }
+
 
 ret_t 
 cherokee_post_get_len (cherokee_post_t *post, off_t *len)
@@ -295,8 +301,9 @@ cherokee_post_commit_buf (cherokee_post_t *post, size_t size)
 				return ret_error;
 			
 			written = write (post->tmp_file_fd, post->info.buf, processed);
-			if (unlikely (written < 0))
+			if (unlikely ((written < 0) || (written < processed))) {
 				return ret_error;
+			}
 						 
 			cherokee_buffer_move_to_begin (&post->info, (cuint_t)written);
 
@@ -329,8 +336,9 @@ cherokee_post_commit_buf (cherokee_post_t *post, size_t size)
 			return ret_error;
 
 		written = write (post->tmp_file_fd, post->info.buf, post->info.len); 
-		if (unlikely (written < 0))
+		if (unlikely ((written < 0) || (written < processed))) {
 			return ret_error;
+		}
 
 		cherokee_buffer_move_to_begin (&post->info, (cuint_t)written);
 		post->received += written;
@@ -419,7 +427,8 @@ cherokee_post_walk_to_fd (cherokee_post_t *post, int fd, int *eagain_fd, int *mo
 	 */
 	switch (post->type) {
 	case post_in_memory:
-		r = write (fd, post->info.buf + post->walk_offset,
+		r = write (fd,
+			   post->info.buf + post->walk_offset,
 			   post->info.len - post->walk_offset);
 		if (r < 0) {
 			int err = errno;
@@ -429,7 +438,7 @@ cherokee_post_walk_to_fd (cherokee_post_t *post, int fd, int *eagain_fd, int *mo
 
 			TRACE(ENTRIES, "errno %d: %s\n", err, strerror(err));
 			return  ret_error; 			
-		}
+		} 
 
 		TRACE(ENTRIES, "wrote %d bytes from memory\n", r);
 

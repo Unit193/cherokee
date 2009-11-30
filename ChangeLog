@@ -1,3 +1,600 @@
+2009-11-29  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=3895 git=7b2eadeed677ae50c04e8a645912a709f0b61a17
+
+    This patch fixes a bug in I/O-cache, and re-enables it in the default
+    configuration file. It also shrinks the default I/O-cache size 10
+    times. Now, it caches information about the 40 most used files.
+    
+ cherokee.conf.sample.pre |    2 +-
+ cherokee/cache.c         |    6 ++++--
+ cherokee/iocache.c       |    4 ++--
+ 3 files changed, 7 insertions(+), 5 deletions(-)
+
+
+2009-11-29  Taher Shihadeh  <taher@unixwars.com>
+            svn=3894 git=9b639200f0d2f9038ceb67c51bc997ee88695076
+
+    Renames a variable
+    
+ cherokee/handler_proxy.c |   22 +++++++++++-----------
+ cherokee/handler_proxy.h |    2 +-
+ 2 files changed, 12 insertions(+), 12 deletions(-)
+
+
+2009-11-28  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=3893 git=a800014f5d376edfae54eab830498da54305d0b2
+
+    This patch should fix a reverse HTTP proxy issue. There were times
+    when the proxy was replying random 502 errors while sending POST
+    requests to the back-end servers. It looks like some operating systems
+    were more likely to suffer from this bug - OpenSolaris specially.
+    Thanks to Juan José Amor for his help and support to fix this bug!
+    
+ cherokee/handler_proxy.c |   13 ++++++++++---
+ 1 files changed, 10 insertions(+), 3 deletions(-)
+
+2009-11-27  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=3892 git=511b83ada44b96872d9795ba5c8fe242fcea1036
+
+    A few misc. improvements. Nothing really important.
+    
+ admin/Wizard_RoR.py |   66 ++++++++++++++++++++++++++++----------------------
+ 1 files changed, 37 insertions(+), 29 deletions(-)
+
+
+2009-11-27  Taher Shihadeh  <taher@unixwars.com>
+            svn=3891 git=1a5d33c6c470a1d2d1cf154faf1cbc79f331aa77
+
+    Some more QA additions
+    
+ doc/dev_qa.txt |   16 +++++++++++++++-
+ 1 files changed, 15 insertions(+), 1 deletions(-)
+
+
+2009-11-27  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=3890 git=86f93e70091e21b8ee6104ffa149b54c03bb65b2
+
+    Adds additional checks after the write() calls to ensure all the POST
+    content has been actually written to a temporal file. Patch by Stefan
+    de Konink <stefan@konink.de>
+    
+ cherokee/post.c |   11 +++++++----
+ 1 files changed, 7 insertions(+), 4 deletions(-)
+
+
+2009-11-27  Taher Shihadeh  <taher@unixwars.com>
+            svn=3889 git=cb0607df55d375680d42e82c462ad21658036e14
+
+    Extends the Rails wizard. Should address issues 501 and 641
+    
+ admin/Wizard_RoR.py |   93 ++++++++++++++++++++++++++++++++++++++++++++------
+ 1 files changed, 81 insertions(+), 12 deletions(-)
+
+
+2009-11-27  Taher Shihadeh  <taher@unixwars.com>
+            svn=3888 git=611a7ae4e1554ddb8c0f39aeeb26f6195d0ca570
+
+    Updates Rails recipe
+    
+ doc/cookbook_ror.txt |   20 +++++++++++++++-----
+ 1 files changed, 15 insertions(+), 5 deletions(-)
+
+
+2009-11-27  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=3887 git=af35155b46e1e062ff14660f3e0ae7c55fd1d54b
+
+    Detect whether or not union semun is defined by <sys/sem.h>. Fixes a
+    compilation issue (on Linux) introduced a few hour ago.
+    
+ cherokee/main.c |   15 +++++++++++++++
+ configure.in    |   21 +++++++++++++++++++++
+ 2 files changed, 36 insertions(+), 0 deletions(-)
+
+
+2009-11-27  Taher Shihadeh  <taher@unixwars.com>
+            svn=3886 git=e8e48bee161c7ee1c3396210f0bbc78e48d8e279
+
+    Adds some info about QA
+    
+ doc/Makefile.am |    3 ++-
+ doc/dev.txt     |    1 +
+ doc/dev_qa.txt  |   54 ++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ doc/index.txt   |    1 +
+ 4 files changed, 58 insertions(+), 1 deletions(-)
+
+2009-11-27  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=3885 git=55b496819b4282677051820b55ebd762aae52ea3
+
+    These three QA tests cannot be run through a proxy server.
+    
+ qa/232-X-Real-IP-CGI.py   |    1 +
+ qa/233-X-Real-IP-CGI-2.py |    1 +
+ qa/234-X-Real-IP-CGI-3.py |    1 +
+ 3 files changed, 3 insertions(+), 0 deletions(-)
+
+
+2009-11-27  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=3884 git=7a9ee17155d5cd6fc1707996935733a85b05ec0d
+
+    Improves the POST support, so the reverse HTTP proxy handler can
+    manage empty post requests, and chunked-encoded posts.
+    
+ cherokee/handler_proxy.c |   13 +++++++++++++
+ cherokee/post.c          |   10 ++++++++--
+ cherokee/post.h          |    1 +
+ 3 files changed, 22 insertions(+), 2 deletions(-)
+
+
+2009-11-27  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=3883 git=91cc924fc47c5cc4e11ca9b9f395143dc5d8bccf
+
+    Regression: Fixes the QA test bench so it can be run through a the
+    reverse proxy again.
+    
+ qa/run-tests.py |    1 +
+ 1 files changed, 1 insertions(+), 0 deletions(-)
+
+
+2009-11-27  Taher Shihadeh  <taher@unixwars.com>
+            svn=3882 git=f17d1989f39af1b966c68871e276b169a8339800
+
+    A few translation updates
+    
+ po/admin/de.po    |  304 +++++++++++++++++++++++++++++----------------------
+ po/admin/en.po    |  317 ++++++++++++++++++++++++++++++----------------------
+ po/admin/es.po    |  320 +++++++++++++++++++++++++++++++----------------------
+ po/admin/nl.po    |  317 ++++++++++++++++++++++++++++++----------------------
+ po/admin/sv_SE.po |  312 ++++++++++++++++++++++++++++++---------------------
+ po/admin/zh_CN.po |  317 ++++++++++++++++++++++++++++++----------------------
+ 6 files changed, 1095 insertions(+), 792 deletions(-)
+
+
+2009-11-27  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=3881 git=a26a64c118e92ea09e8b9ea0887d225fa6312e62
+
+    Adds more TRACE entries to the chunked-encoding processing functions,
+    and fixes minor issue in the reverse proxy handler.
+    
+ cherokee/handler_proxy.c |   17 ++++++++++++-----
+ cherokee/thread.c        |    6 ++++--
+ 2 files changed, 16 insertions(+), 7 deletions(-)
+
+
+2009-11-27  Taher Shihadeh  <taher@unixwars.com>
+            svn=3880 git=c730c29d54c964406ef378877abfdf1fc123d493
+
+    Improves consistency among all the errors
+    
+ cherokee/error_list.py |   78 ++++++++++++++++++++++++------------------------
+ 1 files changed, 39 insertions(+), 39 deletions(-)
+
+
+2009-11-27  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=3879 git=f769fb4d52bbbe7c0be666cd4182e6a44a1b80f4
+
+    Improves timeout related TRACE entries.
+    
+ cherokee/thread.c |   10 +++++++---
+ 1 files changed, 7 insertions(+), 3 deletions(-)
+
+
+2009-11-26  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=3878 git=06108d31206da735da900010f9457ddcdae2012c
+
+    Miscellaneous spawner fixes.
+    
+ cherokee/error_list.py        |    4 +-
+ cherokee/main.c               |   47 +++++++++++++++++++++++++++++++++-------
+ cherokee/source_interpreter.c |    2 +
+ cherokee/spawner.c            |   28 ++++++++++++++----------
+ 4 files changed, 58 insertions(+), 23 deletions(-)
+
+
+2009-11-26  Taher Shihadeh  <taher@unixwars.com>
+            svn=3877 git=62bcb56923966951705a94f4543099aac21d8a66
+
+    More error reporting
+    
+ cherokee/error_list.py |   32 ++++++++++++++++----------------
+ 1 files changed, 16 insertions(+), 16 deletions(-)
+
+
+2009-11-25  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=3876 git=914e3afa46aa259509c4e8e2bc9664d3a79bb49e
+
+    Fixes the graphs menu caption. The "Accepted Connections" menu now
+    shows "Connections / Requests".
+    
+ admin/PageStatus.py |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+
+2009-11-25  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=3875 git=62700b1dad01a335fd847c69f6533aef58ca458e
+
+    The handler render_rrd draws the number of HTTP requests now (in the
+    TCP conns/sec graph).
+    
+ cherokee/collector_rrd.c      |    2 +-
+ cherokee/handler_render_rrd.c |   28 ++++++++++++++++++++--------
+ cherokee/rrd_tools.c          |    2 +-
+ 3 files changed, 22 insertions(+), 10 deletions(-)
+
+
+2009-11-25  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=3874 git=57ad15e0cf098fb083c6f33d3a082ac0a6fab2dc
+
+    The RRD collector was being too gentle while killing it's logging
+    thread. Now it behaves like the tough guy it was supposed to be!
+    
+ cherokee/collector_rrd.c   |    2 ++
+ cherokee/common-internal.h |    2 ++
+ 2 files changed, 4 insertions(+), 0 deletions(-)
+
+
+2009-11-25  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=3873 git=9ce9d6dfbb86ed1149c7c00611844618b6c8c7d2
+
+    The RRD information collector can store information about the number
+    of requests handler by the server. The implementation is not finished
+    yet. Further development is required in the render_rrd handler.
+    
+ cherokee/collector.c     |   15 +++++++++++++++
+ cherokee/collector.h     |    3 +++
+ cherokee/collector_rrd.c |   19 ++++++++++++++++---
+ cherokee/collector_rrd.h |    3 ++-
+ cherokee/rrd_tools.c     |   22 +++++++++++++++++++---
+ cherokee/thread.c        |    6 ++++++
+ 6 files changed, 61 insertions(+), 7 deletions(-)
+
+
+2009-11-25  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=3872 git=1c24a8529350207784031c9c11c12ac3efb0f1d3
+
+    cherokee_mkdir_p() is slightly more 'polite' now.
+    
+ cherokee/util.c |   21 +++++++++++++--------
+ cherokee/util.h |    2 +-
+ 2 files changed, 14 insertions(+), 9 deletions(-)
+
+
+2009-11-25  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=3871 git=c7cc79d94cb50e3caac6d2c6cd347d80077cd51f
+
+    Do not try to spawn new rrdtool binaries once the server is exiting.
+    This misbehavior was causing the server to print random errors while
+    performing graceful restarts. Thanks to Antonio Pérez for the feedback
+    on this issue.
+    
+ cherokee/collector_rrd.c |   15 ++++++++++++++-
+ cherokee/collector_rrd.h |    2 ++
+ cherokee/rrd_tools.c     |    6 ++++++
+ cherokee/rrd_tools.h     |   15 ++++++++-------
+ 4 files changed, 30 insertions(+), 8 deletions(-)
+
+
+2009-11-25  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=3870 git=c160828ef63b0266a70096750704fdf79b8bdaeb
+
+    Fixes the CHEROKEE_PRINT_BACKTRACE macro.
+    
+ cherokee/macros.h |    2 +-
+ cherokee/util.c   |    9 ++++++---
+ 2 files changed, 7 insertions(+), 4 deletions(-)
+
+
+2009-11-25  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=3869 git=251a0f3b7e00cbf632d0e122dc9b6fa5e16433b8
+
+    Removes a superfluous semicolon character.
+    
+ cherokee/macros.h |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+
+2009-11-25  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=3868 git=b8125b8abade2994adcd870dc6f3558e702d9c43
+
+    Fixes the url_arg QA tests. They were still using the old http_arg
+    name instead of the new, much more descriptive, name 'url_arg'.
+    
+ qa/235-HTTP-arg_match1.py     |   34 ----------------------------------
+ qa/235-URL-arg_match1.py      |   34 ++++++++++++++++++++++++++++++++++
+ qa/236-HTTP-arg_match2.py     |   33 ---------------------------------
+ qa/236-URL-arg_match2.py      |   33 +++++++++++++++++++++++++++++++++
+ qa/237-HTTP-arg_match_all1.py |   36 ------------------------------------
+ qa/237-URL-arg_match_all1.py  |   36 ++++++++++++++++++++++++++++++++++++
+ qa/238-HTTP-arg_match_all2.py |   35 -----------------------------------
+ qa/238-URL-arg_match_all2.py  |   35 +++++++++++++++++++++++++++++++++++
+ qa/Makefile.am                |    8 ++++----
+ 9 files changed, 142 insertions(+), 142 deletions(-)
+
+
+2009-11-24  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=3867 git=cc4bf9817e2b17d5143a41f6933229e5cf4dac7f
+
+    Use a safe PHP_FCGI_MAX_REQUESTS by default. For some reason php-cgi
+    might stop replying connections after 500 requests.
+    
+ admin/Wizard_PHP.py |    5 +++--
+ 1 files changed, 3 insertions(+), 2 deletions(-)
+
+
+2009-11-24  Taher Shihadeh  <taher@unixwars.com>
+            svn=3866 git=e3020dc37561e70a961e44805f591e22fb15cec4
+
+    Remove Django warning from the example. It should work out of the box now
+    
+ doc/cookbook_uwsgi.txt |    1 +
+ 1 files changed, 1 insertions(+), 0 deletions(-)
+
+
+2009-11-24  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=3865 git=03937d1777d4da73c886e5d72831999c318b0676
+
+    Do not log the error messages twice is the default error log is being
+    written to stderr. This patch fixes a bug introduced yesterday.
+    
+ cherokee/error_log.c |   18 +++++++++++-------
+ 1 files changed, 11 insertions(+), 7 deletions(-)
+
+
+2009-11-24  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=3864 git=5848737573ca513deb034f46e4480d0f4d31995f
+
+    Renames the URL parameter matching module (http_arg to url_arg), and
+    adds the cherokee-admin module.
+    
+ admin/Makefile.am        |    1 +
+ admin/ModuleUrlarg.py    |   72 ++++++++++++++++
+ admin/consts.py          |    1 +
+ cherokee/Makefile.am     |   22 +++---
+ cherokee/rule_http_arg.c |  206 ----------------------------------------------
+ cherokee/rule_http_arg.h |   53 ------------
+ cherokee/rule_url_arg.c  |  206 ++++++++++++++++++++++++++++++++++++++++++++++
+ cherokee/rule_url_arg.h  |   53 ++++++++++++
+ configure.in             |    4 +-
+ 9 files changed, 346 insertions(+), 272 deletions(-)
+
+2009-11-24  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=3863 git=37eaf780aec0385799d64d8a64b870fdb3368f22
+
+    conn->arguments stores cherokee_buffer_t objects instead of char *
+    strings now. Implements: http://bugs.cherokee-project.com/637
+    
+ cherokee/connection.c         |    4 ++--
+ cherokee/handler_dirlist.c    |   16 ++++++++--------
+ cherokee/handler_streaming.c  |   16 ++++++++--------
+ cherokee/macros.h             |    3 +++
+ cherokee/rule_http_arg.c      |   31 ++++++++++++++++---------------
+ cherokee/util.c               |   23 ++++++++++++++++-------
+ qa/235-HTTP-arg_match1.py     |    4 ++--
+ qa/236-HTTP-arg_match2.py     |    4 ++--
+ qa/237-HTTP-arg_match_all1.py |   13 ++++++++-----
+ qa/238-HTTP-arg_match_all2.py |   13 ++++++++-----
+ 10 files changed, 73 insertions(+), 54 deletions(-)
+
+
+2009-11-24  Taher Shihadeh  <taher@unixwars.com>
+            svn=3862 git=b9858244fde7c234dced14fe035a934ea3ff3145
+
+    Yet more simplified
+    
+ doc/cookbook_uwsgi.txt |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+
+2009-11-24  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=3861 git=f8269a455c9529124790431e4ff1328fef3d819a
+
+    Fixes a typo: s/methos/methods/g
+    
+ cherokee/rule_and.c        |    2 +-
+ cherokee/rule_bind.c       |    2 +-
+ cherokee/rule_default.c    |    2 +-
+ cherokee/rule_directory.c  |    2 +-
+ cherokee/rule_extensions.c |    2 +-
+ cherokee/rule_from.c       |    2 +-
+ cherokee/rule_geoip.c      |    2 +-
+ cherokee/rule_header.c     |    2 +-
+ cherokee/rule_not.c        |    2 +-
+ cherokee/rule_or.c         |    2 +-
+ cherokee/rule_request.c    |    2 +-
+ cherokee/vrule_rehost.c    |    2 +-
+ cherokee/vrule_target_ip.c |    2 +-
+ cherokee/vrule_wildcard.c  |    2 +-
+ 14 files changed, 14 insertions(+), 14 deletions(-)
+
+
+2009-11-24  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=3860 git=10884413d857ea0e0194d9b50a56309c5093c829
+
+    Adds a new rule type. It evaluates regular expressions against the
+    HTTP arguments. It can either check a specific parameter of all of
+    them. The cherokee-admin module is still to be committed.
+    
+ cherokee/Makefile.am          |   19 ++++
+ cherokee/connection.c         |    6 +-
+ cherokee/rule_http_arg.c      |  205 +++++++++++++++++++++++++++++++++++++++++
+ cherokee/rule_http_arg.h      |   53 +++++++++++
+ configure.in                  |    3 +-
+ qa/235-HTTP-arg_match1.py     |   34 +++++++
+ qa/236-HTTP-arg_match2.py     |   33 +++++++
+ qa/237-HTTP-arg_match_all1.py |   33 +++++++
+ qa/238-HTTP-arg_match_all2.py |   32 +++++++
+ qa/Makefile.am                |    7 +-
+ 10 files changed, 420 insertions(+), 5 deletions(-)
+
+
+2009-11-24  Taher Shihadeh  <taher@unixwars.com>
+            svn=3859 git=4e7fbf5c9f1aa555b9a59fa09b47b8d03896103b
+
+    Adds some troubleshooting tips
+    
+ doc/cookbook_uwsgi.txt |   28 ++++++++++++++++++++++++++++
+ 1 files changed, 28 insertions(+), 0 deletions(-)
+
+2009-11-23  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=3858 git=1f02554587470ffd2be361613a708c059204702d
+
+    If an error message were generated while the server starts up, it
+    should be written in the default log file. This patch fixes the
+    logging mechanism so, during the server initialization, error messages
+    are both echoed to stderr and written in the default log file.  Beware
+    of this change-set: it might be introducing regressions.
+    
+ cherokee/error_log.c |   55 +++++++++++++++++----
+ cherokee/error_log.h |    4 +-
+ cherokee/server.c    |  130 +++++++++++++++++++++++++++++++++++++++++++-------
+ 3 files changed, 159 insertions(+), 30 deletions(-)
+
+
+2009-11-23  Taher Shihadeh  <taher@unixwars.com>
+            svn=3857 git=84e66197b8f3396861d1eca1c5ee686fd78eb9c5
+
+    Fixes a bug in RoR Wizard: issue 636
+    
+ admin/Wizard_RoR.py |    1 +
+ 1 files changed, 1 insertions(+), 0 deletions(-)
+
+
+2009-11-23  Taher Shihadeh  <taher@unixwars.com>
+            svn=3856 git=e44c0b319de228c3195d9c0e3389fc0d13657e77
+
+    Some extra info was required.
+    
+ doc/cookbook_uwsgi.txt |    7 ++++++-
+ 1 files changed, 6 insertions(+), 1 deletions(-)
+
+
+2009-11-23  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=3855 git=bed1ec0265a4b5239ad7af17550c19412c811312
+
+    Fixes the RoR wizard. It was generating broken configuration
+    entries. Thanks to Rodrigo Fernandez-Vizarra for the report!
+    
+ admin/Wizard_RoR.py |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+
+2009-11-23  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=3854 git=465438fb2f611ba51418918184a3428ed3ef44b7
+
+    The PHP wizard sets a timeout in the "Extension PHP" rule now. It
+    tries to figure the right value by reading the php.ini file. This
+    should improve PHP execution reliability.
+    
+ admin/Wizard_PHP.py |   38 ++++++++++++++++++++++++++++++++++++++
+ 1 files changed, 38 insertions(+), 0 deletions(-)
+
+
+2009-11-22  Antonio Perez  <aperez@skarcha.com>
+            svn=3853 git=22664b13f145e7d61469d7e765448e2e1c17045b
+
+    Fixes a couple of compilation warnings
+    
+ cherokee/error_log.c |   14 +++++++-------
+ cherokee/header.c    |   10 +++++-----
+ 2 files changed, 12 insertions(+), 12 deletions(-)
+
+2009-11-20  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=3852 git=88a34ddb4006678fd955cb28dbdc9bfc7e50b484
+
+    Fixes a couple of minor compilation issues reported by Sandino Araico
+    Sánchez <sandino@sandino.net>. Thanks!
+    
+ cherokee/rrd_tools.c          |    1 +
+ cherokee/validator_htpasswd.c |    1 +
+ 2 files changed, 2 insertions(+), 0 deletions(-)
+
+
+2009-11-20  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=3851 git=23853f38335ef5b38406cd4e402d225612710e8d
+
+    Adds a new field for the timeout in the rules table.
+    
+ admin/PageVServer.py |    8 +++++---
+ 1 files changed, 5 insertions(+), 3 deletions(-)
+
+
+2009-11-20  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=3850 git=b614a51a5394fdfc6bb516fe79869fd22e0cf952
+
+    Fixes a couple of issues: A file descriptor leak in Cherokee tweak,
+    and a wrong error checking in the host name resolution cache. Thanks
+    to Eric Sesterhenn <eric.sesterhenn@lsexperts.de> for the patch!
+    
+ cherokee/main_tweak.c   |    2 ++
+ cherokee/resolv_cache.c |    3 ++-
+ 2 files changed, 4 insertions(+), 1 deletions(-)
+
+2009-11-20  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=3849 git=522c89a07d5e63f280acef3a433f334e66b89173
+
+    The "Expiration" tab has become the "Time" tab. Now it holds the
+    previous expiration entries, plus the Connections timeout related
+    fields (a single entry box by now).
+    
+ admin/PageEntry.py |   15 +++++++++++----
+ 1 files changed, 11 insertions(+), 4 deletions(-)
+
+
+2009-11-20  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=3848 git=ffb07b685c9cf594fd26236da9ab12a2f03fc263
+
+    Fixes the __VA_ARGS__ usage, so Cherokee can be compiled with recent
+    versions of Sun Studio. Thanks to puccia (Google Code) for the patch!
+    Fixes #634: http://bugs.cherokee-project.com/634
+    
+ cherokee/error_log.h |    2 +-
+ cherokee/macros.h    |    2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+
+2009-11-20  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=3847 git=dc381c56be34d9ef6a3e6c4c6c45118285434d04
+
+    Adds support for custom timeouts. Now rules can set a timeouts to the
+    connections matching them. It works in the very same way as expiration
+    dates, or custom document root values.
+    
+ admin/PageEntry.py              |    4 ++++
+ cherokee/config_entry.c         |   15 +++++++++++++++
+ cherokee/config_entry.h         |    5 +++++
+ cherokee/connection-protected.h |    3 +++
+ cherokee/connection.c           |    8 +++++---
+ cherokee/nullable.h             |    4 ++++
+ cherokee/thread.c               |   38 +++++++++++++++++++++++++++-----------
+ cherokee/virtual_server.c       |   10 ++++++++++
+ 8 files changed, 73 insertions(+), 14 deletions(-)
+
+
+2009-11-20  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=3846 git=be72254f4872bdf2d367095019f5fb16ef2b8947
+
+    Cherokee 0.99.29 released
+    
+ configure.in |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+
+2009-11-19  Taher Shihadeh  <taher@unixwars.com>
+            svn=3844 git=bf6529f7c0190d86716d612b8a1662cdd90a337b
+
+    Trivial polishing
+    
+ admin/Wizard_uWSGI.py |   26 +++++++++++---------------
+ 1 files changed, 11 insertions(+), 15 deletions(-)
+
+
+2009-11-19  Taher Shihadeh  <taher@unixwars.com>
+            svn=3843 git=b1dedb28528b74a34f28af825c3d2422dda00cc8
+
+    Cleanup
+    
+ admin/Wizard_Django.py |    6 ++----
+ 1 files changed, 2 insertions(+), 4 deletions(-)
+
 2009-11-19  Alvaro Lopez Ortega  <alvaro@octality.com>
             svn=3842 git=6c4759224a56e79b6b642d2051a78a1d95011f8f
 

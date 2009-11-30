@@ -35,7 +35,8 @@
 typedef enum {
 	collector_rrd_vserver_traffic,
 	collector_rrd_server_timeouts,
-	collector_rrd_server_accepts
+	collector_rrd_server_accepts,
+	collector_rrd_server_requests
 } cherokee_collector_rrd_graphs_t;
 
 
@@ -53,6 +54,8 @@ typedef struct {
 	/* Asynchronous */
 	pthread_t                 thread;
 	pthread_mutex_t           mutex;	
+	cherokee_boolean_t        exiting;
+
 	cherokee_list_t           collectors_vsrv;
 } cherokee_collector_rrd_t;
 

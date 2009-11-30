@@ -198,6 +198,23 @@ endif
 
 
 #
+# Rule url_arg
+#
+rule_url_arg = \
+rule_url_arg.c \
+rule_url_arg.h
+
+libplugin_url_arg_la_LDFLAGS = $(module_ldflags)  
+libplugin_url_arg_la_SOURCES = $(rule_url_arg)
+
+if STATIC_RULE_URL_ARG
+static_rule_url_arg_src = $(rule_url_arg)
+else
+dynamic_rule_url_arg_lib = libplugin_url_arg.la
+endif
+
+
+#
 # Rule fullpath
 #
 rule_fullpath = \
@@ -1422,6 +1439,7 @@ $(static_rule_extensions_src) \
 $(static_rule_request_src) \
 $(static_rule_header_src) \
 $(static_rule_exists_src) \
+$(static_rule_url_arg_src) \
 $(static_rule_fullpath_src) \
 $(static_rule_bind_src) \
 $(static_rule_method_src) \
@@ -1608,6 +1626,7 @@ $(dynamic_rule_extensions_lib) \
 $(dynamic_rule_request_lib) \
 $(dynamic_rule_header_lib) \
 $(dynamic_rule_exists_lib) \
+$(dynamic_rule_url_arg_lib) \
 $(dynamic_rule_fullpath_lib) \
 $(dynamic_rule_bind_lib) \
 $(dynamic_rule_method_lib) \

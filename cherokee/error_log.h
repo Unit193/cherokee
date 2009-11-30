@@ -50,7 +50,7 @@ typedef struct {
 #define CHEROKEE_ERROR(x) ((cherokee_error_t *)(x))
 
 
-#ifdef __GNUC__
+#if defined(__GNUC__) || ( defined(__SUNPRO_C) && __SUNPRO_C > 0x590 )
 # define LOG_WARNING(e_num,arg...)     cherokee_error_log (cherokee_err_warning,  __FILE__, __LINE__, e_num, ##arg)
 # define LOG_WARNING_S(e_num)          cherokee_error_log (cherokee_err_warning,  __FILE__, __LINE__, e_num)
 # define LOG_ERROR(e_num,arg...)       cherokee_error_log (cherokee_err_error,    __FILE__, __LINE__, e_num, ##arg)
@@ -81,6 +81,8 @@ ret_t cherokee_error_errno_log   (int                    errnumber,
 				  int                    line,
 				  int                    error_num, ...);
 
-ret_t cherokee_error_log_set_log (cherokee_logger_t *logger);
+ret_t cherokee_error_log_set_log_writer  (cherokee_logger_writer_t  *writer);
+ret_t cherokee_error_log_get_log_writer  (cherokee_logger_writer_t **writer);
+ret_t cherokee_error_log_set_echo_stderr (cherokee_boolean_t         do_echo);
 
 #endif /* CHEROKEE_ERROR_LOG_H */
