@@ -26,23 +26,28 @@
 # error "Only <cherokee/cherokee.h> can be included directly, this file may disappear or change contents."
 #endif
 
+#ifndef CHEROKEE_RULE_URL_ARG_H
+#define CHEROKEE_RULE_URL_ARG_H
 
-#ifndef CHEROKEE_NULLABLE_H
-#define CHEROKEE_NULLABLE_H
+#include <cherokee/common.h>
+#include <cherokee/buffer.h>
+#include <cherokee/rule.h>
+#include <cherokee/regex.h>
 
 CHEROKEE_BEGIN_DECLS
 
-typedef int cherokee_null_bool_t;
-typedef int cherokee_null_int_t;
+typedef struct {
+	cherokee_rule_t       rule;
+	cherokee_buffer_t     arg;
+	cherokee_buffer_t     match;
+	void                 *pcre;
 
-#define NULLB_NULL       0xFC
-#define NULLB_TO_BOOL(x) ((x) & 0x3)
-#define NULLB_IS_NULL(x) ((x) & NULLB_NULL)
-#define NULLB_TO_STR(x)  (NULLB_IS_NULL(x) ? "NULL" : ((x) ? "True" : "False"))
+} cherokee_rule_url_arg_t;
 
-#define NULLI_NULL       INT_MAX
-#define NULLI_IS_NULL(x) ((x) == NULLI_NULL)
+#define RULE_URL_ARG(x) ((cherokee_rule_url_arg_t *)(x))
+
+ret_t cherokee_rule_url_arg_new (cherokee_rule_url_arg_t **rule);
 
 CHEROKEE_END_DECLS
 
-#endif /* CHEROKEE_NULLABLE_H */
+#endif /* CHEROKEE_RULE_URL_ARG_H */

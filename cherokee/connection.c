@@ -116,6 +116,8 @@ cherokee_connection_new  (cherokee_connection_t **conn)
 	n->traffic_next         = 0;
 	n->validator            = NULL;
 	n->timeout              = -1;
+	n->timeout_lapse        = -1;
+	n->timeout_header       = NULL;
 	n->polling_fd           = -1;
 	n->polling_multiple     = false;
 	n->polling_mode         = FDPOLL_MODE_NONE;
@@ -212,7 +214,7 @@ cherokee_connection_free (cherokee_connection_t  *conn)
 	}
 
 	if (conn->arguments != NULL) {
-		cherokee_avl_free (conn->arguments, free);
+		cherokee_avl_free (conn->arguments, cherokee_buffer_free);
 		conn->arguments = NULL;
 	}
 
@@ -247,7 +249,6 @@ cherokee_connection_clean (cherokee_connection_t *conn)
 		BIT_UNSET (conn->options, conn_op_tcp_cork);		
 	}
 
-	conn->timeout              = -1;
 	conn->phase                = phase_reading_header;
 	conn->auth_type            = http_auth_nothing;
 	conn->req_auth_type        = http_auth_nothing;
@@ -323,7 +324,7 @@ cherokee_connection_clean (cherokee_connection_t *conn)
 	}
 
 	if (conn->arguments != NULL) {
-		cherokee_avl_free (conn->arguments, free);
+		cherokee_avl_free (conn->arguments, cherokee_buffer_free);
 		conn->arguments = NULL;
 	}
 
@@ -637,7 +638,7 @@ build_response_header (cherokee_connection_t *conn, cherokee_buffer_t *buffer)
 
 	} else if (conn->handler && (conn->keepalive > 0)) {
 		cherokee_buffer_add_str (buffer, "Connection: Keep-Alive"CRLF);
-		cherokee_buffer_add_buffer (buffer, &CONN_SRV(conn)->timeout_header);
+		cherokee_buffer_add_buffer (buffer, conn->timeout_header);
 	} else {
 		cherokee_buffer_add_str (buffer, "Connection: close"CRLF);
 	}
@@ -2314,9 +2315,11 @@ cherokee_connection_parse_args (cherokee_connection_t *conn)
 {
 	ret_t ret;
 
-	/* Sanity check
+	/* Parse arguments only once
 	 */
-	return_if_fail (conn->arguments == NULL, ret_error);
+	if (conn->arguments != NULL) {
+		return ret_ok;
+	}
 
 	/* Build a new table 
 	 */
@@ -2500,8 +2503,9 @@ cherokee_connection_print (cherokee_connection_t *conn)
 
 	/* Shortcut: Don't render if not tracing
 	 */
-	if (! cherokee_trace_is_tracing())
+	if (! cherokee_trace_is_tracing()) {
 		return "";
+	}
 
 	/* Render
 	 */

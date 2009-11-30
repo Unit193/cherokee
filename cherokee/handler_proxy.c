@@ -444,6 +444,18 @@ build_request (cherokee_handler_proxy_t *hdl,
 		hdl->pconn->keepalive_in = false;
 	}
 
+	/* Add header "Content-Length:" */
+	if (conn->post.is_set) {
+		off_t post_len;
+
+		ret = cherokee_post_get_len (&conn->post, &post_len);
+		if (ret == ret_ok) {
+			cherokee_buffer_add_str      (buf, "Content-Length: ");
+			cherokee_buffer_add_ullong10 (buf, (cullong_t)post_len);
+			cherokee_buffer_add_str      (buf, CRLF);
+		}
+	}
+
 	/* Headers
 	 */
 	str = strchr (conn->incoming_header.buf, CHR_CR);
@@ -475,6 +487,7 @@ build_request (cherokee_handler_proxy_t *hdl,
 		    (! strncasecmp (begin, "Expect:", 7)) ||
 		    (! strncasecmp (begin, "Connection:", 11)) ||
 		    (! strncasecmp (begin, "Keep-Alive:", 11)) ||
+		    (! strncasecmp (begin, "Content-Length:", 15)) ||
 		    (! strncasecmp (begin, "Transfer-Encoding:", 18)))
 		{
 			goto next;
@@ -706,9 +719,9 @@ cherokee_handler_proxy_init (cherokee_handler_proxy_t *hdl)
 		TRACE(ENTRIES, "Entering phase '%s'\n", "preconnect");
 	
 	case proxy_init_preconnect:
-		/* Configure if respined
+		/* Configure if respinned
 		 */
-		if (hdl->respined) {
+		if (hdl->respinned) {
 			cherokee_socket_clean (&hdl->pconn->socket);
 			cherokee_socket_close (&hdl->pconn->socket);
 		}
@@ -741,7 +754,7 @@ cherokee_handler_proxy_init (cherokee_handler_proxy_t *hdl)
 			case ret_eagain:
 				return ret_eagain;
 			case ret_deny:
-				if (hdl->respined) {
+				if (hdl->respinned) {
 					cherokee_balancer_report_fail (props->balancer, conn, hdl->src_ref);
 					conn->error_code = http_bad_gateway;
 					hdl->pconn->keepalive_in = false;
@@ -761,7 +774,7 @@ cherokee_handler_proxy_init (cherokee_handler_proxy_t *hdl)
 					}
 				}
 
-				hdl->respined = true;
+				hdl->respinned = true;
 				goto reconnect;
 			default:
 				hdl->pconn->keepalive_in = false;
@@ -800,14 +813,14 @@ cherokee_handler_proxy_init (cherokee_handler_proxy_t *hdl)
 			return ret_eagain;
 		case ret_eof:
 		case ret_error:
-			if (hdl->respined) {
+			if (hdl->respinned) {
 				cherokee_balancer_report_fail (props->balancer, conn, hdl->src_ref);
 				conn->error_code = http_bad_gateway;
 				hdl->pconn->keepalive_in = false;
 				return ret_error;
 			}
 
-			hdl->respined = true;
+			hdl->respinned = true;
 			goto reconnect;
 		default:
 			hdl->pconn->keepalive_in = false;
@@ -827,10 +840,17 @@ cherokee_handler_proxy_init (cherokee_handler_proxy_t *hdl)
 				break;
 			case ret_eagain:
 				return ret_eagain;
+			case ret_eof:
 			case ret_error:
-				hdl->pconn->keepalive_in = false;
-				conn->error_code = http_bad_gateway;
-				return ret_error;
+				if (hdl->respinned) {
+					cherokee_balancer_report_fail (props->balancer, conn, hdl->src_ref);
+					conn->error_code = http_bad_gateway;
+					hdl->pconn->keepalive_in = false;
+					return ret_error;
+				}
+
+				hdl->respinned = true;
+				goto reconnect;
 			default:
 				hdl->pconn->keepalive_in = false;
 				conn->error_code = http_bad_gateway;
@@ -871,7 +891,7 @@ cherokee_handler_proxy_init (cherokee_handler_proxy_t *hdl)
 		case ret_error:
 			/* The socket isn't really connected
 			 */
-			if (hdl->respined) {
+			if (hdl->respinned) {
 				cherokee_balancer_report_fail (props->balancer, conn, hdl->src_ref);
 				hdl->pconn->keepalive_in = false;
 				conn->error_code = http_bad_gateway;
@@ -879,7 +899,7 @@ cherokee_handler_proxy_init (cherokee_handler_proxy_t *hdl)
 			}
 
 			cherokee_post_walk_reset (&conn->post);
-			hdl->respined = true;
+			hdl->respinned = true;
 			goto reconnect;
 		default:
 			hdl->pconn->keepalive_in = false;
@@ -1143,7 +1163,8 @@ cherokee_handler_proxy_add_headers (cherokee_handler_proxy_t *hdl,
 		TRACE(ENTRIES, "Reply is %d, it has no body. Marking as 'got all'.\n",
 		      HANDLER_CONN(hdl)->error_code);
 	}
-
+	
+	TRACE (ENTRIES, "Added reply headers (len=%d)\n", buf->len);
 	return ret_ok;
 }
 
@@ -1325,6 +1346,7 @@ cherokee_handler_proxy_step (cherokee_handler_proxy_t *hdl,
 			/* There is a chunk to send */
 			if (body_size > 0) {
 				cherokee_buffer_add (buf, (p+head_size), body_size);
+				TRACE(ENTRIES",chunked", "Copying chunk len=%d\n", body_size);
 			}
 
 			copied = (head_size + body_size + 2);
@@ -1332,8 +1354,10 @@ cherokee_handler_proxy_step (cherokee_handler_proxy_t *hdl,
 			copied_total += copied;
 			p            += copied;
 
-			if (ret == ret_eof)
+			if (ret == ret_eof) {
+				TRACE (ENTRIES",chunked", "Got a %s package\n", "EOF");
 				break;
+			}
 		}
 
 	out:
@@ -1349,10 +1373,13 @@ cherokee_handler_proxy_step (cherokee_handler_proxy_t *hdl,
 			return ret_ok;
 		}
 
-		if ((ret == ret_eof) ||
-		    (ret_read == ret_eof))
-		{
+		if (ret_read == ret_eof) {
 			hdl->pconn->keepalive_in = false;
+			return ret_eof;
+		}
+
+		if (ret == ret_eof) {
+			hdl->got_all = true;
 			return ret_eof;
 		}
 
@@ -1400,7 +1427,7 @@ cherokee_handler_proxy_new (cherokee_handler_t     **hdl,
 	n->pconn      = NULL;
 	n->src_ref    = NULL;
 	n->init_phase = proxy_init_start;
-	n->respined   = false;
+	n->respinned  = false;
 	n->got_all    = false;
 
 	cherokee_buffer_init (&n->tmp);
