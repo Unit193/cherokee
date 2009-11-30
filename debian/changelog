@@ -1,3 +1,11 @@
+cherokee (0.99.30-1) unstable; urgency=low
+
+  * New Upstream Version
+  * Added debian/libcherokee-mod-rrd.postinst to fix 
+    /var/lib/cherokee/graphs permissions - Thanks to Antonio Perez
+
+ -- Leonel Nunez <leonel@enelserver.com>  Mon, 30 Nov 2009 04:51:07 -0700
+
 cherokee (0.99.29-1) unstable; urgency=low
 
   * New Upstream Versioni
