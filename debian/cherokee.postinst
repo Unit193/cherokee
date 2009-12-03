@@ -60,7 +60,7 @@ case "$1" in
 	    RUNAS_GROUP=www-data
 	fi
 	if [ -d /var/log/cherokee ]; then
-	    dpkg-statoverride --update --add $RUNAS_USER $RUNAS_GROUP 0755 /var/log/cherokee
+	    dpkg-statoverride --update --add --force $RUNAS_USER $RUNAS_GROUP 0755 /var/log/cherokee
 	fi
 
 	# Upgrading from versions <= 0.99.26-1 with dependency-based

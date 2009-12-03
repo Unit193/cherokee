@@ -8,8 +8,9 @@ cherokee (0.99.31-1) unstable; urgency=low
     other than www-data
   * Included upstream's config file migrator as part of the preinst
     process
+  * Removes the symlinks in /var/www at purge time (Closes: #554889)
 
- -- Gunnar Wolf <gwolf@debian.org>  Thu, 03 Dec 2009 16:31:10 -0600
+ -- Gunnar Wolf <gwolf@debian.org>  Thu, 03 Dec 2009 16:45:36 -0600
 
 cherokee (0.99.30-1) unstable; urgency=low
 

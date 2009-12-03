@@ -32,7 +32,7 @@ case "$1" in
 	else
 	    RUNAS_GROUP=www-data
 	fi
-	dpkg-statoverride --update --add $RUNAS_USER $RUNAS_GROUP 0755 /var/lib/cherokee/graphs
+	dpkg-statoverride --update --add --force $RUNAS_USER $RUNAS_GROUP 0755 /var/lib/cherokee/graphs
 	;;
     abort-upgrade|abort-remove|abort-deconfigure)
 	;;

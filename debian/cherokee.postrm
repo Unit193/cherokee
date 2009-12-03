@@ -21,17 +21,25 @@ set -e
 
 case "$1" in
     purge)
+	CONFDIR=/etc/cherokee
 	echo "Purging logfiles .."
-	rm -rf /var/log/cherokee*
+	rm -rf /var/log/cherokee/*
+	# Configuration file backups - From previous releases' updates
+	# and automatically created by cherokee-admin
+	rm -f $CONFDIR/cherokee.conf.backup
 	for OLDVER in 0.6 0.7 0.8 0.9 0.10 0.11 0.98 0.99 0.9910
 	do
-	    if [ -d /etc/cherokee/pre-$OLDVER ]
+	    if [ -d $CONFDIR/pre-$OLDVER ]
 	    then
 		echo "Purging pre-$OLDVER configuration"
-		rm -rf /etc/cherokee/pre-$OLDVER
+		rm -rf $CONFDIR/pre-$OLDVER
 	    fi
 	done
+	# Remove the overrides and symlinks created at postinst
 	dpkg-statoverride --remove /var/log/cherokee || true
+	for LINK in /var/www/index.html /var/www/cherokee-images; do
+	    if [ -L $LINK ]; then rm $LINK; fi
+	done
 	;;
     upgrade)
 	invoke-rc.d cherokee stop
