@@ -1,3 +1,14 @@
+From: Gunnar Wolf <gwolf@debian.org>
+Origin: other, http://vmlinux.org/cgi-bin/dwww/usr/share/doc/autotools-dev/README.Debian.gz
+Bug-Debian: 549965
+Forwarded: no
+Last-Update: 2009-12-03
+Description: Execute systemwide config.{guess,sub} instead of upstream-provided
+ To avoid the outdated GNU config.{sub,guess} problem (see section of that 
+ name refered in the "origin" field), we execute the systemwide, updated 
+ version. The applied solution here applies Bill Allombert's idea mentioned 
+ in said URL.
+
 Index: cherokee/config.guess
 ===================================================================
 --- cherokee.orig/config.guess	2009-11-02 17:12:17.000000000 -0600

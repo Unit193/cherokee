@@ -36,7 +36,7 @@ ifeq (,$(findstring nostrip,$(DEB_BUILD_OPTIONS)))
 endif
 
 %:
-	dh --with-quilt $@
+	dh $@
 
 binary:
 	dh binary --until dh_install
@@ -53,7 +53,7 @@ binary:
 		rm -f $$INSTALLED
 	# Include our nice "Powered by Debian" logo alongside
 	# Cherokee's own
-	/usr/bin/uudecode $(CURDIR)/debian/powered_by_debian.png.uu -o $(CURDIR)/debian/cherokee/usr/share/cherokee/default-site/cherokee-images/powered_by_debian.png 
+	install $(CURDIR)/debian/powered_by_debian.png $(CURDIR)/debian/cherokee/usr/share/cherokee/default-site/cherokee-images/powered_by_debian.png
 	# Done, go on as usual...
 	dh binary --remaining
 

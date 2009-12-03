@@ -3,7 +3,7 @@ Section: httpd
 Priority: optional
 Maintainer: Gunnar Wolf <gwolf@debian.org>
 Uploaders: Alvaro Lopez Ortega <alvaro@gnu.org>, Leonel Nunez <leonel@enelserver.com>
-Build-Depends: bison, flex, debhelper (>= 7.0.50), autotools-dev, sharutils, libpam0g-dev, quilt, python-support, libssl-dev, libldap-dev, libmysqlclient-dev,  libavformat-dev, libavcodec-dev, libavutil-dev, libgeoip-dev
+Build-Depends: bison, flex, debhelper (>= 7.0.50), autotools-dev, libpam0g-dev, python-support, libssl-dev, libldap-dev, libmysqlclient-dev,  libavformat-dev, libavcodec-dev, libavutil-dev, libgeoip-dev
 Standards-Version: 3.8.3
 Homepage: http://cherokee-project.org/
 Vcs-Git: git://git.debian.org/git/collab-maint/cherokee.git
