@@ -22,25 +22,32 @@
  * 02110-1301, USA.
  */ 
 
-#ifndef CHEROKEE_CONNECTION_HANDLER_PHPCGI_H
-#define CHEROKEE_CONNECTION_HANDLER_PHPCGI_H
+#if !defined (CHEROKEE_INSIDE_CHEROKEE_H) && !defined (CHEROKEE_COMPILATION)
+# error "Only <cherokee/cherokee.h> can be included directly, this file may disappear or change contents."
+#endif
 
-#include "common-internal.h"
-#include "handler_cgi.h"
+#ifndef CHEROKEE_RULE_URL_ARG_H
+#define CHEROKEE_RULE_URL_ARG_H
+
+#include <cherokee/common.h>
+#include <cherokee/buffer.h>
+#include <cherokee/rule.h>
+#include <cherokee/regex.h>
+
+CHEROKEE_BEGIN_DECLS
 
 typedef struct {
-	cherokee_handler_cgi_props_t base;
-	cherokee_buffer_t            interpreter;
-} cherokee_handler_phpcgi_props_t;
+	cherokee_rule_t       rule;
+	cherokee_buffer_t     arg;
+	cherokee_buffer_t     match;
+	void                 *pcre;
 
-#define PROP_PHPCGI(x) ((cherokee_handler_phpcgi_props_t *)(x))
+} cherokee_rule_url_arg_t;
 
+#define RULE_URL_ARG(x) ((cherokee_rule_url_arg_t *)(x))
 
-/* Library init function
- */
-void  PLUGIN_INIT_NAME(phpcgi)     (cherokee_plugin_loader_t *loader);
+ret_t cherokee_rule_url_arg_new (cherokee_rule_url_arg_t **rule);
 
-ret_t cherokee_handler_phpcgi_new  (cherokee_handler_t **hdl, void *cnt, cherokee_module_props_t *props);
-ret_t cherokee_handler_phpcgi_init (cherokee_handler_t  *hdl);
+CHEROKEE_END_DECLS
 
-#endif /* CHEROKEE_CONNECTION_HANDLER_PHPCGI_H */
+#endif /* CHEROKEE_RULE_URL_ARG_H */

@@ -118,7 +118,7 @@ configure (cherokee_vrule_wildcard_t   *vrule,
 
 	ret = cherokee_config_node_get (conf, "domain", &subconf);
 	if (ret != ret_ok) {
-		LOG_CRITICAL ("Virtual Server '%s' wildcard vrule needs a 'domain' entry\n", vsrv->name.buf);
+		LOG_CRITICAL (CHEROKEE_ERROR_VRULE_NO_PROPERTY, vsrv->name.buf, "domain");
 		return ret_error;
 	}
 
@@ -159,7 +159,7 @@ cherokee_vrule_wildcard_new (cherokee_vrule_t **vrule)
 	 */
 	cherokee_vrule_init_base (VRULE(n), PLUGIN_INFO_PTR(wildcard));
 
-	/* Virtual methos
+	/* Virtual methods
 	 */
 	VRULE(n)->match     = (vrule_func_match_t) match;
 	VRULE(n)->configure = (vrule_func_configure_t) configure;

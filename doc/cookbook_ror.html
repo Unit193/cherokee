@@ -17,9 +17,9 @@
 </div>
 <h2 id="_cookbook_setting_up_ruby_on_rails">Cookbook: Setting up Ruby on Rails</h2>
 <div class="sectionbody">
-<div class="paragraph"><p>Setting up a Rails application to run with Cherokee and FastCGI is not
-only easy. It is also the best possible solution to manage the load
-among one or many Rails servers. This is done by using an extremely
+<div class="paragraph"><p>Setting up a Rails application to run with Cherokee is not only
+easy. It is also the best possible solution to manage the load among
+one or many Rails servers. This is done by using an extremely
 efficient web server to manage the web part and leaving as many free
 resources as possible to Rails.</p></div>
 <h3 id="framewrok">Preparing the framework</h3><div style="clear:left"></div>
@@ -48,14 +48,16 @@ ERROR:  While executing gem ... (RuntimeError)
     gem update --system is disabled on Debian. RubyGems can be updated \
     using the official Debian repositories by aptitude or apt-get.</tt></pre>
 </div></div>
+<div class="paragraph"><p>You can also install some other gems. <tt>thin</tt>, <tt>mongrel</tt>, <tt>unicorn</tt>,
+<tt>rack</tt> and <tt>fcgi</tt> are some that you might find useful.</p></div>
 <div class="paragraph"><p>Once you are done with that, you must deploy your Rails project:</p></div>
 <div class="listingblock">
 <div class="content">
 <pre><tt>$ rails example</tt></pre>
 </div></div>
-<div class="paragraph"><p>You can do so wherever you want, but the usal recommended way of doing
+<div class="paragraph"><p>You can do so wherever you want, but the usual recommended way of doing
 this is by deploying it outside of your web root path and then
-creating a symbolic link. This is simply to protect from exposure all
+creating a symbolic link. This is simply to protect from exposing all
 the files that do not need to be in your document root.</p></div>
 <div class="paragraph"><p>Assuming you deployed the <tt>example</tt> project in <tt>/home/foo/example</tt>,
 and you have writing permissions to your web path, <tt>/var/www</tt>, simply
@@ -84,6 +86,12 @@ entries as possible. The virtual server configuration will cover the
 vast majority of the cases. Most probably it will cover your needs,
 although you are free to modify it as you will. No more configuration
 is needed after this step.</p></div>
+<div class="paragraph"><p>It is usually best to proxy one or several of the servers used by
+Rails, be it Thin, Mongrel, Unicorn or whatever it can handle.
+You could also choose the FastCGI alternative if there is a suitable
+spawning method in your system. This approach, however, has been known
+to give inconsistent on several releases of Rails. Test it out and
+choose the method that best suits your need.</p></div>
 <div class="paragraph"><p>If you decide to ignore the configuration wizard you can set up
 everything by hand. Although it is not complicated, this method is not
 recommended.</p></div>

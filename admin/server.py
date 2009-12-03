@@ -30,6 +30,7 @@ from PageNewConfig import *
 from PageAjaxUpdate import *
 from PageInfoSource import *
 from CherokeeManagement import *
+from config_version import *
 
 # Constants
 #
@@ -55,6 +56,7 @@ class Handler(pyscgi.SCGIHandler):
         status  = "200 OK"
         uri     = self.env['REQUEST_URI']
 
+        # Translation
         if (not SELECTED_LANGUAGE and
             self.env.has_key('HTTP_ACCEPT_LANGUAGE')):
             try:
@@ -133,7 +135,7 @@ class Handler(pyscgi.SCGIHandler):
             manager = cherokee_management_get (cfg)
             error = manager.launch()
             if error:
-                page = PageError (cfg, PageError.COULDNT_LAUNCH, error=error)
+                page = PageError_LaunchFail (cfg, error)
             else:
                 body = "/"
         elif uri.startswith('/stop'):
@@ -234,6 +236,10 @@ def main():
     global cfg
     cfg = Config(cfg_file)
 
+    # Update the configuration file if needed
+    config_version_update_cfg (cfg)
+
+    # Let the user know what is going on
     version = VERSION
     pid     = os.getpid()
 

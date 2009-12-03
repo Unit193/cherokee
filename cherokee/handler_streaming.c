@@ -169,13 +169,13 @@ cherokee_handler_streaming_new (cherokee_handler_t      **hdl,
 
 static ret_t
 parse_time_start (cherokee_handler_streaming_t *hdl,
-		  const char                   *value)
+		  cherokee_buffer_t            *value)
 {
 	float                  start;
 	char                  *end    = NULL;
 	cherokee_connection_t *conn   = HANDLER_CONN(hdl);
 
-	start = strtof (value, &end);
+	start = strtof (value->buf, &end);
 	if (*end != '\0') {
 		goto error;
 	}
@@ -196,13 +196,13 @@ error:
 
 static ret_t
 parse_offset_start (cherokee_handler_streaming_t *hdl,
-		    const char                   *value)
+		    cherokee_buffer_t            *value)
 {
 	long                   start;
 	char                  *end    = NULL;
 	cherokee_connection_t *conn   = HANDLER_CONN(hdl);
 
-	start = strtol (value, &end, 10);
+	start = strtol (value->buf, &end, 10);
 	if (*end != '\0') {
 		goto error;
 	}
@@ -403,21 +403,21 @@ set_auto_rate (cherokee_handler_streaming_t *hdl)
 static ret_t
 seek_mp3 (cherokee_handler_streaming_t *hdl)
 {
-	TRACE(ENTRIES, "%s: No FFMped support\n", "Seek MP3");
+	TRACE(ENTRIES, "%s: No FFMpeg support\n", "Seek MP3");
 	return ret_error;
 }
 
 static ret_t
 open_media_file (cherokee_handler_streaming_t *hdl)
 {
-	TRACE(ENTRIES, "%s: No FFMped support\n", "Open Media");
+	TRACE(ENTRIES, "%s: No FFMpeg support\n", "Open Media");
 	return ret_error;
 }
 
 static ret_t
 set_auto_rate (cherokee_handler_streaming_t *hdl)
 {
-	TRACE(ENTRIES, "%s: No FFMped support\n", "Auto Rate");
+	TRACE(ENTRIES, "%s: No FFMpeg support\n", "Auto Rate");
 	return ret_error;
 }
 #endif
@@ -427,7 +427,7 @@ ret_t
 cherokee_handler_streaming_init (cherokee_handler_streaming_t *hdl)
 {
 	ret_t                               ret;
-	void                               *value;
+	cherokee_buffer_t                  *value;
 	cherokee_boolean_t                  is_flv = false;
 	cherokee_boolean_t                  is_mp3 = false;
 	cherokee_buffer_t                  *mime   = NULL;
@@ -463,17 +463,17 @@ cherokee_handler_streaming_init (cherokee_handler_streaming_t *hdl)
 	 */
 	ret = cherokee_connection_parse_args (conn);
 	if (ret == ret_ok) {
-		ret = cherokee_avl_get_ptr (conn->arguments, "start", &value);
+		ret = cherokee_avl_get_ptr (conn->arguments, "start", (void **) &value);
 		if (ret == ret_ok) {
 			/* Set the starting point
 			 */
 			if (is_flv) {
-				ret = parse_offset_start (hdl, (const char *)value);
+				ret = parse_offset_start (hdl, value);
 				if (ret != ret_ok)
 					return ret_error;
 
 			} else if (is_mp3) {
-				ret = parse_time_start (hdl, (const char *)value);
+				ret = parse_time_start (hdl, value);
 				if (ret != ret_ok)
 					return ret_error;
 			}

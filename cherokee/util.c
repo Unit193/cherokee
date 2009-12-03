@@ -830,7 +830,7 @@ cherokee_fd_set_nodelay (int fd, cherokee_boolean_t enable)
 #else
  	flags = fcntl (fd, F_GETFL, 0);
 	if (unlikely (flags == -1)) {
-		LOG_ERRNO (errno, cherokee_err_error, "fcntl/F_GETFL fd %d: ${errno}\n", fd);
+		LOG_ERRNO (errno, cherokee_err_error, CHEROKEE_ERROR_UTIL_F_GETFL, fd);
 		return ret_error;
 	}
 
@@ -842,7 +842,7 @@ cherokee_fd_set_nodelay (int fd, cherokee_boolean_t enable)
 	re = fcntl (fd, F_SETFL, flags);
 #endif	
 	if (unlikely (re < 0)) {
-		LOG_ERRNO (errno, cherokee_err_error, "Setting O_NDELAY to fd %d: ${errno}\n", fd);
+		LOG_ERRNO (errno, cherokee_err_error, CHEROKEE_ERROR_UTIL_F_SETFL, fd, flags, "O_NDELAY");
 		return ret_error;
 	}
 
@@ -860,7 +860,7 @@ cherokee_fd_set_nonblocking (int fd, cherokee_boolean_t enable)
 #else	
 	flags = fcntl (fd, F_GETFL, 0);
 	if (flags < 0) {
-		LOG_ERRNO (errno, cherokee_err_error, "fcntl/F_GETFL fd %d: ${errno}\n", fd);
+		LOG_ERRNO (errno, cherokee_err_error, CHEROKEE_ERROR_UTIL_F_GETFL, fd);
 		return ret_error;
 	}
 
@@ -872,7 +872,7 @@ cherokee_fd_set_nonblocking (int fd, cherokee_boolean_t enable)
 	re = fcntl (fd, F_SETFL, flags);
 #endif
 	if (re < 0) {
-		LOG_ERRNO (errno, cherokee_err_error, "Setting O_NONBLOCK to fd %d: ${errno}\n", fd);
+		LOG_ERRNO (errno, cherokee_err_error, CHEROKEE_ERROR_UTIL_F_SETFL, fd, flags, "O_NONBLOCK");
 		return ret_error;
 	}
 
@@ -883,12 +883,21 @@ cherokee_fd_set_nonblocking (int fd, cherokee_boolean_t enable)
 ret_t 
 cherokee_fd_set_closexec (int fd)
 {
-#ifndef _WIN32
 	int re;
+	int flags = 0;
 
-	re = fcntl (fd, F_SETFD, FD_CLOEXEC);
+#ifndef _WIN32
+	flags = fcntl (fd, F_GETFD, 0);
+	if (flags < 0) {
+		LOG_ERRNO (errno, cherokee_err_error, CHEROKEE_ERROR_UTIL_F_GETFD, fd);
+		return ret_error;
+	}
+
+	BIT_SET (flags, FD_CLOEXEC);
+
+	re = fcntl (fd, F_SETFD, flags);
 	if (re < 0) {
-		LOG_ERRNO (errno, cherokee_err_error, "Setting FD_CLOEXEC to fd %d: ${errno}\n", fd);
+		LOG_ERRNO (errno, cherokee_err_error, CHEROKEE_ERROR_UTIL_F_SETFD, fd, flags, "FD_CLOEXEC");
 		return ret_error;
 	}
 #endif
@@ -1046,16 +1055,18 @@ cherokee_get_timezone_ref (void)
 ret_t 
 cherokee_parse_query_string (cherokee_buffer_t *qstring, cherokee_avl_t *arguments)
 {
- 	char *string;
-	char *token; 
+	ret_t  ret;
+ 	char  *string;
+	char  *token; 
 
-	if (cherokee_buffer_is_empty (qstring))
+	if (cherokee_buffer_is_empty (qstring)) {
 		return ret_ok;
+	}
 
 	string = qstring->buf;
 
 	while ((token = (char *) strsep(&string, "&")) != NULL) {
-		char *equ, *key, *val;
+		char *equ, *val;
 
 		if (*token == '\0') {
 			*token = '&';
@@ -1063,14 +1074,21 @@ cherokee_parse_query_string (cherokee_buffer_t *qstring, cherokee_avl_t *argumen
 		}
 
 		if ((equ = strchr(token, '=')) != NULL) {
-			*equ = '\0';
+			cherokee_buffer_t *value;
 
-			key = token;
 			val = equ+1;
 
-			cherokee_avl_add_ptr (arguments, key, strdup(val));
+			ret = cherokee_buffer_new (&value);
+			if (unlikely (ret != ret_ok)) {
+				return ret;
+			}
 
+			cherokee_buffer_add (value, val, strlen(val));
+
+			*equ = '\0';
+			cherokee_avl_add_ptr (arguments, token, value);
 			*equ = '=';
+
 		} else {
 			cherokee_avl_add_ptr (arguments, token, NULL);
 		}
@@ -1348,7 +1366,7 @@ cherokee_buf_add_bogonow (cherokee_buffer_t  *buf,
 		cherokee_bogotime_try_update();
 	}
 
-	cherokee_buffer_add_va (buf, "[%02d/%02d/%d %02d:%02d:%02d.%03d]",
+	cherokee_buffer_add_va (buf, "%02d/%02d/%d %02d:%02d:%02d.%03d",
 				cherokee_bogonow_tmloc.tm_mday, 
 				cherokee_bogonow_tmloc.tm_mon + 1,
 				cherokee_bogonow_tmloc.tm_year + 1900,
@@ -1362,20 +1380,30 @@ cherokee_buf_add_bogonow (cherokee_buffer_t  *buf,
 
 ret_t
 cherokee_buf_add_backtrace (cherokee_buffer_t *buf,
-			    int                n_skip)
+			    int                n_skip,
+			    const char        *new_line,
+			    const char        *line_pre)
 {
 #if HAVE_BACKTRACE
 	void    *array[128];
 	size_t   size;
 	char   **strings;
 	size_t   i;
+	int      line_pre_len;
+	int      new_line_len;
+
+	line_pre_len = strlen (line_pre);
+	new_line_len = strlen (new_line);
 	
 	size = backtrace (array, 128);
 	strings = backtrace_symbols (array, size);
-	
+
 	for (i=n_skip; i < size; i++) {
-		cherokee_buffer_add      (buf, strings[i], strlen(strings[i]));
-		cherokee_buffer_add_char (buf, '\n');
+		if (line_pre_len > 0) {
+			cherokee_buffer_add (buf, line_pre, line_pre_len);
+		}
+		cherokee_buffer_add (buf, strings[i], strlen(strings[i]));
+		cherokee_buffer_add (buf, new_line, new_line_len);
 	}
  
 	free (strings);
@@ -1431,10 +1459,11 @@ cherokee_fix_dirpath (cherokee_buffer_t *buf)
 
 
 ret_t
-cherokee_mkdir_p (cherokee_buffer_t *path)
+cherokee_mkdir_p (cherokee_buffer_t *path, int mode)
 {
-	int   re;
-        char *p;
+	int          re;
+        char        *p;
+	struct stat  foo;
 
 	if (cherokee_buffer_is_empty (path))
 		return ret_ok;
@@ -1446,10 +1475,14 @@ cherokee_mkdir_p (cherokee_buffer_t *path)
 			break;
 
 		*p = '\0';
-		re = cherokee_mkdir (path->buf, 0700);
-		if ((re != 0) && (errno != EEXIST)) {
-			LOG_ERRNO (errno, cherokee_err_error, "Could not mkdir '%s': ${errno}\n", path->buf);
-			return ret_error;
+
+		re = stat(path->buf, &foo);
+		if (re != 0) {
+			re = cherokee_mkdir (path->buf, mode);
+			if ((re != 0) && (errno != EEXIST)) {
+				LOG_ERRNO (errno, cherokee_err_error, CHEROKEE_ERROR_UTIL_MKDIR, path->buf);
+				return ret_error;
+			}
 		}
 		*p = '/';
 		
@@ -1458,9 +1491,9 @@ cherokee_mkdir_p (cherokee_buffer_t *path)
 			return ret_ok;
 	}
 
-	re = cherokee_mkdir (path->buf, 0700);
+	re = cherokee_mkdir (path->buf, mode);
 	if ((re != 0) && (errno != EEXIST)) {
-		LOG_ERRNO (errno, cherokee_err_error, "Could not mkdir '%s': ${errno}\n", path->buf);
+		LOG_ERRNO (errno, cherokee_err_error, CHEROKEE_ERROR_UTIL_MKDIR, path->buf);
 		return ret_error;
 	}
 	
@@ -1901,4 +1934,20 @@ cherokee_find_exec_in_path (const char        *bin_name,
 
 	free (path);
 	return ret_not_found;
+}
+
+
+ret_t
+cherokee_atoi (const char *str, int *ret_value)
+{
+	int tmp;
+
+	errno = 0;
+	tmp = strtol (str, NULL, 10);
+	if (errno != 0) {
+		return ret_error;
+	}
+	
+	*ret_value = tmp;
+	return ret_ok;
 }

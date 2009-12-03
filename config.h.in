@@ -349,6 +349,9 @@
 /* Have select */
 #undef HAVE_SELECT
 
+/* Define if sys/sem.h defines struct semun */
+#undef HAVE_SEMUN
+
 /* Whether sendfile() is available */
 #undef HAVE_SENDFILE
 
@@ -400,13 +403,13 @@
 /* Define to 1 if you have the `strsep' function. */
 #undef HAVE_STRSEP
 
-/* Define to 1 if `struct stat' is a member of `st_rdev'. */
+/* Define to 1 if `st_rdev' is a member of `struct stat'. */
 #undef HAVE_STRUCT_STAT_ST_RDEV
 
 /* gmtoff in struct tm */
 #undef HAVE_STRUCT_TM_GMTOFF
 
-/* Define to 1 if `struct tm' is a member of `tm_zone'. */
+/* Define to 1 if `tm_zone' is a member of `struct tm'. */
 #undef HAVE_STRUCT_TM_TM_ZONE
 
 /* Define to 1 if your `struct stat' has `st_rdev'. Deprecated, use
@@ -450,6 +453,9 @@
 
 /* Define to 1 if you have the <sys/ofcntl.h> header file. */
 #undef HAVE_SYS_OFCNTL_H
+
+/* Define to 1 if you have the <sys/param.h> header file. */
+#undef HAVE_SYS_PARAM_H
 
 /* Define to 1 if you have the <sys/poll.h> header file. */
 #undef HAVE_SYS_POLL_H

@@ -31,6 +31,7 @@
 #include "handler.h"
 #include "list.h"
 #include "connection.h"
+#include "xrealip.h"
 
 #define SUPPORT_XSENDFILE
 
@@ -75,15 +76,12 @@ struct cherokee_handler_cgi_base {
 	 */
 	cherokee_handler_cgi_base_phase_t  init_phase;	
 	cuint_t                            got_eof;
-	char                              *extra_param;
 
 	size_t                             content_length;
 
 	cherokee_buffer_t                  xsendfile;
 	void                              *file_handler;
 
-	cherokee_buffer_t                  param; 
-	cherokee_buffer_t                  param_extra;
 	cherokee_buffer_t                  executable;
 	cherokee_buffer_t                  data; 
 
@@ -107,6 +105,7 @@ typedef struct {
 	cherokee_boolean_t                 allow_xsendfile;
 	cherokee_boolean_t                 is_error_handler;
 	cherokee_boolean_t                 pass_req_headers;
+	cherokee_x_real_ip_t               x_real_ip;
 } cherokee_handler_cgi_base_props_t;
 
 #define PROP_CGI_BASE(x)               ((cherokee_handler_cgi_base_props_t *)(x))
@@ -127,7 +126,6 @@ ret_t cherokee_handler_cgi_base_free            (cherokee_handler_cgi_base_t *hd
 ret_t cherokee_handler_cgi_base_add_headers     (cherokee_handler_cgi_base_t *cgi, cherokee_buffer_t *buffer);
 ret_t cherokee_handler_cgi_base_step            (cherokee_handler_cgi_base_t *cgi, cherokee_buffer_t *buffer);
 
-void  cherokee_handler_cgi_base_add_parameter   (cherokee_handler_cgi_base_t *cgi, char *name, cuint_t len);
 ret_t cherokee_handler_cgi_base_extract_path    (cherokee_handler_cgi_base_t *cgi, cherokee_boolean_t check_filename);
 ret_t cherokee_handler_cgi_base_split_pathinfo  (cherokee_handler_cgi_base_t *cgi, 
 					  	 cherokee_buffer_t           *buf, 

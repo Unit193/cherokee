@@ -66,8 +66,8 @@ configure (cherokee_rule_extensions_t *rule,
 
 	ret = cherokee_config_node_read (conf, "extensions", &tmp);
 	if (ret != ret_ok) {
-		LOG_CRITICAL ("Rule prio=%d needs an 'extensions' property\n",
-			      RULE(rule)->priority);
+		LOG_CRITICAL (CHEROKEE_ERROR_RULE_NO_PROPERTY,
+			      RULE(rule)->priority, "extensions");
 		return ret_error;
 	}
 
@@ -177,7 +177,7 @@ cherokee_rule_extensions_new (cherokee_rule_extensions_t **rule)
 	 */
 	cherokee_rule_init_base (RULE(n), PLUGIN_INFO_PTR(extensions));
 
-	/* Virtual methos
+	/* Virtual methods
 	 */
 	RULE(n)->match     = (rule_func_match_t) match;
 	RULE(n)->configure = (rule_func_configure_t) configure;

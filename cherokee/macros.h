@@ -273,6 +273,9 @@
 #define CHEROKEE_ADD_FUNC_FREE(klass)  \
 	ret_t                                                         \
 	cherokee_ ## klass ## _free (cherokee_ ## klass ## _t *obj) { \
+		if (obj == NULL)				      \
+			return ret_ok;				      \
+								      \
 		cherokee_ ## klass ## _mrproper (obj);                \
 		                                                      \
 		free (obj);                                           \
@@ -282,7 +285,7 @@
 
 /* Printing macros
  */
-#ifdef __GNUC__
+#if defined(__GNUC__) || ( defined(__SUNPRO_C) && __SUNPRO_C > 0x590 )
 # define PRINT_MSG(fmt,arg...)    fprintf(stderr, fmt, ##arg)
 # define PRINT_ERROR(fmt,arg...)  fprintf(stderr, "%s:%d - "fmt, __FILE__, __LINE__, ##arg)
 #else
@@ -395,9 +398,9 @@
 #define CHEROKEE_PRINT_BACKTRACE				\
 	do {							\
 		cherokee_buffer_t tmp = CHEROKEE_BUF_INIT;	\
-		cherokee_buf_add_backtrace (&tmp, 0);		\
+		cherokee_buf_add_backtrace (&tmp, 0, "\n", "");	\
 		PRINT_MSG ("%s", tmp.buf);			\
 		cherokee_buffer_mrproper (&tmp);		\
-	} while (0);
+	} while (0)
 
 #endif /* CHEROKEE_MACROS_H */

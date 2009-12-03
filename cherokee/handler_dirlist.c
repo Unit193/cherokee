@@ -304,7 +304,7 @@ cherokee_handler_dirlist_configure (cherokee_config_node_t *conf, cherokee_serve
 	
 	ret = load_theme (&theme_path, props);
 	if (ret != ret_ok) {
-		LOG_ERROR ("Couldn't load theme '%s': %s\n", theme, theme_path.buf);
+		LOG_ERROR (CHEROKEE_ERROR_HANDLER_DIRLIST_THEME, theme, theme_path.buf);
 	}
 	cherokee_buffer_mrproper (&theme_path);
 	return ret;
@@ -444,8 +444,8 @@ generate_file_entry (cherokee_handler_dirlist_t *dhdl, DIR *dir, cherokee_buffer
 ret_t
 cherokee_handler_dirlist_new  (cherokee_handler_t **hdl, void *cnt, cherokee_module_props_t *props)
 {	
-	ret_t  ret;
-	char  *value;
+	ret_t              ret;
+	cherokee_buffer_t *value;
 	CHEROKEE_NEW_STRUCT (n, handler_dirlist);
 	
 	TRACE_CONN(cnt);
@@ -491,12 +491,12 @@ cherokee_handler_dirlist_new  (cherokee_handler_t **hdl, void *cnt, cherokee_mod
 
 	ret = cherokee_avl_get_ptr (HANDLER_CONN(n)->arguments, "order", (void **) &value);
 	if (ret == ret_ok) {
-		if      (value[0] == 'N') n->sort = Name_Up;
-		else if (value[0] == 'n') n->sort = Name_Down;
-		else if (value[0] == 'D') n->sort = Date_Up;
-		else if (value[0] == 'd') n->sort = Date_Down;
-		else if (value[0] == 'S') n->sort = Size_Up;
-		else if (value[0] == 's') n->sort = Size_Down;
+		if      (value->buf[0] == 'N') n->sort = Name_Up;
+		else if (value->buf[0] == 'n') n->sort = Name_Down;
+		else if (value->buf[0] == 'D') n->sort = Date_Up;
+		else if (value->buf[0] == 'd') n->sort = Date_Down;
+		else if (value->buf[0] == 'S') n->sort = Size_Up;
+		else if (value->buf[0] == 's') n->sort = Size_Down;
 	}
 
 	/* Properties
@@ -508,8 +508,9 @@ cherokee_handler_dirlist_new  (cherokee_handler_t **hdl, void *cnt, cherokee_mod
 	 */
 	if (cherokee_buffer_is_empty (&HDL_DIRLIST_PROP(n)->entry)  ||
 	    cherokee_buffer_is_empty (&HDL_DIRLIST_PROP(n)->header) ||
-	    cherokee_buffer_is_empty (&HDL_DIRLIST_PROP(n)->footer)) {
-		LOG_CRITICAL_S ("The theme is incomplete\n");
+	    cherokee_buffer_is_empty (&HDL_DIRLIST_PROP(n)->footer))
+	{
+		LOG_CRITICAL_S (CHEROKEE_ERROR_HANDLER_DIRLIST_BAD_THEME);
 		return ret_error;
 	}
 

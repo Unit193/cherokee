@@ -34,6 +34,11 @@ You will need to complete a regular
 </li>
 <li>
 <p>
+Add the produced binary into your PATH under the name "uwsgi"
+</p>
+</li>
+<li>
+<p>
 Adapt your application to work with uWSGI.
 </p>
 </li>
@@ -58,7 +63,7 @@ create 2 configuration files on your django project directory.</p></div>
 <pre><tt>import os
 import django.core.handlers.wsgi
 
-os.environ['DJANGO_SETTINGS_MODULE'] = 'project.settings'
+os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
 application = django.core.handlers.wsgi.WSGIHandler()</tt></pre>
 </div></div>
 <h3 id="_uwsgi">uWSGI</h3><div style="clear:left"></div>
@@ -66,14 +71,41 @@ application = django.core.handlers.wsgi.WSGIHandler()</tt></pre>
 <div class="title">uwsgi.xml</div>
 <div class="content">
 <pre><tt>&lt;uwsgi&gt;
+    &lt;pythonpath&gt;/var/www/example/&lt;/pythonpath&gt;
+    &lt;pythonpath&gt;/var/www/&lt;/pythonpath&gt;
     &lt;app mountpoint="/"&gt;
-        &lt;script&gt;project.django_wsgi&lt;/script&gt;
+        &lt;script&gt;django_wsgi&lt;/script&gt;
     &lt;/app&gt;
 &lt;/uwsgi&gt;</tt></pre>
 </div></div>
-<h3 id="_cheroekee">Cheroekee</h3><div style="clear:left"></div>
+<div class="paragraph"><p>Since it is unlikely you&#8217;ll have the Django project on your system
+path, it should be reflected on the <em>pytonpath</em> line. In this example,
+it would be under <em>/var/www/example/</em></p></div>
+<h3 id="_cherokee">Cherokee</h3><div style="clear:left"></div>
 <div class="paragraph"><p>The wizard will look for the uWSGI server, find out the mountpoint and
 configure the web server accordingly. Nothing more to do.</p></div>
+<h3 id="_troubleshooting">Troubleshooting</h3><div style="clear:left"></div>
+<div class="paragraph"><p>This should work out of the box, but in case it doesn&#8217;t you might need
+some pointers to determine what is going wrong exactly.</p></div>
+<div class="paragraph"><p>You should check both your error and access log files, and it comes in
+very handy to execute uWSGI by hand when running your tests. This will
+give all the help you need in the form of backtraces.</p></div>
+<div class="paragraph"><p>The simplest way to do so is looking into the <tt>Information Sources</tt>
+section in <tt>Cherokee-Admin</tt>, exploring the one created by the uWSGI
+wizard, and running that command by hand.</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>/usr/local/bin/uwsgi -s /tmp/cherokee-source1.sock -C -x /&lt;path to my django project&gt;/uwsgi.conf</tt></pre>
+</div></div>
+<div class="paragraph"><p>Make sure to kill other instances running in the background.</p></div>
+<div class="paragraph"><p>Another thing to keep in mind is that sometimes you might modify
+Python sources and not see the changes reflected on the server. In
+those cases simply restart <tt>Cherokee</tt> through <tt>Cherokee-Admin</tt> or
+simply by sending the SIGHUP signal.</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt># killall -SIGHUP cherokee</tt></pre>
+</div></div>
 </div>
 <div id="footer">
 <div id="footer-text">

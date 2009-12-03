@@ -287,7 +287,7 @@ configured.py.pre
 @INSTALL_ADMIN_TRUE@gen_data = $(PY_PRE:.py.pre=.py)
 generateddir = "$(datadir)/cherokee/admin"
 generated_DATA = $(gen_data)
-@INSTALL_ADMIN_TRUE@admin_scripts = server.py
+@INSTALL_ADMIN_TRUE@admin_scripts = server.py upgrade_config.py
 adminpydir = "$(datadir)/cherokee/admin"
 adminpy_SCRIPTS = $(admin_scripts)
 @INSTALL_ADMIN_TRUE@admin_data = \
@@ -361,7 +361,9 @@ adminpy_SCRIPTS = $(admin_scripts)
 @INSTALL_ADMIN_TRUE@ModuleTargetIp.py \
 @INSTALL_ADMIN_TRUE@ModuleEvhost.py \
 @INSTALL_ADMIN_TRUE@ModuleRrd.py \
+@INSTALL_ADMIN_TRUE@ModuleUrlarg.py \
 @INSTALL_ADMIN_TRUE@config.py \
+@INSTALL_ADMIN_TRUE@config_version.py \
 @INSTALL_ADMIN_TRUE@pyscgi.py \
 @INSTALL_ADMIN_TRUE@validations.py \
 @INSTALL_ADMIN_TRUE@CherokeeManagement.py \
@@ -394,7 +396,8 @@ adminpy_SCRIPTS = $(admin_scripts)
 @INSTALL_ADMIN_TRUE@Wizard_Glassfish.py \
 @INSTALL_ADMIN_TRUE@Wizard_uWSGI.py \
 @INSTALL_ADMIN_TRUE@Wizard_Mono.py \
-@INSTALL_ADMIN_TRUE@Wizard_ColdFusion.py
+@INSTALL_ADMIN_TRUE@Wizard_ColdFusion.py \
+@INSTALL_ADMIN_TRUE@Wizard_Concrete5.py
 
 adminpy_DATA = $(admin_data)
 @INSTALL_ADMIN_TRUE@template_data = \

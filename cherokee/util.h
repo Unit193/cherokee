@@ -129,10 +129,13 @@ int     cherokee_string_is_ipv6     (cherokee_buffer_t *ip);
 ret_t   cherokee_buf_add_bogonow    (cherokee_buffer_t *buf,
 				     cherokee_boolean_t update);
 
-ret_t   cherokee_buf_add_backtrace  (cherokee_buffer_t *buf, int n_skip);
+ret_t   cherokee_buf_add_backtrace  (cherokee_buffer_t *buf, int n_skip, const char *new_line, const char *line_pre);
 
 ret_t   cherokee_find_exec_in_path  (const char        *bin_name,
 				     cherokee_buffer_t *fullpath);
+
+ret_t   cherokee_atoi               (const char        *str,
+				     int               *ret_value);
 
 /* Time management functions
  */
@@ -149,7 +152,7 @@ ret_t cherokee_syslog        (int priority, cherokee_buffer_t *buf);
 ret_t cherokee_getpwnam      (const char *name, struct passwd *pwbuf, char *buf, size_t buflen);
 ret_t cherokee_getgrnam      (const char *name, struct group *pwbuf, char *buf, size_t buflen);
 ret_t cherokee_mkstemp       (cherokee_buffer_t *buffer, int *fd);
-ret_t cherokee_mkdir_p       (cherokee_buffer_t *path);
+ret_t cherokee_mkdir_p       (cherokee_buffer_t *path, int mode);
 ret_t cherokee_ntop          (int family, struct sockaddr *addr, char *dst, size_t cnt);
 
 ret_t cherokee_io_stat       (cherokee_iocache_t        *iocache, 

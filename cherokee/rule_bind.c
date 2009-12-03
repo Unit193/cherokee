@@ -67,8 +67,7 @@ configure (cherokee_rule_bind_t      *rule,
 
 	ret = cherokee_config_node_get (conf, "bind", &subconf);
 	if (ret != ret_ok) {
-		LOG_CRITICAL ("Rule prio=%d needs an 'bind' property\n",
-			      RULE(rule)->priority);
+		LOG_CRITICAL (CHEROKEE_ERROR_RULE_NO_PROPERTY, RULE(rule)->priority, "bind");
 		return ret_error;
 	} 
 	
@@ -77,10 +76,10 @@ configure (cherokee_rule_bind_t      *rule,
 		cherokee_list_t        *bind_obj;
 		cherokee_config_node_t *subconf2 = CONFIG_NODE(i);
 
-		bind_n = atoi(subconf2->val.buf);
-		if (bind_n <= 0) {
-			LOG_CRITICAL ("Rule prio=%d type='bind', invalid port=%d\n", 
-				      RULE(rule)->priority, bind_n);
+		ret = cherokee_atoi (subconf2->val.buf, &bind_n);
+		if (ret != ret_ok) {
+			LOG_CRITICAL (CHEROKEE_ERROR_RULE_BIND_PORT, 
+				      RULE(rule)->priority, subconf2->val.buf);
 			return ret_error;
 		}
 
@@ -120,7 +119,7 @@ cherokee_rule_bind_new (cherokee_rule_bind_t **rule)
 	 */
 	cherokee_rule_init_base (RULE(n), PLUGIN_INFO_PTR(bind));
 	
-	/* Virtual methos
+	/* Virtual methods
 	 */
 	RULE(n)->match     = (rule_func_match_t) match;
 	RULE(n)->configure = (rule_func_configure_t) configure;

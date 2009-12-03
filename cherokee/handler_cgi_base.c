@@ -61,8 +61,6 @@ cherokee_handler_cgi_base_init (cherokee_handler_cgi_base_t              *cgi,
 
 	cherokee_buffer_init (&cgi->xsendfile);
 	cherokee_buffer_init (&cgi->executable);
-	cherokee_buffer_init (&cgi->param);
-	cherokee_buffer_init (&cgi->param_extra);
 
 	cherokee_buffer_init (&cgi->data);
 	cherokee_buffer_ensure_size (&cgi->data, 2*1024);
@@ -123,6 +121,7 @@ cherokee_handler_cgi_base_props_free (cherokee_handler_cgi_base_props_t *props)
 	cherokee_list_t *i, *tmp;
 
 	cherokee_buffer_mrproper (&props->script_alias);
+	cherokee_x_real_ip_mrproper (&props->x_real_ip);
 
 	list_for_each_safe (i, tmp, &props->system_env) {
 		env_item_free (i);
@@ -155,6 +154,7 @@ cherokee_handler_cgi_base_configure (cherokee_config_node_t *conf, cherokee_serv
 
 	INIT_LIST_HEAD (&props->system_env);
 	cherokee_buffer_init (&props->script_alias);
+	cherokee_x_real_ip_init (&props->x_real_ip);
 
 	props->is_error_handler = true;
 	props->change_user      = false;
@@ -200,6 +200,11 @@ cherokee_handler_cgi_base_configure (cherokee_config_node_t *conf, cherokee_serv
 		}
 	}
 
+	ret = cherokee_x_real_ip_configure (&props->x_real_ip, conf);
+	if (ret != ret_ok) {
+		return ret_error;
+	}
+
 	return ret_ok;
 }
 
@@ -207,25 +212,15 @@ cherokee_handler_cgi_base_configure (cherokee_config_node_t *conf, cherokee_serv
 ret_t 
 cherokee_handler_cgi_base_free (cherokee_handler_cgi_base_t *cgi)
 {
-	if (cgi->file_handler)
+	if (cgi->file_handler) {
 		cherokee_handler_free (cgi->file_handler);
+	}
 
 	cherokee_buffer_mrproper (&cgi->data);
 	cherokee_buffer_mrproper (&cgi->executable);
 	cherokee_buffer_mrproper (&cgi->xsendfile);
 
-	cherokee_buffer_mrproper (&cgi->param);
-	cherokee_buffer_mrproper (&cgi->param_extra);
-
 	return ret_ok;
-}
-
-
-void  
-cherokee_handler_cgi_base_add_parameter (cherokee_handler_cgi_base_t *cgi, char *param, cuint_t param_len)
-{
-	cherokee_buffer_clean (&cgi->param_extra);
-	cherokee_buffer_add (&cgi->param_extra, param, param_len);
 }
 
 
@@ -252,11 +247,13 @@ cherokee_handler_cgi_base_build_basic_env (
 	cherokee_connection_t                    *conn,
 	cherokee_buffer_t                        *tmp)
 {
-	int              re;
-	ret_t            ret;
-	char            *p;
-	cuint_t          p_len;
-	cherokee_bind_t *bind = CONN_BIND(HANDLER_CONN(cgi));
+	int                                re;
+	ret_t                              ret;
+	char                              *p;
+	cuint_t                            p_len;
+	cherokee_boolean_t                 remote_addr_set;
+	cherokee_bind_t                   *bind      = CONN_BIND(HANDLER_CONN(cgi));
+	cherokee_handler_cgi_base_props_t *cgi_props = HANDLER_CGI_BASE_PROPS(cgi); 
 
 	char remote_ip[CHE_INET_ADDRSTRLEN+1];
 	CHEROKEE_TEMP(temp, 32);
@@ -277,17 +274,60 @@ cherokee_handler_cgi_base_build_basic_env (
 		 CONN_VSRV(conn)->root.buf,
 		 CONN_VSRV(conn)->root.len);
 
-	/* The IP address of the client sending the request to the
-	 * server. This is not necessarily that of the user agent (such
-	 * as if the request came through a proxy).
+	/* REMOTE_(ADDR/PORT): X-Real-IP
 	 */
-	memset (remote_ip, 0, sizeof(remote_ip));
-	cherokee_socket_ntop (&conn->socket, remote_ip, sizeof(remote_ip)-1);
-	set_env (cgi, "REMOTE_ADDR", remote_ip, strlen(remote_ip));
+	remote_addr_set = false;
 
-	re = snprintf (temp, temp_size, "%d", SOCKET_SIN_PORT(&conn->socket));
-	if (re > 0) {
-		set_env (cgi, "REMOTE_PORT", temp, re);
+	if (cgi_props->x_real_ip.enabled)
+	{
+		/* The request has a X-REAL-IP entry */
+		ret = cherokee_header_get_known (&conn->header, header_x_real_ip, &p, &p_len);
+		if (ret == ret_ok)
+		{
+			/* The remote host is allowed to send it */
+			ret = cherokee_x_real_ip_is_allowed (&cgi_props->x_real_ip, &conn->socket);
+			if (ret == ret_ok) {
+				cuint_t     i;
+				const char *port_end = NULL;
+				const char *colon    = NULL;
+				
+				for (i=0; i < p_len; i++) {
+					if (p[i] == ':') {
+						colon = &p[i];
+						break;
+					}
+				}
+							
+				if (colon != NULL) {
+					port_end = colon + 1;
+					while ((*port_end >= '0') && (*port_end <= '9')) {
+						port_end++;
+					}
+
+					set_env (cgi, "REMOTE_ADDR", p, colon - p);
+					set_env (cgi, "REMOTE_PORT", colon+1, (port_end-2) - colon+1);
+				} else {
+					set_env (cgi, "REMOTE_ADDR", p, p_len);
+				}
+				
+				remote_addr_set = true;
+			}
+		}
+	} 
+
+	/* REMOTE_(ADDR/PORT): socket origin
+	 */
+	if (! remote_addr_set) {
+		/* REMOTE_ADDR */
+		memset (remote_ip, 0, sizeof(remote_ip));
+		cherokee_socket_ntop (&conn->socket, remote_ip, sizeof(remote_ip)-1);
+		set_env (cgi, "REMOTE_ADDR", remote_ip, strlen(remote_ip));
+
+		/* REMOTE_PORT */
+		re = snprintf (temp, temp_size, "%d", SOCKET_SIN_PORT(&conn->socket));
+		if (re > 0) {
+			set_env (cgi, "REMOTE_PORT", temp, re);
+		}
 	}
 
 	/* HTTP_HOST and SERVER_NAME. The difference between them is that
@@ -309,7 +349,7 @@ cherokee_handler_cgi_base_build_basic_env (
 		if (ret == ret_ok) {
 			set_env (cgi, "SERVER_NAME", tmp->buf, tmp->len);
 		} else {
-			LOG_WARNING_S ("Error getting host name.\n");
+			LOG_WARNING_S (CHEROKEE_ERROR_HANDLER_CGI_GET_HOSTNAME);
 		}
 	}
 
@@ -651,11 +691,9 @@ cherokee_handler_cgi_base_build_envp (cherokee_handler_cgi_base_t *cgi, cherokee
 		 */
 		cherokee_buffer_clean (&tmp);
 		if (cherokee_buffer_is_empty (&cgi_props->script_alias)) {
-			if (cgi->param.len > 0) {
-				name = &cgi->param;      /* phpcgi */
-			} else {
-				name = &cgi->executable; /* cgi */
-			}
+			/* cgi */
+			name = &cgi->executable; 
+
 			if (conn->local_directory.len > 0){
 				p = name->buf + conn->local_directory.len;
 				len = (name->buf + name->len) - p;

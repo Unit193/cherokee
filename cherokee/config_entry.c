@@ -70,6 +70,9 @@ cherokee_config_entry_init (cherokee_config_entry_t *entry)
 	entry->limit_bps            = 0;
 	entry->no_log               = NULLB_NULL;
 
+	entry->timeout_lapse        = NULLI_NULL;
+	entry->timeout_header       = NULL;
+
 	return ret_ok;
 }
 
@@ -136,7 +139,7 @@ cherokee_config_entry_set_handler (cherokee_config_entry_t        *entry,
 	return_if_fail (plugin_info != NULL, ret_error);
 
 	if (PLUGIN_INFO(plugin_info)->type != cherokee_handler) {
-		LOG_ERROR ("Directory '%s' has not a handler module!\n", entry->document_root->buf);
+		LOG_ERROR_S (CHEROKEE_ERROR_CONFIG_ENTRY_BAD_TYPE);
 		return ret_error;
 	}
 
@@ -203,6 +206,12 @@ cherokee_config_entry_complete (cherokee_config_entry_t *entry, cherokee_config_
 		entry->no_log = source->no_log;
 	}
 
+	if (NULLI_IS_NULL(entry->timeout_lapse) && (source->timeout_lapse != NULL))
+	{
+		entry->timeout_lapse  = source->timeout_lapse;
+		entry->timeout_header = source->timeout_header;
+	}
+
 	return ret_ok;
 }
 
@@ -226,5 +235,11 @@ cherokee_config_entry_print (cherokee_config_entry_t *entry)
 	printf ("limit bps:                 %d\n", entry->limit_bps);
 	printf ("no_log:                    %s\n", NULLB_TO_STR(entry->no_log));
 
+	if (NULLI_IS_NULL(entry->timeout_lapse)) {
+		printf ("timeout custom:          	  no\n");
+	} else {
+		printf ("timeout custom:          	  %d\n", entry->timeout_lapse);
+	}
+	
 	return ret_ok;
 }
