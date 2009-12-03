@@ -182,6 +182,10 @@ EOF
             migrate_conf_versions 0.99 0.9910 0999to09910.py
         fi
 
+	# Finally, starting 0.99.31, there is just a generic migrator
+	# able to do it all. We will deprecate older migrators soon.
+	/usr/share/cherokee/admin/upgrade_config.py $CONFPATH/cherokee.conf
+
 	;;
     abort-upgrade)
 	;;
