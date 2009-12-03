@@ -43,7 +43,7 @@ e('RRD_WRITE',
   desc  = SYSTEM_ISSUE)
 
 e('RRD_MKDIR_WRITE',
-  title = "Cannot write in the '%s' directory",
+  title = "Cannot create the '%s' directory",
   desc  = SYSTEM_ISSUE)
 
 

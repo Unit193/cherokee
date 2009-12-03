@@ -2,7 +2,7 @@
 # Copyright (C) 2001-2007 Alvaro Lopez Ortega
 
 Name:           cherokee
-Version:        0.99.30
+Version:        0.99.31
 Release:        1
 License:        GPL
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
@@ -14,10 +14,12 @@ Group:          Productivity/Networking/Web/Servers
 URL:            http://www.cherokee-project.com
 
 %description
-Cherokee is a very fast, flexible and easy to configure Web Server.
-It supports the widespread technologies nowadays: FastCGI, SCGI, PHP,
-CGI, TLS and SSL encrypted connections, Virtual hosts, Authentication,
-on the fly encoding, Apache compatible log files, and much more.
+Cherokee is a very fast, flexible and easy to configure Web Server. It
+supports the widespread technologies nowadays: FastCGI, SCGI, PHP,
+CGI, uWSGI, SSI, TLS and SSL encrypted connections, Virtual hosts,
+Authentication, on the fly encoding, Load Balancing, Apache compatible
+log files, Data Base Balancing, Reverse HTTP Proxy, Traffic Shaper,
+Video Streaming and much more.
 
 %prep
 %setup -q
@@ -29,22 +31,20 @@ CFLAGS="$RPM_OPT_FLAGS"                 \
             --sysconfdir=%{_sysconfdir} \
             --mandir=%{_mandir}         \
             --sbindir=%{_sbindir}       \
-		  --with-wwwroot=/home/httpd/ \
-            --enable-pthreads
-make CFLAGS="-O0 -g3"
+		  --with-wwwroot=/home/httpd
+make CFLAGS="-O0 -ggb"
 
 %install
 make install DESTDIR=$RPM_BUILD_ROOT
-rm $RPM_BUILD_ROOT/etc/cherokee/sites-enabled/default
 
 %clean
 rm -rf $RPM_BUILD_ROOT
 
 %post
 /sbin/ldconfig
-ln -s %{_sysconfdir}/cherokee/sites-available/default \
-      %{_sysconfdir}/cherokee/sites-enabled/default
 mkdir -p /home/httpd
+mkdir -p %{_localstatedir}/log
+mkdir -p %{_localstatedir}/run
 
 %postun
 /sbin/ldconfig

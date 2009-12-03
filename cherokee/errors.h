@@ -31,7 +31,7 @@ static const cherokee_error_t __cherokee_errors[] =
   {   2, "execv failed cmd='%s': ${errno}", "The issue seems to be related to your system.", NULL, NULL },
   {   3, "Fork failed pid=%d: ${errno}", "The issue seems to be related to your system.", NULL, NULL },
   {   4, "Cannot write in %s: ${errno}", "The issue seems to be related to your system.", NULL, NULL },
-  {   5, "Cannot write in the '%s' directory", "The issue seems to be related to your system.", NULL, NULL },
+  {   5, "Cannot create the '%s' directory", "The issue seems to be related to your system.", NULL, NULL },
   {   6, "Taking source='%s' back on-line: %d active.", "The server is re-enabling one of the Information Sources.", NULL, NULL },
   {   7, "Taking source='%s' off-line. Active %d.", "The server is disabling one of the Information Sources.", NULL, NULL },
   {   8, "Sources exhausted: re-enabling one.", "All the information sources are disabled at this moment. Cherokee needs to re-enable at least one.", NULL, NULL },
