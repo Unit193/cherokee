@@ -23,16 +23,15 @@ case "$1" in
     purge)
 	echo "Purging logfiles .."
 	rm -rf /var/log/cherokee*
-	if [ -d /etc/cherokee/pre-0.6 ]
+	for OLDVER in 0.6 0.7 0.8 0.9 0.10 0.11 0.98 0.99 0.9910
+	do
+	    if [ -d /etc/cherokee/pre-$OLDVER ]
 	    then
-	    echo "Purging pre-0.6 configuration"
-	    rm -rf /etc/cherokee/pre-0.6
-	fi
-	if [ -d /etc/cherokee/pre-0.7 ]
-	    then
-	    echo "Purging pre-0.7 configuration"
-	    rm -rf /etc/cherokee/pre-0.7
-	fi
+		echo "Purging pre-$OLDVER configuration"
+		rm -rf /etc/cherokee/pre-$OLDVER
+	    fi
+	done
+	dpkg-statoverride --remove /var/log/cherokee || true
 	;;
     upgrade)
 	invoke-rc.d cherokee stop

@@ -21,8 +21,17 @@ PATH=/bin:/sbin:/usr/bin:/usr/sbin
 
 case "$1" in
     configure)
-	dpkg-statoverride --force --update --add www-data www-data 0755 /var/lib/cherokee/graphs
-	ldconfig
+	if LINE=`grep 'server!user' $CONF`; then
+	    RUNAS_USER=`echo $LINE | cut -f 2 -d =`
+	else
+	    RUNAS_USER=www-data
+	fi
+	if LINE=`grep 'server!group' $CONF`; then
+	    RUNAS_GROUP=`echo $LINE | cut -f 2 -d =`
+	else
+	    RUNAS_GROUP=www-data
+	fi
+	dpkg-statoverride --update --add $RUNAS_USER $RUNAS_GROUP 0755 /var/lib/cherokee/graphs
 	;;
     abort-upgrade|abort-remove|abort-deconfigure)
 	;;

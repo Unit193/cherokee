@@ -40,25 +40,28 @@ case "$1" in
 		fi
 	fi
 
-	# Log directory and files should be owned by the user the
-	# server runs as. Try to guess it, or fall back to www-data
+	# Log directory should be owned by the user/group the server
+	# runs as. Try to guess it, or fall back to www-data.
+	#
+	# Don't mess with individual files (which will be created by
+	# the server), only make sure it can write to the directory.
+	# Of course, the user can configure to use anything other than
+	# /var/log/cherokee for logs - But it will be up to him to
+	# ensure proper permissions. We should just avoid doing damage
+	# outside our scope.
 	if LINE=`grep 'server!user' $CONF`; then
 	    RUNAS_USER=`echo $LINE | cut -f 2 -d =`
 	else
 	    RUNAS_USER=www-data
 	fi
-	for LOGFILE in `grep vserver.*logger.*filename $CONF`; do
-	    if [ -f $LOGFILE ]; then
-		chown $RUNAS_USER $LOGFILE
-	    fi
-	    LOGDIR=`dirname $LOGFILE`
-	    # Make sure we don't affect the global log directory -
-	    # It's not our default, but some administrators might
-	    # prefer it that way. Don't change what's not ours.
-	    if [ $LOGDIR = /var/log/cherokee ]; then 
-		chown $RUNAS_USER $LOGDIR
-	    fi
-	done
+	if LINE=`grep 'server!group' $CONF`; then
+	    RUNAS_GROUP=`echo $LINE | cut -f 2 -d =`
+	else
+	    RUNAS_GROUP=www-data
+	fi
+	if [ -d /var/log/cherokee ]; then
+	    dpkg-statoverride --update --add $RUNAS_USER $RUNAS_GROUP 0755 /var/log/cherokee
+	fi
 
 	# Upgrading from versions <= 0.99.26-1 with dependency-based
 	# boot sequencing with sysv-rc would still start cherokee in
