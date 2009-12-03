@@ -19,8 +19,9 @@ PATH=/bin:/sbin:/usr/bin:/usr/sbin
 # the debian-policy package
 #
 
-DATADIR=/var/lib/cherokee/graphs/images
+DATADIR=/var/lib/cherokee/graphs
 DEFAULT_USER=www-data
+DEFAULT_GROUP=www-data
 CONFFILE=/etc/cherokee/cherokee.conf
 
 case "$1" in
@@ -32,19 +33,16 @@ case "$1" in
 	if [ -e $CONFFILE ]
 	then
 	    USER=$(grep '^server!user' $CONFFILE|sed 's/^server!user *= *//')
-	    if [ -z "$USER" ]
-	    then
-		# ... Fall back to the default if we cannot find the
-		# configured user.
-		USER=$DEFAULT_USER
-	    fi
-	else
-	    USER=$DEFAULT_USER
+	    GROUP=$(grep '^server!group' $CONFFILE|sed 's/^server!group *= *//')
 	fi
+        # ... Fall back to the defaults if we cannot find the
+        # configured user/group.
+	if [ -z "$USER" ]; then USER=$DEFAULT_USER; fi
+	if [ -z "$GROUP" ]; then GROUP=$DEFAULT_GROUP; fi
 
 	echo "Changing ownership of the RRD graph directory $DATADIR"
 	echo "Setting owner to $USER"
-	chown "$USER" "$DATADIR"
+	dpkg-statoverride --update --add --force $RUNAS_USER $RUNAS_GROUP 0755 $DATADIR
 	;;
     abort-upgrade|abort-remove|abort-deconfigure)
 	;;

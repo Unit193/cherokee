@@ -1,0 +1,24 @@
+-------------------- debian/patches/set_min_config_version --------------------
+new file mode 100644
+index 0000000..00af51a
+@@ -0,0 +1,19 @@
++# Set a minimum configuration file version, so it gets updated the
++# first time.
++#
++# This patch should be applied for next upstream version (0.99.32?)
++Index: cherokee/admin/config_version.py
++===================================================================
++--- cherokee.orig/admin/config_version.py	2009-12-03 16:22:30.000000000 -0600
+++++ cherokee/admin/config_version.py	2009-12-03 16:22:37.000000000 -0600
++@@ -30,8 +30,8 @@
++     # Configuration file version
++     ver_config = cfg.get_val("config!version")
++     if not ver_config:
++-        cfg["config!version"] = ver_cherokee
++-        return True
+++        cfg["config!version"] = "000099028"
+++        return False
++ 
++     # Cherokee 0.99.26 bug: 990250 is actually 99025
++     if int(ver_config) == 990250:
+
