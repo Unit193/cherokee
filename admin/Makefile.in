@@ -361,7 +361,7 @@ adminpy_SCRIPTS = $(admin_scripts)
 @INSTALL_ADMIN_TRUE@ModuleTargetIp.py \
 @INSTALL_ADMIN_TRUE@ModuleEvhost.py \
 @INSTALL_ADMIN_TRUE@ModuleRrd.py \
-@INSTALL_ADMIN_TRUE@ModuleUrlarg.py \
+@INSTALL_ADMIN_TRUE@ModuleUrlArg.py \
 @INSTALL_ADMIN_TRUE@config.py \
 @INSTALL_ADMIN_TRUE@config_version.py \
 @INSTALL_ADMIN_TRUE@pyscgi.py \
