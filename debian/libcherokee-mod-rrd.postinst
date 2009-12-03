@@ -21,6 +21,10 @@ PATH=/bin:/sbin:/usr/bin:/usr/sbin
 
 case "$1" in
     configure)
+<<<<<<< HEAD
+	CONF=/etc/cherokee/cherokee.conf
+=======
+>>>>>>> 8408a187eb4353be91aa09c4fa99387dd79afd64
 	if LINE=`grep 'server!user' $CONF`; then
 	    RUNAS_USER=`echo $LINE | cut -f 2 -d =`
 	else
