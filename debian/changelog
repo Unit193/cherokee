@@ -1,8 +1,10 @@
 cherokee (0.99.32-1) unstable; urgency=low
 
   * New Upstream Version
+  * Removed debian/patches/set_min_config_version
+    upstream included the patch rev 3923 and 3924
 
- -- Leonel Nunez <leonel@enelserver.com>  Wed, 09 Dec 2009 07:23:40 -0700
+ -- Leonel Nunez <leonel@enelserver.com>  Wed, 09 Dec 2009 07:41:35 -0700
 
 cherokee (0.99.31-1) unstable; urgency=low
 
