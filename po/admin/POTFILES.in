@@ -74,6 +74,7 @@ admin/Wizard_Icons.py
 admin/Wizard_Joomla.py
 admin/Wizard_Liferay.py
 admin/Wizard_Mailman.py
+admin/Wizard_MoinMoin.py
 admin/Wizard_Mono.py
 admin/Wizard_Moodle.py
 admin/Wizard_PHP.py
