@@ -397,7 +397,8 @@ adminpy_SCRIPTS = $(admin_scripts)
 @INSTALL_ADMIN_TRUE@Wizard_uWSGI.py \
 @INSTALL_ADMIN_TRUE@Wizard_Mono.py \
 @INSTALL_ADMIN_TRUE@Wizard_ColdFusion.py \
-@INSTALL_ADMIN_TRUE@Wizard_Concrete5.py
+@INSTALL_ADMIN_TRUE@Wizard_Concrete5.py \
+@INSTALL_ADMIN_TRUE@Wizard_MoinMoin.py
 
 adminpy_DATA = $(admin_data)
 @INSTALL_ADMIN_TRUE@template_data = \
