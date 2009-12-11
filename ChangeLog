@@ -1,3 +1,154 @@
+2009-12-11  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=3977 git=3e1efbde733047652191877bd0e0a8b8e52649fd
+
+    A previous commit broke the non-ASCII parameter management. This patch
+    should fix it. Many thanks to Valery Masiutsin <vmasutin@apache.org>
+    for the report and his help to fix this issue.
+    
+ cherokee/buffer.c |    2 +-
+ cherokee/header.c |   35 +++++++++++++++++++++++------------
+ 2 files changed, 24 insertions(+), 13 deletions(-)
+
+
+2009-12-11  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=3976 git=3a23710446bcd41cc91bf6ff7e6110c3e590e9d7
+
+    Clean up: Forgot those lines comments in the previous commit.
+    
+ cherokee/handler_dirlist.c |    3 ---
+ 1 files changed, 0 insertions(+), 3 deletions(-)
+
+
+2009-12-11  Taher Shihadeh  <taher@unixwars.com>
+            svn=3975 git=b7ad9dfdf22a6155543b547264148c47628d4507
+
+    There was a bug when no info sources existed
+    
+ admin/PageInfoSource.py |   48 ++++++++++++++++++++++++----------------------
+ 1 files changed, 25 insertions(+), 23 deletions(-)
+
+
+2009-12-11  Taher Shihadeh  <taher@unixwars.com>
+            svn=3974 git=6640b2c36651dc0aabfe728e051a2901dd825326
+
+    Some documentation of usage graphs. Addresses issue 662
+    
+ doc/Makefile.am                            |    8 +++-
+ doc/config_general.txt                     |    4 ++
+ doc/config_status.txt                      |    4 +-
+ doc/config_virtual_servers.txt             |    6 ++
+ doc/index.txt                              |    1 +
+ doc/media/images/other_graphs_conns.png    |  Bin 0 -> 17888 bytes
+ doc/media/images/other_graphs_logging.png  |  Bin 0 -> 14822 bytes
+ doc/media/images/other_graphs_timeouts.png |  Bin 0 -> 16843 bytes
+ doc/media/images/other_graphs_traffic.png  |  Bin 0 -> 12653 bytes
+ doc/other.txt                              |    1 +
+ doc/other_goodies.txt                      |    9 +++
+ doc/other_graphs.txt                       |   79 ++++++++++++++++++++++++++++
+ 12 files changed, 109 insertions(+), 3 deletions(-)
+
+
+2009-12-11  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=3973 git=94761267f45e0597d3f20caf29303e8f4b68ad07
+
+    Fixes dirlist so it can list non-ASCII file names properly. It fixes
+    bugs #647 and #661: http://bugs.cherokee-project.com/647
+    
+ cherokee/buffer.c          |  288 ++++++++++++++++++++++++++++++--------------
+ cherokee/buffer.h          |    6 +-
+ cherokee/handler_dirlist.c |  159 ++++++++++++++----------
+ cherokee/header.c          |  110 +++++++++---------
+ 4 files changed, 350 insertions(+), 213 deletions(-)
+
+
+2009-12-11  Taher Shihadeh  <taher@unixwars.com>
+            svn=3972 git=5c649dc6c97c60cabe58c241b022ca78311378e8
+
+    Implements rule cloning capabilities. Addresses issue 430
+    
+ admin/PageVServer.py |   51 ++++++++++++++++++++++++++++++++++++++++++++++++-
+ 1 files changed, 49 insertions(+), 2 deletions(-)
+
+
+2009-12-11  Taher Shihadeh  <taher@unixwars.com>
+            svn=3971 git=34f837a4d58802239dbe6ad77a51deabc10b8443
+
+    Minor change to prevent overflow of tab titles
+    
+ po/admin/es.po |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+
+2009-12-11  Taher Shihadeh  <taher@unixwars.com>
+            svn=3966 git=21c126e537e358c2ba5407f22e0359bed7c19c8a
+
+    Implements information source cloning and enhances the way sources are displayed
+    
+ admin/PageInfoSource.py       |  165 +++++++++++++++++++++++++++++++++++------
+ admin/static/css/cherokee.css |    5 +
+ 2 files changed, 148 insertions(+), 22 deletions(-)
+
+
+2009-12-10  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=3964 git=54839e75d1da07f17f327d203c47281b10ee3bee
+
+    Tries to make the running server detection slightly more flexible.
+    Thanks to Sandino Araico for following up on this RFE.
+    
+ admin/CherokeeManagement.py |   70 ++++++++++++++++++++++++++++++++-----------
+ admin/PageStatus.py         |    7 +++-
+ 2 files changed, 57 insertions(+), 20 deletions(-)
+
+
+2009-12-10  Taher Shihadeh  <taher@unixwars.com>
+            svn=3961 git=35fcccfa55b261bdf83d61f53361369545cc1006
+
+    Adds FPM support. Addresses issue 658
+    
+ admin/Wizard_PHP.py |  107 +++++++++++++++++++++++++++++++++++++++++----------
+ 1 files changed, 86 insertions(+), 21 deletions(-)
+
+
+2009-12-10  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=3960 git=456997b3f1e09172da41a566695fc29b2085a489
+
+    Updates the PySCGI version to 1.10
+    
+ admin/pyscgi.py |    3 +--
+ qa/pyscgi.py    |    3 +--
+ 2 files changed, 2 insertions(+), 4 deletions(-)
+
+
+2009-12-10  Taher Shihadeh  <taher@unixwars.com>
+            svn=3957 git=61c578c301f60dad379dcc96f6cde0c3faf84130
+
+    uWSGI wizard now uses TCP port instead of a unix socket by default
+    
+ admin/Wizard_uWSGI.py |    4 +++-
+ 1 files changed, 3 insertions(+), 1 deletions(-)
+
+2009-12-09  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=3948 git=e8b5c1caa20ba4b5854faa06566c06af4a3efa62
+
+    Cherokee 0.99.32 released
+    
+ configure.in |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+
+2009-12-09  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=3947 git=d619e4708138d45e291547854b4126ac8bd777ef
+
+    Update translation files.
+    
+ po/admin/de.po    |  340 ++++++++++++++++++++++++++++++----------------------
+ po/admin/en.po    |  342 +++++++++++++++++++++++++++++++----------------------
+ po/admin/es.po    |  344 +++++++++++++++++++++++++++++++----------------------
+ po/admin/nl.po    |  341 +++++++++++++++++++++++++++++++----------------------
+ po/admin/sv_SE.po |  341 +++++++++++++++++++++++++++++++----------------------
+ po/admin/zh_CN.po |  341 +++++++++++++++++++++++++++++++----------------------
+ 6 files changed, 1197 insertions(+), 852 deletions(-)
+
 2009-12-09  Taher Shihadeh  <taher@unixwars.com>
             svn=3946 git=9738cd71324276d75fcd5c056c0d5c95ff8aa4ea
 
