@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: cherokee '0.99.10'\n"
 "Report-Msgid-Bugs-To: http://bugs.cherokee-project.com/\n"
-"POT-Creation-Date: 2009-12-11 18:46+0100\n"
+"POT-Creation-Date: 2009-12-12 14:06+0100\n"
 "PO-Revision-Date: 2009-05-12 15:10+0100\n"
 "Last-Translator: Andreas Sinz <andreas.sinz@aon.at>\n"
 "Language-Team: none\n"
@@ -2313,38 +2313,38 @@ msgstr "Verändert am"
 msgid "Not Found"
 msgstr "Nicht gefunden"
 
-#: admin/PageStatus.py:173 admin/PageStatus.py:174
+#: admin/PageStatus.py:170 admin/PageStatus.py:171
 #, fuzzy
 msgid "Server Traffic"
 msgstr "Server Info"
 
-#: admin/PageStatus.py:175
+#: admin/PageStatus.py:172
 #, fuzzy
 msgid "Connections / Requests"
 msgstr "Verbindungen"
 
-#: admin/PageStatus.py:176
+#: admin/PageStatus.py:173
 #, fuzzy
 msgid "Connections Timeout"
 msgstr "Verbindungen"
 
-#: admin/PageStatus.py:181 admin/PageVServer.py:576
+#: admin/PageStatus.py:178 admin/PageVServer.py:576
 msgid "1 month"
 msgstr ""
 
-#: admin/PageStatus.py:182 admin/PageVServer.py:577
+#: admin/PageStatus.py:179 admin/PageVServer.py:577
 msgid "1 week"
 msgstr ""
 
-#: admin/PageStatus.py:183 admin/PageVServer.py:578
+#: admin/PageStatus.py:180 admin/PageVServer.py:578
 msgid "1 day"
 msgstr ""
 
-#: admin/PageStatus.py:184 admin/PageVServer.py:579
+#: admin/PageStatus.py:181 admin/PageVServer.py:579
 msgid "6 hours"
 msgstr ""
 
-#: admin/PageStatus.py:185 admin/PageVServer.py:580
+#: admin/PageStatus.py:182 admin/PageVServer.py:580
 msgid "1 hour"
 msgstr ""
 
@@ -2723,6 +2723,11 @@ msgstr "Dateiname muss gesetzt sein"
 #: admin/PageVServer.py:767
 msgid "Template: "
 msgstr ""
+
+#: admin/PageVServer.py:777
+#, fuzzy
+msgid "Choose a rule.."
+msgstr "Wähle.."
 
 #: admin/PageVServers.py:18
 msgid ""

@@ -1,3 +1,85 @@
+2009-12-12  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=3985 git=ca865f545174038c3fb51261ca0314144125036b
+
+    Cherokee 0.99.33 released (after r3977)
+    
+ configure.in |  100 +++++++++++++++++++++++++++++-----------------------------
+ 1 files changed, 50 insertions(+), 50 deletions(-)
+
+
+2009-12-12  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=3984 git=094ae298a4c0fca7358c4eaba6799288475b41b1
+
+    Adds 4 new QA tests. They test the most basics UTF8 handling support:
+    Download a file with a UTF8 name, access a UTF8 directory, work with a
+    UTF8 encoded PATHINFO, and access a UTF8 encoded directory and pass a
+    UTF8 PATHINFO to a CGI.
+    
+ qa/239-utf8-file1.py     |   20 ++++++++++++++++++++
+ qa/240-utf8-dir1.py      |   20 ++++++++++++++++++++
+ qa/241-utf8-pathinfo1.py |   32 ++++++++++++++++++++++++++++++++
+ qa/242-utf8-pathinfo2.py |   32 ++++++++++++++++++++++++++++++++
+ qa/Makefile.am           |    6 +++++-
+ 5 files changed, 109 insertions(+), 1 deletions(-)
+
+
+2009-12-11  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=3983 git=d91d92d8baa0216a5a1f0a335e858283c3a7eb65
+
+    Fixes a really bizarre but heroically possible memory leak. It also
+    cleans a few trailing white spaces.
+    
+ cherokee/logger_writer.c |   69 +++++++++++++++++++++++----------------------
+ cherokee/logger_writer.h |    4 +-
+ 2 files changed, 37 insertions(+), 36 deletions(-)
+
+
+2009-12-11  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=3982 git=e449adae1a7dae3772faf75e1f9d068334671e45
+
+    Tidies up the report_error() internal function.
+    
+ cherokee/error_log.c |   54 +++++++++++++++++++++++++++----------------------
+ 1 files changed, 30 insertions(+), 24 deletions(-)
+
+
+2009-12-11  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=3981 git=15b5494e9e016bf528b1ee68307fb4ea911c371c
+
+    Removes a couple of LOC that should have made it to trunk. My bad.
+    
+ admin/PageStatus.py |    5 +----
+ 1 files changed, 1 insertions(+), 4 deletions(-)
+
+
+2009-12-11  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=3980 git=e34985a9df6ea2aef6bcaeecb4f2e525a9d18259
+
+    Third try. It fixes the second patch. <sigh..> Bug #663
+    
+ admin/PageVServer.py |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+
+2009-12-11  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=3979 git=dec8f1a157b206d143f358ade4e707d9c885f06a
+
+    Reimplements r3978. Fixes http://bugs.cherokee-project.com/663
+    Many thanks to Antonio Perez for his first patch!!
+    
+ admin/PageVServer.py |   25 ++++++++++++-------------
+ 1 files changed, 12 insertions(+), 13 deletions(-)
+
+
+2009-12-11  Antonio Perez  <aperez@skarcha.com>
+            svn=3978 git=87ca0d9c52cb5db7e54a833bee2cba41c7f6386c
+
+    First rule of "Behaviour" was cloned on every submit.
+    Fixes bug: http://bugs.cherokee-project.com/663
+    
+ admin/PageVServer.py |    1 +
+ 1 files changed, 1 insertions(+), 0 deletions(-)
+
 2009-12-11  Alvaro Lopez Ortega  <alvaro@octality.com>
             svn=3977 git=3e1efbde733047652191877bd0e0a8b8e52649fd
 
