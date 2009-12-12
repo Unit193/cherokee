@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: cherokee 0.99.34\n"
+"Project-Id-Version: cherokee 0.99.35\n"
 "Report-Msgid-Bugs-To: http://bugs.cherokee-project.com/\n"
-"POT-Creation-Date: 2009-12-12 14:06+0100\n"
+"POT-Creation-Date: 2009-12-12 17:21+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1687,11 +1687,11 @@ msgstr ""
 msgid "Allow"
 msgstr ""
 
-#: admin/PageError.py:128
+#: admin/PageError.py:148
 msgid "Configuration file cannot be modified"
 msgstr ""
 
-#: admin/PageError.py:129
+#: admin/PageError.py:149
 msgid "Icons directory is missing"
 msgstr ""
 
@@ -2901,7 +2901,7 @@ msgid "Common files have been already configured."
 msgstr ""
 
 #: admin/Wizard_CommonStatic.py:44 admin/Wizard_Icons.py:62
-#: admin/Wizard_MoinMoin.py:225 admin/Wizard_PHP.py:188
+#: admin/Wizard_MoinMoin.py:225 admin/Wizard_PHP.py:192
 #: admin/Wizard_Streaming.py:42 admin/Wizard_rTorrent.py:77
 msgid "Couldn't add a new rule."
 msgstr ""
@@ -2964,7 +2964,7 @@ msgstr ""
 
 #: admin/Wizard_Concrete5.py:164 admin/Wizard_Drupal.py:183
 #: admin/Wizard_Joomla.py:160 admin/Wizard_Moodle.py:120
-#: admin/Wizard_PHP.py:168 admin/Wizard_Sugar.py:154
+#: admin/Wizard_PHP.py:167 admin/Wizard_Sugar.py:154
 #: admin/Wizard_Symfony.py:158 admin/Wizard_WordPress.py:145
 #: admin/Wizard_Zend.py:129 admin/Wizard_phpBB.py:125
 #: admin/Wizard_phpMyAdmin.py:103
@@ -3326,15 +3326,15 @@ msgstr ""
 msgid "Already configured: nick"
 msgstr ""
 
-#: admin/Wizard_PHP.py:166
+#: admin/Wizard_PHP.py:165
 msgid "Looked for the binaries"
 msgstr ""
 
-#: admin/Wizard_PHP.py:174
+#: admin/Wizard_PHP.py:173
 msgid "Couldn't determine PHP-fpm settings"
 msgstr ""
 
-#: admin/Wizard_PHP.py:182
+#: admin/Wizard_PHP.py:179
 msgid "Couldn't determine correct interpreter settings"
 msgstr ""
 
@@ -3975,33 +3975,33 @@ msgstr ""
 msgid "UTC: Coordinated Universal Time"
 msgstr ""
 
-#: admin/server.py:120
+#: admin/server.py:122
 msgid "Configuration saved."
 msgstr ""
 
-#: admin/server.py:122
+#: admin/server.py:124
 msgid " Graceful restart performed."
 msgstr ""
 
-#: admin/server.py:124
+#: admin/server.py:126
 msgid " Hard restart performed."
 msgstr ""
 
-#: admin/server.py:207
+#: admin/server.py:216
 msgid "Incorrect parameters: PORT CONFIG_FILE"
 msgstr ""
 
-#: admin/server.py:247
+#: admin/server.py:256
 #, python-format
 msgid "Server %(version)s running.. PID=%(pid)d Port=%(scgi_port)s"
 msgstr ""
 
-#: admin/server.py:249
+#: admin/server.py:258
 #, python-format
 msgid "Server %(version)s running.. PID=%(pid)d Socket=%(scgi_port)s"
 msgstr ""
 
-#: admin/server.py:256
+#: admin/server.py:265
 msgid "Server exiting.."
 msgstr ""
 

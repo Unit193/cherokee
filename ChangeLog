@@ -1,4 +1,36 @@
 2009-12-12  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=3989 git=53c0a9583897739de22b20b57dd97fdd45de9dea
+
+    Fixes the PHP wizard. It was using an initialised variable. All the
+    wizards depending on this one were broken in the last release.
+    
+ admin/Wizard_PHP.py |   14 +++++++++-----
+ 1 files changed, 9 insertions(+), 5 deletions(-)
+
+
+2009-12-12  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=3988 git=d394babcb405a2fe0819f4f3aab12967e1d9ae9c
+
+    Adds some code so internal cherokee-admin errors are shown as proper
+    errors in the browser, instead of the generic "500 Internal Error"
+    page that was being sent. The 500 response is sent as well, but now it
+    is nicely formatted and includes a backtrace (so it can be reported).
+    
+ admin/Makefile.am                  |    5 +++--
+ admin/PageError.py                 |   24 ++++++++++++++++++++++--
+ admin/error_internal.template.html |   12 ++++++++++++
+ admin/server.py                    |   11 ++++++++++-
+ 4 files changed, 47 insertions(+), 5 deletions(-)
+
+2009-12-12  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=3987 git=5a35b5c79fcbfd90306a5fd6c5d69fc0e1af3da5
+
+    Cherokee 0.99.34 released
+    
+ configure.in |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+2009-12-12  Alvaro Lopez Ortega  <alvaro@octality.com>
             svn=3985 git=ca865f545174038c3fb51261ca0314144125036b
 
     Cherokee 0.99.33 released (after r3977)
