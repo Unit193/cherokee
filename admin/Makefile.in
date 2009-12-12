@@ -406,7 +406,8 @@ adminpy_DATA = $(admin_data)
 @INSTALL_ADMIN_TRUE@status.template.html \
 @INSTALL_ADMIN_TRUE@error_not_writable.template.html \
 @INSTALL_ADMIN_TRUE@error_icons_dir_missing.template.html \
-@INSTALL_ADMIN_TRUE@error_couldnt_launch.template.html
+@INSTALL_ADMIN_TRUE@error_couldnt_launch.template.html \
+@INSTALL_ADMIN_TRUE@error_internal.template.html
 
 adminhelpdir = "$(datadir)/cherokee/admin"
 adminhelp_DATA = $(template_data)

@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: cherokee-admin 0.99.16\n"
 "Report-Msgid-Bugs-To: http://bugs.cherokee-project.com/\n"
-"POT-Creation-Date: 2009-12-12 14:06+0100\n"
+"POT-Creation-Date: 2009-12-12 17:21+0100\n"
 "PO-Revision-Date: 2009-06-02 12:23+0100\n"
 "Last-Translator: Andreas Andersson <andreas@cyberdelic.org>\n"
 "Language-Team: Swedish <LL@li.org>\n"
@@ -1783,11 +1783,11 @@ msgstr "Använd %s som kodning när klienten begär det."
 msgid "Allow"
 msgstr "Tillåt"
 
-#: admin/PageError.py:128
+#: admin/PageError.py:148
 msgid "Configuration file cannot be modified"
 msgstr "Konfigurationsfilen kan inte ändras"
 
-#: admin/PageError.py:129
+#: admin/PageError.py:149
 msgid "Icons directory is missing"
 msgstr "Ikonatalogen fattas"
 
@@ -3100,7 +3100,7 @@ msgid "Common files have been already configured."
 msgstr ""
 
 #: admin/Wizard_CommonStatic.py:44 admin/Wizard_Icons.py:62
-#: admin/Wizard_MoinMoin.py:225 admin/Wizard_PHP.py:188
+#: admin/Wizard_MoinMoin.py:225 admin/Wizard_PHP.py:192
 #: admin/Wizard_Streaming.py:42 admin/Wizard_rTorrent.py:77
 #, fuzzy
 msgid "Couldn't add a new rule."
@@ -3165,7 +3165,7 @@ msgstr "Webkatalog"
 
 #: admin/Wizard_Concrete5.py:164 admin/Wizard_Drupal.py:183
 #: admin/Wizard_Joomla.py:160 admin/Wizard_Moodle.py:120
-#: admin/Wizard_PHP.py:168 admin/Wizard_Sugar.py:154
+#: admin/Wizard_PHP.py:167 admin/Wizard_Sugar.py:154
 #: admin/Wizard_Symfony.py:158 admin/Wizard_WordPress.py:145
 #: admin/Wizard_Zend.py:129 admin/Wizard_phpBB.py:125
 #: admin/Wizard_phpMyAdmin.py:103
@@ -3548,15 +3548,15 @@ msgstr "Lägg till ny port"
 msgid "Already configured: nick"
 msgstr ""
 
-#: admin/Wizard_PHP.py:166
+#: admin/Wizard_PHP.py:165
 msgid "Looked for the binaries"
 msgstr ""
 
-#: admin/Wizard_PHP.py:174
+#: admin/Wizard_PHP.py:173
 msgid "Couldn't determine PHP-fpm settings"
 msgstr ""
 
-#: admin/Wizard_PHP.py:182
+#: admin/Wizard_PHP.py:179
 msgid "Couldn't determine correct interpreter settings"
 msgstr ""
 
@@ -4221,33 +4221,33 @@ msgstr "Nytt värdnamn"
 msgid "UTC: Coordinated Universal Time"
 msgstr ""
 
-#: admin/server.py:120
+#: admin/server.py:122
 msgid "Configuration saved."
 msgstr "Konfiguration sparad."
 
-#: admin/server.py:122
+#: admin/server.py:124
 msgid " Graceful restart performed."
 msgstr "Snäll omstart genomförd."
 
-#: admin/server.py:124
+#: admin/server.py:126
 msgid " Hard restart performed."
 msgstr "Hård omstart genomförd."
 
-#: admin/server.py:207
+#: admin/server.py:216
 msgid "Incorrect parameters: PORT CONFIG_FILE"
 msgstr "Felaktiga parametrar: PORT CONFIG_FILE"
 
-#: admin/server.py:247
+#: admin/server.py:256
 #, fuzzy, python-format
 msgid "Server %(version)s running.. PID=%(pid)d Port=%(scgi_port)s"
 msgstr "Server %(version)s körs.. PID=%(pid)d Port=%(scgi_port)d"
 
-#: admin/server.py:249
+#: admin/server.py:258
 #, fuzzy, python-format
 msgid "Server %(version)s running.. PID=%(pid)d Socket=%(scgi_port)s"
 msgstr "Server %(version)s körs.. PID=%(pid)d Port=%(scgi_port)d"
 
-#: admin/server.py:256
+#: admin/server.py:265
 msgid "Server exiting.."
 msgstr "Server stängs ner.."
 

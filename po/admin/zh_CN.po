@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: cherokee '0.99.15' admin UI for zh_CN \n"
 "Report-Msgid-Bugs-To: http://bugs.cherokee-project.com/\n"
-"POT-Creation-Date: 2009-12-12 14:06+0100\n"
+"POT-Creation-Date: 2009-12-12 17:21+0100\n"
 "PO-Revision-Date: 2009-04-14 21:27+CEST\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: ownlinux.cn\n"
@@ -1748,11 +1748,11 @@ msgstr "每当客户端请求时使用 %s 压缩."
 msgid "Allow"
 msgstr "允许 "
 
-#: admin/PageError.py:128
+#: admin/PageError.py:148
 msgid "Configuration file cannot be modified"
 msgstr "配置文件不允许修改"
 
-#: admin/PageError.py:129
+#: admin/PageError.py:149
 msgid "Icons directory is missing"
 msgstr "图标文件目录不存在"
 
@@ -3033,7 +3033,7 @@ msgid "Common files have been already configured."
 msgstr ""
 
 #: admin/Wizard_CommonStatic.py:44 admin/Wizard_Icons.py:62
-#: admin/Wizard_MoinMoin.py:225 admin/Wizard_PHP.py:188
+#: admin/Wizard_MoinMoin.py:225 admin/Wizard_PHP.py:192
 #: admin/Wizard_Streaming.py:42 admin/Wizard_rTorrent.py:77
 #, fuzzy
 msgid "Couldn't add a new rule."
@@ -3098,7 +3098,7 @@ msgstr "网页目录"
 
 #: admin/Wizard_Concrete5.py:164 admin/Wizard_Drupal.py:183
 #: admin/Wizard_Joomla.py:160 admin/Wizard_Moodle.py:120
-#: admin/Wizard_PHP.py:168 admin/Wizard_Sugar.py:154
+#: admin/Wizard_PHP.py:167 admin/Wizard_Sugar.py:154
 #: admin/Wizard_Symfony.py:158 admin/Wizard_WordPress.py:145
 #: admin/Wizard_Zend.py:129 admin/Wizard_phpBB.py:125
 #: admin/Wizard_phpMyAdmin.py:103
@@ -3481,15 +3481,15 @@ msgstr "增加一个端口"
 msgid "Already configured: nick"
 msgstr ""
 
-#: admin/Wizard_PHP.py:166
+#: admin/Wizard_PHP.py:165
 msgid "Looked for the binaries"
 msgstr ""
 
-#: admin/Wizard_PHP.py:174
+#: admin/Wizard_PHP.py:173
 msgid "Couldn't determine PHP-fpm settings"
 msgstr ""
 
-#: admin/Wizard_PHP.py:182
+#: admin/Wizard_PHP.py:179
 msgid "Couldn't determine correct interpreter settings"
 msgstr ""
 
@@ -4152,33 +4152,33 @@ msgstr "新主机别名"
 msgid "UTC: Coordinated Universal Time"
 msgstr ""
 
-#: admin/server.py:120
+#: admin/server.py:122
 msgid "Configuration saved."
 msgstr "配置已保存."
 
-#: admin/server.py:122
+#: admin/server.py:124
 msgid " Graceful restart performed."
 msgstr " 平稳重启完成."
 
-#: admin/server.py:124
+#: admin/server.py:126
 msgid " Hard restart performed."
 msgstr " 硬重启完成."
 
-#: admin/server.py:207
+#: admin/server.py:216
 msgid "Incorrect parameters: PORT CONFIG_FILE"
 msgstr "不正确的参数: PORT CONFIG_FILE"
 
-#: admin/server.py:247
+#: admin/server.py:256
 #, fuzzy, python-format
 msgid "Server %(version)s running.. PID=%(pid)d Port=%(scgi_port)s"
 msgstr "服务器%s运行中.. 进程号=%d 端口=%d"
 
-#: admin/server.py:249
+#: admin/server.py:258
 #, fuzzy, python-format
 msgid "Server %(version)s running.. PID=%(pid)d Socket=%(scgi_port)s"
 msgstr "服务器%s运行中.. 进程号=%d 端口=%d"
 
-#: admin/server.py:256
+#: admin/server.py:265
 msgid "Server exiting.."
 msgstr "服务器退出.."
 
