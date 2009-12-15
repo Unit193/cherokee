@@ -755,7 +755,7 @@ uninstall-am: uninstall-docDATA uninstall-docmediacssDATA \
 
 
 .txt.html:
-	$(ASCIIDOC) -o $@ $(top_srcdir)/doc/$< 
+	$(ASCIIDOC) -o $@ $(top_srcdir)/doc/$<
 
 serve:
 	../cherokee/cherokee -r .

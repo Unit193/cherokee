@@ -44,10 +44,11 @@ CONFIG_VSERVER = """
 """
 
 SRC_PATHS = [
-    "/usr/share/moodle",          # Debian, Fedora
-    "/var/www/*/htdocs/moodle",   # Gentoo
-    "/srv/www/htdocs/moodle",     # SuSE
-    "/usr/local/www/data/moodle*" # BSD
+    "/usr/share/moodle",           # Debian, Fedora
+    "/var/www/*/htdocs/moodle",    # Gentoo
+    "/srv/www/htdocs/moodle",      # SuSE
+    "/usr/local/www/data/moodle*", # BSD
+    "/opt/local/www/moodle"        # MacPorts
 ]
 
 def is_moodle_dir (path, cfg, nochroot):
@@ -72,7 +73,7 @@ class Wizard_VServer_Moodle (WizardPage):
                              submit = '/vserver/wizard/Moodle',
                              id     = "Moodle_Page1",
                              title  = _("Moodle Wizard"),
-                             group  = _(WIZARD_GROUP_MANAGEMENT))
+                             group  = _(WIZARD_GROUP_MISC))
 
     def show (self):
         return True
@@ -141,7 +142,7 @@ class Wizard_Rules_Moodle (WizardPage):
                              submit = '/vserver/%s/wizard/Moodle'%(pre.split('!')[1]),
                              id     = "Moodle_Page1",
                              title  = _("Moodle Wizard"),
-                             group  = _(WIZARD_GROUP_MANAGEMENT))
+                             group  = _(WIZARD_GROUP_MISC))
 
     def show (self):
         # Check for PHP

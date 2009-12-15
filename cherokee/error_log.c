@@ -29,35 +29,30 @@
 #include "util.h"
 
 static cherokee_logger_writer_t *default_error_writer = NULL;
-static cherokee_boolean_t        echo_to_stderr       = true;
+
 
 /* Include the error information */
 #include "errors.h"
 
 
 ret_t
-cherokee_error_log_set_log_writer (cherokee_logger_writer_t *writer)
+cherokee_error_set_default (cherokee_logger_writer_t *writer)
 {
 	default_error_writer = writer;
 	return ret_ok;
 }
 
-ret_t
-cherokee_error_log_set_echo_stderr (cherokee_boolean_t do_echo)
-{
-	echo_to_stderr = do_echo;
-	return ret_ok;
-}
-
 
 ret_t
-cherokee_error_log_get_log_writer (cherokee_logger_writer_t **writer)
+cherokee_error_log_default_free (void)
 {
 	if (default_error_writer == NULL) {
 		return ret_not_found;
 	}
 
-	*writer = default_error_writer;
+	cherokee_logger_writer_free (default_error_writer);
+	default_error_writer = NULL;
+
 	return ret_ok;
 }
 
@@ -104,21 +99,12 @@ report_error (cherokee_buffer_t *buf)
 		writer = default_error_writer;
 	}
 
-	/* No error log? Print it, and return.
+	/* Last resource: Print it to stderr.
 	 */
-	if (writer == NULL) {
+	if ((writer == NULL) || (! writer->initialized)) {
 		fprintf (stderr, "%s\n", buf->buf);
 		fflush (stderr);
 		return ret_ok;
-	}
-
-	/* Echo to stderr
-	 */
-	if ((echo_to_stderr) &&
-	    (writer->type != cherokee_logger_writer_stderr))
-	{
-		fprintf (stderr, "%s\n", buf->buf);
-		fflush (stderr);
 	}
 
 	/* Do logging

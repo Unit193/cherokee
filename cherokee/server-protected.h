@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301, USA.
- */ 
+ */
 
 #ifndef CHEROKEE_SERVER_PROTECTED_H
 #define CHEROKEE_SERVER_PROTECTED_H
@@ -29,7 +29,7 @@
 
 #ifdef HAVE_SYS_TIME_H
 # include <sys/time.h>
-#else 
+#else
 # include <time.h>
 #endif
 
@@ -72,7 +72,7 @@ struct cherokee_server {
 	/* Virtual servers
 	 */
 	cherokee_list_t            vservers;
-	
+
 	/* Threads
 	 */
 	cherokee_thread_t         *main_thread;
@@ -94,14 +94,18 @@ struct cherokee_server {
 	 */
 	cherokee_collector_t      *collector;
 
+	int                        nonces_cleanup_lapse;
+	time_t                     nonces_cleanup_next;
+
+	/* Logging
+	 */
+	cherokee_logger_writer_t  *error_writer;
+
 	cherokee_list_t            logger_writers;
 	cherokee_avl_t             logger_writers_index;
 
 	int                        log_flush_lapse;
 	time_t                     log_flush_next;
-
-	int                        nonces_cleanup_lapse;
-	time_t                     nonces_cleanup_next;
 
 	/* Main socket
 	 */

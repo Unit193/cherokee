@@ -247,7 +247,7 @@ index.html
 
 EXTRA_DIST = \
 $(HTMLS) \
-$(cherokeewwwimages_DATA) 
+$(cherokeewwwimages_DATA)
 
 all: all-am
 
@@ -467,7 +467,7 @@ install-data-local: $(HTMLS)
 		$(INSTALL_DATA) $(top_srcdir)/www/index.html $(DESTDIR)$(cherokeewwwdir)/index.html; \
 	fi
 
-uninstall-local: 
+uninstall-local:
 	@if test -f $(DESTDIR)$(cherokeewwwdir)/index.html ; then \
 		echo "rm -f $(DESTDIR)$(cherokeewwwdir)/index.html"; \
 		$(RM) -f $(DESTDIR)$(cherokeewwwdir)/index.html; \

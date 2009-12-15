@@ -1,3 +1,618 @@
+2009-12-15  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=4005 git=6ee619d7be9ca2ac6985dd1bda1aba2eb7c885d4
+
+    Error log management clean up. It should work better now.
+    
+ cherokee/error_log.c          |   35 ++-----------
+ cherokee/error_log.h          |    7 +--
+ cherokee/handler_proxy.c      |   12 ++++-
+ cherokee/logger_writer.c      |   19 +++++++
+ cherokee/logger_writer.h      |   15 +++---
+ cherokee/server-protected.h   |   10 +++-
+ cherokee/server.c             |  113 +++++++----------------------------------
+ cherokee/source_interpreter.c |    9 +++-
+ cherokee/virtual_server.c     |   27 ++++++++++
+ cherokee/virtual_server.h     |    3 +
+ 10 files changed, 106 insertions(+), 144 deletions(-)
+
+
+2009-12-14  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=4004 git=10dc6cd93b217bb0ef93f22b29c2b663d792e881
+
+    Adds MacPorts paths to the Moodle and PhpMyAdmin wizards.
+    
+ admin/Wizard_Moodle.py     |    9 +++++----
+ admin/Wizard_phpMyAdmin.py |    3 ++-
+ 2 files changed, 7 insertions(+), 5 deletions(-)
+
+
+2009-12-14  Taher Shihadeh  <taher@unixwars.com>
+            svn=4003 git=6afd82a7414cdf99b9f52f9d7fd4e7f266e8e0ae
+
+    Reclassifies some wizards
+    
+ admin/Wizard_Alfresco.py     |    4 ++--
+ admin/Wizard_ColdFusion.py   |    4 ++--
+ admin/Wizard_CommonStatic.py |    3 ++-
+ admin/Wizard_Icons.py        |    1 +
+ admin/Wizard_Liferay.py      |    4 ++--
+ admin/Wizard_Mono.py         |   12 ++++++------
+ admin/Wizard_Moodle.py       |    4 ++--
+ admin/Wizard_Streaming.py    |    1 +
+ admin/Wizard_Sugar.py        |    4 ++--
+ 9 files changed, 20 insertions(+), 17 deletions(-)
+
+
+2009-12-14  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=4002 git=ce0c7cdb05379fac142c154a15cbc0060da1720f
+
+    Cherokee does no longer throw a fatal error when rrdtool is configured
+    but the binary is not found.
+    
+ cherokee/rrd_tools.c |   13 +++++++++++--
+ cherokee/rrd_tools.h |    1 +
+ 2 files changed, 12 insertions(+), 2 deletions(-)
+
+
+2009-12-14  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=4001 git=8875ab52d90dd09ff96b5b2dfd257e89cb68a0b0
+
+
+
+2009-12-14  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=4000 git=4740a8e0fd282c0a3e3367af143e5965acecf1b6
+
+    Fixes a memory corruption issue on shut down. Under some unusual
+    circumstances, the server could 'feel panic' while performing graceful
+    restarts.
+    
+ cherokee/error_log.c |   25 +++++++++++++++++++------
+ cherokee/error_log.h |    9 ++++++---
+ cherokee/server.c    |   44 +++++++++++++++++---------------------------
+ 3 files changed, 42 insertions(+), 36 deletions(-)
+
+
+2009-12-14  Taher Shihadeh  <taher@unixwars.com>
+            svn=3999 git=64c27370f30998f30f68fd8da6f7136b8d44f735
+
+    Clean up: Trims trailing spaces.
+    
+ Makefile.am                          |    2 +-
+ cget/Makefile.am                     |    2 +-
+ cget/main.c                          |   38 ++++++------
+ cget/proxy.c                         |    2 +-
+ cget/proxy.h                         |    2 +-
+ cherokee/Makefile.am                 |  104 +++++++++++++++++-----------------
+ cherokee/pcre/pcre.h                 |    2 +-
+ cherokee/zlib/deflate.c              |   10 ++--
+ cherokee/zlib/deftree.c              |    4 +-
+ cherokee/zlib/defutil.h              |   10 ++--
+ cherokee/zlib/zconf.h                |    2 +-
+ cherokee/zlib/zlib.h                 |   18 +++---
+ contrib/05to06.py                    |   64 ++++++++++----------
+ contrib/06to07.py                    |   10 ++--
+ contrib/07to08.py                    |    6 +-
+ contrib/08to09.py                    |    8 +-
+ contrib/0999to09910.py               |    2 +-
+ contrib/bin2buffer.py                |    2 +-
+ contrib/tracelor.py                  |    4 +-
+ doc/Makefile.am                      |    2 +-
+ doc/basics_download.txt              |    2 +-
+ doc/cookbook_django.txt              |    4 +-
+ doc/cookbook_mailman.txt             |    2 +-
+ doc/cookbook_nagios.txt              |    8 +-
+ doc/cookbook_streaming.txt           |    2 +-
+ doc/modules_handlers_common.txt      |    2 +-
+ doc/modules_handlers_dbslayer.txt    |    2 +-
+ doc/modules_handlers_dirlist.txt     |    2 +-
+ doc/modules_handlers_secdownload.txt |    2 +-
+ doc/modules_validators_ldap.txt      |    8 +-
+ doc/modules_validators_mysql.txt     |    2 +-
+ icons/README.txt                     |    6 +-
+ packages/osx/build.py                |   10 ++--
+ packages/osx/utils.py                |    2 +-
+ po/admin/generate_POTFILESin.py      |    2 +-
+ svnlog2changelog.py                  |    6 +-
+ www/Makefile.am                      |    4 +-
+ 37 files changed, 180 insertions(+), 180 deletions(-)
+
+
+2009-12-14  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=3998 git=80b598965958aebeb4e683df9e111fbbed56580a
+
+    The previous commit was wrong. Fixes it.
+    
+ cherokee/main.c |   16 ++++++++++++++--
+ 1 files changed, 14 insertions(+), 2 deletions(-)
+
+
+2009-12-14  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=3996 git=b134796c3be4efffcc73c5de15617dfdb4e43c97
+
+    Fixes a couple of incorrect calls to semctl().
+    
+ cherokee/main.c |    4 ++--
+ 1 files changed, 2 insertions(+), 2 deletions(-)
+
+2009-12-13  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=3995 git=23deae3c2dc8190875ee7ec59f467a6bf641a988
+
+    Adds a new entry for the translation to French.
+    
+ admin/consts.py |    1 +
+ 1 files changed, 1 insertions(+), 0 deletions(-)
+
+
+2009-12-13  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=3994 git=acb553a0982c3e6da7f1eb52f9c63337b6a0bae8
+
+    Adds a new translation to French, contributed by Vincent Knecht
+    <vknecht@club-internet.fr>. It's still unfinished; more to come.
+    Thanks Vincent!
+    
+ po/admin/LINGUAS |    2 +-
+ po/admin/fr.po   | 4141 ++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 4142 insertions(+), 1 deletions(-)
+
+2009-12-13  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=3993 git=25b3cb73464c9f79e246bdc3277ec66dfc1b2615
+
+    Clean up: Trims trailing spaces.
+    
+ admin/GraphManager.py               |    2 +-
+ admin/LogViewer.py                  |   12 +-
+ admin/ModuleAuth.py                 |    2 +-
+ admin/ModuleBind.py                 |    2 +-
+ admin/ModuleCommon.py               |    2 +-
+ admin/ModuleDbslayer.py             |    2 +-
+ admin/ModuleDefault.py              |    2 +-
+ admin/ModuleDirlist.py              |    4 +-
+ admin/ModuleEmptyGif.py             |    2 +-
+ admin/ModuleErrorNn.py              |    2 +-
+ admin/ModuleExists.py               |    2 +-
+ admin/ModuleFrom.py                 |    2 +-
+ admin/ModuleFullpath.py             |    2 +-
+ admin/ModuleHeader.py               |    2 +-
+ admin/ModuleMysql.py                |    2 +-
+ admin/ModuleProxy.py                |    8 +-
+ admin/ModuleScgi.py                 |    2 +-
+ admin/ModuleSecdownload.py          |    2 +-
+ admin/ModuleStreaming.py            |    4 +-
+ admin/ModuleUwsgi.py                |    2 +-
+ admin/PageAdvanced.py               |    6 +-
+ admin/PageEntry.py                  |    2 +-
+ admin/PageIcon.py                   |    4 +-
+ admin/PageVServers.py               |    8 +-
+ admin/Post.py                       |   12 +-
+ admin/RuleList.py                   |    6 +-
+ admin/Wizard.py                     |    6 +-
+ admin/Wizard_Mailman.py             |    2 +-
+ admin/Wizard_rTorrent.py            |    2 +-
+ admin/config.py                     |    2 +-
+ admin/config_version.py             |    4 +-
+ admin/flags.py                      |    4 +-
+ admin/pyscgi.py                     |    2 +-
+ admin/upgrade_config.py             |    2 +-
+ admin/validations.py                |    6 +-
+ cherokee/access.c                   |   76 ++++++------
+ cherokee/access.h                   |    2 +-
+ cherokee/admin_client.c             |   96 +++++++-------
+ cherokee/admin_client.h             |    2 +-
+ cherokee/admin_request.c            |   10 +-
+ cherokee/admin_request.h            |    2 +-
+ cherokee/admin_server.c             |   50 ++++----
+ cherokee/admin_server.h             |    2 +-
+ cherokee/avl.c                      |  120 +++++++++---------
+ cherokee/avl.h                      |    2 +-
+ cherokee/avl_r.c                    |   10 +-
+ cherokee/avl_r.h                    |    2 +-
+ cherokee/balancer.c                 |   38 +++---
+ cherokee/balancer.h                 |   12 +-
+ cherokee/balancer_ip_hash.c         |   36 +++---
+ cherokee/balancer_ip_hash.h         |    6 +-
+ cherokee/balancer_round_robin.c     |   28 ++--
+ cherokee/balancer_round_robin.h     |    4 +-
+ cherokee/bind.c                     |   22 ++--
+ cherokee/bind.h                     |   12 +-
+ cherokee/bogotime.c                 |    6 +-
+ cherokee/bogotime.h                 |    4 +-
+ cherokee/cache.c                    |   40 +++---
+ cherokee/cache.h                    |   14 +-
+ cherokee/cacheline.c                |   18 ++--
+ cherokee/cacheline.h                |    2 +-
+ cherokee/cherokee.h                 |    2 +-
+ cherokee/cherokee_show.c            |   16 +-
+ cherokee/collector.c                |    4 +-
+ cherokee/collector.h                |    2 +-
+ cherokee/collector_rrd.c            |   20 ++--
+ cherokee/collector_rrd.h            |    6 +-
+ cherokee/common-internal.h          |   22 ++--
+ cherokee/common.h                   |    8 +-
+ cherokee/config_entry.c             |   38 +++---
+ cherokee/config_entry.h             |   10 +-
+ cherokee/config_node.c              |   56 ++++----
+ cherokee/config_node.h              |    4 +-
+ cherokee/config_reader.c            |   58 ++++----
+ cherokee/config_reader.h            |    2 +-
+ cherokee/connection.h               |    2 +-
+ cherokee/connection_info.c          |   60 ++++----
+ cherokee/connection_info.h          |    2 +-
+ cherokee/crc32.h                    |    2 +-
+ cherokee/cryptor.c                  |   10 +-
+ cherokee/cryptor.h                  |    6 +-
+ cherokee/cryptor_libssl.c           |   20 ++--
+ cherokee/cryptor_libssl.h           |    2 +-
+ cherokee/downloader-protected.h     |    2 +-
+ cherokee/downloader.c               |   84 ++++++------
+ cherokee/downloader.h               |    2 +-
+ cherokee/downloader_async.c         |   20 ++--
+ cherokee/downloader_async.h         |    2 +-
+ cherokee/dtm.c                      |    4 +-
+ cherokee/dtm.h                      |    2 +-
+ cherokee/dwriter.c                  |   38 +++---
+ cherokee/dwriter.h                  |    4 +-
+ cherokee/encoder.c                  |   24 ++--
+ cherokee/encoder.h                  |    4 +-
+ cherokee/encoder_deflate.c          |   50 ++++----
+ cherokee/encoder_deflate.h          |    2 +-
+ cherokee/encoder_gzip.c             |   66 +++++-----
+ cherokee/encoder_gzip.h             |    2 +-
+ cherokee/error_log.h                |    2 +-
+ cherokee/errors.py                  |   12 +-
+ cherokee/fastcgi.h                  |    4 +-
+ cherokee/fcgi_dispatcher.c          |   32 +++---
+ cherokee/fcgi_dispatcher.h          |    4 +-
+ cherokee/fcgi_manager.c             |   92 +++++++-------
+ cherokee/fcgi_manager.h             |    6 +-
+ cherokee/fdpoll-epoll.c             |   24 ++--
+ cherokee/fdpoll-kqueue.c            |   16 +-
+ cherokee/fdpoll-poll.c              |   18 ++--
+ cherokee/fdpoll-port.c              |   26 ++--
+ cherokee/fdpoll-protected.h         |    2 +-
+ cherokee/fdpoll-select.c            |   26 ++--
+ cherokee/fdpoll-win32.c             |   28 ++--
+ cherokee/fdpoll.c                   |   78 ++++++------
+ cherokee/fdpoll.h                   |    2 +-
+ cherokee/gen_evhost.c               |   14 +-
+ cherokee/gen_evhost.h               |    2 +-
+ cherokee/handler.c                  |   20 ++--
+ cherokee/handler.h                  |    4 +-
+ cherokee/handler_admin.c            |   28 ++--
+ cherokee/handler_admin.h            |    4 +-
+ cherokee/handler_cgi.c              |  100 +++++++-------
+ cherokee/handler_cgi.h              |    4 +-
+ cherokee/handler_cgi_base.c         |  182 +++++++++++++-------------
+ cherokee/handler_cgi_base.h         |   20 ++--
+ cherokee/handler_common.c           |   36 +++---
+ cherokee/handler_common.h           |    2 +-
+ cherokee/handler_custom_error.c     |   18 ++--
+ cherokee/handler_custom_error.h     |    2 +-
+ cherokee/handler_dbslayer.c         |   74 +++++-----
+ cherokee/handler_dbslayer.h         |    2 +-
+ cherokee/handler_dirlist.h          |    6 +-
+ cherokee/handler_empty_gif.c        |   12 +-
+ cherokee/handler_empty_gif.h        |    4 +-
+ cherokee/handler_error.c            |   32 +++---
+ cherokee/handler_error.h            |    2 +-
+ cherokee/handler_error_nn.c         |   30 ++--
+ cherokee/handler_error_nn.h         |    2 +-
+ cherokee/handler_error_redir.h      |    2 +-
+ cherokee/handler_fastcgi.c          |   78 ++++++------
+ cherokee/handler_fastcgi.h          |    8 +-
+ cherokee/handler_fcgi.c             |  106 ++++++++--------
+ cherokee/handler_fcgi.h             |    4 +-
+ cherokee/handler_file.c             |  100 +++++++-------
+ cherokee/handler_file.h             |    8 +-
+ cherokee/handler_proxy.c            |  132 +++++++++---------
+ cherokee/handler_proxy.h            |    4 +-
+ cherokee/handler_redir.c            |   76 ++++++------
+ cherokee/handler_redir.h            |    2 +-
+ cherokee/handler_render_rrd.c       |   46 ++++----
+ cherokee/handler_render_rrd.h       |    4 +-
+ cherokee/handler_scgi.c             |   66 +++++-----
+ cherokee/handler_scgi.h             |    4 +-
+ cherokee/handler_secdownload.c      |    8 +-
+ cherokee/handler_secdownload.h      |    2 +-
+ cherokee/handler_server_info.c      |   72 +++++-----
+ cherokee/handler_server_info.h      |    4 +-
+ cherokee/handler_ssi.c              |   36 +++---
+ cherokee/handler_ssi.h              |    8 +-
+ cherokee/handler_streaming.c        |   22 ++--
+ cherokee/handler_streaming.h        |    4 +-
+ cherokee/handler_uwsgi.c            |   62 +++++-----
+ cherokee/handler_uwsgi.h            |    4 +-
+ cherokee/header-protected.h         |    6 +-
+ cherokee/header.h                   |    4 +-
+ cherokee/http.c                     |   50 ++++----
+ cherokee/http.h                     |    2 +-
+ cherokee/human_strcmp.c             |   14 +-
+ cherokee/human_strcmp.h             |    2 +-
+ cherokee/icons.c                    |   48 ++++----
+ cherokee/icons.h                    |    4 +-
+ cherokee/info.c                     |    4 +-
+ cherokee/info.h                     |    2 +-
+ cherokee/init.c                     |    6 +-
+ cherokee/init.h                     |    2 +-
+ cherokee/iocache.c                  |   52 ++++----
+ cherokee/iocache.h                  |    4 +-
+ cherokee/levenshtein_distance.c     |    2 +-
+ cherokee/limiter.c                  |    8 +-
+ cherokee/limiter.h                  |    2 +-
+ cherokee/list.c                     |   48 ++++----
+ cherokee/list.h                     |   14 +-
+ cherokee/logger-protected.h         |    2 +-
+ cherokee/logger.c                   |   20 ++--
+ cherokee/logger.h                   |    2 +-
+ cherokee/logger_combined.c          |   12 +-
+ cherokee/logger_combined.h          |    2 +-
+ cherokee/logger_custom.c            |   32 +++---
+ cherokee/logger_custom.h            |    2 +-
+ cherokee/logger_ncsa.c              |   36 +++---
+ cherokee/logger_ncsa.h              |    2 +-
+ cherokee/macros.h                   |   18 ++--
+ cherokee/main.c                     |   66 +++++-----
+ cherokee/main_admin.c               |   38 +++---
+ cherokee/main_tweak.c               |   54 ++++----
+ cherokee/main_worker.c              |   26 ++--
+ cherokee/match.c                    |    6 +-
+ cherokee/match.h                    |    2 +-
+ cherokee/md5.c                      |    2 +-
+ cherokee/md5crypt.c                 |   10 +-
+ cherokee/mime-protected.h           |    2 +-
+ cherokee/mime.c                     |   28 ++--
+ cherokee/mime.h                     |    2 +-
+ cherokee/mime_entry.c               |   12 +-
+ cherokee/mime_entry.h               |    2 +-
+ cherokee/module.c                   |   14 +-
+ cherokee/module.h                   |    4 +-
+ cherokee/ncpus.c                    |    8 +-
+ cherokee/ncpus.h                    |    2 +-
+ cherokee/nonce.c                    |   18 ++--
+ cherokee/nonce.h                    |    2 +-
+ cherokee/nullable.h                 |    2 +-
+ cherokee/plugin.h                   |    4 +-
+ cherokee/plugin_loader.c            |   88 ++++++------
+ cherokee/plugin_loader.h            |    2 +-
+ cherokee/post.c                     |   62 +++++-----
+ cherokee/post.h                     |    2 +-
+ cherokee/proxy_hosts.c              |   14 +-
+ cherokee/proxy_hosts.h              |    6 +-
+ cherokee/regex.c                    |   32 +++---
+ cherokee/regex.h                    |    4 +-
+ cherokee/request.c                  |   34 +++---
+ cherokee/request.h                  |    2 +-
+ cherokee/resolv_cache.c             |   26 ++--
+ cherokee/resolv_cache.h             |    2 +-
+ cherokee/rrd_tools.c                |   18 ++--
+ cherokee/rrd_tools.h                |    2 +-
+ cherokee/rule.c                     |   14 +-
+ cherokee/rule.h                     |    2 +-
+ cherokee/rule_and.c                 |   32 +++---
+ cherokee/rule_and.h                 |    2 +-
+ cherokee/rule_bind.c                |   24 ++--
+ cherokee/rule_bind.h                |    2 +-
+ cherokee/rule_default.c             |   16 +-
+ cherokee/rule_default.h             |    2 +-
+ cherokee/rule_directory.c           |    8 +-
+ cherokee/rule_directory.h           |    2 +-
+ cherokee/rule_exists.c              |   40 +++---
+ cherokee/rule_exists.h              |    2 +-
+ cherokee/rule_extensions.c          |    2 +-
+ cherokee/rule_extensions.h          |    2 +-
+ cherokee/rule_from.c                |   20 ++--
+ cherokee/rule_from.h                |    2 +-
+ cherokee/rule_fullpath.c            |   16 +-
+ cherokee/rule_fullpath.h            |    2 +-
+ cherokee/rule_geoip.c               |   18 ++--
+ cherokee/rule_geoip.h               |    2 +-
+ cherokee/rule_header.c              |   32 +++---
+ cherokee/rule_header.h              |    2 +-
+ cherokee/rule_list.c                |   16 +-
+ cherokee/rule_list.h                |    4 +-
+ cherokee/rule_method.c              |   12 +-
+ cherokee/rule_method.h              |    2 +-
+ cherokee/rule_not.c                 |   18 ++--
+ cherokee/rule_not.h                 |    2 +-
+ cherokee/rule_or.c                  |   32 +++---
+ cherokee/rule_or.h                  |    2 +-
+ cherokee/rule_request.c             |   32 +++---
+ cherokee/rule_request.h             |    2 +-
+ cherokee/rule_url_arg.c             |   28 ++--
+ cherokee/rule_url_arg.h             |    2 +-
+ cherokee/server-protected.h         |    6 +-
+ cherokee/server.h                   |    2 +-
+ cherokee/sha1.c                     |    6 +-
+ cherokee/shm.c                      |   12 +-
+ cherokee/shm.h                      |    2 +-
+ cherokee/socket.c                   |  190 +++++++++++++-------------
+ cherokee/socket.h                   |    6 +-
+ cherokee/source.c                   |   36 +++---
+ cherokee/source.h                   |    4 +-
+ cherokee/source_interpreter.c       |   66 +++++-----
+ cherokee/source_interpreter.h       |    4 +-
+ cherokee/spawner.c                  |   22 ++--
+ cherokee/spawner.h                  |    2 +-
+ cherokee/table.c                    |   52 ++++----
+ cherokee/table.h                    |    2 +-
+ cherokee/template.c                 |   20 ++--
+ cherokee/template.h                 |    2 +-
+ cherokee/thread.c                   |  248 +++++++++++++++++-----------------
+ cherokee/thread.h                   |   18 ++--
+ cherokee/threading.c                |    2 +-
+ cherokee/threading.h                |    4 +-
+ cherokee/trace.c                    |   22 ++--
+ cherokee/trace.h                    |    2 +-
+ cherokee/unix4win32.c               |    2 +-
+ cherokee/unix4win32.h               |    2 +-
+ cherokee/url.c                      |   32 +++---
+ cherokee/url.h                      |    6 +-
+ cherokee/util.c                     |  214 +++++++++++++++---------------
+ cherokee/util.h                     |   18 ++--
+ cherokee/validator.c                |   80 ++++++------
+ cherokee/validator.h                |   14 +-
+ cherokee/validator_authlist.c       |   26 ++--
+ cherokee/validator_authlist.h       |    2 +-
+ cherokee/validator_file.c           |    6 +-
+ cherokee/validator_file.h           |    4 +-
+ cherokee/validator_htdigest.c       |   30 ++--
+ cherokee/validator_htdigest.h       |    2 +-
+ cherokee/validator_htpasswd.c       |   42 +++---
+ cherokee/validator_htpasswd.h       |    2 +-
+ cherokee/validator_ldap.c           |   38 +++---
+ cherokee/validator_ldap.h           |    2 +-
+ cherokee/validator_mysql.c          |   56 ++++----
+ cherokee/validator_mysql.h          |    6 +-
+ cherokee/validator_pam.c            |   32 +++---
+ cherokee/validator_pam.h            |    4 +-
+ cherokee/validator_plain.c          |   30 ++--
+ cherokee/validator_plain.h          |    2 +-
+ cherokee/version.c                  |    8 +-
+ cherokee/version.h                  |    4 +-
+ cherokee/virtual_server.h           |   10 +-
+ cherokee/vrule.c                    |   10 +-
+ cherokee/vrule.h                    |    2 +-
+ cherokee/vrule_rehost.c             |   12 +-
+ cherokee/vrule_rehost.h             |    2 +-
+ cherokee/vrule_target_ip.c          |   20 ++--
+ cherokee/vrule_target_ip.h          |    2 +-
+ cherokee/vrule_wildcard.c           |   18 ++--
+ cherokee/vrule_wildcard.h           |    2 +-
+ cherokee/win32_cherokeeserv.c       |    2 +-
+ cherokee/win32_cservice.c           |    2 +-
+ cherokee/win32_cservice.h           |    2 +-
+ cherokee/win32_misc.h               |    2 +-
+ cherokee/xrealip.c                  |    6 +-
+ cherokee/xrealip.h                  |    2 +-
+ qa/006-Wrong-Protocol.py            |    2 +-
+ qa/020-VirtualHost.py               |    2 +-
+ qa/031-Post+urlencoded2.py          |    2 +-
+ qa/036-DocumentRoot-common.py       |    2 +-
+ qa/037-PHP-post.py                  |    2 +-
+ qa/048-NN.py                        |    2 +-
+ qa/054-ContentRange.py              |    2 +-
+ qa/058-ContentRange-Double.py       |    2 +-
+ qa/062-PAM2.py                      |    2 +-
+ qa/067-PathInfo.py                  |    2 +-
+ qa/081-DocumentRoot-Common-index.py |    2 +-
+ qa/084-RedirParamShow.py            |    2 +-
+ qa/085-AuthUsers.py                 |    2 +-
+ qa/088-CGI-envs.py                  |    2 +-
+ qa/090-Digest.py                    |    2 +-
+ qa/091-Digest2.py                   |    8 +-
+ qa/092-Digest3.py                   |    8 +-
+ qa/100-Digest-htdigest.py           |    8 +-
+ qa/103-ScriptName.py                |    2 +-
+ qa/105-If-Range.py                  |    4 +-
+ qa/106-If-Range2.py                 |    4 +-
+ qa/111-Compac.py                    |    2 +-
+ qa/113-HeaderFile.py                |    2 +-
+ qa/114-HeaderFile2.py               |    2 +-
+ qa/115-Respin.py                    |    4 +-
+ qa/116-RequestTiny.py               |    4 +-
+ qa/118-Request-redir.py             |    2 +-
+ qa/122-Methods.py                   |    4 +-
+ qa/123-ImplicitRedit.py             |    2 +-
+ qa/124-DomainToDir2.py              |    2 +-
+ qa/125-domain-redir1.py             |    2 +-
+ qa/126-SCGI.py                      |    2 +-
+ qa/130-Digest-EmptyPasswd.py        |    8 +-
+ qa/132-file-ContentType.py          |    2 +-
+ qa/138-ChangeUser-cgi.py            |    2 +-
+ qa/139-domain-wildcards1.py         |    4 +-
+ qa/140-SCGI-EmptyVars.py            |    2 +-
+ qa/141-FastCGI-EmptyVars.py         |    2 +-
+ qa/143-ContentRange-NoIO.py         |    2 +-
+ qa/151-SCGI-vars.py                 |    2 +-
+ qa/153-SCGI-vars-root.py            |    2 +-
+ qa/158-RuleHeader1.py               |    2 +-
+ qa/159-RuleHeader2.py               |    2 +-
+ qa/160-RuleNot1.py                  |    2 +-
+ qa/161-RuleNot2.py                  |    2 +-
+ qa/162-RuleAnd1.py                  |    4 +-
+ qa/163-RuleAnd2.py                  |    4 +-
+ qa/164-RuleOr1.py                   |    4 +-
+ qa/165-RuleOr2.py                   |    4 +-
+ qa/166-xsendfile1.py                |    4 +-
+ qa/167-RuleGeoIP.py                 |    2 +-
+ qa/169-Pipermail.py                 |    2 +-
+ qa/170-Error-ContentLength.py       |    2 +-
+ qa/172-Chunked-CGI.py               |    4 +-
+ qa/175-Digest-htdigest-2.py         |   10 +-
+ qa/193-PHP-documentroot.py          |    2 +-
+ qa/197-SOAPAction.py                |    4 +-
+ qa/198-HTTPresponse.py              |    2 +-
+ qa/202-xsendfile2.py                |    4 +-
+ qa/206-AuthType.py                  |    2 +-
+ qa/211-EmptyGif.py                  |    2 +-
+ qa/212-DirList-Hidden.py            |    2 +-
+ qa/217-DoubleEncode.py              |    6 +-
+ qa/218-DrupalRedirect.py            |    2 +-
+ qa/219-Ext-Dot-Pathinfo.py          |    2 +-
+ qa/220-Pathinfo-Slash.py            |    2 +-
+ qa/221-ReHost1.py                   |    2 +-
+ qa/222-EVHost1.py                   |    2 +-
+ qa/224-EVHost3.py                   |    2 +-
+ qa/226-PathInfo-Default.py          |    2 +-
+ qa/230-Fullpath2.py                 |    2 +-
+ qa/231-POST-4extra.py               |    2 +-
+ qa/232-X-Real-IP-CGI.py             |    2 +-
+ qa/233-X-Real-IP-CGI-2.py           |    2 +-
+ qa/234-X-Real-IP-CGI-3.py           |    2 +-
+ qa/235-URL-arg_match1.py            |    2 +-
+ qa/236-URL-arg_match2.py            |    2 +-
+ qa/237-URL-arg_match_all1.py        |    2 +-
+ qa/238-URL-arg_match_all2.py        |    2 +-
+ qa/base.py                          |   34 +++---
+ qa/fcgi.py                          |   26 ++--
+ qa/pyscgi.py                        |    2 +-
+ qa/run-tests.py                     |   10 +-
+ qa/util.py                          |   14 +-
+ 408 files changed, 3214 insertions(+), 3214 deletions(-)
+
+
+2009-12-12  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=3992 git=3333a558f6cc69238183dbd58dfe28a1eb4544f8
+
+    Update translation files.
+    
+ po/admin/de.po    |  361 +++++++++++++++++++++++++++++------------------------
+ po/admin/en.po    |  361 +++++++++++++++++++++++++++++------------------------
+ po/admin/es.po    |  361 +++++++++++++++++++++++++++++------------------------
+ po/admin/nl.po    |  361 +++++++++++++++++++++++++++++------------------------
+ po/admin/sv_SE.po |  361 +++++++++++++++++++++++++++++------------------------
+ po/admin/zh_CN.po |  361 +++++++++++++++++++++++++++++------------------------
+ 6 files changed, 1170 insertions(+), 996 deletions(-)
+
+
+2009-12-12  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=3991 git=48c714e5757e1ac9a3766f3e25c7c25c5119aec9
+
+    Fixes the error logging subsystem. The server was segment-faulting on
+    graceful restart because of this issue. Besides, now the server uses
+    slightly less resources for the error log writers.
+    
+ cherokee/logger_writer.c  |    7 +++----
+ cherokee/virtual_server.c |   19 +++++--------------
+ 2 files changed, 8 insertions(+), 18 deletions(-)
+
+
+2009-12-12  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=3990 git=9932349c473690f72b8857659f513d5b06a5f7bd
+
+    The custom error redirection handler was not preserving the original
+    HTTP error code while sending the new HTTP response. This patch fixes
+    the super-evil bug number #666: http://bugs.cherokee-project.com/666
+    Many thanks to Stanley Rost for reporting this issue.
+    
+ cherokee/connection-protected.h |   11 +-
+ cherokee/connection.c           |  287 ++++++++++++++++++++-------------------
+ cherokee/handler_error_redir.c  |   41 +++---
+ cherokee/server.c               |  194 +++++++++++++-------------
+ cherokee/virtual_server.c       |  104 +++++++-------
+ qa/243-custom-error-1.py        |   33 +++++
+ qa/Makefile.am                  |    3 +-
+ 7 files changed, 361 insertions(+), 312 deletions(-)
+
 2009-12-12  Alvaro Lopez Ortega  <alvaro@octality.com>
             svn=3989 git=53c0a9583897739de22b20b57dd97fdd45de9dea
 
