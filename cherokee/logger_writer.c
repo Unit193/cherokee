@@ -76,6 +76,25 @@ cherokee_logger_writer_new (cherokee_logger_writer_t **writer)
 }
 
 
+ret_t
+cherokee_logger_writer_new_stderr (cherokee_logger_writer_t **writer)
+{
+	ret_t                     ret;
+	cherokee_logger_writer_t *n;
+
+	ret = cherokee_logger_writer_new (&n);
+	if (ret != ret_ok) {
+		return ret_error;
+	}
+
+	n->type        = cherokee_logger_writer_stderr;
+	n->max_bufsize = 0;
+
+	*writer = n;
+	return ret_ok;
+}
+
+
 static ret_t
 logger_writer_close_file (cherokee_logger_writer_t *writer)
 {
@@ -96,9 +115,7 @@ logger_writer_close_file (cherokee_logger_writer_t *writer)
 ret_t
 cherokee_logger_writer_free (cherokee_logger_writer_t *writer)
 {
-	ret_t ret;
-
-	ret = logger_writer_close_file (writer);
+	logger_writer_close_file (writer);
 
 	cherokee_buffer_mrproper (&writer->buffer);
 	cherokee_buffer_mrproper (&writer->filename);
@@ -108,7 +125,8 @@ cherokee_logger_writer_free (cherokee_logger_writer_t *writer)
 
 	free (writer->priv);
 	free (writer);
-	return ret;
+
+	return ret_ok;
 }
 
 static ret_t

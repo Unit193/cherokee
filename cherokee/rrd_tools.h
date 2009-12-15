@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301, USA.
- */ 
+ */
 
 #ifndef CHEROKEE_RRD_TOOLS_H
 #define CHEROKEE_RRD_TOOLS_H
@@ -41,6 +41,7 @@ typedef struct {
 	int                read_fd;
 	pid_t              pid;
 	cherokee_boolean_t exiting;
+	cherokee_boolean_t disabled;
 
 	/* Threading */
 	CHEROKEE_MUTEX_T  (mutex);
