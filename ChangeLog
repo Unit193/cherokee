@@ -1,3 +1,93 @@
+2009-12-16  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=4017 git=978083d1d4345253cdd07dd7c48d830db00d64a3
+
+    Fixes bug #676. The server was crashing whenever PHP (via fastcgi)
+    tried to log an error message: http://bugs.cherokee-project.com/676
+    
+ cherokee/handler_fcgi.c |   13 ++++++-------
+ cherokee/server.c       |   25 +++++++++++++++++++++----
+ cherokee/thread.c       |   27 +++++++++++++++++++++------
+ 3 files changed, 48 insertions(+), 17 deletions(-)
+
+2009-12-16  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=4016 git=6b18515a51da41f9bbcffaf0e412dea169b6166f
+
+    Clarifies the description of some of the I/O cache text entries
+    regarding the cache object lasting. Many thanks to Ivan Chavero for
+    the feedback. Fixes bug #675: http://bugs.cherokee-project.com/675
+    
+ admin/PageAdvanced.py |    4 ++--
+ 1 files changed, 2 insertions(+), 2 deletions(-)
+
+
+2009-12-16  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=4015 git=047dffc91766c38ae4571b116b42809d02d0af2f
+
+    The log cleaning function was pretty broken. It was not removing the
+    unused log writer keys, which was leading cherokee-admin to generate
+    corrupted configuration files under some circumstances.
+    
+ admin/PageVServer.py |   35 +++++++++++++++++++++--------------
+ 1 files changed, 21 insertions(+), 14 deletions(-)
+
+
+2009-12-16  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=4014 git=a0da8d29c665bc33df659b7ab1c1816adb51723f
+
+    Fixes the Internal Error page. It was not working when reporting an
+    error triggered by a POST request.
+    
+ admin/PageError.py |    3 ---
+ 1 files changed, 0 insertions(+), 3 deletions(-)
+
+
+2009-12-16  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=4013 git=d717870edc6511b56588de70a67cb6c82de395cd
+
+    Adapts the default configuration file to the new error logging format.
+    
+ cherokee.conf.sample.pre |    5 +++--
+ 1 files changed, 3 insertions(+), 2 deletions(-)
+
+
+2009-12-15  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=4012 git=e3ccfc14a94c755ff87aa8dc10825db49c303cbf
+
+    Adds a new translation to Brazilian Portuguese. Many thanks to
+    Sérgio H. Berlotto Jr for such a great contribution.
+    
+ admin/consts.py   |    1 +
+ po/admin/LINGUAS  |    2 +-
+ po/admin/pt_BR.po | 3488 +++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 3490 insertions(+), 1 deletions(-)
+
+
+2009-12-15  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=4011 git=63fec79930c9ca6f1191cae73d83907f386ca190
+
+    Cherokee 0.99.36 released
+    
+ configure.in |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+
+2009-12-15  Taher Shihadeh  <taher@unixwars.com>
+            svn=4008 git=5e0567f008cb490057b09c97ff15a90c3c4b87cb
+
+    Removes errnoeus path
+    
+ admin/Wizard_Mono.py |    1 -
+ 1 files changed, 0 insertions(+), 1 deletions(-)
+
+
+2009-12-15  Taher Shihadeh  <taher@unixwars.com>
+            svn=4006 git=a8279219802d92564cd4570c70604bd4b904ec1d
+
+    Fixes problem regarding the migration from socket to TCP port. Addresses issue 672.
+    
+ admin/Wizard_uWSGI.py |    6 +++---
+ 1 files changed, 3 insertions(+), 3 deletions(-)
+
 2009-12-15  Alvaro Lopez Ortega  <alvaro@octality.com>
             svn=4005 git=6ee619d7be9ca2ac6985dd1bda1aba2eb7c885d4
 
