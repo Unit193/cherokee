@@ -1,8 +1,9 @@
-cherokee (0.99.37-1) jaunty; urgency=low
+cherokee (0.99.37-1) unstable; urgency=low
 
   * New Upstream Version
+  * redo nest_log_directory according to upstream changeset 4013
 
- -- Leonel Nunez <leonel@enelserver.com>  Wed, 16 Dec 2009 09:27:16 -0700
+ -- Leonel Nunez <leonel@enelserver.com>  Wed, 16 Dec 2009 09:30:04 -0700
 
 cherokee (0.99.36-1) unstable; urgency=low
 
