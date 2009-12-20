@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301, USA.
- */ 
+ */
 
 #if !defined (CHEROKEE_INSIDE_CHEROKEE_H) && !defined (CHEROKEE_COMPILATION)
 # error "Only <cherokee/cherokee.h> can be included directly, this file may disappear or change contents."
@@ -81,8 +81,6 @@ ret_t cherokee_error_errno_log   (int                    errnumber,
 				  int                    line,
 				  int                    error_num, ...);
 
-ret_t cherokee_error_log_set_log_writer  (cherokee_logger_writer_t  *writer);
-ret_t cherokee_error_log_get_log_writer  (cherokee_logger_writer_t **writer);
-ret_t cherokee_error_log_set_echo_stderr (cherokee_boolean_t         do_echo);
+ret_t cherokee_error_set_default (cherokee_logger_writer_t *writer);
 
 #endif /* CHEROKEE_ERROR_LOG_H */

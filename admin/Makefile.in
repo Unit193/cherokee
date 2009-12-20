@@ -397,7 +397,8 @@ adminpy_SCRIPTS = $(admin_scripts)
 @INSTALL_ADMIN_TRUE@Wizard_uWSGI.py \
 @INSTALL_ADMIN_TRUE@Wizard_Mono.py \
 @INSTALL_ADMIN_TRUE@Wizard_ColdFusion.py \
-@INSTALL_ADMIN_TRUE@Wizard_Concrete5.py
+@INSTALL_ADMIN_TRUE@Wizard_Concrete5.py \
+@INSTALL_ADMIN_TRUE@Wizard_MoinMoin.py
 
 adminpy_DATA = $(admin_data)
 @INSTALL_ADMIN_TRUE@template_data = \
@@ -405,7 +406,8 @@ adminpy_DATA = $(admin_data)
 @INSTALL_ADMIN_TRUE@status.template.html \
 @INSTALL_ADMIN_TRUE@error_not_writable.template.html \
 @INSTALL_ADMIN_TRUE@error_icons_dir_missing.template.html \
-@INSTALL_ADMIN_TRUE@error_couldnt_launch.template.html
+@INSTALL_ADMIN_TRUE@error_couldnt_launch.template.html \
+@INSTALL_ADMIN_TRUE@error_internal.template.html
 
 adminhelpdir = "$(datadir)/cherokee/admin"
 adminhelp_DATA = $(template_data)

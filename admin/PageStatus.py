@@ -141,7 +141,7 @@ class PageStatus (PageMenu, FormHelper):
 
         manager = cherokee_management_get (self._cfg)
         if manager.is_alive():
-            current_pid = str(manager._pid)
+            current_pid = manager._get_pid()
         else:
             current_pid = _("Not running")
 
@@ -158,8 +158,8 @@ class PageStatus (PageMenu, FormHelper):
             txt += '<tr><td class="infolab">%s:</td><td>%s</td></tr>'  % (_("Configuration File"), _('Not Found'))
 
         txt += '</table>'
-        return txt
 
+        return txt
 
     def _render_server_graphs (self):
         txt = '<script type="text/javascript" src="/static/js/graphs.js"></script>';
@@ -181,7 +181,7 @@ class PageStatus (PageMenu, FormHelper):
         txt += '<div id="g6h" class="gbutton"><a onclick="graphChangeInterval(\'6h\')">%s</a></div>' % (_("6 hours"))
         txt += '<div id="g1h" class="gbutton gsel"><a onclick="graphChangeInterval(\'1h\')">%s</a></div>' % (_("1 hour"))
         txt += '</div>'
- 
+
         txt += '<div id="graphdiv">'
         txt += '<img id="graphimg" src="/graphs/server_traffic_1h.png" alt="Graph" />'
         txt += '</div>'

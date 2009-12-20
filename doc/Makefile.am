@@ -3,7 +3,7 @@ ASCIIDOC=python $(top_srcdir)/doc/build/asciidoc.py --conf-file=$(top_srcdir)/do
 SUFFIXES = .txt .html
 
 .txt.html:
-	$(ASCIIDOC) -o $@ $(top_srcdir)/doc/$< 
+	$(ASCIIDOC) -o $@ $(top_srcdir)/doc/$<
 
 doc_DATA = \
 index.html \
@@ -115,6 +115,7 @@ other_goodies.html \
 other_signals.html \
 other_community.html \
 other_errors.html \
+other_graphs.html \
 dev.html \
 dev_debug.html \
 dev_cherokee.conf.html \
@@ -255,7 +256,12 @@ media/images/cookbook_zend1.png \
 media/images/cookbook_joomla.png \
 media/images/proxy_phase1.png \
 media/images/proxy_phase2.png \
-media/images/tracelor.png
+media/images/tracelor.png \
+media/images/other_graphs_timeouts.png \
+media/images/other_graphs_conns.png \
+media/images/other_graphs_logging.png \
+media/images/other_graphs_traffic.png
+
 
 EXTRA_DIST = \
 $(doc_DATA) \

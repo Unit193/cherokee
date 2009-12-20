@@ -1,6 +1,6 @@
 ## Cherokee: Makefile.am  -*- makefile -*-
 
-SUBDIRS = 
+SUBDIRS =
 
 if INSTALL_ADMIN
 SUBDIRS += static
@@ -139,7 +139,8 @@ Wizard_Glassfish.py \
 Wizard_uWSGI.py \
 Wizard_Mono.py \
 Wizard_ColdFusion.py \
-Wizard_Concrete5.py
+Wizard_Concrete5.py \
+Wizard_MoinMoin.py
 endif
 
 adminpy_DATA = $(admin_data)
@@ -151,7 +152,8 @@ default.template.html \
 status.template.html \
 error_not_writable.template.html \
 error_icons_dir_missing.template.html \
-error_couldnt_launch.template.html
+error_couldnt_launch.template.html \
+error_internal.template.html
 endif
 
 adminhelpdir = "$(datadir)/cherokee/admin"

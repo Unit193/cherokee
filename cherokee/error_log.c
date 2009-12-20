@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301, USA.
- */ 
+ */
 
 #include "common-internal.h"
 #include "error_log.h"
@@ -29,35 +29,30 @@
 #include "util.h"
 
 static cherokee_logger_writer_t *default_error_writer = NULL;
-static cherokee_boolean_t        echo_to_stderr       = true;
+
 
 /* Include the error information */
 #include "errors.h"
 
 
 ret_t
-cherokee_error_log_set_log_writer (cherokee_logger_writer_t *writer)
+cherokee_error_set_default (cherokee_logger_writer_t *writer)
 {
 	default_error_writer = writer;
 	return ret_ok;
 }
 
-ret_t
-cherokee_error_log_set_echo_stderr (cherokee_boolean_t do_echo)
-{
-	echo_to_stderr = do_echo;
-	return ret_ok;
-}
-
 
 ret_t
-cherokee_error_log_get_log_writer (cherokee_logger_writer_t **writer)
+cherokee_error_log_default_free (void)
 {
 	if (default_error_writer == NULL) {
 		return ret_not_found;
 	}
 
-	*writer = default_error_writer;
+	cherokee_logger_writer_free (default_error_writer);
+	default_error_writer = NULL;
+
 	return ret_ok;
 }
 
@@ -91,6 +86,7 @@ skip_args (va_list ap, const char *prev_string)
 static ret_t
 report_error (cherokee_buffer_t *buf)
 {
+	ret_t                     ret;
 	cherokee_logger_writer_t *writer = NULL;
 
 	/* 1st Option, the thread variable
@@ -103,21 +99,18 @@ report_error (cherokee_buffer_t *buf)
 		writer = default_error_writer;
 	}
 
-	/* Echo to stderr
+	/* Last resource: Print it to stderr.
 	 */
-	if (echo_to_stderr) {
-		if ((writer == NULL) ||
-		    ((writer != NULL) && (writer->type != cherokee_logger_writer_stderr)))
-		{
-			fprintf (stderr, "%s\n", buf->buf);
-			fflush (stderr);
-		}
+	if ((writer == NULL) || (! writer->initialized)) {
+		fprintf (stderr, "%s\n", buf->buf);
+		fflush (stderr);
+		return ret_ok;
 	}
 
 	/* Do logging
 	 */
-	if ((writer) && (writer->initialized)) {
-		cherokee_buffer_t *writer_log;
+	if (writer->initialized) {
+		cherokee_buffer_t *writer_log = NULL;
 
 		cherokee_logger_writer_get_buf (writer, &writer_log);
 		cherokee_buffer_add_buffer (writer_log, buf);
@@ -127,12 +120,11 @@ report_error (cherokee_buffer_t *buf)
 		return ret_ok;
 	}
 
-	fprintf (stderr, "%s", buf->buf);
 	return ret_ok;
 }
 
 
-static void 
+static void
 render_python_error (cherokee_error_type_t   type,
 		     const char             *filename,
 		     int                     line,
@@ -142,7 +134,7 @@ render_python_error (cherokee_error_type_t   type,
 		     va_list                 ap)
 {
 	cherokee_buffer_t tmp = CHEROKEE_BUF_INIT;
-	
+
 	/* Dict: open */
 	cherokee_buffer_add_char (output, '{');
 
@@ -163,7 +155,7 @@ render_python_error (cherokee_error_type_t   type,
 		SHOULDNT_HAPPEN;
 	}
 	cherokee_buffer_add_str (output, "\", ");
-	
+
 	/* Time */
 	cherokee_buffer_add_str  (output, "'time': \"");
 	cherokee_buf_add_bogonow (output, false);
@@ -216,23 +208,23 @@ render_python_error (cherokee_error_type_t   type,
 	}
 
 	/* Version */
-	cherokee_buffer_add_str (output, "'version': \"");	
+	cherokee_buffer_add_str (output, "'version': \"");
 	cherokee_buffer_add_str (output, PACKAGE_VERSION);
 	cherokee_buffer_add_str (output, "\", ");
 
-	cherokee_buffer_add_str (output, "'compilation_date': \"");	
+	cherokee_buffer_add_str (output, "'compilation_date': \"");
 	cherokee_buffer_add_str (output, __DATE__ " " __TIME__);
 	cherokee_buffer_add_str (output, "\", ");
 
-	cherokee_buffer_add_str (output, "'configure_args': \"");	
+	cherokee_buffer_add_str (output, "'configure_args': \"");
 	cherokee_buffer_clean   (&tmp);
 	cherokee_buffer_add_str (&tmp, CHEROKEE_CONFIG_ARGS);
 	cherokee_buffer_add_escape_html (output, &tmp);
 	cherokee_buffer_add_buffer (output, &tmp);
-	cherokee_buffer_add_str (output, "\", ");	
-	
+	cherokee_buffer_add_str (output, "\", ");
+
 	/* Backtrace */
-	cherokee_buffer_add_str (output, "'backtrace': \"");	
+	cherokee_buffer_add_str (output, "'backtrace': \"");
 #ifdef BACKTRACES_ENABLED
 	cherokee_buffer_clean (&tmp);
 	cherokee_buf_add_backtrace (&tmp, 2, "\\n", "");
@@ -251,7 +243,7 @@ render_python_error (cherokee_error_type_t   type,
 }
 
 
-static void 
+static void
 render_human_error (cherokee_error_type_t   type,
 		    const char             *filename,
 		    int                     line,
@@ -261,12 +253,12 @@ render_human_error (cherokee_error_type_t   type,
 		    va_list                 ap)
 {
 	UNUSED (error_num);
-	
+
 	/* Time */
 	cherokee_buffer_add_char (output, '[');
 	cherokee_buf_add_bogonow (output, false);
 	cherokee_buffer_add_str  (output, "] ");
-	
+
 	/* Error type */
 	switch (type) {
 	case cherokee_err_warning:
@@ -313,7 +305,7 @@ render (cherokee_error_type_t  type,
 	if (unlikely (error->id != error_num)) {
 		return ret_error;
 	}
-	
+
 	/* Format
 	 */
 	if (! NULLB_IS_NULL (cherokee_readable_errors)) {

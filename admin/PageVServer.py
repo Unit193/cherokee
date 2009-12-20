@@ -1,4 +1,5 @@
 import validations
+import util
 
 from Page import *
 from Form import *
@@ -64,6 +65,7 @@ NOTE_EVHOST           = N_('How to support the "Advanced Virtual Hosting" mechan
 NOTE_LOGGER_TEMPLATE  = N_('The following variables are accepted: <br/>${ip_remote}, ${ip_local}, ${protocol}, ${transport}, ${port_server}, ${query_string}, ${request_first_line}, ${status}, ${now}, ${time_secs}, ${time_nsecs}, ${user_remote}, ${request}, ${request_original}, ${vserver_name}')
 NOTE_MATCHING_METHOD  = N_('Allows the selection of domain matching method.')
 NOTE_COLLECTOR        = N_('Whether or not it should collected statistics about the traffic of this virtual server.')
+NOTE_UTC_TIME         = N_('Time standard to use in the log file entries.')
 
 HELPS = [
     ('config_virtual_servers', N_("Virtual Servers")),
@@ -119,6 +121,11 @@ class PageVServer (PageMenu, FormHelper):
                 if not self.has_errors() and re:
                     return re
 
+            elif post.get_val('tmp!clone_rule'):
+                re = self._op_clone_rule (post)
+                if not self.has_errors() and re:
+                    return re
+
             else:
                 # It's updating properties
                 re = self._op_apply_changes (host, uri, post)
@@ -165,7 +172,7 @@ class PageVServer (PageMenu, FormHelper):
         # Build validation list
         validation = DATA_VALIDATION[:]
 
-        # The 'add_new_entry' checking function depends on 
+        # The 'add_new_entry' checking function depends on
         # the whether 'add_new_type' is a directory, an extension
         # or a regular extension
         rule_module = module_obj_factory (_type, self._cfg, "%s!match"%(pre), self.submit_url)
@@ -226,7 +233,7 @@ class PageVServer (PageMenu, FormHelper):
         pre = 'vserver!%s!rule' %(host)
         tmp = self.Dialog(_(RULE_LIST_NOTE))
         tmp += '<div class="rulesdiv">'
-        tmp += self._render_rules_generic (cfg_key    = pre, 
+        tmp += self._render_rules_generic (cfg_key    = pre,
                                           url_prefix = '/vserver/%s'%(host),
                                           priorities = self._priorities)
 
@@ -234,11 +241,16 @@ class PageVServer (PageMenu, FormHelper):
         tmp += self._render_add_rule ("tmp!new_rule")
         tmp += '</div>'
 
+        tmp += '<div class="rulessection" id="clonesection">'
+        tmp += self._render_clone_rule (pre)
+        tmp += '</div>'
+
         tmp += '<div class="rulessection" id="wizardsection">'
         tmp += self._render_wizards (host)
         tmp += '</div>'
 
         tmp += '<div class="rulesbutton"><a id="newsection_b">%s</a></div>' % (_('Add new rule'))
+        tmp += '<div class="rulesbutton"><a id="clonesection_b">%s</a></div>' % (_('Clone rule'))
         tmp += '<div class="rulesbutton"><a id="wizardsection_b">%s</a></div>' % (_('Wizards'))
 
         tmp += '</div>\n'
@@ -249,7 +261,7 @@ class PageVServer (PageMenu, FormHelper):
         if self._cfg.get_val('vserver!%s!user_dir'%(host)):
             tmp += "<br/><hr />"
             pre = 'vserver!%s!user_dir!rule'%(host)
-            tmp += self._render_rules_generic (cfg_key    = pre, 
+            tmp += self._render_rules_generic (cfg_key    = pre,
                                                url_prefix = '/vserver/%s/userdir'%(host),
                                                priorities = self._priorities_userdir)
             tmp += self._render_add_rule ("tmp!new_rule!user_dir")
@@ -286,7 +298,7 @@ class PageVServer (PageMenu, FormHelper):
         self.AddPropEntry (table, _('Ciphers'), '%s!ssl_ciphers' % (pre), _(NOTE_CIPHERS), optional=True)
         self.AddPropOptions_Ajax (table, _('Client Certs. Request'),
                                          '%s!ssl_client_certs' % (pre),
-                                         CLIENT_CERTS, 
+                                         CLIENT_CERTS,
                                          _(NOTE_CLIENT_CERTS))
 
         req_cc = self._cfg.get_val('%s!ssl_client_certs' % (pre))
@@ -307,8 +319,8 @@ class PageVServer (PageMenu, FormHelper):
         txt = '<h2>%s</h2>' % (_('Error Handling hook'))
         table = TableProps()
         e = self.AddPropOptions_Reload_Module (table, _('Error Handler'),
-                                               '%s!error_handler' % (pre), 
-                                               modules_available(ERROR_HANDLERS), 
+                                               '%s!error_handler' % (pre),
+                                               modules_available(ERROR_HANDLERS),
                                                NOTE_ERROR_HANDLER)
         txt += self.Indent(table) + e
         return txt
@@ -317,7 +329,7 @@ class PageVServer (PageMenu, FormHelper):
         # Render
         txt = "<h2>%s</h2>" % (_('Add new rule'))
         table = TableProps()
-        e = self.AddPropOptions_Reload_Module (table, _("Rule Type"), prefix, 
+        e = self.AddPropOptions_Reload_Module (table, _("Rule Type"), prefix,
                                                modules_available(RULES), "")
         txt += self.Indent (str(table) + e)
         return txt
@@ -437,6 +449,7 @@ class PageVServer (PageMenu, FormHelper):
                       $(document).ready(function(){
                         $("table.rulestable tr:odd").addClass("odd");
                         $("#newsection_b").click(function() { openSection('newsection')});
+                        $("#clonesection_b").click(function() { openSection('clonesection')});
                         $("#wizardsection_b").click(function() { openSection('wizardsection')});
                         open_vsec  = get_cookie('open_vsec');
                         if (open_vsec && document.referrer == window.location) {
@@ -445,7 +458,7 @@ class PageVServer (PageMenu, FormHelper):
 
                       });
 
-                      function openSection(section) 
+                      function openSection(section)
                       {
                           document.cookie = "open_vsec="  + section;
                           if (prevSection != '') {
@@ -478,7 +491,7 @@ class PageVServer (PageMenu, FormHelper):
         table = '<table id="wizSel" class="rulestable"><tr><th>Category</th><th>Wizard</th></tr>'
         table += '<tr><td id="wizG"></td><td id="wizL"></td></table>'
 
-        if txt: 
+        if txt:
             txt = _("<h2>Wizards</h2>") + table + txt
 
         return txt
@@ -546,7 +559,7 @@ class PageVServer (PageMenu, FormHelper):
 
         txt += self.Indent(table)
         txt += "<br/>"
-        
+
         # VServer collect statistics
         if not srv_has:
             return txt
@@ -614,7 +627,7 @@ class PageVServer (PageMenu, FormHelper):
         format = self._cfg.get_val(pre)
 
         table = TableProps()
-        self.AddPropOptions_Ajax (table, _('Format'), pre, 
+        self.AddPropOptions_Ajax (table, _('Format'), pre,
                                   modules_available(LOGGERS), _(NOTE_LOGGERS))
 
         if format:
@@ -639,6 +652,7 @@ class PageVServer (PageMenu, FormHelper):
             x_real_ip     = int(self._cfg.get_val('%s!x_real_ip_enabled'%(pre), "0"))
             x_real_ip_all = int(self._cfg.get_val('%s!x_real_ip_access_all'%(pre), "0"))
 
+            self.AddPropOptions (table, _('Time standard'), '%s!utc_time'%(pre), UTC_TIME, _(NOTE_UTC_TIME))
             self.AddPropCheck (table, _('Accept Forwarded IPs'), '%s!x_real_ip_enabled'%(pre), False, _(NOTE_X_REAL_IP))
             if x_real_ip:
                 self.AddPropCheck (table, _('Don\'t check origin'), '%s!x_real_ip_access_all'%(pre), False, _(NOTE_X_REAL_IP_ALL))
@@ -660,8 +674,8 @@ class PageVServer (PageMenu, FormHelper):
 
         table = TableProps()
         e = self.AddPropOptions_Reload_Module (table, _('Matching method'),
-                                               '%s!match' % (pre), 
-                                               modules_available(VRULES), 
+                                               '%s!match' % (pre),
+                                               modules_available(VRULES),
                                                _(NOTE_MATCHING_METHOD))
         txt += self.Indent(table) + e
         return txt
@@ -715,35 +729,42 @@ class PageVServer (PageMenu, FormHelper):
         # Apply changes
         self.ApplyChanges (checkboxes, post, DATA_VALIDATION)
 
-        # Clean old logger properties
-        self._cleanup_logger_cfg (host)
+        # Clean up: Error Log
+        cfg_key = 'vserver!%s!error_writer'%(host)
+        self._cleanup_writer_cfg (cfg_key)
 
-    def _cleanup_logger_cfg (self, host):
-        cfg_key = "vserver!%s!logger" % (host)
-        logger = self._cfg.get_val (cfg_key)
+        # Clean up: Access Log
+        cfg_key = 'vserver!%s!logger!access'%(host)
+        self._cleanup_writer_cfg (cfg_key)
+
+
+    def _cleanup_writer_cfg (self, pre):
+        logger = self._cfg.get_val('%s!type'%(pre))
         if not logger:
-            del(self._cfg['%s!access'%(cfg_key)])
-            del(self._cfg['%s!error'%(cfg_key)])
-            del(self._cfg['%s!all'%(cfg_key)])
+            del (self._cfg[pre])
             return
 
         to_be_deleted = []
-        to_be_deleted.append('%s!all' % cfg_key)
+        to_be_deleted.append('%s!all' %(pre))
 
-        for entry in self._cfg[cfg_key]:
+        for entry in self._cfg[pre]:
+            if entry == 'type':
+                continue
+
             if logger == "stderr" or \
                logger == "syslog":
-                to_be_deleted.append(cfg_key)
+                to_be_deleted.append(entry)
             elif logger == "file" and \
                  entry != "filename":
-                to_be_deleted.append(cfg_key)
+                to_be_deleted.append(entry)
             elif logger == "exec" and \
                  entry != "command":
-                to_be_deleted.append(cfg_key)
+                to_be_deleted.append(entry)
 
         for entry in to_be_deleted:
-            key = "%s!%s" % (cfg_key, entry)
+            key = "%s!%s" % (pre, entry)
             del(self._cfg[key])
+
 
     def _add_logger_template (self, table, prefix, target):
         cfg_key = '%s!%s_template' % (prefix, target)
@@ -751,3 +772,38 @@ class PageVServer (PageMenu, FormHelper):
         if not value:
             self._cfg[cfg_key] = DEFAULT_LOGGER_TEMPLATE
         self.AddPropEntry (table, _('Template: '), cfg_key, _(NOTE_LOGGER_TEMPLATE))
+
+
+    def _render_clone_rule (self, prefix):
+        # Render
+        txt = "<h2>%s</h2>" % (_('Clone rule'))
+        table = Table(2, 1, header_style='width="200px"')
+        table += (_('Rule'),)
+        fo1 = Form ("/vserver", add_submit=False, auto=False)
+
+        clonable = [("", _("Choose a rule.."))]
+        rule_list = self._cfg[prefix].keys()
+        rule_list.sort(reverse=True)
+
+        for r in rule_list[:-1]:
+            pre   = '%s!%s!match' % (prefix, r)
+            # Try to load the rule plugin
+            rule = Rule(self._cfg, pre, self.submit_url, self.errors, 0)
+            name      = rule.get_name()
+            clonable.append(("%s!%s"%(prefix, r), name))
+
+        op1 = self.InstanceOptions ("tmp!clone_rule", clonable, noautosubmit=True)
+        table += (op1[0], SUBMIT_CLONE)
+
+        txt += self.Indent(fo1.Render(str(table)))
+        return txt
+
+    def _op_clone_rule (self, post):
+       rule_source = post.pop('tmp!clone_rule')
+       tmp         = rule_source.split('!')
+       vserver     = '!'.join(tmp[:-2])
+       next_rule   = util.cfg_vsrv_rule_get_next (self._cfg, vserver)
+       rule_target = next_rule[1]
+       error = self._cfg.clone(rule_source, rule_target)
+       if not error:
+           return '/%s'%(rule_target.replace('!','/'))

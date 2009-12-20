@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301, USA.
- */ 
+ */
 
 #include "common-internal.h"
 #include "logger_ncsa.h"
@@ -32,7 +32,7 @@
 
 #ifdef HAVE_SYS_TIME_H
 # include <sys/time.h>
-#else 
+#else
 # include <time.h>
 #endif
 
@@ -89,21 +89,30 @@ cherokee_logger_ncsa_new (cherokee_logger_t         **logger,
 }
 
 
-static void 
-bogotime_callback (void *param) 
+static void
+bogotime_callback (void *param)
 {
-	struct tm *pnow_tm = &cherokee_bogonow_tmloc;
+	struct tm              *pnow_tm;
+	cherokee_logger_ncsa_t *logger   = LOG_NCSA(param);
 
-	UNUSED (param);
-	
+	/* Choose between local and universal time
+	 */
+	if (LOGGER(logger)->utc_time) {
+		pnow_tm = &cherokee_bogonow_tmgmt;
+	} else {
+		pnow_tm = &cherokee_bogonow_tmloc;
+	}
+
+	/* Render the string
+	 */
 	cherokee_buffer_clean  (&now);
-	cherokee_buffer_add_va (&now, 
+	cherokee_buffer_add_va (&now,
 				" [%02d/%s/%d:%02d:%02d:%02d %c%02d%02d] \"",
-				pnow_tm->tm_mday, 
-				month[pnow_tm->tm_mon], 
+				pnow_tm->tm_mday,
+				month[pnow_tm->tm_mon],
 				1900 + pnow_tm->tm_year,
-				pnow_tm->tm_hour, 
-				pnow_tm->tm_min, 
+				pnow_tm->tm_hour,
+				pnow_tm->tm_min,
 				pnow_tm->tm_sec,
 				(cherokee_bogonow_tzloc < 0) ? '-' : '+',
 				(int) (abs(cherokee_bogonow_tzloc) / 60),
@@ -111,7 +120,7 @@ bogotime_callback (void *param)
 }
 
 
-ret_t 
+ret_t
 cherokee_logger_ncsa_init_base (cherokee_logger_ncsa_t    *logger,
 				cherokee_virtual_server_t *vsrv,
 				cherokee_config_node_t    *config)
@@ -146,14 +155,14 @@ cherokee_logger_ncsa_init_base (cherokee_logger_ncsa_t    *logger,
 	 */
 	if (callback_init == 0) {
 		cherokee_buffer_init (&now);
-		cherokee_bogotime_add_callback (bogotime_callback, NULL, 1);
+		cherokee_bogotime_add_callback (bogotime_callback, logger, 1);
 	}
 
 	return ret_ok;
 }
 
 
-ret_t 
+ret_t
 cherokee_logger_ncsa_init (cherokee_logger_ncsa_t *logger)
 {
 	ret_t ret;
@@ -178,7 +187,7 @@ cherokee_logger_ncsa_free (cherokee_logger_ncsa_t *logger)
 }
 
 
-ret_t 
+ret_t
 cherokee_logger_ncsa_flush (cherokee_logger_ncsa_t *logger)
 {
 	return cherokee_logger_writer_flush (logger->writer_access, false);
@@ -281,10 +290,10 @@ build_log_string (cherokee_logger_ncsa_t *logger, cherokee_connection_t *cnt, ch
 		} else {
 			cherokee_buffer_add_str (buf, " \"-\" \"");
 		}
-		
+
 		if (useragent->len > 0) {
 			cherokee_buffer_add_buffer (buf, useragent);
-		} 
+		}
 		cherokee_buffer_add_str (buf, "\"\n");
 	}
 
@@ -297,7 +306,7 @@ cherokee_logger_ncsa_write_access (cherokee_logger_ncsa_t *logger, cherokee_conn
 {
 	ret_t              ret;
 	cherokee_buffer_t *log;
-	
+
 	/* Get the buffer
 	 */
 	cherokee_logger_writer_get_buf (logger->writer_access, &log);
@@ -310,7 +319,7 @@ cherokee_logger_ncsa_write_access (cherokee_logger_ncsa_t *logger, cherokee_conn
 	}
 
 	/* Flush buffer if full
-	 */  
+	 */
 	if (log->len < logger->writer_access->max_bufsize)
 		goto ok;
 
@@ -329,7 +338,7 @@ error:
 }
 
 
-ret_t 
+ret_t
 cherokee_logger_ncsa_reopen (cherokee_logger_ncsa_t *logger)
 {
 	ret_t ret;

@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301, USA.
- */ 
+ */
 
 #include "common-internal.h"
 
@@ -35,7 +35,7 @@
 #include "virtual_server.h"
 #include "util.h"
 
-#define ELAPSE_UPDATE     60 
+#define ELAPSE_UPDATE     60
 #define ENTRIES "rrd"
 
 
@@ -60,6 +60,7 @@ cherokee_rrd_connection_init (cherokee_rrd_connection_t *rrd_conn)
 	rrd_conn->read_fd  = -1;
 	rrd_conn->pid      = -1;
 	rrd_conn->exiting  = false;
+	rrd_conn->disabled = false;
 
 	cherokee_buffer_init (&rrd_conn->tmp);
 	cherokee_buffer_init (&rrd_conn->path_rrdtool);
@@ -109,8 +110,8 @@ cherokee_rrd_connection_configure (cherokee_rrd_connection_t *rrd_conn,
 	} else {
 		ret = cherokee_find_exec_in_path ("rrdtool", &rrd_conn->path_rrdtool);
 		if (ret != ret_ok) {
+			rrd_conn->disabled = true;
 			LOG_ERROR (CHEROKEE_ERROR_RRD_NO_BINARY, getenv("PATH"));
-			return ret_error;
 		}
 	}
 
@@ -122,7 +123,7 @@ cherokee_rrd_connection_configure (cherokee_rrd_connection_t *rrd_conn,
 	} else {
 		cherokee_buffer_add_str (&rrd_conn->path_databases, CHEROKEE_RRD_DIR);
 	}
-	
+
 	/* Build the image cache directory
 	 */
 	cherokee_tmp_dir_copy  (&rrd_conn->path_img_cache);
@@ -155,9 +156,11 @@ cherokee_rrd_connection_spawn (cherokee_rrd_connection_t *rrd_conn)
 	char  *argv[3];
 	int    fds_to[2];
         int    fds_from[2];
-	
+
 	/* Do not spawn if the server it exiting */
-	if (rrd_conn->exiting) { 
+	if ((rrd_conn->exiting) ||
+	    (rrd_conn->disabled))
+	{
 		return ret_ok;
 	}
 
@@ -213,7 +216,7 @@ cherokee_rrd_connection_spawn (cherokee_rrd_connection_t *rrd_conn)
         default:
                 close (fds_from[1]);
                 close (fds_to[0]);
-			 
+
                 rrd_conn->write_fd = fds_to[1];
                 rrd_conn->read_fd  = fds_from[0];
                 rrd_conn->pid      = pid;
@@ -234,15 +237,8 @@ ret_t
 cherokee_rrd_connection_kill (cherokee_rrd_connection_t *rrd_conn,
 			      cherokee_boolean_t         do_kill)
 {
+	int re;
 	int status;
-
-	if (rrd_conn->pid != -1) {
-		if (do_kill) {
-			kill (rrd_conn->pid, SIGINT);
-		}
-		waitpid (rrd_conn->pid, &status, 0);
-		rrd_conn->pid = -1;
-	}
 
 	if (rrd_conn->write_fd) {
 		close (rrd_conn->write_fd);
@@ -252,6 +248,23 @@ cherokee_rrd_connection_kill (cherokee_rrd_connection_t *rrd_conn,
 	if (rrd_conn->read_fd) {
 		close (rrd_conn->read_fd);
 		rrd_conn->read_fd = -1;
+	}
+
+	if (rrd_conn->pid != -1) {
+		if (do_kill) {
+			kill (rrd_conn->pid, SIGTERM);
+		}
+
+		do {
+			re = waitpid (rrd_conn->pid, &status, 0);
+			if ((re < 0) && (errno == EINTR)) {
+				usleep (500 * 1000);
+				continue;
+			}
+			break;
+		} while (true);
+
+		rrd_conn->pid = -1;
 	}
 
 	return ret_ok;
@@ -285,7 +298,7 @@ write_rrdtool (cherokee_rrd_connection_t *rrd_conn,
 		if (written >= (ssize_t) buffer->len) {
 			cherokee_buffer_clean (buffer);
 			return ret_ok;
-				    
+
 		} else if (written > 0) {
 			cherokee_buffer_move_to_begin (buffer, written);
 			continue;
@@ -312,6 +325,12 @@ cherokee_rrd_connection_execute (cherokee_rrd_connection_t *rrd_conn,
 	ret_t ret;
 
 	TRACE (ENTRIES, "Sending to RRDtool: %s", buf->buf);
+
+	/* Might be disabled
+	 */
+	if (unlikely (rrd_conn->disabled)) {
+		return ret_ok;
+	}
 
 	/* Spawn rrdtool
 	 */
@@ -427,7 +446,7 @@ cherokee_rrd_connection_create_srv_db (cherokee_rrd_connection_t *rrd_conn)
 	cherokee_buffer_add_str    (&tmp, "RRA:MIN:0.5:1:600 ");
 	cherokee_buffer_add_str    (&tmp, "RRA:MIN:0.5:6:700 ");
 	cherokee_buffer_add_str    (&tmp, "RRA:MIN:0.5:24:775 ");
-	cherokee_buffer_add_str    (&tmp, "RRA:MIN:0.5:288:797 ");	   
+	cherokee_buffer_add_str    (&tmp, "RRA:MIN:0.5:288:797 ");
 	cherokee_buffer_add_str    (&tmp, "\n");
 
 	/* Exec */
@@ -496,7 +515,7 @@ cherokee_rrd_connection_create_vsrv_db (cherokee_rrd_connection_t *rrd_conn,
 	cherokee_buffer_add_str    (&tmp, "RRA:MIN:0.5:1:600 ");
 	cherokee_buffer_add_str    (&tmp, "RRA:MIN:0.5:6:700 ");
 	cherokee_buffer_add_str    (&tmp, "RRA:MIN:0.5:24:775 ");
-	cherokee_buffer_add_str    (&tmp, "RRA:MIN:0.5:288:797 ");	   
+	cherokee_buffer_add_str    (&tmp, "RRA:MIN:0.5:288:797 ");
 	cherokee_buffer_add_str    (&tmp, "\n");
 
 	/* Exec */

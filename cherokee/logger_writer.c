@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301, USA.
- */ 
+ */
 
 #include "common-internal.h"
 #include "logger_writer.h"
@@ -45,7 +45,7 @@ typedef struct {
 #define PRIV(l) ((priv_t *)(l->priv))
 
 
-ret_t 
+ret_t
 cherokee_logger_writer_new (cherokee_logger_writer_t **writer)
 {
 	CHEROKEE_NEW_STRUCT(n,logger_writer);
@@ -64,11 +64,31 @@ cherokee_logger_writer_new (cherokee_logger_writer_t **writer)
 
 	n->priv = malloc (sizeof(priv_t));
 	if (n->priv == NULL) {
+		free(n);
 		return ret_nomem;
 	}
+
 	CHEROKEE_MUTEX_INIT (&PRIV(n)->mutex, NULL);
-	
 	n->initialized = false;
+
+	*writer = n;
+	return ret_ok;
+}
+
+
+ret_t
+cherokee_logger_writer_new_stderr (cherokee_logger_writer_t **writer)
+{
+	ret_t                     ret;
+	cherokee_logger_writer_t *n;
+
+	ret = cherokee_logger_writer_new (&n);
+	if (ret != ret_ok) {
+		return ret_error;
+	}
+
+	n->type        = cherokee_logger_writer_stderr;
+	n->max_bufsize = 0;
 
 	*writer = n;
 	return ret_ok;
@@ -92,22 +112,21 @@ logger_writer_close_file (cherokee_logger_writer_t *writer)
 }
 
 
-ret_t 
+ret_t
 cherokee_logger_writer_free (cherokee_logger_writer_t *writer)
 {
-	ret_t ret;
-
-	ret = logger_writer_close_file (writer);
+	logger_writer_close_file (writer);
 
 	cherokee_buffer_mrproper (&writer->buffer);
 	cherokee_buffer_mrproper (&writer->filename);
 	cherokee_buffer_mrproper (&writer->command);
 
 	CHEROKEE_MUTEX_DESTROY (&PRIV(writer)->mutex);
-	
+
 	free (writer->priv);
 	free (writer);
-	return ret;
+
+	return ret_ok;
 }
 
 static ret_t
@@ -122,25 +141,25 @@ config_read_type (cherokee_config_node_t         *config,
 		LOG_ERROR_S (CHEROKEE_ERROR_LOGGER_NO_WRITER);
 		return ret_error;
 	}
-	
+
 	if (equal_buf_str (tmp, "syslog")) {
 		*type = cherokee_logger_writer_syslog;
 	} else if (equal_buf_str (tmp, "stderr")) {
 		*type = cherokee_logger_writer_stderr;
 	} else if (equal_buf_str (tmp, "file")) {
-		*type = cherokee_logger_writer_file;				
+		*type = cherokee_logger_writer_file;
 	} else if (equal_buf_str (tmp, "exec")) {
-		*type = cherokee_logger_writer_pipe;		
+		*type = cherokee_logger_writer_pipe;
 	} else {
 		LOG_CRITICAL (CHEROKEE_ERROR_LOGGER_WRITER_UNKNOWN, tmp->buf);
 		return ret_error;
-	}	
+	}
 
 	return ret_ok;
 }
 
 
-ret_t 
+ret_t
 cherokee_logger_writer_configure (cherokee_logger_writer_t *writer, cherokee_config_node_t *config)
 {
 	ret_t              ret;
@@ -158,7 +177,7 @@ cherokee_logger_writer_configure (cherokee_logger_writer_t *writer, cherokee_con
 	switch (writer->type) {
 	case cherokee_logger_writer_file:
 		ret = cherokee_config_node_read (config, "filename", &tmp);
-		if (ret != ret_ok) { 
+		if (ret != ret_ok) {
 			LOG_ERROR (CHEROKEE_ERROR_LOGGER_WRITER_READ, "file");
 			return ret_error;
 		}
@@ -167,7 +186,7 @@ cherokee_logger_writer_configure (cherokee_logger_writer_t *writer, cherokee_con
 
 	case cherokee_logger_writer_pipe:
 		ret = cherokee_config_node_read (config, "command", &tmp);
-		if (ret != ret_ok) { 
+		if (ret != ret_ok) {
 			LOG_ERROR (CHEROKEE_ERROR_LOGGER_WRITER_READ, "exec");
 			return ret_error;
 		}
@@ -182,21 +201,21 @@ cherokee_logger_writer_configure (cherokee_logger_writer_t *writer, cherokee_con
 	ret = cherokee_config_node_read (config, "bufsize", &tmp);
 	if (ret == ret_ok) {
 		int buf_len = atoi (tmp->buf);
-		
+
 		if (buf_len < LOGGER_MIN_BUFSIZE)
 			buf_len = LOGGER_MIN_BUFSIZE;
 		else if (buf_len > LOGGER_MAX_BUFSIZE)
 			buf_len = LOGGER_MAX_BUFSIZE;
-		
+
 		cherokee_buffer_mrproper (&writer->buffer);
 		cherokee_buffer_init (&writer->buffer);
-		
+
 		ret = cherokee_buffer_ensure_size (&writer->buffer, buf_len);
 		if (ret != ret_ok) {
 			LOG_ERROR (CHEROKEE_ERROR_LOGGER_WRITER_ALLOC, writer->max_bufsize);
 			return ret_nomem;
 		}
-		
+
 		writer->max_bufsize = (size_t)buf_len;
 	}
 
@@ -207,24 +226,24 @@ cherokee_logger_writer_configure (cherokee_logger_writer_t *writer, cherokee_con
 static ret_t
 launch_logger_process (cherokee_logger_writer_t *writer)
 {
-#ifdef HAVE_FORK 
+#ifdef HAVE_FORK
 	int   fd;
-	int   to_log_fds[2]; 
-	pid_t pid; 
+	int   to_log_fds[2];
+	pid_t pid;
 
-	if (pipe (to_log_fds)) { 
+	if (pipe (to_log_fds)) {
 		LOG_ERRNO (errno, cherokee_err_error, CHEROKEE_ERROR_LOGGER_WRITER_PIPE, errno);
 		return ret_error;
 	}
 
-	switch (pid = fork()) { 
-	case 0: 
-		/* Child 
+	switch (pid = fork()) {
+	case 0:
+		/* Child
 		 */
-		close (STDIN_FILENO); 
+		close (STDIN_FILENO);
 		dup2 (to_log_fds[0], STDIN_FILENO);
-		close (to_log_fds[0]); 
-		close (to_log_fds[1]); 
+		close (to_log_fds[0]);
+		close (to_log_fds[1]);
 
 		for (fd = 3; fd < 256; fd++)
 			close (fd);
@@ -248,7 +267,7 @@ launch_logger_process (cherokee_logger_writer_t *writer)
 }
 
 
-ret_t 
+ret_t
 cherokee_logger_writer_open (cherokee_logger_writer_t *writer)
 {
 	ret_t ret;
@@ -333,11 +352,11 @@ error:
 }
 
 
-ret_t 
+ret_t
 cherokee_logger_writer_get_buf (cherokee_logger_writer_t *writer, cherokee_buffer_t **buf)
 {
-	*buf = &writer->buffer;
 	CHEROKEE_MUTEX_LOCK (&PRIV(writer)->mutex);
+	*buf = &writer->buffer;
 
 	return ret_ok;
 }
@@ -350,8 +369,8 @@ cherokee_logger_writer_release_buf (cherokee_logger_writer_t *writer)
 }
 
 
-ret_t 
-cherokee_logger_writer_flush (cherokee_logger_writer_t *writer, 
+ret_t
+cherokee_logger_writer_flush (cherokee_logger_writer_t *writer,
 			      cherokee_boolean_t        locked)
 {
 	int   re;
@@ -373,7 +392,7 @@ cherokee_logger_writer_flush (cherokee_logger_writer_t *writer,
 	case cherokee_logger_writer_stderr:
 		/* In this case we ignore errors.
 		 */
-		re = fwrite (writer->buffer.buf, 1, writer->buffer.len, stderr); 
+		re = fwrite (writer->buffer.buf, 1, writer->buffer.len, stderr);
 		if (re != (size_t) writer->buffer.len) {
 			ret = ret_error;
 		}
@@ -452,7 +471,7 @@ cherokee_logger_writer_get_id (cherokee_config_node_t   *config,
 	if (ret != ret_ok) {
 		return ret;
 	}
-	
+
 	switch (type) {
 	case cherokee_logger_writer_syslog:
 		cherokee_buffer_add_str (id, "syslog");
@@ -480,6 +499,6 @@ cherokee_logger_writer_get_id (cherokee_config_node_t   *config,
 		SHOULDNT_HAPPEN;
 		return ret_error;
 	}
-	
+
 	return ret_ok;
 }

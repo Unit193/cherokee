@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301, USA.
- */ 
+ */
 
 #if !defined (CHEROKEE_INSIDE_CHEROKEE_H) && !defined (CHEROKEE_COMPILATION)
 # error "Only <cherokee/cherokee.h> can be included directly, this file may disappear or change contents."
@@ -47,7 +47,7 @@ typedef enum {
 typedef struct {
 	cherokee_list_t                listed;
 	cherokee_logger_writer_types_t type;
-	
+
 	int                            fd;
 	size_t                         max_bufsize;
 	cherokee_buffer_t              buffer;
@@ -62,20 +62,21 @@ typedef struct {
 
 #define LOGGER_WRITER(x) ((cherokee_logger_writer_t *)(x))
 
-ret_t cherokee_logger_writer_new       (cherokee_logger_writer_t **writer);
-ret_t cherokee_logger_writer_free      (cherokee_logger_writer_t  *writer);
+ret_t cherokee_logger_writer_new         (cherokee_logger_writer_t **writer);
+ret_t cherokee_logger_writer_new_stderr  (cherokee_logger_writer_t **writer);
+ret_t cherokee_logger_writer_free        (cherokee_logger_writer_t  *writer);
 
-ret_t cherokee_logger_writer_configure (cherokee_logger_writer_t *writer, cherokee_config_node_t *conf);
+ret_t cherokee_logger_writer_configure   (cherokee_logger_writer_t *writer, cherokee_config_node_t *conf);
 
-ret_t cherokee_logger_writer_open      (cherokee_logger_writer_t *writer);
-ret_t cherokee_logger_writer_reopen    (cherokee_logger_writer_t *writer);
-ret_t cherokee_logger_writer_flush     (cherokee_logger_writer_t *writer, cherokee_boolean_t locked);
+ret_t cherokee_logger_writer_open        (cherokee_logger_writer_t *writer);
+ret_t cherokee_logger_writer_reopen      (cherokee_logger_writer_t *writer);
+ret_t cherokee_logger_writer_flush       (cherokee_logger_writer_t *writer, cherokee_boolean_t locked);
 
 ret_t cherokee_logger_writer_get_buf     (cherokee_logger_writer_t *writer, cherokee_buffer_t **buf);
 ret_t cherokee_logger_writer_release_buf (cherokee_logger_writer_t *writer);
 
 /* Extra */
-ret_t cherokee_logger_writer_get_id    (cherokee_config_node_t *conf, cherokee_buffer_t *id);
+ret_t cherokee_logger_writer_get_id (cherokee_config_node_t *conf, cherokee_buffer_t *id);
 
 CHEROKEE_END_DECLS
 

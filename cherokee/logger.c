@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301, USA.
- */ 
+ */
 
 #include "common-internal.h"
 #include "logger.h"
@@ -37,7 +37,7 @@
 struct cherokee_logger_private {
 	CHEROKEE_MUTEX_T     (mutex);
 	cherokee_boolean_t    backup_mode;
-	cherokee_x_real_ip_t  x_real_ip; 
+	cherokee_x_real_ip_t  x_real_ip;
 };
 
 #define PRIV(x)  (LOGGER(x)->priv)
@@ -59,11 +59,12 @@ cherokee_logger_init_base (cherokee_logger_t      *logger,
 	 */
 	logger->priv         = priv;
 	logger->write_access = NULL;
+	logger->utc_time     = false;
 
 	/* Private
-	 */	
+	 */
 	logger->priv->backup_mode = false;
-	
+
        	CHEROKEE_MUTEX_INIT (&PRIV(logger)->mutex, NULL);
 	cherokee_x_real_ip_init (&logger->priv->x_real_ip);
 
@@ -73,6 +74,8 @@ cherokee_logger_init_base (cherokee_logger_t      *logger,
 	if (ret != ret_ok) {
 		return ret_error;
 	}
+
+	cherokee_config_node_read_bool (config, "utc_time", &logger->utc_time);
 
 	return ret_ok;
 }
@@ -142,7 +145,7 @@ parse_x_real_ip (cherokee_logger_t *logger, cherokee_connection_t *conn)
 	ret_t    ret;
 	cuint_t  len  = 0;
 	char    *val  = NULL;
-	
+
 	/* Look for the X-Real-IP header
 	 */
 	ret = cherokee_header_get_known (&conn->header, header_x_real_ip, &val, &len);
@@ -165,14 +168,14 @@ parse_x_real_ip (cherokee_logger_t *logger, cherokee_connection_t *conn)
 			p++;
 		}
 	}
-	
+
 	/* Is the client allowed to use X-Real-IP?
 	 */
 	ret = cherokee_x_real_ip_is_allowed (&logger->priv->x_real_ip, &conn->socket);
 	if (ret != ret_ok) {
 		return ret_deny;
 	}
-		
+
 	/* Store the X-Real-IP value
 	 */
 	ret = cherokee_buffer_add (&conn->logger_real_ip, val, len);
@@ -193,7 +196,7 @@ cherokee_logger_write_access (cherokee_logger_t *logger, void *conn)
 	if (unlikely (logger->write_access == NULL)) {
 		return ret_error;
 	}
-	
+
 	/* Deal with X-Real-IP
 	 */
 	if (logger->priv->x_real_ip.enabled) {
@@ -213,7 +216,7 @@ cherokee_logger_write_access (cherokee_logger_t *logger, void *conn)
 }
 
 
-ret_t 
+ret_t
 cherokee_logger_reopen (cherokee_logger_t *logger)
 {
 	ret_t ret = ret_error;
@@ -228,7 +231,7 @@ cherokee_logger_reopen (cherokee_logger_t *logger)
 }
 
 
-ret_t 
+ret_t
 cherokee_logger_set_backup_mode (cherokee_logger_t *logger, cherokee_boolean_t active)
 {
 	ret_t ret;
@@ -254,7 +257,7 @@ cherokee_logger_set_backup_mode (cherokee_logger_t *logger, cherokee_boolean_t a
 }
 
 
-ret_t 
+ret_t
 cherokee_logger_get_backup_mode (cherokee_logger_t *logger, cherokee_boolean_t *active)
 {
 	*active = logger->priv->backup_mode;

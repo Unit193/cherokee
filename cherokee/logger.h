@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301, USA.
- */ 
+ */
 
 #if !defined (CHEROKEE_INSIDE_CHEROKEE_H) && !defined (CHEROKEE_COMPILATION)
 # error "Only <cherokee/cherokee.h> can be included directly, this file may disappear or change contents."
@@ -50,6 +50,7 @@ typedef ret_t (* logger_func_write_access_t) (void  *logger, void *conn);
 typedef struct {
 	cherokee_module_t               module;
 	struct cherokee_logger_private *priv;
+	cherokee_boolean_t              utc_time;
 
 	/* Pure virtual methods
 	 */

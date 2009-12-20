@@ -5,8 +5,10 @@ AVAILABLE_LANGUAGES = [
     ('en',           N_('English')),
     ('es',           N_('Spanish')),
     ('de',           N_('German')),
+    ('fr',           N_('French')),
     ('nl',           N_('Dutch')),
     ('sv_SE',        N_('Swedish')),
+    ('po_BR',        N_('Brazilian Portuguese')),
     ('zh_CN',        N_('Chinese Simplified'))
 ]
 
@@ -169,4 +171,9 @@ CLIENT_CERTS = [
 COLLECTORS = [
     ('',         N_('Disabled')),
     ('rrd',      N_('RRDtool graphs'))
+]
+
+UTC_TIME = [
+    ('',         N_('Local time')),
+    ('1',        N_('UTC: Coordinated Universal Time'))
 ]
