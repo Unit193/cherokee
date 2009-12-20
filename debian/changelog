@@ -1,4 +1,4 @@
-cherokee (0.99.31-1) experimental; urgency=low
+cherokee (0.99.37-1) experimental; urgency=low
 
   * New upstream version
   * PENDING BEFORE RELEASE TO UNSTABLE: Should we stop providing *.a/*.la
