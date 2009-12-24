@@ -1,3 +1,332 @@
+2009-12-24  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=4046 git=0b79f403ace92f5a4a07aebca42760d9bbdf878c
+
+    Adds a few missing HTTP return codes. It also document each entry with
+    a reference to the RFC and section where it is defined. Now, all the
+    modern HTTP response codes should be covered.
+    
+ cherokee/http.c |   32 +++++++++++++++++
+ cherokee/http.h |  100 ++++++++++++++++++++++++++++++++++++-------------------
+ 2 files changed, 98 insertions(+), 34 deletions(-)
+
+
+2009-12-23  Taher Shihadeh  <taher@unixwars.com>
+            svn=4045 git=b9a450f23786be5d9efad11e2dd473951017f142
+
+    Some more updates to the docs were needed. Fixes issue 687
+    
+ doc/cookbook_alfresco.txt |    2 +-
+ doc/cookbook_liferay.txt  |    2 +-
+ doc/cookbook_mono.txt     |    2 +-
+ doc/cookbook_moodle.txt   |    2 +-
+ doc/cookbook_sugarcrm.txt |    2 +-
+ 5 files changed, 5 insertions(+), 5 deletions(-)
+
+
+2009-12-23  Taher Shihadeh  <taher@unixwars.com>
+            svn=4044 git=ec42cbad9e85a719835b37731e2593ea4ea4b73c
+
+    Some updates to the docs were needed. More to come. Issue 687
+    
+ doc/cookbook_php.txt        |    3 +++
+ doc/cookbook_phpbb.txt      |    9 ++++++++-
+ doc/cookbook_phpmyadmin.txt |   10 ++++++++++
+ doc/cookbook_redirs.txt     |    4 ++++
+ doc/cookbook_zend.txt       |    9 ++++-----
+ 5 files changed, 29 insertions(+), 6 deletions(-)
+
+
+2009-12-23  Taher Shihadeh  <taher@unixwars.com>
+            svn=4043 git=7b92eedc8e341565b4cdbb47dcbd6a29adc331a3
+
+    Some updates to the Rails recipe. Issue 679.
+    
+ doc/Makefile.am                          |    1 +
+ doc/cookbook_ror.txt                     |   15 +++++++++++----
+ doc/media/images/cookbook_ror_wizard.png |  Bin 0 -> 14995 bytes
+ 3 files changed, 12 insertions(+), 4 deletions(-)
+
+
+2009-12-23  Taher Shihadeh  <taher@unixwars.com>
+            svn=4042 git=1f76bab282485174dedb1716ddcdfa7211ced8c6
+
+    Improves the HotLinking wizard. Addresses issue 686 by fixing the redirection when it uses a banned filetype, and by provinding an extra method to handle the hotlinking protection.
+    
+ admin/Wizard_HotLinking.py |   27 ++++++++++++++++++++++++---
+ 1 files changed, 24 insertions(+), 3 deletions(-)
+
+
+2009-12-23  Taher Shihadeh  <taher@unixwars.com>
+            svn=4041 git=174c373b753f5d26d6c8add0bd7f0d2e10c21af4
+
+    Fixes all the wizards. Empty fields would make them fail. Addresses issue 685.
+    
+ admin/Wizard.py            |    4 ++--
+ admin/Wizard_Alfresco.py   |   12 ++++++------
+ admin/Wizard_ColdFusion.py |    8 ++++----
+ admin/Wizard_Concrete5.py  |    8 ++++----
+ admin/Wizard_Drupal.py     |    8 ++++----
+ admin/Wizard_Glassfish.py  |   12 ++++++------
+ admin/Wizard_Joomla.py     |    8 ++++----
+ admin/Wizard_Liferay.py    |   12 ++++++------
+ admin/Wizard_Mailman.py    |    8 ++++----
+ admin/Wizard_MoinMoin.py   |    8 ++++----
+ admin/Wizard_Mono.py       |   10 +++++-----
+ admin/Wizard_Moodle.py     |    8 ++++----
+ admin/Wizard_RoR.py        |    4 ++++
+ admin/Wizard_Sugar.py      |    4 ++++
+ admin/Wizard_Symfony.py    |    6 ++++++
+ admin/Wizard_Trac.py       |    5 ++++-
+ admin/Wizard_WordPress.py  |    4 ++++
+ admin/Wizard_Zend.py       |    4 ++++
+ admin/Wizard_phpBB.py      |    8 ++++----
+ admin/Wizard_phpMyAdmin.py |    4 ++--
+ admin/Wizard_rTorrent.py   |    5 +++++
+ admin/Wizard_uWSGI.py      |    4 ++++
+ 22 files changed, 94 insertions(+), 60 deletions(-)
+
+
+2009-12-22  Taher Shihadeh  <taher@unixwars.com>
+            svn=4040 git=7f40d88492c0766cf0e087e22455815d74a1eda6
+
+    Fixes phpBB and phpMyadmin wizards. Empty fields would make the wizards fail. Addresses issue 685.
+    
+ admin/Wizard_phpBB.py      |    6 ++++++
+ admin/Wizard_phpMyAdmin.py |    3 +++
+ 2 files changed, 9 insertions(+), 0 deletions(-)
+
+
+2009-12-22  Taher Shihadeh  <taher@unixwars.com>
+            svn=4039 git=a09fb525db2c5cf31bc330caa1de26f8213c62bf
+
+    Empty fields would make the wizards fail. Addresses issue 685.
+    
+ admin/Wizard_Joomla.py   |    6 ++++++
+ admin/Wizard_Liferay.py  |    8 ++++++++
+ admin/Wizard_Mailman.py  |    5 +++++
+ admin/Wizard_MoinMoin.py |    6 ++++++
+ admin/Wizard_Mono.py     |    7 +++++++
+ admin/Wizard_Moodle.py   |    6 ++++++
+ 6 files changed, 38 insertions(+), 0 deletions(-)
+
+
+2009-12-22  Taher Shihadeh  <taher@unixwars.com>
+            svn=4038 git=a26f8b78589c7feb1510fb4541732d6e1aa481d0
+
+    Empty fields would make the wizards fail. Addresses issue 685.
+    
+ admin/Wizard_ColdFusion.py |    6 ++++++
+ admin/Wizard_Concrete5.py  |    6 ++++++
+ admin/Wizard_Drupal.py     |    6 ++++++
+ admin/Wizard_Glassfish.py  |    8 ++++++++
+ 4 files changed, 26 insertions(+), 0 deletions(-)
+
+
+2009-12-22  Taher Shihadeh  <taher@unixwars.com>
+            svn=4037 git=f99da723dd5fcca63800edcd726a27034d7ef476
+
+    Empty fields would make the wizard fail. Addresses issue 685.
+    
+ admin/Wizard.py          |    3 ++-
+ admin/Wizard_Alfresco.py |    8 ++++++++
+ 2 files changed, 10 insertions(+), 1 deletions(-)
+
+
+2009-12-22  Taher Shihadeh  <taher@unixwars.com>
+            svn=4036 git=7362fd16b3830d06ee34c7f84d29419793cebcd8
+
+    Fixes the wizard in line with the previous fix addressing issue 685
+    
+ admin/Wizard_Django.py |    7 ++++++-
+ 1 files changed, 6 insertions(+), 1 deletions(-)
+
+
+2009-12-22  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=4035 git=1e545e0522badcc77f796a8bd9549ed50209c408
+
+    Cherokee-admin was failing when the Django wizard was submitted
+    without filling out the path to the Django project. Fixes bug #685:
+    http://bugs.cherokee-project.com/685
+    
+ admin/Wizard_Django.py |    5 +++++
+ 1 files changed, 5 insertions(+), 0 deletions(-)
+
+
+2009-12-20  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=4034 git=d1477883ecd60978a35910a00077514f5790b38c
+
+    Reverts r4023
+    
+ admin/ModuleUwsgi.py     |   42 ++-------------------------
+ cherokee/handler_uwsgi.c |   71 +++++++++-------------------------------------
+ cherokee/handler_uwsgi.h |   10 ++----
+ 3 files changed, 20 insertions(+), 103 deletions(-)
+
+
+2009-12-18  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=4033 git=ab6b1600cb8554cff3262cc38c746a848c588ed4
+
+    Fixes a PO compilation problem.
+    
+ po/admin/zh_CN.po |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+
+2009-12-18  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=4032 git=bf6653a2149ec3d40edc009f303fd6d5509de42c
+
+    Updates the developers list.
+    
+ developers.py |    6 +++++-
+ 1 files changed, 5 insertions(+), 1 deletions(-)
+
+2009-12-18  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=4031 git=5378ef62bf6fc270ba9c8e428eb4c98bcc4cf9bf
+
+    Fixes the changelog update script. Now, the Changelog can be updated
+    even if there are local commits that have not been pushed upstream.
+    
+ changelog-update.sh |    6 +++---
+ gitlog2changelog.py |    6 ++++++
+ 2 files changed, 9 insertions(+), 3 deletions(-)
+
+
+2009-12-18  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=4030 git=6af3279916b01058d95d810266dfdeba9df66a8a
+
+    Fixes a few compilation warning. Patch by Stefan de Konink.
+    
+ cherokee/admin_client.c   |    2 +-
+ cherokee/config_entry.c   |    2 +-
+ cherokee/cryptor_libssl.c |    3 ++-
+ cherokee/main_admin.c     |    1 +
+ cherokee/source.c         |    2 +-
+ cherokee/spawner.c        |    3 +--
+ cherokee/util.c           |    1 -
+ 7 files changed, 7 insertions(+), 7 deletions(-)
+
+
+2009-12-18  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=4029 git=98bb9657c99f540a49c84ba558782a60e50d27c5
+
+    Removes an old method. I was not used any longer.
+    
+ cherokee/error_log.c |   15 ---------------
+ 1 files changed, 0 insertions(+), 15 deletions(-)
+
+
+2009-12-18  李炅 <lijiong1986@126.com>
+            svn=4028 git=8281113d5433b33e69aa1491ddf6b33f7b64dc0d
+
+    Chinese translation update
+    
+ po/admin/zh_CN.po |   66 ++++++++++++++++++++++++++--------------------------
+ 1 files changed, 33 insertions(+), 33 deletions(-)
+
+
+2009-12-18  李炅 <lijiong1986@126.com>
+            svn=4027 git=bba894d34cc89a53ad115fe63e2041c78c1a7538
+
+    M    zh_CN.po
+    
+ po/admin/zh_CN.po |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+
+2009-12-18  Stefan de Konink <stefan@konink.de>
+            svn=4026 git=9f90c76b7aa511aabeedd5f621cd3fe43add0302
+
+    This updates the Dutch translation with new strings and some corrections to the old translations.
+    
+    Side note:
+    This is my first COMMIT :D :D :D
+    
+ po/admin/nl.po | 2279 +++++++++++++++++++++++++++-----------------------------
+ 1 files changed, 1083 insertions(+), 1196 deletions(-)
+
+
+2009-12-17  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=4024 git=1c6ecd869ff3496234f1cc3c4d7defdf93618921
+
+    When a custom error handler was triggered, the log entry showed a 200
+    HTTP response instead of the original error code. This patch fixes the
+    issue: http://bugs.cherokee-project.com/678
+    
+ cherokee/logger_custom.c |    7 ++++++-
+ cherokee/logger_ncsa.c   |   10 ++++++++--
+ 2 files changed, 14 insertions(+), 3 deletions(-)
+
+
+2009-12-17  Roberto De Ioris <roberto@unbit.it>
+            svn=4023 git=0850006ca385d26dff3d201ebf1820be9dcd7157
+
+    support for upcoming 0.9.4 release of uWSGI (FastFuncs,Spooler,request modifiers,message passing...)
+    
+ admin/ModuleUwsgi.py     |   42 +++++++++++++++++++++++++--
+ cherokee/handler_uwsgi.c |   71 +++++++++++++++++++++++++++++++++++++---------
+ cherokee/handler_uwsgi.h |   10 ++++--
+ 3 files changed, 103 insertions(+), 20 deletions(-)
+
+
+2009-12-17  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=4022 git=a8c66ff3d21db9f795f3a4c9b16d5195cd98a611
+
+    Adds a new property to the proxy handler, so it can be more permissive
+    about incoming malformed headers from the back-end servers.
+    
+ cherokee/error_list.py   |    8 ++++++
+ cherokee/handler_proxy.c |    7 ++++-
+ cherokee/handler_proxy.h |    1 +
+ cherokee/proxy_hosts.c   |   60 ++++++++++++++++++++++++++++++++++++++++++++-
+ cherokee/proxy_hosts.h   |    3 +-
+ 5 files changed, 75 insertions(+), 4 deletions(-)
+
+
+2009-12-16  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=4021 git=5e4f94c0a3132efce7c46d85cc96a25e40c5bfdd
+
+    Fixes a potential memory corruption issue - while clean up on exit.
+    
+ cherokee/main.c |   11 +++++++++--
+ 1 files changed, 9 insertions(+), 2 deletions(-)
+
+
+2009-12-16  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=4020 git=365ef6de164431b44850da8552ff87b049e08e37
+
+    Cherokee 0.99.37 released
+    
+ configure.in |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+
+2009-12-16  Antonio Perez  <aperez@skarcha.com>
+            svn=4019 git=0999bbe42febda23c730a0d2cf8899b02023f343
+
+    Adds the possibility to disable Virtual Servers and Rules.
+    
+ admin/Entry.py                                 |    4 +
+ admin/Page.py                                  |    1 +
+ admin/PageVServer.py                           |   84 +--
+ admin/PageVServers.py                          |   80 +--
+ admin/default.template.html                    |    4 +-
+ admin/static/css/Makefile.am                   |    3 +-
+ admin/static/css/cherokee.css                  |   43 +
+ admin/static/css/jquery.ibutton.css            |  195 ++++
+ admin/static/images/Makefile.am                |    3 +-
+ admin/static/images/ibutton-slider-default.png |  Bin 0 -> 4440 bytes
+ admin/static/js/Makefile.am                    |    3 +-
+ admin/static/js/common.js                      |  125 +++-
+ admin/static/js/jquery-1.2.6.min.js            |   32 -
+ admin/static/js/jquery-1.3.2.min.js            |   19 +
+ admin/static/js/jquery.ibutton.js              |  383 +++++++
+ admin/static/js/ui.core.js                     |  810 ++++++++++------
+ admin/static/js/ui.tabs.js                     | 1284 +++++++++++++-----------
+ cherokee/server.c                              |    7 +-
+ cherokee/virtual_server.c                      |   35 +-
+ 19 files changed, 2054 insertions(+), 1061 deletions(-)
+
+
 2009-12-16  Alvaro Lopez Ortega  <alvaro@octality.com>
             svn=4017 git=978083d1d4345253cdd07dd7c48d830db00d64a3
 
@@ -8,6 +337,7 @@
  cherokee/server.c       |   25 +++++++++++++++++++++----
  cherokee/thread.c       |   27 +++++++++++++++++++++------
  3 files changed, 48 insertions(+), 17 deletions(-)
+
 
 2009-12-16  Alvaro Lopez Ortega  <alvaro@octality.com>
             svn=4016 git=6b18515a51da41f9bbcffaf0e412dea169b6166f
@@ -87,6 +417,7 @@
     
  admin/Wizard_uWSGI.py |    6 +++---
  1 files changed, 3 insertions(+), 3 deletions(-)
+
 
 2009-12-15  Alvaro Lopez Ortega  <alvaro@octality.com>
             svn=4005 git=6ee619d7be9ca2ac6985dd1bda1aba2eb7c885d4
@@ -224,6 +555,7 @@
  cherokee/main.c |    4 ++--
  1 files changed, 2 insertions(+), 2 deletions(-)
 
+
 2009-12-13  Alvaro Lopez Ortega  <alvaro@octality.com>
             svn=3995 git=23deae3c2dc8190875ee7ec59f467a6bf641a988
 
@@ -243,6 +575,7 @@
  po/admin/LINGUAS |    2 +-
  po/admin/fr.po   | 4141 ++++++++++++++++++++++++++++++++++++++++++++++++++++++
  2 files changed, 4142 insertions(+), 1 deletions(-)
+
 
 2009-12-13  Alvaro Lopez Ortega  <alvaro@octality.com>
             svn=3993 git=25b3cb73464c9f79e246bdc3277ec66dfc1b2615
@@ -703,6 +1036,7 @@
  qa/Makefile.am                  |    3 +-
  7 files changed, 361 insertions(+), 312 deletions(-)
 
+
 2009-12-12  Alvaro Lopez Ortega  <alvaro@octality.com>
             svn=3989 git=53c0a9583897739de22b20b57dd97fdd45de9dea
 
@@ -727,6 +1061,7 @@
  admin/server.py                    |   11 ++++++++++-
  4 files changed, 47 insertions(+), 5 deletions(-)
 
+
 2009-12-12  Alvaro Lopez Ortega  <alvaro@octality.com>
             svn=3987 git=5a35b5c79fcbfd90306a5fd6c5d69fc0e1af3da5
 
@@ -734,6 +1069,7 @@
     
  configure.in |    2 +-
  1 files changed, 1 insertions(+), 1 deletions(-)
+
 
 2009-12-12  Alvaro Lopez Ortega  <alvaro@octality.com>
             svn=3985 git=ca865f545174038c3fb51261ca0314144125036b
@@ -816,6 +1152,7 @@
     
  admin/PageVServer.py |    1 +
  1 files changed, 1 insertions(+), 0 deletions(-)
+
 
 2009-12-11  Alvaro Lopez Ortega  <alvaro@octality.com>
             svn=3977 git=3e1efbde733047652191877bd0e0a8b8e52649fd
@@ -946,6 +1283,7 @@
  admin/Wizard_uWSGI.py |    4 +++-
  1 files changed, 3 insertions(+), 1 deletions(-)
 
+
 2009-12-09  Alvaro Lopez Ortega  <alvaro@octality.com>
             svn=3948 git=e8b5c1caa20ba4b5854faa06566c06af4a3efa62
 
@@ -967,6 +1305,7 @@
  po/admin/sv_SE.po |  341 +++++++++++++++++++++++++++++++----------------------
  po/admin/zh_CN.po |  341 +++++++++++++++++++++++++++++++----------------------
  6 files changed, 1197 insertions(+), 852 deletions(-)
+
 
 2009-12-09  Taher Shihadeh  <taher@unixwars.com>
             svn=3946 git=9738cd71324276d75fcd5c056c0d5c95ff8aa4ea
@@ -1055,6 +1394,7 @@
  cherokee/logger_ncsa.c   |   17 +++++++++++++----
  6 files changed, 38 insertions(+), 9 deletions(-)
 
+
 2009-12-04  Alvaro Lopez Ortega  <alvaro@octality.com>
             svn=3932 git=59c61a3f0a97355745c6f658e1a6c931b3890f92
 
@@ -1121,6 +1461,7 @@
  po/admin/generate_POTFILESin.py |   12 ++++++++++++
  1 files changed, 12 insertions(+), 0 deletions(-)
 
+
 2009-12-03  Alvaro Lopez Ortega  <alvaro@octality.com>
             svn=3918 git=0c3e35ac4aabf3f49100a864ab48df320be50fd2
 
@@ -1133,6 +1474,7 @@
  po/admin/sv_SE.po |  894 ++++++++++++++++++++++++++++++++++++++++++++-------
  po/admin/zh_CN.po |  893 ++++++++++++++++++++++++++++++++++++++++++++-------
  6 files changed, 4695 insertions(+), 691 deletions(-)
+
 
 2009-12-02  Alvaro Lopez Ortega  <alvaro@octality.com>
             svn=3917 git=28108933af9670dc9d65ee689f86066905aabf22
@@ -1347,6 +1689,7 @@
  cherokee/connection.c |    6 ++++--
  1 files changed, 4 insertions(+), 2 deletions(-)
 
+
 2009-11-30  Alvaro Lopez Ortega  <alvaro@octality.com>
             svn=3897 git=ad62aa81b205f843896253fe4c06e6a96389ec8d
 
@@ -1354,6 +1697,7 @@
     
  configure.in |    2 +-
  1 files changed, 1 insertions(+), 1 deletions(-)
+
 
 2009-11-29  Alvaro Lopez Ortega  <alvaro@octality.com>
             svn=3895 git=7b2eadeed677ae50c04e8a645912a709f0b61a17
@@ -1389,6 +1733,7 @@
     
  cherokee/handler_proxy.c |   13 ++++++++++---
  1 files changed, 10 insertions(+), 3 deletions(-)
+
 
 2009-11-27  Alvaro Lopez Ortega  <alvaro@octality.com>
             svn=3892 git=511b83ada44b96872d9795ba5c8fe242fcea1036
@@ -1458,6 +1803,7 @@
  doc/dev_qa.txt  |   54 ++++++++++++++++++++++++++++++++++++++++++++++++++++++
  doc/index.txt   |    1 +
  4 files changed, 58 insertions(+), 1 deletions(-)
+
 
 2009-11-27  Alvaro Lopez Ortega  <alvaro@octality.com>
             svn=3885 git=55b496819b4282677051820b55ebd762aae52ea3
@@ -1713,6 +2059,7 @@
  configure.in             |    4 +-
  9 files changed, 346 insertions(+), 272 deletions(-)
 
+
 2009-11-24  Alvaro Lopez Ortega  <alvaro@octality.com>
             svn=3863 git=37eaf780aec0385799d64d8a64b870fdb3368f22
 
@@ -1791,6 +2138,7 @@
  doc/cookbook_uwsgi.txt |   28 ++++++++++++++++++++++++++++
  1 files changed, 28 insertions(+), 0 deletions(-)
 
+
 2009-11-23  Alvaro Lopez Ortega  <alvaro@octality.com>
             svn=3858 git=1f02554587470ffd2be361613a708c059204702d
 
@@ -1854,6 +2202,7 @@
  cherokee/header.c    |   10 +++++-----
  2 files changed, 12 insertions(+), 12 deletions(-)
 
+
 2009-11-20  Alvaro Lopez Ortega  <alvaro@octality.com>
             svn=3852 git=88a34ddb4006678fd955cb28dbdc9bfc7e50b484
 
@@ -1884,6 +2233,7 @@
  cherokee/main_tweak.c   |    2 ++
  cherokee/resolv_cache.c |    3 ++-
  2 files changed, 4 insertions(+), 1 deletions(-)
+
 
 2009-11-20  Alvaro Lopez Ortega  <alvaro@octality.com>
             svn=3849 git=522c89a07d5e63f280acef3a433f334e66b89173
@@ -1951,6 +2301,7 @@
     
  admin/Wizard_Django.py |    6 ++----
  1 files changed, 2 insertions(+), 4 deletions(-)
+
 
 2009-11-19  Alvaro Lopez Ortega  <alvaro@octality.com>
             svn=3842 git=6c4759224a56e79b6b642d2051a78a1d95011f8f
@@ -2034,6 +2385,7 @@
  cherokee/handler_render_rrd.h |    1 +
  2 files changed, 46 insertions(+), 13 deletions(-)
 
+
 2009-11-17  Alvaro Lopez Ortega  <alvaro@octality.com>
             svn=3835 git=53ab1b9d2cd18731eb78b27f84780863927d4ba1
 
@@ -2054,6 +2406,7 @@
  cherokee/collector_rrd.h |    1 -
  2 files changed, 0 insertions(+), 2 deletions(-)
 
+
 2009-11-16  Alvaro Lopez Ortega  <alvaro@octality.com>
             svn=3833 git=827adb4eaee0d0665220ee8f1e6d53f3ff663fcf
 
@@ -2061,6 +2414,7 @@
     
  configure.in |    2 +-
  1 files changed, 1 insertions(+), 1 deletions(-)
+
 
 2009-11-16  Alvaro Lopez Ortega  <alvaro@octality.com>
             svn=3831 git=84d8f271bc46fb4838ff94ec21827643c57a6a87
@@ -2096,6 +2450,7 @@
  cherokee/phpcgi.deps        |    1 -
  configure.in                |    3 +-
  8 files changed, 7 insertions(+), 383 deletions(-)
+
 
 2009-11-16  Taher Shihadeh  <taher@unixwars.com>
             svn=3828 git=d3afadc8f9d8243106fd43e941427b35bf833144
@@ -2138,6 +2493,7 @@
  cherokee/error_list.py |    5 +++--
  1 files changed, 3 insertions(+), 2 deletions(-)
 
+
 2009-11-16  Taher Shihadeh  <taher@unixwars.com>
             svn=3824 git=4f170d6fbfef99411aaa77af2f00e5c25317a756
 
@@ -2154,6 +2510,7 @@
  doc/other_faq.txt               |   30 +-----------
  9 files changed, 138 insertions(+), 41 deletions(-)
 
+
 2009-11-15  Alvaro Lopez Ortega  <alvaro@octality.com>
             svn=3823 git=2d2e0aa1f1362c4f6e820cdbfd20873e096a353f
 
@@ -2162,6 +2519,7 @@
  cherokee/validator_htpasswd.c |   19 ++-----------------
  1 files changed, 2 insertions(+), 17 deletions(-)
 
+
 2009-11-15  Alvaro Lopez Ortega  <alvaro@octality.com>
             svn=3822 git=bfdc63a3e41b0ce71ba73aa4189ce7f93f42469c
 
@@ -2169,6 +2527,7 @@
     
  configure.in |    6 +++++-
  1 files changed, 5 insertions(+), 1 deletions(-)
+
 
 2009-11-15  Alvaro Lopez Ortega  <alvaro@octality.com>
             svn=3821 git=9f3904e9e24dc5c505f05313334057711a43007e
@@ -2190,6 +2549,7 @@
     
  doc/basics_installation_windows.txt |    2 +-
  1 files changed, 1 insertions(+), 1 deletions(-)
+
 
 2009-11-15  Alvaro Lopez Ortega  <alvaro@octality.com>
             svn=3819 git=457a5afa235a2bca57cb5aedb40ccdcc49d6cb91
