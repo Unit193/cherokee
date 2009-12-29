@@ -1,3 +1,67 @@
+2009-12-29  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=4067 git=d4ced03960d105454f1a48457e31dad00aefd610
+
+    Cherokee 0.99.38 was released on Dec 24th.
+    
+ configure.in |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+2009-12-29  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=4066 git=44d3bf1b2e4fc03e6d2bd200bd3eb0705e683e80
+
+    Fixes an escaping issue. File containing forbidden HTML characters
+    could mess up the HTML list of files.
+    
+ cherokee/handler_dirlist.c |    4 +++-
+ 1 files changed, 3 insertions(+), 1 deletions(-)
+
+
+2009-12-29  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=4064 git=469bb058f41089b342a6e024b1e651f79e425ffd
+
+    Do not perform the images usage test if the documentation source files
+    are not found. Many thanks to Barnaby Claydon for reporting the issue.
+    
+ doc/test_images.py |    6 ++++++
+ 1 files changed, 6 insertions(+), 0 deletions(-)
+
+
+2009-12-28  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=4060 git=e8746b8d139001de9896c32109de39afc99451f6
+
+    Fixes bug #690: Cherokee-admin failed to load the Virtual Server page.
+    
+ admin/PageVServers.py |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+
+2009-12-28  Taher Shihadeh  <taher@unixwars.com>
+            svn=4059 git=85810a2b7014739e5501ba0fd65eed159f541b33
+
+    Improves an error description. Issue 578
+    
+ cherokee/error_list.py |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+
+2009-12-27  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=4057 git=2e8d77e9776e5f88f4f7d3e20202dba9b4c60203
+
+    Fixes a typo: s/-ggb/-ggdb/. Thanks to Joe Klemmer, and Stefan de
+    Konink for the report.
+    
+ cherokee.spec.in |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+
+2009-12-24  Taher Shihadeh  <taher@unixwars.com>
+            svn=4049 git=9d075e47139ae6638b2bcd3fb639fdfae5eb10f1
+
+    The script was having trouble with non-ASCII characters.
+    
+ svnlog2changelog.py |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
 2009-12-24  Alvaro Lopez Ortega  <alvaro@octality.com>
             svn=4046 git=0b79f403ace92f5a4a07aebca42760d9bbdf878c
 

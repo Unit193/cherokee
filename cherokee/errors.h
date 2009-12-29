@@ -172,7 +172,7 @@ static const cherokee_error_t __cherokee_errors[] =
   {  143, "Parsing error", "The server could not parse the configuration. Something must be wrong with formation. At this stage the lexical is checked.", NULL, "%s" },
   {  144, "Could not remove temporal file", "The temporal file '%s' could not be removed.", NULL, NULL },
   {  145, "Token not found '%s'", "It seems that the template uses an undefined token.", NULL, NULL },
-  {  146, "Could not initialize SHM '%s': ${errno}", "The issue seems to be related to your system.", NULL, NULL },
+  {  146, "Could not initialize SHM '%s': ${errno}", "Check if your shared memory is mounted in /dev/shm", NULL, NULL },
   {  147, "Could not unlock spawning semaphore %d: ${errno}", "The issue seems to be related to your system.", NULL, NULL },
   {  148, "Unknown HTTP status code %d", NULL, NULL, NULL },
   {  149, "A default icon is needed", "Please, specify a default icon. It is the icon that Cherokee will use whenever no other icon is used.", "/icons", NULL },
