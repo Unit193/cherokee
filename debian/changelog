@@ -1,8 +1,12 @@
 cherokee (0.99.39-1) unstable; urgency=low
 
+  [ Leonel Nunez ]
   * New Upstream Version
 
- -- Leonel Nunez <leonel@enelserver.com>  Tue, 29 Dec 2009 07:17:10 -0700
+  [ Gunnar Wolf ]
+  * Added missing misc:Depends to buinary packages
+
+ -- Gunnar Wolf <gwolf@debian.org>  Wed, 06 Jan 2010 14:14:26 -0600
 
 cherokee (0.99.38-1) unstable; urgency=low
 
