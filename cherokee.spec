@@ -2,7 +2,7 @@
 # Copyright (C) 2001-2007 Alvaro Lopez Ortega
 
 Name:           cherokee
-Version:        0.99.37
+Version:        0.99.39
 Release:        1
 License:        GPL
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
@@ -32,7 +32,7 @@ CFLAGS="$RPM_OPT_FLAGS"                 \
             --mandir=%{_mandir}         \
             --sbindir=%{_sbindir}       \
 		  --with-wwwroot=/home/httpd
-make CFLAGS="-O0 -ggb"
+make CFLAGS="-O0 -ggdb"
 
 %install
 make install DESTDIR=$RPM_BUILD_ROOT

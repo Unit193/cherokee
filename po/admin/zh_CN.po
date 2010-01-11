@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: cherokee '0.99.15' admin UI for zh_CN \n"
+"Project-Id-Version: cherokee '0.99.38' admin UI for zh_CN \n"
 "Report-Msgid-Bugs-To: http://bugs.cherokee-project.com/\n"
-"POT-Creation-Date: 2009-12-16 14:36+0100\n"
+"POT-Creation-Date: 2009-12-29 12:41+0100\n"
 "PO-Revision-Date: 2009-04-14 21:27+CEST\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: ownlinux.cn\n"
@@ -21,7 +21,7 @@ msgstr "不能访问配置文件: "
 msgid "ERROR: Couldn't execute '%s -i'"
 msgstr "错误: 执行 '%s -i' 失败"
 
-#: admin/Entry.py:48
+#: admin/Entry.py:52
 msgid " Enabled"
 msgstr " 允许"
 
@@ -109,7 +109,7 @@ msgid ""
 "A load balancer must be configured to use at least one information source."
 msgstr "负载均衡器要求必须配置至少一个数据源."
 
-#: admin/ModuleBalancer.py:55 admin/Page.py:170 admin/PageInfoSource.py:93
+#: admin/ModuleBalancer.py:55 admin/Page.py:171 admin/PageInfoSource.py:93
 #: admin/PageInfoSource.py:152
 msgid "Information Sources"
 msgstr "数据源"
@@ -121,7 +121,7 @@ msgid "Nick"
 msgstr "名称"
 
 #: admin/ModuleBalancer.py:57 admin/ModuleMysql.py:44
-#: admin/Wizard_ColdFusion.py:106 admin/Wizard_ColdFusion.py:160
+#: admin/Wizard_ColdFusion.py:106 admin/Wizard_ColdFusion.py:163
 msgid "Host"
 msgstr "主机"
 
@@ -147,7 +147,7 @@ msgstr "应用程序服务器"
 
 #: admin/ModuleBind.py:21
 msgid "IP (Port):"
-msgstr ""
+msgstr "IP地址(端口)"
 
 #: admin/ModuleBind.py:22
 #, fuzzy
@@ -192,7 +192,7 @@ msgstr "是"
 #: admin/ModuleBind.py:75
 #, fuzzy
 msgid "Assign new IP/Port"
-msgstr "增加新的端口"
+msgstr "增加新的IP地址/端口"
 
 #: admin/ModuleBind.py:97 admin/ModuleExists.py:71
 #: admin/ModuleExtensions.py:32 admin/ModuleFrom.py:64
@@ -284,11 +284,11 @@ msgstr "允许 X-Sendfile"
 msgid "Read X-Real-IP"
 msgstr "允许 X-Real-IP"
 
-#: admin/ModuleCgi.py:68 admin/PageVServer.py:658
+#: admin/ModuleCgi.py:68 admin/PageVServer.py:611
 msgid "Don't check origin"
 msgstr "不检查来源"
 
-#: admin/ModuleCgi.py:70 admin/PageVServer.py:660
+#: admin/ModuleCgi.py:70 admin/PageVServer.py:613
 #, fuzzy
 msgid "Accept from Hosts"
 msgstr "接受域"
@@ -406,16 +406,16 @@ msgid ""
 msgstr "公共网页目录的内容将应用于配置."
 
 #: admin/ModuleDirectory.py:22 admin/ModuleDirectory.py:24
-#: admin/Wizard_Alfresco.py:142 admin/Wizard_ColdFusion.py:159
-#: admin/Wizard_Concrete5.py:206 admin/Wizard_Django.py:175
-#: admin/Wizard_Django.py:177 admin/Wizard_Drupal.py:228
-#: admin/Wizard_Glassfish.py:139 admin/Wizard_Joomla.py:201
-#: admin/Wizard_Liferay.py:139 admin/Wizard_MoinMoin.py:199
-#: admin/Wizard_Mono.py:159 admin/Wizard_Mono.py:162
-#: admin/Wizard_Moodle.py:159 admin/Wizard_RoR.py:289 admin/Wizard_RoR.py:291
-#: admin/Wizard_Sugar.py:195 admin/Wizard_Symfony.py:194
-#: admin/Wizard_WordPress.py:185 admin/Wizard_Zend.py:163
-#: admin/Wizard_phpBB.py:164 admin/Wizard_phpMyAdmin.py:79
+#: admin/Wizard_Alfresco.py:146 admin/Wizard_ColdFusion.py:162
+#: admin/Wizard_Concrete5.py:209 admin/Wizard_Django.py:182
+#: admin/Wizard_Django.py:184 admin/Wizard_Drupal.py:231
+#: admin/Wizard_Glassfish.py:143 admin/Wizard_Joomla.py:204
+#: admin/Wizard_Liferay.py:143 admin/Wizard_MoinMoin.py:202
+#: admin/Wizard_Mono.py:163 admin/Wizard_Mono.py:166
+#: admin/Wizard_Moodle.py:162 admin/Wizard_RoR.py:291 admin/Wizard_RoR.py:293
+#: admin/Wizard_Sugar.py:197 admin/Wizard_Symfony.py:197
+#: admin/Wizard_WordPress.py:187 admin/Wizard_Zend.py:165
+#: admin/Wizard_phpBB.py:167 admin/Wizard_phpMyAdmin.py:79
 #: admin/Wizard_rTorrent.py:44
 msgid "Web Directory"
 msgstr "网页目录"
@@ -519,14 +519,14 @@ msgid "Error"
 msgstr "错误"
 
 #: admin/ModuleErrorRedir.py:41 admin/ModuleErrorRedir.py:52
-#: admin/Wizard_HotLinking.py:77 admin/consts.py:20
+#: admin/Wizard_HotLinking.py:88 admin/consts.py:20
 msgid "Redirection"
 msgstr "重定向"
 
 #: admin/ModuleErrorRedir.py:41 admin/ModuleErrorRedir.py:52
 #: admin/ModuleRedir.py:35 admin/PageInfoSource.py:246
 #: admin/PageInfoSource.py:274 admin/PageInfoSource.py:302
-#: admin/PageVServer.py:362
+#: admin/PageVServer.py:365
 msgid "Type"
 msgstr "类型"
 
@@ -570,15 +570,15 @@ msgstr "检查符合要求的文件是否存在."
 
 #: admin/ModuleExists.py:12
 msgid "Only match regular files. If unset directories will be matched as well."
-msgstr ""
+msgstr "只匹配常规文件,如果没有设置目录,则将匹配所有目录"
 
 #: admin/ModuleExists.py:13
 msgid "If a directory is request, check the index files inside it."
-msgstr ""
+msgstr "如果请求一个目录,将检查目录里面的index文件"
 
 #: admin/ModuleExists.py:15
 msgid "Match a specific list of files"
-msgstr ""
+msgstr "匹配文件清单"
 
 #: admin/ModuleExists.py:16 admin/ModuleExists.py:57
 msgid "Match any file"
@@ -651,7 +651,7 @@ msgstr "文件传送"
 
 #: admin/ModuleFrom.py:9
 msgid "IP or SubNet to check the connection origin against."
-msgstr ""
+msgstr "检查来源IP地址或子网"
 
 #: admin/ModuleFrom.py:27 admin/ModuleFrom.py:76 admin/consts.py:136
 #, fuzzy
@@ -660,7 +660,7 @@ msgstr "连接"
 
 #: admin/ModuleFrom.py:35
 msgid "IP or SubNet"
-msgstr ""
+msgstr "IP地址或子网"
 
 #: admin/ModuleFrom.py:54
 #, fuzzy
@@ -840,7 +840,7 @@ msgstr "LDAP 链接"
 msgid "The HTTP method that should match this rule."
 msgstr "HTTP 方法将被此规则验证."
 
-#: admin/ModuleMethod.py:48 admin/ModuleMethod.py:51 admin/PageVServer.py:538
+#: admin/ModuleMethod.py:48 admin/ModuleMethod.py:51 admin/PageVServer.py:491
 msgid "Method"
 msgstr "方式"
 
@@ -883,7 +883,7 @@ msgstr "使用MD5密码加密. 只适合\"Basic\" 认证 机制."
 msgid "Unix Socket"
 msgstr "Unix 套接字"
 
-#: admin/ModuleMysql.py:49 admin/ModuleMysql.py:65 admin/Wizard.py:16
+#: admin/ModuleMysql.py:49 admin/ModuleMysql.py:65 admin/Wizard.py:17
 msgid "Database"
 msgstr "数据库"
 
@@ -1021,13 +1021,12 @@ msgid ""
 "Regular expression. Check out the <a target=\"_blank\" href=\"http://perldoc."
 "perl.org/perlre.html\">Reference</a>."
 msgstr ""
-"Regular expression. Check out the <a target=\"_blank\" href=\"http://perldoc."
-"perl.org/perlre.html\">Reference</a>."
+"正则表达式. 请访问 <a target=\"_blank\" href=\"http://perldoc.perl.org/"
+"perlre.html\">perl参考</a>."
 
 #: admin/ModuleRedir.py:11
 msgid "Target address. It can use Regular Expression substitution sub-strings."
-msgstr ""
-"Target address. It can use Regular Expression substitution sub-strings."
+msgstr "目标地址。可以使用正则表达式替换子字符串."
 
 #: admin/ModuleRedir.py:14
 msgid "Redirections"
@@ -1082,12 +1081,12 @@ msgstr ""
 
 #: admin/ModuleRrd.py:7
 msgid "Directory where the RRDtool databases should be written."
-msgstr ""
+msgstr "RRDtool数据库目录必须可写"
 
 #: admin/ModuleRrd.py:8
 msgid ""
 "Path to the rrdtool binary. By default the server will look in the PATH."
-msgstr ""
+msgstr "RRDtool 可执行文件路径.默认情况下,服务器"
 
 #: admin/ModuleRrd.py:24
 msgid "RRD Database directory"
@@ -1195,7 +1194,7 @@ msgstr "开始升高"
 msgid ""
 "IP or Subnet of the NIC that accepted the request. Example: ::1, or "
 "10.0.0.0/8"
-msgstr ""
+msgstr "绑定接受请求的网卡的IP地址或子网,例如: ::1 或 10.0.0.0/8"
 
 #: admin/ModuleTargetIp.py:10
 #, fuzzy
@@ -1204,19 +1203,19 @@ msgstr "至少有一个通配符字符串必须定义."
 
 #: admin/ModuleTargetIp.py:30
 msgid "Accepted Server IP addresses and subnets"
-msgstr ""
+msgstr "应用服务器IP地址和子网"
 
 #: admin/ModuleTargetIp.py:34
 msgid "IP or Subnet"
-msgstr ""
+msgstr "IP地址或子网"
 
 #: admin/ModuleTargetIp.py:61
 msgid "New IP/Subnet"
-msgstr ""
+msgstr "新的IP地址或子网"
 
 #: admin/ModuleUrlArg.py:9
 msgid "Argument name"
-msgstr ""
+msgstr "参数名称"
 
 #: admin/ModuleUrlArg.py:10
 #, fuzzy
@@ -1225,7 +1224,7 @@ msgstr "正则表达式"
 
 #: admin/ModuleUrlArg.py:12
 msgid "Match a specific argument"
-msgstr ""
+msgstr "匹配一个具体参数"
 
 #: admin/ModuleUrlArg.py:13
 #, fuzzy
@@ -1234,12 +1233,12 @@ msgstr "匹配任何文件"
 
 #: admin/ModuleUrlArg.py:33 admin/ModuleUrlArg.py:44
 msgid "Argument"
-msgstr ""
+msgstr "参数"
 
 #: admin/ModuleUrlArg.py:65
 #, python-format
 msgid "Any arg ~= %s"
-msgstr ""
+msgstr "任何参数 ~= %s"
 
 #: admin/ModuleUrlArg.py:72
 #, fuzzy
@@ -1273,75 +1272,75 @@ msgstr "域名模式"
 msgid "New host name"
 msgstr "新主机别名"
 
-#: admin/Page.py:115
+#: admin/Page.py:116
 msgid "Version:"
 msgstr "服务器版本:"
 
-#: admin/Page.py:144
+#: admin/Page.py:145
 msgid "Help"
 msgstr "帮助"
 
-#: admin/Page.py:167 admin/PageAdvanced.py:123 admin/PageStatus.py:60
-#: admin/PageVServer.py:507
+#: admin/Page.py:168 admin/PageAdvanced.py:123 admin/PageStatus.py:60
+#: admin/PageVServer.py:460
 msgid "Status"
 msgstr "状态"
 
-#: admin/Page.py:168
+#: admin/Page.py:169
 msgid "General"
 msgstr "一般设置"
 
-#: admin/Page.py:169 admin/PageVServer.py:71 admin/PageVServers.py:25
+#: admin/Page.py:170 admin/PageVServer.py:71 admin/PageVServers.py:25
 #: admin/PageVServers.py:130
 msgid "Virtual Servers"
 msgstr "虚拟主机设置"
 
-#: admin/Page.py:171 admin/PageIcon.py:12
+#: admin/Page.py:172 admin/PageIcon.py:12
 msgid "Icons"
 msgstr "图标设置"
 
-#: admin/Page.py:172
+#: admin/Page.py:173
 msgid "Mime Types"
 msgstr "Mime 文件类型设置"
 
-#: admin/Page.py:173 admin/PageAdvanced.py:65
+#: admin/Page.py:174 admin/PageAdvanced.py:65
 msgid "Advanced"
 msgstr "高级设置"
 
-#: admin/Page.py:174
+#: admin/Page.py:175
 msgid "Save Changes"
 msgstr "保存修改"
 
-#: admin/Page.py:175
+#: admin/Page.py:176
 msgid "Save"
 msgstr "保存"
 
-#: admin/Page.py:176
+#: admin/Page.py:177
 #, fuzzy
 msgid "Apply"
 msgstr "回复"
 
-#: admin/Page.py:177
+#: admin/Page.py:178
 #, fuzzy
 msgid "Optional"
 msgstr "选项"
 
-#: admin/Page.py:181
+#: admin/Page.py:182
 msgid "Graceful restart"
 msgstr "常规重启"
 
-#: admin/Page.py:182
+#: admin/Page.py:183
 msgid "Hard restart"
 msgstr "强制重启"
 
-#: admin/Page.py:183
+#: admin/Page.py:184
 msgid "Do not restart"
 msgstr "不重启"
 
-#: admin/Page.py:186
+#: admin/Page.py:187
 msgid "Commit to disk and apply changes to the running server"
 msgstr "保存配置文件，并将所做修改应用于服务器"
 
-#: admin/Page.py:189
+#: admin/Page.py:190
 msgid "Commit all the changes permanently"
 msgstr "永久应用所有修改"
 
@@ -1643,17 +1642,17 @@ msgstr ""
 msgid "Behavior rules"
 msgstr "行为规则"
 
-#: admin/PageEntry.py:154 admin/PageInfoSource.py:389 admin/PageVServer.py:781
+#: admin/PageEntry.py:154 admin/PageInfoSource.py:389 admin/PageVServer.py:735
 msgid "Rule"
 msgstr "规则"
 
 #: admin/PageEntry.py:158 admin/PageEntry.py:166 admin/PageEntry.py:168
-#: admin/PageVServer.py:362
+#: admin/PageVServer.py:365
 msgid "Handler"
 msgstr "处理"
 
-#: admin/PageEntry.py:163 admin/PageVServer.py:526 admin/PageVServers.py:274
-#: admin/Wizard_Django.py:112 admin/Wizard_Mono.py:98
+#: admin/PageEntry.py:163 admin/PageVServer.py:479 admin/PageVServers.py:224
+#: admin/Wizard_Django.py:115 admin/Wizard_Mono.py:98
 #: admin/Wizard_uWSGI.py:145
 msgid "Document Root"
 msgstr "根目录"
@@ -1662,7 +1661,7 @@ msgstr "根目录"
 msgid "Encoding"
 msgstr "压缩"
 
-#: admin/PageEntry.py:176 admin/PageVServer.py:362
+#: admin/PageEntry.py:176 admin/PageVServer.py:365
 #, fuzzy
 msgid "Time"
 msgstr "超时"
@@ -1706,7 +1705,7 @@ msgstr "认证"
 
 #: admin/PageEntry.py:250 admin/PageVServer.py:277 admin/PageVServers.py:144
 #: admin/Wizard_Alfresco.py:91 admin/Wizard_ColdFusion.py:109
-#: admin/Wizard_Concrete5.py:134 admin/Wizard_Django.py:120
+#: admin/Wizard_Concrete5.py:134 admin/Wizard_Django.py:123
 #: admin/Wizard_Drupal.py:153 admin/Wizard_Glassfish.py:88
 #: admin/Wizard_Joomla.py:130 admin/Wizard_Liferay.py:88
 #: admin/Wizard_Mailman.py:132 admin/Wizard_MoinMoin.py:148
@@ -1804,7 +1803,7 @@ msgstr "报告"
 msgid "Feedback: Thank you"
 msgstr "反馈信息: 谢谢"
 
-#: admin/PageGeneral.py:12 admin/PageIcon.py:189 admin/PageVServer.py:387
+#: admin/PageGeneral.py:12 admin/PageIcon.py:189 admin/PageVServer.py:394
 #: admin/consts.py:89
 msgid "Default"
 msgstr "默认"
@@ -1885,7 +1884,7 @@ msgstr "快速配置"
 msgid "General Settings"
 msgstr "一般设置"
 
-#: admin/PageGeneral.py:59 admin/PageVServer.py:530
+#: admin/PageGeneral.py:59 admin/PageVServer.py:483
 msgid "Network"
 msgstr "网络"
 
@@ -2130,7 +2129,7 @@ msgstr "数据源"
 msgid "Source"
 msgstr "数据源使用"
 
-#: admin/PageInfoSource.py:337 admin/PageVServers.py:287
+#: admin/PageInfoSource.py:337 admin/PageVServers.py:237
 msgid "Clone as.."
 msgstr "克隆成.."
 
@@ -2150,8 +2149,8 @@ msgstr "数据源使用"
 msgid "Virtual server"
 msgstr "虚拟主机"
 
-#: admin/PageInfoSource.py:481 admin/PageVServers.py:355
-#: admin/PageVServers.py:369 admin/validations.py:259
+#: admin/PageInfoSource.py:481 admin/PageVServers.py:305
+#: admin/PageVServers.py:319 admin/validations.py:259
 msgid "Cannot be empty"
 msgstr "不能为空"
 
@@ -2339,7 +2338,7 @@ msgid "Not running"
 msgstr "服务器没有运行"
 
 #: admin/PageStatus.py:155 admin/PageStatus.py:158 admin/Wizard_uWSGI.py:152
-#: admin/Wizard_uWSGI.py:231
+#: admin/Wizard_uWSGI.py:234
 msgid "Configuration File"
 msgstr "服务器配置文件"
 
@@ -2366,23 +2365,23 @@ msgstr "连接"
 msgid "Connections Timeout"
 msgstr "连接"
 
-#: admin/PageStatus.py:178 admin/PageVServer.py:576
+#: admin/PageStatus.py:178 admin/PageVServer.py:529
 msgid "1 month"
 msgstr ""
 
-#: admin/PageStatus.py:179 admin/PageVServer.py:577
+#: admin/PageStatus.py:179 admin/PageVServer.py:530
 msgid "1 week"
 msgstr ""
 
-#: admin/PageStatus.py:180 admin/PageVServer.py:578
+#: admin/PageStatus.py:180 admin/PageVServer.py:531
 msgid "1 day"
 msgstr ""
 
-#: admin/PageStatus.py:181 admin/PageVServer.py:579
+#: admin/PageStatus.py:181 admin/PageVServer.py:532
 msgid "6 hours"
 msgstr ""
 
-#: admin/PageStatus.py:182 admin/PageVServer.py:580
+#: admin/PageStatus.py:182 admin/PageVServer.py:533
 msgid "1 hour"
 msgstr ""
 
@@ -2561,7 +2560,7 @@ msgstr ""
 
 #: admin/PageVServer.py:68
 msgid "Time standard to use in the log file entries."
-msgstr ""
+msgstr "日志文件使用的时间标准"
 
 #: admin/PageVServer.py:72
 msgid "Loggers"
@@ -2571,7 +2570,7 @@ msgstr "日志"
 msgid "SSL cookbook"
 msgstr "SSL cookbook"
 
-#: admin/PageVServer.py:211 admin/PageVServer.py:222 admin/PageVServers.py:287
+#: admin/PageVServer.py:211 admin/PageVServer.py:222 admin/PageVServers.py:237
 msgid "Virtual Server"
 msgstr "虚拟主机"
 
@@ -2579,17 +2578,17 @@ msgstr "虚拟主机"
 msgid "Basics"
 msgstr "基本配置"
 
-#: admin/PageVServer.py:253 admin/PageVServer.py:779
+#: admin/PageVServer.py:253 admin/PageVServer.py:733
 #, fuzzy
 msgid "Clone rule"
 msgstr "克隆虚拟主机"
 
-#: admin/PageVServer.py:254 admin/PageVServers.py:310
+#: admin/PageVServer.py:254 admin/PageVServers.py:260
 #, fuzzy
 msgid "Wizards"
 msgstr "通配符"
 
-#: admin/PageVServer.py:257 admin/Wizard_HotLinking.py:71
+#: admin/PageVServer.py:257 admin/Wizard_HotLinking.py:82
 msgid "Behavior"
 msgstr "扩展设置"
 
@@ -2641,149 +2640,158 @@ msgstr "错误处理"
 msgid "Rule Type"
 msgstr "规则类型"
 
-#: admin/PageVServer.py:362
-msgid "Target"
-msgstr "目标"
-
-#: admin/PageVServer.py:362 admin/PageVServers.py:144
-msgid "Root"
-msgstr "网站根目录"
-
-#: admin/PageVServer.py:362
-msgid "Auth"
-msgstr "认证"
-
-#: admin/PageVServer.py:362
-msgid "Enc"
-msgstr "压缩"
-
-#: admin/PageVServer.py:362
-msgid "Exp"
-msgstr "到期"
-
-#: admin/PageVServer.py:362
-msgid "Final"
-msgstr "启用"
-
-#: admin/PageVServer.py:495 admin/PageVServers.py:324
-msgid "<h2>Wizards</h2>"
-msgstr "新建向导"
-
-#: admin/PageVServer.py:500
-msgid "/~user directories"
-msgstr "/~user 目录"
-
-#: admin/PageVServer.py:506
-msgid "Disable"
-msgstr "禁止"
-
-#: admin/PageVServer.py:509
-msgid "Directory name"
-msgstr "目录名"
-
-#: admin/PageVServer.py:519
-msgid "Server ID"
-msgstr "服务器 ID"
-
-#: admin/PageVServer.py:521
-msgid "Virtual Server nickname"
-msgstr "虚拟主机名称"
-
-#: admin/PageVServer.py:524
-msgid "Paths"
-msgstr "路径"
-
-#: admin/PageVServer.py:527
-msgid "Directory Indexes"
-msgstr "目录首页设置"
-
-#: admin/PageVServer.py:532
-msgid "Keep-alive"
-msgstr "保持活动连接"
-
-#: admin/PageVServer.py:533
-msgid "Max Upload Size"
-msgstr "允许上传大小"
-
-#: admin/PageVServer.py:536
-msgid "Advanced Virtual Hosting"
-msgstr "高级虚拟主机"
-
-#: admin/PageVServer.py:553
+#: admin/PageVServer.py:360
 #, fuzzy
-msgid "Statistics"
-msgstr "流量统计"
+msgid "Enabled"
+msgstr " 允许"
 
-#: admin/PageVServer.py:556 admin/PageVServer.py:558
-#, fuzzy
-msgid "Collect Statistics"
-msgstr "流量统计"
-
-#: admin/PageVServer.py:602
-#, fuzzy
-msgid "Error logging"
-msgstr "错误处理机制"
-
-#: admin/PageVServer.py:608 admin/consts.py:172
+#: admin/PageVServer.py:361 admin/PageVServer.py:561 admin/consts.py:172
 #, fuzzy
 msgid "Disabled"
 msgstr "禁止"
 
-#: admin/PageVServer.py:612
+#: admin/PageVServer.py:365
+msgid "Target"
+msgstr "目标"
+
+#: admin/PageVServer.py:365 admin/PageVServers.py:144
+msgid "Root"
+msgstr "网站根目录"
+
+#: admin/PageVServer.py:365
+msgid "Auth"
+msgstr "认证"
+
+#: admin/PageVServer.py:365
+msgid "Enc"
+msgstr "压缩"
+
+#: admin/PageVServer.py:365
+msgid "Exp"
+msgstr "到期"
+
+#: admin/PageVServer.py:365
+msgid "Final"
+msgstr "启用"
+
+#: admin/PageVServer.py:365 admin/PageVServers.py:144
+msgid "Active"
+msgstr ""
+
+#: admin/PageVServer.py:448 admin/PageVServers.py:274
+msgid "<h2>Wizards</h2>"
+msgstr "新建向导"
+
+#: admin/PageVServer.py:453
+msgid "/~user directories"
+msgstr "/~user 目录"
+
+#: admin/PageVServer.py:459
+msgid "Disable"
+msgstr "禁止"
+
+#: admin/PageVServer.py:462
+msgid "Directory name"
+msgstr "目录名"
+
+#: admin/PageVServer.py:472
+msgid "Server ID"
+msgstr "服务器 ID"
+
+#: admin/PageVServer.py:474
+msgid "Virtual Server nickname"
+msgstr "虚拟主机名称"
+
+#: admin/PageVServer.py:477
+msgid "Paths"
+msgstr "路径"
+
+#: admin/PageVServer.py:480
+msgid "Directory Indexes"
+msgstr "目录首页设置"
+
+#: admin/PageVServer.py:485
+msgid "Keep-alive"
+msgstr "保持活动连接"
+
+#: admin/PageVServer.py:486
+msgid "Max Upload Size"
+msgstr "允许上传大小"
+
+#: admin/PageVServer.py:489
+msgid "Advanced Virtual Hosting"
+msgstr "高级虚拟主机"
+
+#: admin/PageVServer.py:506
+#, fuzzy
+msgid "Statistics"
+msgstr "流量统计"
+
+#: admin/PageVServer.py:509 admin/PageVServer.py:511
+#, fuzzy
+msgid "Collect Statistics"
+msgstr "流量统计"
+
+#: admin/PageVServer.py:555
+#, fuzzy
+msgid "Error logging"
+msgstr "错误处理机制"
+
+#: admin/PageVServer.py:565
 #, fuzzy
 msgid "Write errors to"
 msgstr "Writers"
 
-#: admin/PageVServer.py:616 admin/PageVServer.py:639
+#: admin/PageVServer.py:569 admin/PageVServer.py:592
 msgid "Filename"
 msgstr "文件名"
 
-#: admin/PageVServer.py:618 admin/PageVServer.py:641
+#: admin/PageVServer.py:571 admin/PageVServer.py:594
 msgid "Command"
 msgstr "命令"
 
-#: admin/PageVServer.py:623
+#: admin/PageVServer.py:576
 msgid "Access logging"
 msgstr ""
 
-#: admin/PageVServer.py:630
+#: admin/PageVServer.py:583
 msgid "Format"
 msgstr "格式"
 
-#: admin/PageVServer.py:635
+#: admin/PageVServer.py:588
 msgid "Accesses"
 msgstr "访问"
 
-#: admin/PageVServer.py:655
+#: admin/PageVServer.py:608
 msgid "Time standard"
 msgstr ""
 
-#: admin/PageVServer.py:656
+#: admin/PageVServer.py:609
 msgid "Accept Forwarded IPs"
 msgstr "接受转发IPs"
 
-#: admin/PageVServer.py:662
+#: admin/PageVServer.py:615
 #, fuzzy
 msgid "Logging Option"
 msgstr "启用日志"
 
-#: admin/PageVServer.py:669
+#: admin/PageVServer.py:622
 msgid "Host names"
 msgstr "主机名称"
 
-#: admin/PageVServer.py:676
+#: admin/PageVServer.py:629
 msgid "Matching method"
 msgstr "匹配方法"
 
-#: admin/PageVServer.py:727
+#: admin/PageVServer.py:681
 msgid "Filename must be set"
 msgstr "必须设置文件名"
 
-#: admin/PageVServer.py:774
+#: admin/PageVServer.py:728
 msgid "Template: "
 msgstr "日志格式: "
 
-#: admin/PageVServer.py:784
+#: admin/PageVServer.py:738
 #, fuzzy
 msgid "Choose a rule.."
 msgstr "选择.."
@@ -2803,7 +2811,7 @@ msgstr ""
 msgid "Virtual Servers configuration"
 msgstr "虚拟主机配置"
 
-#: admin/PageVServers.py:144 admin/PageVServers.py:274
+#: admin/PageVServers.py:144 admin/PageVServers.py:224
 msgid "Nickname"
 msgstr "名称"
 
@@ -2821,11 +2829,11 @@ msgstr "状态"
 msgid "Offline"
 msgstr "关闭"
 
-#: admin/PageVServers.py:280 admin/PageVServers.py:308
+#: admin/PageVServers.py:230 admin/PageVServers.py:258
 msgid "Add new Virtual Server"
 msgstr "新建一个虚拟主机"
 
-#: admin/PageVServers.py:299 admin/PageVServers.py:309
+#: admin/PageVServers.py:249 admin/PageVServers.py:259
 msgid "Clone Virtual Server"
 msgstr "克隆虚拟主机"
 
@@ -2887,41 +2895,46 @@ msgstr "克隆"
 
 #: admin/Wizard.py:8
 msgid "Use the same logging configuration as one of the other virtual servers."
-msgstr ""
+msgstr "其他虚拟主机的日志使用相同配置"
 
-#: admin/Wizard.py:10
+#: admin/Wizard.py:9 admin/Wizard_Redirect.py:13
+#, fuzzy
+msgid "This field can not be empty."
+msgstr "界限不能为空"
+
+#: admin/Wizard.py:11
 msgid "Misc"
 msgstr ""
 
-#: admin/Wizard.py:11
+#: admin/Wizard.py:12
 msgid "CMS"
 msgstr ""
 
-#: admin/Wizard.py:12
-msgid "Tasks"
-msgstr ""
-
 #: admin/Wizard.py:13
-msgid "Platforms"
-msgstr ""
+msgid "Tasks"
+msgstr "任务"
 
 #: admin/Wizard.py:14
+msgid "Platforms"
+msgstr "平台"
+
+#: admin/Wizard.py:15
 #, fuzzy
 msgid "Languages"
 msgstr "语言"
 
-#: admin/Wizard.py:15
+#: admin/Wizard.py:16
 msgid "Management"
-msgstr ""
+msgstr "管理"
 
-#: admin/Wizard.py:22
+#: admin/Wizard.py:23
 #, fuzzy
 msgid "Unknown wizard"
-msgstr "未知"
+msgstr "未知向导"
 
-#: admin/Wizard.py:208
+#: admin/Wizard.py:209
 msgid "Same logs as vserver"
-msgstr ""
+msgstr "和虚拟主机使用同一个日志文件"
 
 #: admin/Wizard_Alfresco.py:18 admin/Wizard_ColdFusion.py:19
 #: admin/Wizard_Django.py:14 admin/Wizard_Glassfish.py:18
@@ -2934,11 +2947,11 @@ msgstr "PID文件的路径. 为空则不建立PID文件"
 
 #: admin/Wizard_Alfresco.py:19
 msgid "Hostname or IP of the server running Alfresco."
-msgstr ""
+msgstr "服务器主机名或IP地址"
 
 #: admin/Wizard_Alfresco.py:20 admin/Wizard_Liferay.py:20
 msgid "Port running the service in said host."
-msgstr ""
+msgstr "运行服务的主机端口"
 
 #: admin/Wizard_Alfresco.py:21 admin/Wizard_Liferay.py:21
 msgid "Web folder under which Liferay will be accessible."
@@ -2946,15 +2959,15 @@ msgstr ""
 
 #: admin/Wizard_Alfresco.py:65
 msgid "New virtual server based on a Alfresco project."
-msgstr ""
+msgstr "新虚拟主机基于Alfresco项目"
 
-#: admin/Wizard_Alfresco.py:71 admin/Wizard_Alfresco.py:131
+#: admin/Wizard_Alfresco.py:71 admin/Wizard_Alfresco.py:135
 #, fuzzy
 msgid "Alfresco Wizard"
 msgstr "重定向"
 
 #: admin/Wizard_Alfresco.py:80 admin/Wizard_ColdFusion.py:99
-#: admin/Wizard_Django.py:109 admin/Wizard_Glassfish.py:77
+#: admin/Wizard_Django.py:112 admin/Wizard_Glassfish.py:77
 #: admin/Wizard_Liferay.py:77 admin/Wizard_Mailman.py:120
 #: admin/Wizard_MoinMoin.py:138 admin/Wizard_Mono.py:95
 #: admin/Wizard_RoR.py:191 admin/Wizard_Trac.py:103 admin/Wizard_uWSGI.py:142
@@ -2963,7 +2976,7 @@ msgid "New Virtual Server"
 msgstr "虚拟主机"
 
 #: admin/Wizard_Alfresco.py:82 admin/Wizard_ColdFusion.py:101
-#: admin/Wizard_Concrete5.py:130 admin/Wizard_Django.py:111
+#: admin/Wizard_Concrete5.py:130 admin/Wizard_Django.py:114
 #: admin/Wizard_Drupal.py:149 admin/Wizard_Glassfish.py:79
 #: admin/Wizard_Joomla.py:126 admin/Wizard_Liferay.py:79
 #: admin/Wizard_Mailman.py:122 admin/Wizard_MoinMoin.py:140
@@ -2977,29 +2990,29 @@ msgstr "新主机别名"
 
 #: admin/Wizard_Alfresco.py:85
 msgid "Alfresco project"
-msgstr ""
+msgstr "Alfresco 项目"
 
-#: admin/Wizard_Alfresco.py:87 admin/Wizard_Alfresco.py:143
-#: admin/Wizard_Glassfish.py:84 admin/Wizard_Glassfish.py:140
-#: admin/Wizard_Liferay.py:84 admin/Wizard_Liferay.py:140
+#: admin/Wizard_Alfresco.py:87 admin/Wizard_Alfresco.py:147
+#: admin/Wizard_Glassfish.py:84 admin/Wizard_Glassfish.py:144
+#: admin/Wizard_Liferay.py:84 admin/Wizard_Liferay.py:144
 #, fuzzy
 msgid "Source host"
 msgstr "数据源使用"
 
-#: admin/Wizard_Alfresco.py:88 admin/Wizard_Alfresco.py:144
-#: admin/Wizard_Glassfish.py:85 admin/Wizard_Glassfish.py:141
-#: admin/Wizard_Liferay.py:85 admin/Wizard_Liferay.py:141
+#: admin/Wizard_Alfresco.py:88 admin/Wizard_Alfresco.py:148
+#: admin/Wizard_Glassfish.py:85 admin/Wizard_Glassfish.py:145
+#: admin/Wizard_Liferay.py:85 admin/Wizard_Liferay.py:145
 #, fuzzy
 msgid "Source port"
 msgstr "支持"
 
-#: admin/Wizard_Alfresco.py:125
+#: admin/Wizard_Alfresco.py:129
 msgid "New directory based on a Alfresco project."
-msgstr ""
+msgstr "新目录基于Alfresco项目"
 
-#: admin/Wizard_Alfresco.py:140
+#: admin/Wizard_Alfresco.py:144
 msgid "Alfresco Project"
-msgstr ""
+msgstr "Alfresco项目"
 
 #: admin/Wizard_ColdFusion.py:20
 msgid ""
@@ -3019,12 +3032,12 @@ msgstr ""
 msgid "New virtual server to proxy a ColdFusion host."
 msgstr ""
 
-#: admin/Wizard_ColdFusion.py:90 admin/Wizard_ColdFusion.py:148
+#: admin/Wizard_ColdFusion.py:90 admin/Wizard_ColdFusion.py:151
 #, fuzzy
 msgid "ColdFusion Wizard"
 msgstr "重定向"
 
-#: admin/Wizard_ColdFusion.py:142
+#: admin/Wizard_ColdFusion.py:145
 msgid "New directory to proxy a Coldfusion host."
 msgstr ""
 
@@ -3041,8 +3054,8 @@ msgid "Common files have been already configured."
 msgstr ""
 
 #: admin/Wizard_CommonStatic.py:45 admin/Wizard_Icons.py:63
-#: admin/Wizard_MoinMoin.py:225 admin/Wizard_PHP.py:192
-#: admin/Wizard_Streaming.py:43 admin/Wizard_rTorrent.py:77
+#: admin/Wizard_MoinMoin.py:231 admin/Wizard_PHP.py:192
+#: admin/Wizard_Streaming.py:43 admin/Wizard_rTorrent.py:82
 #, fuzzy
 msgid "Couldn't add a new rule."
 msgstr "添加新的规则"
@@ -3087,40 +3100,40 @@ msgstr ""
 msgid "Configure a new virtual server using Concrete5."
 msgstr ""
 
-#: admin/Wizard_Concrete5.py:118 admin/Wizard_Concrete5.py:191
+#: admin/Wizard_Concrete5.py:118 admin/Wizard_Concrete5.py:194
 msgid "Concrete5 Wizard"
 msgstr ""
 
-#: admin/Wizard_Concrete5.py:131 admin/Wizard_Concrete5.py:207
-#: admin/Wizard_Drupal.py:150 admin/Wizard_Drupal.py:229
-#: admin/Wizard_Joomla.py:127 admin/Wizard_Joomla.py:202
-#: admin/Wizard_MoinMoin.py:200 admin/Wizard_Moodle.py:88
-#: admin/Wizard_Moodle.py:160 admin/Wizard_Sugar.py:121
-#: admin/Wizard_Sugar.py:196 admin/Wizard_WordPress.py:112
-#: admin/Wizard_WordPress.py:186 admin/Wizard_Zend.py:96
-#: admin/Wizard_Zend.py:164 admin/Wizard_phpBB.py:92 admin/Wizard_phpBB.py:165
+#: admin/Wizard_Concrete5.py:131 admin/Wizard_Concrete5.py:210
+#: admin/Wizard_Drupal.py:150 admin/Wizard_Drupal.py:232
+#: admin/Wizard_Joomla.py:127 admin/Wizard_Joomla.py:205
+#: admin/Wizard_MoinMoin.py:203 admin/Wizard_Moodle.py:88
+#: admin/Wizard_Moodle.py:163 admin/Wizard_Sugar.py:121
+#: admin/Wizard_Sugar.py:198 admin/Wizard_WordPress.py:112
+#: admin/Wizard_WordPress.py:188 admin/Wizard_Zend.py:96
+#: admin/Wizard_Zend.py:166 admin/Wizard_phpBB.py:92 admin/Wizard_phpBB.py:168
 #: admin/Wizard_phpMyAdmin.py:80
 #, fuzzy
 msgid "Source Directory"
 msgstr "网页目录"
 
-#: admin/Wizard_Concrete5.py:164 admin/Wizard_Drupal.py:183
-#: admin/Wizard_Joomla.py:160 admin/Wizard_Moodle.py:121
-#: admin/Wizard_PHP.py:167 admin/Wizard_Sugar.py:154
-#: admin/Wizard_Symfony.py:158 admin/Wizard_WordPress.py:145
-#: admin/Wizard_Zend.py:129 admin/Wizard_phpBB.py:125
-#: admin/Wizard_phpMyAdmin.py:104
+#: admin/Wizard_Concrete5.py:167 admin/Wizard_Drupal.py:186
+#: admin/Wizard_Joomla.py:163 admin/Wizard_Moodle.py:124
+#: admin/Wizard_PHP.py:167 admin/Wizard_Sugar.py:156
+#: admin/Wizard_Symfony.py:161 admin/Wizard_WordPress.py:147
+#: admin/Wizard_Zend.py:131 admin/Wizard_phpBB.py:128
+#: admin/Wizard_phpMyAdmin.py:107
 msgid "Couldn't find a suitable PHP interpreter."
 msgstr ""
 
-#: admin/Wizard_Concrete5.py:185
+#: admin/Wizard_Concrete5.py:188
 msgid "Configures Concrete5 inside a public web directory."
 msgstr ""
 
-#: admin/Wizard_Concrete5.py:198 admin/Wizard_Drupal.py:220
-#: admin/Wizard_Joomla.py:193 admin/Wizard_Moodle.py:151
-#: admin/Wizard_Sugar.py:187 admin/Wizard_Symfony.py:186
-#: admin/Wizard_WordPress.py:177 admin/Wizard_Zend.py:157
+#: admin/Wizard_Concrete5.py:201 admin/Wizard_Drupal.py:223
+#: admin/Wizard_Joomla.py:196 admin/Wizard_Moodle.py:154
+#: admin/Wizard_Sugar.py:189 admin/Wizard_Symfony.py:189
+#: admin/Wizard_WordPress.py:179 admin/Wizard_Zend.py:159
 #: admin/Wizard_phpMyAdmin.py:71
 msgid "PHP support is required."
 msgstr ""
@@ -3129,39 +3142,53 @@ msgstr ""
 msgid "Local path to the Django based project."
 msgstr ""
 
-#: admin/Wizard_Django.py:16
+#: admin/Wizard_Django.py:15
+#, fuzzy
+msgid "Web directory that will give access to the project."
+msgstr "新目录基于Alfresco项目"
+
+#: admin/Wizard_Django.py:17
 msgid "It does not look like a Django based project directory."
 msgstr ""
 
-#: admin/Wizard_Django.py:17 admin/Wizard_RoR.py:24
+#: admin/Wizard_Django.py:18 admin/Wizard_RoR.py:24
 msgid "The document root directory does not exist."
 msgstr ""
 
-#: admin/Wizard_Django.py:60
+#: admin/Wizard_Django.py:19
+#, fuzzy
+msgid "A name for the virtual server is required."
+msgstr "虚拟主机名称."
+
+#: admin/Wizard_Django.py:20
+msgid "A web directory is required."
+msgstr ""
+
+#: admin/Wizard_Django.py:63
 msgid "Directory doesn't look like a Django based project."
 msgstr ""
 
-#: admin/Wizard_Django.py:94
+#: admin/Wizard_Django.py:97
 msgid "New virtual server based on a Django project."
 msgstr ""
 
-#: admin/Wizard_Django.py:100 admin/Wizard_Django.py:166
+#: admin/Wizard_Django.py:103 admin/Wizard_Django.py:173
 #, fuzzy
 msgid "Django Wizard"
 msgstr "通配符"
 
-#: admin/Wizard_Django.py:115 admin/Wizard_Django.py:180
+#: admin/Wizard_Django.py:118 admin/Wizard_Django.py:187
 msgid "Django Project"
 msgstr ""
 
-#: admin/Wizard_Django.py:117 admin/Wizard_Django.py:182
-#: admin/Wizard_Mono.py:104 admin/Wizard_Mono.py:168 admin/Wizard_RoR.py:204
-#: admin/Wizard_RoR.py:302 admin/Wizard_Trac.py:110
+#: admin/Wizard_Django.py:120 admin/Wizard_Django.py:189
+#: admin/Wizard_Mono.py:104 admin/Wizard_Mono.py:172 admin/Wizard_RoR.py:204
+#: admin/Wizard_RoR.py:304 admin/Wizard_Trac.py:110
 #, fuzzy
 msgid "Project Directory"
 msgstr "网页目录"
 
-#: admin/Wizard_Django.py:160
+#: admin/Wizard_Django.py:167
 msgid "New directory based on a Django project."
 msgstr ""
 
@@ -3183,12 +3210,12 @@ msgstr ""
 msgid "Configure a new virtual server using Drupal."
 msgstr ""
 
-#: admin/Wizard_Drupal.py:137 admin/Wizard_Drupal.py:213
+#: admin/Wizard_Drupal.py:137 admin/Wizard_Drupal.py:216
 #, fuzzy
 msgid "Drupal Wizard"
 msgstr "通配符"
 
-#: admin/Wizard_Drupal.py:207
+#: admin/Wizard_Drupal.py:210
 msgid "Configures Drupal inside a public web directory."
 msgstr ""
 
@@ -3210,15 +3237,15 @@ msgstr ""
 msgid "New virtual server to proxy Glassfish projects."
 msgstr ""
 
-#: admin/Wizard_Glassfish.py:68 admin/Wizard_Glassfish.py:128
+#: admin/Wizard_Glassfish.py:68 admin/Wizard_Glassfish.py:132
 msgid "Glassfish Wizard"
 msgstr ""
 
-#: admin/Wizard_Glassfish.py:82 admin/Wizard_Glassfish.py:137
+#: admin/Wizard_Glassfish.py:82 admin/Wizard_Glassfish.py:141
 msgid "Glassfish Project"
 msgstr ""
 
-#: admin/Wizard_Glassfish.py:122
+#: admin/Wizard_Glassfish.py:126
 msgid "New directory to proxy Glassfish projects."
 msgstr ""
 
@@ -3238,25 +3265,39 @@ msgstr ""
 msgid "A domain name is required"
 msgstr ""
 
-#: admin/Wizard_HotLinking.py:48
+#: admin/Wizard_HotLinking.py:52
+#, fuzzy
+msgid "Show error"
+msgstr "显示用户"
+
+#: admin/Wizard_HotLinking.py:53
+#, fuzzy
+msgid "Redirect"
+msgstr "重定向"
+
+#: admin/Wizard_HotLinking.py:54 admin/consts.py:33
+msgid "1x1 Transparent GIF"
+msgstr "1x1 透明 GIF"
+
+#: admin/Wizard_HotLinking.py:59
 msgid "Stop other domains from hot-linking your media files."
 msgstr ""
 
-#: admin/Wizard_HotLinking.py:54
+#: admin/Wizard_HotLinking.py:65
 msgid "Hot Linking Prevention Wizard"
 msgstr ""
 
-#: admin/Wizard_HotLinking.py:66
+#: admin/Wizard_HotLinking.py:77
 #, fuzzy
 msgid "Local Host Name"
 msgstr "新主机别名"
 
-#: admin/Wizard_HotLinking.py:68
+#: admin/Wizard_HotLinking.py:79
 #, fuzzy
 msgid "Domain Name"
 msgstr "域名模式"
 
-#: admin/Wizard_HotLinking.py:73
+#: admin/Wizard_HotLinking.py:84
 #, fuzzy
 msgid "Reply type"
 msgstr "回复"
@@ -3294,12 +3335,12 @@ msgstr ""
 msgid "Configure a new virtual server using Joomla."
 msgstr ""
 
-#: admin/Wizard_Joomla.py:114 admin/Wizard_Joomla.py:186
+#: admin/Wizard_Joomla.py:114 admin/Wizard_Joomla.py:189
 #, fuzzy
 msgid "Joomla Wizard"
 msgstr "通配符"
 
-#: admin/Wizard_Joomla.py:180
+#: admin/Wizard_Joomla.py:183
 msgid "Configures Joomla inside a public web directory."
 msgstr ""
 
@@ -3311,16 +3352,16 @@ msgstr ""
 msgid "New virtual server based on a Liferay project."
 msgstr ""
 
-#: admin/Wizard_Liferay.py:68 admin/Wizard_Liferay.py:128
+#: admin/Wizard_Liferay.py:68 admin/Wizard_Liferay.py:132
 #, fuzzy
 msgid "Liferay Wizard"
 msgstr "通配符"
 
-#: admin/Wizard_Liferay.py:82 admin/Wizard_Liferay.py:137
+#: admin/Wizard_Liferay.py:82 admin/Wizard_Liferay.py:141
 msgid "Liferay Project"
 msgstr ""
 
-#: admin/Wizard_Liferay.py:122
+#: admin/Wizard_Liferay.py:126
 msgid "New directory based on a Liferay project."
 msgstr ""
 
@@ -3393,7 +3434,7 @@ msgstr ""
 msgid "New virtual server based on a Moinmoin Wiki Instance."
 msgstr ""
 
-#: admin/Wizard_MoinMoin.py:128 admin/Wizard_MoinMoin.py:189
+#: admin/Wizard_MoinMoin.py:128 admin/Wizard_MoinMoin.py:192
 #, fuzzy
 msgid "Moinmoin Wizard"
 msgstr "通配符"
@@ -3407,7 +3448,7 @@ msgstr ""
 msgid "Moinmoin Directory"
 msgstr "路径不是目录"
 
-#: admin/Wizard_MoinMoin.py:183
+#: admin/Wizard_MoinMoin.py:186
 msgid "Configures a Moinmoin Wiki Instance inside a public web directory."
 msgstr ""
 
@@ -3434,21 +3475,23 @@ msgid "Could not find the fastcgi Mono server binary"
 msgstr "不能启动服务器"
 
 #: admin/Wizard_Mono.py:83
+#, fuzzy
 msgid "New virtual server based on a .NET/Mono project."
-msgstr ""
+msgstr "新虚拟主机基于Alfresco项目"
 
-#: admin/Wizard_Mono.py:89 admin/Wizard_Mono.py:153
+#: admin/Wizard_Mono.py:89 admin/Wizard_Mono.py:157
 #, fuzzy
 msgid ".NET/Mono Wizard"
 msgstr "通配符"
 
-#: admin/Wizard_Mono.py:101 admin/Wizard_Mono.py:165
+#: admin/Wizard_Mono.py:101 admin/Wizard_Mono.py:169
 msgid "Mono Project"
 msgstr ""
 
-#: admin/Wizard_Mono.py:147
+#: admin/Wizard_Mono.py:151
+#, fuzzy
 msgid "New directory based on a .NET/Mono project."
-msgstr ""
+msgstr "新目录基于Alfresco项目"
 
 #: admin/Wizard_Moodle.py:17
 msgid ""
@@ -3469,7 +3512,7 @@ msgstr ""
 msgid "Configures Moodle e-learning platform on a new virtual server."
 msgstr ""
 
-#: admin/Wizard_Moodle.py:75 admin/Wizard_Moodle.py:144
+#: admin/Wizard_Moodle.py:75 admin/Wizard_Moodle.py:147
 #, fuzzy
 msgid "Moodle Wizard"
 msgstr "通配符"
@@ -3511,11 +3554,6 @@ msgstr ""
 #, fuzzy
 msgid "Domain name to which requests will be redirected."
 msgstr "正在表达式将决定哪些请求将被执行."
-
-#: admin/Wizard_Redirect.py:13
-#, fuzzy
-msgid "This field can not be empty."
-msgstr "界限不能为空"
 
 #: admin/Wizard_Redirect.py:43
 msgid "New virtual server redirecting every request to another domain host."
@@ -3586,23 +3624,23 @@ msgstr ""
 msgid "New virtual server based on a Ruby on Rails project."
 msgstr ""
 
-#: admin/Wizard_RoR.py:185 admin/Wizard_RoR.py:283
+#: admin/Wizard_RoR.py:185 admin/Wizard_RoR.py:285
 msgid "Ruby on Rails Wizard"
 msgstr ""
 
-#: admin/Wizard_RoR.py:196 admin/Wizard_RoR.py:294
+#: admin/Wizard_RoR.py:196 admin/Wizard_RoR.py:296
 msgid "Ruby on Rails Project"
 msgstr ""
 
-#: admin/Wizard_RoR.py:205 admin/Wizard_RoR.py:303
+#: admin/Wizard_RoR.py:205 admin/Wizard_RoR.py:305
 msgid "RAILS_ENV environment"
 msgstr ""
 
-#: admin/Wizard_RoR.py:207 admin/Wizard_RoR.py:305
+#: admin/Wizard_RoR.py:207 admin/Wizard_RoR.py:307
 msgid "Deployment method"
 msgstr ""
 
-#: admin/Wizard_RoR.py:277
+#: admin/Wizard_RoR.py:279
 msgid "New directory based on a Ruby of Rails project."
 msgstr ""
 
@@ -3638,12 +3676,12 @@ msgstr ""
 msgid "Configure a new virtual server for Sugar CRM."
 msgstr ""
 
-#: admin/Wizard_Sugar.py:108 admin/Wizard_Sugar.py:180
+#: admin/Wizard_Sugar.py:108 admin/Wizard_Sugar.py:182
 #, fuzzy
 msgid "Sugar Wizard"
 msgstr "通配符"
 
-#: admin/Wizard_Sugar.py:174
+#: admin/Wizard_Sugar.py:176
 msgid "Configures Sugar CRM inside a public web directory."
 msgstr ""
 
@@ -3671,20 +3709,20 @@ msgstr ""
 msgid "Configure a new virtual server using Symfony."
 msgstr ""
 
-#: admin/Wizard_Symfony.py:110 admin/Wizard_Symfony.py:179
+#: admin/Wizard_Symfony.py:110 admin/Wizard_Symfony.py:182
 msgid "Symfony Wizard"
 msgstr ""
 
-#: admin/Wizard_Symfony.py:123 admin/Wizard_Symfony.py:195
+#: admin/Wizard_Symfony.py:123 admin/Wizard_Symfony.py:198
 #, fuzzy
 msgid "Project Source"
 msgstr "网页目录"
 
-#: admin/Wizard_Symfony.py:124 admin/Wizard_Symfony.py:196
+#: admin/Wizard_Symfony.py:124 admin/Wizard_Symfony.py:199
 msgid "Symfony Package"
 msgstr ""
 
-#: admin/Wizard_Symfony.py:173
+#: admin/Wizard_Symfony.py:176
 msgid "Configures Symfony inside a public web directory."
 msgstr ""
 
@@ -3745,11 +3783,11 @@ msgstr ""
 msgid "WordPress Wizard"
 msgstr ""
 
-#: admin/Wizard_WordPress.py:164
+#: admin/Wizard_WordPress.py:166
 msgid "Configures Wordpress inside a public web directory."
 msgstr ""
 
-#: admin/Wizard_WordPress.py:170
+#: admin/Wizard_WordPress.py:172
 msgid "Wordpress Wizard: Location"
 msgstr ""
 
@@ -3767,12 +3805,12 @@ msgstr ""
 msgid "Configures Zend in a new virtual server."
 msgstr ""
 
-#: admin/Wizard_Zend.py:84 admin/Wizard_Zend.py:150
+#: admin/Wizard_Zend.py:84 admin/Wizard_Zend.py:152
 #, fuzzy
 msgid "Zend Wizard"
 msgstr "通配符"
 
-#: admin/Wizard_Zend.py:144
+#: admin/Wizard_Zend.py:146
 msgid "Configures Zend inside a public web directory."
 msgstr ""
 
@@ -3794,7 +3832,7 @@ msgstr ""
 msgid "Configure a new virtual server using phpBB."
 msgstr ""
 
-#: admin/Wizard_phpBB.py:79 admin/Wizard_phpBB.py:149
+#: admin/Wizard_phpBB.py:79 admin/Wizard_phpBB.py:152
 #, fuzzy
 msgid "phpBB Wizard"
 msgstr "通配符"
@@ -3841,7 +3879,7 @@ msgstr ""
 msgid "rTorrent Wizard"
 msgstr "重定向"
 
-#: admin/Wizard_rTorrent.py:64
+#: admin/Wizard_rTorrent.py:69
 msgid "Already configured:"
 msgstr ""
 
@@ -3877,16 +3915,16 @@ msgstr ""
 msgid "New virtual server for an uWSGI project."
 msgstr ""
 
-#: admin/Wizard_uWSGI.py:129 admin/Wizard_uWSGI.py:214
+#: admin/Wizard_uWSGI.py:129 admin/Wizard_uWSGI.py:217
 #, fuzzy
 msgid "uWSGI Wizard"
 msgstr "通配符"
 
-#: admin/Wizard_uWSGI.py:151 admin/Wizard_uWSGI.py:230
+#: admin/Wizard_uWSGI.py:151 admin/Wizard_uWSGI.py:233
 msgid "uWSGI binary"
 msgstr ""
 
-#: admin/Wizard_uWSGI.py:208
+#: admin/Wizard_uWSGI.py:211
 msgid "New directory for an uWSGI project."
 msgstr ""
 
@@ -3977,10 +4015,6 @@ msgstr "MySQL 桥接"
 #: admin/consts.py:31
 msgid "HTTP error"
 msgstr "HTTP错误"
-
-#: admin/consts.py:33
-msgid "1x1 Transparent GIF"
-msgstr "1x1 透明 GIF"
 
 #: admin/consts.py:37
 msgid "Default errors"

@@ -16,6 +16,14 @@ BROKEN_CONFIG = """The configuration file seems to be broken."""
 INTERNAL_ISSUE = """The server found an internal problem. """
 
 
+# cherokee/proxy_host.c
+#
+e('PROXY_HEADER_PARSE',
+  title = "Could not parse header from the back-end",
+  desc  = "It looks like the back-end server sent a malformed HTTP response.",
+  debug = "Dump of the header buffer (len=%d): %s")
+
+
 # cherokee/source.c
 #
 e('SOURCE_NONBLOCK',
@@ -754,7 +762,7 @@ e('TEMPLATE_NO_TOKEN',
 #
 e('SPAWNER_SHM_INIT',
   title = "Could not initialize SHM '%s': ${errno}",
-  desc  = SYSTEM_ISSUE)
+  desc  = "Check if your shared memory is mounted in /dev/shm")
 
 e('SPAWNER_UNLOCK_SEMAPHORE',
   title = "Could not unlock spawning semaphore %d: ${errno}",
