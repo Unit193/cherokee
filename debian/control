@@ -12,7 +12,7 @@ Vcs-Browser: http://git.debian.org/git/collab-maint/cherokee.git
 Package: cherokee
 Architecture: any
 Pre-Depends: libcherokee-config0 (= ${binary:Version})
-Depends: ${misc:Depends}, ${shlibs:Depends}, logrotate, libcherokee-base0 (= ${binary:Version}), libcherokee-server0 (= ${binary:Version}), libcherokee-mod-server-info
+Depends: ${misc:Depends}, ${shlibs:Depends}, logrotate, libcherokee-base0 (= ${binary:Version}), libcherokee-server0 (= ${binary:Version})
 Recommends: libcherokee-mod-admin, spawn-fcgi
 Suggests: cherokee-doc, libcherokee-mod-geoip, libcherokee-mod-ldap, libcherokee-mod-libssl, libcherokee-mod-mysql, libcherokee-mod-rrd, libcherokee-mod-streaming
 Provides: httpd, httpd-cgi
@@ -188,24 +188,6 @@ Description: Cherokee web server - Administrative plugin
  administrative tasks on the server itself; it also provides the
  cherokee-tweak binary, which can optimally perform log rotations or
  retreive server information from the command line.
- 
-Package: libcherokee-mod-server-info
-Section: httpd
-Architecture: any
-Depends: ${misc:Depends}, ${shlibs:Depends}, libcherokee-server0 (= ${binary:Version})
-Enhances: cherokee
-Description: Cherokee web server - Server information plugin
- Cherokee is a very fast, flexible and easy to configure Web Server.
- It supports the widespread technologies nowadays: FastCGI, SCGI, PHP,
- CGI, TLS and SSL encrypted connections, Virtual hosts, Authentication,
- on the fly encoding, Apache compatible log files, HTTP Load Balancing,
- Data Base Balancing, SSI, Reverse HTTP Proxy and much more.
- .
- Cherokee also provides an easy to use configuration interface that
- allows to configure the server from top to bottom without having to
- edit a text configuration file.
- .
- This plugin provides the server information plugin.
  
 Package: libcherokee-mod-mysql
 Section: httpd

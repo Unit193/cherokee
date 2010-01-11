@@ -41,19 +41,20 @@ endif
 binary:
 	dh binary --until dh_install
 	# We avoid manually stating each of the files to be included
-	# in libcherokee-server0 by copying over to it everything in
-	# $(BUILD_DIR)/usr/lib/cherokee that has not been copied over
-	# to any of the plugin packages (libcherokee-mod-*)
+	# in libcherokee-server0 by copying over to them all the
+	# corresponding (*.so) files we have in
+	# $(BUILD_DIR)/usr/lib/cherokee that have not been copied over
+	# to any of the plugin packages (libcherokee-mod-*).
 	INSTALLED=`mktemp`; \
 		DEST=$(CURDIR)/debian/libcherokee-server0/usr/lib/cherokee; \
 		ls $(CURDIR)/debian/libcherokee-mod*/usr/lib/cherokee/* | \
 			sed 's/.*\///' > $$INSTALLED; \
-		install $$(ls $(BUILD_DIR)/usr/lib/cherokee/* | \
-			egrep -vf $$INSTALLED) $$DEST;\
+		install $$(ls $(BUILD_DIR)/usr/lib/cherokee/*.so | \
+			   egrep -vf $$INSTALLED ) $$DEST;\
 		rm -f $$INSTALLED
 	# Include our nice "Powered by Debian" logo alongside
 	# Cherokee's own
-	install $(CURDIR)/debian/powered_by_debian.png $(CURDIR)/debian/cherokee/usr/share/cherokee/default-site/cherokee-images/powered_by_debian.png
+	install -m 0644 $(CURDIR)/debian/powered_by_debian.png $(CURDIR)/debian/cherokee/usr/share/cherokee/default-site/cherokee-images/powered_by_debian.png
 	# Done, go on as usual...
 	dh binary --remaining
 
