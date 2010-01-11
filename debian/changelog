@@ -1,6 +1,5 @@
-cherokee (0.99.37-1) experimental; urgency=low
+cherokee (0.99.39-2) experimental; urgency=low
 
-  * New upstream version
   * PENDING BEFORE RELEASE TO UNSTABLE: Should we stop providing *.a/*.la
     given there are corresponding .so files? Think so... 
   * Update config.{guess,sub} before building (Closes: #549965). 
@@ -20,6 +19,119 @@ cherokee (0.99.37-1) experimental; urgency=low
     + Removes the symlinks in /var/www at purge time (Closes: #554889)
   
  -- Gunnar Wolf <gwolf@debian.org>  Thu, 03 Dec 2009 10:38:26 -0600
+
+cherokee (0.99.39-1) unstable; urgency=low
+
+  [ Leonel Nunez ]
+  * New Upstream Version
+
+  [ Gunnar Wolf ]
+  * Added missing misc:Depends to buinary packages
+
+ -- Gunnar Wolf <gwolf@debian.org>  Wed, 06 Jan 2010 14:14:26 -0600
+
+cherokee (0.99.38-1) unstable; urgency=low
+
+  * New Upstream Version
+
+ -- Leonel Nunez <leonel@enelserver.com>  Thu, 24 Dec 2009 07:04:44 -0700
+
+cherokee (0.99.37-1) unstable; urgency=low
+
+  * New Upstream Version
+  * redo nest_log_directory according to upstream changeset 4013
+
+ -- Leonel Nunez <leonel@enelserver.com>  Wed, 16 Dec 2009 09:30:04 -0700
+
+cherokee (0.99.36-1) unstable; urgency=low
+
+  * New Upstream Version
+
+ -- Leonel Nunez <leonel@enelserver.com>  Tue, 15 Dec 2009 09:51:13 -0700
+
+cherokee (0.99.35-1) unstable; urgency=low
+
+  * New Upstream Version
+
+ -- Leonel Nunez <leonel@enelserver.com>  Sat, 12 Dec 2009 14:02:04 -0700
+
+cherokee (0.99.34-1) unstable; urgency=low
+
+  * New Upstream Version
+
+ -- Leonel Nunez <leonel@enelserver.com>  Sat, 12 Dec 2009 07:25:00 -0700
+
+cherokee (0.99.33-1) unstable; urgency=low
+
+  * New Upstream Version
+
+ -- Leonel Nunez <leonel@enelserver.com>  Fri, 11 Dec 2009 11:30:26 -0700
+
+cherokee (0.99.32-1) unstable; urgency=low
+
+  * New Upstream Version
+  * Removed debian/patches/set_min_config_version
+    upstream included the patch rev 3923 and 3924
+
+ -- Leonel Nunez <leonel@enelserver.com>  Wed, 09 Dec 2009 07:41:35 -0700
+
+cherokee (0.99.31-1) unstable; urgency=low
+
+  * New upstream version
+  * Properly remove backup directories for old configfile migrations on purge
+  * Use dpkg-statoverride instead of dirtily chowning the log directory in
+    postinst; don't mess with individual files in it
+  * Fix libcherokee-mod-rrd not to break when server runs under a user
+    other than www-data
+  * Included upstream's config file migrator as part of the preinst
+    process
+  * Removes the symlinks in /var/www at purge time (Closes: #554889)
+
+ -- Gunnar Wolf <gwolf@debian.org>  Thu, 03 Dec 2009 16:45:36 -0600
+
+cherokee (0.99.30-1) unstable; urgency=low
+
+  * New Upstream Version
+  * Added debian/libcherokee-mod-rrd.postinst to fix
+    /var/lib/cherokee/graphs permissions - Thanks to Antonio Perez
+
+ -- Leonel Nunez <leonel@enelserver.com>  Mon, 30 Nov 2009 04:51:07 -0700
+
+cherokee (0.99.29-1) unstable; urgency=low
+
+  * New Upstream Version
+  * Edited debian/cherokee.logrotate removed duplicate copytruncate
+    added postrotate. Thanks to Antonio Perez
+
+ -- Leonel Nunez <leonel@enelserver.com>  Fri, 20 Nov 2009 10:05:12 -0700
+
+cherokee (0.99.28-1) unstable; urgency=low
+
+  * New upstream version
+  * Bumped up standards-version 3.8.2→3.8.3 (no changes needed)
+
+ -- Gunnar Wolf <gwolf@debian.org>  Fri, 06 Nov 2009 08:59:46 -0600
+
+cherokee (0.99.27-1) unstable; urgency=low
+
+  * New Upstream Version
+
+ -- Leonel Nunez <leonel@enelserver.com>  Thu, 05 Nov 2009 09:43:42 -0700
+
+cherokee (0.99.26-1) UNRELEASED; urgency=low
+
+  * New upstream release
+  * Fixed incorrect dependency information in cherokee.init - Thanks to
+    Petter Reinholdtsen for pointing it out! (Closes: #541861)
+  * Update config.{guess,sub} before building (Closes: #549965).
+
+ -- Gunnar Wolf <gwolf@debian.org>  Mon, 02 Nov 2009 17:25:47 -0600
+
+cherokee (0.99.25-1) unstable; urgency=low
+
+  * New upstream version
+
+ -- Gunnar Wolf <gwolf@debian.org>  Mon, 26 Oct 2009 14:38:10 -0600
 
 cherokee (0.99.24-2) experimental; urgency=low
 
