@@ -1,8 +1,11 @@
 cherokee (0.99.39-2) unstable; urgency=low
 
-  * Finally uploading the DH7-based branch! Crossing my fingers...
+  * Finally uploading the DH7-based branch! Crossing my fingers... Note that
+    this changelog entry will be re-closing already closed bugs (as it grew 
+    over a parallel branch)
   * Merged libcherokee-mod-server-info back into libcherokee-server0, as it 
-    has no outside dependencies
+    has no outside dependencies. Added provides/conflicts/replaces to allow
+    for upgrades.
   * Update config.{guess,sub} before building (Closes: #549965). 
   * Switched to 3.0 (quilt) source format 
     + Dropped build-dependency on quilt
@@ -18,8 +21,8 @@ cherokee (0.99.39-2) unstable; urgency=low
     + Included upstream's config file migrator as part of the preinst
       process
     + Removes the symlinks in /var/www at purge time (Closes: #554889)
-  
- -- Gunnar Wolf <gwolf@debian.org>  Thu, 11 Jan 2010 10:38:26 -0600
+
+ -- Gunnar Wolf <gwolf@debian.org>  Mon, 11 Jan 2010 17:18:59 -0600
 
 cherokee (0.99.39-1) unstable; urgency=low
 
