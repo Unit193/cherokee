@@ -1,6 +1,11 @@
-# Migrator scripts which include the hardcoded relative path
-# '../admin/' are modified to include the correct full path
-#
+From: Gunnar Wolf <gwolf@debian.org>
+Origin: vendor
+Forwarded: not-needed
+Last-Update: 2009-12-03
+Description: Set full path (instead of relative) to configuration migrators
+ Migrator scripts which include the hardcoded relative path
+ '../admin/' are modified to include the correct full path
+
 Index: cherokee/contrib/06to07.py
 ===================================================================
 --- cherokee.orig/contrib/06to07.py	2008-12-26 20:31:59.000000000 -0600

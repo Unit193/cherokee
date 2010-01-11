@@ -31,14 +31,6 @@ migrate_conf_versions() {
 	cat $file >> $LOG
     fi
 
-    # Make sure the configuration file has a trailing whiteline to
-    # avoid confusing the parser (see #528160)
-    CONFFILE=/etc/cherokee.conf
-    if [ -f $CONFFILE -a ! -z "$(tail -1 $CONFFILE)" ]
-    then
-        echo >> $CONFFILE
-    fi
-
     cat <<EOF > $README
 Your Cherokee ${OLD_VERSION} configuration file has been converted to
 the ${NEW_VERSION} format. Automatic conversion is expected to succeed
@@ -52,6 +44,13 @@ EOF
 
 case "$action" in
     install)
+	# Make sure the configuration file has a trailing whiteline to
+	# avoid confusing the parser (see #528160)
+	CONFFILE=/etc/cherokee.conf
+	if [ -f $CONFFILE -a ! -z "$(tail -1 $CONFFILE)" ]
+	then
+	    echo >> $CONFFILE
+	fi
 	;;
     upgrade)
 	if (  dpkg --compare-versions "$version" lt 0.6 )
@@ -126,14 +125,6 @@ case "$action" in
 	    echo "Merging migrated files into $CONFPATH/cherokee.conf" >> $LOG
 	    cat $TMPCONFPATH/cherokee.conf | /usr/share/cherokee/config_joiner $CONFPATH $TMPCONFPATH > $CONFPATH/cherokee.conf 2>>$LOG
 
-	# Make sure the configuration file has a trailing whiteline to
-	# avoid confusing the parser (see #528160)
-	CONFFILE=/etc/cherokee.conf
-	if [ -f $CONFFILE -a ! -z "$(tail -1 $CONFFILE)" ]
-	    then
-	    echo >> $CONFFILE
-	fi
-
 	    cat <<EOF > $README
 For further information on the migration process, please refer to
 /usr/share/doc/cherokee/README_0.5_to_0.6
@@ -186,6 +177,13 @@ EOF
 	# able to do it all. We will deprecate older migrators soon.
 	/usr/share/cherokee/admin/upgrade_config.py $CONFPATH/cherokee.conf
 
+	# Make sure the configuration file has a trailing whiteline to
+	# avoid confusing the parser (see #528160)
+	CONFFILE=/etc/cherokee.conf
+	if [ -f $CONFFILE -a ! -z "$(tail -1 $CONFFILE)" ]
+	    then
+	    echo >> $CONFFILE
+	fi
 	;;
     abort-upgrade)
 	;;

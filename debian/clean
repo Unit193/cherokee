@@ -1,0 +1,14 @@
+#the distclean target in the doc directory seems broken, replace the 
+#makefile with a dummy so it's broken distclean target doesn't get run
+doc/Makefile
+# Cruft not cleaned by the build process
+cherokee/mime_grammar.output
+cherokee/icons_grammar.output
+cherokee/config_protocol_grammar.output
+www/cherokee-images
+cherokee/loader.autoconf.h
+cherokee/loader.autoconf.inc
+cherokee/Makefile.MingW
+cherokee.spec
+windows/cherokee.nsi
+config.log

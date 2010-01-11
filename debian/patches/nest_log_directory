@@ -1,8 +1,14 @@
-Index: cherokee/cherokee.conf.sample.pre
+From: Gunnar Wolf <gwolf@debian.org>
+Origin: vendor
+Forwarded: not-needed
+Last-Update: 2009-12-03
+Description: Moves the default logging location to its own directory
+
+Index: cherokee-0.99.39/cherokee.conf.sample.pre
 ===================================================================
---- cherokee.orig/cherokee.conf.sample.pre	2009-12-16 09:28:28.000000000 -0700
-+++ cherokee/cherokee.conf.sample.pre	2009-12-16 09:29:09.000000000 -0700
-@@ -29,11 +29,11 @@
+--- cherokee-0.99.39.orig/cherokee.conf.sample.pre	2010-01-11 11:56:30.000000000 -0600
++++ cherokee-0.99.39/cherokee.conf.sample.pre	2010-01-11 11:57:11.000000000 -0600
+@@ -27,11 +27,11 @@
  
  vserver!1!logger = combined
  vserver!1!logger!access!type = file

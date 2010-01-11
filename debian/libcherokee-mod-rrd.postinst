@@ -19,20 +19,30 @@ PATH=/bin:/sbin:/usr/bin:/usr/sbin
 # the debian-policy package
 #
 
+DATADIR=/var/lib/cherokee/graphs
+DEFAULT_USER=www-data
+DEFAULT_GROUP=www-data
+CONFFILE=/etc/cherokee/cherokee.conf
+
 case "$1" in
     configure)
-	CONF=/etc/cherokee/cherokee.conf
-	if LINE=`grep 'server!user' $CONF`; then
-	    RUNAS_USER=`echo $LINE | cut -f 2 -d =`
-	else
-	    RUNAS_USER=www-data
+	# If the Cherokee config file does not exist, it means this
+	# can be just the initial setup. We don't want to pre-depend
+	# on it, and we know the initial package configuration is made
+	# to the www-data user, so use it as a default.
+	if [ -e $CONFFILE ]
+	then
+	    USER=$(grep '^server!user' $CONFFILE|sed 's/^server!user *= *//')
+	    GROUP=$(grep '^server!group' $CONFFILE|sed 's/^server!group *= *//')
 	fi
-	if LINE=`grep 'server!group' $CONF`; then
-	    RUNAS_GROUP=`echo $LINE | cut -f 2 -d =`
-	else
-	    RUNAS_GROUP=www-data
-	fi
-	dpkg-statoverride --update --add --force $RUNAS_USER $RUNAS_GROUP 0755 /var/lib/cherokee/graphs
+        # ... Fall back to the defaults if we cannot find the
+        # configured user/group.
+	if [ -z "$USER" ]; then USER=$DEFAULT_USER; fi
+	if [ -z "$GROUP" ]; then GROUP=$DEFAULT_GROUP; fi
+
+	echo "Changing ownership of the RRD graph directory $DATADIR"
+	echo "Setting owner to $USER"
+	dpkg-statoverride --update --add --force $RUNAS_USER $RUNAS_GROUP 0755 $DATADIR
 	;;
     abort-upgrade|abort-remove|abort-deconfigure)
 	;;

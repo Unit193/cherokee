@@ -1,3 +1,26 @@
+cherokee (0.99.39-2) unstable; urgency=low
+
+  * Finally uploading the DH7-based branch! Crossing my fingers...
+  * Merged libcherokee-mod-server-info back into libcherokee-server0, as it 
+    has no outside dependencies
+  * Update config.{guess,sub} before building (Closes: #549965). 
+  * Switched to 3.0 (quilt) source format 
+    + Dropped build-dependency on quilt
+    + Documented existing patches according to DEP3
+    + Debian "powered by" logo now included as straight PNG, no longer 
+      uuencoded; dropped build-dependency on sharutils
+  * Merged in changes made to the branch being uploaded to unstable
+    + Properly remove backup directories for old configfile migrations on purge
+    + Use dpkg-statoverride instead of dirtily chowning the log directory in
+      postinst; don't mess with individual files in it
+    + Fix libcherokee-mod-rrd not to break when server runs under a user
+      other than www-data
+    + Included upstream's config file migrator as part of the preinst
+      process
+    + Removes the symlinks in /var/www at purge time (Closes: #554889)
+  
+ -- Gunnar Wolf <gwolf@debian.org>  Thu, 11 Jan 2010 10:38:26 -0600
+
 cherokee (0.99.39-1) unstable; urgency=low
 
   [ Leonel Nunez ]
@@ -70,14 +93,14 @@ cherokee (0.99.31-1) unstable; urgency=low
 cherokee (0.99.30-1) unstable; urgency=low
 
   * New Upstream Version
-  * Added debian/libcherokee-mod-rrd.postinst to fix 
+  * Added debian/libcherokee-mod-rrd.postinst to fix
     /var/lib/cherokee/graphs permissions - Thanks to Antonio Perez
 
  -- Leonel Nunez <leonel@enelserver.com>  Mon, 30 Nov 2009 04:51:07 -0700
 
 cherokee (0.99.29-1) unstable; urgency=low
 
-  * New Upstream Versioni
+  * New Upstream Version
   * Edited debian/cherokee.logrotate removed duplicate copytruncate
     added postrotate. Thanks to Antonio Perez
 
@@ -111,6 +134,19 @@ cherokee (0.99.25-1) unstable; urgency=low
 
  -- Gunnar Wolf <gwolf@debian.org>  Mon, 26 Oct 2009 14:38:10 -0600
 
+cherokee (0.99.24-2) experimental; urgency=low
+
+  * Reworked the build system to have a cleaner debian/rules, following
+    dh7 conventions
+  * Moved /var/lib/cherokee/graphs to the rrdtool binary package
+  * Fixed incorrect dependency information in cherokee.init - Thanks to
+    Petter Reinholdtsen for pointing it out! (Closes: #541861)
+  * Moved the lib.*-dev packages to section:libdevel
+  * Added a postinst script for libcherokee-mod-rrd to chown the
+    directory to the user running Cherokee
+
+ -- Gunnar Wolf <gwolf@debian.org>  Mon, 21 Sep 2009 00:21:55 -0500
+
 cherokee (0.99.24-1) unstable; urgency=low
 
   * New Upstream Version
@@ -119,21 +155,9 @@ cherokee (0.99.24-1) unstable; urgency=low
 
 cherokee (0.99.23-1) unstable; urgency=low
 
-  [ Leonel Nunez ]
   * New Upstream Version
 
-  [ Gunnar Wolf ]
-  * Moved /var/lib/cherokee/graphs to the rrdtool binary package
-  
  -- Leonel Nunez <leonel@enelserver.com>  Fri, 27 Aug 2009 12:05:21 -0600
-
-cherokee (0.99.22-1.1) unstable; urgency=low
-
-  * Non-maintainer upload.
-  * Do not add trailing line to conf file during install time, do it at 
-    build time. Closes: #542661.
-
- -- Felipe Sateler <fsateler@gmail.com>  Fri, 11 Sep 2009 16:46:03 -0400
 
 cherokee (0.99.22-1) unstable; urgency=low
 

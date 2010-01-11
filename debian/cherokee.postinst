@@ -40,7 +40,7 @@ case "$1" in
 		fi
 	fi
 
-	# Log directory should be owned by the user/group the server
+        # Log directory should be owned by the user/group the server
 	# runs as. Try to guess it, or fall back to www-data.
 	#
 	# Don't mess with individual files (which will be created by
@@ -63,13 +63,13 @@ case "$1" in
 	    dpkg-statoverride --update --add --force $RUNAS_USER $RUNAS_GROUP 0755 /var/log/cherokee
 	fi
 
-	# Upgrading from versions <= 0.99.26-1 with dependency-based
-	# boot sequencing with sysv-rc would still start cherokee in
-	# runlevel S - Not a good thing! Remove the links, they will
-	# be put back in place bythe auto-DH-generated section.
+        # Upgrading from versions <= 0.99.26-1 with dependency-based
+        # boot sequencing with sysv-rc would still start cherokee in
+        # runlevel S - Not a good thing! Remove the links, they will
+        # be put back in place bythe auto-DH-generated section.
 	if dpkg --compare-versions "$2" le "0.99.26-1" && [ -e /etc/rcS.d/[SK][0-9][0-9]cherokee ]
 	then
-	    update-rc.d -f cherokee remove
+            update-rc.d -f cherokee remove
 	fi
 	;;
     abort-upgrade|abort-remove|abort-deconfigure)

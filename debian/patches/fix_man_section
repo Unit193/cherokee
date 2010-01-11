@@ -1,5 +1,9 @@
-# Move manpage to the right section
-#
+From: Gunnar Wolf <gwolf@debian.org>
+Origin: vendor
+Forwarded: not-needed
+Last-Update: 2009-12-03
+Description: Move manpage to the right section
+
 Index: cherokee/cherokee-admin.1
 ===================================================================
 --- cherokee.orig/cherokee-admin.1	2008-12-26 20:31:59.000000000 -0600
