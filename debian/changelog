@@ -1,3 +1,11 @@
+cherokee (0.99.39-3) unstable; urgency=low
+
+  * Arch-specific files were moved to its binary package in the "binary"
+    target instead of the "binary-arch" target, causing buildd-generated
+    packages to lack all plugins. Fixed. (Closes: #565316)
+
+ -- Gunnar Wolf <gwolf@debian.org>  Fri, 15 Jan 2010 07:42:14 -0600
+
 cherokee (0.99.39-2) unstable; urgency=low
 
   * Finally uploading the DH7-based branch! Crossing my fingers... Note that
