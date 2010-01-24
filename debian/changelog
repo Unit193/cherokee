@@ -1,3 +1,12 @@
+cherokee (0.99.39-4.1) UNRELEASED; urgency=high
+
+  * Non-maintainer upload.
+  * High-urgency upload for RC bugfixes.
+  * Ship /var/www in the package, to ensure the install succeeds when nothing
+    else providing it is installed yet.  Closes: #566526.
+
+ -- Steve Langasek <vorlon@debian.org>  Sun, 24 Jan 2010 15:25:48 -0800
+
 cherokee (0.99.39-4) unstable; urgency=low
 
   * Actually install the files mentioned in the last entry by using the
