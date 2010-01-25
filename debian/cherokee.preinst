@@ -44,7 +44,10 @@ EOF
 
 case "$action" in
     install|upgrade)
-	if dpkg --compare-versions "$version" lt 0.6
+	CONFPATH=/etc/cherokee
+	CONFFILE=$CONFPATH/cherokee.conf
+
+	if dpkg --compare-versions "$version" lt-nl 0.6
 	then
 	    ### The 0.5->0.6 migrator uses different semantics to those 
 	    ### provided by all subsequent migrators, and -as it merges 
@@ -58,7 +61,6 @@ case "$action" in
 
 	    # 0.5 configuration files must be converted - 0.6 uses a
 	    # completely different syntax. 
-	    CONFPATH=/etc/cherokee
 	    OLDCONFPATH=$CONFPATH/pre-0.6
 	    TMPCONFPATH=$(mktemp -d /tmp/cherokee_migration.XXXXXXXX)
 	    MIGRATOR=/usr/share/cherokee/05to06.py
@@ -116,8 +118,8 @@ case "$action" in
 		fi
 	    done
 	    echo "----------------------------------------" >> $LOG
-	    echo "Merging migrated files into $CONFPATH/cherokee.conf" >> $LOG
-	    cat $TMPCONFPATH/cherokee.conf | /usr/share/cherokee/config_joiner $CONFPATH $TMPCONFPATH > $CONFPATH/cherokee.conf 2>>$LOG
+	    echo "Merging migrated files into $CONFFILE" >> $LOG
+	    cat $TMPCONFPATH/cherokee.conf | /usr/share/cherokee/config_joiner $CONFPATH $TMPCONFPATH > $CONFFILE 2>>$LOG
 
 	    cat <<EOF > $README
 For further information on the migration process, please refer to
@@ -132,51 +134,59 @@ Please include it in any bug reports regarding this migration!
 EOF
 	fi
 
-	if ( dpkg --compare-versions "$version" lt 0.7 )
+	# If the conffile has an unmodified md5sum, skip all the rest of the
+	# processing; dpkg conffile upgrading will already do what we need.
+	if [ -e "$CONFFILE" ]; then
+		md5sum="`md5sum \"$CONFFILE\" | sed -e \"s/ .*//\"`"
+		old_md5sum="`dpkg-query -W -f='${Conffiles}' cherokee | sed -n -e \"\\\\' $CONFFILE[[:space:]]'{s/ obsolete$//;s/.* //p}\"`"
+	fi
+
+	if [ -e "$CONFFILE" ] && [ "$md5sum" != "$old_md5sum" ]; then
+	    if dpkg --compare-versions "$version" lt-nl 0.7
 	    then
-	    migrate_conf_versions 0.6 0.7 06to07.py
-	fi
+		migrate_conf_versions 0.6 0.7 06to07.py
+	    fi
 
-	if ( dpkg --compare-versions "$version" lt 0.8 )
-        then
-	    migrate_conf_versions 0.7 0.8 07to08.py
-	fi
-
-	if ( dpkg --compare-versions "$version" lt 0.8 )
-        then
-	    migrate_conf_versions 0.8 0.9 08to09.py
-	fi
-
-	if ( dpkg --compare-versions "$version" lt 0.9 )
-        then
-	    migrate_conf_versions 0.9 0.10 09to010.py
-	fi
-
-	if ( dpkg --compare-versions "$version" lt 0.98 )
-        then
-	    migrate_conf_versions 0.11 0.98 011to098.py
-	fi
-
-        if ( dpkg --compare-versions "$version" lt 0.99 )
-        then
-            migrate_conf_versions 0.98 0.99 098to099.py
-        fi
-
-        if ( dpkg --compare-versions "$version" lt 0.9910 )
-        then
-            migrate_conf_versions 0.99 0.9910 0999to09910.py
-        fi
-
-	# Finally, starting 0.99.31, there is just a generic migrator
-	# able to do it all. We will deprecate older migrators soon.
-	/usr/share/cherokee/admin/upgrade_config.py $CONFPATH/cherokee.conf
-
-	# Make sure the configuration file has a trailing whiteline to
-	# avoid confusing the parser (see #528160)
-	CONFFILE=$CONFPATH/cherokee.conf
-	if [ -f $CONFFILE -a ! -z "$(tail -1 $CONFFILE)" ]
+	    if dpkg --compare-versions "$version" lt-nl 0.8
 	    then
-	    echo >> $CONFFILE
+		migrate_conf_versions 0.7 0.8 07to08.py
+	    fi
+
+	    if dpkg --compare-versions "$version" lt-nl 0.8
+	    then
+		migrate_conf_versions 0.8 0.9 08to09.py
+	    fi
+
+	    if dpkg --compare-versions "$version" lt-nl 0.9
+	    then
+		migrate_conf_versions 0.9 0.10 09to010.py
+	    fi
+
+	    if dpkg --compare-versions "$version" lt-nl 0.98
+	    then
+		migrate_conf_versions 0.11 0.98 011to098.py
+	    fi
+
+	    if dpkg --compare-versions "$version" lt-nl 0.99
+	    then
+		migrate_conf_versions 0.98 0.99 098to099.py
+	    fi
+
+	    if dpkg --compare-versions "$version" lt-nl 0.9910
+	    then
+		migrate_conf_versions 0.99 0.9910 0999to09910.py
+	    fi
+
+	    # Finally, starting 0.99.31, there is just a generic migrator
+	    # able to do it all. We will deprecate older migrators soon.
+	    /usr/share/cherokee/admin/upgrade_config.py $CONFFILE
+
+	    # Make sure the configuration file has a trailing whiteline to
+	    # avoid confusing the parser (see #528160)
+	    if [ -f $CONFFILE -a ! -z "$(tail -1 $CONFFILE)" ]
+	    then
+		echo >> $CONFFILE
+	    fi
 	fi
 	;;
     abort-upgrade)
