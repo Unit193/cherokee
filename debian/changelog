@@ -7,6 +7,8 @@ cherokee (0.99.39-4.1) UNRELEASED; urgency=high
   * Do not call invoke-rc.d start in the postrm, even on upgrade - this is
     the responsibility of the postinst, which already has the automatic code
     to do this!
+  * debian/cherokee.preinst: don't treat the 'install' case differently from
+    'upgrade', there's no reason for a different code path here.
 
  -- Steve Langasek <vorlon@debian.org>  Sun, 24 Jan 2010 15:25:48 -0800
 

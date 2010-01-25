@@ -43,16 +43,7 @@ EOF
 }
 
 case "$action" in
-    install)
-	# Make sure the configuration file has a trailing whiteline to
-	# avoid confusing the parser (see #528160)
-	CONFFILE=/etc/cherokee.conf
-	if [ -f $CONFFILE -a ! -z "$(tail -1 $CONFFILE)" ]
-	then
-	    echo >> $CONFFILE
-	fi
-	;;
-    upgrade)
+    install|upgrade)
 	if (  dpkg --compare-versions "$version" lt 0.6 )
 	    then
 	    ### The 0.5->0.6 migrator uses different semantics to those 
