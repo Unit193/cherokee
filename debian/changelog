@@ -1,4 +1,4 @@
-cherokee (0.99.39-4.1) UNRELEASED; urgency=high
+cherokee (0.99.39-4.1) unstable; urgency=high
 
   * Non-maintainer upload.
   * High-urgency upload for RC bugfixes.
@@ -19,7 +19,7 @@ cherokee (0.99.39-4.1) UNRELEASED; urgency=high
     cherokee.conf on upgrade.  The issue that led to this requirement has
     been fixed upstream.  Closes: #542661.
 
- -- Steve Langasek <vorlon@debian.org>  Sun, 24 Jan 2010 15:25:48 -0800
+ -- Steve Langasek <vorlon@debian.org>  Sun, 24 Jan 2010 19:57:59 -0800
 
 cherokee (0.99.39-4) unstable; urgency=low
 
