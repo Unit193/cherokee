@@ -41,11 +41,7 @@ case "$1" in
 	    if [ -L $LINK ]; then rm $LINK; fi
 	done
 	;;
-    upgrade)
-	invoke-rc.d cherokee stop
-	invoke-rc.d cherokee start
-	;;
-    remove|failed-upgrade|abort-install|abort-upgrade|disappear)
+    upgrade|remove|failed-upgrade|abort-install|abort-upgrade|disappear)
 	;;
 
     *)

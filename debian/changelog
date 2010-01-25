@@ -4,6 +4,9 @@ cherokee (0.99.39-4.1) UNRELEASED; urgency=high
   * High-urgency upload for RC bugfixes.
   * Ship /var/www in the package, to ensure the install succeeds when nothing
     else providing it is installed yet.  Closes: #566526.
+  * Do not call invoke-rc.d start in the postrm, even on upgrade - this is
+    the responsibility of the postinst, which already has the automatic code
+    to do this!
 
  -- Steve Langasek <vorlon@debian.org>  Sun, 24 Jan 2010 15:25:48 -0800
 
