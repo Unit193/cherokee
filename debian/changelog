@@ -1,3 +1,11 @@
+cherokee (0.99.39-4) unstable; urgency=low
+
+  * Actually install the files mentioned in the last entry by using the
+    correct target. Thanks to Evgeni Golov for finding the _right_
+    solution to my ugly logic! (Closes: #566054)
+
+ -- Gunnar Wolf <gwolf@debian.org>  Sun, 24 Jan 2010 11:44:18 -0600
+
 cherokee (0.99.39-3) unstable; urgency=low
 
   * Arch-specific files were moved to its binary package in the "binary"
