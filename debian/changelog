@@ -11,6 +11,8 @@ cherokee (0.99.39-4.1) UNRELEASED; urgency=high
     'upgrade', there's no reason for a different code path here.
   * debian/cherokee.preinst: fix up the path to cherokee.conf, this has been
     in /etc/cherokee, not /etc, at least as far back as etch.
+  * debian/cherokee.preinst: make the pre-0.6 migration code more resistant
+    to interrupts (though not completely idempotent).
 
  -- Steve Langasek <vorlon@debian.org>  Sun, 24 Jan 2010 15:25:48 -0800
 

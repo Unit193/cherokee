@@ -44,8 +44,8 @@ EOF
 
 case "$action" in
     install|upgrade)
-	if (  dpkg --compare-versions "$version" lt 0.6 )
-	    then
+	if dpkg --compare-versions "$version" lt 0.6
+	then
 	    ### The 0.5->0.6 migrator uses different semantics to those 
 	    ### provided by all subsequent migrators, and -as it merges 
 	    ### several distinct files into a single output- is quite more 
@@ -81,18 +81,30 @@ case "$action" in
 	    echo "Starting Cherokee 0.5 -> 0.6 migration" > $LOG
 
 	    for file in $(find -L $CONFPATH -type f | grep -v $IGNORE); do
-		dirname=$(dirname $file | perl -pe "s%^$CONFPATH%%")
+		dirname=$(dirname $file | sed -e "s%^$CONFPATH%%")
 		filename=$(basename $file)
 
-		oldfile=$OLDCONFPATH/$dirname/$filename
+		[ -d $TMPCONFPATH/$dirname ] || mkdir $TMPCONFPATH/$dirname
 		tmpfile=$TMPCONFPATH/$dirname/$filename
 		echo "----------------------------------------" >> $LOG
-		echo "Translating $file ($oldfile => $tmpfile)" >> $LOG
-		for base in $OLDCONFPATH $TMPCONFPATH
-		do
-		    if [ ! -d $base/$dirname ] ; then mkdir $base/$dirname; fi
-		done
+		echo "Translating $file (=> $tmpfile)" >> $LOG
 
+		if python $MIGRATOR < $file > $tmpfile 2>>$LOG
+		then
+		    echo $file was successfully migrated to temporary directory >> $LOG
+		else
+		    echo "*** ERROR MIGRATING $file - Follows:" >> $LOG
+		    cat $file >> $LOG
+		fi
+
+	    done
+
+	    for file in $(find -L $CONFPATH -type f | grep -v $IGNORE); do
+		dirname=$(dirname $file | sed -e "s%^$CONFPATH%%")
+		filename=$(basename $file)
+
+		[ -d $OLDCONFPATH/$dirname ] || mkdir $OLDCONFPATH/$dirname
+		oldfile=$OLDCONFPATH/$dirname/$filename
 		if [ -L $file ]
 		then
 		    # Bah for symlinks :-P
@@ -100,18 +112,9 @@ case "$action" in
 		    rm $file
 		else
 		    # regular file
-		    mv $file $oldfile		    
-		fi
-
-		if python $MIGRATOR < $oldfile > $tmpfile 2>>$LOG
-		then
-		    echo $file was successfully migrated to temporary directory >> $LOG
-		else
-		    echo "*** ERROR MIGRATING $file - Follows:" >> $LOG
-		    cat $file >> $LOG
+		    mv $file $oldfile
 		fi
 	    done
-
 	    echo "----------------------------------------" >> $LOG
 	    echo "Merging migrated files into $CONFPATH/cherokee.conf" >> $LOG
 	    cat $TMPCONFPATH/cherokee.conf | /usr/share/cherokee/config_joiner $CONFPATH $TMPCONFPATH > $CONFPATH/cherokee.conf 2>>$LOG
