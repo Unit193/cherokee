@@ -15,6 +15,9 @@ cherokee (0.99.39-4.1) UNRELEASED; urgency=high
     to interrupts (though not completely idempotent).
   * debian/cherokee.preinst: if the conffile is unmodified, skip the
     expensive migration code - dpkg can handle this for us.
+  * debian/cherokee.preinst: don't append a blank line to the end of the
+    cherokee.conf on upgrade.  The issue that led to this requirement has
+    been fixed upstream.  Closes: #542661.
 
  -- Steve Langasek <vorlon@debian.org>  Sun, 24 Jan 2010 15:25:48 -0800
 
