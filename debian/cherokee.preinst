@@ -170,7 +170,7 @@ EOF
 
 	# Make sure the configuration file has a trailing whiteline to
 	# avoid confusing the parser (see #528160)
-	CONFFILE=/etc/cherokee.conf
+	CONFFILE=$CONFPATH/cherokee.conf
 	if [ -f $CONFFILE -a ! -z "$(tail -1 $CONFFILE)" ]
 	    then
 	    echo >> $CONFFILE
