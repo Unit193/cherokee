@@ -1,4 +1,28 @@
 2010-01-26  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=4182 git=3be313e0b648367e81bbbfbfd66f8b377106e0ec
+
+    Fixes a cross-library symbol usage that was causing the compilation to
+    fail on some platforms. Basically, neither libcherokee-base nor its
+    sibling libcherokee-client can rely on libcherokee-server symbols.
+    
+ cherokee/handler.h       |    3 ++-
+ cherokee/handler_cgi.c   |   10 ++++++++--
+ cherokee/handler_proxy.c |   10 ++++++++--
+ cherokee/handler_scgi.c  |   14 ++++++++++++--
+ cherokee/handler_uwsgi.c |   10 ++++++++--
+ cherokee/post.c          |   16 ++++++++--------
+ cherokee/post.h          |    8 ++++----
+ 7 files changed, 50 insertions(+), 21 deletions(-)
+
+2010-01-26  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=4181 git=1cb3e7078f25dce762a7e8cd36a0f6e609fe86c7
+
+    Cherokee 0.99.40 released
+    
+ configure.in |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+2010-01-26  Alvaro Lopez Ortega  <alvaro@octality.com>
             svn=4179 git=dca1d2698f5d4076704089ec76e8bcef3c7bd7f3
 
     Better timeout support while handling POSTs.
