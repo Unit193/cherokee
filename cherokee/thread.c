@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2009 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2010 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -39,7 +39,6 @@
 #include "header.h"
 #include "header-protected.h"
 #include "util.h"
-#include "fcgi_manager.h"
 #include "bogotime.h"
 #include "limiter.h"
 
@@ -257,8 +256,17 @@ cherokee_thread_new  (cherokee_thread_t      **thd,
 
 
 static void
-conn_set_mode (cherokee_thread_t *thd, cherokee_connection_t *conn, cherokee_socket_status_t s)
+conn_set_mode (cherokee_thread_t        *thd,
+	       cherokee_connection_t    *conn,
+	       cherokee_socket_status_t  s)
 {
+	if (conn->socket.status == s) {
+		TRACE (ENTRIES, "Connection already in mode = %s\n", (s == socket_reading)? "reading" : "writing");
+		return;
+	}
+
+	TRACE (ENTRIES, "Connection mode = %s\n", (s == socket_reading)? "reading" : "writing");
+
 	cherokee_socket_set_status (&conn->socket, s);
 	cherokee_fdpoll_set_mode (thd->fdpoll, SOCKET_FD(&conn->socket), s);
 }
@@ -327,7 +335,7 @@ purge_connection (cherokee_thread_t *thread, cherokee_connection_t *conn)
 
 	/* It maybe have a delayed log
 	 */
-	cherokee_connection_log_delayed (conn);
+	cherokee_connection_log (conn);
 
 	/* Close & clean the socket and clean up the connection object
 	 */
@@ -437,7 +445,7 @@ maybe_purge_closed_connection (cherokee_thread_t *thread, cherokee_connection_t 
 	/* Log if it was delayed and update vserver traffic counters
 	 */
 	cherokee_connection_update_vhost_traffic (conn);
-	cherokee_connection_log_delayed (conn);
+	cherokee_connection_log (conn);
 
 	/* If it isn't a keep-alive connection, it should try to
 	 * perform a lingering close (there is no need to disable TCP
@@ -632,17 +640,10 @@ process_active_connections (cherokee_thread_t *thd)
 		/* Update the connection timeout
 		 */
 		if ((conn->phase != phase_reading_header) &&
+		    (conn->phase != phase_reading_post) &&
 		    (conn->phase != phase_lingering))
 		{
-			if (conn->timeout_lapse == -1) {
-				TRACE (ENTRIES",timeout", "conn (%p, %s): Timeout = now + %d secs\n",
-				       conn, cherokee_connection_get_phase_str (conn), srv->timeout);
-				conn->timeout = cherokee_bogonow_now + srv->timeout;
-			} else {
-				TRACE (ENTRIES",timeout", "conn (%p, %s): Timeout = now + %d secs\n",
-				       conn, cherokee_connection_get_phase_str (conn), conn->timeout_lapse);
-				conn->timeout = cherokee_bogonow_now + conn->timeout_lapse;
-			}
+			cherokee_connection_update_timeout (conn);
 		}
 
 		/* Maybe update traffic counters
@@ -740,65 +741,6 @@ process_active_connections (cherokee_thread_t *thd)
 			}
 			break;
 
-		case phase_read_post:
-			len = 0;
-			ret = cherokee_connection_recv (conn, POST_BUF(&conn->post), &len);
-
-			switch (ret) {
-			case ret_eagain:
-				continue;
-
-			case ret_ok:
-				if ((conn->post.size > 0) &&
-				    ((conn->post.received + len) > conn->post.size))
-				{
-					size_t remain = 0;
-
-					remain = len - (conn->post.size - conn->post.received);
-					len = conn->post.size - conn->post.received;
-
-					cherokee_buffer_add (&conn->incoming_header,
-							conn->post.info.buf + len,
-							remain);
-
-					cherokee_buffer_drop_ending (POST_BUF(&conn->post),
-							remain);
-				}
-
-				cherokee_post_commit_buf (&conn->post, len);
-				if (cherokee_post_got_all (&conn->post)) {
-					break;
-				}
-				continue;
-
-			case ret_eof:
-				/* Finish..
-				 */
-				if (!cherokee_post_got_all (&conn->post)) {
-					conns_freed++;
-					goto shutdown;
-				}
-
-				cherokee_post_commit_buf (&conn->post, len);
-				break;
-
-			case ret_error:
-				conns_freed++;
-				goto shutdown;
-
-			default:
-				RET_UNKNOWN(ret);
-				conns_freed++;
-				goto shutdown;
-			}
-
-			/* Turn the connection in write mode
-			 */
-			conn_set_mode (thd, conn, socket_writing);
-			conn->phase = phase_setup_connection;
-			break;
-
-
 		case phase_reading_header:
 			/* Maybe the buffer has a request (previous pipelined)
 			 */
@@ -824,7 +766,9 @@ process_active_connections (cherokee_thread_t *thd)
 
 			/* Read from the client
 			 */
-			ret = cherokee_connection_recv (conn, &conn->incoming_header, &len);
+			ret = cherokee_connection_recv (conn,
+							&conn->incoming_header,
+							DEFAULT_RECV_SIZE, &len);
 			switch (ret) {
 			case ret_ok:
 				break;
@@ -907,15 +851,6 @@ process_active_connections (cherokee_thread_t *thd)
 				cherokee_collector_log_request (THREAD_SRV(thd)->collector);
 			}
 
-			/* If it's a POST we've to read more data
-			 */
-			if (http_method_with_input (conn->header.method)) {
-				if (! cherokee_post_got_all (&conn->post)) {
-					conn_set_mode (thd, conn, socket_reading);
-					conn->phase = phase_read_post;
-					continue;
-				}
-			}
 
 			conn->phase = phase_setup_connection;
 
@@ -1126,9 +1061,53 @@ process_active_connections (cherokee_thread_t *thd)
 				}
 			}
 
+			/* Figure next state
+			 */
+			if (! http_method_with_input (conn->header.method)) {
+				conn->phase = phase_add_headers;
+				goto add_headers;
+			}
+
+			/* Register with the POST tracker
+			 */
+			if ((srv->post_track) && (conn->post.has_info)) {
+				srv->post_track->func_register (srv->post_track, conn);
+			}
+
+			conn->phase = phase_reading_post;
+
+		case phase_reading_post:
+
+			/* Read/Send the POST info
+			 */
+			ret = cherokee_connection_read_post (conn);
+			switch (ret) {
+			case ret_ok:
+				break;
+			case ret_eagain:
+				/* Blocking on socket read */
+				conn_set_mode (thd, conn, socket_reading);
+				continue;
+			case ret_deny:
+				/* Blocking on back-end write */
+				continue;
+			case ret_eof:
+			case ret_error:
+				conn->error_code = http_internal_error;
+				cherokee_connection_setup_error_handler (conn);
+				continue;
+			default:
+				RET_UNKNOWN(ret);
+			}
+
+			/* Turn the connection in write mode
+			 */
+			conn_set_mode (thd, conn, socket_writing);
 			conn->phase = phase_add_headers;
 
 		case phase_add_headers:
+		add_headers:
+
 			/* Build the header
 			 */
 			ret = cherokee_connection_build_header (conn);
@@ -1193,13 +1172,8 @@ process_active_connections (cherokee_thread_t *thd)
 				RET_UNKNOWN(ret);
 			}
 
-			/* Maybe log the connection
-			 */
-			cherokee_connection_log_or_delay (conn);
-
 		phase_send_headers_EXIT:
 			conn->phase = phase_steping;
-
 
 		case phase_steping:
 			/* Special case:
@@ -1452,12 +1426,10 @@ accept_new_connection (cherokee_thread_t *thd,
 
 	/* Try to get a new connection
 	 */
-	do {
-		ret = cherokee_socket_accept_fd (&bind->socket, &new_fd, &new_sa);
-	} while (ret == ret_deny);
-
-	if (ret != ret_ok)
+	ret = cherokee_socket_accept_fd (&bind->socket, &new_fd, &new_sa);
+	if (ret != ret_ok) {
 		return ret_deny;
+	}
 
 	/* Information collection
 	 */

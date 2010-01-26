@@ -62,7 +62,7 @@ NOTE_X_REAL_IP        = N_('Whether the logger should read and use the X-Real-IP
 NOTE_X_REAL_IP_ALL    = N_('Accept all the X-Real-IP and X-Forwarded-For headers. WARNING: Turn it on only if you are centain of what you are doing.')
 NOTE_X_REAL_IP_ACCESS = N_('List of IP addresses and subnets that are allowed to send X-Real-IP and X-Forwarded-For headers.')
 NOTE_EVHOST           = N_('How to support the "Advanced Virtual Hosting" mechanism. (Default: off)')
-NOTE_LOGGER_TEMPLATE  = N_('The following variables are accepted: <br/>${ip_remote}, ${ip_local}, ${protocol}, ${transport}, ${port_server}, ${query_string}, ${request_first_line}, ${status}, ${now}, ${time_secs}, ${time_nsecs}, ${user_remote}, ${request}, ${request_original}, ${vserver_name}')
+NOTE_LOGGER_TEMPLATE  = N_('The following variables are accepted: <br/>${ip_remote}, ${ip_local}, ${protocol}, ${transport}, ${port_server}, ${query_string}, ${request_first_line}, ${status}, ${now}, ${time_secs}, ${time_nsecs}, ${user_remote}, ${request}, ${request_original}, ${vserver_name}, ${response_size}')
 NOTE_MATCHING_METHOD  = N_('Allows the selection of domain matching method.')
 NOTE_COLLECTOR        = N_('Whether or not it should collected statistics about the traffic of this virtual server.')
 NOTE_UTC_TIME         = N_('Time standard to use in the log file entries.')
@@ -354,11 +354,9 @@ class PageVServer (PageMenu, FormHelper):
         table_name = "rules%d" % (self._rule_table)
         self._rule_table += 1
 
-        ENABLED_IMAGE  = self.InstanceImage('tick.png', _('Yes'))
-        DISABLED_IMAGE = self.InstanceImage('cross.png', _('No'))
-
-        ON_IMAGE  = self.InstanceImage('switch_on_m.png', _('Enabled'))
-        OFF_IMAGE = self.InstanceImage('switch_off_m.png', _('Disabled'))
+        ENABLED_IMAGE   = self.InstanceImage('tick.png',  _('Yes'))
+        DISABLED_IMAGE  = self.InstanceImage('cross.png', _('No'))
+        FORBIDDEN_IMAGE = self.InstanceImage('forbidden.png', _('Forbidden'))
 
         txt += '<table id="%s" class="rulestable">' % (table_name)
         txt += '<tr class="nodrag nodrop"><th>&nbsp;</th><th>%s</th><th>%s</th><th>%s</th><th>%s</th><th>%s</th><th>%s</th><th>%s</th><th>%s</th><th>%s</th><th>%s</th><th></th></tr>' %(
@@ -415,8 +413,11 @@ class PageVServer (PageMenu, FormHelper):
             encoders = DISABLED_IMAGE
             if 'encoder' in conf.keys():
                 for k in conf['encoder'].keys():
-                    if int(conf.get_val('encoder!%s'%(k))):
+                    val = conf.get_val('encoder!%s'%(k))
+                    if val in ['1', 'allow']:
                         encoders = ENABLED_IMAGE
+                    elif val == 'forbid':
+                        encoders = FORBIDDEN_IMAGE
 
             txt += '<!-- %s --><tr prio="%s" id="%s"%s><td%s>&nbsp;</td><td>%s</td><td>%s</td><td>%s</td><td class="center">%s</td><td class="center">%s</td><td class="center">%s</td><td class="center">%s</td><td class="center">%s</td><td class="center">%s</td><td class="center switch">%s</td><td class="center">%s</td></tr>\n' % (
                 prio, pre, prio, extra, draggable, link, name_type, handler_name, document_root, auth_name, encoders, expiration, timeout, final, disabled, link_del)

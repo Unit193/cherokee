@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2009 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2010 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -51,7 +51,7 @@
 
 #define APP_COPY_NOTICE \
 	"Written by Alvaro Lopez Ortega <alvaro@alobbs.com>\n\n"                       \
-	"Copyright (C) 2001-2009 Alvaro Lopez Ortega.\n"                               \
+	"Copyright (C) 2001-2010 Alvaro Lopez Ortega.\n"                               \
 	"This is free software; see the source for copying conditions.  There is NO\n" \
 	"warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n"
 
@@ -62,6 +62,7 @@
 
 #define BASIC_CONFIG							\
 	"vserver!1!nick = default\n"					\
+	"vserver!1!error_writer!type = stderr\n"                        \
 	"vserver!1!rule!3!match = directory\n"				\
 	"vserver!1!rule!3!match!directory = /cherokee_themes\n"		\
 	"vserver!1!rule!3!handler = file\n"				\

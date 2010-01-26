@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2009 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2010 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -79,13 +79,13 @@
 #include "fdpoll.h"
 #include "fdpoll-protected.h"
 #include "regex.h"
-#include "fcgi_manager.h"
 #include "connection-protected.h"
 #include "nonce.h"
 #include "config_reader.h"
 #include "init.h"
 #include "bogotime.h"
 #include "source_interpreter.h"
+#include "post_track.h"
 
 #define ENTRIES "core,server"
 #define GRNAM_BUF_LEN 8192
@@ -114,6 +114,7 @@ cherokee_server_new  (cherokee_server_t **srv)
 	 */
 	n->tls_enabled      = false;
 	n->cryptor          = NULL;
+	n->post_track       = NULL;
 
 	n->timeout          = 5;
 	n->fdwatch_msecs    = 1000;
@@ -297,6 +298,10 @@ cherokee_server_free (cherokee_server_t *srv)
 
 	if (srv->cryptor) {
 		cherokee_cryptor_free (srv->cryptor);
+	}
+
+	if (srv->post_track) {
+		MODULE(srv->post_track)->free (srv->post_track);
 	}
 
 	if (srv->collector) {
@@ -1484,6 +1489,25 @@ configure_server_property (cherokee_config_node_t *conf, void *data)
 
 		instance = (collector_func_new_t) info->instance;
 		ret = instance ((void **) &srv->collector, info, conf);
+		if (ret != ret_ok)
+			return ret;
+
+	} else if (equal_buf_str (&conf->key, "post_track")) {
+		post_track_new_t        instance;
+		post_track_configure_t  configure;
+		cherokee_plugin_info_t *info      = NULL;
+
+		ret = cherokee_plugin_loader_get (&srv->loader, conf->val.buf, &info);
+		if ((ret != ret_ok) || (info == NULL))
+			return ret;
+
+		instance = (post_track_new_t) info->instance;
+		ret = instance ((void **) &srv->post_track);
+		if (ret != ret_ok)
+			return ret;
+
+		configure = (post_track_configure_t) info->configure;
+		ret = configure ((void **) srv->post_track, conf);
 		if (ret != ret_ok)
 			return ret;
 

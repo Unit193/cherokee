@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2009 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2010 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -80,6 +80,9 @@ ret_t cherokee_dwriter_dict_open  (cherokee_dwriter_t *w);
 ret_t cherokee_dwriter_dict_close (cherokee_dwriter_t *w);
 ret_t cherokee_dwriter_list_open  (cherokee_dwriter_t *w);
 ret_t cherokee_dwriter_list_close (cherokee_dwriter_t *w);
+
+/* Helpers */
+ret_t cherokee_dwriter_lang_to_type (cherokee_buffer_t *buf, cherokee_dwriter_lang_t *lang);
 
 CHEROKEE_END_DECLS
 

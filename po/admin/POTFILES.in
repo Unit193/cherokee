@@ -31,6 +31,7 @@ admin/ModuleLdap.py
 admin/ModuleMethod.py
 admin/ModuleMysql.py
 admin/ModulePlain.py
+admin/ModulePostReport.py
 admin/ModuleProxy.py
 admin/ModuleRedir.py
 admin/ModuleRehost.py

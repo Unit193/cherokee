@@ -3,7 +3,7 @@
 # Authors:
 #      Alvaro Lopez Ortega <alvaro@alobbs.com>
 #
-# Copyright (C) 2001-2009 Alvaro Lopez Ortega
+# Copyright (C) 2001-2010 Alvaro Lopez Ortega
 # This file is distributed under the GPL license.
 
 import os
@@ -40,6 +40,7 @@ class TestBase:
         self.expected_error          = None
         self.expected_content        = None
         self.forbidden_content       = None
+        self.disabled                = False
         self._initialize()
 
     def _initialize (self):
@@ -374,8 +375,9 @@ class TestBase:
 
 class TestCollection:
     def __init__ (self):
-        self.tests = []
-        self.num   = 0
+        self.tests    = []
+        self.num      = 0
+        self.disabled = False
 
     def Add (self, test):
         self.num += 1

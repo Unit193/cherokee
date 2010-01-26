@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2009 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2010 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -418,6 +418,10 @@ cherokee_handler_cgi_base_build_basic_env (
 
 		if (! cherokee_buffer_is_empty (&conn->request_original)) {
 			cherokee_buffer_add_buffer (tmp, &conn->request_original);
+			if (! cherokee_buffer_is_empty (&conn->query_string_original)) {
+				cherokee_buffer_add_char   (tmp, '?');
+				cherokee_buffer_add_buffer (tmp, &conn->query_string_original);
+			}
 		} else {
 			cherokee_buffer_add_buffer (tmp, &conn->request);
 

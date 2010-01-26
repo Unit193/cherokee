@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2009 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2010 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -394,15 +394,17 @@ ioentry_update_mmap (cherokee_iocache_entry_t *entry,
 	PUBL(entry)->mmaped_len      = entry->state.st_size;
 	PRIV(entry)->mmap_expiration = cherokee_bogonow_now + iocache->lasting_mmap;
 
-	if ((fd == NULL) && (fd_local != -1))
-		close (fd_local);
+	if ((fd == NULL) && (fd_local != -1)) {
+		cherokee_fd_close (fd_local);
+	}
 
 	BIT_SET (PUBL(entry)->info, iocache_mmap);
 	return ret_ok;
 
 error:
-	if ((fd == NULL) && (fd_local != -1))
-		close (fd_local);
+	if ((fd == NULL) && (fd_local != -1)) {
+		cherokee_fd_close (fd_local);
+	}
 
 	BIT_UNSET (PUBL(entry)->info, iocache_mmap);
 	return ret;

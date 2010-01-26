@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2009 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2010 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -62,7 +62,6 @@ ret_t cherokee_downloader_set_cryptor     (cherokee_downloader_t *downloader, ch
 ret_t cherokee_downloader_get_reply_code  (cherokee_downloader_t *downloader, cherokee_http_t *code);
 ret_t cherokee_downloader_get_reply_hdr   (cherokee_downloader_t *downloader, cherokee_buffer_t **header);
 
-ret_t cherokee_downloader_post_set        (cherokee_downloader_t *downloader, cherokee_post_t *post);
 ret_t cherokee_downloader_post_reset      (cherokee_downloader_t *downloader);
 
 ret_t cherokee_downloader_step            (cherokee_downloader_t *downloader, cherokee_buffer_t *tmp1, cherokee_buffer_t *tmp2);

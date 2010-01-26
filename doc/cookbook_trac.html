@@ -22,21 +22,24 @@ integrated SCM and Project Management solution that gets along very
 well with Cherokee.</p></div>
 <div class="paragraph"><p>It is written in Python and can work with Cherokee either using HTTP
 or SCGI protocols. The recipe will address the second scenario because
-it is slighlty more complex. Should you wish to run it via HTTP,
+it is slightly more complex. Should you wish to run it via HTTP,
 Cherokee would only have to relay the requests to Trac acting as an
 <a href="modules_handlers_proxy.html">HTTP reverse proxy</a> and no other
 configuration would be needed on that end.</p></div>
 <h3 id="_trac">Trac</h3><div style="clear:left"></div>
 <div class="paragraph"><p>The software requirements are Python-2.5, easy_install and
-SQlite-3.3.4 or above.</p></div>
+SQLite-3.3.4 or above. Flup is also required unless you want to use
+the HTTP-proxy method, and SQLite can be replaced by PostreSQL or
+MySQL if you wish to do so.</p></div>
 <div class="paragraph"><p>On Debian based Linux distributions, just a couple of commands issued
 as <tt>root</tt> would suffice to provide the requirements and install Trac.</p></div>
 <div class="listingblock">
 <div class="title">Quick install</div>
 <div class="content">
-<pre><tt>apt-get install python-genshi python-setuptools python-pysqlite2
+<pre><tt>apt-get install python-genshi python-setuptools python-pysqlite2 python-flup
 easy_install Trac</tt></pre>
 </div></div>
+<div class="paragraph"><p>The package names could slightly vary on different distributions.</p></div>
 <div class="paragraph"><p>The next thing would be defining a project environment:</p></div>
 <div class="listingblock">
 <div class="title">Project creation</div>

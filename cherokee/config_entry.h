@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2009 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2010 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -48,6 +48,18 @@ typedef enum {
 	cherokee_expiration_max,
 	cherokee_expiration_time
 } cherokee_expiration_t;
+
+typedef enum {
+	cherokee_encoder_unset,
+	cherokee_encoder_allow,
+	cherokee_encoder_forbid
+} cherokee_encoder_perms_t;
+
+typedef struct {
+	cherokee_encoder_perms_t  perms;
+	void                     *instance_func;
+} cherokee_encoder_avl_entry_t;
+
 
 typedef struct {
 	/* Properties
@@ -99,7 +111,9 @@ ret_t cherokee_config_entry_free     (cherokee_config_entry_t  *entry);
 ret_t cherokee_config_entry_init     (cherokee_config_entry_t  *entry);
 ret_t cherokee_config_entry_mrproper (cherokee_config_entry_t  *entry);
 
-ret_t cherokee_config_entry_add_encoder (cherokee_config_entry_t *entry, cherokee_buffer_t *name, cherokee_plugin_info_t *plugin_info);
+ret_t cherokee_config_entry_encoder_add    (cherokee_config_entry_t *entry, cherokee_buffer_t *name, cherokee_plugin_info_t *plugin_info);
+ret_t cherokee_config_entry_encoder_forbid (cherokee_config_entry_t *entry, cherokee_buffer_t *name);
+
 ret_t cherokee_config_entry_set_handler (cherokee_config_entry_t *entry, cherokee_plugin_info_handler_t *plugin_info);
 ret_t cherokee_config_entry_complete    (cherokee_config_entry_t *entry, cherokee_config_entry_t *source);
 

@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2009 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2010 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -35,10 +35,8 @@
 #include "balancer.h"
 
 typedef enum {
-	fcgi_post_unknown,
-	fcgi_post_init,
-	fcgi_post_read,
-	fcgi_post_write
+	fcgi_post_phase_read,
+	fcgi_post_phase_write
 } cherokee_handler_fcgi_post_t;
 
 /* Data structure
@@ -48,7 +46,6 @@ typedef struct {
 	cherokee_source_t            *src_ref;
 	cherokee_socket_t             socket;
 	cherokee_handler_fcgi_post_t  post_phase;
-	off_t                         post_len;
 	cherokee_buffer_t             write_buffer;
 } cherokee_handler_fcgi_t;
 
@@ -67,10 +64,12 @@ typedef struct {
 #define HANDLER_FCGI_PROPS(x) (PROP_FCGI (MODULE(x)->props))
 
 
- /* Methods
+/* Methods
  */
 ret_t cherokee_handler_fcgi_new  (cherokee_handler_t     **hdl, void *cnt, cherokee_module_props_t *props);
 ret_t cherokee_handler_fcgi_free (cherokee_handler_fcgi_t *hdl);
-ret_t cherokee_handler_fcgi_init (cherokee_handler_fcgi_t *hdl);
+
+ret_t cherokee_handler_fcgi_init      (cherokee_handler_fcgi_t *hdl);
+ret_t cherokee_handler_fcgi_read_post (cherokee_handler_fcgi_t *hdl);
 
 #endif /* CHEROKEE_HANDLER_CGI_H */

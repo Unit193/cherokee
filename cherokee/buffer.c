@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2009 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2010 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -963,13 +963,13 @@ cherokee_buffer_read_file (cherokee_buffer_t *buf, char *filename)
 	if (r < 0) {
 		buf->buf[buf->len] = '\0';
 
-		close(f);
+		cherokee_fd_close(f);
 		return ret_error;
 	}
 
 	/* Close it and exit
 	 */
-	close(f);
+	cherokee_fd_close(f);
 
 	buf->len += r;
 	buf->buf[buf->len] = '\0';
