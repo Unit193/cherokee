@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2009 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2010 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -45,7 +45,7 @@
 
 #define APP_COPY_NOTICE \
 	"Written by Alvaro Lopez Ortega <alvaro@alobbs.com>\n\n"	               \
-	"Copyright (C) 2001-2009 Alvaro Lopez Ortega.\n"                               \
+	"Copyright (C) 2001-2010 Alvaro Lopez Ortega.\n"                               \
 	"This is free software; see the source for copying conditions.  There is NO\n" \
 	"warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n"
 
@@ -280,12 +280,37 @@ config_server (cherokee_server_t *srv)
 		cherokee_buffer_add_str (&buf, RULE_PRE "5!expiration!time = 30d\n");
 	}
 
+	/* Embedded help
+	 */
 	cherokee_buffer_add_va  (&buf,
 				 RULE_PRE "6!match = directory\n"
 				 RULE_PRE "6!match!directory = /help\n"
-				 RULE_PRE "6!handler = file\n"
-				 RULE_PRE "6!handler!iocache = 0\n"
-				 RULE_PRE "6!document_root = %s\n", CHEROKEE_DOCDIR);
+				 RULE_PRE "6!handler = file\n");
+
+	cherokee_buffer_add_va  (&buf,
+				 RULE_PRE "7!match = fullpath\n"
+				 RULE_PRE "7!match!fullpath!1 = /static/help_404.html\n"
+				 RULE_PRE "7!handler = file\n"
+				 RULE_PRE "7!handler!iocache = 0\n"
+				 RULE_PRE "7!document_root = %s\n", document_root);
+
+	cherokee_buffer_add_va  (&buf,
+				 RULE_PRE "8!match = and\n"
+				 RULE_PRE "8!match!left = directory\n"
+				 RULE_PRE "8!match!left!directory = /help\n"
+				 RULE_PRE "8!match!right = not\n"
+				 RULE_PRE "8!match!right!right = exists\n"
+				 RULE_PRE "8!match!right!right!iocache = 0\n"
+				 RULE_PRE "8!match!right!right!match_any = 1\n"
+				 RULE_PRE "8!handler = redir\n"
+				 RULE_PRE "8!handler!rewrite!1!show = 1\n"
+				 RULE_PRE "8!handler!rewrite!1!substring = /static/help_404.html\n");
+
+	cherokee_buffer_add_va  (&buf,
+				 RULE_PRE "9!match = directory\n"
+				 RULE_PRE "9!match!directory = /help\n"
+				 RULE_PRE "9!match!final = 0\n"
+				 RULE_PRE "9!document_root = %s\n", CHEROKEE_DOCDIR);
 
 
 	/* RRDtool graphs
@@ -301,20 +326,20 @@ config_server (cherokee_server_t *srv)
 
 	if (! cherokee_buffer_is_empty (&rrd_bin)) {
 		cherokee_buffer_add_va  (&buf,
-					 RULE_PRE "7!handler!rrdtool_path = %s\n", rrd_bin.buf);
+					 RULE_PRE "20!handler!rrdtool_path = %s\n", rrd_bin.buf);
 	}
 
 	if (! cherokee_buffer_is_empty (&rrd_dir)) {
 		cherokee_buffer_add_va  (&buf,
-					 RULE_PRE "7!handler!database_dir = %s\n", rrd_dir.buf);
+					 RULE_PRE "20!handler!database_dir = %s\n", rrd_dir.buf);
 	}
 
 	cherokee_buffer_add_str (&buf,
-				 RULE_PRE "7!match = directory\n"
-				 RULE_PRE "7!match!directory = /graphs\n"
-				 RULE_PRE "7!handler = render_rrd\n");
+				 RULE_PRE "20!match = directory\n"
+				 RULE_PRE "20!match!directory = /graphs\n"
+				 RULE_PRE "20!handler = render_rrd\n");
 
-	cherokee_buffer_add_str (&buf, RULE_PRE "7!document_root = ");
+	cherokee_buffer_add_str (&buf, RULE_PRE "20!document_root = ");
 	cherokee_tmp_dir_copy   (&buf);
 	cherokee_buffer_add_va  (&buf, "/cherokee/rrd-cache\n");
 
@@ -340,9 +365,11 @@ config_server (cherokee_server_t *srv)
 	cherokee_buffer_mrproper (&rrd_dir);
 	cherokee_buffer_mrproper (&password);
 	cherokee_buffer_mrproper (&buf);
-	return ret_ok;
 
+	return ret_ok;
 }
+
+
 static void
 print_help (void)
 {

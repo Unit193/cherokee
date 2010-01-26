@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2009 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2010 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -134,7 +134,7 @@ ret_t
 cherokee_handler_file_free (cherokee_handler_file_t *fhdl)
 {
 	if (fhdl->fd != -1) {
-		close (fhdl->fd);
+		cherokee_fd_close (fhdl->fd);
 		fhdl->fd = -1;
 	}
 

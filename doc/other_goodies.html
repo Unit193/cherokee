@@ -84,14 +84,13 @@ second depend on it.</p></div>
 <div class="paragraph"><p>With Cherokee you can cope with this and much more. With Cherokee, it&#8217;s
 easier done than said.</p></div>
 <h3 id="ssl-vhosts">SSL Virtual Hosts</h3><div style="clear:left"></div>
-<div class="paragraph"><p>You might have been told elsewhere that named virtual hosts in SSL
-cannot be supported without SNI (Server Name Indication) because a web
-server cannot see the hostname header when the SSL request is being
-processed. Technically this might have been correct in the past. The
-first thing that the server has to do is to connect with the other end
-by using SSL/TLS. The user entered host part of the URI must match the
-Common Name (CN) provided by the certificate. Since virtual hosts are in
-use, the CN of the first available certificate may or may not match
+<div class="paragraph"><p>A problem arises when virtual hosts and SSL must be used
+simultaneously. This is due to the fact that a web server cannot see
+the hostname header when the SSL request is being processed. The first
+thing that the server has to do is to connect with the other end by
+using SSL/TLS. The user entered host part of the URI must match the
+Common Name (CN) provided by the certificate. Since virtual hosts are
+in use, the CN of the first available certificate may or may not match
 the one specified in the early stages of TLS negotiation.</p></div>
 <div class="paragraph"><p>Cherokee supports the clean and standard method of dealing with this
 issue called
@@ -105,8 +104,9 @@ will simply work as long as there is a web browser with SNI support at
 the other side. Currently every modern web browser supports this, and
 Cherokee has TLS SNI support for the OpenSSL backends.</p></div>
 <div class="paragraph"><p>Note that for SNI to work, client support is required. Web browsers
-known to support it are Mozilla Firefox 2.0+, Opera 8.0+, Internet
-Explorer 7 (Vista, not XP) or later and Google Chrome.</p></div>
+known to support it are Mozilla Firefox 2.0+ and Opera 8.0+ in all its
+variants, Safari 3.2.1+ on OS X and Vista, Internet Explorer 7+
+(Vista, not XP) or later, and Google Chrome (Vista, not XP).</p></div>
 <h3 id="dbslayer">Database load balancing</h3><div style="clear:left"></div>
 <div class="paragraph"><p>Ever heard of the <strong>DB Access Layer</strong>, AKA
 <a href="http://code.nytimes.com/projects/dbslayer/">DBSlayer</a>?</p></div>

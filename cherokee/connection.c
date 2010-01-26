@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2009 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2010 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -94,7 +94,7 @@ cherokee_connection_new  (cherokee_connection_t **conn)
 	n->auth_type            = http_auth_nothing;
 	n->req_auth_type        = http_auth_nothing;
 	n->upgrade              = http_upgrade_nothing;
-	n->options              = conn_op_log_at_end;
+	n->options              = conn_op_nothing;
 	n->handler              = NULL;
 	n->encoder              = NULL;
 	n->encoder_new_func     = NULL;
@@ -150,6 +150,7 @@ cherokee_connection_new  (cherokee_connection_t **conn)
 
 	cherokee_buffer_init (&n->query_string);
 	cherokee_buffer_init (&n->request_original);
+	cherokee_buffer_init (&n->query_string_original);
 
 	cherokee_socket_init (&n->socket);
 	cherokee_header_init (&n->header, header_type_request);
@@ -188,6 +189,7 @@ cherokee_connection_free (cherokee_connection_t  *conn)
 
 	cherokee_buffer_mrproper (&conn->request);
 	cherokee_buffer_mrproper (&conn->request_original);
+	cherokee_buffer_mrproper (&conn->query_string_original);
 	cherokee_buffer_mrproper (&conn->logger_real_ip);
 
 	cherokee_buffer_mrproper (&conn->pathinfo);
@@ -221,7 +223,7 @@ cherokee_connection_free (cherokee_connection_t  *conn)
 	}
 
         if (conn->polling_fd != -1) {
-                close (conn->polling_fd);
+                cherokee_fd_close (conn->polling_fd);
                 conn->polling_fd   = -1;
 		conn->polling_mode = FDPOLL_MODE_NONE;
         }
@@ -234,8 +236,9 @@ cherokee_connection_free (cherokee_connection_t  *conn)
 ret_t
 cherokee_connection_clean (cherokee_connection_t *conn)
 {
-	uint32_t header_len;
-	size_t   crlf_len;
+	size_t             crlf_len;
+	uint32_t           header_len;
+	cherokee_server_t *srv         = CONN_SRV(conn);
 
 	/* I/O cache entry reference
 	 */
@@ -251,11 +254,17 @@ cherokee_connection_clean (cherokee_connection_t *conn)
 		BIT_UNSET (conn->options, conn_op_tcp_cork);
 	}
 
+	/* POST track
+	 */
+	if (srv && srv->post_track) {
+		srv->post_track->func_unregister (srv->post_track, &conn->post);
+	}
+
 	conn->phase                = phase_reading_header;
 	conn->auth_type            = http_auth_nothing;
 	conn->req_auth_type        = http_auth_nothing;
 	conn->upgrade              = http_upgrade_nothing;
-	conn->options              = conn_op_log_at_end;
+	conn->options              = conn_op_nothing;
 	conn->error_code           = http_ok;
 	conn->range_start          = -1;
 	conn->range_end            = -1;
@@ -295,15 +304,16 @@ cherokee_connection_clean (cherokee_connection_t *conn)
 	conn->encoder_new_func = NULL;
 
 	if (conn->polling_fd != -1) {
-		close (conn->polling_fd);
+		cherokee_fd_close (conn->polling_fd);
 		conn->polling_fd = -1;
 	}
 
-	cherokee_post_mrproper (&conn->post);
+	cherokee_post_clean (&conn->post);
 	cherokee_buffer_mrproper (&conn->encoder_buffer);
 
 	cherokee_buffer_clean (&conn->request);
 	cherokee_buffer_clean (&conn->request_original);
+	cherokee_buffer_clean (&conn->query_string_original);
 	cherokee_buffer_clean (&conn->logger_real_ip);
 
 	cherokee_buffer_clean (&conn->pathinfo);
@@ -712,6 +722,19 @@ build_response_header (cherokee_connection_t *conn, cherokee_buffer_t *buffer)
 
 
 ret_t
+cherokee_connection_read_post (cherokee_connection_t *conn)
+{
+	/* Shortcut
+	 */
+	if (conn->handler->read_post == NULL) {
+		return ret_ok;
+	}
+
+	return cherokee_handler_read_post (conn->handler);
+}
+
+
+ret_t
 cherokee_connection_build_header (cherokee_connection_t *conn)
 {
 	ret_t              ret;
@@ -907,12 +930,15 @@ cherokee_connection_tx_add (cherokee_connection_t *conn, ssize_t tx)
 
 
 ret_t
-cherokee_connection_recv (cherokee_connection_t *conn, cherokee_buffer_t *buffer, off_t *len)
+cherokee_connection_recv (cherokee_connection_t *conn,
+			  cherokee_buffer_t     *buffer,
+			  off_t                  to_read,
+			  off_t                 *len)
 {
 	ret_t  ret;
 	size_t cnt_read = 0;
 
-	ret = cherokee_socket_bufread (&conn->socket, buffer, DEFAULT_RECV_SIZE, &cnt_read);
+	ret = cherokee_socket_bufread (&conn->socket, buffer, to_read, &cnt_read);
 	switch (ret) {
 	case ret_ok:
 		cherokee_connection_rx_add (conn, cnt_read);
@@ -968,10 +994,11 @@ cherokee_connection_set_cork (cherokee_connection_t *conn,
 		return ret;
 	}
 
-	if (enable)
+	if (enable) {
 		BIT_SET (conn->options, conn_op_tcp_cork);
-	else
+	} else {
 		BIT_UNSET (conn->options, conn_op_tcp_cork);
+	}
 
 	return ret_ok;
 }
@@ -1176,6 +1203,13 @@ error:
 ret_t
 cherokee_connection_shutdown_wr (cherokee_connection_t *conn)
 {
+	/* Turn TCP-cork off
+	 */
+	if (conn->options & conn_op_tcp_cork) {
+		cherokee_socket_flush (&conn->socket);
+		cherokee_connection_set_cork (conn, false);
+	}
+
 	/* At this point, we don't want to follow the TLS protocol
 	 * any longer.
 	 */
@@ -1380,10 +1414,12 @@ get_encoding (cherokee_connection_t *conn,
 	      char                  *ptr,
 	      cherokee_avl_t        *encoders_accepted)
 {
-	ret_t ret;
-	char tmp;
-	char *i1, *i2;
-	char *end;
+	ret_t                         ret;
+	char                          tmp;
+	char                         *i1;
+	char                         *i2;
+	char                         *end;
+	cherokee_encoder_avl_entry_t *encoder_info;
 
 	/* ptr = Header at the "Accept-Encoding" position
 	 */
@@ -1399,23 +1435,40 @@ get_encoding (cherokee_connection_t *conn,
 			i1++;
 
 		i2 = strchr (i1, ',');
-		if (!i2)
+		if (!i2) {
 			i2 = strchr (i1, ';');
-		if (!i2)
-			i2 = end;
-
-		tmp = *i2;    /* (2) */
-		*i2 = '\0';
-		ret = cherokee_avl_get_ptr (encoders_accepted, i1,
-					    (void **) &conn->encoder_new_func);
-		*i2 = tmp;    /* (2') */
-
-		if ((ret == ret_ok) &&
-		    (conn->encoder_new_func != NULL))
-		{
-			break;
+			if (!i2) {
+				i2 = end;
+			}
 		}
 
+		/* Get the encoder configuration entry
+		 */
+		tmp = *i2;    /* (2) */
+		*i2 = '\0';
+		ret = cherokee_avl_get_ptr (encoders_accepted, i1, (void **)&encoder_info);
+		*i2 = tmp;    /* (2') */
+
+		if (ret == ret_ok) {
+			if (encoder_info->perms == cherokee_encoder_allow) {
+				/* Use encoder
+				 */
+				conn->encoder_new_func = encoder_info->instance_func;
+				break;
+
+			} else if (encoder_info->perms == cherokee_encoder_forbid) {
+				/* Explicitly forbidden
+				 */
+				conn->encoder_new_func = NULL;
+				break;
+			}
+
+			SHOULDNT_HAPPEN;
+			return ret_error;
+		}
+
+		/* Next iteration
+		 */
 		if (i2 < end) {
 			i1 = i2+1;
 		}
@@ -1545,6 +1598,9 @@ cherokee_connection_set_custom_droot (cherokee_connection_t   *conn,
 	 */
 	if (cherokee_buffer_is_empty (&conn->request_original)) {
 		cherokee_buffer_add_buffer (&conn->request_original, &conn->request);
+		if (! cherokee_buffer_is_empty (&conn->query_string)) {
+			cherokee_buffer_add_buffer (&conn->query_string_original, &conn->query_string);
+		}
 	}
 
 	if (conn->web_directory.len > 1) {
@@ -1686,98 +1742,6 @@ get_range (cherokee_connection_t *conn, char *ptr, int ptr_len)
 
 
 static ret_t
-send_100continue (cherokee_connection_t *conn)
-{
-	ret_t       ret;
-	const char *reply   = "HTTP/1.1 100 Continue" CRLF CRLF; /* 25 chars */
-	size_t      written = 0;
-
-	ret = cherokee_socket_write (&conn->socket, reply, 25, &written);
-	if ((ret == ret_ok) && (written == 25)) {
-		TRACE(ENTRIES, "Sent a '100 Continue' response.\n");
-		return ret_ok;
-	}
-
-	TRACE(ENTRIES, "Could not send a '100 Continue' response. Error=500.\n");
-	conn->error_code = http_internal_error;
-	return ret_error;
-}
-
-
-static ret_t
-post_init (cherokee_connection_t *conn)
-{
-	ret_t    ret;
-	off_t    post_len;
-	char    *info     = NULL;
-	cuint_t  info_len = 0;
-	CHEROKEE_TEMP(buf, 64);
-
-	/* RFC 2616:
-	 *
-	 * If a message is received with both a Transfer-Encoding
-	 * header field and a Content-Length header field, the latter
-	 * MUST be ignored.
-	 */
-
-	/* Check "Transfer-Encoding"
-	 */
-	ret = cherokee_header_get_known (&conn->header, header_transfer_encoding, &info, &info_len);
-	if (ret == ret_ok) {
-		if (strncasecmp (info, "chunked", MIN(info_len, 7)) == 0) {
-			cherokee_post_set_encoding (&conn->post, post_enc_chunked);
-			return ret_ok;
-		}
-	}
-
-	/* Check "Content-Length"
-	 */
-	ret = cherokee_header_get_known (&conn->header, header_content_length, &info, &info_len);
-	if (unlikely (ret != ret_ok)) {
-		conn->error_code = http_length_required;
-		return ret_error;
-	}
-
-	/* Parse the POST length
-	 */
-	if (unlikely ((info == NULL)  ||
-		      (info_len == 0) ||
-		      (info_len >= buf_size)))
-	{
-		conn->error_code = http_bad_request;
-		return ret_error;
-	}
-
-	memcpy (buf, info, info_len);
-	buf[info_len] = '\0';
-
-	/* Check: Post length >= 0
-	 */
-	post_len = (off_t) atoll(buf);
-	if (unlikely (post_len < 0)) {
-		conn->error_code = http_bad_request;
-		return ret_error;
-	}
-
-	/* Set the length
-	 */
-	cherokee_post_set_len (&conn->post, post_len);
-
-	/* Check "Expect: 100-continue" header
-	 */
-	ret = cherokee_header_get_known (&conn->header, header_expect, &info, &info_len);
-	if (ret == ret_ok) {
-		ret = send_100continue(conn);
-		if (ret != ret_ok) {
-			return ret_error;
-		}
-	}
-
-	return ret_ok;
-}
-
-
-static ret_t
 parse_userdir (cherokee_connection_t *conn)
 {
 	char *begin;
@@ -1826,43 +1790,26 @@ ret_t
 cherokee_connection_get_request (cherokee_connection_t *conn)
 {
 	ret_t            ret;
-	cherokee_http_t  error_code = http_bad_request;
 	char            *host, *upgrade, *cnt;
 	cuint_t          host_len, upgrade_len, cnt_len;
+	cherokee_http_t  error_code = http_bad_request;
 
 	/* Header parsing
 	 */
 	ret = cherokee_header_parse (&conn->header, &conn->incoming_header, &error_code);
-	if (unlikely (ret < ret_ok))
+	if (unlikely (ret < ret_ok)) {
 		goto error;
+	}
 
-	/* Maybe read the POST data
+	/* Init the POST structure if needed
 	 */
-	if (http_method_with_input (conn->header.method)) {
-		uint32_t header_len;
-		uint32_t post_len;
-		size_t   written;
-
-		/* Init the post info
+	if (http_method_with_input (conn->header.method))
+	{
+		/* Read the POST header
 		 */
-		ret = post_init (conn);
+		ret = cherokee_post_read_header (&conn->post, conn);
 		if (unlikely (ret != ret_ok)) {
 			return ret;
-		}
-
-		/* Split header and post
-		 */
-		ret = cherokee_header_get_length (&conn->header, &header_len);
-		if (unlikely(ret != ret_ok))
-			return ret;
-
-		post_len = conn->incoming_header.len - header_len;
-
-		if (post_len > 0) {
-			cherokee_post_append (&conn->post, conn->incoming_header.buf + header_len,
-					       post_len, &written);
-
-			cherokee_buffer_remove_chunk (&conn->incoming_header, header_len, written);
 		}
 	}
 
@@ -1970,7 +1917,7 @@ cherokee_connection_get_request (cherokee_connection_t *conn)
 	/* Check Upload limit
 	 */
 	if ((CONN_VSRV(conn)->post_max_len > 0) &&
-	    (conn->post.size > CONN_VSRV(conn)->post_max_len))
+	    (conn->post.len > CONN_VSRV(conn)->post_max_len))
 	{
 		conn->error_code = http_request_entity_too_large;
 		return ret_error;
@@ -2335,14 +2282,16 @@ cherokee_connection_parse_args (cherokee_connection_t *conn)
 	/* Build a new table
 	 */
 	ret = cherokee_avl_new (&conn->arguments);
-	if (unlikely(ret < ret_ok))
+	if (unlikely(ret != ret_ok)) {
 		return ret;
+	}
 
 	/* Parse the header
 	 */
 	ret = cherokee_parse_query_string (&conn->query_string, conn->arguments);
-	if (unlikely(ret < ret_ok))
+	if (unlikely(ret != ret_ok)) {
 		return ret;
+	}
 
 	return ret_ok;
 }
@@ -2368,51 +2317,16 @@ cherokee_connection_open_request (cherokee_connection_t *conn)
 
 
 ret_t
-cherokee_connection_log_or_delay (cherokee_connection_t *conn)
-{
-	cherokee_boolean_t at_end;
-
-	/* Check whether it should log at end or not..
-	 */
-	if (conn->handler == NULL)
-		at_end = true;
-	else
-		at_end = ! HANDLER_SUPPORTS (conn->handler, hsupport_length);
-
-	/* Set the option bit mask
-	 */
-	if (at_end)
-		BIT_SET (conn->options, conn_op_log_at_end);
-	else
-		BIT_UNSET (conn->options, conn_op_log_at_end);
-
-	/* Return if there is no logger or has to log_at_end
-	 */
-	if (conn->logger_ref == NULL)
-		return ret_ok;
-	if (conn->options & conn_op_log_at_end)
-		return ret_ok;
-
-	/* Log it
-	 */
-	return cherokee_logger_write_access (conn->logger_ref, conn);
-}
-
-
-ret_t
-cherokee_connection_log_delayed (cherokee_connection_t *conn)
+cherokee_connection_log (cherokee_connection_t *conn)
 {
 	/* Check whether if needs to log now of not
 	 */
-	if (conn->logger_ref == NULL)
+	if (conn->logger_ref == NULL) {
 		return ret_ok;
-	if (! (conn->options & conn_op_log_at_end))
-		return ret_ok;
+	}
 
 	/* Log it
 	 */
-	BIT_UNSET (conn->options, conn_op_log_at_end);
-
 	return cherokee_logger_write_access (conn->logger_ref, conn);
 }
 
@@ -2420,8 +2334,9 @@ cherokee_connection_log_delayed (cherokee_connection_t *conn)
 ret_t
 cherokee_connection_update_vhost_traffic (cherokee_connection_t *conn)
 {
-	if (CONN_VSRV(conn)->collector == NULL)
+	if (CONN_VSRV(conn)->collector == NULL) {
 		return ret_ok;
+	}
 
 	cherokee_collector_vsrv_count (CONN_VSRV(conn)->collector,
 				       conn->rx_partial,
@@ -2553,6 +2468,7 @@ cherokee_connection_print (cherokee_connection_t *conn)
 	print_cbuf ("        Pathinfo", pathinfo);
 	print_cbuf ("        User Dir", userdir);
 	print_cbuf ("    Query string", query_string);
+	print_cbuf ("Query str. Orig.", query_string_original);
 	print_cbuf ("            Host", host);
 	print_cbuf ("        Redirect", redirect);
 	print_cint ("    Redirect num", respins);
@@ -2570,14 +2486,19 @@ cherokee_connection_print (cherokee_connection_t *conn)
 	/* Options bit fields
 	 */
 	print_add ("\t|     Option bits:");
-	if (conn->options & conn_op_log_at_end)
-		print_add (" log_at_end");
 	if (conn->options & conn_op_root_index)
 		print_add (" root_index");
 	if (conn->options & conn_op_tcp_cork)
 		print_add (" tcp_cork");
 	if (conn->options & conn_op_document_root)
 		print_add (" document_root");
+	if (conn->options & conn_op_was_polling)
+		print_add (" was_polling");
+	if (conn->options & conn_op_cant_encoder)
+		print_add (" cant_encoder");
+	if (conn->options & conn_op_got_eof)
+		print_add (" got_eof");
+
 	print_add ("\n");
 
 #undef print_buf
@@ -2601,7 +2522,7 @@ cherokee_connection_get_phase_str (cherokee_connection_t *conn)
 	case phase_tls_handshake:     return "TLS handshake";
 	case phase_reading_header:    return "Reading header";
 	case phase_processing_header: return "Processing header";
-	case phase_read_post:         return "Read POST";
+	case phase_reading_post:      return "Reading POST";
 	case phase_setup_connection:  return "Setup connection";
 	case phase_init:              return "Init connection";
 	case phase_add_headers:       return "Add headers";
@@ -2672,4 +2593,22 @@ cherokee_connection_sleep (cherokee_connection_t *conn,
 {
 	conn->limit_blocked_until = cherokee_bogonow_msec + msecs;
 	return ret_ok;
+}
+
+
+void
+cherokee_connection_update_timeout (cherokee_connection_t *conn)
+{
+	if (conn->timeout_lapse == -1) {
+		TRACE (ENTRIES",timeout", "conn (%p, %s): Timeout = now + %d secs\n",
+		       conn, cherokee_connection_get_phase_str (conn), CONN_SRV(conn)->timeout);
+
+		conn->timeout = cherokee_bogonow_now + CONN_SRV(conn)->timeout;
+		return;
+	}
+
+	TRACE (ENTRIES",timeout", "conn (%p, %s): Timeout = now + %d secs\n",
+	       conn, cherokee_connection_get_phase_str (conn), conn->timeout_lapse);
+
+	conn->timeout = cherokee_bogonow_now + conn->timeout_lapse;
 }

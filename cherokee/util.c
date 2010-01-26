@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2009 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2010 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -1319,14 +1319,15 @@ cherokee_fd_close (int fd)
 		return ret_error;
 	}
 
+	do {
 #ifdef _WIN32
-	re = closesocket (fd);
+		re = closesocket (fd);
 #else
-	re = close (fd);
+		re = close (fd);
 #endif
+	} while ((re == -1) && (errno == EINTR));
 
 	TRACE (ENTRIES",close_fd", "fd=%d re=%d\n", fd, re);
-
 	return (re == 0) ? ret_ok : ret_error;
 }
 

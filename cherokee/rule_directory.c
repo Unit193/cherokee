@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2009 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2010 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -66,11 +66,6 @@ match (cherokee_rule_directory_t *rule,
 		return ret_not_found;
 	}
 
-	/* Copy the web directory property
-	 */
-	cherokee_buffer_clean      (&conn->web_directory);
-	cherokee_buffer_add_buffer (&conn->web_directory, &rule->directory);
-
 	/* If the request is exactly the directory entry, and it
 	 * doesn't end with a slash, it must be redirected. Eg:
 	 *
@@ -92,10 +87,11 @@ match (cherokee_rule_directory_t *rule,
 		return ret_error;
 	}
 
-	/* Set the web_directory if needed
+	/* Copy the web directory property
 	 */
-	if (cherokee_buffer_is_empty (&conn->web_directory)) {
-		cherokee_buffer_add_str (&conn->web_directory, "/");
+	if (RULE(rule)->config.handler_new_func != NULL) {
+		cherokee_buffer_clean      (&conn->web_directory);
+		cherokee_buffer_add_buffer (&conn->web_directory, &rule->directory);
 	}
 
 	TRACE(ENTRIES, "Match! rule=%s req=%s web_directory=%s: ret_ok\n",

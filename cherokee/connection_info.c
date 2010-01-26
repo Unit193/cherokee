@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2009 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2010 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -109,9 +109,9 @@ cherokee_connection_info_fill_up (cherokee_connection_info_t *info,
 		phase = phase_processing_header;
 		cherokee_buffer_add_str (&info->phase, "Processing headers");
 		break;
-	case phase_read_post:
-		phase = phase_read_post;
-		cherokee_buffer_add_str (&info->phase, "Reading Post");
+	case phase_reading_post:
+		phase = phase_reading_post;
+		cherokee_buffer_add_str (&info->phase, "Reading POST");
 		break;
 	case phase_setup_connection:
 		phase = phase_setup_connection;

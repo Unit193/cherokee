@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2009 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2010 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -485,8 +485,8 @@ _spawn_local (cherokee_source_interpreter_t *src,
 				dup2 (error_writer->fd, STDERR_FILENO);
 			}
 			else {
-				close (STDOUT_FILENO);
-				close (STDERR_FILENO);
+				cherokee_fd_close (STDOUT_FILENO);
+				cherokee_fd_close (STDERR_FILENO);
 			}
 		}
 

@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2009 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2010 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -34,16 +34,21 @@
 #include "handler_cgi_base.h"
 #include "balancer.h"
 
+
 typedef struct __attribute__((packed)) {
-	unsigned char arg1;
-	unsigned short env_size;
-	unsigned char arg2;
+	uint8_t   modifier1;
+	uint16_t  env_size;
+	uint8_t   modifier2;
 } uwsgi_header ;
 
 
 typedef struct {
 	cherokee_handler_cgi_base_t  base;
 	cherokee_balancer_t         *balancer;
+	uint8_t                      modifier1;
+	uint8_t                      modifier2;
+	cherokee_boolean_t           pass_wsgi_vars;
+	cherokee_boolean_t           pass_request_body;
 } cherokee_handler_uwsgi_props_t;
 
 
@@ -53,22 +58,21 @@ typedef struct {
 	cherokee_socket_t            socket;
 	cherokee_source_t           *src_ref;
 	time_t                       spawned;
-	off_t                        post_len;
 } cherokee_handler_uwsgi_t;
 
 #define HDL_UWSGI(x)           ((cherokee_handler_uwsgi_t *)(x))
 #define PROP_UWSGI(x)          ((cherokee_handler_uwsgi_props_t *)(x))
 #define HANDLER_UWSGI_PROPS(x) (PROP_UWSGI(MODULE(x)->props))
 
+/* Methods
+ */
+ret_t cherokee_handler_uwsgi_new       (cherokee_handler_t      **hdl, void *cnt, cherokee_module_props_t *props);
+ret_t cherokee_handler_uwsgi_free      (cherokee_handler_uwsgi_t *hdl);
+ret_t cherokee_handler_uwsgi_init      (cherokee_handler_uwsgi_t *hdl);
+ret_t cherokee_handler_uwsgi_read_post (cherokee_handler_uwsgi_t *hdl);
 
 /* Library init function
  */
-void PLUGIN_INIT_NAME(uwsgi)      (cherokee_plugin_loader_t *loader);
-
-/* Methods
- */
-ret_t cherokee_handler_uwsgi_new  (cherokee_handler_t     **hdl, void *cnt, cherokee_module_props_t *props);
-ret_t cherokee_handler_uwsgi_free (cherokee_handler_uwsgi_t *hdl);
-ret_t cherokee_handler_uwsgi_init (cherokee_handler_uwsgi_t *hdl);
+void PLUGIN_INIT_NAME(uwsgi) (cherokee_plugin_loader_t *loader);
 
 #endif /* CHEROKEE_HANDLER_UWSGI_H */

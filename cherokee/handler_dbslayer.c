@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2009 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2010 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -357,7 +357,7 @@ render_result (cherokee_handler_dbslayer_t *hdl,
 			case MYSQL_TYPE_MEDIUM_BLOB:
 			case MYSQL_TYPE_LONG_BLOB:
 				if ((row[i] == NULL) ||
-				    (fields[i].charsetnr == 63))
+				    (fields[i].charsetnr != 63))
 				{
 					cherokee_dwriter_null (&hdl->writer);
 					continue;
@@ -544,16 +544,8 @@ cherokee_handler_dbslayer_configure (cherokee_config_node_t  *conf,
 
 		} else  if (equal_buf_str (&subconf->key, "lang")) {
 
-			if (equal_buf_str (&subconf->val, "json")) {
-				props->lang = dwriter_json;
-			} else if (equal_buf_str (&subconf->val, "python")) {
-				props->lang = dwriter_python;
-			} else if (equal_buf_str (&subconf->val, "php")) {
-				props->lang = dwriter_php;
-			} else if (equal_buf_str (&subconf->val, "ruby")) {
-				props->lang = dwriter_ruby;
-
-			} else {
+			ret = cherokee_dwriter_lang_to_type (&subconf->val, &props->lang);
+			if (ret != ret_ok) {
 				LOG_CRITICAL (CHEROKEE_ERROR_HANDLER_DBSLAYER_LANG, subconf->val.buf);
 				return ret_error;
 			}

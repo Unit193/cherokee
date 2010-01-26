@@ -50,7 +50,11 @@ Once the engine is configured, a new
 <li>
 <p>
 The last step would be to assign SSL certificates to the virtual
-    servers. The configuration is found inside each
+    servers, starting with the default virtual server.
+    Cherokee uses SNI to distinguish between virtual servers, the
+    certificate specified in the default server will be used in the
+    first negotiation. If not present, the startup sequence will
+    fail. The configuration is found inside each
     <a href="config_virtual_servers.html#security">virtual server</a>
     configuration, under the Security tab.
 </p>

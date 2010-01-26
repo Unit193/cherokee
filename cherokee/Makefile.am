@@ -20,11 +20,11 @@ error_redir.deps \
 scgi.deps \
 fcgi.deps \
 uwsgi.deps \
-fastcgi.deps \
 cgi.deps \
 streaming.deps \
 secdownload.deps \
-render_rrd.deps
+render_rrd.deps \
+post_report.deps
 
 #
 # External sources
@@ -428,7 +428,7 @@ endif
 
 
 #
-# Gen wildcard
+# Enhanced virtual hosts
 #
 gen_evhost = \
 gen_evhost.c \
@@ -441,6 +441,40 @@ if STATIC_GEN_EVHOST
 static_gen_evhost_src = $(gen_evhost)
 else
 dynamic_gen_evhost_lib = libplugin_evhost.la
+endif
+
+
+#
+# POST tracker
+#
+post_track = \
+post_track.h \
+post_track.c
+
+libplugin_post_track_la_LDFLAGS = $(module_ldflags)
+libplugin_post_track_la_SOURCES = $(post_track)
+
+if STATIC_POST_TRACK
+static_post_track_src = $(post_track)
+else
+dynamic_post_track_lib = libplugin_post_track.la
+endif
+
+
+#
+# POST reporter
+#
+handler_post_report = \
+handler_post_report.h \
+handler_post_report.c
+
+libplugin_post_report_la_LDFLAGS = $(module_ldflags)
+libplugin_post_report_la_SOURCES = $(handler_post_report)
+
+if STATIC_POST_REPORT
+static_handler_post_report_src = $(handler_post_report)
+else
+dynamic_handler_post_report_lib = libplugin_post_report.la
 endif
 
 
@@ -611,34 +645,6 @@ if STATIC_HANDLER_UWSGI
 static_handler_uwsgi_src = $(handler_uwsgi)
 else
 dynamic_handler_uwsgi_lib = libplugin_uwsgi.la
-endif
-
-
-#
-# Handler fastcgi
-#
-if !STATIC_HANDLER_FASTCGI
-handlerfastcgi_cgi = handler_cgi_base.h handler_cgi_base.c
-endif
-
-handler_fastcgi = \
-$(handlerfastcgi_cgi) \
-fastcgi.h \
-fcgi_dispatcher.h \
-fcgi_dispatcher.c \
-fcgi_manager.h \
-fcgi_manager.c \
-handler_fastcgi.c \
-handler_fastcgi.h
-
-libplugin_fastcgi_la_LDFLAGS = $(module_ldflags)
-libplugin_fastcgi_la_SOURCES = $(handler_fastcgi)
-libplugin_fastcgi_la_LIBADD  = $(dynamic_handler_file_lib)
-
-if STATIC_HANDLER_FASTCGI
-static_handler_fastcgi_src = $(handler_fastcgi)
-else
-dynamic_handler_fastcgi_lib = libplugin_fastcgi.la
 endif
 
 
@@ -1391,10 +1397,6 @@ if STATIC_HANDLER_FCGI
    common_cgi = handler_cgi_base.h \
 	     	 handler_cgi_base.c
 endif
-if STATIC_HANDLER_FASTCGI
-   common_cgi = handler_cgi_base.h \
-	     	 handler_cgi_base.c
-endif
 if STATIC_HANDLER_CGI
    common_cgi = handler_cgi_base.h \
 	     	 handler_cgi_base.c
@@ -1455,21 +1457,22 @@ $(static_vrule_target_ip_src) \
 \
 $(static_gen_evhost_src) \
 \
+$(static_post_track_src) \
+$(static_handler_post_report_src) \
+\
 $(static_collector_rrd_src) \
 \
 $(static_handler_file_src) \
-$(static_handler_admin_src) \
 $(static_handler_dirlist_src) \
-$(static_handler_scgi_src) \
+$(static_handler_cgi_src) \
 $(static_handler_fcgi_src) \
+$(static_handler_scgi_src) \
+$(static_handler_proxy_src) \
 $(static_handler_uwsgi_src) \
-$(static_handler_fastcgi_src) \
 $(static_handler_redir_src) \
 $(static_handler_error_redir_src) \
 $(static_handler_error_nn_src) \
-$(static_handler_cgi_src) \
 $(static_handler_common_src) \
-$(static_handler_proxy_src) \
 $(static_handler_ssi_src) \
 $(static_handler_secdownload_src) \
 $(static_handler_empty_gif_src) \
@@ -1478,6 +1481,7 @@ $(static_handler_custom_error_src) \
 $(static_handler_server_info_src) \
 $(static_handler_render_rrd_src) \
 $(static_handler_dbslayer_src) \
+$(static_handler_admin_src) \
 \
 $(static_logger_ncsa_src) \
 $(static_logger_custom_src) \
@@ -1640,18 +1644,18 @@ $(dynamic_vrule_rehost_lib) \
 $(dynamic_vrule_target_ip_lib) \
 $(dynamic_collector_rrd_lib) \
 $(dynamic_gen_evhost_lib) \
+$(dynamic_post_track_lib) \
+$(dynamic_handler_post_report_lib) \
 $(dynamic_handler_file_lib) \
-$(dynamic_handler_cgi_lib) \
 $(dynamic_handler_server_info_lib) \
 $(dynamic_handler_render_rrd_lib) \
-$(dynamic_handler_admin_lib) \
 $(dynamic_handler_dirlist_lib) \
-$(dynamic_handler_scgi_lib) \
+$(dynamic_handler_cgi_lib) \
 $(dynamic_handler_fcgi_lib) \
-$(dynamic_handler_uwsgi_lib) \
-$(dynamic_handler_fastcgi_lib) \
-$(dynamic_handler_redir_lib) \
+$(dynamic_handler_scgi_lib) \
 $(dynamic_handler_proxy_lib) \
+$(dynamic_handler_uwsgi_lib) \
+$(dynamic_handler_redir_lib) \
 $(dynamic_handler_ssi_lib) \
 $(dynamic_handler_secdownload_lib) \
 $(dynamic_handler_empty_gif_lib) \
@@ -1661,6 +1665,7 @@ $(dynamic_handler_error_redir_lib) \
 $(dynamic_handler_error_nn_lib) \
 $(dynamic_handler_common_lib) \
 $(dynamic_handler_dbslayer_lib) \
+$(dynamic_handler_admin_lib) \
 $(dynamic_encoder_gzip_lib) \
 $(dynamic_encoder_deflate_lib) \
 $(dynamic_logger_ncsa_lib) \

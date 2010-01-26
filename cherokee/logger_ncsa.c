@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2009 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2010 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -248,6 +248,10 @@ build_log_string (cherokee_logger_ncsa_t *logger, cherokee_connection_t *cnt, ch
 
 	if (! cherokee_buffer_is_empty (&cnt->request_original)) {
 		cherokee_buffer_add_buffer (buf, &cnt->request_original);
+		if (! cherokee_buffer_is_empty (&cnt->query_string_original)) {
+			cherokee_buffer_add_char   (buf, '?');
+			cherokee_buffer_add_buffer (buf, &cnt->query_string_original);
+		}
 	} else {
 		cherokee_buffer_add_buffer (buf, &cnt->request);
 		if (! cherokee_buffer_is_empty (&cnt->query_string)) {

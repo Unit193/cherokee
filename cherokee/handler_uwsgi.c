@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2009 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2010 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -38,13 +38,20 @@
  */
 CGI_LIB_INIT (uwsgi, http_all_methods);
 
+#if BYTE_ORDER == BIG_ENDIAN
+static uint16_t uwsgi_swap16(uint16_t x) {
+	return (uint16_t) ((x & 0xff) << 8 | (x & 0xff00) >> 8);
+}
+#endif
+
 /* Methods implementation
  */
 static ret_t
 props_free (cherokee_handler_uwsgi_props_t *props)
 {
-	if (props->balancer)
+	if (props->balancer) {
 		cherokee_balancer_free (props->balancer);
+	}
 
 	return cherokee_handler_cgi_base_props_free (PROP_CGI_BASE(props));
 }
@@ -52,8 +59,8 @@ props_free (cherokee_handler_uwsgi_props_t *props)
 ret_t
 cherokee_handler_uwsgi_configure (cherokee_config_node_t *conf, cherokee_server_t *srv, cherokee_module_props_t **_props)
 {
-	ret_t                          ret;
-	cherokee_list_t               *i;
+	ret_t                           ret;
+	cherokee_list_t                *i;
 	cherokee_handler_uwsgi_props_t *props;
 
 	/* Instance a new property object
@@ -65,6 +72,10 @@ cherokee_handler_uwsgi_configure (cherokee_config_node_t *conf, cherokee_server_
 							   MODULE_PROPS_FREE(props_free));
 
 		n->balancer = NULL;
+		n->modifier1 = 0 ;
+		n->modifier2 = 0 ;
+		n->pass_wsgi_vars = true;
+		n->pass_request_body = true;
 
 		*_props = MODULE_PROPS(n);
 	}
@@ -79,6 +90,18 @@ cherokee_handler_uwsgi_configure (cherokee_config_node_t *conf, cherokee_server_
 		if (equal_buf_str (&subconf->key, "balancer")) {
 			ret = cherokee_balancer_instance (&subconf->val, subconf, srv, &props->balancer);
 			if (ret != ret_ok) return ret;
+		}
+		else if (equal_buf_str (&subconf->key, "modifier1")) {
+			props->modifier1 = (uint8_t) atoi(subconf->val.buf);
+		}
+		else if (equal_buf_str (&subconf->key, "modifier2")) {
+			props->modifier2 = (uint8_t) atoi(subconf->val.buf);
+		}
+		else if (equal_buf_str (&subconf->key, "pass_wsgi_vars")) {
+			props->pass_wsgi_vars = !! atoi (subconf->val.buf);
+		}
+		else if (equal_buf_str (&subconf->key, "pass_request_body")) {
+			props->pass_request_body = !! atoi (subconf->val.buf);
 		}
 	}
 
@@ -103,36 +126,49 @@ add_env_pair (cherokee_handler_cgi_base_t *cgi_base,
 	      const char *key, int key_len,
 	      const char *val, int val_len)
 {
-	cherokee_handler_uwsgi_t *uwsgi = HDL_UWSGI(cgi_base);
-	unsigned short u_key_len = (unsigned short) key_len ;
-	unsigned short u_val_len = (unsigned short) val_len ;
-
+	uint16_t                  u_key_len = (uint16_t) key_len ;
+	uint16_t                  u_val_len = (uint16_t) val_len ;
+	cherokee_handler_uwsgi_t *uwsgi     = HDL_UWSGI(cgi_base);
 
 	/* 2 bytes for every string (16 bit le) */
 	cherokee_buffer_ensure_size (&uwsgi->header, uwsgi->header.len + key_len + val_len + 4);
 
-	/* TODO: force to le if cherokee is big-endian */
-
+	/* force to le if cherokee is big-endian */
+#if BYTE_ORDER  == BIG_ENDIAN
+	u_key_len = uwsgi_swap16(u_key_len);
+#endif
 	cherokee_buffer_add (&uwsgi->header, (const char *) &u_key_len, 2);
+#if BYTE_ORDER  == BIG_ENDIAN
+	u_key_len = uwsgi_swap16(u_key_len);
+#endif
 	cherokee_buffer_add (&uwsgi->header, key, key_len);
+#if BYTE_ORDER  == BIG_ENDIAN
+	u_val_len = uwsgi_swap16(u_val_len);
+#endif
 	cherokee_buffer_add (&uwsgi->header, (const char *) &u_val_len, 2);
+#if BYTE_ORDER  == BIG_ENDIAN
+	u_val_len = uwsgi_swap16(u_val_len);
+#endif
 	cherokee_buffer_add (&uwsgi->header, val, val_len);
 }
 
 
 static ret_t
-read_from_uwsgi (cherokee_handler_cgi_base_t *cgi_base, cherokee_buffer_t *buffer)
+read_from_uwsgi (cherokee_handler_cgi_base_t *cgi_base,
+		 cherokee_buffer_t           *buffer)
 {
-	ret_t                    ret;
-	size_t                   read = 0;
+	ret_t                     ret;
+	size_t                    read  = 0;
 	cherokee_handler_uwsgi_t *uwsgi = HDL_UWSGI(cgi_base);
 
 	ret = cherokee_socket_bufread (&uwsgi->socket, buffer, 4096, &read);
 
 	switch (ret) {
 	case ret_eagain:
-		cherokee_thread_deactive_to_polling (HANDLER_THREAD(cgi_base), HANDLER_CONN(cgi_base),
-						     uwsgi->socket.socket, 0, false);
+		cherokee_thread_deactive_to_polling (HANDLER_THREAD(cgi_base),
+						     HANDLER_CONN(cgi_base),
+						     uwsgi->socket.socket,
+						     FDPOLL_MODE_READ, false);
 		return ret_eagain;
 
 	case ret_ok:
@@ -170,16 +206,16 @@ cherokee_handler_uwsgi_new (cherokee_handler_t **hdl, void *cnt, cherokee_module
 	 */
 	MODULE(n)->init         = (handler_func_init_t) cherokee_handler_uwsgi_init;
 	MODULE(n)->free         = (module_func_free_t) cherokee_handler_uwsgi_free;
+	HANDLER(n)->read_post   = (handler_func_read_post_t) cherokee_handler_uwsgi_read_post;
 
 	/* Virtual methods: implemented by handler_cgi_base
 	 */
-	HANDLER(n)->step        = (handler_func_step_t) cherokee_handler_cgi_base_step;
 	HANDLER(n)->add_headers = (handler_func_add_headers_t) cherokee_handler_cgi_base_add_headers;
+	HANDLER(n)->step        = (handler_func_step_t) cherokee_handler_cgi_base_step;
 
 	/* Properties
 	 */
-	n->post_len = 0;
-	n->src_ref  = NULL;
+	n->src_ref = NULL;
 
 	cherokee_buffer_init (&n->header);
 	cherokee_socket_init (&n->socket);
@@ -210,16 +246,20 @@ cherokee_handler_uwsgi_free (cherokee_handler_uwsgi_t *hdl)
 
 
 static ret_t
-uwsgi_fix_packet (cherokee_buffer_t *buf)
+uwsgi_fix_packet (cherokee_buffer_t *buf,
+		  uint8_t            modifier1,
+		  uint8_t            modifier2)
 {
 
 	uwsgi_header uh;
 
-	uh.arg1 = 0 ;
-	uh.arg2 = 0 ;
-	uh.env_size = (unsigned short) buf->len ;
-
-	/* TODO: check endianess */
+	uh.modifier1 = modifier1 ;
+	uh.modifier2 = modifier2 ;
+#if BYTE_ORDER  == BIG_ENDIAN
+	uh.env_size = uwsgi_swap16((uint16_t) buf->len) ;
+#else
+	uh.env_size = (uint16_t) buf->len ;
+#endif
 
 	cherokee_buffer_ensure_size (buf, buf->len + 4);
 	cherokee_buffer_prepend (buf, (const char * )&uh, 4);
@@ -231,17 +271,21 @@ uwsgi_fix_packet (cherokee_buffer_t *buf)
 static ret_t
 build_header (cherokee_handler_uwsgi_t *hdl)
 {
+	cuint_t                         len;
+        char                            tmp[64];
+	cherokee_connection_t          *conn     = HANDLER_CONN(hdl);
+	cherokee_handler_uwsgi_props_t *props    = HANDLER_UWSGI_PROPS(hdl);
 
-	cuint_t len;
-        char    tmp[64];
+	if (props->pass_request_body == true && props->pass_wsgi_vars == true) {
+        	len = snprintf (tmp, sizeof(tmp), FMT_OFFSET, (CST_OFFSET)conn->post.len);
+        	add_env_pair(HDL_CGI_BASE(hdl), "CONTENT_LENGTH", 14, tmp, len);
+	}
 
-        len = snprintf (tmp, sizeof(tmp), FMT_OFFSET, (CST_OFFSET)hdl->post_len);
+	if (props->pass_wsgi_vars == true) {
+		cherokee_handler_cgi_base_build_envp (HDL_CGI_BASE(hdl), HANDLER_CONN(hdl));
+	}
 
-        add_env_pair(HDL_CGI_BASE(hdl), "CONTENT_LENGTH", 14, tmp, len);
-
-	cherokee_handler_cgi_base_build_envp (HDL_CGI_BASE(hdl), HANDLER_CONN(hdl));
-
-	return uwsgi_fix_packet (&hdl->header);
+	return uwsgi_fix_packet (&hdl->header, props->modifier1, props->modifier2);
 }
 
 
@@ -249,8 +293,8 @@ build_header (cherokee_handler_uwsgi_t *hdl)
 static ret_t
 connect_to_server (cherokee_handler_uwsgi_t *hdl)
 {
-	ret_t                          ret;
-	cherokee_connection_t         *conn  = HANDLER_CONN(hdl);
+	ret_t                           ret;
+	cherokee_connection_t          *conn  = HANDLER_CONN(hdl);
 	cherokee_handler_uwsgi_props_t *props = HANDLER_UWSGI_PROPS(hdl);
 
 	/* Get a reference to the target host
@@ -305,32 +349,6 @@ send_header (cherokee_handler_uwsgi_t *hdl)
 }
 
 
-static ret_t
-send_post (cherokee_handler_uwsgi_t *hdl)
-{
-	ret_t                  ret;
-	int                    e_fd = -1;
-	int                    mode =  0;
-	cherokee_connection_t *conn = HANDLER_CONN(hdl);
-
-	ret = cherokee_post_walk_to_fd (&conn->post, hdl->socket.socket, &e_fd, &mode);
-
-	switch (ret) {
-	case ret_ok:
-		break;
-	case ret_eagain:
-		if (e_fd != -1)
-			cherokee_thread_deactive_to_polling (HANDLER_THREAD(hdl), conn, e_fd, mode, false);
-		return ret_eagain;
-	default:
-		conn->error_code = http_bad_gateway;
-		return ret;
-	}
-
-	return ret_ok;
-}
-
-
 ret_t
 cherokee_handler_uwsgi_init (cherokee_handler_uwsgi_t *hdl)
 {
@@ -347,13 +365,6 @@ cherokee_handler_uwsgi_init (cherokee_handler_uwsgi_t *hdl)
 		if (unlikely (ret < ret_ok)) {
 			conn->error_code = http_internal_error;
 			return ret_error;
-		}
-
-		/* Prepare Post
-		 */
-		if (! cherokee_post_is_empty (&conn->post)) {
-			cherokee_post_walk_reset (&conn->post);
-			cherokee_post_get_len (&conn->post, &hdl->post_len);
 		}
 
 		/* Build the headers
@@ -393,18 +404,51 @@ cherokee_handler_uwsgi_init (cherokee_handler_uwsgi_t *hdl)
 		/* Send the header
 		 */
 		ret = send_header (hdl);
-		if (ret != ret_ok)
+		if (ret != ret_ok) {
 			return ret;
-
-		HDL_CGI_BASE(hdl)->init_phase = hcgi_phase_send_post;
-
-	case hcgi_phase_send_post:
-		/* Send the Post
-		 */
-		if (hdl->post_len > 0) {
-			return send_post (hdl);
 		}
+
 		break;
+	}
+
+	return ret_ok;
+}
+
+
+ret_t
+cherokee_handler_uwsgi_read_post (cherokee_handler_uwsgi_t *hdl)
+{
+	ret_t                           ret;
+	cherokee_connection_t          *conn     = HANDLER_CONN(hdl);
+	cherokee_socket_status_t        blocking = socket_closed;
+	cherokee_handler_uwsgi_props_t *props    = HANDLER_UWSGI_PROPS(hdl);
+
+	/* Should it send the post?
+	 */
+	if (! props->pass_request_body) {
+		return ret_ok;
+	}
+
+	/* Send it
+	 */
+	ret = cherokee_post_send_to_socket (&conn->post, conn, &conn->socket,
+					    &hdl->socket, NULL, &blocking);
+	switch (ret) {
+	case ret_ok:
+		break;
+
+	case ret_eagain:
+		if (blocking == socket_writing) {
+			cherokee_thread_deactive_to_polling (HANDLER_THREAD(hdl),
+							     conn, hdl->socket.socket,
+							     FDPOLL_MODE_WRITE, false);
+			return ret_deny;
+		}
+		return ret_eagain;
+
+	default:
+		conn->error_code = http_bad_gateway;
+		return ret;
 	}
 
 	return ret_ok;

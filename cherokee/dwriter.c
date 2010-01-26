@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2009 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2010 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -422,4 +422,32 @@ cherokee_dwriter_list_close (cherokee_dwriter_t *w)
 
 	ADD_NEW_LINE;
 	return ret_ok;
+}
+
+
+ret_t
+cherokee_dwriter_lang_to_type (cherokee_buffer_t       *buf,
+			       cherokee_dwriter_lang_t *lang)
+{
+	if (equal_buf_str (buf, "json")) {
+		*lang = dwriter_json;
+		return ret_ok;
+	}
+
+	if (equal_buf_str (buf, "python")) {
+		*lang = dwriter_python;
+		return ret_ok;
+	}
+
+	if (equal_buf_str (buf, "php")) {
+		*lang = dwriter_php;
+		return ret_ok;
+	}
+
+	if (equal_buf_str (buf, "ruby")) {
+		*lang = dwriter_ruby;
+		return ret_ok;
+	}
+
+	return ret_not_found;
 }

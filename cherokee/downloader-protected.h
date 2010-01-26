@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2009 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2010 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -54,7 +54,7 @@ struct cherokee_downloader {
 	cherokee_buffer_t            reply_header;
 	cherokee_buffer_t            body;
 
-	cherokee_post_t             *post;
+	cherokee_buffer_t            post;
 	cherokee_buffer_t            proxy;
 	cuint_t                      proxy_port;
 

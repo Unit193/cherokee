@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2009 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2010 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -105,7 +105,9 @@ build_hardcoded_response_page (cherokee_connection_t *conn, cherokee_buffer_t *b
 
 	/* Add big banner
 	 */
-	cherokee_buffer_add_str (buffer, "</title></head>" CRLF "<body>" CRLF "<h1>");
+	cherokee_buffer_add_str (buffer, "</title>" CRLF
+				 "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" />" CRLF
+				 "</head>" CRLF "<body>" CRLF "<h1>");
 	cherokee_http_code_copy (conn->error_code, buffer);
 	cherokee_buffer_add_str (buffer, "</h1>" CRLF);
 

@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2009 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2010 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -74,9 +74,9 @@ typedef enum {
 	phase_tls_handshake,
 	phase_reading_header,
 	phase_processing_header,
-	phase_read_post,
 	phase_setup_connection,
 	phase_init,
+	phase_reading_post,
 	phase_add_headers,
 	phase_send_headers,
 	phase_steping,
@@ -86,7 +86,6 @@ typedef enum {
 
 
 #define conn_op_nothing        0
-#define conn_op_log_at_end    (1 << 0)
 #define conn_op_root_index    (1 << 1)
 #define conn_op_tcp_cork      (1 << 2)
 #define conn_op_document_root (1 << 3)
@@ -160,6 +159,7 @@ struct cherokee_connection {
 	cherokee_buffer_t             host;
 	cherokee_buffer_t             effective_directory;
 	cherokee_buffer_t             request_original;
+	cherokee_buffer_t             query_string_original;
 
 	/* Authentication
 	 */
@@ -258,7 +258,7 @@ ret_t cherokee_connection_send                   (cherokee_connection_t *conn);
 ret_t cherokee_connection_send_header            (cherokee_connection_t *conn);
 ret_t cherokee_connection_send_header_and_mmaped (cherokee_connection_t *conn);
 ret_t cherokee_connection_send_switching         (cherokee_connection_t *conn);
-ret_t cherokee_connection_recv                   (cherokee_connection_t *conn, cherokee_buffer_t *buffer, off_t *len);
+ret_t cherokee_connection_recv                   (cherokee_connection_t *conn, cherokee_buffer_t *buffer, off_t to_read, off_t *len);
 
 /* Internal
  */
@@ -275,6 +275,7 @@ void  cherokee_connection_set_chunked_encoding   (cherokee_connection_t *conn);
 int   cherokee_connection_should_include_length  (cherokee_connection_t *conn);
 ret_t cherokee_connection_instance_encoder       (cherokee_connection_t *conn);
 ret_t cherokee_connection_sleep                  (cherokee_connection_t *conn, cherokee_msec_t msecs);
+void  cherokee_connection_update_timeout         (cherokee_connection_t *conn);
 
 /* Iteration
  */
@@ -284,6 +285,7 @@ ret_t cherokee_connection_step                   (cherokee_connection_t *conn);
 
 /* Headers
  */
+ret_t cherokee_connection_read_post              (cherokee_connection_t *conn);
 ret_t cherokee_connection_build_header           (cherokee_connection_t *conn);
 ret_t cherokee_connection_get_request            (cherokee_connection_t *conn);
 ret_t cherokee_connection_parse_range            (cherokee_connection_t *conn);
@@ -301,8 +303,7 @@ int   cherokee_connection_use_webdir             (cherokee_connection_t *conn);
 
 /* Log
  */
-ret_t cherokee_connection_log_or_delay           (cherokee_connection_t *conn);
-ret_t cherokee_connection_log_delayed            (cherokee_connection_t *conn);
+ret_t cherokee_connection_log                    (cherokee_connection_t *conn);
 ret_t cherokee_connection_update_vhost_traffic   (cherokee_connection_t *conn);
 char *cherokee_connection_print                  (cherokee_connection_t *conn);
 
