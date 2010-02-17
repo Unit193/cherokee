@@ -28,11 +28,11 @@ static const cherokee_error_t __cherokee_errors[] =
 {
   {   0, "Could not parse header from the back-end", "It looks like the back-end server sent a malformed HTTP response.", NULL, "Dump of the header buffer (len=%d): %s" },
   {   1, "Failed to set nonblocking (fd=%d): ${errno}", "The issue seems to be related to your system.", NULL, NULL },
-  {   2, "Could not find the rrdtool binary.", "A custom rrdtool binary has not been defined, and the server could not find one in the $PATH.", NULL, "PATH=%s" },
+  {   2, "Could not find the rrdtool binary.", "A custom rrdtool binary has not been defined, and the server could not find one in the $PATH.", "/general#tabs_general-0", "PATH=%s" },
   {   3, "execv failed cmd='%s': ${errno}", "The issue seems to be related to your system.", NULL, NULL },
   {   4, "Fork failed pid=%d: ${errno}", "The issue seems to be related to your system.", NULL, NULL },
   {   5, "Cannot write in %s: ${errno}", "The issue seems to be related to your system.", NULL, NULL },
-  {   6, "Cannot create the '%s' directory", "The issue seems to be related to your system.", NULL, NULL },
+  {   6, "Cannot create the '%s' directory", "The issue seems to be related to your system.", "/general#tabs_general-0", NULL },
   {   7, "Taking source='%s' back on-line: %d active.", "The server is re-enabling one of the Information Sources.", NULL, NULL },
   {   8, "Taking source='%s' off-line. Active %d.", "The server is disabling one of the Information Sources.", NULL, NULL },
   {   9, "Sources exhausted: re-enabling one.", "All the information sources are disabled at this moment. Cherokee needs to re-enable at least one.", NULL, NULL },
