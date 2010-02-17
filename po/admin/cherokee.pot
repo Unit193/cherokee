@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: cherokee 0.99.42\n"
+"Project-Id-Version: cherokee 0.99.43\n"
 "Report-Msgid-Bugs-To: http://bugs.cherokee-project.com/\n"
-"POT-Creation-Date: 2010-01-28 19:50+0100\n"
+"POT-Creation-Date: 2010-02-17 13:20+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -403,7 +403,7 @@ msgstr ""
 #: admin/Wizard_Liferay.py:143 admin/Wizard_MoinMoin.py:202
 #: admin/Wizard_Mono.py:163 admin/Wizard_Mono.py:166
 #: admin/Wizard_Moodle.py:162 admin/Wizard_RoR.py:291 admin/Wizard_RoR.py:293
-#: admin/Wizard_Sugar.py:197 admin/Wizard_Symfony.py:197
+#: admin/Wizard_Sugar.py:197 admin/Wizard_Symfony.py:210
 #: admin/Wizard_WordPress.py:187 admin/Wizard_Zend.py:165
 #: admin/Wizard_phpBB.py:167 admin/Wizard_phpMyAdmin.py:79
 #: admin/Wizard_rTorrent.py:44
@@ -512,7 +512,7 @@ msgid "Redirection"
 msgstr ""
 
 #: admin/ModuleErrorRedir.py:41 admin/ModuleErrorRedir.py:52
-#: admin/ModuleRedir.py:35 admin/PageInfoSource.py:246
+#: admin/ModuleRedir.py:41 admin/PageInfoSource.py:246
 #: admin/PageInfoSource.py:274 admin/PageInfoSource.py:302
 #: admin/PageVServer.py:363
 msgid "Type"
@@ -572,7 +572,7 @@ msgstr ""
 msgid "Match any file"
 msgstr ""
 
-#: admin/ModuleExists.py:42 admin/ModuleUrlArg.py:31 admin/ModuleUrlArg.py:42
+#: admin/ModuleExists.py:42 admin/ModuleUrlArg.py:34 admin/ModuleUrlArg.py:45
 msgid "Match type"
 msgstr ""
 
@@ -708,9 +708,9 @@ msgstr ""
 msgid "Header"
 msgstr ""
 
-#: admin/ModuleHeader.py:38 admin/ModuleProxy.py:159 admin/ModuleRedir.py:35
-#: admin/ModuleRedir.py:52 admin/ModuleRequest.py:22 admin/ModuleRequest.py:24
-#: admin/ModuleRequest.py:41 admin/ModuleUrlArg.py:34 admin/ModuleUrlArg.py:45
+#: admin/ModuleHeader.py:38 admin/ModuleProxy.py:159 admin/ModuleRedir.py:41
+#: admin/ModuleRedir.py:58 admin/ModuleRequest.py:22 admin/ModuleRequest.py:24
+#: admin/ModuleRequest.py:41 admin/ModuleUrlArg.py:37 admin/ModuleUrlArg.py:48
 #: admin/consts.py:131
 msgid "Regular Expression"
 msgstr ""
@@ -985,8 +985,8 @@ msgstr ""
 msgid "Header addition"
 msgstr ""
 
-#: admin/ModuleProxy.py:159 admin/ModuleProxy.py:181 admin/ModuleRedir.py:35
-#: admin/ModuleRedir.py:53
+#: admin/ModuleProxy.py:159 admin/ModuleProxy.py:181 admin/ModuleRedir.py:41
+#: admin/ModuleRedir.py:59
 msgid "Substitution"
 msgstr ""
 
@@ -994,38 +994,38 @@ msgstr ""
 msgid "Add RegEx"
 msgstr ""
 
-#: admin/ModuleRedir.py:9
+#: admin/ModuleRedir.py:10
 msgid "Defines whether the redirection will be seen by the client."
 msgstr ""
 
-#: admin/ModuleRedir.py:10
+#: admin/ModuleRedir.py:11
 msgid ""
 "Regular expression. Check out the <a target=\"_blank\" href=\"http://perldoc."
 "perl.org/perlre.html\">Reference</a>."
 msgstr ""
 
-#: admin/ModuleRedir.py:11
+#: admin/ModuleRedir.py:12
 msgid "Target address. It can use Regular Expression substitution sub-strings."
 msgstr ""
 
-#: admin/ModuleRedir.py:14
+#: admin/ModuleRedir.py:20
 msgid "Redirections"
 msgstr ""
 
-#: admin/ModuleRedir.py:15 admin/ModuleRehost.py:28 admin/ModuleRehost.py:32
+#: admin/ModuleRedir.py:21 admin/ModuleRehost.py:30 admin/ModuleRehost.py:34
 #: admin/consts.py:145
 msgid "Regular Expressions"
 msgstr ""
 
-#: admin/ModuleRedir.py:46
+#: admin/ModuleRedir.py:52
 msgid "Rule list"
 msgstr ""
 
-#: admin/ModuleRedir.py:51
+#: admin/ModuleRedir.py:57
 msgid "Show"
 msgstr ""
 
-#: admin/ModuleRedir.py:55 admin/PageVServer.py:252 admin/PageVServer.py:330
+#: admin/ModuleRedir.py:61 admin/PageVServer.py:252 admin/PageVServer.py:330
 msgid "Add new rule"
 msgstr ""
 
@@ -1038,11 +1038,11 @@ msgstr ""
 msgid "At least one Regular Expression string must be defined."
 msgstr ""
 
-#: admin/ModuleRehost.py:59
+#: admin/ModuleRehost.py:61
 msgid "New Regular Expression"
 msgstr ""
 
-#: admin/ModuleRehost.py:60 admin/ModuleTargetIp.py:62
+#: admin/ModuleRehost.py:62 admin/ModuleTargetIp.py:62
 #: admin/ModuleWildcard.py:60
 msgid "Add new"
 msgstr ""
@@ -1205,16 +1205,16 @@ msgstr ""
 msgid "Match any argument"
 msgstr ""
 
-#: admin/ModuleUrlArg.py:33 admin/ModuleUrlArg.py:44
+#: admin/ModuleUrlArg.py:36 admin/ModuleUrlArg.py:47
 msgid "Argument"
 msgstr ""
 
-#: admin/ModuleUrlArg.py:65
+#: admin/ModuleUrlArg.py:68
 #, python-format
 msgid "Any arg ~= %s"
 msgstr ""
 
-#: admin/ModuleUrlArg.py:75
+#: admin/ModuleUrlArg.py:78
 msgid "URL arg"
 msgstr ""
 
@@ -1674,7 +1674,7 @@ msgstr ""
 #: admin/Wizard_Joomla.py:130 admin/Wizard_Liferay.py:88
 #: admin/Wizard_Mailman.py:132 admin/Wizard_MoinMoin.py:148
 #: admin/Wizard_Mono.py:107 admin/Wizard_Moodle.py:91 admin/Wizard_RoR.py:213
-#: admin/Wizard_Sugar.py:124 admin/Wizard_Symfony.py:127
+#: admin/Wizard_Sugar.py:124 admin/Wizard_Symfony.py:140
 #: admin/Wizard_Trac.py:114 admin/Wizard_WordPress.py:115
 #: admin/Wizard_Zend.py:99 admin/Wizard_phpBB.py:95
 msgid "Logging"
@@ -2113,7 +2113,7 @@ msgid "Virtual server"
 msgstr ""
 
 #: admin/PageInfoSource.py:481 admin/PageVServers.py:305
-#: admin/PageVServers.py:319 admin/validations.py:259
+#: admin/PageVServers.py:319 admin/validations.py:260
 msgid "Cannot be empty"
 msgstr ""
 
@@ -2884,7 +2884,7 @@ msgstr ""
 #: admin/Wizard_Joomla.py:126 admin/Wizard_Liferay.py:79
 #: admin/Wizard_Mailman.py:122 admin/Wizard_MoinMoin.py:140
 #: admin/Wizard_Mono.py:97 admin/Wizard_Moodle.py:87 admin/Wizard_RoR.py:193
-#: admin/Wizard_Sugar.py:120 admin/Wizard_Symfony.py:122
+#: admin/Wizard_Sugar.py:120 admin/Wizard_Symfony.py:135
 #: admin/Wizard_Trac.py:105 admin/Wizard_WordPress.py:111
 #: admin/Wizard_Zend.py:95 admin/Wizard_phpBB.py:91 admin/Wizard_uWSGI.py:144
 msgid "New Host Name"
@@ -2971,7 +2971,7 @@ msgstr ""
 
 #: admin/Wizard_Concrete5.py:18 admin/Wizard_Drupal.py:14
 #: admin/Wizard_Joomla.py:19 admin/Wizard_Moodle.py:19
-#: admin/Wizard_Sugar.py:19 admin/Wizard_Symfony.py:20
+#: admin/Wizard_Sugar.py:19 admin/Wizard_Symfony.py:23
 #: admin/Wizard_WordPress.py:14 admin/Wizard_Zend.py:19
 #: admin/Wizard_phpBB.py:19
 msgid "Host name of the virtual host that is about to be created."
@@ -3017,7 +3017,7 @@ msgstr ""
 #: admin/Wizard_Concrete5.py:167 admin/Wizard_Drupal.py:186
 #: admin/Wizard_Joomla.py:163 admin/Wizard_Moodle.py:124
 #: admin/Wizard_PHP.py:167 admin/Wizard_Sugar.py:156
-#: admin/Wizard_Symfony.py:161 admin/Wizard_WordPress.py:147
+#: admin/Wizard_Symfony.py:174 admin/Wizard_WordPress.py:147
 #: admin/Wizard_Zend.py:131 admin/Wizard_phpBB.py:128
 #: admin/Wizard_phpMyAdmin.py:107
 msgid "Couldn't find a suitable PHP interpreter."
@@ -3029,7 +3029,7 @@ msgstr ""
 
 #: admin/Wizard_Concrete5.py:201 admin/Wizard_Drupal.py:223
 #: admin/Wizard_Joomla.py:196 admin/Wizard_Moodle.py:154
-#: admin/Wizard_Sugar.py:189 admin/Wizard_Symfony.py:189
+#: admin/Wizard_Sugar.py:189 admin/Wizard_Symfony.py:202
 #: admin/Wizard_WordPress.py:179 admin/Wizard_Zend.py:159
 #: admin/Wizard_phpMyAdmin.py:71
 msgid "PHP support is required."
@@ -3549,43 +3549,43 @@ msgstr ""
 msgid "Configures Sugar CRM inside a public web directory."
 msgstr ""
 
-#: admin/Wizard_Symfony.py:17
+#: admin/Wizard_Symfony.py:20
 msgid ""
 "Path to the directory where Symfony is installed. (Example: /usr/share/php/"
 "data/symfony)"
 msgstr ""
 
-#: admin/Wizard_Symfony.py:18
+#: admin/Wizard_Symfony.py:21
 msgid ""
 "Path to the web folder of the Symfony project. (Example: /home/user/"
 "sf_project/web)"
 msgstr ""
 
-#: admin/Wizard_Symfony.py:19
+#: admin/Wizard_Symfony.py:22
 msgid "Web directory where you want Symfony to be accessible. (Example: /app)"
 msgstr ""
 
-#: admin/Wizard_Symfony.py:21
+#: admin/Wizard_Symfony.py:24
 msgid "Does not look like a Symfony source directory."
 msgstr ""
 
-#: admin/Wizard_Symfony.py:104
+#: admin/Wizard_Symfony.py:117
 msgid "Configure a new virtual server using Symfony."
 msgstr ""
 
-#: admin/Wizard_Symfony.py:110 admin/Wizard_Symfony.py:182
+#: admin/Wizard_Symfony.py:123 admin/Wizard_Symfony.py:195
 msgid "Symfony Wizard"
 msgstr ""
 
-#: admin/Wizard_Symfony.py:123 admin/Wizard_Symfony.py:198
+#: admin/Wizard_Symfony.py:136 admin/Wizard_Symfony.py:211
 msgid "Project Source"
 msgstr ""
 
-#: admin/Wizard_Symfony.py:124 admin/Wizard_Symfony.py:199
+#: admin/Wizard_Symfony.py:137 admin/Wizard_Symfony.py:212
 msgid "Symfony Package"
 msgstr ""
 
-#: admin/Wizard_Symfony.py:176
+#: admin/Wizard_Symfony.py:189
 msgid "Configures Symfony inside a public web directory."
 msgstr ""
 
@@ -4105,98 +4105,102 @@ msgstr ""
 msgid "Server exiting.."
 msgstr ""
 
-#: admin/validations.py:9
+#: admin/validations.py:10
 msgid "Malformed number"
 msgstr ""
 
-#: admin/validations.py:15
+#: admin/validations.py:16
 msgid "Malformed float number"
 msgstr ""
 
-#: admin/validations.py:20
+#: admin/validations.py:21
 msgid "Must be greater than zero"
 msgstr ""
 
-#: admin/validations.py:32
+#: admin/validations.py:33
 msgid "Port must be a number"
 msgstr ""
 
-#: admin/validations.py:34
+#: admin/validations.py:35
 msgid "Out of the range (1 to 65535)"
 msgstr ""
 
-#: admin/validations.py:47
+#: admin/validations.py:48
 msgid "Malformed path"
 msgstr ""
 
-#: admin/validations.py:78
+#: admin/validations.py:79
 msgid "It is not executable"
 msgstr ""
 
-#: admin/validations.py:96
+#: admin/validations.py:97
 msgid "It cannot be negative"
 msgstr ""
 
-#: admin/validations.py:112
+#: admin/validations.py:113
 msgid "Malformed IPv4"
 msgstr ""
 
-#: admin/validations.py:117
+#: admin/validations.py:118
 msgid "Malformed IPv4 entry"
 msgstr ""
 
-#: admin/validations.py:119
+#: admin/validations.py:120
 msgid "IPv4 entry out of range"
 msgstr ""
 
-#: admin/validations.py:127
+#: admin/validations.py:128
 msgid "Malformed IPv6"
 msgstr ""
 
-#: admin/validations.py:140 admin/validations.py:157
+#: admin/validations.py:141 admin/validations.py:158
 msgid "Path does not exist"
 msgstr ""
 
-#: admin/validations.py:143
+#: admin/validations.py:144
 msgid "Path is not a directory"
 msgstr ""
 
-#: admin/validations.py:160
+#: admin/validations.py:161
 msgid "Path is not a regular file"
 msgstr ""
 
-#: admin/validations.py:176
+#: admin/validations.py:177
 msgid "Invalid char. Accepts: letters, digits, _, - and ."
 msgstr ""
 
-#: admin/validations.py:199
+#: admin/validations.py:200
 msgid "Neither a number or an IPv4"
 msgstr ""
 
-#: admin/validations.py:210
+#: admin/validations.py:211
 msgid "Invalid mask"
 msgstr ""
 
-#: admin/validations.py:234
+#: admin/validations.py:235
 msgid "Malformed entry (netmask)"
 msgstr ""
 
-#: admin/validations.py:263
+#: admin/validations.py:264
 msgid "Forced failure"
 msgstr ""
 
-#: admin/validations.py:271
+#: admin/validations.py:270
+msgid "Invalid regular expression"
+msgstr ""
+
+#: admin/validations.py:276
 msgid "http:// missing"
 msgstr ""
 
-#: admin/validations.py:308
+#: admin/validations.py:313
 msgid "Time value contain invalid values"
 msgstr ""
 
-#: admin/validations.py:311
+#: admin/validations.py:316
 msgid "Malformed time"
 msgstr ""
 
-#: admin/validations.py:318
+#: admin/validations.py:323
 msgid "Virtual host nick is already being used."
 msgstr ""
