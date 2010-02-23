@@ -1,8 +1,12 @@
 cherokee (0.99.43-1) unstable; urgency=low
 
+  [ Leonel Nunez ]
   * New Upstream Version
 
- -- Leonel Nunez <leonel@enelserver.com>  Wed, 17 Feb 2010 10:42:23 -0700
+  [ Gunnar Wolf ]
+  * Standards-version 3.8.3→3.8.4 (no changes)
+
+ -- Gunnar Wolf <gwolf@debian.org>  Mon, 22 Feb 2010 17:19:43 -0600
 
 cherokee (0.99.42-1) unstable; urgency=low
 
