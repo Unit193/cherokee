@@ -32,7 +32,7 @@ sources.</p></div>
 <strong>Remote</strong>: Cherokee will simply dispatch the request to the specified
   host. As many hosts as needed can be added, and Cherokee will simply
   apply the balancing strategy to which the information source is
-  asinged among them. If for any reason the requests made to these
+  assigned among them. If for any reason the requests made to these
   hosts could not be performed, the processes would simply fail.
 </p>
 </li>
@@ -55,8 +55,8 @@ sources.</p></div>
 </li>
 </ol></div>
 <div class="paragraph"><p>Note that because of Cherokee&#8217;s flexibility and modularity, sometimes
-and deppending of the situation one or the other setting might not
-make much sense. In such ocasions <tt>cherokee-admin</tt> will simply hide
+and depending of the situation one or the other setting might not
+make much sense. In such occasions <tt>cherokee-admin</tt> will simply hide
 whatever options do not apply.</p></div>
 <div class="imageblock">
 <div class="content">
@@ -77,7 +77,7 @@ For instance, if your PHP rule was balancing among two information
 sources, by deleting one of the sources in this section you would also
 be deleting it in the corresponding rule entry. Now the PHP rule would
 balance only with one information source. This is perfectly safe. The
-problem arises whenever you want to compeltely exhaust the list of
+problem arises whenever you want to completely exhaust the list of
 sources being balanced. Since every balancer (a generic balancer or a
 FastCGI balancer, for example) needs at least one information source,
 the rule would be broken and Cherokee would fail to start. This is
@@ -89,7 +89,7 @@ alternative information sources or by completely eliminating the rule.</td>
 </tr></table>
 </div>
 <h3 id="unix_sockets">Unix Sockets</h3><div style="clear:left"></div>
-<div class="paragraph"><p>Note that information sources can be adressed by host:port or directly
+<div class="paragraph"><p>Note that information sources can be addressed by host:port or directly
 through Unix sockets. You only have to specify a full path to the
 socket instead of the <tt>host:port</tt>.</p></div>
 <div class="paragraph"><p>For instance an entry such as <tt>/var/tmp/socket-tmp.1</tt> should get

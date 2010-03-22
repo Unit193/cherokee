@@ -19,7 +19,7 @@
 <div class="sectionbody">
 <div class="paragraph"><p>Server Side Includes, also known as SSI, are directives placed in HTML
 pages meant to be evaluated on the web server while the requests are
-being delivered. The intented use is adding some dynamic content to
+being delivered. The intended use is adding some dynamic content to
 existing HTML pages without having to serve the whole content
 dynamically (be it through CGI, SCGI, FastCGI, etc.).</p></div>
 <div class="paragraph"><p>SSI are very useful to add small pieces of information, but are not
@@ -29,7 +29,7 @@ it should apply SSI when it processed files ending with the <tt>.shtml</tt>
 extension.</p></div>
 <div class="paragraph"><p>Although this will be the majority of cases where this can be of
 usefulness, Cherokee is not limited to just one file extension. The
-SSI hanlder applies to whatever is matched by the rule where it has
+SSI handler applies to whatever is matched by the rule where it has
 been configured.</p></div>
 <div class="paragraph"><p>Currently Cherokee supports the following SSI directives:</p></div>
 <div class="ulist"><ul>
@@ -69,7 +69,7 @@ directives like the following ones:</p></div>
 <pre><tt>   &lt;!--#include virtual="/footer.html" --&gt;</tt></pre>
 </div></div>
 <div class="paragraph"><p>Note that the include element can determine what file to include based
-on the <tt>virtual</tt> or <tt>file</tt> attributes, which have the behavoir
+on the <tt>virtual</tt> or <tt>file</tt> attributes, which have the behavior
 specified above. In any case, despite specifying absolute or relative
 paths containing <tt>..</tt>, the SSI handler will not include any files
 outside the webserver document root.</p></div>

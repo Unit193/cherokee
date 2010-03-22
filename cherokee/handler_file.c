@@ -428,8 +428,13 @@ cherokee_handler_file_custom_init (cherokee_handler_file_t *fhdl,
 	/* Is it cached on the client?
 	 */
 	ret = check_cached (fhdl);
-	if ((ret != ret_ok) || (fhdl->not_modified))
+	if ((ret != ret_ok) || (fhdl->not_modified)) {
+		/* Set both ranges to zero to avoid file size errors in loggers
+		 */
+		conn->range_start  = 0;
+		conn->range_end    = 0;
 		goto out;
+	}
 
 	/* Is this file cached in the io cache?
 	 */
@@ -499,8 +504,10 @@ cherokee_handler_file_custom_init (cherokee_handler_file_t *fhdl,
 	if (unlikely ((conn->range_start >= fhdl->info->st_size) ||
 		      (conn->range_end   >= fhdl->info->st_size)))
 	{
-		conn->range_end  = fhdl->info->st_size - 1;
-		conn->error_code = http_range_not_satisfiable;
+		conn->error_code   = http_range_not_satisfiable;
+		conn->range_start  = 0;
+		conn->range_end    = 0;
+
 		ret = ret_error;
 		goto out;
 	}

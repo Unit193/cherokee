@@ -43,31 +43,43 @@ typedef enum {
 } cherokee_http_version_t;
 
 typedef enum {
-	http_unknown      = 0,
-	http_all_methods  = 0xFFFFFFF,
+	http_unknown      = 0LL,
+	http_all_methods  = 0xFFFFFFFLL,
 
-	http_get          = 1,
-	http_post         = 1 << 1,
-	http_head         = 1 << 2,
-	http_put          = 1 << 3,
-	http_options      = 1 << 4,
-	http_delete       = 1 << 5,
-	http_trace        = 1 << 6,
-	http_connect      = 1 << 7,
+	http_get              = 1,
+	http_post             = 1LL << 1,
+	http_head             = 1LL << 2,
+	http_put              = 1LL << 3,
+	http_options          = 1LL << 4,
+	http_delete           = 1LL << 5,
+	http_trace            = 1LL << 6,
+	http_connect          = 1LL << 7,
 
-	http_copy         = 1 << 8,
-	http_lock         = 1 << 9,
-	http_mkcol        = 1 << 10,
-	http_move         = 1 << 11,
-	http_notify       = 1 << 12,
-	http_poll         = 1 << 13,
-	http_propfind     = 1 << 14,
-	http_proppatch    = 1 << 15,
-	http_search       = 1 << 16,
-	http_subscribe    = 1 << 17,
-	http_unlock       = 1 << 18,
-	http_unsubscribe  = 1 << 19,
-	http_report       = 1 << 20
+	http_copy             = 1LL << 8,
+	http_lock             = 1LL << 9,
+	http_mkcol            = 1LL << 10,
+	http_move             = 1LL << 11,
+	http_notify           = 1LL << 12,
+	http_poll             = 1LL << 13,
+	http_propfind         = 1LL << 14,
+	http_proppatch        = 1LL << 15,
+	http_search           = 1LL << 16,
+	http_subscribe        = 1LL << 17,
+	http_unlock           = 1LL << 18,
+	http_unsubscribe      = 1LL << 19,
+	http_report           = 1LL << 20,
+	http_patch            = 1LL << 21,
+	http_version_control  = 1LL << 22,
+	http_checkout         = 1LL << 23,
+	http_uncheckout       = 1LL << 24,
+	http_checkin          = 1LL << 25,
+	http_update           = 1LL << 26,
+	http_label            = 1LL << 27,
+	http_mkworkspace      = 1LL << 28,
+	http_mkactivity       = 1LL << 29,
+	http_baseline_control = 1LL << 30,
+	http_merge            = 1LL << 31,
+	http_invalid          = 1LL << 32
 } cherokee_http_method_t;
 
 typedef enum {
@@ -124,14 +136,18 @@ typedef enum {                               /* Protocol   RFC  Section */
 	http_unprocessable_entity     = 422, /*   WebDAV  2518  10.3    */
 	http_locked                   = 423, /*   WebDAV  2518  10.4    */
 	http_failed_dependency        = 424, /*   WebDAV  2518  10.5    */
+	http_unordered_collection     = 425, /*   WebDAV  3648          */
 	http_upgrade_required         = 426, /* TLS upgr  2817   6      */
+	http_retry_with               = 449, /* Microsoft extension     */
 	http_internal_error           = 500, /* HTTP/1.1  2616  10.5.1  */
 	http_not_implemented          = 501, /* HTTP/1.1  2616  10.5.2  */
 	http_bad_gateway              = 502, /* HTTP/1.1  2616  10.5.3  */
 	http_service_unavailable      = 503, /* HTTP/1.1  2616  10.5.4  */
 	http_gateway_timeout          = 504, /* HTTP/1.1  2616  10.5.5  */
 	http_version_not_supported    = 505, /* HTTP/1.1  2616  10.5.6  */
+	http_variant_also_negotiates  = 506, /* HTTP/1.1  2295   8.1    */
 	http_insufficient_storage     = 507, /* HTTP/1.1  2616  10.6    */
+	http_bandwidth_limit_exceeded = 509, /* Apache extension        */
 	http_not_extended             = 510  /* HTTP Ext  2774   7      */
 } cherokee_http_t;
 
@@ -175,14 +191,18 @@ typedef enum {                               /* Protocol   RFC  Section */
 #define http_unprocessable_entity_string     "422 Unprocessable Entity"
 #define http_locked_string                   "423 Locked"
 #define http_failed_dependency_string        "424 Failed Dependency"
+#define http_unordered_collection_string     "425 Unordered Collection"
 #define http_upgrade_required_string         "426 Upgrade Required"
+#define http_retry_with_string               "449 Retry With"
 #define http_internal_error_string           "500 Internal Server Error"
 #define http_not_implemented_string          "501 Not Implemented"
 #define http_bad_gateway_string              "502 Bad gateway"
 #define http_service_unavailable_string      "503 Service Unavailable"
 #define http_gateway_timeout_string          "504 Gateway Timeout"
 #define http_version_not_supported_string    "505 HTTP Version Not Supported"
+#define http_variant_also_negotiates_string  "506 Variant Also Negotiates"
 #define http_insufficient_storage_string     "507 Insufficient Storage"
+#define http_bandwidth_limit_exceeded_string "509 Bandwidth Limit Exceeded"
 #define http_not_extended_string             "510 Not Extended"
 
 #define http_type_100_max 102

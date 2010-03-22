@@ -24,25 +24,25 @@ widely used. As such, you are encouraged to use it.</p></div>
 fields.</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>host rfc931 username date:time request statuscode bytes referrer user_agent</tt></pre>
+<pre><tt>host rfc931 username date:time request statuscode bytes referer user_agent</tt></pre>
 </div></div>
 <div class="paragraph"><p>Here is an example:</p></div>
 <div class="sidebarblock">
 <div class="sidebar-content">
 <div class="paragraph"><p>::ffff:127.0.0.1 - - [11/Aug/2008:16:17:58 +0000] "GET /index.html HTTP/1.1" 200 2633 "-" "Mozilla/5.0 (X11; U; Linux i686; es-ES; rv:1.9.0.1) Gecko/2008072820 Firefox/3.0.1"</p></div>
 </div></div>
-<div class="paragraph"><p>The description of the aditional fields follows.
+<div class="paragraph"><p>The description of the additional fields follows.
 Refer to the <a href="modules_loggers_ncsa.html">Common Log
 Format</a> documentation for information about the rest of the fields.</p></div>
 <div class="dlist"><dl>
 <dt class="hdlist1">
-<strong>referrer</strong> ("-") 
+<strong>referer</strong> ("-") 
 </dt>
 <dd>
 <p>
 This is the "Referer" HTTP request header. This indicates the URL
 which linked the user to your site (as reported by the client). In
-this case it is empty because no referer exists (i.e. it is a direct
+this case it is empty because no Referer exists (i.e. it is a direct
 hit).
 </p>
 </dd>
