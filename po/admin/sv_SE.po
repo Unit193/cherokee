@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: cherokee-admin 0.99.16\n"
 "Report-Msgid-Bugs-To: http://bugs.cherokee-project.com/\n"
-"POT-Creation-Date: 2010-02-17 13:20+0100\n"
+"POT-Creation-Date: 2010-03-21 13:10+0100\n"
 "PO-Revision-Date: 2009-06-02 12:23+0100\n"
 "Last-Translator: Andreas Andersson <andreas@cyberdelic.org>\n"
 "Language-Team: Swedish <LL@li.org>\n"
@@ -117,13 +117,13 @@ msgstr ""
 "En lastbalanserare måste konfigureras att använda minst en informationskälla."
 
 #: admin/ModuleBalancer.py:55 admin/Page.py:171 admin/PageInfoSource.py:93
-#: admin/PageInfoSource.py:152
+#: admin/PageInfoSource.py:153
 msgid "Information Sources"
 msgstr "Informationskällor"
 
-#: admin/ModuleBalancer.py:57 admin/PageInfoSource.py:247
-#: admin/PageInfoSource.py:275 admin/PageInfoSource.py:302
-#: admin/PageInfoSource.py:389
+#: admin/ModuleBalancer.py:57 admin/PageInfoSource.py:248
+#: admin/PageInfoSource.py:276 admin/PageInfoSource.py:303
+#: admin/PageInfoSource.py:390
 msgid "Nick"
 msgstr "Smeknamn"
 
@@ -312,7 +312,7 @@ msgid "Name"
 msgstr "Namn"
 
 #: admin/ModuleCgi.py:92 admin/ModuleProxy.py:103 admin/ModuleProxy.py:119
-#: admin/PageInfoSource.py:220
+#: admin/PageInfoSource.py:221
 msgid "Value"
 msgstr "Värde"
 
@@ -530,8 +530,8 @@ msgid "Redirection"
 msgstr "Omdirigering"
 
 #: admin/ModuleErrorRedir.py:41 admin/ModuleErrorRedir.py:52
-#: admin/ModuleRedir.py:41 admin/PageInfoSource.py:246
-#: admin/PageInfoSource.py:274 admin/PageInfoSource.py:302
+#: admin/ModuleRedir.py:41 admin/PageInfoSource.py:247
+#: admin/PageInfoSource.py:275 admin/PageInfoSource.py:303
 #: admin/PageVServer.py:363
 msgid "Type"
 msgstr "Typ"
@@ -1707,7 +1707,7 @@ msgstr "Tillåt"
 msgid "Forbid"
 msgstr ""
 
-#: admin/PageEntry.py:159 admin/PageInfoSource.py:389 admin/PageVServer.py:736
+#: admin/PageEntry.py:159 admin/PageInfoSource.py:390 admin/PageVServer.py:736
 msgid "Rule"
 msgstr "Regel"
 
@@ -2151,91 +2151,91 @@ msgid ""
 "the server process. Default: yes."
 msgstr ""
 
-#: admin/PageInfoSource.py:199
+#: admin/PageInfoSource.py:200
 msgid "Environment variables"
 msgstr "Miljövariabler"
 
-#: admin/PageInfoSource.py:215
+#: admin/PageInfoSource.py:216
 msgid "Add new Environment variable"
 msgstr "Lägg till ny miljövariabel"
 
-#: admin/PageInfoSource.py:220
+#: admin/PageInfoSource.py:221
 msgid "Variable"
 msgstr "Variabel"
 
-#: admin/PageInfoSource.py:248 admin/PageInfoSource.py:276
-#: admin/PageInfoSource.py:302 admin/Wizard_rTorrent.py:45
+#: admin/PageInfoSource.py:249 admin/PageInfoSource.py:277
+#: admin/PageInfoSource.py:303 admin/Wizard_rTorrent.py:45
 msgid "Connection"
 msgstr "Anslutning"
 
-#: admin/PageInfoSource.py:250 admin/PageInfoSource.py:278
+#: admin/PageInfoSource.py:251 admin/PageInfoSource.py:279
 msgid "Interpreter"
 msgstr "Tolk"
 
-#: admin/PageInfoSource.py:251 admin/PageInfoSource.py:279
+#: admin/PageInfoSource.py:252 admin/PageInfoSource.py:280
 msgid "Spawning timeout"
 msgstr "Tidsgräns för nya processer"
 
-#: admin/PageInfoSource.py:252 admin/PageInfoSource.py:280
+#: admin/PageInfoSource.py:253 admin/PageInfoSource.py:281
 msgid "Execute as User"
 msgstr "Kör som användare"
 
-#: admin/PageInfoSource.py:253 admin/PageInfoSource.py:281
+#: admin/PageInfoSource.py:254 admin/PageInfoSource.py:282
 msgid "Execute as Group"
 msgstr "Kör som grupp"
 
-#: admin/PageInfoSource.py:254
+#: admin/PageInfoSource.py:255
 msgid "Inherit Environment"
 msgstr ""
 
-#: admin/PageInfoSource.py:288
+#: admin/PageInfoSource.py:289
 msgid "Information Sources Settings"
 msgstr "Inställningar för informationskällor"
 
-#: admin/PageInfoSource.py:299
+#: admin/PageInfoSource.py:300
 msgid "Known sources"
 msgstr "Kända källor"
 
-#: admin/PageInfoSource.py:312
+#: admin/PageInfoSource.py:313
 msgid "Deletion forbidden. Check source usage."
 msgstr "Borttagning omöjlig. Kolla användandet av källan."
 
-#: admin/PageInfoSource.py:327
+#: admin/PageInfoSource.py:328
 #, fuzzy
 msgid "Add new Information Source"
 msgstr "Tilldela informationskällor"
 
-#: admin/PageInfoSource.py:330 admin/PageInfoSource.py:349
+#: admin/PageInfoSource.py:331 admin/PageInfoSource.py:350
 #, fuzzy
 msgid "Clone Information Source"
 msgstr "Informationskällor"
 
-#: admin/PageInfoSource.py:337
+#: admin/PageInfoSource.py:338
 #, fuzzy
 msgid "Source"
 msgstr "Användandet av källa"
 
-#: admin/PageInfoSource.py:337 admin/PageVServers.py:237
+#: admin/PageInfoSource.py:338 admin/PageVServers.py:237
 msgid "Clone as.."
 msgstr "Klona som.."
 
-#: admin/PageInfoSource.py:359
+#: admin/PageInfoSource.py:360
 msgid "Details:"
 msgstr "Detaljer:"
 
-#: admin/PageInfoSource.py:364
+#: admin/PageInfoSource.py:365
 msgid "Add a new"
 msgstr "Lägg till ny"
 
-#: admin/PageInfoSource.py:377
+#: admin/PageInfoSource.py:378
 msgid "Source usage"
 msgstr "Användandet av källa"
 
-#: admin/PageInfoSource.py:389
+#: admin/PageInfoSource.py:390
 msgid "Virtual server"
 msgstr "Virtuell server"
 
-#: admin/PageInfoSource.py:481 admin/PageVServers.py:305
+#: admin/PageInfoSource.py:482 admin/PageVServers.py:305
 #: admin/PageVServers.py:319 admin/validations.py:260
 msgid "Cannot be empty"
 msgstr "Kan inte vara tom"

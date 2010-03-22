@@ -188,7 +188,7 @@ this case, as it takes the default value), a database called
 <tt>cherokee</tt> with <tt>cherokee</tt> as user and password, and a table that
 suits the shown query.</p></div>
 <div class="paragraph"><p>Assuming you have a MySQL user with privileges granted to create
-databases, a MySQL session simliar to this one would suffice:</p></div>
+databases, a MySQL session similar to this one would suffice:</p></div>
 <div class="listingblock">
 <div class="content">
 <pre><tt>$ mysql -u cherokee -D cherokee -p
@@ -217,7 +217,7 @@ mysql&gt; quit</tt></pre>
 authentication against the database.</p></div>
 <h3 id="example">Another usage example</h3><div style="clear:left"></div>
 <div class="paragraph"><p>As you can see, getting the hang of how authentication works is pretty
-easy. Let&#8217;s ilustrate another easy example. How to serve PHP files,
+easy. Let&#8217;s illustrate another easy example. How to serve PHP files,
 both from a protected location and an unprotected one?</p></div>
 <div class="paragraph"><p>Let&#8217;s assume our locations are targets are:
 - /unprotected/<strong>.php
@@ -248,7 +248,7 @@ The second one, of type <tt>Extension</tt> would apply to <tt>php</tt> files and
 would match the first rule and the authentication would be
 required. In case it was successful, not being a final rule, the
 request would proceed to the second rule. Once there, the regular
-processing of PHP files would take palce. This one is a <em>FINAL</em> rule,
+processing of PHP files would take place. This one is a <em>FINAL</em> rule,
 so the rule evaluation would stop.</p></div>
 <div class="paragraph"><p>In case the PHP files were not being requested from the secured
 directory, just the second rule would apply.</p></div>

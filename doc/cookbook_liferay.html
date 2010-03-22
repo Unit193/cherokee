@@ -23,7 +23,7 @@
 <div class="paragraph"><p>You can use the standard package which is shipped with Tomcat as
 application server, or simply download one of the others. There is a
 <a href="http://downloads.sourceforge.net/lportal/liferay-portal-glassfish-linux-5.1.1.jar">Glassfish
-version</a> availabe. We will be using the former method, but you could
+version</a> available. We will be using the former method, but you could
 choose the latter and just deploy the application in your favorite
 application server. If you chose the Glassfish release, you could
 refer to the <a href="cookbook_glassfish.html">Glassfish</a> recipe and the
@@ -31,7 +31,7 @@ rest of this document would be of no more concern to you.</p></div>
 <div class="paragraph"><p>Before we proceed with the installation on Linux, you will need to
 make sure to have JDK 1.5 or later installed.</p></div>
 <div class="paragraph"><p>We will be installing the package and then setting up Cherokee as a
-reverse proxy to access this Enterprse Portal.</p></div>
+reverse proxy to access this Enterprise Portal.</p></div>
 <h3 id="liferay">Phase one: Liferay</h3><div style="clear:left"></div>
 <div class="paragraph"><p>This part is trivial. As the
 <a href="http://www.liferay.com/web/guest/community/wiki/-/wiki/Main/Quick+Installation+Instructions">Quick
@@ -49,7 +49,7 @@ and you are done with this part.</p></div>
 <div class="paragraph"><p>This path is set to the symbolic link present in <tt>/usr/lib/jvm</tt>. Yours
 could vary, so take a look there. As stated before, you do need Java
 1.5 or higher.</p></div>
-<div class="paragraph"><p>Once you have launched it, you can already acces the application
+<div class="paragraph"><p>Once you have launched it, you can already access the application
 server directly at <a href="http://localhost:8080">http://localhost:8080</a></p></div>
 <div class="tableblock">
 <table rules="all"
@@ -89,7 +89,7 @@ Cherokee-Admin on your proxy machine and then you will find this
 assistant under the <tt>Platforms</tt> category of the Wizards. Click, answer a few
 questions and you are done. You can then skip the rest of this
 document.</p></div>
-<div class="paragraph"><p>Should you have any problem with the assitant, you can perform the
+<div class="paragraph"><p>Should you have any problem with the assistant, you can perform the
 same tasks manually. Simply set up Cherokee as reverse proxy. You can
 either create a new virtual server with a matching rule (be it
 <tt>default</tt> or anything else) if you are sharing the proxy machine, or
@@ -98,7 +98,7 @@ choice, since typically you will be wanting to get the best possible
 performance, the Java application server is heavy by definition, and
 you could be using the proxy machine also to serve other contents. We
 are only going to set Cherokee&#8217;s HTTP reverse proxy handler to hit the
-server running Lifreay at port 8080.</p></div>
+server running Liferay at port 8080.</p></div>
 <div class="paragraph"><p>Launch Cherokee-Admin on your proxy machine, create a rule that
 matches the desired path on your web server hierarchy -<tt>/liferay</tt> for
 instance- in your virtual server of choice, and define the <tt>HTTP

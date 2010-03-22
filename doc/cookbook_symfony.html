@@ -55,7 +55,7 @@ called <tt>demo</tt> as well, and then create a module, also called <tt>demo</tt
 <div class="paragraph"><p>So now that we have the files in place, we&#8217;ll just create the needed
 rules for the web server. Specially important will be the rewrite
 rules.</p></div>
-<h3 id="wizard_configuration">Configure Cheroke using the Wizard</h3><div style="clear:left"></div>
+<h3 id="wizard_configuration">Configure Cherokee using the Wizard</h3><div style="clear:left"></div>
 <div class="paragraph"><p>Launch cherokee-admin, and proceed to the
 <a href="config_virtual_servers.html">Virtual servers</a> section and either
 enter the chosen one to install under a web folder, or directly click
@@ -63,7 +63,7 @@ on the <tt>Symfony Wizard</tt> to create a customised one.</p></div>
 <div class="paragraph"><p>In either case you will be asked for the basic information and
 everything will be handled for you. The two main data pieces will be
 the location of the public web folder of your Symfony project (that
-is, the part that you wish to make publicly accesible, not the whole
+is, the part that you wish to make publicly accessible, not the whole
 project), and the path to the installed release of Symfony in your
 system.</p></div>
 <div class="paragraph"><p>There is nothing else you need to do on Cherokee.</p></div>
@@ -79,8 +79,8 @@ applications in the symfony manual.</p></div>
 </div>
 <div class="paragraph"><p>Note that the Wizard configures Cherokee for your project&#8217;s production
 frontend. Should you wish to access the development environment simply
-adjust the redirection to the appropriate forntend.</p></div>
-<h3 id="manual_configuration">Configure Cheroke manually</h3><div style="clear:left"></div>
+adjust the redirection to the appropriate frontend.</p></div>
+<h3 id="manual_configuration">Configure Cherokee manually</h3><div style="clear:left"></div>
 <div class="paragraph"><p>In case you are wondering, these are manual steps you would have to
 follow if you opted for not using the configuration Wizard.</p></div>
 <div class="paragraph"><p>Select or create the virtual server that you will be configuring and
@@ -149,9 +149,9 @@ Symfony includes two controllers. One of them is "index.php". The
 </li>
 <li>
 <p>
-A slight adition must be added to fix an issue with how requests for
+A slight addition must be added to fix an issue with how requests for
   the root are managed when there is a rule with the <tt>File exists</tt>
-  handler in place. If this is not put in place, you will recieve 403
+  handler in place. If this is not put in place, you will receive 403
   errors. Simply define yet another redirection rule for this regular
   expression:
 </p>

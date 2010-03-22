@@ -78,7 +78,7 @@ cellspacing="0" cellpadding="4">
 <tr>
 <td align="left" valign="top"><p class="table">server!bind!#!port</p></td>
 <td align="left" valign="top"><p class="table">Number</p></td>
-<td align="left" valign="top"><p class="table">Listen to a TCP port. <em>#</em> is a secuential number since many ports can be listened at once.</p></td>
+<td align="left" valign="top"><p class="table">Listen to a TCP port. <em>#</em> is a sequential number since many ports can be listened at once.</p></td>
 </tr>
 <tr>
 <td align="left" valign="top"><p class="table">server!bind!#!tls</p></td>
@@ -287,7 +287,7 @@ most common type of entry.</p></div>
 does not really matter. What matters is that the list will be
 interpreted in an orderly fashion to prioritize some virtual servers
 over others, which can be of use depending on the way these are
-defined. The only precuation to take is making sure there are no
+defined. The only precaution to take is making sure there are no
 repeated priorities, since the behavior in these cases in undefined.</p></div>
 <div class="tableblock">
 <table rules="all"
@@ -370,7 +370,7 @@ specifies which is the rule type and its properties.</p></div>
 The general syntax is
 </dt>
 <dd>
-<div class="paragraph"><p><tt>vserver ! order ! rule ! prioriry ! match</tt></p></div>
+<div class="paragraph"><p><tt>vserver ! order ! rule ! priority ! match</tt></p></div>
 </dd>
 </dl></div>
 <div class="paragraph"><p>The rule types plug-ins shipped within a standard Cherokee release
@@ -550,7 +550,7 @@ cellspacing="0" cellpadding="4">
 </table>
 </div>
 <div class="paragraph"><p>The <tt>`auth</tt>` entry deserves a little more attention,
-actually. Accepted validarot modules are <tt>htdigest, htpasswd, ldap,
+actually. Accepted validator modules are <tt>htdigest, htpasswd, ldap,
 mysql, pam, plain</tt>. It restricts the access to some of the objects
 accessed by the web server based on a number of properties that are
 defined at its child properties:</p></div>

@@ -30,7 +30,7 @@ document would be of no more concern to you.</p></div>
 you must know that it uses JDK 1.5+, MySQL and Tomcat as application
 server.</p></div>
 <div class="paragraph"><p>We will be installing the package and then setting up Cherokee as a
-reverse proxy to access this Enterprse Content Managment solution.</p></div>
+reverse proxy to access this Enterprise Content Management solution.</p></div>
 <h3 id="alfresco">Phase one: Alfresco</h3><div style="clear:left"></div>
 <div class="paragraph"><p>Once you&#8217;ve downloaded the full installer, the process is as simple as
 running it and follow the easy step by step assistant.</p></div>
@@ -54,7 +54,7 @@ your home directory will be chosen.</p></div>
 </div>
 </div>
 <div class="paragraph"><p>When you are asked for an OpenOffice location, you can select the
-Alfresco directory if you don&#8217;w want to use it for Office document
+Alfresco directory if you don&#8217;t want to use it for Office document
 conversions. If you can&#8217;t seem to find a path that lets the installer
 proceed, it could be that the installer is trying to look for the file
 <tt>soffice.exe</tt>. There is information about this problem in their
@@ -138,7 +138,7 @@ Cherokee-Admin on your proxy machine and then you will find this
 assistant under the <tt>Platforms</tt> category of the Wizards. Click, answer a few
 questions and you are done. You can then skip the rest of this
 document.</p></div>
-<div class="paragraph"><p>Should you have any problem with the assitant, you can perform the
+<div class="paragraph"><p>Should you have any problem with the assistant, you can perform the
 same tasks manually. Simply set up Cherokee as reverse proxy. You can
 either create a new virtual server with a matching rule (be it
 <tt>default</tt> or anything else) if you are sharing the proxy machine, or
@@ -152,7 +152,7 @@ server running Alfresco at port 8080.</p></div>
 matches the desired path on your web server hierarchy -<tt>/share</tt> for
 instance- in your virtual server of choice, and define the <tt>HTTP
 reverse proxy</tt> handler from within the <tt>Handler</tt> tab.</p></div>
-<div class="paragraph"><p>Remeber to configure an URL rewriting rule in the handler&#8217;s
+<div class="paragraph"><p>Remember to configure an URL rewriting rule in the handler&#8217;s
 configuration. Alfresco&#8217;s application server doesn&#8217;t provide content
 directly in the document root, so we&#8217;ll have to add the required
 subnode.</p></div>

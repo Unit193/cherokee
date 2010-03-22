@@ -5,7 +5,7 @@
 <dict>
     <!-- Provides information for the Finder to display about the package -->
     <key>CFBundleGetInfoString</key>
-    <string>Cherokee Web Server 0.99.43</string>
+    <string>Cherokee Web Server 0.99.44</string>
 
     <!-- Provides information for the Finder to display about the package. -->    
     <key>CFBundleName</key>
@@ -13,7 +13,7 @@
 
     <!-- Provides information for the Finder to display about the package. -->    
     <key>CFBundleShortVersionString</key>
-    <string>0.99.43</string>
+    <string>0.99.44</string>
 
     <!-- A unique identifier string for the bundle. It should be in the form of a Java-style package name. -->
     <key>CFBundleIdentifier</key>

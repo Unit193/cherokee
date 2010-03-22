@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: cherokee '0.99.38' admin UI for zh_CN \n"
 "Report-Msgid-Bugs-To: http://bugs.cherokee-project.com/\n"
-"POT-Creation-Date: 2010-02-17 13:20+0100\n"
+"POT-Creation-Date: 2010-03-21 13:10+0100\n"
 "PO-Revision-Date: 2009-04-14 21:27+CEST\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: ownlinux.cn\n"
@@ -110,13 +110,13 @@ msgid ""
 msgstr "负载均衡器要求必须配置至少一个数据源."
 
 #: admin/ModuleBalancer.py:55 admin/Page.py:171 admin/PageInfoSource.py:93
-#: admin/PageInfoSource.py:152
+#: admin/PageInfoSource.py:153
 msgid "Information Sources"
 msgstr "数据源"
 
-#: admin/ModuleBalancer.py:57 admin/PageInfoSource.py:247
-#: admin/PageInfoSource.py:275 admin/PageInfoSource.py:302
-#: admin/PageInfoSource.py:389
+#: admin/ModuleBalancer.py:57 admin/PageInfoSource.py:248
+#: admin/PageInfoSource.py:276 admin/PageInfoSource.py:303
+#: admin/PageInfoSource.py:390
 msgid "Nick"
 msgstr "名称"
 
@@ -301,7 +301,7 @@ msgid "Name"
 msgstr "姓名"
 
 #: admin/ModuleCgi.py:92 admin/ModuleProxy.py:103 admin/ModuleProxy.py:119
-#: admin/PageInfoSource.py:220
+#: admin/PageInfoSource.py:221
 msgid "Value"
 msgstr "值"
 
@@ -519,8 +519,8 @@ msgid "Redirection"
 msgstr "重定向"
 
 #: admin/ModuleErrorRedir.py:41 admin/ModuleErrorRedir.py:52
-#: admin/ModuleRedir.py:41 admin/PageInfoSource.py:246
-#: admin/PageInfoSource.py:274 admin/PageInfoSource.py:302
+#: admin/ModuleRedir.py:41 admin/PageInfoSource.py:247
+#: admin/PageInfoSource.py:275 admin/PageInfoSource.py:303
 #: admin/PageVServer.py:363
 msgid "Type"
 msgstr "类型"
@@ -1665,7 +1665,7 @@ msgstr "允许 "
 msgid "Forbid"
 msgstr ""
 
-#: admin/PageEntry.py:159 admin/PageInfoSource.py:389 admin/PageVServer.py:736
+#: admin/PageEntry.py:159 admin/PageInfoSource.py:390 admin/PageVServer.py:736
 msgid "Rule"
 msgstr "规则"
 
@@ -2095,92 +2095,92 @@ msgid ""
 "the server process. Default: yes."
 msgstr ""
 
-#: admin/PageInfoSource.py:199
+#: admin/PageInfoSource.py:200
 msgid "Environment variables"
 msgstr "环境变量"
 
-#: admin/PageInfoSource.py:215
+#: admin/PageInfoSource.py:216
 msgid "Add new Environment variable"
 msgstr "新增环境变量"
 
-#: admin/PageInfoSource.py:220
+#: admin/PageInfoSource.py:221
 msgid "Variable"
 msgstr "变量"
 
-#: admin/PageInfoSource.py:248 admin/PageInfoSource.py:276
-#: admin/PageInfoSource.py:302 admin/Wizard_rTorrent.py:45
+#: admin/PageInfoSource.py:249 admin/PageInfoSource.py:277
+#: admin/PageInfoSource.py:303 admin/Wizard_rTorrent.py:45
 msgid "Connection"
 msgstr "连接"
 
-#: admin/PageInfoSource.py:250 admin/PageInfoSource.py:278
+#: admin/PageInfoSource.py:251 admin/PageInfoSource.py:279
 msgid "Interpreter"
 msgstr "解释器"
 
-#: admin/PageInfoSource.py:251 admin/PageInfoSource.py:279
+#: admin/PageInfoSource.py:252 admin/PageInfoSource.py:280
 msgid "Spawning timeout"
 msgstr "超时"
 
-#: admin/PageInfoSource.py:252 admin/PageInfoSource.py:280
+#: admin/PageInfoSource.py:253 admin/PageInfoSource.py:281
 msgid "Execute as User"
 msgstr "执行用户"
 
-#: admin/PageInfoSource.py:253 admin/PageInfoSource.py:281
+#: admin/PageInfoSource.py:254 admin/PageInfoSource.py:282
 #, fuzzy
 msgid "Execute as Group"
 msgstr "执行用户组"
 
-#: admin/PageInfoSource.py:254
+#: admin/PageInfoSource.py:255
 msgid "Inherit Environment"
 msgstr ""
 
-#: admin/PageInfoSource.py:288
+#: admin/PageInfoSource.py:289
 msgid "Information Sources Settings"
 msgstr "数据源设置"
 
-#: admin/PageInfoSource.py:299
+#: admin/PageInfoSource.py:300
 msgid "Known sources"
 msgstr "已有数据源"
 
-#: admin/PageInfoSource.py:312
+#: admin/PageInfoSource.py:313
 msgid "Deletion forbidden. Check source usage."
 msgstr "不允许删除. 请检查数据源是否使用中."
 
-#: admin/PageInfoSource.py:327
+#: admin/PageInfoSource.py:328
 #, fuzzy
 msgid "Add new Information Source"
 msgstr "新增数据源"
 
-#: admin/PageInfoSource.py:330 admin/PageInfoSource.py:349
+#: admin/PageInfoSource.py:331 admin/PageInfoSource.py:350
 #, fuzzy
 msgid "Clone Information Source"
 msgstr "数据源"
 
-#: admin/PageInfoSource.py:337
+#: admin/PageInfoSource.py:338
 #, fuzzy
 msgid "Source"
 msgstr "数据源使用"
 
-#: admin/PageInfoSource.py:337 admin/PageVServers.py:237
+#: admin/PageInfoSource.py:338 admin/PageVServers.py:237
 msgid "Clone as.."
 msgstr "克隆成.."
 
-#: admin/PageInfoSource.py:359
+#: admin/PageInfoSource.py:360
 msgid "Details:"
 msgstr "详细:"
 
-#: admin/PageInfoSource.py:364
+#: admin/PageInfoSource.py:365
 msgid "Add a new"
 msgstr "新增"
 
-#: admin/PageInfoSource.py:377
+#: admin/PageInfoSource.py:378
 msgid "Source usage"
 msgstr "数据源使用"
 
-#: admin/PageInfoSource.py:389
+#: admin/PageInfoSource.py:390
 msgid "Virtual server"
 msgstr "虚拟主机"
 
-#: admin/PageInfoSource.py:481 admin/PageVServers.py:305
+#: admin/PageInfoSource.py:482 admin/PageVServers.py:305
 #: admin/PageVServers.py:319 admin/validations.py:260
 msgid "Cannot be empty"
 msgstr "不能为空"
