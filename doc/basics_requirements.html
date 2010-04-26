@@ -30,8 +30,10 @@ smaller, but we haven&#8217;t really had the chance to try it out.</p></div>
 is optional. Obviously anything beyond serving mere static content
 must be available for Cherokee to correctly execute the task. This
 means you will need PHP if you want Cherokee to serve PHP dynamic
-content, MySQL or LDAP development libraries if you want built-in
-support for these as authentication mechanisms for protected content
+content, the rrdtool package if you intend to collect statistics to
+render usage graphs, MySQL or LDAP development libraries if you want
+built-in support for these as authentication mechanisms for protected
+content, ffmpeg development libraries to build the streaming module,
 and so on.</p></div>
 <div class="paragraph"><p>If you intend to build Cherokee from source however, you will need
 several tools and libraries.</p></div>
@@ -47,7 +49,7 @@ Building tools: Cherokee is built on top of the autoconf and
 </li>
 <li>
 <p>
-Python: Cherokee has an administrative web interface written in
+Python: Cherokee has an administration web interface written in
   Python, so if you intend to use cherokee-admin you will need this.
   For disk space constrained environments this won&#8217;t be an issue
   since you would probably want to make a minimal install in your
@@ -56,7 +58,9 @@ Python: Cherokee has an administrative web interface written in
   number of Quality Assurance tests written in it as well. If you are
   planning to contribute code into the project, or you just want to
   test everything is working in the server, you will need a Python
-  interpreter installed on your system.
+  interpreter installed on your system. The main Python releases
+  targeted by our developers are 2.4, 2.5 and 2.6. Anything other than
+  that is not guaranteed to work at the moment.
 </p>
 </li>
 <li>
