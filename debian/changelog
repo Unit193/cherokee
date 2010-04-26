@@ -1,8 +1,13 @@
 cherokee (0.99.45-1) unstable; urgency=low
 
+  [ Leonel Nunez ]
   * New Upstream Version 
 
- -- Leonel Nunez <leonel@enelserver.com>  Sun, 25 Apr 2010 21:24:51 -0600
+  [ Gunnar Wolf ]
+  * Upstream release includes patch fixing ARM sysmalloc error (Closes:
+    #578739)
+
+ -- Gunnar Wolf <gwolf@debian.org>  Mon, 26 Apr 2010 09:38:09 -0500
 
 cherokee (0.99.44-1) unstable; urgency=low
 
