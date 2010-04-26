@@ -1,195 +1,132 @@
-import time
+# -*- coding: utf-8 -*-
+#
+# Cherokee-admin
+#
+# Authors:
+#      Alvaro Lopez Ortega <alvaro@alobbs.com>
+#      Taher Shihadeh <taher@unixwars.com>
+#
+# Copyright (C) 2001-2010 Alvaro Lopez Ortega
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of version 2 of the GNU General Public
+# License as published by the Free Software Foundation.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+# 02110-1301, USA.
+#
 
-from Page import *
-from Table import *
+import re
+import CTK
+import Page
+import Graph
+import Cherokee
+import validations
+import SelectionPanel
+
+from CTK.Submitter import HEADER as Submit_HEADER
 from configured import *
-from CherokeeManagement import *
-from GraphManager import *
 
-# For gettext
-N_ = lambda x: x
+URL_BASE  = '/status'
 
-SERVER_RUNNING = """
-<div id="statusarea" class="running">
-<form id="run-form" action="/stop" method="post">
- <div id="statustitle">{{_lserver_status}}:</div>
- <div id="statusmsg">{{_server_running}}</div>
- <div id="statusaction"><a href="#" onclick="this.blur(); $('#run-form').submit(); return false;">{{_button_stop}}</a></div>
-</form>
-</div>
-"""
+# Help entries
+HELPS = [('config_status', N_("Status"))]
 
-SERVER_NOT_RUNNING = """
-<div id="statusarea" class="notrunning">
-<form id="run-form" action="/launch" method="post">
- <div id="statustitle">{{_lserver_status}}:</div>
- <div id="statusmsg">{{_server_running}}</div>
- <div id="statusaction"><a href="#" onclick="this.blur(); $('#run-form').submit(); return false;">{{_button_launch}}</a></div>
-</form>
-</div>
-"""
 
-MENU_LANGUAGES = """
-<div id="change_language">
-  <form name="flanguages" id="flanguages" method="post" action="/change_language">
-  <div class="label_lang">{{_llanguages}}</div>
-  <div>{{languages_select}}</div>
-  </form>
-</div>
-"""
+class LiveLogs_Instancer (CTK.Container):
+    class LiveLogs (CTK.Box):
+        def __init__ (self, refreshable, vserver = None, **kwargs):
+            CTK.Box.__init__ (self, **kwargs)
 
-BETA_TESTER_NOTICE = N_("""
-<h3>Beta testing</h3>
-<p>Individuals like yourself who download and test the latest developer snapshots of Cherokee Web Server help us to create the highest quality product.</p>
-<p>For that, we thank you.</p>
-""")
+            self.refreshable = refreshable
+            self.vserver     = vserver
 
-FEEDBACK_NOTICE = N_("""
-If you wanted to let us know something about Cherokee: what you
-like the most or what you would improve, please do not hesitate to
-<a href="/feedback">drop us a line</a>.
-""")
+    def __init__ (self, vserver):
+        CTK.Container.__init__ (self)
 
-PROUD_USERS_NOTICE = N_("""
-We would love to know that you are using Cherokee. Submit your domain
-name and  it will be <a href="http://www.cherokee-project.com/cherokee-domain-list.html">
-listed on the Cherokee Project web site</a>.
-""")
+        # Refresher
+        refresh = CTK.Refreshable ({'id': 'log-area'})
+        refresh.register (lambda: self.LiveLogs(refresh, vserver).Render())
+        self += refresh
 
-HELPS = [
-    ('config_status', N_("Status"))
-]
 
-class PageStatus (PageMenu, FormHelper):
-    def __init__ (self, cfg=None):
-        PageMenu.__init__ (self, 'status', cfg, HELPS)
-        FormHelper.__init__ (self, 'status', cfg)
+class Render_Content (CTK.Container):
+    def __call__ (self, vsrv = None):
 
-    def _op_render (self):
-        self.AddMacroContent ('title', _('Welcome to Cherokee Admin'))
-        self.AddMacroContent ('_description', _('This interface will assist in configuring the Cherokee Web Server.'))
-        self.AddMacroContent ('content', self.Read('status.template'))
-
-        if 'b' in VERSION:
-            notice = self.Dialog(_(BETA_TESTER_NOTICE))
-            self.AddMacroContent ('beta_tester', notice)
+        # Render graphs
+        if CTK.request.url.endswith('/general'):
+            vsrv_nam = None
+            title = _('Server Wide Monitoring')
+            graph = Graph.GraphServer_Instancer()
         else:
-            self.AddMacroContent ('beta_tester', '')
+            vsrv_num = CTK.request.url.split('/')[-1]
+            vsrv_nam = CTK.cfg.get_val ("vserver!%s!nick" %(vsrv_num), _("Unknown"))
+            title    ='%s: %s' %(_('Virtual Server Monitoring'), vsrv_nam)
+            graph    = Graph.GraphVServer_Instancer(vsrv_num)
 
-        manager = cherokee_management_get (self._cfg)
-        self.AddMacroContent ('_lserver_status', _('Server status'))
-        if manager.is_alive():
-            self.AddMacroContent ('_server_running', _('Server is running.'))
-            self.AddMacroContent ('_button_stop',    _('Stop'))
-            self.AddMacroContent ('status', SERVER_RUNNING)
-        else:
-            self.AddMacroContent ('_server_running', _('Server is not running.'))
-            self.AddMacroContent ('_button_launch',    _('Launch'))
-            self.AddMacroContent ('status', SERVER_NOT_RUNNING)
+        cont  = CTK.Container()
+        cont += CTK.RawHTML ('<h2>%s</h2>' %(title))
+        cont += graph
 
-        extra_info = self._render_extra_info()
-        self.AddMacroContent ('_linformation', _('Information'))
-        self.AddMacroContent ('extra_info', extra_info)
+        render = cont.Render()
+        return render.toJSON()
 
-        if graphs_are_active(self._cfg):
-            server_graphs = self._render_server_graphs()
-        else:
-            server_graphs = ''
-        self.AddMacroContent ('server_graphs', server_graphs)
 
-        # Translation
-        if len(AVAILABLE_LANGUAGES) > 1:
-            self.AddMacroContent ('_llanguages',    _('Language:'))
-            self.AddMacroContent ('translation', MENU_LANGUAGES)
-            options = [('', _('Choose'))] + AVAILABLE_LANGUAGES
-            js = "javascript:$('#flanguages').submit()"
-            selbox = EntryOptions ('language', options, onChange=js)
-            self.AddMacroContent ('languages_select', str(selbox))
-        else:
-            self.AddMacroContent ('translation', '')
+class Render:
+    class PanelList (CTK.Container):
+        def __init__ (self, right_box):
+            CTK.Container.__init__ (self)
 
-        self.AddMacroContent ('_lfeedback', _('Feedback'))
-        self.AddMacroContent ('_feedback',  _(FEEDBACK_NOTICE))
+            # Helpers
+            entry   = lambda klass, key: CTK.Box ({'class': klass}, CTK.RawHTML (CTK.cfg.get_val(key, '')))
+            special = lambda klass, txt: CTK.Box ({'class': klass}, CTK.RawHTML (txt))
 
-        self.AddMacroContent ('_lproudusers', _('Proud Cherokee Users'))
-        self.AddMacroContent ('_proudusers',  _(PROUD_USERS_NOTICE))
+            # Build the panel list
+            panel = SelectionPanel.SelectionPanel (None, right_box.id, URL_BASE, '', container='status_panel')
+            self += panel
 
-        return Page.Render(self)
+            # Build the Virtual Server list
+            vservers = CTK.cfg.keys('vserver')
+            vservers.sort (lambda x,y: cmp(int(x), int(y)))
+            vservers.reverse()
 
-    def _op_handler (self, uri, post):
-        return '/'
+            # Special Panel entries
+            content = [special('nick',  _('General')),
+                       special('droot', _('System wide status'))]
+            panel.Add ('general', '%s/content/general'%(URL_BASE), content, draggable=False)
 
-    def _render_extra_info (self):
-        txt = ""
-        txt += '<table width="100%" class="rulestable">'
+            # Regular list entries
+            for k in vservers:
+                content = [entry('nick', 'vserver!%s!nick'%(k))]
+                panel.Add (k, '%s/content/%s'%(URL_BASE, k), content, draggable=False)
 
-        # Document root
-        #
-        tmp = [int(x) for x in self._cfg.keys('vserver')]
-        tmp.sort()
 
-        www_root = None
-        if tmp:
-            www_root = self._cfg.get_val ('vserver!%d!document_root'%(tmp[0]))
-        if not www_root:
-            www_root = WWWROOT
+    def __call__ (self):
+        title = _('Status')
 
-        # Server
-        txt += '<tr><td class="infolab">%s:</td><td>%s</td></tr>' % (_("Version"), VERSION)
-        txt += '<tr><td class="infolab">%s:</td><td>%s</td></tr>' % (_("Default WWW"), www_root)
-        txt += '<tr><td class="infolab">%s:</td><td>%s</td></tr>' % (_("Prefix"), PREFIX)
+        # Content
+        left  = CTK.Box({'class': 'panel'})
+        left += CTK.RawHTML('<h2>%s</h2>'%(title))
 
-        manager = cherokee_management_get (self._cfg)
-        if manager.is_alive():
-            current_pid = manager._get_pid()
-        else:
-            current_pid = _("Not running")
+        right = CTK.Box({'class': 'status_content'})
+        left += CTK.Box({'class': 'filterbox'}, CTK.TextField({'class':'filter', 'optional_string': _('Virtual Server Filtering'), 'optional': True}))
+        left += CTK.Box ({'id': 'status_panel'}, self.PanelList(right))
 
-        txt += '<tr><td class="infolab">%s:</td><td>%s</td></tr>'  % (_("PID file"), current_pid)
+        # Build the page
+        page = Page.Base(title, body_id='status', helps=HELPS, headers=Submit_HEADER)
+        page += left
+        page += right
 
-        # Configuration
-        file = self._cfg.file
-        if file:
-            info = os.stat(file)
-            file_status = time.ctime(info.st_ctime)
-            txt += '<tr><td class="infolab">%s:</td><td>%s</td></tr>'  % (_("Configuration File"), file)
-            txt += '<tr><td class="infolab">%s:</td><td>%s</td></tr>'  % (_("Modified"), file_status)
-        else:
-            txt += '<tr><td class="infolab">%s:</td><td>%s</td></tr>'  % (_("Configuration File"), _('Not Found'))
+        return page.Render()
 
-        txt += '</table>'
 
-        return txt
-
-    def _render_server_graphs (self):
-        txt = '<script type="text/javascript" src="/static/js/graphs.js"></script>';
-        txt += '<div id="grapharea">'
-
-        txt += '<div id="gmenu">'
-        txt += '<ul>'
-        txt += '<li id="gmtop"><span>%s</span></li>' % (_("Server Traffic"))
-        txt += '<li class="item"><a onclick="graphChangeType(\'traffic\', this.innerHTML)">%s</a></li>'  % (_("Server Traffic"))
-        txt += '<li class="item"><a onclick="graphChangeType(\'accepts\', this.innerHTML)">%s</a></li>'  % (_("Connections / Requests"))
-        txt += '<li class="item last"><a onclick="graphChangeType(\'timeouts\', this.innerHTML)">%s</a></li>'  % (_("Connections Timeout"))
-        txt += '</ul>'
-        txt += '</div>'
-
-        txt += '<div id="gtype">'
-        txt += '<div id="g1m" class="gbutton"><a onclick="graphChangeInterval(\'1m\')">%s</a></div>' % (_("1 month"))
-        txt += '<div id="g1w" class="gbutton"><a onclick="graphChangeInterval(\'1w\')">%s</a></div>' % (_("1 week"))
-        txt += '<div id="g1d" class="gbutton"><a onclick="graphChangeInterval(\'1d\')">%s</a></div>' % (_("1 day"))
-        txt += '<div id="g6h" class="gbutton"><a onclick="graphChangeInterval(\'6h\')">%s</a></div>' % (_("6 hours"))
-        txt += '<div id="g1h" class="gbutton gsel"><a onclick="graphChangeInterval(\'1h\')">%s</a></div>' % (_("1 hour"))
-        txt += '</div>'
-
-        txt += '<div id="graphdiv">'
-        txt += '<img id="graphimg" src="/graphs/server_traffic_1h.png" alt="Graph" />'
-        txt += '</div>'
-        txt += '</div>'
-
-        txt += """<script type="text/javascript">
-                   $(document).ready(function() { refreshGraph(); });
-                  </script>
-               """
-
-        return txt
+CTK.publish (r'^%s$'               %(URL_BASE), Render)
+CTK.publish ('^%s/content/[\d]+$'  %(URL_BASE), Render_Content)
+CTK.publish ('^%s/content/general$'%(URL_BASE), Render_Content)

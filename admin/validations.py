@@ -1,7 +1,16 @@
+import CTK
 import string
 import os.path
-import re
-from util import split_list
+from util import split_list, get_real_path
+
+# Conditional Check
+# -----------------
+# By default the validations are not performed if there is no value to
+# check. That usually means that the configuation entry is being
+# removed. In case the entry should always be checked, the function
+# could define a property 'CHECK_ON_NO_VALUE' to enforce it.
+
+OPTIONAL = 'optional'
 
 def is_number (value):
     try:
@@ -32,7 +41,15 @@ def is_tcp_port (value):
     except:
         raise ValueError, _('Port must be a number')
     if tmp < 0 or tmp > 0xFFFF:
-        raise ValueError, _('Out of the range (1 to 65535)')
+        raise ValueError, _('Out of range (1 to 65535)')
+    return value
+
+def is_new_tcp_port (value):
+    value    = is_tcp_port (value)
+    bindings = CTK.cfg.keys ('server!bind')
+    ports    = [CTK.cfg.get_val('server!bind!%s!port'%(x)) for x in bindings]
+    if value in ports:
+        raise ValueError, _('Port already in use')
     return value
 
 def is_extension (value):
@@ -53,7 +70,7 @@ def is_list (value):
         return ''
     return ','.join(tmp)
 
-def is_dir_formated (value):
+def is_dir_formatted (value):
     is_path (value)
 
     try:
@@ -77,6 +94,12 @@ def is_exec_path (value):
     is_path(value)
     if not os.access (value, os.X_OK):
         raise ValueError, _('It is not executable')
+    return value
+
+def is_exec_file (value):
+    value = is_exec_path (value)
+    if not os.path.isfile(path):
+        raise ValueError, _('Path is not a regular file')
     return value
 
 def is_extension_list (value):
@@ -128,14 +151,12 @@ def is_ipv6 (value):
         raise ValueError, _('Malformed IPv6')
     return value
 
-def is_local_dir_exists (value, cfg, nochroot=False):
-    value = is_path (value)
+def is_chroot_dir_exists (value):
+    return is_local_dir_exists (value, nochroot=True)
 
-    chroot = cfg.get_val('server!chroot')
-    if chroot and not nochroot:
-        path = os.path.normpath (chroot + os.path.sep + value)
-    else:
-        path = value
+def is_local_dir_exists (value, nochroot=False):
+    value = is_path (value)
+    path  = get_real_path (value, nochroot)
 
     if not os.path.exists(path):
         raise ValueError, _('Path does not exist')
@@ -145,14 +166,9 @@ def is_local_dir_exists (value, cfg, nochroot=False):
 
     return value
 
-def is_local_file_exists (value, cfg, nochroot=False):
+def is_local_file_exists (value, nochroot=False):
     value = is_path (value)
-
-    chroot = cfg.get_val('server!chroot')
-    if chroot and not nochroot:
-        path = os.path.normpath (chroot + os.path.sep + value)
-    else:
-        path = value
+    path  = get_real_path (value, nochroot)
 
     if not os.path.exists(path):
         raise ValueError, _('Path does not exist')
@@ -162,11 +178,11 @@ def is_local_file_exists (value, cfg, nochroot=False):
 
     return value
 
-def parent_is_dir (value, cfg, nochroot=False):
+def parent_is_dir (value, nochroot=False):
     value = is_path (value)
 
     dirname, filename = os.path.split(value)
-    is_local_dir_exists (dirname, cfg, nochroot)
+    is_local_dir_exists (dirname, nochroot)
 
     return value
 
@@ -259,16 +275,13 @@ def is_not_empty (value):
     if len(value) <= 0:
         raise ValueError, _('Cannot be empty')
     return value
+is_not_empty.CHECK_ON_NO_VALUE = True
 
 def debug_fail (value):
     raise ValueError, _('Forced failure')
 
 def is_regex (value):
-    try:
-        trash = re.compile(value)
-    except:
-        raise ValueError, _('Invalid regular expression')
-
+    # Can a regular expression be checked?
     return value
 
 def is_http_url (value):
@@ -285,10 +298,10 @@ def is_url_or_path (value):
 
     raise ValueError, 'Not a URL, nor a path'
 
-def is_dev_null_or_local_dir_exists (value, cfg, nochroot=False):
+def is_dev_null_or_local_dir_exists (value, nochroot=False):
     if value == '/dev/null':
         return value
-    return is_local_dir_exists (value, cfg, nochroot)
+    return is_local_dir_exists (value, nochroot)
 
 def is_information_source (value):
     # /unix/path
@@ -317,10 +330,56 @@ def is_time (value):
 
     return value
 
-def is_new_host (value, cfg, nochroot):
-    for h in cfg.keys('vserver'):
-        if value == cfg.get_val('vserver!%s!nick'%(h)):
-            raise ValueError, _('Virtual host nick is already being used.')
+def is_new_vserver_nick (value):
+    value = is_not_empty(value)
+    for h in CTK.cfg.keys('vserver'):
+        if value == CTK.cfg.get_val('vserver!%s!nick'%(h)):
+            raise ValueError, _('Virtual Server nick name is already being used.')
     return value
 
 
+def is_safe_mime_type (mime):
+    mimes = CTK.cfg.keys ('mime')
+    if mime in mimes:
+        raise ValueError, _('Already in use')
+    return mime
+
+
+def is_safe_information_source (value):
+    host = is_information_source (value)
+    keys = CTK.cfg.keys ('source')
+    hosts  = [CTK.cfg.get_val('source!%s!host' % key) for key in keys]
+
+    if host in hosts:
+        raise ValueError, _('Already in use')
+    return host
+
+
+def is_safe_cfgval (key, cfg_str, new, safe):
+    new  = list(set(split_list (new))) # remove list duplicates
+    keys = CTK.cfg.keys (key)
+    cfg  = [CTK.cfg.get_val(cfg_str % key) for key in keys]
+    old  = [x for sublist in map(split_list, cfg) for x in sublist]
+
+    old.sort()
+    dupes = list (set(old) & set(new))
+    if safe: # Do not worry about safe values
+        safe  = split_list (safe)
+        dupes = list (set(dupes) - set(safe))
+
+    if dupes:
+        raise ValueError, '%s: %s' %(_('Already in use'), ', '.join(dupes))
+
+    return ','.join(new)
+
+
+def is_safe_mime_exts (new, safe = None):
+    return is_safe_cfgval ('mime', 'mime!%s!extensions', new, safe)
+
+
+def is_safe_icons_suffix (new, safe = None):
+    return is_safe_cfgval ('icons!suffix', 'icons!suffix!%s', new, safe)
+
+
+def is_safe_icons_file (new, safe = None):
+    return is_safe_cfgval ('icons!file', 'icons!file!%s', new, safe)

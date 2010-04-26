@@ -1,22 +1,60 @@
+# -*- coding: utf-8 -*-
+#
+# Cherokee-admin
+#
+# Authors:
+#      Alvaro Lopez Ortega <alvaro@alobbs.com>
+#
+# Copyright (C) 2001-2010 Alvaro Lopez Ortega
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of version 2 of the GNU General Public
+# License as published by the Free Software Foundation.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+# 02110-1301, USA.
+#
+
 import os
 import sys
 import glob
 import socket
+import CTK
+
+#
+# Strings
+#
+def bool_to_active (b):
+    return (_('Deactived'), _('Active'))[bool(b)]
+
+def bool_to_onoff (b):
+    return (_('Off'), _('On'))[bool(b)]
+
+def bool_to_yesno (b):
+    return (_('No'), _('Yes'))[bool(b)]
+
 
 #
 # Virtual Server
 #
 
-def cfg_vsrv_get_next (cfg):
+def cfg_vsrv_get_next():
     """ Get the prefix of the next vserver """
-    tmp = [int(x) for x in cfg.keys("vserver")]
+    tmp = [int(x) for x in CTK.cfg.keys("vserver")]
     tmp.sort()
     next = str(tmp[-1] + 10)
     return "vserver!%s" % (next)
 
-def cfg_vsrv_rule_get_next (cfg, pre):
+def cfg_vsrv_rule_get_next (pre):
     """ Get the prefix of the next rule of a vserver """
-    tmp = [int(x) for x in cfg.keys("%s!rule"%(pre))]
+    tmp = [int(x) for x in CTK.cfg.keys("%s!rule"%(pre))]
     tmp.sort()
     if tmp:
         next = tmp[-1] + 100
@@ -24,53 +62,52 @@ def cfg_vsrv_rule_get_next (cfg, pre):
         next = 100
     return (next, "%s!rule!%d" % (pre, next))
 
-def cfg_vsrv_rule_find_extension (cfg, pre, extension):
+def cfg_vsrv_rule_find_extension (pre, extension):
     """Find an extension rule in a virtual server """
-    for r in cfg.keys("%s!rule"%(pre)):
+    for r in CTK.cfg.keys("%s!rule"%(pre)):
         p = "%s!rule!%s" % (pre, r)
-        if cfg.get_val ("%s!match"%(p)) == "extensions":
-            if extension in cfg.get_val ("%s!match!extensions"%(p)):
+        if CTK.cfg.get_val ("%s!match"%(p)) == "extensions":
+            if extension in CTK.cfg.get_val ("%s!match!extensions"%(p)):
                 return p
 
-def cfg_vsrv_rule_find_regexp (cfg, pre, regexp):
+def cfg_vsrv_rule_find_regexp (pre, regexp):
     """Find a regular expresion rule in a virtual server """
-    for r in cfg.keys("%s!rule"%(pre)):
+    for r in CTK.cfg.keys("%s!rule"%(pre)):
         p = "%s!rule!%s" % (pre, r)
-        if cfg.get_val ("%s!match"%(p)) == "request":
-            if regexp == cfg.get_val ("%s!match!request"%(p)):
+        if CTK.cfg.get_val ("%s!match"%(p)) == "request":
+            if regexp == CTK.cfg.get_val ("%s!match!request"%(p)):
                 return p
 
 #
 # Information Sources
 #
 
-def cfg_source_get_next (cfg):
-    tmp = [int(x) for x in cfg.keys("source")]
+def cfg_source_get_next ():
+    tmp = [int(x) for x in CTK.cfg.keys("source")]
     if not tmp:
         return (1, "source!1")
     tmp.sort()
     next = tmp[-1] + 10
     return (next, "source!%d" % (next))
 
-def cfg_source_find_interpreter (cfg,
-                                 in_interpreter = None,
+def cfg_source_find_interpreter (in_interpreter = None,
                                  in_nick        = None):
-    for i in cfg.keys("source"):
-        if cfg.get_val("source!%s!type"%(i)) != 'interpreter':
+    for i in CTK.cfg.keys("source"):
+        if CTK.cfg.get_val("source!%s!type"%(i)) != 'interpreter':
             continue
 
         if (in_interpreter and
-            in_interpreter in cfg.get_val("source!%s!interpreter"%(i))):
+            in_interpreter in CTK.cfg.get_val("source!%s!interpreter"%(i))):
             return "source!%s" % (i)
 
         if (in_nick and
-            in_nick in cfg.get_val("source!%s!nick"%(i))):
+            in_nick in CTK.cfg.get_val("source!%s!nick"%(i))):
             return "source!%s" % (i)
 
-def cfg_source_find_empty_port (cfg, n_ports=1):
+def cfg_source_find_empty_port (n_ports=1):
     ports = []
-    for i in cfg.keys("source"):
-        host = cfg.get_val ("source!%s!host"%(i))
+    for i in CTK.cfg.keys("source"):
+        host = CTK.cfg.get_val ("source!%s!host"%(i))
         if not host: continue
 
         colon = host.rfind(':')
@@ -101,6 +138,22 @@ def cfg_source_get_localhost_addr ():
     if addrs:
         return addrs[0]
     return None
+
+def cfg_get_surrounding_repls (macro, value, n_minus=9, n_plus=9):
+    replacements = {}
+
+    tmp = value.split('!')
+    pre = '!'.join(tmp[:-1])
+    num = int(tmp[-1])
+
+    for n in range(n_minus):
+        replacements['%s_minus%d'%(macro,n+1)] = '%s!%d' %(pre, num-(n+1))
+
+    for n in range(n_plus):
+        replacements['%s_plus%d'%(macro,n+1)] = '%s!%d' %(pre, num+(n+1))
+
+    return replacements
+
 
 #
 # Paths
@@ -189,3 +242,25 @@ def split_list (value):
                 continue
             ids.append(id)
     return ids
+
+
+def lists_differ (a, b):
+    """Compare lists disregarding order"""
+    if len(a) != len(b):
+        return True
+    if bool (set(a)-set(b)):
+        return True
+    if bool (set(b)-set(a)):
+        return True
+    return False
+
+
+def get_real_path (name, nochroot=False):
+    """Get real path accounting for chrooted environments"""
+    chroot = CTK.cfg.get_val('server!chroot')
+    if chroot and not nochroot:
+        fullname = os.path.normpath (chroot + os.path.sep + name)
+    else:
+        fullname = name
+
+    return fullname

@@ -1,147 +1,167 @@
-from Page import *
+# -*- coding: utf-8 -*-
+#
+# Cherokee-admin
+#
+# Authors:
+#      Alvaro Lopez Ortega <alvaro@alobbs.com>
+#
+# Copyright (C) 2010 Alvaro Lopez Ortega
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of version 2 of the GNU General Public
+# License as published by the Free Software Foundation.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+# 02110-1301, USA.
+#
 
-ERROR_LAUNCH_URL_ADMIN = """
-<div class="error-suggestion">The server suggests to check <a href="%s">this page</a>. Most probably the problem can he solved in there.</div>
-"""
+import os
+import CTK
+from urllib import quote
 
-class PageError_LaunchFail (Page):
-    def __init__ (self, cfg, error):
-        Page.__init__ (self, 'error_couldnt_launch', cfg)
+ERROR_LAUNCH_URL_ADMIN = N_('The server suggests to check <a href="%s">this page</a>. Most probably the problem can he solved in there.')
 
-        self._cfg         = cfg
-        self._error       = None
-        self._error_raw   = error
-        self._error_lines = error.split("\n")
+class PageErrorLaunch (CTK.Page):
+    def __init__ (self, error_str, **kwargs):
+        srcdir = os.path.dirname (os.path.realpath (__file__))
+        theme_file = os.path.join (srcdir, 'exception.html')
 
-        for line in self._error_lines:
+        # Set up the template
+        template = CTK.Template (filename = theme_file)
+        template['body_props'] = ' id="body-error-launch"'
+
+        # Parent's constructor
+        CTK.Page.__init__ (self, template, **kwargs)
+
+        # Error parse
+        self._error     = None
+        self._error_raw = error_str
+
+        for line in error_str.split("\n"):
             if not line:
                 continue
 
             if line.startswith("{'type': "):
-                src = "self._error = " + self._error_lines[0]
+                src = "self._error = " + line
                 exec(src)
                 break
 
-    def _op_render (self):
-        if not self._error:
-            return self._op_render_unknown()
+        # Build the page content
+        if self._error:
+            template['title'] = '%s' %(self._error['title'])
+            self._build_error_py()
+        else:
+            template['title'] = _('Server Launch Error')
+            self._build_error_raw()
 
-        return self._op_render_error()
+    def _build_error_py (self):
+        self += CTK.RawHTML ('<h1>%s</h1>' %(_('Server Launch Error')))
+        self += CTK.Box ({'class': 'description'}, CTK.RawHTML(self._error.get('description','')))
 
-    def _op_render_error (self):
-        template = 'error_couldnt_launch.template'
-
-        self.AddMacroContent ('menu', '')
-        self.AddMacroContent ('help', '')
-        self.AddMacroContent ('body', PAGE_BASIC_LAYOUT_NOBAR)
-        self.AddMacroContent ('title', 'ERROR: %s'%(self._error['title']))
-        self.AddMacroContent ('content', self.Read(template))
-        self.AddMacroContent ('icons_dir', CHEROKEE_ICONSDIR)
-
-        # admin
         admin_url = self._error.get('admin_url')
         if admin_url:
-            admin_url_msg = ERROR_LAUNCH_URL_ADMIN % (admin_url)
-        else:
-            admin_url_msg = ''
+            self += CTK.Box ({'class': 'admin-url'}, CTK.RawHTML(_(ERROR_LAUNCH_URL_ADMIN)%(admin_url)))
 
-        # debug
         debug = self._error.get('debug')
         if debug:
-            debug_msg = '<div class="error-debug">%s</div>' %(debug)
-        else:
-            debug_msg = ''
+            self += CTK.Box ({'class': 'debug'}, CTK.RawHTML(debug))
 
-        # backtrace
         backtrace = self._error.get('backtrace')
         if backtrace:
-            backtrace_msg = '<div class="error-backtrace">%s</div>' %(backtrace)
-        else:
-            backtrace_msg = ''
+            self += CTK.Box ({'class': 'backtrace'}, CTK.RawHTML(backtrace))
 
-        self.AddMacroContent ('time',          self._error.get('time', ''))
-        self.AddMacroContent ('debug_msg',     debug_msg)
-        self.AddMacroContent ('admin_url_msg', admin_url_msg)
-        self.AddMacroContent ('backtrace_msg', backtrace_msg)
-        self.AddMacroContent ('description',   self._error.get('description', ''))
-        self.AddMacroContent ('title',         self._error.get('title', self._error_raw))
+        self += CTK.Box ({'class': 'time'}, CTK.RawHTML(self._error.get('time','')))
 
-        return Page.Render(self)
-
-    def _op_render_unknown (self):
-        template = 'error_couldnt_launch.template'
-
-        self.AddMacroContent ('menu', '')
-        self.AddMacroContent ('help', '')
-        self.AddMacroContent ('body',       PAGE_BASIC_LAYOUT_NOBAR)
-        self.AddMacroContent ('title',      'Unknown Error')
-        self.AddMacroContent ('content',    self.Read(template))
-        self.AddMacroContent ('icons_dir',  CHEROKEE_ICONSDIR)
-
-        debug_msg = '<div class="error-debug">%s</div>' %(self._error_raw)
-
-        self.AddMacroContent ('time',          '')
-        self.AddMacroContent ('backtrace_msg', '')
-        self.AddMacroContent ('admin_url_msg', '')
-        self.AddMacroContent ('debug_msg',     debug_msg)
-        self.AddMacroContent ('description',   'Something unexpected just happened.')
-
-        return Page.Render(self)
+    def _build_error_raw (self):
+        self += CTK.RawHTML ('<h1>%s</h1>' %(_('Server Launch Error')))
+        self += CTK.Box ({'class': 'description'}, CTK.RawHTML(_('Something unexpected just happened.')))
+        self += CTK.Box ({'class': 'backtrace'},   CTK.RawHTML(self._error_raw))
 
 
-    def _op_handler (self, uri, post):
-        return '/'
+
+NOT_WRITABLE_TITLE = N_('The configuration file <code>%s</code> cannot be modified.')
+NOT_WRITABLE_1     = N_('You have to change its permissions in order to allow cherokee-admin to work with it. You can try to fix it by changing the file permissions:')
+NOT_WRITABLE_2     = N_('or by launching cherokee-admin as root.')
+
+class ConfigNotWritable (CTK.Page):
+    def __init__ (self, file, **kwargs):
+        srcdir = os.path.dirname (os.path.realpath (__file__))
+        theme_file = os.path.join (srcdir, 'exception.html')
+
+        # Set up the template
+        template = CTK.Template (filename = theme_file)
+        template['body_props'] = ' id="body-error"'
+        template['title']      = _('Configuration file is not writable')
+
+        # Parent's constructor
+        CTK.Page.__init__ (self, template, **kwargs)
+
+        # Body
+        self += CTK.RawHTML ('<h1>%s</h1>' %(_('Configuration file is not writable')))
+        self += CTK.RawHTML ('<p><strong>%s</strong></p>' %(NOT_WRITABLE_TITLE %(file)))
+        self += CTK.RawHTML ('<p>%s</p>' %(NOT_WRITABLE_1))
+        self += CTK.RawHTML ('<div class="shell">chmod u+w %s</div>' %(file))
+        self += CTK.RawHTML ('<p>%s</p>' %(NOT_WRITABLE_2))
+
+def NotWritable (file):
+    return ConfigNotWritable (file).Render()
 
 
-class PageInternelError (Page):
-    def __init__ (self, trace):
-        Page.__init__ (self, 'error_internal', None)
-        self.trace = trace
 
-    def _op_render (self):
-        template = 'error_internal.template'
+ICONS_MISSING_TITLE = N_('Could not find the icons directory: <code>%s</code>')
+ICONS_MISSING       = N_('You may need to reinstall the Web Server in order to sort out this issue.')
 
-        self.AddMacroContent ('menu',      '')
-        self.AddMacroContent ('help',      '')
-        self.AddMacroContent ('body',       PAGE_BASIC_LAYOUT_NOBAR)
-        self.AddMacroContent ('title',     'Internal Error')
-        self.AddMacroContent ('backtrace',  self.trace)
-        self.AddMacroContent ('content',    self.Read(template))
-        return Page.Render(self)
+class ConfigIconsMissing (CTK.Page):
+    def __init__ (self, path, **kwargs):
+        srcdir = os.path.dirname (os.path.realpath (__file__))
+        theme_file = os.path.join (srcdir, 'exception.html')
 
+        # Set up the template
+        template = CTK.Template (filename = theme_file)
+        template['body_props'] = ' id="body-error"'
+        template['title']      = _('Icons Directory is Missing')
 
-class PageError (Page):
-    CONFIG_NOT_WRITABLE = 'not_writable'
-    ICONS_DIR_MISSING   = 'icons_dir_missing'
+        # Parent's constructor
+        CTK.Page.__init__ (self, template, **kwargs)
 
-    def __init__ (self, cfg, tipe, **kwargs):
-        Page.__init__ (self, 'error_%s'%(tipe), cfg)
-        self.type   = tipe
-        self._error = None
+        # Body
+        self += CTK.RawHTML ('<h1>%s</h1>'%(_('Icons Directory is Missing')))
+        self += CTK.RawHTML ('<p><strong>%s</strong>'%(_(ICONS_MISSING_TITLE)%(path)))
+        self += CTK.RawHTML ('<p>%s</p>' %(ICONS_MISSING))
 
-        for arg in kwargs:
-            self.AddMacroContent (arg, kwargs[arg])
-
-    def _op_render (self):
-        template = 'error_%s.template' % (self.type)
-
-        self.AddMacroContent ('menu', '')
-        self.AddMacroContent ('help', '')
-        self.AddMacroContent ('body', PAGE_BASIC_LAYOUT_NOBAR)
-        self.AddMacroContent ('title', 'ERROR: %s'%(ERRORS_TITLE[self.type]))
-        self.AddMacroContent ('content', self.Read(template))
-        self.AddMacroContent ('cherokee_conf', self._cfg.file)
-        self.AddMacroContent ('icons_dir', CHEROKEE_ICONSDIR)
-        return Page.Render(self)
-
-    def _op_handler (self, uri, post):
-        return '/'
+def IconsMissing (path):
+    return ConfigIconsMissing(path).Render()
 
 
-# For gettext
-N_ = lambda x: x
 
-ERRORS_TITLE = {
-    PageError.CONFIG_NOT_WRITABLE : N_('Configuration file cannot be modified'),
-    PageError.ICONS_DIR_MISSING:    N_('Icons directory is missing'),
-}
+ANCIENT_CONFIG_TITLE = N_('Cherokee-admin has detected a very old configuration file.')
+ANCIENT_CONFIG       = N_('Most probably cherokee-admin is trying to read an old configuation file. Please, remove it so cherokee-admin can create a new one with the right format.')
+
+class AncientConfigError (CTK.Page):
+    def __init__ (self, path, **kwargs):
+        srcdir = os.path.dirname (os.path.realpath (__file__))
+        theme_file = os.path.join (srcdir, 'exception.html')
+
+        # Set up the template
+        template = CTK.Template (filename = theme_file)
+        template['body_props'] = ' id="body-error"'
+        template['title']      = _('Detected an Ancient Configuration File')
+
+        # Parent's constructor
+        CTK.Page.__init__ (self, template, **kwargs)
+
+        # Body
+        self += CTK.RawHTML ('<h1>%s</h1>'%(_('Ancient Configuration File')))
+        self += CTK.RawHTML ('<p><strong>%s</strong>'%(_(ANCIENT_CONFIG_TITLE)))
+        self += CTK.RawHTML ('<p>%s</p>' %(ANCIENT_CONFIG))
+        self += CTK.RawHTML ("<p><pre>rm -f '%s'</pre></p>" %(path))
+
+def AncientConfig (file):
+    return AncientConfigError(file).Render()

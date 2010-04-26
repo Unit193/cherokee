@@ -1,232 +1,197 @@
+# -*- coding: utf-8 -*-
+#
+# Cherokee-admin
+#
+# Authors:
+#      Alvaro Lopez Ortega <alvaro@alobbs.com>
+#
+# Copyright (C) 2010 Alvaro Lopez Ortega
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of version 2 of the GNU General Public
+# License as published by the Free Software Foundation.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+# 02110-1301, USA.
+#
+
+import re
 import copy
-
-from Form import *
-from Table import *
-from Page import *
-from Module import *
+import CTK
 from consts import *
-import validations
-
-# For gettext
-N_ = lambda x: x
 
 DEFAULT_RULE_WARNING = N_('The default match ought not to be changed.')
 
-class Rule (Module, FormHelper):
-    def __init__ (self, cfg, prefix, submit_url, in_errors, depth=0):
-        FormHelper.__init__ (self, 'rule', cfg)
-        Module.__init__ (self, 'rule', cfg, prefix, submit_url)
+URL_APPLY_LOGIC = "/rule/logic/apply"
+
+
+class RulePlugin (CTK.Plugin):
+    def __init__ (self, key):
+        CTK.Plugin.__init__ (self, key)
+
+    def GetName (self):
+        raise NotImplementedError
+
+def RuleButtons_apply():
+    def move (old, new):
+        val = CTK.cfg.get_val(old)
+        tmp = copy.deepcopy (CTK.cfg[old])
+        del (CTK.cfg[old])
+
+        CTK.cfg[new] = val
+        CTK.cfg.set_sub_node (new, tmp)
+
+    # Data collection
+    key = CTK.post['key']
+    op  = CTK.post['op']
+
+    # Apply
+    if op == 'NOT':
+        if CTK.cfg.get_val(key) == 'not':
+            move ("%s!right"%(key), key)
+        else:
+            move (key, "%s!right"%(key))
+            CTK.cfg[key] = 'not'
+
+    elif op == 'AND':
+        move (key, "%s!left"%(key))
+        CTK.cfg[key] = 'and'
+
+    elif op == 'OR':
+        move (key, "%s!left"%(key))
+        CTK.cfg[key] = 'or'
+
+    elif op == 'DEL':
+        parent_key  = '!'.join (key.split('!')[:-1])
+        parent_rule = CTK.cfg.get_val(parent_key)
+
+        if parent_rule == 'not':
+            move ("%s!right"%(parent_key), parent_key)
+        elif parent_rule in ('and', 'or'):
+            if key.endswith ('right'):
+                move ("%s!left"%(parent_key), parent_key)
+            else:
+                move ("%s!right"%(parent_key), parent_key)
+        else:
+            del(CTK.cfg[key])
+
+    return CTK.cfg_reply_ajax_ok()
+
+
+class RuleButtons (CTK.Box):
+    def __init__ (self, key, depth):
+        CTK.Box.__init__ (self, {'class': 'rulebuttons'})
+
+        if depth == 0:
+            opts = ['OR', 'AND', 'NOT']
+        else:
+            opts = ['OR', 'AND', 'NOT', 'DEL']
+
+        for op in opts:
+            submit = CTK.Submitter (URL_APPLY_LOGIC)
+            submit += CTK.Hidden ('key', key)
+            submit += CTK.Hidden ('op', op)
+            submit += CTK.SubmitterButton (op)
+            submit.bind ('submit_success', "$(this).trigger('changed');")
+            self += submit
+
+
+class Rule (CTK.Box):
+    def __init__ (self, key, depth=0):
+        assert type(key) == str
+        assert type(depth) == int
+
+        CTK.Box.__init__ (self, {'class': 'rule'})
+        self.key   = key
         self.depth = depth
 
-        for e in in_errors:
-            self.errors[e] = in_errors[e]
+    def Render (self):
+        # Default Rule
+        value = CTK.cfg.get_val (self.key)
+        if value == 'default':
+            self += CTK.Notice ('important-information', CTK.RawHTML (DEFAULT_RULE_WARNING))
+            return CTK.Box.Render (self)
 
-    def get_checks (self):
-        matcher = self._cfg.get_val(self._prefix)
-        if matcher == 'not':
-            r = Rule(self._cfg, '%s!right'%(self._prefix), self.submit_url, self.errors, self.depth+1)
-            return r.get_checks()
-        elif matcher in ['or', 'and']:
-            r1 = Rule(self._cfg, '%s!left'%(self._prefix), self.submit_url, self.errors, self.depth+1)
-            r2 = Rule(self._cfg, '%s!right'%(self._prefix), self.submit_url, self.errors, self.depth+1)
-            return r1.get_checks() + r2.get_checks()
+        # Special rule types
+        elif value == "and":
+            self.props['class'] += ' rule-and'
+            self += Rule ('%s!left' %(self.key), self.depth+1)
+            self += CTK.Box({'class':'rule-label-and'}, CTK.RawHTML(_("And")))
+            self += Rule ('%s!right'%(self.key), self.depth+1)
+            self += RuleButtons (self.key, self.depth)
+            return CTK.Box.Render (self)
+
+        elif value == "or":
+            self.props['class'] += ' rule-or'
+            self += Rule ('%s!left' %(self.key), self.depth+1)
+            self += CTK.Box({'class':'rule-label-or'}, CTK.RawHTML(_("Or")))
+            self += Rule ('%s!right'%(self.key), self.depth+1)
+            self += RuleButtons (self.key, self.depth)
+            return CTK.Box.Render (self)
+
+        elif value == "not":
+            self.props['class'] += ' rule-not'
+            self += CTK.Box({'class':'rule-label-not'}, CTK.RawHTML(_("Not")))
+            self += Rule ('%s!right'%(self.key), self.depth+1)
+            self += RuleButtons (self.key, self.depth)
+            return CTK.Box.Render (self)
+
+        # Regular rules
+        vsrv_num = self.key.split('!')[1]
+
+        if not CTK.cfg.get_val(self.key):
+            rules = [('', _('Select..'))] + RULES
         else:
-            rule_module = module_obj_factory (matcher, self._cfg, self._prefix, self.submit_url)
-            if 'checks' in dir(rule_module):
-                return rule_module.checks
-        return []
+            rules = RULES[:]
 
-    def get_validation (self):
-        matcher = self._cfg.get_val(self._prefix)
-        if matcher == 'not':
-            r = Rule(self._cfg, '%s!right'%(self._prefix), self.submit_url, self.errors, self.depth+1)
-            return r.get_validation()
-        elif matcher in ['or', 'and']:
-            r1 = Rule(self._cfg, '%s!left'%(self._prefix), self.submit_url, self.errors, self.depth+1)
-            r2 = Rule(self._cfg, '%s!right'%(self._prefix), self.submit_url, self.errors, self.depth+1)
-            return r1.get_validation() + r2.get_validation()
-        else:
-            rule_module = module_obj_factory (matcher, self._cfg, self._prefix, self.submit_url)
-            if 'validation' in dir(rule_module):
-                return rule_module.validation
-        return []
+        table = CTK.PropsTable()
+        modul = CTK.PluginSelector (self.key, rules, vsrv_num=vsrv_num)
+        table.Add (_('Rule Type'), modul.selector_widget, '')
 
-    def get_title (self):
-        txt = ''
+        self += table
+        self += modul
 
-        matcher = self._cfg.get_val(self._prefix)
-        if not matcher:
-            return _("Unknown")
+        if CTK.cfg.get_val(self.key):
+            self += RuleButtons (self.key, self.depth)
 
-        if matcher == 'not':
-            r = Rule(self._cfg, '%s!right'%(self._prefix), self.submit_url, self.errors, self.depth+1)
-            return "%s (%s)" % (_('Not'), r.get_title())
-        elif matcher in ['or', 'and']:
-            op = [_('AND'), _('OR')][matcher == 'or']
-            r1 = Rule(self._cfg, '%s!left'%(self._prefix), self.submit_url, self.errors, self.depth+1)
-            r2 = Rule(self._cfg, '%s!right'%(self._prefix), self.submit_url, self.errors, self.depth+1)
-            return "(%s) %s (%s)"%(r1.get_title(), op, r2.get_title())
+        # Render
+        return CTK.Box.Render (self)
 
-        rule_module = module_obj_factory (matcher, self._cfg, self._prefix, self.submit_url)
-        txt += "%s: %s" % (rule_module.get_type_name(), rule_module.get_name())
-        return txt
+    def GetName (self):
+        # Default Rule
+        value = CTK.cfg.get_val (self.key)
+        if value == 'default':
+            return _('Default')
 
-    def get_name (self):
-        matcher = self._cfg.get_val(self._prefix)
-        if matcher in ['not', 'and', 'or']:
-            return self.get_title()
-        rule_module = module_obj_factory (matcher, self._cfg, self._prefix, self.submit_url)
-        name = rule_module.get_name()
+        # Logic ops
+        elif value == "and":
+            rule1 = Rule ('%s!left' %(self.key), self.depth+1)
+            rule2 = Rule ('%s!right'%(self.key), self.depth+1)
+            return '(%s AND %s)' %(rule1.GetName(), rule2.GetName())
 
-        if not name:
-            name = _("Undefined..")
+        elif value == "or":
+            rule1 = Rule ('%s!left' %(self.key), self.depth+1)
+            rule2 = Rule ('%s!right'%(self.key), self.depth+1)
+            return '(%s OR %s)' %(rule1.GetName(), rule2.GetName())
 
-        return name
+        elif value == "not":
+            rule = Rule ('%s!right'%(self.key), self.depth+1)
+            return '(NOT %s)' %(rule.GetName())
 
-    def get_type_name (self):
-        matcher = self._cfg.get_val(self._prefix)
-        if matcher in ['not', 'and', 'or']:
-            return _("Complex")
-        rule_module = module_obj_factory (matcher, self._cfg, self._prefix, self.submit_url)
-        return rule_module.get_type_name()
+        # No rule (yet)
+        if not value:
+            return ''
 
-    def _get_ops (self, pre):
-        _not = '<input type="button" value="%s" onClick="return rule_do_not(\'%s\');" />' % (_('Not'), pre)
-        _and = '<input type="button" value="%s" onClick="return rule_do_and(\'%s\');" />' % (_('And'), pre)
-        _or  = '<input type="button" value="%s" onClick="return rule_do_or(\'%s\');" />' % (_('Or'), pre)
-        _del = '<input type="button" value="%s" onClick="return rule_delete(\'%s\');" />' %(_('Remove'), pre)
-        return (_not,_and,_or,_del)
-
-    def _op_render (self):
-        txt = ""
-        pre = self._prefix
-
-        matcher = self._cfg.get_val(pre)
-        if matcher == "not":
-            rule = Rule (self._cfg, "%s!right"%(self._prefix), self.submit_url, self.errors, self.depth+1)
-            rule_txt = rule._op_render()
-
-            _not, _and, _or, _del = self._get_ops(pre)
-
-            NOT = _('NOT')
-            txt = """
-            <div class="rule_group rule_not">
-              <div class="rule_not_title">%(NOT)s</div>
-              %(rule_txt)s
-              <div class="rule_toolbar">%(_and)s %(_or)s %(_del)s</div>
-            </div>
-            """ % (locals())
-            return txt
-
-        elif matcher in ["or", "and"]:
-            op = [_("AND"), _("OR")][matcher == "or"]
-
-            depth = self.depth + 1
-            rule1 = Rule (self._cfg, "%s!left"%(self._prefix), self.submit_url, self.errors, depth)
-            rule1_txt = rule1._op_render()
-            rule2 = Rule (self._cfg, "%s!right"%(self._prefix), self.submit_url, self.errors, depth)
-            rule2_txt = rule2._op_render()
-
-            _not, _and, _or, _del = self._get_ops(pre)
-
-            prev = '!'.join(pre.split('!')[:-1])
-            prev_rule = self._cfg.get_val(prev)
-            if prev_rule == "not":
-                _not = ''
-
-            txt = """
-            <div class="rule_group rule_group_%(depth)s">
-              %(rule1_txt)s
-              <div class="rule_operation">%(op)s</div>
-              %(rule2_txt)s
-              <div class="rule_toolbar">%(_not)s %(_del)s</div>
-            </div>
-            """ % (locals())
-            return txt
-
-        # Special Case: Default rule
-        if self._cfg.get_val(pre) == 'default':
-            return self.Dialog (DEFAULT_RULE_WARNING, 'important-information')
-
-        # The rule hasn't been set
-        if not self._cfg.get_val(pre):
-            self._cfg[pre] = 'directory'
-
-        # Rule
-        table = TableProps()
-        e = self.AddPropOptions_Reload_Module (table, _("Rule Type"), pre, modules_available(RULES), "")
-        rule = self.Indent(str(table) + e)
-
-        # Operations
-        _not, _and, _or, _del = self._get_ops(pre)
-
-        # Allow to remove rules only if they are inside an AND or OR.
-        prev = '!'.join(pre.split('!')[:-1])
-        prev_rule = self._cfg.get_val(prev)
-        if not prev_rule in ['and', 'or']:
-            _del = ''
-            if "!match" in prev:
-                _not = ''
-
-        txt += """
-        <div class="rule_box rule_group">
-          <div class="rule_content">%(rule)s</div>
-          <div class="rule_toolbar">%(_not)s %(_and)s %(_or)s %(_del)s</div>
-        </div>""" % (locals())
-
-        return txt
-
-class RuleRender (Module, FormHelper):
-    def __init__ (self, cfg, prefix, submit_url):
-        FormHelper.__init__ (self, 'rule_render', cfg)
-        Module.__init__ (self, 'rule_render', cfg, prefix, submit_url)
-
-    def _op_render (self):
-        txt = ""
-        return txt
+        # Regular rules
+        plugin = CTK.instance_plugin (value, self.key)
+        return plugin.GetName()
 
 
-class RuleOp (PageMenu, FormHelper):
-    def __init__ (self, cfg):
-        FormHelper.__init__ (self, 'rule_op', cfg)
-        PageMenu.__init__ (self, 'rule_op', cfg, [])
-
-    def __move (self, old, new):
-        val = self._cfg.get_val(old)
-        tmp = copy.deepcopy (self._cfg[old])
-        del (self._cfg[old])
-
-        self._cfg[new] = val
-        self._cfg.set_sub_node (new, tmp)
-
-    def _op_handler (self, uri, post):
-        prefix = post['prefix'][0]
-
-        if uri == "/not":
-            if self._cfg.get_val(prefix) == "not":
-                # not(not(rule)) == rule
-                self.__move ("%s!right"%(prefix), prefix)
-            else:
-                self.__move (prefix, "%s!right"%(prefix))
-                self._cfg[prefix] = "not"
-
-        elif uri == '/and':
-            self.__move (prefix, "%s!left"%(prefix))
-            self._cfg[prefix] = "and"
-        elif uri == '/or':
-            self.__move (prefix, "%s!left"%(prefix))
-            self._cfg[prefix] = "or"
-
-        elif uri == "/del":
-            rule = self._cfg.get_val(prefix)
-            if rule == "not":
-                self.__move ("%s!right"%(prefix), prefix)
-            elif rule in ['and', 'or']:
-                self.__move ("%s!left"%(prefix), prefix)
-            else:
-                del(self._cfg[prefix])
-
-        else:
-            print "%s '%s'" % (_('ERROR: Unknown uri'), uri)
-
-        return "ok"
+CTK.publish (r"^%s$"%(URL_APPLY_LOGIC), RuleButtons_apply, method="POST")

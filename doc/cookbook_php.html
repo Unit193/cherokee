@@ -83,6 +83,75 @@ there manually:</p></div>
 <img src="media/images/admin_handler_fastcgi2.png" alt="media/images/admin_handler_fastcgi2.png" />
 </div>
 </div>
+<h3 id="multi-site">Multi-site support</h3><div style="clear:left"></div>
+<div class="paragraph"><p>An even more advanced scenario would be one that required custom PHP
+settings for each virtual host.</p></div>
+<div class="paragraph"><p>In such a scenario several information sources are required. Some
+settings can be set simply by providing ENV variables to customize the
+FastCGI behavior. Others can only be specified in the <tt>php.ini</tt>
+configuration file, which is read by <tt>php-cgi</tt> on start-up.</p></div>
+<div class="paragraph"><p>The location of this file is platform dependent, so you will need to
+refer to PHP&#8217;s documentation. It is the file located in
+<em>/etc/php5/cgi/php.ini</em> on Debian/Ubuntu systems,
+<em>/opt/local/etc/php5/php.ini</em> on MacPorts, etc.</p></div>
+<div class="paragraph"><p>You will have to customize and specify different <tt>php.ini</tt> files for
+each information source. A nifty trick to do this and provide custom
+environment variables is by wrapping the required parameters in a
+simple script such as this one:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>#!/bin/sh
+
+export PHP_FCGI_MAX_REQUESTS=250
+export PHP_FCGI_CHILDREN=4
+
+exec /usr/local/bin/php-cgi $@
+
+# EOF</tt></pre>
+</div></div>
+<div class="paragraph"><p>It just calls the real <tt>php-cgi</tt> with the ENV variables to customize the
+FastCGI behavior, passing the parameters along. The same wrapper can
+be used for every information source, providing a different <tt>-c
+path/php.ini</tt> for each one of them.</p></div>
+<div class="paragraph"><p>Bare in mind that every information source will need its own port to
+run.</p></div>
+<div class="paragraph"><p>Assuming that two customized information sources were required, simply
+specifying different interpreters for each one of them would suffice.</p></div>
+<div class="tableblock">
+<table rules="all"
+width="100%"
+frame="border"
+cellspacing="0" cellpadding="4">
+<col width="10%" />
+<col width="90%" />
+<thead>
+<tr>
+<th align="left" valign="top">VHost        </th>
+<th align="left" valign="top"> Interpreter</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left" valign="top"><p class="table">1</p></td>
+<td align="left" valign="top"><p class="table"><tt>/usr/local/bin/php-cgi -c /usr/local/etc/php/php-vhost1.ini -b 127.0.0.1:2998</tt></p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">2</p></td>
+<td align="left" valign="top"><p class="table"><tt>/usr/local/bin/php-cgi -c /usr/local/etc/php/php-vhost2.ini -b 127.0.0.1:2999</tt></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="paragraph"><p>This, in turn, would produce configuration entries similar to the
+following ones:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>source!1!nick = php-vhost1
+source!1!interpreter = /usr/local/bin/php-cgi -c /usr/local/etc/php/php-vhost1.ini -b 127.0.0.1:2998
+...
+source!2!nick = php-vhost2
+source!2!interpreter = /usr/local/bin/php-cgi -c /usr/local/etc/php/php-vhost2.ini -b 127.0.0.1:2999</tt></pre>
+</div></div>
 </div>
 <div id="footer">
 <div id="footer-text">

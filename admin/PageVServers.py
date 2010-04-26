@@ -1,350 +1,336 @@
+# -*- coding: utf-8 -*-
+#
+# Cherokee-admin
+#
+# Authors:
+#      Alvaro Lopez Ortega <alvaro@alobbs.com>
+#
+# Copyright (C) 2001-2010 Alvaro Lopez Ortega
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of version 2 of the GNU General Public
+# License as published by the Free Software Foundation.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+# 02110-1301, USA.
+#
+
+import CTK
+import Page
+import Cherokee
+import SelectionPanel
 import validations
+import Wizard
 
-from Page import *
-from Form import *
-from Table import *
-from Entry import *
-from Wizard import *
+from CTK.Tab       import HEADER as Tab_HEADER
+from CTK.Submitter import HEADER as Submit_HEADER
+from CTK.TextField import HEADER as TextField_HEADER
+from CTK.SortableList import HEADER as SortableList_HEADER
 
-# For gettext
-N_ = lambda x: x
+from util import *
+from consts import *
+from CTK.util import *
+from CTK.consts import *
+from configured import *
 
-DATA_VALIDATION = [
-    ("new_vserver_name",   validations.is_safe_id),
-    ("new_vserver_droot", (validations.is_dev_null_or_local_dir_exists, 'cfg')),
-    ("vserver_clone_trg",  validations.is_safe_id),
+
+URL_BASE       = r'/vserver'
+URL_APPLY      = r'/vserver/apply'
+URL_NEW_MANUAL = r'/vserver/new/manual'
+
+HELPS = [('config_virtual_servers', N_("Virtual Servers"))]
+
+NOTE_DELETE_DIALOG = N_('<p>You are about to delete the <b>%s</b> Virtual Server.</p><p>Are you sure you want to proceed?</p>')
+NOTE_CLONE_DIALOG  = N_('You are about to clone a Virtual Server. Would you like to proceed?')
+NOTE_NEW_NICK      = N_('Name of the Virtual Server you are about to create. A domain name is alright.')
+NOTE_NEW_DROOT     = N_('Document Root directory of the new Virtual Server.')
+
+VALIDATIONS = [
+    ('tmp!new_droot', validations.is_dev_null_or_local_dir_exists),
+    ('tmp!new_nick',  validations.is_new_vserver_nick)
 ]
 
-COMMENT = N_("""
-<p>'Virtual Server' is an abstraction mechanism that allows to define
-a custom number of parameters and rules that have to be applied to one or
-more domains.</p>
-""")
+JS_ACTIVATE_FIRST = """
+$('.selection-panel:first').data('selectionpanel').select_first();
+"""
 
-HELPS = [
-    ('config_virtual_servers', N_("Virtual Servers"))
-]
+JS_CLONE = """
+  var panel = $('.selection-panel:first').data('selectionpanel').get_selected();
+  var url   = panel.find('.row_content').attr('url');
+  $.ajax ({type: 'GET', async: false, url: url+'/clone', success: function(data) {
+      // A transaction took place
+      $('.panel-buttons').trigger ('submit_success');
+  }});
+"""
 
-def domain_cmp (d1, d2):
-    d1s = d1.split('.')
-    d2s = d2.split('.')
+JS_PARTICULAR = """
+  var vserver = window.location.pathname.match (/^\/vserver\/(\d+)\/?$/)[1];
+  $.cookie ('%(cookie_name)s', vserver, { path: '/vserver' });
+  window.location.replace ('%(url_base)s'+window.location.hash);
+"""
 
-    if len(d1s) >= 2 and len(d2s) >= 2:
-        if d1s[-2] == d2s[-2]:                    # Domain name
-            if d1s[-1] == d2s[-1]:                # TLD
-                skip = len(".".join(d2s[-2:]))
-                return cmp(d1[:-skip],d2[:-skip])
-            else:
-                return cmp(d1s[-1], d2s[-1])
-        else:
-            return cmp(d1s[-2],d2s[-2])
-    else:
-        return cmp(d1,d2)
+def Commit():
+    # New Virtual Server
+    new_nick  = CTK.post.pop('tmp!new_nick')
+    new_droot = CTK.post.pop('tmp!new_droot')
+    if new_nick and new_droot:
+        next = CTK.cfg.get_next_entry_prefix ('vserver')
+        CTK.cfg['%s!nick'                   %(next)] = new_nick
+        CTK.cfg['%s!document_root'          %(next)] = new_droot
+        CTK.cfg['%s!rule!1!match'           %(next)] = 'default'
+        CTK.cfg['%s!rule!1!handler'         %(next)] = 'common'
 
-class PageVServers (PageMenu, FormHelper):
-    def __init__ (self, cfg):
-        PageMenu.__init__ (self, 'vservers', cfg, HELPS)
-        FormHelper.__init__ (self, 'vservers', cfg)
+        CTK.cfg['%s!rule!2!match'           %(next)] = 'directory'
+        CTK.cfg['%s!rule!2!match!directory' %(next)] = '/icons'
+        CTK.cfg['%s!rule!2!handler'         %(next)] = 'file'
+        CTK.cfg['%s!rule!2!document_root'   %(next)] = CHEROKEE_ICONSDIR
 
-        self._normailze_vservers()
+        CTK.cfg['%s!rule!3!match'           %(next)] = 'directory'
+        CTK.cfg['%s!rule!3!match!directory' %(next)] = '/cherokee_themes'
+        CTK.cfg['%s!rule!3!handler'         %(next)] = 'file'
+        CTK.cfg['%s!rule!3!document_root'   %(next)] = CHEROKEE_THEMEDIR
 
-    def _op_render (self):
-        content = self._render_vserver_list()
+        return CTK.cfg_reply_ajax_ok()
 
-        self.AddMacroContent ('title', _('Virtual Servers configuration'))
-        self.AddMacroContent ('content', content)
+    # Modifications
+    return CTK.cfg_apply_post()
 
-        return Page.Render(self)
 
-    def _op_handler (self, uri, post):
-        if '/wizard/' in uri:
-            re = self._op_apply_wizard (uri, post)
-            if re: return re
+def reorder (arg):
+    # Process new list
+    order = CTK.post.pop(arg)
+    tmp = order.split(',')
+    tmp.reverse()
 
-        if post.get_val('is_submit'):
-            if post.get_val('vserver_clone_trg'):
-                tmp = self._op_clone_vserver (post)
+    # Build and alternative tree
+    num = 10
+    for v in tmp:
+        CTK.cfg.clone ('vserver!%s'%(v), 'tmp!vserver!%d'%(num))
+        num += 10
 
-            elif post.get_val('new_vserver_name') or \
-                 post.get_val('new_vserver_droot'):
-                tmp = self._op_add_vserver (post)
+    # Set the new list in place
+    del (CTK.cfg['vserver'])
+    CTK.cfg.rename ('tmp!vserver', 'vserver')
+    return CTK.cfg_reply_ajax_ok()
 
-            if self.has_errors():
-                return self._op_render()
-            return "/vserver"
 
-        elif uri.endswith('/ajax_update'):
-            if post.get_val('update_prio'):
-                tmp = post.get_val('prios').split(',')
-                order = filter (lambda x: x, tmp)
+def NewManual():
+    table = CTK.PropsTable()
+    table.Add (_('Nick'),          CTK.TextCfg ('tmp!new_nick',  False, {'class': 'noauto'}), _(NOTE_NEW_NICK))
+    table.Add (_('Document Root'), CTK.TextCfg ('tmp!new_droot', False, {'class': 'noauto'}), _(NOTE_NEW_DROOT))
 
-                self._reorder_vservers (order)
-                return "ok"
+    submit = CTK.Submitter (URL_APPLY)
+    submit += table
 
-        return self._op_render()
+    box = CTK.Box({'class': 'vserver-new-box'})
+    box += CTK.RawHTML ('<h2>%s</h2>' %(_('Manual')))
+    box += submit
 
-    def _op_apply_wizard (self, uri, post):
-        tmp  = uri.split('/')
-        name = tmp[2]
+    return box.Render().toJSON()
 
-        mgr = WizardManager (self._cfg, "VServer", 'vserver')
-        wizard = mgr.load (name)
 
-        output = wizard.run ("/vserver%s"%(uri), post)
-        if output:
-            return output
+class VirtualServerNew (CTK.Container):
+    def __init__ (self):
+        CTK.Container.__init__ (self)
 
-        return '/vserver'
+        # Build the panel list
+        right_box = CTK.Box({'class': 'vserver_new_content'})
+        panel = SelectionPanel.SelectionPanel (None, right_box.id, URL_BASE, '', cookie_name='new_vsrv_selected')
 
-    def _normailze_vservers (self):
-        vservers = [int(x) for x in self._cfg['vserver'].keys()]
-        vservers.sort ()
+        self += panel
+        self += right_box
 
-        # Rename all the virtual servers
-        for vserver in self._cfg['vserver'].keys():
-            self._cfg.rename('vserver!%s'%(vserver),
-                             'vserver!OLD_%d'%(int(vserver)))
+        # Special 1st: Manual
+        content = [CTK.Box({'class': 'title'},       CTK.RawHTML(_('Manual'))),
+                   CTK.Box({'class': 'description'}, CTK.RawHTML(_('Manual configuration')))]
+        panel.Add ('manual', URL_NEW_MANUAL, content, draggable=False)
 
-        # Add them again
-        for i in range(len(vservers)):
-            prio = (i+1) * 10
-            self._cfg.rename ('vserver!OLD_%d'%(vservers[i]),
-                              'vserver!%d'%(prio))
+        # Wizard Categories
+        for cat in Wizard.Categories (Wizard.TYPE_VSERVER):
+            url_pre = '%s/%s' %(Wizard.URL_CAT_LIST_VSRV, cat['name'])
+            content = [CTK.Box({'class': 'title'},       CTK.RawHTML(_(cat['title']))),
+                       CTK.Box({'class': 'description'}, CTK.RawHTML(_(cat['descr'])))]
+            panel.Add (cat['name'], url_pre, content, draggable=False)
 
-    def _reorder_vservers (self, changes):
-        changes.reverse()
 
-        # Rename all the virtual servers
-        for vserver in self._cfg['vserver'].keys():
-            self._cfg.rename ('vserver!%s'%(vserver),
-                              'vserver!OLD_%d'%(int(vserver)))
+class Render:
+    class PanelList (CTK.Container):
+        def __init__ (self, refresh, right_box):
+            CTK.Container.__init__ (self)
 
-        # Rebuild the list according to 'changes'
-        n = 10
-        for prio in changes:
-            self._cfg.rename ('vserver!OLD_%s'%(prio),
-                              'vserver!%d'%(n))
-            n += 10
+            # Sanity check
+            if not CTK.cfg.keys('vserver'):
+                CTK.cfg['vserver!1!nick']           = 'default'
+                CTK.cfg['vserver!1!document_root']  = '/tmp'
+                CTK.cfg['vserver!1!rule!1!match']   = 'default'
+                CTK.cfg['vserver!1!rule!1!handler'] = 'common'
 
-    def _render_vserver_list (self):
-        txt = "<h1>%s</h1>" % (_('Virtual Servers'))
-        txt += self.Dialog (COMMENT)
+            # Helper
+            entry = lambda klass, key: CTK.Box ({'class': klass}, CTK.RawHTML (CTK.cfg.get_val(key, '')))
 
-        vservers = self._cfg['vserver']
-        table_name = 'vserver_sortable_table'
+            # Build the panel list
+            panel = SelectionPanel.SelectionPanel (reorder, right_box.id, URL_BASE, '', container='vservers_panel')
+            self += panel
 
-        def sort_vservers(x,y):
-            return cmp(int(x), int(y))
+            # Build the Virtual Server list
+            vservers = CTK.cfg.keys('vserver')
+            vservers.sort (lambda x,y: cmp(int(x), int(y)))
+            vservers.reverse()
 
-        sorted_vservers = self._cfg['vserver'].keys()
-        sorted_vservers.sort(sort_vservers, reverse=True)
-
-        txt += '<div class="rulesdiv"><table id="%s" class="rulestable">' % (table_name)
-        txt += '<tr class="nodrag nodrop"><th>&nbsp</th><th>%s</th><th>%s</th><th>%s</th><th>%s</th><th>%s</th><th>%s</th><th></th></tr>' % \
-            (_('Nickname'), _('Root'), _('Domains'), _('Logging'), _('Stats'), _('Active'))
-
-        ENABLED_IMAGE  = self.InstanceImage('tick.png', _('Yes'))
-        DISABLED_IMAGE = self.InstanceImage('cross.png', _('No'))
-        OFFLINE_IMAGE = self.InstanceImage('exclamation.png', _('Offline'))
-
-        for prio in sorted_vservers:
-            nick          = self._cfg.get_val('vserver!%s!nick'%(prio))
-            document_root = self._cfg.get_val('vserver!%s!document_root'%(prio), '')
-            logger_val    = self._cfg.get_val('vserver!%s!logger'%(prio))
-            collector_val = self._cfg.get_val('vserver!%s!collector!enabled'%(prio))
-
-            hmatchtype    = self._cfg.get_val('vserver!%s!match'%(prio), None)
-            if hmatchtype == 'rehost':
-                skey = 'regex'
-            elif hmatchtype == 'wildcard':
-                skey = 'domain'
-            elif hmatchtype == 'target_ip':
-                skey = 'ip'
-            else:
-                doms = 1
-
-            if hmatchtype:
-                prefix        = 'vserver!%s!match!%s!%%s' % (prio,skey)
-                domkeys       = [prefix % k for k in self._cfg.keys(prefix[:-3])]
-                domains       = self._cfg.get_vals(domkeys)
-                if domains:
-                    doms = len(domains)
-                    if not nick in domains:
-                        doms += 1
+            for k in vservers:
+                if k == vservers[-1]:
+                    content = [entry('nick',  'vserver!%s!nick'%(k)),
+                               entry('droot', 'vserver!%s!document_root'%(k))]
+                    panel.Add (k, '/vserver/content/%s'%(k), content, draggable=False)
                 else:
-                    doms = 1
+                    nick = CTK.cfg.get_val ('vserver!%s!nick'%(k), _('Unknown'))
 
-            link = '<a href="/vserver/%s">%s</a>' % (prio, nick)
+                    # Remove
+                    dialog = CTK.Dialog ({'title': _('Do you really want to remove it?'), 'width': 480})
+                    dialog.AddButton (_('Remove'), CTK.JS.Ajax (URL_APPLY, async=True,
+                                                                data    = {'vserver!%s'%(k):''},
+                                                                success = dialog.JS_to_close() + \
+                                                                    refresh.JS_to_refresh()))
+                    dialog.AddButton (_('Cancel'), "close")
+                    dialog += CTK.RawHTML (_(NOTE_DELETE_DIALOG) %(nick))
+                    self += dialog
+                    remove = CTK.ImageStock('del')
+                    remove.bind ('click', dialog.JS_to_show() + "return false;")
 
-            if logger_val:
-                logging = ENABLED_IMAGE
-            else:
-                logging = DISABLED_IMAGE
+                    # Disable
+                    is_disabled = bool (int (CTK.cfg.get_val('vserver!%s!disabled'%(k), "0")))
+                    disclass = 'vserver-inactive' if is_disabled else ''
 
-            collector_status = self._cfg.get_val ('server!collector')
-            if collector_val=="0":
-                collector = DISABLED_IMAGE
-            elif collector_status:
-                collector = ENABLED_IMAGE
-            else:
-                collector = OFFLINE_IMAGE
+                    disabled = CTK.ToggleButtonOnOff (not is_disabled)
+                    disabled.bind ('changed',
+                                   CTK.JS.Ajax (URL_APPLY, async=True,
+                                                data = '{"vserver!%s!disabled": event.value}'%(k)))
+                    disabled.bind ('changed',
+                                   "$(this).parents('.row_content').toggleClass('vserver-inactive');")
 
-            draggable = ''
-            if nick != "default":
-                disabled = self.InstanceCheckbox ('vserver!%s!disabled'%(prio), self._cfg.get_val('vserver!%s!disabled'%(prio)) == 1, quiet=True, switch=True, noautosubmit=True)
-                link_del = self.AddDeleteLink ('/ajax/update', 'vserver!%s'%(prio))
-                if self._cfg.get_val('vserver!%s!disabled'%(prio)) == "1":
-                    extra = ' class="trdisabled"'
-                else:
-                    extra = ''
-                    draggable = ' class="dragHandle"'
-            else:
-                disabled  = self.HiddenInput ('vserver!%s!disabled'%(prio), "0")
-                link_del = ''
-                extra = ' class="nodrag nodrop"'
+                    # Actions
+                    group = CTK.Box ({'class': 'sel-actions'}, [disabled, remove])
 
-            txt += '<tr prio="%s" id="%s"%s><td%s>&nbsp</td><td>%s</td><td>%s</td><td class="center">%d</td><td class="center">%s</td><td class="center">%s</td><td class="center switch">%s</td><td class="center">%s</td></tr>' % (
-                prio, prio, extra, draggable, link, document_root, doms, logging, collector, disabled, link_del)
+                    content = [group]
+                    content += [entry('nick',  'vserver!%s!nick'%(k)),
+                                entry('droot', 'vserver!%s!document_root'%(k))]
 
-        txt += '</table>'
+                    # List entry
+                    panel.Add (k, '/vserver/content/%s'%(k), content, True, disclass)
+
+    class PanelButtons (CTK.Box):
+        def __init__ (self):
+            CTK.Box.__init__ (self, {'class': 'panel-buttons'})
+
+            # Add New
+            dialog = CTK.Dialog ({'title': _('Add New Virtual Server'), 'width': 720})
+            dialog.id = 'dialog-new-vserver'
+            dialog.AddButton (_('Add'), dialog.JS_to_trigger('submit'))
+            dialog.AddButton (_('Cancel'), "close")
+            dialog += VirtualServerNew()
+
+            druid  = CTK.Druid (CTK.RefreshableURL())
+            wizard = CTK.Dialog ({'title': _('Virtual Server Configuration Assistant'), 'width': 550})
+            wizard += druid
+            druid.bind ('druid_exiting',
+                        wizard.JS_to_close() +
+                        self.JS_to_trigger('submit_success'))
+
+            button = CTK.Button(_('New…'), {'id': 'vserver-new-button', 'class': 'panel-button', 'title': _('Add New Virtual Server')})
+            button.bind ('click', dialog.JS_to_show())
+            dialog.bind ('submit_success', dialog.JS_to_close())
+            dialog.bind ('submit_success', self.JS_to_trigger('submit_success'))
+            dialog.bind ('open_wizard',
+                         dialog.JS_to_close() +
+                         druid.JS_to_goto("'/wizard/vserver/' + event.wizard") +
+                         wizard.JS_to_show())
+
+            self += button
+            self += dialog
+            self += wizard
+
+            # Clone
+            dialog = CTK.Dialog ({'title': _('Clone Virtual Server'), 'width': 480})
+            dialog.AddButton (_('Clone'), JS_CLONE + dialog.JS_to_close())
+            dialog.AddButton (_('Cancel'), "close")
+            dialog += CTK.RawHTML ('<p>%s</p>' %(_(NOTE_CLONE_DIALOG)))
+
+            button = CTK.Button(_('Clone…'), {'id': 'vserver-clone-button', 'class': 'panel-button', 'title': _('Clone Selected Virtual Server')})
+            button.bind ('click', dialog.JS_to_show())
+
+            self += dialog
+            self += button
+
+    CHILD_HEADERS = None
+
+    def __call__ (self):
+        title = _('Virtual Servers')
+
+        # Content
+        left  = CTK.Box({'class': 'panel'})
+        left += CTK.RawHTML('<h2>%s</h2>'%(title))
+
+        # Virtual Server List
+        refresh = CTK.Refreshable ({'id': 'vservers_panel'})
+        refresh.register (lambda: self.PanelList(refresh, right).Render())
+
+        # Refresh on 'New' or 'Clone'
+        buttons = self.PanelButtons()
+        buttons.bind ('submit_success', refresh.JS_to_refresh (on_success=JS_ACTIVATE_FIRST))
+        left += buttons
+
+        left += CTK.Box({'class': 'filterbox'}, CTK.TextField({'class':'filter', 'optional_string': _('Virtual Server Filtering'), 'optional': True}))
+        right = CTK.Box({'class': 'vserver_content'})
+        left += refresh
+
+        # Refresh the list whenever the content change
+        right.bind ('submit_success', refresh.JS_to_refresh());
+
+        # Figure out content panel headers. This step is very tricky.
+        # We have no idea what HTML headers the content HTML will
+        # have. In fact, the panel content is receiving only the HTML
+        # content only (body).
+        #
+        # The static CHILD_HEADERS class property will hold a copy of
+        # the headers generated by the direct render of the PageVServer
+        # class. It should cover most of the cases, unless a dynamically
+        # loaded module requires an additional header entry.
+        #
+        if not self.CHILD_HEADERS:
+            import PageVServer
+            vsrv_num = CTK.cfg.keys('vserver')[0]
+            render   = PageVServer.RenderContent(vsrv_num).Render()
+            self.CHILD_HEADERS = render.headers
+
+        # Build the page
+        page = Page.Base(title, body_id='vservers', helps=HELPS, headers=self.CHILD_HEADERS)
+        page += left
+        page += right
+
+        return page.Render()
 
 
-        txt += '''
-                      <script type="text/javascript">
-                        $(document).ready(function(){
-                            init_PageVServers ("%(name)s", "%(url)s");
-                        });
-                      </script>
-               ''' % {'name':   table_name,
-                      'url' :   '/vserver/ajax_update'}
+class RenderParticular:
+    def __call__ (self):
+        headers = SelectionPanel.HEADER
+        page    = CTK.Page(headers=headers)
 
-        # Add new Virtual Server
-        txt += '<div class="rulessection" id="newsection">'
-        table = Table(3, 1, header_style='width="200px"')
-        table += (_('Nickname'), _('Document Root'))
-        fo1 = Form ("/vserver", add_submit=False, auto=False)
-        en1 = self.InstanceEntry ("new_vserver_name",  "text", size=20)
-        en2 = self.InstanceEntry ("new_vserver_droot", "text", size=40)
-        table += (en1, en2, SUBMIT_ADD)
+        props = {'url_base':    URL_BASE,
+                 'cookie_name': SelectionPanel.COOKIE_NAME_DEFAULT}
+        page += CTK.RawHTML (js=JS_PARTICULAR %(props))
 
-        txt += "<h2>%s</h2>" % (_('Add new Virtual Server'))
-        txt += self.Indent(fo1.Render(str(table)))
-        txt += '</div>'
+        return page.Render()
 
-        # Clone Virtual Server
-        txt += '<div class="rulessection" id="clonesection">'
-        table = Table(3, 1, header_style='width="200px"')
-        table += (_('Virtual Server'), _('Clone as..'))
-        fo1 = Form ("/vserver", add_submit=False, auto=False)
 
-        clonable = []
-        for v in sorted_vservers:
-            nick = self._cfg.get_val('vserver!%s!nick'%(v))
-            clonable.append((v,nick))
+CTK.publish (r'^%s$'    %(URL_BASE),       Render)
+CTK.publish (r'^%s/\d+$'%(URL_BASE),       RenderParticular)
+CTK.publish (r'^%s$'    %(URL_NEW_MANUAL), NewManual, method="POST", validation=VALIDATIONS)
+CTK.publish (r'^%s$'    %(URL_APPLY),      Commit, method="POST", validation=VALIDATIONS)
 
-        op1 = self.InstanceOptions ("vserver_clone_src", clonable)
-        en1 = self.InstanceEntry   ("vserver_clone_trg", "text", size=40)
-        table += (op1[0], en1, SUBMIT_CLONE)
-
-        txt += "<h2>%s</h2>" % (_('Clone Virtual Server'))
-        txt += self.Indent(fo1.Render(str(table)))
-        txt += '</div>'
-
-        # Wizards
-        txt += '<div class="rulessection" id="wizardsection">'
-        txt += self._render_wizards()
-        txt += '</div>'
-
-        txt += '<div class="rulesbutton"><a href="#" id="newsection_b">%s</a></div>' % (_('Add new Virtual Server'))
-        txt += '<div class="rulesbutton"><a href="#" id="clonesection_b">%s</a></div>' % (_('Clone Virtual Server'))
-        txt += '<div class="rulesbutton"><a href="#" id="wizardsection_b">%s</a></div>' % (_('Wizards'))
-        txt += '</div>'
-
-        return txt
-
-    def _render_wizards (self):
-        txt = ''
-        mgr = WizardManager (self._cfg, "VServer", pre='vserver')
-        txt += mgr.render ("/vserver")
-
-        table = '<table id="wizSel" class="rulestable"><tr><th>Category</th><th>Wizard</th></tr>'
-        table += '<tr><td id="wizG"></td><td id="wizL"></td></table>'
-
-        if txt:
-            txt = _("<h2>Wizards</h2>") + table + txt
-
-        return txt
-
-    def _get_vserver_for_nick (self, nick):
-        for v in self._cfg['vserver']:
-            n = self._cfg.get_val ('vserver!%s!nick'%(v))
-            if n == nick:
-                return v
-
-    def _get_next_new_vserver (self):
-        n = 1
-        for v in self._cfg['vserver']:
-            nv = int(v)
-            if nv > n:
-                n = nv
-        return str(n+10)
-
-    def _op_clone_vserver (self, post):
-        # Validate entries
-        self._ValidateChanges (post, DATA_VALIDATION)
-        if self.has_errors():
-            return
-
-        # Fetch data
-        prio_source = post.pop('vserver_clone_src')
-        nick_target = post.pop('vserver_clone_trg')
-        prio_target = self._get_next_new_vserver()
-
-        # Check the field has been filled out
-        if not nick_target:
-            self._error_add ('vserver_clone_trg', '', _('Cannot be empty'))
-            return
-
-        # Clone it
-        error = self._cfg.clone('vserver!%s'%(prio_source),
-                                'vserver!%s'%(prio_target))
-        if not error:
-            self._cfg['vserver!%s!nick'%(prio_target)] = nick_target
-            return '/vserver/%s'%(prio_target)
-
-    def _op_add_vserver (self, post):
-        # Ensure that no entry in empty
-        for key in ['new_vserver_name', 'new_vserver_droot']:
-            if not post.get_val(key):
-                self._error_add (key, '', _('Cannot be empty'))
-
-        self._ValidateChanges (post, DATA_VALIDATION)
-        if self.has_errors():
-            return
-
-        # Find a new vserver number
-        num   = self._get_next_new_vserver()
-        name  = post.pop('new_vserver_name')
-        droot = post.pop('new_vserver_droot')
-        pre   = 'vserver!%s' % (num)
-
-        # Do not add the server if it already exists
-        if name in self._cfg['vserver']:
-            return '/vserver'
-
-        self._cfg['%s!nick'                   % (pre)] = name
-        self._cfg['%s!document_root'          % (pre)] = droot
-        self._cfg['%s!rule!1!match'           % (pre)] = 'default'
-        self._cfg['%s!rule!1!handler'         % (pre)] = 'common'
-
-        self._cfg['%s!rule!2!match'           % (pre)] = 'directory'
-        self._cfg['%s!rule!2!match!directory' % (pre)] = '/icons'
-        self._cfg['%s!rule!2!handler'         % (pre)] = 'file'
-        self._cfg['%s!rule!2!document_root'   % (pre)] = CHEROKEE_ICONSDIR
-
-        self._cfg['%s!rule!3!match'           % (pre)] = 'directory'
-        self._cfg['%s!rule!3!match!directory' % (pre)] = '/cherokee_themes'
-        self._cfg['%s!rule!3!handler'         % (pre)] = 'file'
-        self._cfg['%s!rule!3!document_root'   % (pre)] = CHEROKEE_THEMEDIR
-
-        return '/vserver/%s' % (num)
