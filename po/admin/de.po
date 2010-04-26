@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: cherokee '0.99.10'\n"
 "Report-Msgid-Bugs-To: http://bugs.cherokee-project.com/\n"
-"POT-Creation-Date: 2010-04-24 12:14+0200\n"
+"POT-Creation-Date: 2010-04-26 15:14+0200\n"
 "PO-Revision-Date: 2009-05-12 15:10+0100\n"
 "Last-Translator: Andreas Sinz <andreas.sinz@aon.at>\n"
 "Language-Team: none\n"
@@ -206,7 +206,7 @@ msgid "Custom Environment Variables"
 msgstr "Umgebungsvariablen"
 
 #: admin/CgiBase.py:150 admin/Icons.py:341 admin/Mime.py:100
-#: admin/PageGeneral.py:189 admin/PageRule.py:259 admin/PageSource.py:324
+#: admin/PageGeneral.py:189 admin/PageRule.py:258 admin/PageSource.py:324
 #: admin/PageVServers.py:235
 msgid "Add"
 msgstr "Hinzufügen"
@@ -352,8 +352,8 @@ msgid "Add new %s"
 msgstr "Neue Regel hinzufügen"
 
 #: admin/Icons.py:347 admin/Mime.py:101 admin/PageGeneral.py:190
-#: admin/PageIndex.py:348 admin/PageRule.py:211 admin/PageRule.py:260
-#: admin/PageRule.py:286 admin/PageSource.py:311 admin/PageSource.py:325
+#: admin/PageIndex.py:348 admin/PageRule.py:211 admin/PageRule.py:259
+#: admin/PageRule.py:285 admin/PageSource.py:311 admin/PageSource.py:325
 #: admin/PageSource.py:339 admin/PageVServers.py:201 admin/PageVServers.py:236
 #: admin/PageVServers.py:262
 #, fuzzy
@@ -1495,52 +1495,52 @@ msgstr ""
 msgid "Remove"
 msgstr "Löschen"
 
-#: admin/PageRule.py:232 admin/PageVServer.py:118
+#: admin/PageRule.py:231 admin/PageVServer.py:118
 msgid "Final"
 msgstr ""
 
-#: admin/PageRule.py:233
+#: admin/PageRule.py:232
 #, fuzzy
 msgid "Non Final"
 msgstr "Icon Datei"
 
-#: admin/PageRule.py:257 admin/PageRule.py:270
+#: admin/PageRule.py:256 admin/PageRule.py:269
 #, fuzzy
 msgid "Add Behavior Rule"
 msgstr "Verhalten"
 
-#: admin/PageRule.py:264
+#: admin/PageRule.py:263
 #, fuzzy
 msgid "Configuration Assistant"
 msgstr "Schnelle Konfiguration"
 
-#: admin/PageRule.py:270 admin/PageSource.py:328 admin/PageVServers.py:246
+#: admin/PageRule.py:269 admin/PageSource.py:328 admin/PageVServers.py:246
 msgid "New…"
 msgstr ""
 
-#: admin/PageRule.py:284
+#: admin/PageRule.py:283
 #, fuzzy
 msgid "Clone Behavior Rule"
 msgstr "Klone virtuellen Server"
 
-#: admin/PageRule.py:285 admin/PageSource.py:338 admin/PageVServers.py:261
+#: admin/PageRule.py:284 admin/PageSource.py:338 admin/PageVServers.py:261
 msgid "Clone"
 msgstr "Klonen"
 
-#: admin/PageRule.py:289 admin/PageSource.py:342 admin/PageVServers.py:265
+#: admin/PageRule.py:288 admin/PageSource.py:342 admin/PageVServers.py:265
 #, fuzzy
 msgid "Clone…"
 msgstr "Klonen"
 
-#: admin/PageRule.py:289
+#: admin/PageRule.py:288
 msgid "Clone Selected Behavior Rule"
 msgstr ""
 
-#: admin/PageRule.py:297 admin/PageVServer.py:481
+#: admin/PageRule.py:296 admin/PageVServer.py:481
 msgid "Behavior"
 msgstr "Verhalten"
 
-#: admin/PageRule.py:316
+#: admin/PageRule.py:315
 #, fuzzy
 msgid "Rule Filtering"
 msgstr "Liste der Regeln"
@@ -2595,7 +2595,7 @@ msgstr "Server %s läuft.. PID=%d Port=%d"
 msgid "Server %(version)s running.. PID=%(pid)d Socket=%(scgi_port)s"
 msgstr "Server %s läuft.. PID=%d Port=%d"
 
-#: admin/server.py:124
+#: admin/server.py:132
 msgid "Incorrect parameters: PORT CONFIG_FILE"
 msgstr ""
 

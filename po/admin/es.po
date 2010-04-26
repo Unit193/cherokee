@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: cherokee '0.99.10'\n"
 "Report-Msgid-Bugs-To: http://bugs.cherokee-project.com/\n"
-"POT-Creation-Date: 2010-04-24 12:14+0200\n"
+"POT-Creation-Date: 2010-04-26 15:14+0200\n"
 "PO-Revision-Date: 2009-08-31 02:16+0200\n"
 "Last-Translator: Antonio Pérez Jiménez <aperez@skarcha.com>\n"
 "Language-Team: Spanish <>\n"
@@ -227,7 +227,7 @@ msgid "Custom Environment Variables"
 msgstr "Variables de entorno personalizadas"
 
 #: admin/CgiBase.py:150 admin/Icons.py:341 admin/Mime.py:100
-#: admin/PageGeneral.py:189 admin/PageRule.py:259 admin/PageSource.py:324
+#: admin/PageGeneral.py:189 admin/PageRule.py:258 admin/PageSource.py:324
 #: admin/PageVServers.py:235
 msgid "Add"
 msgstr "Añadir"
@@ -382,8 +382,8 @@ msgid "Add new %s"
 msgstr "Añadir nuevo"
 
 #: admin/Icons.py:347 admin/Mime.py:101 admin/PageGeneral.py:190
-#: admin/PageIndex.py:348 admin/PageRule.py:211 admin/PageRule.py:260
-#: admin/PageRule.py:286 admin/PageSource.py:311 admin/PageSource.py:325
+#: admin/PageIndex.py:348 admin/PageRule.py:211 admin/PageRule.py:259
+#: admin/PageRule.py:285 admin/PageSource.py:311 admin/PageSource.py:325
 #: admin/PageSource.py:339 admin/PageVServers.py:201 admin/PageVServers.py:236
 #: admin/PageVServers.py:262
 msgid "Cancel"
@@ -1483,7 +1483,7 @@ msgstr "Normal"
 
 #: admin/PageNewConfig.py:151
 msgid "Regular configuration: Apache logs, MIME types, icons, etc."
-msgstr "Configuración normal: PHP, logs tipo Apache, tipos MIME, iconos, etc."
+msgstr "Configuración normal: Logs tipo Apache, tipos MIME, iconos, etc."
 
 #: admin/PageNewConfig.py:155 admin/consts.py:48
 msgid "Static Content"
@@ -1550,52 +1550,52 @@ msgstr ""
 msgid "Remove"
 msgstr "Eliminar"
 
-#: admin/PageRule.py:232 admin/PageVServer.py:118
+#: admin/PageRule.py:231 admin/PageVServer.py:118
 msgid "Final"
 msgstr "Final"
 
-#: admin/PageRule.py:233
+#: admin/PageRule.py:232
 #, fuzzy
 msgid "Non Final"
 msgstr "Final"
 
-#: admin/PageRule.py:257 admin/PageRule.py:270
+#: admin/PageRule.py:256 admin/PageRule.py:269
 #, fuzzy
 msgid "Add Behavior Rule"
 msgstr "Reglas de funcionamiento"
 
-#: admin/PageRule.py:264
+#: admin/PageRule.py:263
 #, fuzzy
 msgid "Configuration Assistant"
 msgstr "Configuración rápida."
 
-#: admin/PageRule.py:270 admin/PageSource.py:328 admin/PageVServers.py:246
+#: admin/PageRule.py:269 admin/PageSource.py:328 admin/PageVServers.py:246
 msgid "New…"
 msgstr ""
 
-#: admin/PageRule.py:284
+#: admin/PageRule.py:283
 #, fuzzy
 msgid "Clone Behavior Rule"
 msgstr "Reglas de funcionamiento"
 
-#: admin/PageRule.py:285 admin/PageSource.py:338 admin/PageVServers.py:261
+#: admin/PageRule.py:284 admin/PageSource.py:338 admin/PageVServers.py:261
 msgid "Clone"
 msgstr "Clonar"
 
-#: admin/PageRule.py:289 admin/PageSource.py:342 admin/PageVServers.py:265
+#: admin/PageRule.py:288 admin/PageSource.py:342 admin/PageVServers.py:265
 #, fuzzy
 msgid "Clone…"
 msgstr "Clonar"
 
-#: admin/PageRule.py:289
+#: admin/PageRule.py:288
 msgid "Clone Selected Behavior Rule"
 msgstr ""
 
-#: admin/PageRule.py:297 admin/PageVServer.py:481
+#: admin/PageRule.py:296 admin/PageVServer.py:481
 msgid "Behavior"
 msgstr "Comportamiento"
 
-#: admin/PageRule.py:316
+#: admin/PageRule.py:315
 #, fuzzy
 msgid "Rule Filtering"
 msgstr "Lista de Reglas"
@@ -2706,7 +2706,7 @@ msgstr "Servidor %(version)s ejecutandose.. PID=%(pid)d Puerto=%(scgi_port)s"
 msgid "Server %(version)s running.. PID=%(pid)d Socket=%(scgi_port)s"
 msgstr "Servidor %(version)s ejecutandose.. PID=%(pid)d Puerto=%(scgi_port)s"
 
-#: admin/server.py:124
+#: admin/server.py:132
 msgid "Incorrect parameters: PORT CONFIG_FILE"
 msgstr "Parámetros incorrectos: PORT CONFIG_FILE"
 

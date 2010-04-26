@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: cherokee '0.99.38' admin UI for zh_CN \n"
 "Report-Msgid-Bugs-To: http://bugs.cherokee-project.com/\n"
-"POT-Creation-Date: 2010-04-24 12:14+0200\n"
+"POT-Creation-Date: 2010-04-26 15:14+0200\n"
 "PO-Revision-Date: 2009-04-14 21:27+CEST\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: ownlinux.cn\n"
@@ -206,7 +206,7 @@ msgid "Custom Environment Variables"
 msgstr "自定义环境变量"
 
 #: admin/CgiBase.py:150 admin/Icons.py:341 admin/Mime.py:100
-#: admin/PageGeneral.py:189 admin/PageRule.py:259 admin/PageSource.py:324
+#: admin/PageGeneral.py:189 admin/PageRule.py:258 admin/PageSource.py:324
 #: admin/PageVServers.py:235
 msgid "Add"
 msgstr "增加"
@@ -362,8 +362,8 @@ msgid "Add new %s"
 msgstr "新增"
 
 #: admin/Icons.py:347 admin/Mime.py:101 admin/PageGeneral.py:190
-#: admin/PageIndex.py:348 admin/PageRule.py:211 admin/PageRule.py:260
-#: admin/PageRule.py:286 admin/PageSource.py:311 admin/PageSource.py:325
+#: admin/PageIndex.py:348 admin/PageRule.py:211 admin/PageRule.py:259
+#: admin/PageRule.py:285 admin/PageSource.py:311 admin/PageSource.py:325
 #: admin/PageSource.py:339 admin/PageVServers.py:201 admin/PageVServers.py:236
 #: admin/PageVServers.py:262
 #, fuzzy
@@ -1452,7 +1452,7 @@ msgstr "规则"
 #: admin/PageNewConfig.py:151
 #, fuzzy
 msgid "Regular configuration: Apache logs, MIME types, icons, etc."
-msgstr "设置: PHP, Apache logs, MIME types, icons, 等"
+msgstr "设置: Apache logs, MIME types, icons, 等"
 
 #: admin/PageNewConfig.py:155 admin/consts.py:48
 msgid "Static Content"
@@ -1519,52 +1519,52 @@ msgstr ""
 msgid "Remove"
 msgstr "删除"
 
-#: admin/PageRule.py:232 admin/PageVServer.py:118
+#: admin/PageRule.py:231 admin/PageVServer.py:118
 msgid "Final"
 msgstr "启用"
 
-#: admin/PageRule.py:233
+#: admin/PageRule.py:232
 #, fuzzy
 msgid "Non Final"
 msgstr "启用"
 
-#: admin/PageRule.py:257 admin/PageRule.py:270
+#: admin/PageRule.py:256 admin/PageRule.py:269
 #, fuzzy
 msgid "Add Behavior Rule"
 msgstr "行为规则"
 
-#: admin/PageRule.py:264
+#: admin/PageRule.py:263
 #, fuzzy
 msgid "Configuration Assistant"
 msgstr "快速配置"
 
-#: admin/PageRule.py:270 admin/PageSource.py:328 admin/PageVServers.py:246
+#: admin/PageRule.py:269 admin/PageSource.py:328 admin/PageVServers.py:246
 msgid "New…"
 msgstr ""
 
-#: admin/PageRule.py:284
+#: admin/PageRule.py:283
 #, fuzzy
 msgid "Clone Behavior Rule"
 msgstr "行为规则"
 
-#: admin/PageRule.py:285 admin/PageSource.py:338 admin/PageVServers.py:261
+#: admin/PageRule.py:284 admin/PageSource.py:338 admin/PageVServers.py:261
 msgid "Clone"
 msgstr "克隆"
 
-#: admin/PageRule.py:289 admin/PageSource.py:342 admin/PageVServers.py:265
+#: admin/PageRule.py:288 admin/PageSource.py:342 admin/PageVServers.py:265
 #, fuzzy
 msgid "Clone…"
 msgstr "克隆"
 
-#: admin/PageRule.py:289
+#: admin/PageRule.py:288
 msgid "Clone Selected Behavior Rule"
 msgstr ""
 
-#: admin/PageRule.py:297 admin/PageVServer.py:481
+#: admin/PageRule.py:296 admin/PageVServer.py:481
 msgid "Behavior"
 msgstr "扩展设置"
 
-#: admin/PageRule.py:316
+#: admin/PageRule.py:315
 #, fuzzy
 msgid "Rule Filtering"
 msgstr "规则列表"
@@ -2652,7 +2652,7 @@ msgstr "服务器%s运行中.. 进程号=%d 端口=%d"
 msgid "Server %(version)s running.. PID=%(pid)d Socket=%(scgi_port)s"
 msgstr "服务器%s运行中.. 进程号=%d 端口=%d"
 
-#: admin/server.py:124
+#: admin/server.py:132
 msgid "Incorrect parameters: PORT CONFIG_FILE"
 msgstr "不正确的参数: PORT CONFIG_FILE"
 

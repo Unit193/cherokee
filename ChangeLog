@@ -1,3 +1,141 @@
+2010-04-26  Taher Shihadeh  <taher@unixwars.com>
+            svn=4963 git=495d02620a9b8741f3abc58c116a10f516a41bd6
+
+    Documentation updates
+    
+ doc/bundle_cherokee-tweak.txt              |   15 ++++++++-------
+ doc/bundle_cherokee.txt                    |    2 +-
+ doc/cookbook_authentication.txt            |    2 +-
+ doc/cookbook_coldfusion.txt                |    2 +-
+ doc/cookbook_glassfish.txt                 |    2 +-
+ doc/cookbook_maintenance.txt               |   13 +++++++------
+ doc/media/images/admin_validators_ldap.png |  Bin 31505 -> 30041 bytes
+ doc/modules_handlers_dirlist.txt           |    2 +-
+ 8 files changed, 20 insertions(+), 18 deletions(-)
+
+2010-04-26  Taher Shihadeh  <taher@unixwars.com>
+            svn=4962 git=d746092b661bc8d7e22aa126913bf8c2b01a07cf
+
+    Updates documentation to 0.99.45
+    
+ doc/basics_installation_unix.txt      |    3 +++
+ doc/basics_installation_windows.txt   |    3 +++
+ doc/basics_requirements.txt           |    3 +++
+ doc/basics_upgrade.txt                |    3 +++
+ doc/config_advanced.txt               |    3 +++
+ doc/config_general.txt                |    3 +++
+ doc/config_index.txt                  |    3 +++
+ doc/config_info_sources.txt           |    3 +++
+ doc/config_quickstart.txt             |    3 +++
+ doc/config_status.txt                 |    3 +++
+ doc/config_virtual_servers_evhost.txt |    3 +++
+ doc/config_virtual_servers_rule.txt   |    3 +++
+ 12 files changed, 36 insertions(+), 0 deletions(-)
+
+
+2010-04-26  Taher Shihadeh  <taher@unixwars.com>
+            svn=4961 git=c6860415d2191dc2a947ce21e2c8556940d513b4
+
+    Updates documentation to 0.99.45
+    
+ doc/config_virtual_servers.txt |   28 +++++++++++++----------
+ doc/config_wizards.txt         |   47 ++++++++++++++++++++++++++++------------
+ 2 files changed, 49 insertions(+), 26 deletions(-)
+
+
+2010-04-26  Taher Shihadeh  <taher@unixwars.com>
+            svn=4958 git=e0e781e661558ea7d6e3acb2f1d6a2949939a453
+
+    Documentation updates
+    
+ doc/Makefile.am                            |    2 +-
+ doc/basics_installation_unix.txt           |    7 ++
+ doc/basics_installation_windows.txt        |   12 ++-
+ doc/basics_requirements.txt                |   13 ++-
+ doc/basics_running_cherokee.txt            |   11 +-
+ doc/basics_upgrade.txt                     |    4 +
+ doc/config.txt                             |    1 +
+ doc/config_index.txt                       |   24 +++++
+ doc/config_info_sources.txt                |    9 +-
+ doc/config_quickstart.txt                  |  111 ++++++++++++++-------
+ doc/config_status.txt                      |   19 ++--
+ doc/config_virtual_servers.txt             |  146 +++++++++++++++-------------
+ doc/index.txt                              |    1 +
+ doc/media/images/admin_advanced0.png       |  Bin 4007 -> 3897 bytes
+ doc/media/images/admin_advanced1.png       |  Bin 17657 -> 16873 bytes
+ doc/media/images/admin_advanced2.png       |  Bin 19420 -> 18604 bytes
+ doc/media/images/admin_advanced3.png       |  Bin 15155 -> 14588 bytes
+ doc/media/images/admin_advanced4.png       |  Bin 9928 -> 9480 bytes
+ doc/media/images/admin_advanced5.png       |  Bin 13554 -> 13128 bytes
+ doc/media/images/admin_general_mime.png    |  Bin 30310 -> 9678 bytes
+ doc/media/images/admin_vserver_vserver.png |  Bin 19180 -> 0 bytes
+ 21 files changed, 230 insertions(+), 130 deletions(-)
+
+
+2010-04-26  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=4957 git=d6899e9fb13dba4cdefa6cd82b5d8e78f6d4cc97
+
+    Final keys were not being handled properly. It fixes the bug #820:
+    http://bugs.cherokee-project.com/820
+    
+ admin/PageRule.py |    4 ++--
+ 1 files changed, 2 insertions(+), 2 deletions(-)
+
+
+2010-04-26  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=4955 git=2da2f78d6d0ae78462e7f6b2fbdeb8bf00142d55
+
+    Work in synchronous mode until the mainloop is reached.
+    
+ admin/server.py |   18 +++++++++++++++---
+ 1 files changed, 15 insertions(+), 3 deletions(-)
+
+
+2010-04-26  Taher Shihadeh  <taher@unixwars.com>
+            svn=4953 git=9db501804408417bb4126ef4974fb236b4ce1b71
+
+    Some translation updates
+    
+ po/admin/de.po    | 4905 ++++++++++++++++------------------------
+ po/admin/en.po    | 5685 +++++++++++++++++++++-------------------------
+ po/admin/es.po    | 6213 +++++++++++++++++++++++++--------------------------
+ po/admin/fr.po    | 4961 ++++++++++++++++------------------------
+ po/admin/nl.po    | 6505 +++++++++++++++++++++++++++--------------------------
+ po/admin/pt_BR.po | 4617 ++++++++++++++------------------------
+ po/admin/sv_SE.po | 5665 +++++++++++++++++++++-------------------------
+ po/admin/zh_CN.po | 5758 ++++++++++++++++++++++-------------------------
+ 8 files changed, 19763 insertions(+), 24546 deletions(-)
+
+
+2010-04-26  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=4952 git=4bddb749fae7913a110383033dc94c3a69176dd9
+
+    Fixes Cherokee-admin so it can be executed with a regular Python 2.4
+    interpreter.
+    
+ admin/PageRule.py        |    3 +--
+ admin/PageVServers.py    |    2 +-
+ admin/XMLServerDigest.py |   14 ++++++++++----
+ 3 files changed, 12 insertions(+), 7 deletions(-)
+
+2010-04-24  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=4949 git=918d3d94a7a4bd5dd7e993a53b786247df53b123
+
+    Fixes style and adds MacPort paths
+    
+ admin/wizards/drupal.py |   15 ++++++++-------
+ 1 files changed, 8 insertions(+), 7 deletions(-)
+
+
+2010-04-24  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=4948 git=e3c4ea83607d488a945ab031dd93a70f0a7349ed
+
+    Fixes the Wordpress wizard. Some paths were not working:
+    http://lists.octality.com/pipermail/cherokee/2010-April/012589.html
+    
+ admin/wizards/wordpress.py |   15 ++++++++-------
+ 1 files changed, 8 insertions(+), 7 deletions(-)
+
 2010-04-23  Jonathan Hernandez  <ion@suavizado.com>
             svn=4945 git=992be5dd2211bb87322d8f4e656ae8bb926064bc
 

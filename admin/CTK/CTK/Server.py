@@ -23,12 +23,14 @@
 import re
 import sys
 import types
+import errno
 import threading
 import traceback
+
 try:
     import json
 except ImportError:
-    import simplejson as json
+    import json_embedded as json
 
 import pyscgi
 import Cookie
@@ -135,10 +137,7 @@ class ServerHandler (pyscgi.SCGIHandler):
         return HTTP_Error (404)
 
     def handle_request (self):
-        try:
-            content = self._do_handle()
-            self.send(str(content))
-        except Exception, desc:
+        def manage_exception():
             # Print the backtrace
             info = traceback.format_exc()
             print >> sys.stderr, info
@@ -160,6 +159,20 @@ class ServerHandler (pyscgi.SCGIHandler):
             # No error handling page
             html = '<pre>%s</pre>'%(info)
             self.send (str(HTTP_Error(desc=html)))
+
+        try:
+            content = self._do_handle()
+            self.send (str(content))
+
+        except OSError, e:
+            if e.errno == errno.EPIPE:
+                # The web server closed the SCGI socket
+                return
+            manage_exception()
+
+        except Exception, desc:
+            manage_exception()
+
 
 
 class Server:
@@ -264,8 +277,11 @@ def init (*args, **kwargs):
         kwargs['threading'] = True
 
     kwargs['handler_class'] = ServerHandler
-
     srv.init_server (*args, **kwargs)
+
+def set_synchronous (sync):
+    srv = get_server()
+    srv._scgi.set_synchronous (sync)
 
 def run (*args, **kwargs):
     init (*args, **kwargs)
