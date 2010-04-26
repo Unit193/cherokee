@@ -61,7 +61,7 @@ absolutely no cost.</p></div>
 header, a similar feature offered by other web servers.
 This is to allow the migration of applications supporting it without
 having to make major code rewrites.</p></div>
-<h3 id="zero-downtime">Zero Downtime Updates</h3><div style="clear:left"></div>
+<h3 id="zero-downtime">Zero Downtime Updates, AKA "Graceful restart"</h3><div style="clear:left"></div>
 <div class="paragraph"><p>Cherokee has an ability hardly ever seen in any service delivering
 application, be it web content, multimedia streaming or almost any
 other server you can think of.</p></div>
@@ -71,6 +71,7 @@ the server. Of course the connections that are already being served
 will continue normally with the same parameters that where negotiated
 with the requesting clients, but they will not be shut down just to
 perform a menial task such as restarting the server.</p></div>
+<div class="paragraph"><p>It&#8217;s a bit like changing the tires on your car while still driving.</p></div>
 <div class="paragraph"><p>In fact, this mechanism is not only limited to configuration
 updates. Cherokee is so smart that it can even apply this to perform
 full program upgrades. This means you can completely replace the

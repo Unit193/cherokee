@@ -1,163 +1,242 @@
+# -*- coding: utf-8 -*-
+#
+# Cherokee-admin
+#
+# Authors:
+#      Alvaro Lopez Ortega <alvaro@alobbs.com>
+#
+# Copyright (C) 2001-2010 Alvaro Lopez Ortega
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of version 2 of the GNU General Public
+# License as published by the Free Software Foundation.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+# 02110-1301, USA.
+#
+
+import CTK
+import Page
+import Cherokee
+import Icons
+import Mime
 import validations
 
-from Page import *
-from Table import *
-from Entry import *
-from Form import *
+from consts import *
+from configured import *
 
-# For gettext
-N_ = lambda x: x
+URL_BASE  = '/general'
+URL_APPLY = '/general/apply'
 
-PRODUCT_TOKENS = [
-    ('',        N_('Default')),
-    ('product', N_('Product only')),
-    ('minor',   N_('Product + Minor version')),
-    ('minimal', N_('Product + Minimal version')),
-    ('os',      N_('Product + Platform')),
-    ('full',    N_('Full Server string'))
-]
+NOTE_ADD_PORT    = N_('Defines a port that the server will listen to')
+NOTE_IPV6        = N_('Set to enable the IPv6 support. The OS must support IPv6 for this to work.')
+NOTE_TOKENS      = N_('This option allows to choose how the server identifies itself.')
+NOTE_TIMEOUT     = N_('Time interval until the server closes inactive connections.')
+NOTE_TLS         = N_('Which, if any, should be the TLS/SSL backend.')
+NOTE_COLLECTORS  = N_('How the usage graphics should be generated.')
+NOTE_POST_TRACKS = N_('How to track uploads/posts so its progress can be reported to the user.')
+NOTE_USER        = N_('Changes the effective user. User names and IDs are accepted.')
+NOTE_GROUP       = N_('Changes the effective group. Group names and IDs are accepted.')
+NOTE_CHROOT      = N_('Jail the server inside the directory. Don\'t use it as the only security measure.')
+NOTE_NO_SOURCES  = N_('No ports to listen have been defined. By default the server will listen to TCP port 80 on all the network interfaces.')
 
-DATA_VALIDATION = [
+
+HELPS = [('config_general',    N_("General Configuration")),
+         ('config_quickstart', N_("Configuration Quickstart"))]
+
+
+VALIDATIONS = [
     ("server!ipv6",              validations.is_boolean),
     ("server!timeout",           validations.is_number),
     ("server!bind!.*!port",      validations.is_tcp_port),
     ("server!bind!.*!interface", validations.is_ip),
     ("server!bind!.*!tls",       validations.is_boolean),
-    ("server!chroot",           (validations.is_local_dir_exists, 'cfg')),
+    ("server!chroot",            validations.is_chroot_dir_exists),
+    ("new_port",                 validations.is_new_tcp_port)
 ]
 
-NOTE_ADD_PORT    = N_('Defines a port that the server will listen to')
-NOTE_IPV6        = N_('Set to enable the IPv6 support. The OS must support IPv6 for this to work.')
-NOTE_LISTEN      = N_('IP address of the interface to bind. It is usually empty.')
-NOTE_TIMEOUT     = N_('Time interval until the server closes inactive connections.')
-NOTE_TOKENS      = N_('This option allows to choose how the server identifies itself.')
-NOTE_USER        = N_('Changes the effective user. User names and IDs are accepted.')
-NOTE_GROUP       = N_('Changes the effective group. Group names and IDs are accepted.')
-NOTE_CHROOT      = N_('Jail the server inside the directory. Don\'t use it as the only security measure.')
-NOTE_TLS         = N_('Which, if any, should be the TLS/SSL backend.')
-NOTE_COLLECTORS  = N_('How the usage graphics should be generated.')
-NOTE_POST_TRACKS = N_('How to track uploads/posts so its progress can be reported to the user.')
+JS_SCROLL = """
+function resize_cherokee_containers() {
+   $('#Network-1').height($(window).height() - 154);
+   $('#Ports_to_listen-2').height($(window).height() - 154);
+   $('#Permissions-3').height($(window).height() - 154);
+   $('#Icons-4').height($(window).height() - 154);
+   $('#mimetable tbody').height($(window).height() - 270);
+}
 
-HELPS = [('config_general',    N_("General Configuration")),
-         ('config_quickstart', N_("Configuration Quickstart"))]
+$(document).ready(function() {
+   resize_cherokee_containers();
+   $(window).resize(function(){
+       resize_cherokee_containers();
+   });
+});
 
-class PageGeneral (PageMenu, FormHelper):
-    def __init__ (self, cfg):
-        PageMenu.__init__ (self, 'general', cfg, HELPS)
-        FormHelper.__init__ (self, 'general', cfg)
-        self.set_submit_url ("/%s/"%(self._id))
+"""
 
-    def _op_render (self):
-        content = self._render_content()
-        self.AddMacroContent ('title', _('General Configuration'))
-        self.AddMacroContent ('content', content)
-        return Page.Render(self)
 
-    def _render_content (self):
-        txt = "<h1>%s</h1>" % (_('General Settings'))
+def commit():
+    # Add a new port
+    port = CTK.post.pop('new_port')
+    if port:
+        # Look for the next entry
+        pre = CTK.cfg.get_next_entry_prefix ('server!bind')
+        CTK.cfg['%s!port'%(pre)] = port
 
-        tabs  = []
-        tabs += [(_('Network'),            self._render_network())]
-        tabs += [(_('Ports to listen'),    self._render_ports())]
-        tabs += [(_('Server Permissions'), self._render_permissions())]
+    # Modifications
+    return CTK.cfg_apply_post()
 
-        txt += self.InstanceTab (tabs)
-        form = Form ("/%s" % (self._id), add_submit=False)
-        return form.Render(txt, DEFAULT_SUBMIT_VALUE)
 
-    def _render_permissions (self):
-        txt = "<h2>%s</h2>" % (_('Execution Permissions'))
-        table = TableProps()
-        self.AddPropEntry (table, _('User'),   'server!user',   _(NOTE_USER), optional=True)
-        self.AddPropEntry (table, _('Group'),  'server!group',  _(NOTE_GROUP), optional=True)
-        self.AddPropEntry (table, _('Chroot'), 'server!chroot', _(NOTE_CHROOT), optional=True)
-        txt += self.Indent(table)
-        return txt
+class NetworkWidget (CTK.Box):
+    def __init__ (self):
+        CTK.Box.__init__ (self)
 
-    def _render_network (self):
-        txt = "<h2>%s</h2>" % (_('Support'))
-        table = TableProps()
-        self.AddPropCheck (table, 'IPv6',     'server!ipv6', True, _(NOTE_IPV6))
-        self.AddPropOptions_Reload_Plain (table, _('SSL/TLS back-end'),'server!tls',modules_available(CRYPTORS), _(NOTE_TLS))
-        txt += self.Indent(table)
+        table = CTK.PropsTable()
+        table.Add (_('IPv6'),             CTK.CheckCfgText('server!ipv6', True), _(NOTE_IPV6))
+        table.Add (_('SSL/TLS back-end'), CTK.ComboCfg('server!tls', Cherokee.support.filter_available(CRYPTORS)), _(NOTE_TLS))
+        submit = CTK.Submitter (URL_APPLY)
+        submit += CTK.Indenter(table)
+        self += CTK.RawHTML ("<h2>%s</h2>" %(_('Support')))
+        self += submit
 
-        txt += "<h2>%s</h2>" % (_('Network behavior'))
-        table = TableProps()
-        self.AddPropEntry (table,  _('Timeout (<i>secs</i>)'), 'server!timeout',       _(NOTE_TIMEOUT))
-        self.AddPropOptions_Reload_Plain (table, _('Server Tokens'), 'server!server_tokens', PRODUCT_TOKENS, _(NOTE_TOKENS))
-        txt += self.Indent(table)
+        table = CTK.PropsTable()
+        table.Add (_('Timeout (<i>secs</i>)'), CTK.TextCfg('server!timeout'), _(NOTE_TIMEOUT))
+        table.Add (_('Server Tokens'),         CTK.ComboCfg('server!server_tokens', PRODUCT_TOKENS), _(NOTE_TOKENS))
+        submit = CTK.Submitter (URL_APPLY)
+        submit += CTK.Indenter(table)
+        self += CTK.RawHTML ("<h2>%s</h2>" %(_('Network Behavior')))
+        self += submit
 
-        txt += "<h2>%s</h2>" % (_('Information Collector'))
-        table = TableProps()
-        e = self.AddPropOptions_Reload_Module (table, _('Graphs Type'), 'server!collector',
-                                               modules_available(COLLECTORS), _(NOTE_COLLECTORS))
-        txt += self.Indent(str(table) + e)
+        table = CTK.PropsTable()
+        modul = CTK.PluginSelector('server!collector', Cherokee.support.filter_available(COLLECTORS))
+        table.Add (_('Graphs Type'), modul.selector_widget, _(NOTE_COLLECTORS))
+        self += CTK.RawHTML ("<h2>%s</h2>" %(_('Information Collector')))
+        self += CTK.Indenter(table)
+        self += CTK.Indenter(modul)
 
-        txt += "<h2>%s</h2>" % (_('Upload tracking'))
-        table = TableProps()
-        self.AddPropOptions_Reload_Plain (table, _('Upload tracking'), 'server!post_track',
-                                          modules_available(POST_TRACKERS), _(NOTE_POST_TRACKS))
-        txt += self.Indent(table)
+        table = CTK.PropsTable()
+        modul = CTK.PluginSelector('server!post_track', Cherokee.support.filter_available(POST_TRACKERS))
+        table.Add (_('Upload Tracking'), modul.selector_widget, _(NOTE_POST_TRACKS))
+        self += CTK.RawHTML ("<h2>%s</h2>" %(_('Upload Tracking')))
+        self += CTK.Indenter(table)
+        self += CTK.Indenter(modul)
 
-        return txt
 
-    def _op_apply_changes (self, uri, post):
-        # TLS checkboxes
-        checkboxes  = ['server!ipv6']
-        checkboxes += ['server!bind!%s!tls' % (cb) for cb in self._cfg.keys('server!bind')]
+class PortsTable (CTK.Submitter):
+    def __init__ (self, refreshable, **kwargs):
+        CTK.Submitter.__init__ (self, URL_APPLY)
 
-        # Validation
-        validation = DATA_VALIDATION[:]
+        table   = CTK.Table()
+        binds   = CTK.cfg.keys('server!bind')
+        has_tls = CTK.cfg.get_val('server!tls') != None
 
-        # Collector
-        pre  = "server!collector"
-        name = self._cfg.get_val (pre)
-
-        if name:
-            graph_module = module_obj_factory (name, self._cfg, pre, self.submit_url)
-            if 'validation' in dir(graph_module):
-                validation += graph_module.validation
-
-        # Apply
-        self.ApplyChanges (checkboxes, post, validation)
-
-    def _render_ports (self):
-        txt = ''
-
-        # Is it empty?
-        binds = [int(x) for x in self._cfg.keys('server!bind')]
-        binds.sort()
+        # Skip if empty
         if not binds:
-            self._cfg['server!bind!1!port'] = '80'
-            next = '2'
-        else:
-            next = str(binds[-1] + 1)
+            self += CTK.Indenter (CTK.Notice('information', CTK.RawHTML (_(NOTE_NO_SOURCES))))
+            return
 
-        has_tls = self._cfg.get_val('server!tls')
+        # Header
+        table[(1,1)] = [CTK.RawHTML(x) for x in (_('Port'), _('Bind to'), _('TLS'), '')]
+        table.set_header (row=True, num=1)
+        self += table
 
-        # List ports
-        table = Table(4, 1, style='width="90%"')
-        table += (_('Port'), _('Bind to'), _('TLS'), '')
-
-        for k in self._cfg.keys('server!bind'):
+        # Entries
+        n = 2
+        for k in binds:
             pre = 'server!bind!%s'%(k)
 
-            port   = self.InstanceEntry ("%s!port"%(pre),      'text', size=8)
-            listen = self.InstanceEntry ("%s!interface"%(pre), 'text', size=45, optional=True)
-            tls    = self.InstanceCheckbox ('%s!tls'%(pre), False, quiet=True, disabled=not has_tls)
+            port   = CTK.TextCfg ('%s!port'%(pre),      False, {'size': 8})
+            listen = CTK.TextCfg ('%s!interface'%(pre), True,  {'size': 45})
 
-            link_del = self.AddDeleteLink ('/ajax/update', pre)
+            if has_tls:
+                tls = CTK.CheckCfgText ('%s!tls'%(pre), False, _('TLS/SSL port'))
+            else:
+                tls = CTK.CheckCfgText ('%s!tls'%(pre), False, _('TLS/SSL support disabled'), {'disabled': not has_tls})
 
-            table += (port, listen, tls, link_del)
+            delete = None
+            if len(binds) >= 2:
+                delete = CTK.ImageStock('del')
+                delete.bind('click', CTK.JS.Ajax (URL_APPLY,
+                                                  data     = {pre: ''},
+                                                  complete = refreshable.JS_to_refresh()))
 
-        txt = "<h2>%s</h2>" % (_('Listening to ports'))
-        txt += self.Indent(table)
+            table[(n,1)] = [port, listen, tls, delete]
+            n += 1
 
-        # Add new port
-        pre    = 'server!bind!%s!port'%(next)
-        table = TableProps()
-        self.AddPropEntry (table,  _('Add new port'), pre,  _(NOTE_ADD_PORT))
 
-        txt += "<br />"
-        txt += str(table)
-        return txt
+class PortsWidget (CTK.Container):
+    def __init__ (self):
+        CTK.Container.__init__ (self)
+
+        # List ports
+        self.refresh = CTK.Refreshable({'id': 'general_ports'})
+        self.refresh.register (lambda: PortsTable(self.refresh).Render())
+
+        # Add new - dialog
+        table = CTK.PropsTable()
+        table.Add (_('Port'), CTK.TextCfg ('new_port', False, {'class':'noauto'}), _(NOTE_ADD_PORT))
+
+        submit = CTK.Submitter (URL_APPLY)
+        submit += table
+
+        dialog = CTK.Dialog({'title': _('New port'), 'autoOpen': False, 'draggable': False, 'width': 480 })
+        dialog.AddButton (_("Add"),    submit.JS_to_submit())
+        dialog.AddButton (_("Cancel"), "close")
+        dialog += submit
+
+        submit.bind ('submit_success', self.refresh.JS_to_refresh())
+        submit.bind ('submit_success', dialog.JS_to_close())
+
+        # Add new
+        button = CTK.SubmitterButton (_('Add new port…'))
+        button.bind ('click', dialog.JS_to_show())
+        button_s = CTK.Submitter (URL_APPLY)
+        button_s += button
+
+        # Integration
+        self += CTK.RawHTML ("<h2>%s</h2>" % (_('Listening to Ports')))
+        self += CTK.Indenter(self.refresh)
+        self += button_s
+        self += dialog
+
+
+class PermsWidget (CTK.Container):
+    def __init__ (self):
+        CTK.Container.__init__ (self)
+
+        table = CTK.PropsAuto (URL_APPLY)
+        self += CTK.RawHTML ("<h2>%s</h2>" %(_('Execution Permissions')))
+        table.Add (_('User'),   CTK.TextCfg('server!user',   True),  _(NOTE_USER))
+        table.Add (_('Group'),  CTK.TextCfg('server!group',  True), _(NOTE_GROUP))
+        table.Add (_('Chroot'), CTK.TextCfg('server!chroot', True), _(NOTE_CHROOT))
+        self += CTK.Indenter(table)
+
+
+class Render:
+    def __call__ (self):
+        ports   = PortsWidget()
+        network = NetworkWidget()
+        network.bind ('submit_success', ports.refresh.JS_to_refresh())
+
+        tabs = CTK.Tab()
+        tabs.Add (_('Network'),         network)
+        tabs.Add (_('Ports to listen'), ports)
+        tabs.Add (_('Permissions'),     PermsWidget())
+        tabs.Add (_('Icons'),           Icons.Icons_Widget())
+        tabs.Add (_('Mime types'),       Mime.MIME_Widget())
+
+        page = Page.Base (_("General"), body_id='general', helps=HELPS)
+        page += CTK.RawHTML("<h1>%s</h1>" %(_('General Settings')))
+        page += tabs
+        page += CTK.RawHTML (js=JS_SCROLL)
+
+        return page.Render()
+
+CTK.publish ('^%s'%(URL_BASE), Render)
+CTK.publish ('^%s'%(URL_APPLY), commit, validation=VALIDATIONS, method="POST")

@@ -1,5 +1,26 @@
-# For gettext
-N_ = lambda x: x
+# -*- coding: utf-8 -*-
+#
+# Cherokee-admin
+#
+# Authors:
+#      Alvaro Lopez Ortega <alvaro@alobbs.com>
+#
+# Copyright (C) 2001-2010 Alvaro Lopez Ortega
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of version 2 of the GNU General Public
+# License as published by the Free Software Foundation.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+# 02110-1301, USA.
+#
 
 AVAILABLE_LANGUAGES = [
     ('en',           N_('English')),
@@ -12,24 +33,33 @@ AVAILABLE_LANGUAGES = [
     ('zh_CN',        N_('Chinese Simplified'))
 ]
 
+PRODUCT_TOKENS = [
+    ('',        N_('Default')),
+    ('product', N_('Product only')),
+    ('minor',   N_('Product + Minor version')),
+    ('minimal', N_('Product + Minimal version')),
+    ('os',      N_('Product + Platform')),
+    ('full',    N_('Full Server string'))
+]
+
 HANDLERS = [
     ('',             N_('None')),
     ('common',       N_('List & Send')),
-    ('file',         N_('Static content')),
-    ('dirlist',      N_('Only listing')),
+    ('file',         N_('Static Content')),
+    ('dirlist',      N_('Only Listing')),
     ('redir',        N_('Redirection')),
     ('fcgi',         N_('FastCGI')),
     ('scgi',         N_('SCGI')),
     ('uwsgi',        N_('uWSGI')),
-    ('proxy',        N_('HTTP reverse proxy')),
-    ('post_report',  N_('Upload reporting')),
-    ('streaming',    N_('Audio/Video streaming')),
+    ('proxy',        N_('HTTP Reverse Proxy')),
+    ('post_report',  N_('Upload Reporting')),
+    ('streaming',    N_('Audio/Video Streaming')),
     ('cgi',          N_('CGI')),
     ('ssi',          N_('Server Side Includes')),
     ('secdownload',  N_('Hidden Downloads')),
     ('server_info',  N_('Server Info')),
-    ('dbslayer',     N_('MySQL bridge')),
-    ('custom_error', N_('HTTP error')),
+    ('dbslayer',     N_('MySQL Bridge')),
+    ('custom_error', N_('HTTP Error')),
     ('admin',        N_('Remote Administration')),
     ('empty_gif',    N_('1x1 Transparent GIF'))
 ]
@@ -72,6 +102,7 @@ LOGGER_WRITERS = [
 ]
 
 BALANCERS = [
+    ('',            N_('None')),
     ('round_robin', N_("Round Robin")),
     ('ip_hash',     N_("IP Hash"))
 ]
@@ -110,19 +141,39 @@ REDIR_SHOW = [
 
 ERROR_CODES = [
     ('400', '400 Bad Request'),
+    ('401', '401 Unauthorized'),
+    ('402', '402 Payment Required'),
     ('403', '403 Forbidden'),
     ('404', '404 Not Found'),
     ('405', '405 Method Not Allowed'),
+    ('406', '406 Not Acceptable'),
+    ('407', '407 Proxy Auth Required'),
+    ('408', '408 Request Timeout'),
+    ('409', '409 Conflict'),
     ('410', '410 Gone'),
+    ('411', '411 Length Required'),
+    ('412', '412 Precondition Failed'),
     ('413', '413 Request Entity too large'),
     ('414', '414 Request-URI too long'),
+    ('415', '415 Unsupported Media Type'),
     ('416', '416 Requested range not satisfiable'),
+    ('417', '417 Expectation Failed'),
+    ('422', '422 Unprocessable Entity'),
+    ('423', '423 Locked'),
+    ('424', '424 Failed Dependency'),
+    ('425', '425 Unordered Collection'),
+    ('426', '426 Upgrade Required'),
+    ('449', '449 Retry With'),
     ('500', '500 Internal Server Error'),
     ('501', '501 Not Implemented'),
     ('502', '502 Bad gateway'),
     ('503', '503 Service Unavailable'),
     ('504', '504 Gateway Timeout'),
-    ('505', '505 HTTP Version Not Supported')
+    ('505', '505 HTTP Version Not Supported'),
+    ('506', '506 Variant Also Negotiates'),
+    ('507', '507 Insufficient Storage'),
+    ('509', '509 Bandwidth Limit Exceeded'),
+    ('510', '510 Not Extended')
 ]
 
 RULES = [
@@ -140,7 +191,7 @@ RULES = [
 ]
 
 VRULES = [
-    ('',           N_('Choose..')),
+    ('',           N_('Match Nickname')),
     ('wildcard',   N_('Wildcards')),
     ('rehost',     N_('Regular Expressions')),
     ('target_ip',  N_('Server IP'))

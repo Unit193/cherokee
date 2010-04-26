@@ -96,7 +96,7 @@ AM_RECURSIVE_TARGETS = $(RECURSIVE_TARGETS:-recursive=) \
 	distdir
 ETAGS = etags
 CTAGS = ctags
-DIST_SUBDIRS = static
+DIST_SUBDIRS = plugins wizards CTK static
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 am__relativize = \
   dir0=`pwd`; \
@@ -279,7 +279,7 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-SUBDIRS = $(am__append_1)
+SUBDIRS = plugins wizards CTK $(am__append_1)
 SUFFIXES = .py.pre .py
 PY_PRE = \
 configured.py.pre
@@ -291,129 +291,54 @@ generated_DATA = $(gen_data)
 adminpydir = "$(datadir)/cherokee/admin"
 adminpy_SCRIPTS = $(admin_scripts)
 @INSTALL_ADMIN_TRUE@admin_data = \
-@INSTALL_ADMIN_TRUE@consts.py \
-@INSTALL_ADMIN_TRUE@Entry.py \
-@INSTALL_ADMIN_TRUE@Form.py \
-@INSTALL_ADMIN_TRUE@Post.py \
+@INSTALL_ADMIN_TRUE@Auth.py \
+@INSTALL_ADMIN_TRUE@Balancer.py \
+@INSTALL_ADMIN_TRUE@CgiBase.py \
+@INSTALL_ADMIN_TRUE@Cherokee.py \
+@INSTALL_ADMIN_TRUE@Flags.py \
+@INSTALL_ADMIN_TRUE@Graph.py \
+@INSTALL_ADMIN_TRUE@Handler.py \
+@INSTALL_ADMIN_TRUE@Icons.py \
+@INSTALL_ADMIN_TRUE@Mime.py \
 @INSTALL_ADMIN_TRUE@Page.py \
-@INSTALL_ADMIN_TRUE@PageAjaxUpdate.py \
 @INSTALL_ADMIN_TRUE@PageAdvanced.py \
 @INSTALL_ADMIN_TRUE@PageEntry.py \
+@INSTALL_ADMIN_TRUE@PageError.py \
+@INSTALL_ADMIN_TRUE@PageException.py \
 @INSTALL_ADMIN_TRUE@PageGeneral.py \
-@INSTALL_ADMIN_TRUE@PageIcon.py \
-@INSTALL_ADMIN_TRUE@PageStatus.py \
-@INSTALL_ADMIN_TRUE@PageMime.py \
+@INSTALL_ADMIN_TRUE@PageHelp.py \
+@INSTALL_ADMIN_TRUE@PageIndex.py \
 @INSTALL_ADMIN_TRUE@PageNewConfig.py \
+@INSTALL_ADMIN_TRUE@PageRule.py \
+@INSTALL_ADMIN_TRUE@PageSource.py \
+@INSTALL_ADMIN_TRUE@PageSources.py \
+@INSTALL_ADMIN_TRUE@PageStatus.py \
 @INSTALL_ADMIN_TRUE@PageVServer.py \
 @INSTALL_ADMIN_TRUE@PageVServers.py \
-@INSTALL_ADMIN_TRUE@PageError.py \
-@INSTALL_ADMIN_TRUE@PageFeedback.py \
-@INSTALL_ADMIN_TRUE@PageInfoSource.py \
-@INSTALL_ADMIN_TRUE@Table.py \
-@INSTALL_ADMIN_TRUE@Theme.py \
 @INSTALL_ADMIN_TRUE@Rule.py \
-@INSTALL_ADMIN_TRUE@RuleList.py \
-@INSTALL_ADMIN_TRUE@Module.py \
-@INSTALL_ADMIN_TRUE@ModuleHandler.py \
-@INSTALL_ADMIN_TRUE@ModuleFile.py \
-@INSTALL_ADMIN_TRUE@ModuleDirlist.py \
-@INSTALL_ADMIN_TRUE@ModuleCommon.py \
-@INSTALL_ADMIN_TRUE@ModuleRedir.py \
-@INSTALL_ADMIN_TRUE@ModuleServerInfo.py \
-@INSTALL_ADMIN_TRUE@ModuleCgi.py \
-@INSTALL_ADMIN_TRUE@ModuleFcgi.py \
-@INSTALL_ADMIN_TRUE@ModuleScgi.py \
-@INSTALL_ADMIN_TRUE@ModuleUwsgi.py \
-@INSTALL_ADMIN_TRUE@ModuleBalancer.py \
-@INSTALL_ADMIN_TRUE@ModuleSsi.py \
-@INSTALL_ADMIN_TRUE@ModuleSecdownload.py \
-@INSTALL_ADMIN_TRUE@ModuleEmptyGif.py \
-@INSTALL_ADMIN_TRUE@ModulePostReport.py \
-@INSTALL_ADMIN_TRUE@ModuleProxy.py \
-@INSTALL_ADMIN_TRUE@ModuleDbslayer.py \
-@INSTALL_ADMIN_TRUE@ModuleStreaming.py \
-@INSTALL_ADMIN_TRUE@ModuleErrorNn.py \
-@INSTALL_ADMIN_TRUE@ModuleErrorRedir.py \
-@INSTALL_ADMIN_TRUE@ModuleAuth.py \
-@INSTALL_ADMIN_TRUE@ModuleAuthlist.py \
-@INSTALL_ADMIN_TRUE@ModuleAdmin.py \
-@INSTALL_ADMIN_TRUE@ModuleHtdigest.py \
-@INSTALL_ADMIN_TRUE@ModuleLdap.py \
-@INSTALL_ADMIN_TRUE@ModulePlain.py \
-@INSTALL_ADMIN_TRUE@ModuleHtpasswd.py \
-@INSTALL_ADMIN_TRUE@ModuleMysql.py \
-@INSTALL_ADMIN_TRUE@ModulePam.py \
-@INSTALL_ADMIN_TRUE@ModuleRoundRobin.py \
-@INSTALL_ADMIN_TRUE@ModuleIpHash.py \
-@INSTALL_ADMIN_TRUE@ModuleDefault.py \
-@INSTALL_ADMIN_TRUE@ModuleRequest.py \
-@INSTALL_ADMIN_TRUE@ModuleDirectory.py \
-@INSTALL_ADMIN_TRUE@ModuleExtensions.py \
-@INSTALL_ADMIN_TRUE@ModuleFullpath.py \
-@INSTALL_ADMIN_TRUE@ModuleGeoip.py \
-@INSTALL_ADMIN_TRUE@ModuleHeader.py \
-@INSTALL_ADMIN_TRUE@ModuleExists.py \
-@INSTALL_ADMIN_TRUE@ModuleMethod.py \
-@INSTALL_ADMIN_TRUE@ModuleBind.py \
-@INSTALL_ADMIN_TRUE@ModuleFrom.py \
-@INSTALL_ADMIN_TRUE@ModuleCustomError.py \
-@INSTALL_ADMIN_TRUE@ModuleWildcard.py \
-@INSTALL_ADMIN_TRUE@ModuleRehost.py \
-@INSTALL_ADMIN_TRUE@ModuleTargetIp.py \
-@INSTALL_ADMIN_TRUE@ModuleEvhost.py \
-@INSTALL_ADMIN_TRUE@ModuleRrd.py \
-@INSTALL_ADMIN_TRUE@ModuleUrlArg.py \
-@INSTALL_ADMIN_TRUE@config.py \
-@INSTALL_ADMIN_TRUE@config_version.py \
-@INSTALL_ADMIN_TRUE@pyscgi.py \
-@INSTALL_ADMIN_TRUE@validations.py \
-@INSTALL_ADMIN_TRUE@CherokeeManagement.py \
-@INSTALL_ADMIN_TRUE@GraphManager.py \
-@INSTALL_ADMIN_TRUE@flags.py \
-@INSTALL_ADMIN_TRUE@util.py \
+@INSTALL_ADMIN_TRUE@RuleSimple.py \
+@INSTALL_ADMIN_TRUE@SelectionPanel.py \
 @INSTALL_ADMIN_TRUE@Wizard.py \
-@INSTALL_ADMIN_TRUE@Wizard_PHP.py \
-@INSTALL_ADMIN_TRUE@Wizard_WordPress.py \
-@INSTALL_ADMIN_TRUE@Wizard_Django.py \
-@INSTALL_ADMIN_TRUE@Wizard_Redirect.py \
-@INSTALL_ADMIN_TRUE@Wizard_HotLinking.py \
-@INSTALL_ADMIN_TRUE@Wizard_Drupal.py \
-@INSTALL_ADMIN_TRUE@Wizard_RoR.py \
-@INSTALL_ADMIN_TRUE@Wizard_Mailman.py \
-@INSTALL_ADMIN_TRUE@Wizard_Icons.py \
-@INSTALL_ADMIN_TRUE@Wizard_CommonStatic.py \
-@INSTALL_ADMIN_TRUE@Wizard_Streaming.py \
-@INSTALL_ADMIN_TRUE@Wizard_rTorrent.py \
-@INSTALL_ADMIN_TRUE@Wizard_Joomla.py \
-@INSTALL_ADMIN_TRUE@Wizard_Moodle.py \
-@INSTALL_ADMIN_TRUE@Wizard_Sugar.py \
-@INSTALL_ADMIN_TRUE@Wizard_phpBB.py \
-@INSTALL_ADMIN_TRUE@Wizard_phpMyAdmin.py \
-@INSTALL_ADMIN_TRUE@Wizard_Symfony.py \
-@INSTALL_ADMIN_TRUE@Wizard_Zend.py \
-@INSTALL_ADMIN_TRUE@Wizard_Trac.py \
-@INSTALL_ADMIN_TRUE@Wizard_Liferay.py \
-@INSTALL_ADMIN_TRUE@Wizard_Alfresco.py \
-@INSTALL_ADMIN_TRUE@Wizard_Glassfish.py \
-@INSTALL_ADMIN_TRUE@Wizard_uWSGI.py \
-@INSTALL_ADMIN_TRUE@Wizard_Mono.py \
-@INSTALL_ADMIN_TRUE@Wizard_ColdFusion.py \
-@INSTALL_ADMIN_TRUE@Wizard_Concrete5.py \
-@INSTALL_ADMIN_TRUE@Wizard_MoinMoin.py
+@INSTALL_ADMIN_TRUE@XMLServerDigest.py \
+@INSTALL_ADMIN_TRUE@config_version.py \
+@INSTALL_ADMIN_TRUE@consts.py \
+@INSTALL_ADMIN_TRUE@server.py \
+@INSTALL_ADMIN_TRUE@upgrade_config.py \
+@INSTALL_ADMIN_TRUE@util.py \
+@INSTALL_ADMIN_TRUE@validations.py
 
-adminpy_DATA = $(admin_data)
-@INSTALL_ADMIN_TRUE@template_data = \
-@INSTALL_ADMIN_TRUE@default.template.html \
-@INSTALL_ADMIN_TRUE@status.template.html \
-@INSTALL_ADMIN_TRUE@error_not_writable.template.html \
-@INSTALL_ADMIN_TRUE@error_icons_dir_missing.template.html \
-@INSTALL_ADMIN_TRUE@error_couldnt_launch.template.html \
-@INSTALL_ADMIN_TRUE@error_internal.template.html
+@INSTALL_ADMIN_TRUE@html_data = \
+@INSTALL_ADMIN_TRUE@exception.html \
+@INSTALL_ADMIN_TRUE@help.html \
+@INSTALL_ADMIN_TRUE@theme.html
 
+adminpy_DATA = $(admin_data) $(html_data)
+@INSTALL_ADMIN_TRUE@template_data = 
 adminhelpdir = "$(datadir)/cherokee/admin"
 adminhelp_DATA = $(template_data)
 EXTRA_DIST = \
 $(PY_PRE) \
+$(html_data) \
 $(admin_data) \
 $(admin_scripts) \
 $(template_data)
