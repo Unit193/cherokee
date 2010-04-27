@@ -1,3 +1,278 @@
+2010-04-27  Taher Shihadeh  <taher@unixwars.com>
+            svn=4984 git=8971fccc3db1df5195599056246444457496a43a
+
+    Fixes an incorrect shot
+    
+ doc/Makefile.am                      |    2 +-
+ doc/config_virtual_servers.txt       |    2 +-
+ doc/media/images/admin_behavior.png  |  Bin 0 -> 9769 bytes
+ doc/media/images/admin_behaviour.png |  Bin 20375 -> 0 bytes
+ 4 files changed, 2 insertions(+), 2 deletions(-)
+
+
+2010-04-27  Taher Shihadeh  <taher@unixwars.com>
+            svn=4983 git=d487d411c647ab24c913b1bcee0b587c86224ded
+
+    Updates the rest of the documentation
+    
+ doc/cookbook_alfresco.txt                          |    8 +++++---
+ doc/cookbook_coldfusion.txt                        |    9 ++++++---
+ doc/cookbook_concrete5.txt                         |    8 +++++---
+ doc/cookbook_django.txt                            |   14 ++++++++------
+ doc/cookbook_drupal.txt                            |    8 +++++---
+ doc/cookbook_embedding_cherokee.txt                |    2 +-
+ doc/cookbook_glassfish.txt                         |   12 ++++++++----
+ doc/cookbook_joomla.txt                            |    9 ++++++---
+ doc/cookbook_kumbia.txt                            |    2 +-
+ doc/cookbook_mailman.txt                           |    6 +++---
+ doc/cookbook_maintenance.txt                       |   10 ++++++----
+ doc/cookbook_managing_logs.txt                     |    8 ++++++--
+ doc/cookbook_moodle.txt                            |    5 +++--
+ doc/cookbook_php.txt                               |    4 +++-
+ doc/cookbook_phpbb.txt                             |    4 ++--
+ doc/cookbook_phpmyadmin.txt                        |    8 +++++---
+ doc/cookbook_redirs.txt                            |    4 ++--
+ doc/cookbook_ror.txt                               |   17 +++++++++++++----
+ doc/cookbook_streaming.txt                         |   10 ++++++----
+ doc/cookbook_sugarcrm.txt                          |   12 ++++++++----
+ doc/cookbook_wordpress.txt                         |    8 +++++---
+ doc/cookbook_zend.txt                              |    6 +++---
+ doc/media/images/admin_handler_fastcgi1.png        |  Bin 21459 -> 21207 bytes
+ doc/media/images/admin_handler_fastcgi2.png        |  Bin 66889 -> 66318 bytes
+ doc/media/images/admin_noconfig.png                |  Bin 11594 -> 11638 bytes
+ doc/media/images/cookbook_alfresco_alfresco.png    |  Bin 36672 -> 34437 bytes
+ doc/media/images/cookbook_alfresco_assistant.png   |  Bin 21452 -> 20121 bytes
+ doc/media/images/cookbook_alfresco_install.png     |  Bin 21223 -> 19817 bytes
+ doc/media/images/cookbook_alfresco_path.png        |  Bin 7629 -> 7356 bytes
+ doc/media/images/cookbook_alfresco_share.png       |  Bin 40507 -> 37782 bytes
+ doc/media/images/cookbook_alfresco_soffice.png     |  Bin 7738 -> 7474 bytes
+ doc/media/images/cookbook_dbslayer1.png            |  Bin 9446 -> 8884 bytes
+ doc/media/images/cookbook_dbslayer2.png            |  Bin 20176 -> 18742 bytes
+ doc/media/images/cookbook_dbslayer3.png            |  Bin 8451 -> 7909 bytes
+ doc/media/images/cookbook_dbslayer4.png            |  Bin 36846 -> 35042 bytes
+ doc/media/images/cookbook_django.png               |  Bin 24570 -> 23568 bytes
+ doc/media/images/cookbook_django_common.png        |  Bin 23244 -> 22134 bytes
+ doc/media/images/cookbook_django_infosources.png   |  Bin 34340 -> 30736 bytes
+ doc/media/images/cookbook_drupal.png               |  Bin 28194 -> 27607 bytes
+ doc/media/images/cookbook_glassfish.png            |  Bin 4837 -> 4851 bytes
+ doc/media/images/cookbook_joomla.png               |  Bin 13433 -> 12561 bytes
+ doc/media/images/cookbook_liferay.png              |  Bin 17710 -> 16861 bytes
+ doc/media/images/cookbook_mailman.png              |  Bin 13387 -> 13235 bytes
+ .../cookbook_maintenance_advanced_domains.png      |  Bin 8751 -> 8557 bytes
+ .../images/cookbook_maintenance_advanced_redir.png |  Bin 14572 -> 14100 bytes
+ .../images/cookbook_maintenance_advanced_rules.png |  Bin 9925 -> 9641 bytes
+ doc/media/images/cookbook_maintenance_copy.png     |  Bin 16180 -> 15654 bytes
+ doc/media/images/cookbook_maintenance_domain.png   |  Bin 9290 -> 9055 bytes
+ doc/media/images/cookbook_maintenance_error.png    |  Bin 7911 -> 7784 bytes
+ doc/media/images/cookbook_maintenance_result.png   |  Bin 7356 -> 7203 bytes
+ doc/media/images/cookbook_maintenance_rule.png     |  Bin 8349 -> 8213 bytes
+ .../images/cookbook_managing_logs_handler.png      |  Bin 6349 -> 6172 bytes
+ doc/media/images/cookbook_managing_logs_rules.png  |  Bin 15290 -> 14223 bytes
+ .../images/cookbook_managing_logs_security.png     |  Bin 44325 -> 41923 bytes
+ doc/media/images/cookbook_mono_demo.png            |  Bin 11694 -> 11183 bytes
+ doc/media/images/cookbook_mono_handler.png         |  Bin 65210 -> 62644 bytes
+ doc/media/images/cookbook_moodle.png               |  Bin 20046 -> 18427 bytes
+ doc/media/images/cookbook_moodle_db.png            |  Bin 34246 -> 31835 bytes
+ doc/media/images/cookbook_moodle_document_root.png |  Bin 12902 -> 12159 bytes
+ doc/media/images/cookbook_moodle_modules.png       |  Bin 57064 -> 48838 bytes
+ doc/media/images/cookbook_moodle_paths.png         |  Bin 37347 -> 35388 bytes
+ doc/media/images/cookbook_mysql_rule.png           |  Bin 5274 -> 5027 bytes
+ doc/media/images/cookbook_mysql_validator.png      |  Bin 14678 -> 14012 bytes
+ doc/media/images/cookbook_nagios1.png              |  Bin 8426 -> 8081 bytes
+ doc/media/images/cookbook_nagios2.png              |  Bin 8475 -> 8133 bytes
+ doc/media/images/cookbook_nagios3.png              |  Bin 21136 -> 20249 bytes
+ doc/media/images/cookbook_nagios4.png              |  Bin 36819 -> 35664 bytes
+ doc/media/images/cookbook_phpbb_1_intro.png        |  Bin 42051 -> 39031 bytes
+ doc/media/images/cookbook_phpbb_2_req.png          |  Bin 38468 -> 35390 bytes
+ doc/media/images/cookbook_phpbb_3_db.png           |  Bin 32525 -> 30601 bytes
+ doc/media/images/cookbook_phpbb_4_admin.png        |  Bin 31397 -> 28930 bytes
+ doc/media/images/cookbook_phpbb_5_config.png       |  Bin 25893 -> 23794 bytes
+ doc/media/images/cookbook_phpbb_6_advanced.png     |  Bin 38390 -> 36283 bytes
+ doc/media/images/cookbook_phpbb_7_create.png       |  Bin 27273 -> 24918 bytes
+ doc/media/images/cookbook_phpbb_8_final.png        |  Bin 50883 -> 45143 bytes
+ doc/media/images/cookbook_phpbb_adm.png            |  Bin 41772 -> 39075 bytes
+ doc/media/images/cookbook_phpbb_adm_warning.png    |  Bin 40112 -> 37334 bytes
+ doc/media/images/cookbook_phpbb_rules.png          |  Bin 10153 -> 9593 bytes
+ doc/media/images/cookbook_phpbb_running.png        |  Bin 30708 -> 29947 bytes
+ doc/media/images/cookbook_phpmyadmin.png           |  Bin 12135 -> 11383 bytes
+ doc/media/images/cookbook_phpmyadmin_denied.png    |  Bin 8916 -> 8702 bytes
+ doc/media/images/cookbook_redir_behavior.png       |  Bin 4713 -> 4519 bytes
+ doc/media/images/cookbook_redir_domains.png        |  Bin 8934 -> 8552 bytes
+ doc/media/images/cookbook_redir_handler.png        |  Bin 9656 -> 9034 bytes
+ doc/media/images/cookbook_ror.png                  |  Bin 15410 -> 15239 bytes
+ doc/media/images/cookbook_ror_common.png           |  Bin 31359 -> 29750 bytes
+ doc/media/images/cookbook_ror_fcgi.png             |  Bin 19340 -> 18589 bytes
+ doc/media/images/cookbook_ror_wizard.png           |  Bin 11842 -> 11315 bytes
+ doc/media/images/cookbook_sugarcrm_install0.png    |  Bin 65402 -> 61674 bytes
+ doc/media/images/cookbook_sugarcrm_install1.png    |  Bin 22665 -> 21762 bytes
+ doc/media/images/cookbook_sugarcrm_running0.png    |  Bin 23118 -> 22260 bytes
+ doc/media/images/cookbook_sugarcrm_running1.png    |  Bin 27229 -> 25443 bytes
+ doc/media/images/cookbook_symfony.png              |  Bin 25415 -> 24493 bytes
+ doc/media/images/cookbook_trac.png                 |  Bin 36099 -> 35325 bytes
+ doc/media/images/cookbook_trac_info.png            |  Bin 19798 -> 18709 bytes
+ doc/media/images/cookbook_trac_rules.png           |  Bin 5956 -> 5693 bytes
+ doc/media/images/cookbook_trac_scgi.png            |  Bin 29568 -> 28229 bytes
+ doc/media/images/cookbook_trac_static.png          |  Bin 9949 -> 9485 bytes
+ doc/media/images/cookbook_wp1.png                  |  Bin 28214 -> 26477 bytes
+ doc/media/images/cookbook_wp2.png                  |  Bin 14129 -> 13235 bytes
+ doc/media/images/cookbook_wp3.png                  |  Bin 10592 -> 10279 bytes
+ doc/media/images/cookbook_wp4.png                  |  Bin 49037 -> 44859 bytes
+ doc/media/images/cookbook_wp5.png                  |  Bin 28161 -> 25656 bytes
+ doc/media/images/cookbook_zend1.png                |  Bin 3762 -> 3735 bytes
+ 104 files changed, 110 insertions(+), 64 deletions(-)
+
+
+2010-04-27  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=4982 git=e49e4b938b0cd9ef8e343d1cbde9b7cd47467d87
+
+    Tries to address a Keep-Alive related bug.
+    
+ cherokee/thread.c |   12 +++++++++++-
+ 1 files changed, 11 insertions(+), 1 deletions(-)
+
+
+2010-04-27  Taher Shihadeh  <taher@unixwars.com>
+            svn=4981 git=aabf710cedc4f1a8728aec17f521f2d2c505d981
+
+    phpMyadmin wizard had been left out
+    
+ admin/wizards/List.py |    4 ++--
+ 1 files changed, 2 insertions(+), 2 deletions(-)
+
+
+2010-04-27  Taher Shihadeh  <taher@unixwars.com>
+            svn=4980 git=e4959bf2ec8b673f79913997c485282e9267efea
+
+    Updates the wizard
+    
+ admin/wizards/symfony.py |    2 ++
+ 1 files changed, 2 insertions(+), 0 deletions(-)
+
+
+2010-04-27  Taher Shihadeh  <taher@unixwars.com>
+            svn=4979 git=134933b138caa150290bd9381bc4f8cbb2b7772d
+
+    Fixes WordPress wizard. It was failing when installed under a subdirectory
+    
+ admin/wizards/concrete5.py |    4 ++-
+ admin/wizards/drupal.py    |    4 +++
+ admin/wizards/joomla.py    |    2 +
+ admin/wizards/rails.py     |    6 ++--
+ admin/wizards/wordpress.py |   47 +++++++++++++++++++++++++------------------
+ admin/wizards/zend.py      |    4 +++
+ 6 files changed, 43 insertions(+), 24 deletions(-)
+
+
+2010-04-27  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=4978 git=68f300de8923072ca63412036fe51851e7bd0275
+
+    Fixes the Error Writer management: Stale entries were being left.
+    Patch based on Taher's: http://bugs.cherokee-project.com/825
+    
+ admin/PageVServer.py |   15 ++++++++++++++-
+ 1 files changed, 14 insertions(+), 1 deletions(-)
+
+
+2010-04-27  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=4976 git=78c423e7964e6bd514b242f1a1f39b265a8e2782
+
+    Fixes the old configuration conversion scripts.
+    
+ contrib/06to07.py      |    4 ++--
+ contrib/07to08.py      |    4 ++--
+ contrib/08to09.py      |    4 ++--
+ contrib/0999to09910.py |    4 ++--
+ 4 files changed, 8 insertions(+), 8 deletions(-)
+
+
+2010-04-27  Taher Shihadeh  <taher@unixwars.com>
+            svn=4975 git=759908f24e12f6d14cbdf7d992016d53f409e653
+
+    Fixes screenshot margins
+    
+ .../cookbook_maintenance_advanced_domains.png      |  Bin 9315 -> 8751 bytes
+ .../images/cookbook_maintenance_advanced_redir.png |  Bin 15620 -> 14572 bytes
+ .../images/cookbook_maintenance_advanced_rules.png |  Bin 10717 -> 9925 bytes
+ doc/media/images/cookbook_maintenance_copy.png     |  Bin 17377 -> 16180 bytes
+ doc/media/images/cookbook_maintenance_domain.png   |  Bin 9857 -> 9290 bytes
+ doc/media/images/cookbook_maintenance_error.png    |  Bin 8523 -> 7911 bytes
+ doc/media/images/cookbook_maintenance_result.png   |  Bin 7977 -> 7356 bytes
+ doc/media/images/cookbook_maintenance_rule.png     |  Bin 8995 -> 8349 bytes
+ 8 files changed, 0 insertions(+), 0 deletions(-)
+
+
+2010-04-26  Jonathan Hernandez  <ion@suavizado.com>
+            svn=4973 git=164bde6c870fc4f488d4d78a081f1dcdeaa64945
+
+    Style balancer sources table
+    
+ admin/Balancer.py |    4 ++--
+ 1 files changed, 2 insertions(+), 2 deletions(-)
+
+
+2010-04-26  Taher Shihadeh  <taher@unixwars.com>
+            svn=4972 git=f72ce00243f1d01a7c49d35894f7c34c30a434e8
+
+    Minor fix
+    
+ doc/cookbook_wordpress.txt |    6 +++---
+ 1 files changed, 3 insertions(+), 3 deletions(-)
+
+
+2010-04-26  Taher Shihadeh  <taher@unixwars.com>
+            svn=4971 git=a121693204a317b13ce12d782ae879cafa9e5578
+
+    Adds a warning to the WordPress recipe
+    
+ doc/cookbook_wordpress.txt |   14 ++++++++++++++
+ 1 files changed, 14 insertions(+), 0 deletions(-)
+
+
+2010-04-26  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=4970 git=b22d0ef87bdb9089af68d18f293906cbb4bd7a1e
+
+    The --enable-trace was duplicated. Thanks to Jedrzej Nowak for the
+    report.
+    
+ doc/basics_installation_unix.txt |    3 +--
+ 1 files changed, 1 insertions(+), 2 deletions(-)
+
+
+2010-04-26  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=4969 git=b8b95ac6ab46ac14f437ae407430b2d3b3c25b85
+
+    The favicon.ico was missing.
+    
+ admin/static/images/Makefile.am |    1 +
+ admin/static/images/favicon.ico |  Bin 0 -> 769 bytes
+ 2 files changed, 1 insertions(+), 0 deletions(-)
+
+
+2010-04-26  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=4968 git=a68437deeeb41d4052234ca2fff242b3bedd6c8d
+
+    Increases default timeout to 25 seconds in Cherokee-admin.
+    
+ cherokee/main_admin.c |    6 ++++--
+ 1 files changed, 4 insertions(+), 2 deletions(-)
+
+2010-04-26  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=4967 git=a4662e035cbe1b21cd09bfdaad63eb08d2fa87fd
+
+    Cherokee 0.99.46 released
+    
+ configure.in |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+
+2010-04-26  Taher Shihadeh  <taher@unixwars.com>
+            svn=4964 git=4611e64582e04ed032f584801554d232b1f846df
+
+    Fixes an image-rendering issue in Firefox 3.5
+    
+ admin/static/css/cherokee-admin.css |    6 +++---
+ 1 files changed, 3 insertions(+), 3 deletions(-)
+
 2010-04-26  Taher Shihadeh  <taher@unixwars.com>
             svn=4963 git=495d02620a9b8741f3abc58c116a10f516a41bd6
 

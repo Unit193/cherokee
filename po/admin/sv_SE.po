@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: cherokee-admin 0.99.16\n"
 "Report-Msgid-Bugs-To: http://bugs.cherokee-project.com/\n"
-"POT-Creation-Date: 2010-04-26 15:14+0200\n"
+"POT-Creation-Date: 2010-04-27 18:20+0200\n"
 "PO-Revision-Date: 2009-06-02 12:23+0100\n"
 "Last-Translator: Andreas Andersson <andreas@cyberdelic.org>\n"
 "Language-Team: Swedish <LL@li.org>\n"
@@ -290,7 +290,7 @@ msgid ""
 msgstr ""
 
 #: admin/Graph.py:117 admin/PageEntry.py:233 admin/PageSource.py:166
-#: admin/PageStatus.py:70 admin/PageVServer.py:494 admin/PageVServers.py:193
+#: admin/PageStatus.py:70 admin/PageVServer.py:506 admin/PageVServers.py:193
 msgid "Unknown"
 msgstr "Okänd"
 
@@ -820,7 +820,7 @@ msgstr "Trafikmodellering"
 msgid "Skip Logging"
 msgstr "Hoppa över loggning"
 
-#: admin/PageEntry.py:108 admin/PageVServer.py:483
+#: admin/PageEntry.py:108 admin/PageVServer.py:495
 msgid "Logging"
 msgstr "Loggning"
 
@@ -897,7 +897,7 @@ msgstr "Kodning"
 msgid "Time"
 msgstr "Timeout"
 
-#: admin/PageEntry.py:251 admin/PageVServer.py:484
+#: admin/PageEntry.py:251 admin/PageVServer.py:496
 msgid "Security"
 msgstr "Säkerhet"
 
@@ -1586,7 +1586,7 @@ msgstr "Klona"
 msgid "Clone Selected Behavior Rule"
 msgstr ""
 
-#: admin/PageRule.py:296 admin/PageVServer.py:481
+#: admin/PageRule.py:296 admin/PageVServer.py:493
 msgid "Behavior"
 msgstr "Betéende"
 
@@ -1682,7 +1682,7 @@ msgstr ""
 msgid "First edit the offending rule(s)"
 msgstr ""
 
-#: admin/PageSource.py:162 admin/PageVServer.py:486
+#: admin/PageSource.py:162 admin/PageVServer.py:498
 msgid "Virtual Server"
 msgstr "Virtuell server"
 
@@ -2189,50 +2189,50 @@ msgstr "Kolla inte ursprung"
 msgid "Logging Option"
 msgstr "Loggning"
 
-#: admin/PageVServer.py:436
+#: admin/PageVServer.py:448
 msgid "Certificate"
 msgstr "Certifikat"
 
-#: admin/PageVServer.py:437
+#: admin/PageVServer.py:449
 msgid "Certificate key"
 msgstr "Certifikatnyckel"
 
-#: admin/PageVServer.py:442
+#: admin/PageVServer.py:454
 #, fuzzy
 msgid "Required SSL/TLS Values"
 msgstr "Obligatoriska SSL/TLS-värden"
 
-#: admin/PageVServer.py:447
+#: admin/PageVServer.py:459
 msgid "Ciphers"
 msgstr "Chiffer"
 
-#: admin/PageVServer.py:448
+#: admin/PageVServer.py:460
 msgid "Client Certs. Request"
 msgstr ""
 
-#: admin/PageVServer.py:451
+#: admin/PageVServer.py:463
 msgid "CA List"
 msgstr "CA-lista"
 
-#: admin/PageVServer.py:454
+#: admin/PageVServer.py:466
 msgid "Verify Depth"
 msgstr "Verifiera djup"
 
-#: admin/PageVServer.py:460
+#: admin/PageVServer.py:472
 #, fuzzy
 msgid "Advanced Options"
 msgstr "Avancerade val"
 
-#: admin/PageVServer.py:479
+#: admin/PageVServer.py:491
 msgid "Basics"
 msgstr "Allmänt"
 
-#: admin/PageVServer.py:480
+#: admin/PageVServer.py:492
 #, fuzzy
 msgid "Host Match"
 msgstr "Närmast träff"
 
-#: admin/PageVServer.py:482
+#: admin/PageVServer.py:494
 msgid "Error Handler"
 msgstr "Felhanterare"
 

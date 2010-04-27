@@ -25,7 +25,8 @@ as a new virtual server or be installed inside a directory of some of
 the virtual servers that already exist.</p></div>
 <h3 id="cherokee_vserver">Setting up Wordpress as a new Virtual Server</h3><div style="clear:left"></div>
 <div class="paragraph"><p>The first step would be to go to the virtual server list page. Once in
-there, you&#8217;ll have to click the <tt>Wizards</tt> button:</p></div>
+there, click on the <tt>Add</tt> button at the top of the panel to show the
+list of available wizards.</p></div>
 <div class="imageblock">
 <div class="content">
 <img src="media/images/admin_vservers_wizard.png" alt="media/images/admin_vservers_wizard.png" />
@@ -46,8 +47,9 @@ to modify it as you will.</p></div>
 want to set up Wordpress inside the <tt>/blog</tt> directory of one of our
 virtual servers.</p></div>
 <div class="paragraph"><p>In this case, the first thing you will have to do is to enter the
-virtual server configuration you&#8217;d like to configure Wordpress in.
-Once in there, click the <tt>Wizards</tt> button:</p></div>
+virtual server configuration you&#8217;d like to configure WordPress
+in. Visit the <tt>Behavior</tt> tab, use the <tt>Rule Management</tt> button and
+click on the <tt>Add</tt> button at the top of the panel.</p></div>
 <div class="imageblock">
 <div class="content">
 <img src="media/images/admin_vserver_wizard.png" alt="media/images/admin_vserver_wizard.png" />
@@ -71,6 +73,19 @@ start over.</p></div>
 reconfiguration of Cherokee whatsoever, you can skip right to the
 section <a href="cookbook_wordpress.html#setting_up_wordpress">Setting up
 Wordpress</a>.</p></div>
+<h4 id="_warning_2">WARNING</h4>
+<div class="paragraph"><p>Beware of another possible break point. The last step in the
+installation of WordPress involves mailing the details of the new
+account to the provided email. Normally the process will be painless:
+if the system is running an MTA, this report will be sent. If not, it
+will simply skip this step. In both cases the information will also be
+displayed on screen. However, there is a corner case that might make
+your installation fail: if the server is running a broken MTA, this
+could make PHP fail when trying to deliver the email, in turn
+resulting in a failure during the installation, and making Cherokee
+report an <tt>Error 500</tt>. Having a broken MTA on a production server is a
+very unlikely scenario, but double check your MTA in case you receive
+this error.</p></div>
 <h3 id="wordpress">Setting up Wordpress</h3><div style="clear:left"></div>
 <div class="paragraph"><p>First download and uncompress the distributed Wordpress release into
 <tt>/var/www/wordpress</tt>, and create a database suitable for the installation.</p></div>

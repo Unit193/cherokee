@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: cherokee '0.99.38' admin UI for zh_CN \n"
 "Report-Msgid-Bugs-To: http://bugs.cherokee-project.com/\n"
-"POT-Creation-Date: 2010-04-26 15:14+0200\n"
+"POT-Creation-Date: 2010-04-27 18:20+0200\n"
 "PO-Revision-Date: 2009-04-14 21:27+CEST\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: ownlinux.cn\n"
@@ -284,7 +284,7 @@ msgid ""
 msgstr "是否对此虚拟机进行流量及状态统计"
 
 #: admin/Graph.py:117 admin/PageEntry.py:233 admin/PageSource.py:166
-#: admin/PageStatus.py:70 admin/PageVServer.py:494 admin/PageVServers.py:193
+#: admin/PageStatus.py:70 admin/PageVServer.py:506 admin/PageVServers.py:193
 msgid "Unknown"
 msgstr "未知"
 
@@ -800,7 +800,7 @@ msgstr "流量限制"
 msgid "Skip Logging"
 msgstr "不启用日志"
 
-#: admin/PageEntry.py:108 admin/PageVServer.py:483
+#: admin/PageEntry.py:108 admin/PageVServer.py:495
 msgid "Logging"
 msgstr "启用日志"
 
@@ -877,7 +877,7 @@ msgstr "压缩"
 msgid "Time"
 msgstr "超时"
 
-#: admin/PageEntry.py:251 admin/PageVServer.py:484
+#: admin/PageEntry.py:251 admin/PageVServer.py:496
 msgid "Security"
 msgstr "安全"
 
@@ -1560,7 +1560,7 @@ msgstr "克隆"
 msgid "Clone Selected Behavior Rule"
 msgstr ""
 
-#: admin/PageRule.py:296 admin/PageVServer.py:481
+#: admin/PageRule.py:296 admin/PageVServer.py:493
 msgid "Behavior"
 msgstr "扩展设置"
 
@@ -1647,7 +1647,7 @@ msgstr ""
 msgid "First edit the offending rule(s)"
 msgstr ""
 
-#: admin/PageSource.py:162 admin/PageVServer.py:486
+#: admin/PageSource.py:162 admin/PageVServer.py:498
 msgid "Virtual Server"
 msgstr "虚拟主机"
 
@@ -2144,50 +2144,50 @@ msgstr "不检查来源"
 msgid "Logging Option"
 msgstr "启用日志"
 
-#: admin/PageVServer.py:436
+#: admin/PageVServer.py:448
 msgid "Certificate"
 msgstr "证书"
 
-#: admin/PageVServer.py:437
+#: admin/PageVServer.py:449
 msgid "Certificate key"
 msgstr "加密证书"
 
-#: admin/PageVServer.py:442
+#: admin/PageVServer.py:454
 #, fuzzy
 msgid "Required SSL/TLS Values"
 msgstr "必要的 SSL/TLS 值"
 
-#: admin/PageVServer.py:447
+#: admin/PageVServer.py:459
 msgid "Ciphers"
 msgstr "密码"
 
-#: admin/PageVServer.py:448
+#: admin/PageVServer.py:460
 msgid "Client Certs. Request"
 msgstr "客户端证书. 请求"
 
-#: admin/PageVServer.py:451
+#: admin/PageVServer.py:463
 msgid "CA List"
 msgstr "CA 列表"
 
-#: admin/PageVServer.py:454
+#: admin/PageVServer.py:466
 msgid "Verify Depth"
 msgstr "验证"
 
-#: admin/PageVServer.py:460
+#: admin/PageVServer.py:472
 #, fuzzy
 msgid "Advanced Options"
 msgstr "高级选项"
 
-#: admin/PageVServer.py:479
+#: admin/PageVServer.py:491
 msgid "Basics"
 msgstr "基本配置"
 
-#: admin/PageVServer.py:480
+#: admin/PageVServer.py:492
 #, fuzzy
 msgid "Host Match"
 msgstr "最接近"
 
-#: admin/PageVServer.py:482
+#: admin/PageVServer.py:494
 msgid "Error Handler"
 msgstr "错误处理"
 
