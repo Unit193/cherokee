@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: cherokee 0.99.33\n"
 "Report-Msgid-Bugs-To: http://bugs.cherokee-project.com/\n"
-"POT-Creation-Date: 2010-04-26 15:14+0200\n"
+"POT-Creation-Date: 2010-04-27 18:20+0200\n"
 "PO-Revision-Date: 2009-12-13 19:40+0100\n"
 "Last-Translator: Vincent Knecht <vknecht@users.sourceforge.net>\n"
 "Language-Team: none\n"
@@ -293,7 +293,7 @@ msgid ""
 msgstr ""
 
 #: admin/Graph.py:117 admin/PageEntry.py:233 admin/PageSource.py:166
-#: admin/PageStatus.py:70 admin/PageVServer.py:494 admin/PageVServers.py:193
+#: admin/PageStatus.py:70 admin/PageVServer.py:506 admin/PageVServers.py:193
 msgid "Unknown"
 msgstr "Inconnu"
 
@@ -789,7 +789,7 @@ msgstr "Mise en forme de Trafic"
 msgid "Skip Logging"
 msgstr ""
 
-#: admin/PageEntry.py:108 admin/PageVServer.py:483
+#: admin/PageEntry.py:108 admin/PageVServer.py:495
 msgid "Logging"
 msgstr "Journalisation"
 
@@ -864,7 +864,7 @@ msgstr "Encodage"
 msgid "Time"
 msgstr "Temps"
 
-#: admin/PageEntry.py:251 admin/PageVServer.py:484
+#: admin/PageEntry.py:251 admin/PageVServer.py:496
 msgid "Security"
 msgstr "Sécurité"
 
@@ -1532,7 +1532,7 @@ msgstr ""
 msgid "Clone Selected Behavior Rule"
 msgstr ""
 
-#: admin/PageRule.py:296 admin/PageVServer.py:481
+#: admin/PageRule.py:296 admin/PageVServer.py:493
 msgid "Behavior"
 msgstr ""
 
@@ -1622,7 +1622,7 @@ msgstr ""
 msgid "First edit the offending rule(s)"
 msgstr ""
 
-#: admin/PageSource.py:162 admin/PageVServer.py:486
+#: admin/PageSource.py:162 admin/PageVServer.py:498
 msgid "Virtual Server"
 msgstr "Serveur Virtuel"
 
@@ -2095,49 +2095,49 @@ msgstr "Ne pas vérifier l'origine"
 msgid "Logging Option"
 msgstr ""
 
-#: admin/PageVServer.py:436
+#: admin/PageVServer.py:448
 msgid "Certificate"
 msgstr "Certificat"
 
-#: admin/PageVServer.py:437
+#: admin/PageVServer.py:449
 msgid "Certificate key"
 msgstr "Clé du certificat"
 
-#: admin/PageVServer.py:442
+#: admin/PageVServer.py:454
 msgid "Required SSL/TLS Values"
 msgstr ""
 
-#: admin/PageVServer.py:447
+#: admin/PageVServer.py:459
 msgid "Ciphers"
 msgstr ""
 
-#: admin/PageVServer.py:448
+#: admin/PageVServer.py:460
 msgid "Client Certs. Request"
 msgstr ""
 
-#: admin/PageVServer.py:451
+#: admin/PageVServer.py:463
 msgid "CA List"
 msgstr ""
 
-#: admin/PageVServer.py:454
+#: admin/PageVServer.py:466
 msgid "Verify Depth"
 msgstr ""
 
-#: admin/PageVServer.py:460
+#: admin/PageVServer.py:472
 #, fuzzy
 msgid "Advanced Options"
 msgstr "Options avancées"
 
-#: admin/PageVServer.py:479
+#: admin/PageVServer.py:491
 msgid "Basics"
 msgstr ""
 
-#: admin/PageVServer.py:480
+#: admin/PageVServer.py:492
 #, fuzzy
 msgid "Host Match"
 msgstr "Nom d'hôtes"
 
-#: admin/PageVServer.py:482
+#: admin/PageVServer.py:494
 msgid "Error Handler"
 msgstr ""
 
