@@ -1,3 +1,11 @@
+cherokee (0.99.47-1) unstable; urgency=low
+
+  * New Upstream Version 
+  * edited debian/patches/include_paths_in_migrators fixed
+    new admin path
+
+ -- Leonel Nunez <leonel@enelserver.com>  Tue, 27 Apr 2010 11:28:13 -0600
+
 cherokee (0.99.46-1) unstable; urgency=low
 
   * New Upstream Version
