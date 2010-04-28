@@ -1,3 +1,84 @@
+2010-04-28  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=4994 git=29cbd7370f48c4b9d9d9981911ca10ab74a94cdb
+
+    The Transport class of the xmlrpclib package does not implement a
+    constructor method on Python 2.4. We have to check whether the
+    __init__() method is present before invoking it <sigh!!>. This patch
+    fixes the bug #821: http://bugs.cherokee-project.com/821 . Thanks to
+    Juan J. Martinez for the report.
+    
+ admin/XMLServerDigest.py |    6 +++++-
+ 1 files changed, 5 insertions(+), 1 deletions(-)
+
+
+2010-04-28  Taher Shihadeh  <taher@unixwars.com>
+            svn=4992 git=8cd672f95efffc3f6e1a57854e77e24240b0432e
+
+    The flags were not being displayed on the GeoIP module
+    
+ admin/Flags.py |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+
+2010-04-28  Taher Shihadeh  <taher@unixwars.com>
+            svn=4991 git=06ce33db42eb1fadd20f04f72e75e32a9cf4e363
+
+    Upgrades Server_Info documentation
+    
+ doc/modules_handlers_server_info.txt |   23 +++++++++++++++++++----
+ 1 files changed, 19 insertions(+), 4 deletions(-)
+
+
+2010-04-28  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=4990 git=caba5b47010f8c5f47016b7719d23adb61e560bc
+
+    Fixes a bug that was preventing the LOCK method from being recognized.
+    
+ cherokee/header.c |    6 +++---
+ 1 files changed, 3 insertions(+), 3 deletions(-)
+
+2010-04-28  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=4989 git=41bd4d32eece141c78178ac7cd1df8c403e40b32
+
+    Fixes the QA bench so it can run on Python 2.4
+    
+ qa/100-Digest-htdigest.py   |    5 ++++-
+ qa/175-Digest-htdigest-2.py |    5 ++++-
+ qa/203-secdownload1.py      |    9 +++++++--
+ qa/205-secdownload3.py      |    9 +++++++--
+ qa/base.py                  |    5 ++++-
+ qa/conf.py                  |    7 +++++--
+ 6 files changed, 31 insertions(+), 9 deletions(-)
+
+
+2010-04-27  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=4987 git=a97753aa2d21a9f2e71cd176152dc2fd921442b4
+
+    Fixes file permission. Thanks to "Juan J. Martínez" for the report.
+    Fixes bug #828: http://bugs.cherokee-project.com/828
+    
+ qa/157-Dirlist-symlinks.py |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+
+2010-04-27  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=4986 git=6d9a40389828fb87bbf3cc5aa092c1306759428d
+
+    This patch fixes a broken dependency of admin/upgrade_config.py.
+    Thanks to Leonel Nunez for the report!
+    
+ admin/upgrade_config.py |    6 +++++-
+ 1 files changed, 5 insertions(+), 1 deletions(-)
+
+
+2010-04-27  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=4985 git=2734404172b2517e49b94af0d17feae6483d19ea
+
+    Cherokee 0.99.47 released
+    
+ configure.in |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
 2010-04-27  Taher Shihadeh  <taher@unixwars.com>
             svn=4984 git=8971fccc3db1df5195599056246444457496a43a
 
