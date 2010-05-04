@@ -27,6 +27,7 @@ import Page
 import Cherokee
 import validations
 
+import os
 import re
 
 from consts import *
@@ -281,7 +282,6 @@ class BasicsWidget (CTK.Container):
 
         pre        = "vserver!%s" %(vsrv_num)
         url_apply  = "%s/%s" %(URL_APPLY, vsrv_num)
-        vsrv_nick  = CTK.cfg.get_val("%s!nick"%(pre), '')
         is_default = CTK.cfg.get_lowest_entry("vserver") == int(vsrv_num)
 
         # Server ID
@@ -379,7 +379,11 @@ class LogginWidgetContent (CTK.Container):
             submit = CTK.Submitter(url_apply)
             writer = CTK.cfg.get_val ('%s!access!type'%(pre))
             if writer == 'file' or not writer:
-                submit += CTK.TextCfg('%s!access!filename'%(pre))
+                # Set a default value
+                if not CTK.cfg.get_val ('%s!access!filename'%(pre)):
+                    CTK.cfg['%s!access!filename'%(pre)] = os.path.join (CHEROKEE_VAR_LOG, 'cherokee.log')
+
+                submit += CTK.TextCfg('%s!access!filename'%(pre), False)
                 table.Add (_('Filename'), submit, _(NOTE_WRT_FILE))
             elif writer == 'exec':
                 submit += CTK.TextCfg('%s!access!command'%(pre))
@@ -409,7 +413,7 @@ class LogginWidgetContent (CTK.Container):
             submit.bind ('submit_success', refreshable.JS_to_refresh())
             submit += table
 
-            self += CTK.RawHTML ('<h3>%s</h3>' % (_('Logging Option')))
+            self += CTK.RawHTML ('<h3>%s</h3>' % (_('Logging Options')))
             self += CTK.Indenter (submit)
 
 def LogginWidgetContent_Apply():
@@ -495,7 +499,7 @@ class RenderContent (CTK.Container):
         tabs.Add (_('Logging'),       LogginWidget (vsrv_num))
         tabs.Add (_('Security'),      SecurityWidget (vsrv_num))
 
-        self += CTK.RawHTML ('<h2>%s: %s</h2>' %(_('Virtual Server'), vsrv_nam))
+        self += CTK.RawHTML ('<h2>%s: %s</h2>' %(_('Virtual Server'), CTK.escape_html (vsrv_nam)))
         self += tabs
 
 

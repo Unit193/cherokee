@@ -175,7 +175,7 @@ class EncodingWidget (CTK.Container):
         table = CTK.PropsTable()
         for e,e_name in encoders:
             note  = _("Use the %s encoder whenever the client requests it.") %(_(e_name))
-            table.Add (_("%s Support") %(_(e_name)), CTK.ComboCfg('%s!%s'%(pre,e), ENCODE_OPTIONS), note)
+            table.Add ('%s %s'% (_(e_name), _("support")), CTK.ComboCfg('%s!%s'%(pre,e), ENCODE_OPTIONS), note)
 
         submit = CTK.Submitter (apply)
         submit += table
@@ -208,7 +208,8 @@ class Header (CTK.Container):
 
         rule = Rule ('vserver!%s!rule!%s!match'%(vsrv_num, rule_num))
         rule_nam = rule.GetName()
-        self += CTK.RawHTML ('<h2><a href="/vserver/%s">%s</a> &rarr; %s</h2>' %(vsrv_num, vsrv_nam, rule_nam))
+        self += CTK.RawHTML ('<h2><a href="/vserver/%s">%s</a> &rarr; %s</h2>' %(
+                vsrv_num, CTK.escape_html(vsrv_nam), rule_nam))
 
 
 class HandlerWidget (CTK.Container):

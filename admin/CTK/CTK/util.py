@@ -22,6 +22,11 @@
 
 import re
 
+try:
+    import json
+except ImportError:
+    import json_embedded as json
+
 #
 # Strings
 #
@@ -40,7 +45,15 @@ def formater (string, props):
             s2 += string[n]
             n  += 1
 
-    return s2 %(props)
+    try:
+        return s2 %(props)
+    except ValueError:
+        print "-------------------------------------------------------"
+        print s2
+        print "-------------------------------------------------------"
+        print props
+        print "-------------------------------------------------------"
+        raise
 
 #
 # HTML Tag properties
@@ -83,3 +96,14 @@ def find_copy_name (orig, names):
         return '%s Copy' %(orig)
 
     return '%s Copy %d' %(orig, higher+1)
+
+#
+# JSon
+#
+def json_dump (obj):
+    # Python 2.6, and json_embeded
+    if hasattr (json, 'dumps'):
+        return json.dumps (obj)
+
+    # Python 2.5
+    return json.write(obj)
