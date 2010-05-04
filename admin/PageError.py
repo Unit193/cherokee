@@ -35,7 +35,7 @@ class PageErrorLaunch (CTK.Page):
 
         # Set up the template
         template = CTK.Template (filename = theme_file)
-        template['body_props'] = ' id="body-error-launch"'
+        template['body_props'] = ' id="body-error"'
 
         # Parent's constructor
         CTK.Page.__init__ (self, template, **kwargs)
@@ -54,15 +54,15 @@ class PageErrorLaunch (CTK.Page):
                 break
 
         # Build the page content
+        template['title'] = _('Server Launch Error')
+
         if self._error:
-            template['title'] = '%s' %(self._error['title'])
             self._build_error_py()
         else:
-            template['title'] = _('Server Launch Error')
             self._build_error_raw()
 
     def _build_error_py (self):
-        self += CTK.RawHTML ('<h1>%s</h1>' %(_('Server Launch Error')))
+        self += CTK.RawHTML ('<h1>%s</h1>' %(self._error['title']))
         self += CTK.Box ({'class': 'description'}, CTK.RawHTML(self._error.get('description','')))
 
         admin_url = self._error.get('admin_url')
@@ -142,7 +142,7 @@ def IconsMissing (path):
 
 
 ANCIENT_CONFIG_TITLE = N_('Cherokee-admin has detected a very old configuration file.')
-ANCIENT_CONFIG       = N_('Most probably cherokee-admin is trying to read an old configuation file. Please, remove it so cherokee-admin can create a new one with the right format.')
+ANCIENT_CONFIG       = N_('Most probably cherokee-admin is trying to read an old configuration file. Please, remove it so cherokee-admin can create a new one with the right format.')
 
 class AncientConfigError (CTK.Page):
     def __init__ (self, path, **kwargs):

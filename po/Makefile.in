@@ -251,6 +251,9 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 SUBDIRS = admin
+EXTRA_DIST = \
+./po_stats.py
+
 all: all-recursive
 
 .SUFFIXES:
@@ -597,6 +600,9 @@ uninstall-am:
 	mostlyclean-libtool pdf pdf-am ps ps-am tags tags-recursive \
 	uninstall uninstall-am
 
+
+test:
+	./po_stats.py admin/*.po
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

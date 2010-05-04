@@ -96,7 +96,7 @@ static const cherokee_error_t __cherokee_errors[] =
   {  67, "Logger: No '%s' log has been defined.", "The configuration file seems to be broken.", NULL, NULL },
   {  68, "Logger writer type is required.", "The configuration file seems to be broken.", NULL, NULL },
   {  69, "Unknown logger writer type '%s'", "The configuration file seems to be broken.", NULL, NULL },
-  {  70, "Logger writer (%s): Could not read the filename.", "The configuration file seems to be broken.", NULL, NULL },
+  {  70, "Logger writer (%s): Could not read the filename.", "A property of the log writer is missing. Odds are you selected to write the output of the log into a file but you did not define it.", NULL, NULL },
   {  71, "Could not open '%s' for appending", "The issue seems to be related to your system.", NULL, NULL },
   {  72, "Allocation logger->max_bufsize %d failed.", "The system might have run out of memory.", NULL, NULL },
   {  73, "Could not create pipe (errno=%d): ${errno}", "The issue seems to be related to your system.", NULL, NULL },
