@@ -204,18 +204,15 @@ also using the priorities defined by the virtual host order.</p></div>
 Cherokee issue the failure.</p></div>
 <h3 id="behavior">Behavior</h3><div style="clear:left"></div>
 <div class="paragraph"><p>This sections allows to define a set of rules to define how the server
-should handle the different requests. A summary of the existing rules is
-presented, containing several fields of information:</p></div>
+should handle the different requests. A summary of the existing rules
+is presented, containing several fields of information:</p></div>
 <div class="olist arabic"><ol class="arabic">
 <li>
 <p>
-<strong>Target</strong>: web target of the rule, be it a path, a file type, etc.
-</p>
-</li>
-<li>
-<p>
-<strong>Type</strong>: Rule type. These will be explained in the following
-    paragraphs.
+<strong>Match</strong>: what the rule matches, which shows information about the
+    web target of the rule (be it a path, a file type, etc.) plus the
+    rule type. You can check the complete list of rule types in the
+    <a href="config_virtual_servers_rule_types.html">Rule Types</a> section.
 </p>
 </li>
 <li>
@@ -226,25 +223,47 @@ presented, containing several fields of information:</p></div>
 </li>
 <li>
 <p>
+<strong>Authentication</strong>: Indicates if authentication is used for this
+    rule. This can be set up through the
+    <a href="config_virtual_servers_rule.html">Rule Entry</a> menu.
+</p>
+</li>
+<li>
+<p>
 <strong>Root</strong>: Indicates if the rule defines an alternative document root
     path.
 </p>
 </li>
 <li>
 <p>
-<strong>Auth</strong>: Indicates if authentication is used for this rule. This
-    can be set up through the <a href="config_virtual_servers_rule.html">Rule
-    Entry</a> menu.
+<strong>Secure</strong>: Which indicates that the rule only applies for HTTPS
+    connections.
 </p>
 </li>
 <li>
 <p>
-<strong>Enc</strong>: Indicates if any encoding is applied to the rule.
+<strong>Encoders</strong>: Indicates if any encoding is applied to the rule.
 </p>
 </li>
 <li>
 <p>
-<strong>Exp</strong>: Indicates if expiration headers are configured for the rule.
+<strong>Expiration</strong>: Indicates if expiration headers are configured for the rule.
+</p>
+</li>
+<li>
+<p>
+<strong>Timeout</strong>: Indicates if there is a defined connection timeout for
+    the rule.
+</p>
+</li>
+<li>
+<p>
+<strong>Shaping</strong>: Whether traffic shaping is enabled.
+</p>
+</li>
+<li>
+<p>
+<strong>Logging</strong>: Whether the rule matches are logged or not.
 </p>
 </li>
 <li>
@@ -254,256 +273,37 @@ presented, containing several fields of information:</p></div>
     rules with lower priority.
 </p>
 </li>
+<li>
+<p>
+<strong>Enabled</strong>: If the rule is currently enabled or not, which might
+    completely alter the behavior of the virtual server.
+</p>
+</li>
 </ol></div>
 <div class="paragraph"><p>These rules can be defined based on the directory that the request
 targets, the extension of the file that it is requesting, or a regular
-expression that may match the request. This is the list of available
-rule types:</p></div>
-<div class="ulist"><ul>
-<li>
-<p>
-<strong>Directory</strong>: The entry Directory encloses a group of directives which will
-    apply only to the named directory and sub-directories of that directory.
-</p>
-</li>
-<li>
-<p>
-<strong>Extensions</strong>: The entry Extensions doesn&#8217;t care about directories, it will
-    just look for the extension of the object requested.
-</p>
-</li>
-<li>
-<p>
-<strong>Regular Expressions</strong>: The Request entry provides a powerful way to apply
-    custom options to requests. It is a complement for the Directory and Extension
-    entries. Basically, there are two differences between them:
-</p>
-<div class="ulist"><ul>
-<li>
-<p>
-It uses regular expressions to define the requests in which the configuration
-      will be applied.
-</p>
-</li>
-<li>
-<p>
-These entries are able to use the connection parameters (both pathinfo
-      and query string). In this way it is possible to set rules based on
-      parameter values.
-</p>
-</li>
-</ul></div>
-</li>
-<li>
-<p>
-<strong>Header</strong>: This type of rule is used to modify the behavior in
-      response to the contents of HTTP headers. A regular expression
-      is needed to match against. This kind of rule can be used to
-      provide alternative contents to a specific type of users. For
-      example, it can check if the HTTP referer header refferences
-      specific domains to allow or deny the delivery of the requested
-      information.
-</p>
-</li>
-<li>
-<p>
-<strong>File Exists</strong>: This type of rule will only be applied if a
-      certain file (or a file among a list of provided file names) is
-      present. An I/O cache specific setting for the rule can be
-      configured in the <tt>Rule</tt> tab. If enabled, it will speed up the
-      file detection during the rule evaluation. This improves
-      performance but is not recommended when the directory contents
-      change dynamically. This type of rule can also be used to match
-      any file. For example, it can be configured to serve static
-      files and fall through to another rule if the HTTP request is
-      for a resource of dynamic nature.
-</p>
-</li>
-<li>
-<p>
-<strong>HTTP method</strong>: These rules are applied whenever the selected HTTP
-      method is used. You can configure these to respond to a request
-      of type GET, POST, HEAD, PUT, OPTIONS, DELETE, TRACE, CONNECT,
-      COPY, LOCK, MKCOL, MOVE, NOTIFY, POLL, PROPFIND, PROPPATCH,
-      SEARCH, SUBSCRIBE, UNLOCK or UNSUBSCRIBE.
-</p>
-</li>
-<li>
-<p>
-<strong>GeoIP</strong>: If GeoIP support is present, this type of rules can be
-      added. The GeoIP library has to be present at build time for
-      this to happen. If enabled, specific behavior can be offered
-      depending on the country of origin of the requests to the web
-      server. Note that the country is determined by matching the IPs
-      to the actual list of countries handled by the library, so the
-      usage of proxies on the user side will render this resolution
-      mechanism inaccurate. An initial country must be added to the
-      rule, and more selections can be added in further steps.
-</p>
-</li>
-<li>
-<p>
-<strong>Incoming IP/Port</strong>: If the server is running on several ports,
-      this rule type will let you specify to which port&#8217;s pettitions
-      will it apply.
-</p>
-</li>
-<li>
-<p>
-<strong>Full Path</strong>: Full path request to which content the
-      configuration will be applied. This means you can pinpoint a
-      list of files that will be specifically targeted by this rule
-      type.
-</p>
-</li>
-<li>
-<p>
-<strong>Connected from</strong>: will let you discriminate connections based on
-      the IP or SubNet from which these are originated.
-</p>
-</li>
-<li>
-<p>
-<strong>URL Argument</strong>: will allow you to match a Regular Expressions to
-      the URL arguments, be it a specific one or any of the possible
-      arguments.
-</p>
-</li>
-</ul></div>
+expression that may match the request among other options.</p></div>
 <div class="paragraph"><p>It is very important to know that these rules are prioritized. The
 higher its priority is, the sooner they are checked. You could think
 of a network routing table, it is quite similar. You can set the
 relative priorities among the rules from within the <tt>Behavior</tt> panel,
-which is accessed through the <tt>Rule Management</tt> button. Simply
-dragging and dropping them in the desired position will do. If you
-click on the rule name, the rule&#8217;s configuration options will be
-displayed in the main content area. If you click anywhere else, you
-will be able to drag and drop it into the desired position).</p></div>
+which is accessed through the <tt>Rule Management</tt> button. This button
+will switch the left panel from <tt>Virtual Server</tt> mode to <tt>Rule mode</tt>,
+and the list of virtual servers on the left panel will be replaced by
+a panel with the list of rules.</p></div>
+<div class="paragraph"><p>In <tt>Rule mode</tt> you wiil be able to define a set of rules to define how
+the server should handle the different requests, and simply dragging
+and dropping the rules in the desired position will do. If you click
+on the rule name, the rule&#8217;s configuration options will be displayed
+in the main content area. If you click anywhere else, you will be able
+to drag and drop it into the desired position).</p></div>
 <div class="imageblock">
 <div class="content">
 <img src="media/images/admin_behavior.png" alt="media/images/admin_behavior.png" />
 </div>
 </div>
 <div class="paragraph"><p>Each of these behavior rules must specify the handler that the server
-should use to reply to the requests that match the rule.  Handlers are
-the modules that generate the information with which the server
-responds a client&#8217;s request. By default Cherokee provides a number of
-them:</p></div>
-<div class="sidebarblock">
-<div class="sidebar-content">
-<div class="ulist"><ul>
-<li>
-<p>
-<a href="modules_handlers_common.html">common</a> - <strong>List &amp; Send</strong>
-</p>
-<div class="paragraph"><p>Combines both <tt>Static Content</tt> and <tt>Only listing</tt> handlers
-functionality to behave similarly to common web servers, it will
-display directory listings when a directory is requested and serve the
-requested files.</p></div>
-</li>
-<li>
-<p>
-<a href="modules_handlers_file.html">Static Content</a> - <strong>Static Content</strong>
-</p>
-<div class="paragraph"><p>This is the file handler and it serves files straight from the
-file system.</p></div>
-</li>
-<li>
-<p>
-<a href="modules_handlers_dirlist.html">dirlist</a> - <strong>Only listing</strong>:
-</p>
-<div class="paragraph"><p>Displays a directory content list when a directory is requested,
-but it does not allow to download any content.</p></div>
-</li>
-<li>
-<p>
-<a href="modules_handlers_redir.html">redir</a> - <strong>Redirection</strong>
-</p>
-<div class="paragraph"><p>Perform simple and/or complex redirections using regexes.</p></div>
-</li>
-<li>
-<p>
-<a href="modules_handlers_cgi.html">cgi</a> - <strong>CGI Execution</strong>
-</p>
-<div class="paragraph"><p>Executes CGI programs.</p></div>
-</li>
-<li>
-<p>
-<a href="modules_handlers_fcgi.html">fcgi</a> - <strong>FastCGI Server Support</strong>
-</p>
-<div class="paragraph"><p>Communicates with FastCGI servers.</p></div>
-</li>
-<li>
-<p>
-<a href="modules_handlers_scgi.html">scgi</a> - <strong>SCGI Server Support</strong>
-</p>
-<div class="paragraph"><p>Communicates with SCGI servers.</p></div>
-</li>
-<li>
-<p>
-<a href="modules_handlers_uwsgi.html">uwsgi</a> - <strong>uWSGI Server Support</strong>
-</p>
-<div class="paragraph"><p>Communicates with the uWSGI server.</p></div>
-</li>
-<li>
-<p>
-<a href="modules_handlers_proxy.html">proxy</a> - <strong>HTTP Reverse Proxy</strong>
-</p>
-<div class="paragraph"><p>Advanced proxy services.</p></div>
-</li>
-<li>
-<p>
-<a href="modules_handlers_streaming.html">streaming</a> - <strong>Audio/Video streaming</strong>
-</p>
-<div class="paragraph"><p>Media streaming directly within Cherokee.</p></div>
-</li>
-<li>
-<p>
-<a href="modules_handlers_ssi.html">ssi</a> - <strong>Server Side Includes</strong>
-</p>
-<div class="paragraph"><p>Enables Server Side Includes.</p></div>
-</li>
-<li>
-<p>
-<a href="modules_handlers_secdownload.html">secdownload</a> - <strong>Hidden Downloads</strong>
-</p>
-<div class="paragraph"><p>Creates one-time, secure, time-expiring downloads.</p></div>
-</li>
-<li>
-<p>
-<a href="modules_handlers_dbslayer.html">dbslayer</a> - <strong>MySQL Bridge</strong>
-</p>
-<div class="paragraph"><p>MySQL load-balancing database abstraction layer.</p></div>
-</li>
-<li>
-<p>
-<a href="modules_handlers_custom_error.html">custom_error</a> - <strong>HTTP Error</strong>
-</p>
-<div class="paragraph"><p>Generates customizable HTTP errors.</p></div>
-</li>
-<li>
-<p>
-<a href="modules_handlers_empty_gif.html">empty_gif</a> - <strong>1x1 Transparent GIF</strong>
-</p>
-<div class="paragraph"><p>Returns a 1 pixel transparent image.</p></div>
-</li>
-<li>
-<p>
-<a href="modules_handlers_server_info.html">Server Info</a> - <strong>Server
-  Info</strong>
-</p>
-<div class="paragraph"><p>Provide some configurable information about the server.</p></div>
-</li>
-<li>
-<p>
-<a href="modules_handlers_admin.html">Remote Administration</a> - <strong>Remote
-  Administration</strong>
-</p>
-<div class="paragraph"><p>Implements an administration interface to work with
-<a href="bundle_cherokee-tweak.html">cherokee-tweak</a>.</p></div>
-</li>
-</ul></div>
-</div></div>
+should use to reply to the requests that match the rule.</p></div>
 <div class="paragraph"><p>The selection of any one of the rule targets will offer new
 configuration options through the
 <a href="config_virtual_servers_rule.html">Rule Entry</a> menu.</p></div>
