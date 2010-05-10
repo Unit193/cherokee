@@ -55,6 +55,9 @@ NOTE_DELETE_DIALOG = N_('You are about to delete an Information Source. Are you 
 NOTE_NO_ENTRIES    = N_('The Information Source list is currently empty.')
 NOTE_FORBID_1      = N_('This is the last Information Source in use by a rule. Deleting it would break the configuration.')
 NOTE_FORBID_2      = N_('First edit the offending rule(s)')
+NOTE_ADD_VARIABLE  = N_('Name of the variable')
+NOTE_ADD_VALUE     = N_('Value of the variable')
+NOTE_CLONE_DIALOG  = N_('The selected Information Source is about to be cloned.')
 
 VALIDATIONS = [
     ('source!.+?!timeout',     validations.is_positive_int),
@@ -102,12 +105,20 @@ def commit():
     new_nick = CTK.post.pop('tmp!new_nick')
     new_host = CTK.post.pop('tmp!new_host')
 
-    # New
+    # New source
     if new_nick and new_host:
         next = CTK.cfg.get_next_entry_prefix ('source')
         CTK.cfg['%s!nick'%(next)] = new_nick
         CTK.cfg['%s!host'%(next)] = new_host
         CTK.cfg['%s!type'%(next)] = 'host'
+        return CTK.cfg_reply_ajax_ok()
+
+    # New variable
+    new_variable = CTK.post.pop('tmp!new_variable')
+    new_value    = CTK.post.pop('tmp!new_value')
+    source_pre   = CTK.post.pop('tmp!source_pre')
+    if new_variable and new_value:
+        CTK.cfg['%s!%s'%(source_pre,new_variable)] = new_value
         return CTK.cfg_reply_ajax_ok()
 
     # Modification
@@ -182,6 +193,68 @@ def _protected_sources ():
     return protect
 
 
+class EnvironmentTable (CTK.Submitter):
+    def __init__ (self, refreshable, src_num, **kwargs):
+        CTK.Submitter.__init__ (self, URL_APPLY)
+
+        variables = CTK.cfg.keys('source!%s!env'%(src_num))
+        if variables:
+            table = CTK.Table({'id':'env_table'})
+            table[(1,1)] = [CTK.RawHTML(x) for x in (_('Variable'), _('Value'), '')]
+            table.set_header (row=True, num=1)
+            self += CTK.RawHTML ("<h2>%s</h2>" % (_('Environment Variables')))
+            self += CTK.Indenter (table)
+
+            n = 2
+            for v in variables:
+                # Entries
+                key   = 'source!%s!env!%s'%(src_num, v)
+                value = CTK.TextCfg (key, True,  {'size': 45})
+                delete = CTK.ImageStock('del')
+                delete.bind('click', CTK.JS.Ajax (URL_APPLY,
+                                                  data     = {key: ''},
+                                                  complete = refreshable.JS_to_refresh()))
+
+                table[(n,1)] = [CTK.RawHTML (v), value, delete]
+                n += 1
+
+class EnvironmentWidget (CTK.Container):
+    def __init__ (self, src_num):
+        CTK.Container.__init__ (self)
+
+        # List ports
+        self.refresh = CTK.Refreshable({'id': 'environment_table'})
+        self.refresh.register (lambda: EnvironmentTable(self.refresh, src_num).Render())
+
+        # Add new - dialog
+        table = CTK.PropsTable()
+        table.Add (_('Variable'), CTK.TextCfg ('tmp!new_variable', False, {'class':'noauto'}), _(NOTE_ADD_VARIABLE))
+        table.Add (_('Value'),    CTK.TextCfg ('tmp!new_value',    False, {'class':'noauto'}), _(NOTE_ADD_VALUE))
+
+        submit = CTK.Submitter (URL_APPLY)
+        submit += CTK.Hidden ('tmp!source_pre','source!%s!env'%(src_num))
+        submit += table
+
+        dialog = CTK.Dialog({'title': _('Add new Environment variable'), 'autoOpen': False, 'draggable': False, 'width': 350 })
+        dialog.AddButton (_("Add"),    submit.JS_to_submit())
+        dialog.AddButton (_("Cancel"), "close")
+        dialog += submit
+
+        submit.bind ('submit_success', self.refresh.JS_to_refresh())
+        submit.bind ('submit_success', dialog.JS_to_close())
+
+        # Add new
+        button = CTK.SubmitterButton (_('Add new variable'))
+        button.bind ('click', dialog.JS_to_show())
+        button_s = CTK.Submitter (URL_APPLY)
+        button_s += button
+
+        # Integration
+        self += self.refresh
+        self += button_s
+        self += dialog
+
+
 class Render_Source:
     class Source_Usage (CTK.Container):
         def __init__ (self, rules):
@@ -197,7 +270,10 @@ class Render_Source:
                 vsrv_name = CTK.cfg.get_val ("vserver!%s!nick" %(vsrv_num), _("Unknown"))
                 r = Rule.Rule('%s!match' %(rule))
                 rule_name = r.GetName()
-                table += [CTK.RawHTML(x) for x in (vsrv_name, rule_name)]
+                vsrv_link = '/vserver/%s'%(vsrv_num)
+                rule_link = rule.replace('!','/')
+                table += [CTK.Link (vsrv_link, CTK.RawHTML(vsrv_name)),
+                          CTK.Link (rule_link, CTK.RawHTML(rule_name))]
 
 
     def __call__ (self):
@@ -218,7 +294,7 @@ class Render_Source:
         workarea = CTK.Box ({'id': 'source-workarea'})
 
         table = CTK.PropsTable()
-        table.Add (_('Type'),       CTK.ComboCfg ('source!%s!type'%(num), SOURCE_TYPES), _(NOTE_TYPE))
+        table.Add (_('Type'),       CTK.ComboCfg ('source!%s!type'%(num), trans(SOURCE_TYPES)), _(NOTE_TYPE))
         table.Add (_('Nick'),       CTK.TextCfg ('source!%s!nick'%(num), False), _(NOTE_NICK))
         table.Add (_('Connection'), CTK.TextCfg ('source!%s!host'%(num), False), _(NOTE_HOST))
         if tipe == 'interpreter':
@@ -226,12 +302,14 @@ class Render_Source:
             table.Add (_('Spawning timeout'),    CTK.TextCfg ('source!%s!timeout'%(num),       True),  _(NOTE_TIMEOUT))
             table.Add (_('Execute as User'),     CTK.TextCfg ('source!%s!user'%(num),          True),  _(NOTE_USER))
             table.Add (_('Execute as Group'),    CTK.TextCfg ('source!%s!group'%(num),         True),  _(NOTE_GROUP))
-            table.Add (_('Inherit Environment'), CTK.TextCfg ('source!%s!env_inherited'%(num), False), _(NOTE_ENV_INHERIT))
+            table.Add (_('Inherit Environment'), CTK.CheckCfgText ('source!%s!env_inherited'%(num), True), _(NOTE_ENV_INHERIT))
 
         submit = CTK.Submitter (URL_APPLY)
-        submit += CTK.Hidden ('source', num)
         submit += table
         workarea += submit
+
+        if CTK.cfg.get_val ('source!%s!env_inherited'%(num)) == '0':
+            workarea += EnvironmentWidget (num)
 
         sources = _all_sources_per_rule ()
         rules   = [dic.keys()[0] for dic in sources if str(num) in dic.values()[0]]
@@ -248,7 +326,7 @@ class Render_Source:
 class CloneSource (CTK.Container):
     def __init__ (self):
         CTK.Container.__init__ (self)
-        self += CTK.RawHTML ('Information Source Cloning dialog.')
+        self += CTK.RawHTML (_(NOTE_CLONE_DIALOG))
 
 
 class AddSource (CTK.Container):
@@ -358,7 +436,7 @@ class Render:
             dialog.AddButton (_('Cancel'), "close")
             dialog += AddSource()
 
-            button = CTK.Button(_('New…'), {'id': 'source-new-button', 'class': 'panel-button', 'title': _('Add New Information Source')})
+            button = CTK.Button(_('New'), {'id': 'source-new-button', 'class': 'panel-button', 'title': _('Add New Information Source')})
             button.bind ('click', dialog.JS_to_show())
             dialog.bind ('submit_success', dialog.JS_to_close())
             dialog.bind ('submit_success', self.JS_to_trigger('submit_success'));
@@ -372,7 +450,7 @@ class Render:
             dialog.AddButton (_('Cancel'), "close")
             dialog += CloneSource()
 
-            button = CTK.Button(_('Clone…'), {'id': 'source-clone-button', 'class': 'panel-button', 'title': _('Clone Selected Information Source')})
+            button = CTK.Button(_('Clone'), {'id': 'source-clone-button', 'class': 'panel-button', 'title': _('Clone Selected Information Source')})
             button.bind ('click', dialog.JS_to_show())
 
             self += dialog

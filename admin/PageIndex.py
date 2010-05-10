@@ -65,13 +65,13 @@ NOTE_NAME       = N_("Optionally provide your name")
 # Notices
 RUNNING_NOTICE      = N_('Server is Running.')
 STOPPED_NOTICE      = N_('Server is not Running.')
-SUPPORT_NOTICE      = N_('Commercial support for Cherokee is provided by <a target="_blank" href="%s">Octality</a>. They provide top notch Consulting, Custom Engineering, and Enterprise Support Services.' %(LINK_OCTALITY))
+SUPPORT_NOTICE      = N_('Commercial support for Cherokee is provided by <a target="_blank" href="%s">Octality</a>. They provide top notch Consulting, Custom Engineering, and Enterprise Support Services.')
 LIST_NOTICE         = N_('The Community Mailing List is the place to go for help on Cherokee. <a id="subscribe-a">Subscribe now!</a>')
-IRC_NOTICE          = N_('Join us at the <a target="_blank" href="%s">#cherokee</a> IRC Channel.'%(LINK_IRC))
-BUG_TRACKER_NOTICE  = N_('Your feedback is important! Log Bug Reports and Requests for Enhancements in our <a target="_blank" href="%s">bug tracker</a> to help us improve Cherokee.' %(LINK_BUGTRACKER))
+IRC_NOTICE          = N_('Join us at the <a target="_blank" href="%s">#cherokee</a> IRC Channel.')
+BUG_TRACKER_NOTICE  = N_('Your feedback is important! Log Bug Reports and Requests for Enhancements in our <a target="_blank" href="%s">bug tracker</a> to help us improve Cherokee.' )
 SOCIAL_MEDIA_NOTICE = N_("Find out what's going on with Cherokee on your favorite Social Media!")
-TWITTER_NOTICE      = N_('Follow <a target="_blank" href="%s">Cherokee on Twitter</a>.' %(LINK_TWITTER))
-FACEBOOK_NOTICE     = N_('Join <a target="_blank" href="%s">Cherokee on Facebook</a>.' %(LINK_FACEBOOK))
+TWITTER_NOTICE      = N_('Follow <a target="_blank" href="%s">Cherokee on Twitter</a>.')
+FACEBOOK_NOTICE     = N_('Join <a target="_blank" href="%s">Cherokee on Facebook</a>.')
 
 BETA_TESTER_NOTICE = N_("""\
 <h3>Beta testing</h3> <p>Individuals like yourself who download and
@@ -137,7 +137,7 @@ def Stop():
 class ServerStatus (CTK.Box):
     def __init__ (self):
         CTK.Box.__init__ (self, {'class': 'server-status', 'id': ['server-stopped', 'server-running'][Cherokee.server.is_alive()]})
-        self += CTK.Box ({'id': 'status-message'}, CTK.RawHTML([STOPPED_NOTICE, RUNNING_NOTICE][Cherokee.server.is_alive()]))
+        self += CTK.Box ({'id': 'status-message'}, CTK.RawHTML([_(STOPPED_NOTICE), _(RUNNING_NOTICE)][Cherokee.server.is_alive()]))
 
         if Cherokee.server.is_alive():
             button = CTK.Button(_('Stop Server'), {'id': 'launch-button', 'class': 'butlight butstop'})
@@ -204,7 +204,7 @@ class LanguageSelector (CTK.Box):
         submit = CTK.Submitter('/lang/apply')
         submit.id = 'language-list'
         # TODO: Maybe it's better to show selected lang and ommit 'Language' label.
-        submit += CTK.Combobox ({'name': 'lang'}, languages)
+        submit += CTK.Combobox ({'name': 'lang'}, trans (languages))
 
         self += CTK.RawHTML('%s: ' %(_('Language')))
         self += submit
@@ -225,7 +225,7 @@ def ProudUsers_Apply():
 
     # Send the list
     try:
-        xmlrpc = XMLServerDigest.XmlRpcServer (OWS_PROUD)
+        xmlrpc = XMLServerDigest.XmlRpcServer (_(OWS_PROUD))
         xmlrpc.add_domains_to_review(domains)
 
     except xmlrpclib.ProtocolError, err:
@@ -233,14 +233,14 @@ def ProudUsers_Apply():
         details += "Error message: %s\n" % err.errmsg
         details += "Headers: %s\n"       % err.headers
 
-        return '<p>%s</p>'            %(PROUS_DIALOG_ERROR1)      + \
-               '<p><pre>%s</pre></p>' %(CTK.escape_html(details)) + \
-               '<p>%s</p>'            %(PROUS_DIALOG_ERROR2)
+        return '<p>%s</p>'            %(_(PROUS_DIALOG_ERROR1))    + \
+               '<p><pre>%s</pre></p>' %(CTK.escape_html(details))  + \
+               '<p>%s</p>'            %(_(PROUS_DIALOG_ERROR2))
 
     except Exception, e:
-        return '<p>%s</p>'              %(PROUS_DIALOG_ERROR1)     + \
+        return '<p>%s</p>'              %(_(PROUS_DIALOG_ERROR1))  + \
                '<p><pre>%s\n</pre></p>' %(CTK.escape_html(str(e))) + \
-               '<p>%s</p>'              %(PROUS_DIALOG_ERROR2)
+               '<p>%s</p>'              %(_(PROUS_DIALOG_ERROR2))
 
     return "<p>%s</p>" %(_(PROUD_DIALOG_OK))
 
@@ -254,8 +254,8 @@ class ProudUsers (CTK.Box):
         dialog.AddButton (_('Close'), "close")
 
         self += CTK.RawHTML('<h3>%s</h3>' %(_('Proud Cherokee Users')))
-        self += CTK.Box ({'id': 'proud-notice'}, CTK.RawHTML (PROUD_USERS_NOTICE))
-        self += CTK.Box ({'id': 'proud-link'}, CTK.RawHTML ('<a target="_blank" href="%s">%s</a> | <a id="proud-a">%s</a>' %(PROUD_USERS_WEB, _('View list'), _('Send your domains'))))
+        self += CTK.Box ({'id': 'proud-notice'}, CTK.RawHTML (_(PROUD_USERS_NOTICE)))
+        self += CTK.Box ({'id': 'proud-link'}, CTK.RawHTML ('<a target="_blank" href="%s">%s</a> | <a id="proud-a">%s</a>' %(_(PROUD_USERS_WEB), _('View list'), _('Send your domains'))))
         self += CTK.RawHTML (js=JS_PROUD %(dialog.JS_to_show()))
         self += dialog
 
@@ -334,7 +334,7 @@ class ContactChannels (CTK.Box):
 
         box = CTK.Box({'id': 'contact-irc', 'class': 'contact-box'})
         box += CTK.RawHTML('<h4>%s</h4>' % _('IRC'))
-        box += CTK.RawHTML(_(IRC_NOTICE))
+        box += CTK.RawHTML(_(IRC_NOTICE)%(LINK_IRC))
         self += box
 
         box = CTK.Box({'id': 'contact-list', 'class': 'contact-box'})
@@ -353,7 +353,7 @@ class ContactChannels (CTK.Box):
 
         box = CTK.Box({'id': 'contact-bug', 'class': 'contact-box'})
         box += CTK.RawHTML('<h4>%s</h4>' % _('Bug Tracker'))
-        box += CTK.RawHTML(_(BUG_TRACKER_NOTICE))
+        box += CTK.RawHTML(_(BUG_TRACKER_NOTICE)%(LINK_BUGTRACKER))
         self += box
 
         self += dialog
@@ -364,11 +364,11 @@ class SocialMedia (CTK.Box):
         CTK.Box.__init__ (self, {'id': 'social-media'})
 
         twitter = CTK.Box ({'id': 'twitter-box', 'class': 'social-box'})
-        twitter += CTK.RawHTML(_(TWITTER_NOTICE))
+        twitter += CTK.RawHTML(_(TWITTER_NOTICE)%(LINK_TWITTER))
         self += twitter
 
         fb = CTK.Box ({'id': 'fb-box', 'class': 'social-box'})
-        fb += CTK.RawHTML(_(FACEBOOK_NOTICE))
+        fb += CTK.RawHTML(_(FACEBOOK_NOTICE)%(LINK_FACEBOOK))
         self += fb
 
 
@@ -394,7 +394,7 @@ class EnterpriseBox (CTK.Box):
         CTK.Box.__init__ (self, {'id': 'enterprise-box'})
 
         self += CTK.RawHTML('<h2>%s</h2>' % _('Commercial Support'))
-        self += CTK.Box ({'id': 'enterprise-notice'}, CTK.RawHTML (SUPPORT_NOTICE))
+        self += CTK.Box ({'id': 'enterprise-notice'}, CTK.RawHTML (_(SUPPORT_NOTICE)%(LINK_OCTALITY)))
         self += CTK.Box ({'id': 'enterprise-link'}, CTK.RawHTML ('<a target="_blank" href="%s">%s</a>' %(LINK_SUPPORT, _('Purchase Support'))))
 
 

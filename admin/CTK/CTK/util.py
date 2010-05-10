@@ -45,15 +45,7 @@ def formater (string, props):
             s2 += string[n]
             n  += 1
 
-    try:
-        return s2 %(props)
-    except ValueError:
-        print "-------------------------------------------------------"
-        print s2
-        print "-------------------------------------------------------"
-        print props
-        print "-------------------------------------------------------"
-        raise
+    return s2 %(props)
 
 #
 # HTML Tag properties

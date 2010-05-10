@@ -1,3 +1,353 @@
+2010-05-10  Taher Shihadeh  <taher@unixwars.com>
+            svn=5068 git=2e4fc1c50228711b0fd5e7bd014c86849252e2c8
+
+    Final translation updates before 1.0
+    
+ po/admin/de.po    |  362 +++++---
+ po/admin/en.po    |  363 +++++---
+ po/admin/es.po    |  354 ++++----
+ po/admin/fr.po    |  363 +++++---
+ po/admin/nl.po    | 2602 ++++++++++++++++++++++++++++++++++-------------------
+ po/admin/pl.po    |  348 +++++---
+ po/admin/pt_BR.po |  348 +++++---
+ po/admin/sv_SE.po | 1054 +++++++++++++---------
+ po/admin/zh_CN.po |  519 ++++++-----
+ 9 files changed, 3851 insertions(+), 2462 deletions(-)
+
+
+2010-05-10  Taher Shihadeh  <taher@unixwars.com>
+            svn=5067 git=4cf69500e08c9dca62b9ed010722ef5d4275584a
+
+    Adds untranslated string
+    
+ admin/PageSource.py |    3 ++-
+ 1 files changed, 2 insertions(+), 1 deletions(-)
+
+
+2010-05-10  Taher Shihadeh  <taher@unixwars.com>
+            svn=5066 git=674afd848b79a206f0bbda845bafadcf9307dd11
+
+    Fixes untranslated combobox issues
+    
+ admin/Auth.py                |    2 +-
+ admin/Graph.py               |    2 +-
+ admin/Page.py                |    5 +++++
+ admin/PageAdvanced.py        |    4 ++--
+ admin/PageEntry.py           |    4 ++--
+ admin/PageException.py       |    2 +-
+ admin/PageGeneral.py         |    8 ++++----
+ admin/PageIndex.py           |    2 +-
+ admin/PageSource.py          |    2 +-
+ admin/PageVServer.py         |   10 +++++-----
+ admin/Wizard.py              |    2 +-
+ admin/consts.py              |    4 ++++
+ admin/plugins/error_redir.py |    8 ++++----
+ admin/plugins/mysql.py       |    9 +++++----
+ admin/plugins/post_report.py |    2 +-
+ admin/plugins/redir.py       |    4 ++--
+ admin/plugins/server_info.py |    3 ++-
+ admin/plugins/url_arg.py     |    9 +++++----
+ admin/wizards/hotlinking.py  |    4 +++-
+ admin/wizards/rails.py       |   17 +++++++++--------
+ 20 files changed, 59 insertions(+), 44 deletions(-)
+
+
+2010-05-10  Taher Shihadeh  <taher@unixwars.com>
+            svn=5065 git=82426da979e91454f7fd962fd4977980c7bdf869
+
+    New patch added some strings to be translated
+    
+ po/admin/es.po |  185 +++++++++++++++++++++++++++++++++-----------------------
+ 1 files changed, 109 insertions(+), 76 deletions(-)
+
+
+2010-05-10  Stefan de Konink <stefan@konink.de>
+            svn=5064 git=6a6fa7a86a3a7e179da431b3b9f9d5dacd274e66
+
+    Paul van Genderen (lolwut) went through the Dutch translations, and came
+    up with this nifty patch! Thanks :)
+    
+ po/admin/nl.po |  186 ++++++++++++++++++++++++++++----------------------------
+ 1 files changed, 93 insertions(+), 93 deletions(-)
+
+
+2010-05-10  Antonio Perez  <aperez@skarcha.com>
+            svn=5063 git=6675c8db7840fa71671c97a0567894d72034d01f
+
+    i18n of top Menu in Cherokee Admin.
+    
+ admin/Page.py    |   11 ++++++++++-
+ admin/theme.html |   18 +++++++++---------
+ 2 files changed, 19 insertions(+), 10 deletions(-)
+
+
+2010-05-10  Taher Shihadeh  <taher@unixwars.com>
+            svn=5062 git=6bdd30f6d20e34026db0ece5061da5bba2f45d9c
+
+    Typo
+    
+ admin/plugins/exists.py |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+
+2010-05-09  Jonathan Hernandez  <ion@suavizado.com>
+            svn=5061 git=1e7edec1a1b1089b1c91ff6571d897ad08c04e13
+
+    imcsk8 patch to fix a bug in panels
+    
+ admin/static/js/SelectionPanel.js |    3 +--
+ 1 files changed, 1 insertions(+), 2 deletions(-)
+
+
+2010-05-09  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=5060 git=f4ee43b27b286733683717ecf1a1998a2bcf0873
+
+    DBSlayer uses cherokee_balancer_report_fail() now. Thanks to Stefan de
+    Konink for the patch!! Fixes http://bugs.cherokee-project.com/271
+    
+ cherokee/handler_dbslayer.c |    6 +++++-
+ 1 files changed, 5 insertions(+), 1 deletions(-)
+
+
+2010-05-09  Jonathan Hernandez  <ion@suavizado.com>
+            svn=5058 git=260de41c6d92348ee8d77c63d557cbd4ce76a607
+
+    Style for auth list
+    
+ admin/plugins/authlist.py |    4 ++--
+ 1 files changed, 2 insertions(+), 2 deletions(-)
+
+
+2010-05-06  Antonio Perez  <aperez@skarcha.com>
+            svn=5057 git=f239d16be18d153c078c467fbedcfb4479b86569
+
+    gettext should be installed using configured locale directory.
+    
+ admin/server.py |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+
+2010-05-06  Taher Shihadeh  <taher@unixwars.com>
+            svn=5056 git=a5f4c2874ccd0ee3963a38448e41e41fe2347c20
+
+    Reworks some of the documents
+    
+ doc/Makefile.am                           |    1 +
+ doc/config.txt                            |    1 +
+ doc/config_virtual_servers.txt            |  207 +++++-----------------------
+ doc/config_virtual_servers_rule.txt       |  110 ++++++++++++++-
+ doc/config_virtual_servers_rule_types.txt |   88 ++++++++++++
+ doc/cookbook_php.txt                      |   10 +-
+ doc/index.txt                             |    3 +-
+ 7 files changed, 236 insertions(+), 184 deletions(-)
+
+
+2010-05-06  李炅 <lijiong1986@126.com>
+            svn=5055 git=ffbcecf08603ccbc4c7ce35f706fa745d69bdf93
+
+    update Chinese Simplified translations
+    
+ po/admin/zh_CN.po | 2129 +++++++++++++++++------------------------------------
+ 1 files changed, 681 insertions(+), 1448 deletions(-)
+
+
+2010-05-05  Taher Shihadeh  <taher@unixwars.com>
+            svn=5054 git=a16eec573d9d65da6d5d300463be63e42a29b1b9
+
+    Restores custom environment variable addition
+    
+ admin/PageSource.py |   81 +++++++++++++++++++++++++++++++++++++++++++++++++--
+ 1 files changed, 78 insertions(+), 3 deletions(-)
+
+
+2010-05-05  Taher Shihadeh  <taher@unixwars.com>
+            svn=5053 git=4dfb0907573042bab78cf8d5b652f27a738739bc
+
+    Makes server/rules in usage report clickable as in the old admin
+    
+ admin/PageSource.py |    6 ++++--
+ 1 files changed, 4 insertions(+), 2 deletions(-)
+
+
+2010-05-05  Stefan de Konink <stefan@konink.de>
+            svn=5052 git=0c676fed651dcd834fbe24c8b4a078597c1edcd2
+
+    More Dutch updates
+    
+ po/admin/nl.po | 2364 +++++++++++++++++++++-----------------------------------
+ 1 files changed, 867 insertions(+), 1497 deletions(-)
+
+
+2010-05-05  Taher Shihadeh  <taher@unixwars.com>
+            svn=5051 git=2870b829a31cb8fadf0ba0f77990e5157e5048aa
+
+    Fixes a problem with custom templates and the loggers
+    
+ admin/PageVServer.py |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+
+2010-05-05  Taher Shihadeh  <taher@unixwars.com>
+            svn=5050 git=ac2eac7d17118c3a7ff16f6d5b22b358a3eb3b80
+
+    The document was not been rendered correctly
+    
+ doc/config_virtual_servers_rule.txt |    3 ++-
+ 1 files changed, 2 insertions(+), 1 deletions(-)
+
+
+2010-05-05  Taher Shihadeh  <taher@unixwars.com>
+            svn=5049 git=854d04778690829f57358e50e675be003c9273ed
+
+    Enhances rule documentation. WIP
+    
+ doc/config_virtual_servers_rule.txt |   57 +++++++++++++++++++++++++++--------
+ 1 files changed, 44 insertions(+), 13 deletions(-)
+
+
+2010-05-05  Taher Shihadeh  <taher@unixwars.com>
+            svn=5048 git=cc04d785e6ebb806d82fe8a56679a5b4a49b6cf2
+
+    Updates .po files. A few sentences from PageIndex have been fixed
+    
+ po/admin/de.po    |  469 +++++-----
+ po/admin/en.po    |  469 +++++-----
+ po/admin/es.po    |  569 +++++-------
+ po/admin/fr.po    |  462 +++++-----
+ po/admin/nl.po    | 2642 +++++++++++++++++++++++++++++++++--------------------
+ po/admin/pl.po    |  267 +++---
+ po/admin/pt_BR.po |  461 +++++-----
+ po/admin/sv_SE.po |  467 +++++-----
+ po/admin/zh_CN.po |  609 ++++++-------
+ 9 files changed, 3488 insertions(+), 2927 deletions(-)
+
+
+2010-05-05  Taher Shihadeh  <taher@unixwars.com>
+            svn=5047 git=47defc06b7ab181ca3499be69424581bb609657c
+
+    Gettext was having trouble with some rough edges
+    
+ admin/Balancer.py            |    2 +-
+ admin/Graph.py               |    4 ++--
+ admin/Icons.py               |    2 +-
+ admin/Mime.py                |    2 +-
+ admin/PageAdvanced.py        |    2 +-
+ admin/PageGeneral.py         |    2 +-
+ admin/PageIndex.py           |   20 ++++++++++----------
+ admin/PageRule.py            |    6 +++---
+ admin/PageSource.py          |    4 ++--
+ admin/PageVServers.py        |    4 ++--
+ admin/Rule.py                |    2 +-
+ admin/plugins/error_redir.py |    2 +-
+ admin/plugins/redir.py       |    2 +-
+ admin/plugins/rehost.py      |    2 +-
+ admin/plugins/target_ip.py   |    2 +-
+ admin/plugins/wildcard.py    |    2 +-
+ 16 files changed, 30 insertions(+), 30 deletions(-)
+
+
+2010-05-05  Taher Shihadeh  <taher@unixwars.com>
+            svn=5046 git=e4f8a6fb8902af1f669b65e34434f43f1a6a098a
+
+    Fixes some gettext calls
+    
+ admin/PageIndex.py |   20 ++++++++++----------
+ 1 files changed, 10 insertions(+), 10 deletions(-)
+
+
+2010-05-05  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=5045 git=db760b7509e9e6ff20930c2751470f2b8984f587
+
+    Fixes an UTF8 issue. Thanks a million to Stefan de Konink for the
+    finding an initial patch (great work!). Fixes bug number #796:
+    http://bugs.cherokee-project.com/796
+    
+ cherokee/buffer.c |    9 +++++----
+ 1 files changed, 5 insertions(+), 4 deletions(-)
+
+
+2010-05-05  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=5044 git=fff2202fe0abcd897744e9ee78cf1cf69ffa0dea
+
+    Fixes a 'No logging' flag minor bug.
+    
+ admin/PageRule.py |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+
+2010-05-05  李炅 <lijiong1986@126.com>
+            svn=5043 git=055352bcde40b01da1390f95c9000834fc838e83
+
+    new zh_CN.po from en.po,but not complete
+    
+ po/admin/zh_CN.po | 2108 +++++++++++++++++++++++++++--------------------------
+ 1 files changed, 1081 insertions(+), 1027 deletions(-)
+
+
+2010-05-05  Taher Shihadeh  <taher@unixwars.com>
+            svn=5042 git=387d79ac4bb0f2a93ad031dd0790b1dd391f9ac2
+
+    Fixes some typos
+    
+ admin/plugins/mysql.py      |    2 +-
+ admin/wizards/alfresco.py   |    2 +-
+ admin/wizards/coldfusion.py |    2 +-
+ admin/wizards/concrete5.py  |    2 +-
+ admin/wizards/django.py     |    2 +-
+ admin/wizards/drupal.py     |    2 +-
+ admin/wizards/glassfish.py  |    2 +-
+ admin/wizards/joomla.py     |    2 +-
+ admin/wizards/liferay.py    |    2 +-
+ admin/wizards/moinmoin.py   |    2 +-
+ admin/wizards/mono.py       |    2 +-
+ admin/wizards/moodle.py     |    2 +-
+ admin/wizards/phpbb.py      |    2 +-
+ admin/wizards/phpmyadmin.py |    2 +-
+ admin/wizards/rails.py      |    2 +-
+ admin/wizards/sugar.py      |    2 +-
+ admin/wizards/symfony.py    |    2 +-
+ admin/wizards/uwsgi.py      |    2 +-
+ admin/wizards/wordpress.py  |    2 +-
+ admin/wizards/zend.py       |    2 +-
+ 20 files changed, 20 insertions(+), 20 deletions(-)
+
+
+2010-05-05  Taher Shihadeh  <taher@unixwars.com>
+            svn=5041 git=cbe767856a361b1a4b8d1d729c2e82546413e26e
+
+    Admin: Fixes bug in CGI module
+    
+ admin/CgiBase.py |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+2010-05-05  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=5040 git=9cc28b3f30054e966b21b548a8a065324bd6273e
+
+    Cherokee 0.99.49 released
+    
+ configure.in |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+
+2010-05-05  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=5039 git=6d6edaeb72a99f566b964c531376fe1e32fb708d
+
+    Fixes an internal HTML issue. This patch was already included in
+    Cherokee 0.99.49 by mistake. It's a good but untested patch.
+    
+ admin/SelectionPanel.py           |    1 -
+ admin/static/js/SelectionPanel.js |   15 ++++++++-------
+ 2 files changed, 8 insertions(+), 8 deletions(-)
+
+
+2010-05-05  Stefan de Konink <stefan@konink.de>
+            svn=5038 git=e8f4d9eeb257da9eab0fc36c4bdbe54d6c5afc2d
+
+    Another big translation effort for Dutch.
+    
+ po/admin/nl.po | 2661 +++++++++++++++++++++-----------------------------------
+ 1 files changed, 1012 insertions(+), 1649 deletions(-)
+
 2010-05-04  Alvaro Lopez Ortega  <alvaro@octality.com>
             svn=5036 git=4451eb1e9828a587b7419f1fe88b484044bdb2fa
 

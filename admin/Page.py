@@ -110,7 +110,16 @@ class Base (CTK.Page):
 
         # Set up the template
         template = CTK.Template (filename = theme_file)
-        template['title'] = title
+        template['title']    = title
+        template['save']     = _('Save')
+        template['home']     = _('Home')
+        template['status']   = _('Status')
+        template['general']  = _('General')
+        template['vservers'] = _('vServers')
+        template['sources']  = _('Sources')
+        template['advanced'] = _('Advanced')
+        template['help']     = _('Help')
+        template['updating'] = _('Updating...')
 
         # <body> property
         if body_id:
@@ -123,6 +132,11 @@ class Base (CTK.Page):
         # Default headers
         heads = copy.copy (headers)
         heads.append ('<link rel="stylesheet" type="text/css" href="/static/css/cherokee-admin.css" />')
+
+        # Help translation
+        if kwargs.has_key('helps'):
+            helps = [(x[0], _(x[1])) for x in kwargs['helps']]
+            kwargs['helps'] = helps
 
         # Parent's constructor
         CTK.Page.__init__ (self, template, heads, **kwargs)
