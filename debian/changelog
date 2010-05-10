@@ -1,8 +1,13 @@
-cherokee (1.0-1) unstable; urgency=low
+cherokee (1.0-1) unstable; urgency=medium
 
+  [ Leonel Nunez ]
   * New Upstream Version 
 
- -- Leonel Nunez <leonel@enelserver.com>  Mon, 10 May 2010 10:45:08 -0600
+  [ Gunnar Wolf ]
+  * Tagging with urgency=medium as #578739 has not yet been fixed in
+    testing and upstream strongly recommends upgrading to 1.0.0
+
+ -- Gunnar Wolf <gwolf@debian.org>  Mon, 10 May 2010 18:25:52 -0500
 
 cherokee (0.99.49-1) unstable; urgency=low
 
