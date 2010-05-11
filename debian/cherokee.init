@@ -17,15 +17,13 @@
 PATH=/sbin:/bin:/usr/sbin:/usr/bin
 DAEMON=/usr/sbin/cherokee
 NAME=cherokee
+PIDFILE=/var/run/cherokee.pid
 
 . /lib/lsb/init-functions
 
 set -e
 
 test -x $DAEMON || exit 0
-
-PIDFILE=/var/run/cherokee.pid
-
 
 case "$1" in
   start)	
@@ -82,7 +80,7 @@ case "$1" in
 		fi
 	    fi
 	else
-	    if PID=$(pidofproc cherokee); then
+	    if PID=$(pidofproc $DAEMON); then
 		printf "Running (PID %s), but PIDFILE not present\t" "$PID"
 	    else
 		printf "Not running\t"
