@@ -1,5 +1,16 @@
 admin/Auth.py
 admin/Balancer.py
+admin/CTK/CTK/Config.py
+admin/CTK/CTK/Dialog.py
+admin/CTK/CTK/Druid.py
+admin/CTK/CTK/Help.py
+admin/CTK/CTK/Image.py
+admin/CTK/CTK/Server.py
+admin/CTK/CTK/Submitter.py
+admin/CTK/CTK/TextField.py
+admin/CTK/CTK/ToggleButton.py
+admin/CTK/CTK/json_embedded.py
+admin/CTK/CTK/pyscgi.py
 admin/CgiBase.py
 admin/Cherokee.py
 admin/Flags.py
@@ -82,6 +93,7 @@ admin/wizards/icons.py
 admin/wizards/joomla.py
 admin/wizards/liferay.py
 admin/wizards/mailman.py
+admin/wizards/mediawiki.py
 admin/wizards/moinmoin.py
 admin/wizards/mono.py
 admin/wizards/php.py

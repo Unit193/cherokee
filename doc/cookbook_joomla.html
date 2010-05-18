@@ -115,29 +115,27 @@ and log in. Go to the <tt>Global Configuration</tt> option and enable all the
 want some more insight on what exactly has been done by the
 Cherokee-Admin Joomla Wizard.</p></div>
 <h3 id="manual_configuration">Configuring Cherokee manually</h3><div style="clear:left"></div>
-<div class="paragraph"><p>We will assume that our <tt>Document Root</tt> directory is <tt>/var/www</tt>
-and that we want to install the software on a subdirectory called
-<tt>joomla</tt> of the server we are working on.</p></div>
+<div class="paragraph"><p>The wizard handles both series of Joomla, 1.5.x and 1.6.x. This manual
+process was documented for 1.5.x and does not work for 1.6.x.</p></div>
 <div class="paragraph"><p>You will need PHP support correctly configured in Cherokee, and PHP
-with the MySQL module installed. The default configuration already
-provides a valid PHP configuration for Cherokee if you have php-cgi
-installed, but you can follow the appropriate recipe about
-<a href="cookbook_php.html">setting up PHP</a> in case you don&#8217;t have it
-available for any reason. You will also need an FTP server if the
-Joomla files are owned by a user other than the one running the web
-server.</p></div>
+with the MySQL module installed. For this you will require php-cgi
+installed on your system, and to run the PHP wizard, so in case it is
+not configured yet you an follow the appropriate recipe about
+<a href="cookbook_php.html">setting up PHP</a>. You will also need an FTP
+server if the Joomla files are owned by a user other than the one
+running the web server.</p></div>
 <div class="paragraph"><p>Under these conditions, you could start Joomla&#8217;s installation and you
 would already be able to have your site up and running.</p></div>
 <div class="paragraph"><p>However, we can add several refinements. In this recipe we will be
 dedicating a virtual server entirely to Joomla, so either create a new
 one or adjust <tt>default</tt> accordingly. Of course, you can also set it up
 under a directory in an existing virtual server, but we will take the
-first approach for clarity and simplicity. And we will make the
-modifications in our <tt>default</tt> virtual server. This will only affect
-the URLs we&#8217;ll be accessing to log in to Joomla. First download and
-uncompress the distributed Joomla release into <tt>/var/www/joomla</tt>, and
-set that path as the <tt>Document Root</tt> in your virtual host&#8217;s <tt>Basics</tt>
-tab.</p></div>
+first approach for clarity and simplicity.</p></div>
+<div class="paragraph"><p>For our purposes, we will make the modifications in our <tt>default</tt>
+virtual server. This will only affect the URLs we&#8217;ll be accessing to
+log in to Joomla. First download and uncompress the distributed Joomla
+release into <tt>/var/www/joomla</tt>, and set that path as the <tt>Document
+Root</tt> in your virtual host&#8217;s <tt>Basics</tt> tab.</p></div>
 <div class="paragraph"><p>We will also be making changes in the <tt>Error Handler</tt> tab, selecting
 the <tt>Custom redirections</tt> option and adding an option to send errors
 to Joomla.</p></div>

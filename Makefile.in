@@ -39,9 +39,10 @@ subdir = .
 DIST_COMMON = README $(am__configure_deps) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in $(srcdir)/cherokee-config.in \
 	$(srcdir)/cherokee.pc.in $(srcdir)/cherokee.spec.in \
-	$(srcdir)/config.h.in $(top_srcdir)/configure AUTHORS COPYING \
-	ChangeLog INSTALL NEWS config.guess config.sub depcomp \
-	install-sh ltmain.sh missing
+	$(srcdir)/config.h.in \
+	$(srcdir)/org.cherokee.webserver.plist.in \
+	$(top_srcdir)/configure AUTHORS COPYING ChangeLog INSTALL NEWS \
+	config.guess config.sub depcomp install-sh ltmain.sh missing
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/etr_socket_nsl.m4 \
 	$(top_srcdir)/m4/libtool.m4 $(top_srcdir)/m4/libwww.m4 \
@@ -58,7 +59,8 @@ am__CONFIG_DISTCLEAN_FILES = config.status config.cache config.log \
  configure.lineno config.status.lineno
 mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = config.h
-CONFIG_CLEAN_FILES = cherokee-config cherokee.pc cherokee.spec
+CONFIG_CLEAN_FILES = cherokee-config cherokee.pc cherokee.spec \
+	org.cherokee.webserver.plist
 CONFIG_CLEAN_VPATH_FILES =
 am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
 am__vpath_adj = case $$p in \
@@ -357,22 +359,24 @@ debian_testing.sh   \
 debian_testing_chroot.sh
 
 EXTRA_DIST = \
-http-cherokee.xml     \
-cherokee.spec         \
-cherokee.spec.in      \
-SUNWcherokee.spec     \
-pam.d_cherokee        \
-cherokee.pc.in        \
-developers.py         \
-svnlog2changelog.py   \
-gitlog2changelog.py   \
-changelog-update.sh   \
-$(m4data_DATA)        \
-$(XMLS_PRE)           \
-$(CONFS_PRE)          \
-$(CONSTANTS_PRE)      \
-$(man_MANS)           \
-$(WINDOWS_PORT_FILES) \
+http-cherokee.xml               \
+cherokee.spec                   \
+cherokee.spec.in                \
+org.cherokee.webserver.plist    \
+org.cherokee.webserver.plist.in \
+SUNWcherokee.spec               \
+pam.d_cherokee                  \
+cherokee.pc.in                  \
+developers.py                   \
+svnlog2changelog.py             \
+gitlog2changelog.py             \
+changelog-update.sh             \
+$(m4data_DATA)                  \
+$(XMLS_PRE)                     \
+$(CONFS_PRE)                    \
+$(CONSTANTS_PRE)                \
+$(man_MANS)                     \
+$(WINDOWS_PORT_FILES)           \
 $(COMPILATION_TESTS)
 
 all: config.h
@@ -436,6 +440,8 @@ cherokee-config: $(top_builddir)/config.status $(srcdir)/cherokee-config.in
 cherokee.pc: $(top_builddir)/config.status $(srcdir)/cherokee.pc.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
 cherokee.spec: $(top_builddir)/config.status $(srcdir)/cherokee.spec.in
+	cd $(top_builddir) && $(SHELL) ./config.status $@
+org.cherokee.webserver.plist: $(top_builddir)/config.status $(srcdir)/org.cherokee.webserver.plist.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
 install-binSCRIPTS: $(bin_SCRIPTS)
 	@$(NORMAL_INSTALL)

@@ -38,6 +38,7 @@ TYPE_VSERVER = 1
 TYPE_RULE    = 1 << 2
 
 USUAL_STATIC_FILES = ['/favicon.ico', '/robots.txt', '/crossdomain.xml']
+DEFAULT_RECIPE_TEXT= N_('Check the cookbook for more details.')
 
 class Wizard (CTK.Box):
     def __init__ (self, _props={}):
@@ -151,9 +152,10 @@ class CategoryList_Widget (CTK.Box):
         tmp = filter (lambda g: g['name'] == category, wizard_list)
         if tmp:
             for w in tmp[0]['list']:
+                descr, title = w['descr'], w['title']
                 wlist.Add ([CTK.Box({'class': 'logo'},  Icon(w['name'])),
-                            CTK.Box({'class': 'title'}, CTK.RawHTML(w['title'])),
-                            CTK.Box({'class': 'descr'}, CTK.RawHTML(w['descr']))],
+                            CTK.Box({'class': 'title'}, CTK.RawHTML(_(title))),
+                            CTK.Box({'class': 'descr'}, CTK.RawHTML(_(descr)))],
                            {'wizard': w['name']})
 
         hidden = CTK.Hidden ('wizard')
@@ -229,6 +231,19 @@ def AddUsualStaticFiles (rule_pre):
     for file in USUAL_STATIC_FILES:
         CTK.cfg['%s!match!fullpath!%d'%(rule_pre,n)] = file
         n += 1
+
+
+class CookBookBox (CTK.Box):
+    """References the local documentation"""
+    def __init__ (self, help, text = DEFAULT_RECIPE_TEXT):
+        CTK.Box.__init__(self, {'class': 'wizard-cookbook'})
+
+        if help.startswith('http://'):
+            link = help
+        else:
+            link = '/help/%s.html'%(help)
+
+        self += CTK.Link (link, CTK.RawHTML(_(text)))
 
 
 #

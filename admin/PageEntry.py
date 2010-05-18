@@ -26,6 +26,7 @@ import CTK
 import Page
 import Cherokee
 import validations
+import Handler
 
 import re
 
@@ -101,7 +102,7 @@ class SecurityWidget (CTK.Container):
 
         # Logging
         table = CTK.PropsTable()
-        table.Add (_('Skip Logging'), CTK.CheckCfgText ('%s!no_log'%(pre), False), _(NOTE_NO_LOG))
+        table.Add (_('Skip Logging'), CTK.CheckCfgText ('%s!no_log'%(pre), False, _('Enabled')), _(NOTE_NO_LOG))
         submit = CTK.Submitter (apply)
         submit += table
 
@@ -110,7 +111,7 @@ class SecurityWidget (CTK.Container):
 
         # Access Restrictions
         table = CTK.PropsTable()
-        table.Add (_('Only https'), CTK.CheckCfgText ('%s!only_secure'%(pre), False), _(NOTE_HTTPS_ONLY))
+        table.Add (_('Only https'), CTK.CheckCfgText ('%s!only_secure'%(pre), False, _('Enabled')), _(NOTE_HTTPS_ONLY))
         table.Add (_('Allow From'), CTK.TextCfg ('%s!allow_from'%(pre), True), _(NOTE_ALLOW_FROM))
         submit = CTK.Submitter (apply)
         submit += table
@@ -119,7 +120,7 @@ class SecurityWidget (CTK.Container):
         self += CTK.Indenter (submit)
 
         # Authentication
-        modul = CTK.PluginSelector('%s!auth'%(pre), Cherokee.support.filter_available (VALIDATORS))
+        modul = CTK.PluginSelector('%s!auth'%(pre), trans (Cherokee.support.filter_available (VALIDATORS)))
 
         table = CTK.PropsTable()
         table.Add (_('Validation Mechanism'), modul.selector_widget, _(NOTE_VALIDATOR))
@@ -170,7 +171,7 @@ class EncodingWidget (CTK.Container):
     def __init__ (self, vsrv, rule, apply):
         CTK.Container.__init__ (self)
         pre = 'vserver!%s!rule!%s!encoder' %(vsrv, rule)
-        encoders = Cherokee.support.filter_available (ENCODERS)
+        encoders = trans (Cherokee.support.filter_available (ENCODERS))
 
         table = CTK.PropsTable()
         for e,e_name in encoders:
@@ -217,10 +218,15 @@ class HandlerWidget (CTK.Container):
         CTK.Container.__init__ (self)
         pre = 'vserver!%s!rule!%s!handler' %(vsrv, rule)
 
-        modul = CTK.PluginSelector(pre, Cherokee.support.filter_available (HANDLERS))
+        modul = CTK.PluginSelector(pre, trans (Cherokee.support.filter_available (HANDLERS)))
 
         table = CTK.PropsTable()
         table.Add (_('Handler'), modul.selector_widget, _(NOTE_HANDLER))
+
+        # Exceptionally, a custom document root option must be
+        # available when the handler is not yet set
+        if CTK.cfg.get_val (pre) == None:
+            table.Add (_('Document Root'), CTK.TextCfg('vserver!%s!rule!%s!document_root'%(vsrv, rule), True), _(Handler.NOTE_DOCUMENT_ROOT))
 
         self += CTK.RawHTML ('<h2>%s</h2>' %(_('Handler')))
         self += CTK.Indenter (table)
