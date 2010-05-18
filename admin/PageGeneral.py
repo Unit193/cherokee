@@ -36,6 +36,7 @@ URL_BASE  = '/general'
 URL_APPLY = '/general/apply'
 
 NOTE_ADD_PORT    = N_('Defines a port that the server will listen to')
+NOTE_ADD_IF      = N_('Optionally defines an interface to listen to')
 NOTE_IPV6        = N_('Set to enable the IPv6 support. The OS must support IPv6 for this to work.')
 NOTE_TOKENS      = N_('This option allows to choose how the server identifies itself.')
 NOTE_TIMEOUT     = N_('Time interval until the server closes inactive connections.')
@@ -59,7 +60,8 @@ VALIDATIONS = [
     ("server!bind!.*!interface", validations.is_ip),
     ("server!bind!.*!tls",       validations.is_boolean),
     ("server!chroot",            validations.is_chroot_dir_exists),
-    ("new_port",                 validations.is_new_tcp_port)
+    ("new_port",                 validations.is_tcp_port),
+    ("new_if",                   validations.is_ip)
 ]
 
 JS_SCROLL = """
@@ -81,13 +83,37 @@ $(document).ready(function() {
 """
 
 
+def is_new_bind (port, ip=None):
+    if ip:
+        ip   = validations.is_ip (ip)
+        port = validations.is_tcp_port (port)
+    else:
+        port = validations.is_new_tcp_port (port)
+
+    binds = [(CTK.cfg.get_val('server!bind!%s!port'%(x)),
+              CTK.cfg.get_val('server!bind!%s!interface'%(x)))
+             for x in CTK.cfg.keys ('server!bind')]
+
+    if (port, ip) in binds:
+        raise ValueError, _("Port/Interface combination already in use.")
+
+
 def commit():
     # Add a new port
     port = CTK.post.pop('new_port')
+    interface = CTK.post.pop('new_if')
     if port:
+        try:
+            is_new_bind (port, interface)
+        except ValueError, e:
+            return { "ret": "error", "errors": { 'new_port': str(e),
+                                                 'new_if':   str(e) }}
+
         # Look for the next entry
         pre = CTK.cfg.get_next_entry_prefix ('server!bind')
         CTK.cfg['%s!port'%(pre)] = port
+        if interface:
+            CTK.cfg['%s!interface'%(pre)] = interface
 
     # Modifications
     return CTK.cfg_apply_post()
@@ -95,10 +121,10 @@ def commit():
 
 class NetworkWidget (CTK.Box):
     def __init__ (self):
-        CTK.Box.__init__ (self)
+        CTK.Box.__init__ (self, {'class':'network'})
 
         table = CTK.PropsTable()
-        table.Add (_('IPv6'),             CTK.CheckCfgText('server!ipv6', True), _(NOTE_IPV6))
+        table.Add (_('IPv6'),             CTK.CheckCfgText('server!ipv6', True, _('Enabled')), _(NOTE_IPV6))
         table.Add (_('SSL/TLS back-end'), CTK.ComboCfg('server!tls', trans (Cherokee.support.filter_available(CRYPTORS))), _(NOTE_TLS))
         submit = CTK.Submitter (URL_APPLY)
         submit += CTK.Indenter(table)
@@ -132,7 +158,7 @@ class PortsTable (CTK.Submitter):
     def __init__ (self, refreshable, **kwargs):
         CTK.Submitter.__init__ (self, URL_APPLY)
 
-        table   = CTK.Table()
+        table   = CTK.Table({'class':'ports'})
         binds   = CTK.cfg.keys('server!bind')
         has_tls = CTK.cfg.get_val('server!tls') != None
 
@@ -181,6 +207,7 @@ class PortsWidget (CTK.Container):
         # Add new - dialog
         table = CTK.PropsTable()
         table.Add (_('Port'), CTK.TextCfg ('new_port', False, {'class':'noauto'}), _(NOTE_ADD_PORT))
+        table.Add (_('Interface'), CTK.TextCfg ('new_if', True, {'class':'noauto'}), _(NOTE_ADD_IF))
 
         submit = CTK.Submitter (URL_APPLY)
         submit += table
@@ -206,9 +233,9 @@ class PortsWidget (CTK.Container):
         self += dialog
 
 
-class PermsWidget (CTK.Container):
+class PermsWidget (CTK.Box):
     def __init__ (self):
-        CTK.Container.__init__ (self)
+        CTK.Box.__init__ (self, {'class':'permissions'})
 
         table = CTK.PropsAuto (URL_APPLY)
         self += CTK.RawHTML ("<h2>%s</h2>" %(_('Execution Permissions')))
@@ -229,7 +256,7 @@ class Render:
         tabs.Add (_('Ports to listen'), ports)
         tabs.Add (_('Permissions'),     PermsWidget())
         tabs.Add (_('Icons'),           Icons.Icons_Widget())
-        tabs.Add (_('Mime types'),       Mime.MIME_Widget())
+        tabs.Add (_('Mime types'),      Mime.MIME_Widget())
 
         page = Page.Base (_("General"), body_id='general', helps=HELPS)
         page += CTK.RawHTML("<h1>%s</h1>" %(_('General Settings')))

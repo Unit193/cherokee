@@ -25,7 +25,7 @@ AC_PREREQ([2.60])
 dnl Version
 m4_define([cherokee_major_version], [1])
 m4_define([cherokee_minor_version], [0])
-m4_define([cherokee_micro_version], [0])
+m4_define([cherokee_micro_version], [1])
 m4_define([cherokee_version], m4_format('%s.%s.%s', cherokee_major_version, cherokee_minor_version, cherokee_micro_version))
 
 dnl Init autoconf and automake
@@ -1487,6 +1487,7 @@ cget/Makefile
 cherokee-config
 cherokee.pc
 cherokee.spec
+org.cherokee.webserver.plist
 cherokee/Makefile
 contrib/Makefile
 icons/Makefile

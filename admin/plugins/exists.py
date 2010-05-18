@@ -21,6 +21,7 @@
 #
 
 import CTK
+import validations
 
 from Rule import RulePlugin
 from util import *
@@ -68,14 +69,14 @@ class Modify (CTK.Submitter):
 
         # Main table
         table = CTK.PropsTable()
-        table.Add (_('Match any file'), CTK.CheckCfgText('%s!match_any'%(key), False), _(NOTE_ANY))
+        table.Add (_('Match any file'), CTK.CheckCfgText('%s!match_any'%(key), False, _('Enabled')), _(NOTE_ANY))
 
         if not int (CTK.cfg.get_val('%s!match_any'%(key), '0')):
             table.Add (_('Files'),                 CTK.TextCfg ('%s!exists'%(key),           False), _(NOTE_EXISTS))
 
-        table.Add (_('Use I/O cache'),             CTK.CheckCfgText('%s!iocache'%(key),           True), _(NOTE_IOCACHE))
-        table.Add (_('Only match files'),          CTK.CheckCfgText('%s!match_only_files'%(key),  True), _(NOTE_ONLY_FILES))
-        table.Add (_('If dir, check index files'), CTK.CheckCfgText('%s!match_index_files'%(key), True), _(NOTE_INDEX_FILES))
+        table.Add (_('Use I/O cache'),             CTK.CheckCfgText('%s!iocache'%(key),           True, _('Enabled')), _(NOTE_IOCACHE))
+        table.Add (_('Only match files'),          CTK.CheckCfgText('%s!match_only_files'%(key),  True, _('Enabled')), _(NOTE_ONLY_FILES))
+        table.Add (_('If dir, check index files'), CTK.CheckCfgText('%s!match_index_files'%(key), True, _('Enabled')), _(NOTE_INDEX_FILES))
 
         # Submit
         self += table
@@ -99,7 +100,10 @@ class Plugin_exists (RulePlugin):
             self += refresh
 
         # Validation, and Public URLs
-        CTK.publish (URL_APPLY, apply, method="POST")
+        VALS = [("tmp!exists",      validations.is_list),
+                ("%s!exists"%(key), validations.is_list)]
+
+        CTK.publish (URL_APPLY, apply, validation=VALS, method="POST")
 
     def _GUI_new (self, key, vsrv_num):
         any = CTK.CheckCfgText('%s!match_any'%(key), False, _('Enabled'), {'class': 'noauto'})
@@ -137,4 +141,5 @@ class Plugin_exists (RulePlugin):
         elif len(files) == 0:
             return _("File exists (never matched)")
 
-        return _('File %(most)s or %(last)s exists' % ({most:', '.join (files[:-1]), last:files[-1]}))
+        return _('File %(most)s or %(last)s exists' % ({'most': ', '.join (files[:-1]),
+                                                        'last': files[-1]}))

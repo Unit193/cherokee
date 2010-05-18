@@ -558,7 +558,7 @@ tr.panel-selected td div.row_content .sel-actions {
   border-top: 1px solid #cde;
 }
 
-#source-usage { 
+#source-usage {
  table-layout: fixed;
  border-collapse: collapse;
  width: 670px;
@@ -703,10 +703,10 @@ tr.panel-selected td div.row_content .sel-actions {
 #mimetable thead tr { position: relative; display: block; }
 
 #mimetable tbody {
-	display: block;
-	height: 480px;
-	overflow: auto;
-	width: 100%;
+  display: block;
+  height: 480px;
+  overflow: auto;
+  width: 100%;
 }
 
 #mimetable tbody td { width: 480px; }
@@ -805,15 +805,15 @@ tr.panel-selected td div.row_content .sel-actions {
 
 #icons_special table td { padding: 4px 8px; }
 #icons_files { clear: both; margin-bottom: 64px; }
-.File-button { width: 480px; }
-.File-button .button { float: right; }
+.file-button { width: 480px; }
+.file-button .button { float: right; }
 #icon_files td { padding: 2px 8px; }
 #icon_files td + td + td { padding: 4px 0; }
 #icon_files input { width: 400px; }
 #icon_files .notice { display: none; }
 #icons_extensions { clear: both; margin-bottom: 64px; }
-.Extensions-button { width: 480px; }
-.Extensions-button .button { float: right; }
+.extensions-button { width: 480px; }
+.extensions-button .button { float: right; }
 #icon_extensions td { padding: 2px 8px; }
 #icon_extensions td + td + td { padding: 4px 0; }
 #icon_extensions input { width: 400px; }

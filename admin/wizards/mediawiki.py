@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 #
-# Cherokee-admin's WordPress wizard
+# Cherokee-admin's MediaWiki wizard
 #
 # Authors:
-#      Alvaro Lopez Ortega <alvaro@alobbs.com>
 #      Taher Shihadeh <taher@unixwars.com>
 #
 # Copyright (C) 2010 Alvaro Lopez Ortega
@@ -25,7 +24,7 @@
 
 #
 # Tested:
-# 2010/04/12: WordPress 2.9.2 Cherokee 0.99.41
+# 2010/05/14: MediaWiki 1.15.3 Cherokee 1.0.0
 #
 
 import os
@@ -35,50 +34,44 @@ import Wizard
 import validations
 from util import *
 
-NOTE_WELCOME_H1 = N_("Welcome to the WordPress wizard")
-NOTE_WELCOME_P1 = N_('<a target="_blank" href="http://wordpress.org/">WordPress</a> is a state-of-the-art publishing platform with a focus on aesthetics, web standards, and usability. WordPress is both free and priceless at the same time.')
-NOTE_WELCOME_P2 = N_('More simply, WordPress is what you use when you want to work with your blogging software, not fight it.')
+NOTE_WELCOME_H1 = N_("Welcome to the Mediawiki wizard")
+NOTE_WELCOME_P1 = N_('<a target="_blank" href="http://mediawiki.org/">MediaWiki</a> is a free software wiki  package written in PHP, originally for use on Wikipedia.')
+NOTE_WELCOME_P2 = N_('It is now used by several other projects of the non-profit Wikimedia Foundation and by many other wikis.')
 NOTE_LOCAL_H1   = N_("Application Source Code")
-NOTE_LOCAL_DIR  = N_("Local directory where the WordPress source code is located. Example: /usr/share/wordpress.")
+NOTE_LOCAL_DIR  = N_("Local directory where the MediaWiki source code is located. Example: /usr/share/mediawiki.")
 NOTE_HOST_H1    = N_("New Virtual Server Details")
 NOTE_HOST       = N_("Host name of the virtual server that is about to be created.")
-NOTE_WEBDIR     = N_("Web directory where you want WordPress to be accessible. (Example: /blog)")
+NOTE_WEBDIR     = N_("Web directory where you want MediaWiki to be accessible. (Example: /wiki)")
 NOTE_WEBDIR_H1  = N_("Public Web Directory")
-ERROR_NO_SRC    = N_("Does not look like a WordPress source directory.")
+ERROR_NO_SRC    = N_("Does not look like a MediaWiki source directory.")
 
-PREFIX    = 'tmp!wizard!wordpress'
-URL_APPLY = r'/wizard/vserver/wordpress/apply'
+NOTE_AUXDIR     = N_("Internal web directory used by MediaWiki. It usually is /w.")
+
+NOTE_SETTINGS_H1= N_("Changes to LocalSettings.php")
+NOTE_SETTINGS_P1= N_("Once you complete the installation of MediaWiki, LocalSettings.php will be created.")
+NOTE_SETTINGS_P2= N_("For this wizard to be effective you will have to add the following changes to that file.")
+
+PREFIX    = 'tmp!wizard!mediawiki'
+URL_APPLY = r'/wizard/vserver/mediawiki/apply'
 
 CONFIG_DIR = """
-%(pre_rule_minus1)s!match = fullpath
-%(pre_rule_minus1)s!match!fullpath!1 = %(web_dir)s/wp-admin/
-%(pre_rule_minus1)s!handler = redir
-%(pre_rule_minus1)s!handler!rewrite!1!regex = (.*)/
-%(pre_rule_minus1)s!handler!rewrite!1!show = 0
-%(pre_rule_minus1)s!handler!rewrite!1!substring = $1/index.php
+%(pre_rule_plus3)s!document_root = %(local_dir)s
+%(pre_rule_plus3)s!match = directory
+%(pre_rule_plus3)s!match!directory = %(aux_dir)s
+%(pre_rule_plus3)s!match!final = 0
 
-%(pre_rule_minus2)s!document_root = %(local_dir)s
-%(pre_rule_minus2)s!match = directory
-%(pre_rule_minus2)s!match!directory = %(web_dir)s
-%(pre_rule_minus2)s!match!final = 0
+%(pre_rule_plus2)s!handler = redir
+%(pre_rule_plus2)s!handler!rewrite!1!show = 1
+%(pre_rule_plus2)s!handler!rewrite!1!substring = %(aux_dir)s/index.php
+%(pre_rule_plus2)s!match = fullpath
+%(pre_rule_plus2)s!match!fullpath!1 = %(web_dir)s
+%(pre_rule_plus2)s!match!fullpath!2 = %(web_dir)s/
 
-%(pre_rule_minus3)s!match = and
-%(pre_rule_minus3)s!match!final = 1
-%(pre_rule_minus3)s!match!left = directory
-%(pre_rule_minus3)s!match!left!directory = %(web_dir)s
-%(pre_rule_minus3)s!match!right = exists
-%(pre_rule_minus3)s!match!right!iocache = 1
-%(pre_rule_minus3)s!match!right!match_any = 1
-%(pre_rule_minus3)s!match!right!match_index_files = 0
-%(pre_rule_minus3)s!match!right!match_only_files = 1
-%(pre_rule_minus3)s!handler = file
-%(pre_rule_minus3)s!handler!iocache = 1
-
-%(pre_rule_minus4)s!match = request
-%(pre_rule_minus4)s!match!request = %(web_dir)s/(.+)
-%(pre_rule_minus4)s!handler = redir
-%(pre_rule_minus4)s!handler!rewrite!1!show = 0
-%(pre_rule_minus4)s!handler!rewrite!1!substring = %(web_dir)s/index.php?/$1
+%(pre_rule_plus1)s!handler = redir
+%(pre_rule_plus1)s!handler!rewrite!1!show = 0
+%(pre_rule_plus1)s!handler!rewrite!1!substring = %(aux_dir)s/index.php?/$1
+%(pre_rule_plus1)s!match = request
+%(pre_rule_plus1)s!match!request = %(web_dir)s/(.+)
 """
 
 CONFIG_VSERVER = """
@@ -88,34 +81,25 @@ CONFIG_VSERVER = """
 
 # The PHP rule comes here
 
-%(pre_rule_minus2)s!match = fullpath
-%(pre_rule_minus2)s!match!fullpath!1 = /
-%(pre_rule_minus2)s!match!fullpath!2 = /wp-admin/
-%(pre_rule_minus2)s!handler = redir
-%(pre_rule_minus2)s!handler!rewrite!1!show = 0
-%(pre_rule_minus2)s!handler!rewrite!1!regex = (.*)/
-%(pre_rule_minus2)s!handler!rewrite!1!substring = $1/index.php
-
-%(pre_rule_minus3)s!match = exists
-%(pre_rule_minus3)s!match!iocache = 1
-%(pre_rule_minus3)s!match!match_any = 1
-%(pre_rule_minus3)s!match!match_only_files = 1
-%(pre_rule_minus3)s!handler = file
-%(pre_rule_minus3)s!handler!iocache = 1
-
 %(pre_vsrv)s!rule!1!match = default
-%(pre_vsrv)s!rule!1!handler = redir
-%(pre_vsrv)s!rule!1!handler!rewrite!1!show = 0
-%(pre_vsrv)s!rule!1!handler!rewrite!1!regex = /(.+)
-%(pre_vsrv)s!rule!1!handler!rewrite!1!substring = /index.php?/$1
+%(pre_vsrv)s!rule!1!handler = file
+""" + CONFIG_DIR
+
+LOCAL_SETTINGS = """
+$wgScriptPath       = "%(aux_dir)s";
+$wgScript           = "$wgScriptPath/index.php";
+$wgRedirectScript   = "$wgScriptPath/redirect.php";
+$wgArticlePath      = "%(web_dir)s/$1";
+$wgUsePathInfo      = true;
 """
 
 SRC_PATHS = [
-    "/usr/share/wordpress",          # Debian, Fedora
-    "/var/www/*/htdocs/wordpress",   # Gentoo
-    "/srv/www/htdocs/wordpress",     # SuSE
-    "/usr/local/www/data/wordpress", # BSD
-    "/opt/local/www/wordpress"       # MacPorts
+    "/var/lib/mediawiki",            # Debian
+    "/usr/share/mediawiki",          # Debian, Fedora
+    "/var/www/*/htdocs/mediawiki",   # Gentoo
+    "/srv/www/htdocs/mediawiki",     # SuSE
+    "/usr/local/www/data/mediawiki", # BSD
+    "/opt/local/www/mediawiki"       # MacPorts
 ]
 
 
@@ -131,11 +115,13 @@ class Commit:
         error = php.wizard_php_add (next)
         php_info = php.get_info (next)
 
-        # WordPress
+        # MediaWiki
         props = cfg_get_surrounding_repls ('pre_rule', php_info['rule'])
         props['pre_vsrv']  = next
         props['host']      = CTK.cfg.get_val('%s!host'      %(PREFIX))
         props['local_dir'] = CTK.cfg.get_val('%s!local_dir' %(PREFIX))
+        props['web_dir']   = CTK.cfg.get_val('%s!web_dir'   %(PREFIX))
+        props['aux_dir']   = CTK.cfg.get_val('%s!aux_dir'   %(PREFIX))
 
         config = CONFIG_VSERVER %(props)
         CTK.cfg.apply_chunk (config)
@@ -158,11 +144,12 @@ class Commit:
         error = php.wizard_php_add (next)
         php_info = php.get_info (next)
 
-        # WordPress
+        # MediaWiki
         props = cfg_get_surrounding_repls ('pre_rule', php_info['rule'])
         props['pre_vsrv']  = next
         props['web_dir']   = CTK.cfg.get_val('%s!web_dir'   %(PREFIX))
         props['local_dir'] = CTK.cfg.get_val('%s!local_dir' %(PREFIX))
+        props['aux_dir']   = CTK.cfg.get_val('%s!aux_dir'   %(PREFIX))
 
         config = CONFIG_DIR %(props)
         CTK.cfg.apply_chunk (config)
@@ -187,19 +174,45 @@ class Commit:
         return CTK.cfg_apply_post()
 
 
-class WebDirectory:
+class ShowLocalSettings:
     def __call__ (self):
-        table = CTK.PropsTable()
-        table.Add (_('Web Directory'), CTK.TextCfg ('%s!web_dir'%(PREFIX), False, {'value': '/blog', 'class': 'noauto'}), _(NOTE_WEBDIR))
+        print 1
+
+        web_dir = CTK.cfg.get_val('%s!web_dir'%(PREFIX))
+        aux_dir = CTK.cfg.get_val('%s!aux_dir'%(PREFIX))
+        info = LOCAL_SETTINGS % (locals())
+
+        print 2,info
 
         submit = CTK.Submitter (URL_APPLY)
         submit += CTK.Hidden('final', '1')
+
+        cont = CTK.Container()
+        cont += CTK.RawHTML ('<h2>%s</h2>' %(_(NOTE_SETTINGS_H1)))
+        cont += CTK.RawHTML ('<p>%s</p>' %(_(NOTE_SETTINGS_P1)))
+        cont += CTK.RawHTML ('<p>%s</p>' %(_(NOTE_SETTINGS_P2)))
+        cont += CTK.Notice (content=CTK.RawHTML('<pre>%s</pre>'%(info)))
+
+        print 3
+
+        cont += submit
+        cont += CTK.DruidButtonsPanel_PrevCreate_Auto()
+        return cont.Render().toStr()
+
+
+class WebDirectory:
+    def __call__ (self):
+        table = CTK.PropsTable()
+        table.Add (_('Web Directory'), CTK.TextCfg ('%s!web_dir'%(PREFIX), False, {'value': '/wiki', 'class': 'noauto'}), _(NOTE_WEBDIR))
+        table.Add (_('Internal Web Directory'), CTK.TextCfg ('%s!aux_dir'%(PREFIX), False, {'value': '/w', 'class': 'noauto'}), _(NOTE_AUXDIR))
+
+        submit = CTK.Submitter (URL_APPLY)
         submit += table
 
         cont = CTK.Container()
         cont += CTK.RawHTML ('<h2>%s</h2>' %(_(NOTE_WEBDIR_H1)))
         cont += submit
-        cont += CTK.DruidButtonsPanel_PrevCreate_Auto()
+        cont += CTK.DruidButtonsPanel_PrevNext_Auto()
         return cont.Render().toStr()
 
 
@@ -210,13 +223,12 @@ class Host:
         table.Add (_('Use Same Logs as'), Wizard.CloneLogsCfg('%s!logs_as_vsrv'%(PREFIX)), _(Wizard.CloneLogsCfg.NOTE))
 
         submit = CTK.Submitter (URL_APPLY)
-        submit += CTK.Hidden('final', '1')
         submit += table
 
         cont = CTK.Container()
         cont += CTK.RawHTML ('<h2>%s</h2>' %(_(NOTE_HOST_H1)))
         cont += submit
-        cont += CTK.DruidButtonsPanel_PrevCreate_Auto()
+        cont += CTK.DruidButtonsPanel_PrevNext_Auto()
         return cont.Render().toStr()
 
 
@@ -225,7 +237,7 @@ class LocalSource:
         guessed_src = path_find_w_default (SRC_PATHS)
 
         table = CTK.PropsTable()
-        table.Add (_('WordPress Local Directory'), CTK.TextCfg ('%s!local_dir'%(PREFIX), False, {'value': guessed_src}), _(NOTE_LOCAL_DIR))
+        table.Add (_('MediaWiki Local Directory'), CTK.TextCfg ('%s!local_dir'%(PREFIX), False, {'value': guessed_src}), _(NOTE_LOCAL_DIR))
 
         submit = CTK.Submitter (URL_APPLY)
         submit += table
@@ -241,11 +253,12 @@ class Welcome:
     def __call__ (self):
         cont = CTK.Container()
         cont += CTK.RawHTML ('<h2>%s</h2>' %(_(NOTE_WELCOME_H1)))
-        cont += Wizard.Icon ('wordpress', {'class': 'wizard-descr'})
+        cont += Wizard.Icon ('mediawiki', {'class': 'wizard-descr'})
         box = CTK.Box ({'class': 'wizard-welcome'})
         box += CTK.RawHTML ('<p>%s</p>' %(_(NOTE_WELCOME_P1)))
         box += CTK.RawHTML ('<p>%s</p>' %(_(NOTE_WELCOME_P2)))
-        box += Wizard.CookBookBox ('cookbook_wordpress')
+        box += Wizard.CookBookBox ('http://www.mediawiki.org/wiki/Manual:Short_URL/wiki/Page_title_--_Cherokee_rewrite--root_access',
+                                   _('This wizard is based on the Cherokee wiki-article at MediaWiki.org.'))
         cont += box
 
         # Send the VServer num if it's a Rule
@@ -259,9 +272,9 @@ class Welcome:
         return cont.Render().toStr()
 
 
-def is_wordpress_dir (path):
+def is_mediawiki_dir (path):
     path = validations.is_local_dir_exists (path)
-    module_inc = os.path.join (path, 'wp-login.php')
+    module_inc = os.path.join (path, 'includes/Article.php')
     try:
         validations.is_local_file_exists (module_inc)
     except:
@@ -274,20 +287,23 @@ VALS = [
     ('%s!host'     %(PREFIX), validations.is_not_empty),
     ('%s!web_dir'  %(PREFIX), validations.is_not_empty),
 
-    ('%s!local_dir'%(PREFIX), is_wordpress_dir),
+    ('%s!local_dir'%(PREFIX), is_mediawiki_dir),
     ('%s!host'     %(PREFIX), validations.is_new_vserver_nick),
     ('%s!web_dir'  %(PREFIX), validations.is_dir_formatted)
 ]
 
 # VServer
-CTK.publish ('^/wizard/vserver/wordpress$',   Welcome)
-CTK.publish ('^/wizard/vserver/wordpress/2$', LocalSource)
-CTK.publish ('^/wizard/vserver/wordpress/3$', Host)
+CTK.publish ('^/wizard/vserver/mediawiki$',   Welcome)
+CTK.publish ('^/wizard/vserver/mediawiki/2$', LocalSource)
+CTK.publish ('^/wizard/vserver/mediawiki/3$', WebDirectory)
+CTK.publish ('^/wizard/vserver/mediawiki/4$', Host)
+CTK.publish ('^/wizard/vserver/mediawiki/5$', ShowLocalSettings)
 
 # Rule
-CTK.publish ('^/wizard/vserver/(\d+)/wordpress$',   Welcome)
-CTK.publish ('^/wizard/vserver/(\d+)/wordpress/2$', LocalSource)
-CTK.publish ('^/wizard/vserver/(\d+)/wordpress/3$', WebDirectory)
+CTK.publish ('^/wizard/vserver/(\d+)/mediawiki$',   Welcome)
+CTK.publish ('^/wizard/vserver/(\d+)/mediawiki/2$', LocalSource)
+CTK.publish ('^/wizard/vserver/(\d+)/mediawiki/3$', WebDirectory)
+CTK.publish ('^/wizard/vserver/(\d+)/mediawiki/4$', ShowLocalSettings)
 
 # Common
 CTK.publish (r'^%s$'%(URL_APPLY), Commit, method="POST", validation=VALS)

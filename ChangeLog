@@ -1,3 +1,479 @@
+2010-05-18  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=5128 git=2250b46de58822c91e7d3f28cc92399e3f1d48dd
+
+    The list of virtual servers and rules were becoming inconsistent
+    whenever entries were reordered. This patch fixes the problem.
+    
+ admin/PageRule.py       |    6 ++++--
+ admin/PageVServers.py   |   17 ++++++++++-------
+ admin/SelectionPanel.py |    1 -
+ 3 files changed, 14 insertions(+), 10 deletions(-)
+
+
+2010-05-18  Taher Shihadeh  <taher@unixwars.com>
+            svn=5126 git=d4a89c3873b703f7a707c907d0533de4c923a8c3
+
+    Updates Spanish translation
+    
+ po/admin/es.po |  306 ++++++++++++++++++++++++++++++++------------------------
+ 1 files changed, 173 insertions(+), 133 deletions(-)
+
+
+2010-05-18  Taher Shihadeh  <taher@unixwars.com>
+            svn=5125 git=c05b668540db200b95be6417e99d21c75079cc8d
+
+    Gettext fixes
+    
+ admin/Wizard.py                 |    5 +++--
+ po/admin/generate_POTFILESin.py |    3 ++-
+ 2 files changed, 5 insertions(+), 3 deletions(-)
+
+
+2010-05-18  Taher Shihadeh  <taher@unixwars.com>
+            svn=5123 git=1224097c3d4493175471d341d28543d6272b223d
+
+    Handles issue 874 (i18n)
+    
+ admin/Icons.py |   13 +++++++------
+ 1 files changed, 7 insertions(+), 6 deletions(-)
+
+
+2010-05-18  Taher Shihadeh  <taher@unixwars.com>
+            svn=5122 git=5e4e0468d08bf3313171217b16635cd3f0453780
+
+    i18n
+    
+ admin/PageVServer.py |    2 +-
+ admin/Wizard.py      |    4 ++--
+ 2 files changed, 3 insertions(+), 3 deletions(-)
+
+
+2010-05-18  Taher Shihadeh  <taher@unixwars.com>
+            svn=5120 git=70eca88bdf5a90922139c20104af979a8f20c0e2
+
+    Adds some classes required for styling (localized interfaces have some problems with IDs)
+    
+ admin/Icons.py       |    5 +++--
+ admin/Mime.py        |    4 ++--
+ admin/PageGeneral.py |   10 +++++-----
+ 3 files changed, 10 insertions(+), 9 deletions(-)
+
+
+2010-05-18  Taher Shihadeh  <taher@unixwars.com>
+            svn=5119 git=f0559c44003fe48b927d6aa31d6eab3764a1ea64
+
+    Fixes i18n issues.
+    
+ admin/Graph.py          |    2 +-
+ admin/Mime.py           |    2 +-
+ admin/PageAdvanced.py   |    2 +-
+ admin/PageEntry.py      |    4 ++--
+ admin/PageGeneral.py    |    2 +-
+ admin/PageSource.py     |    2 +-
+ admin/plugins/exists.py |    8 ++++----
+ 7 files changed, 11 insertions(+), 11 deletions(-)
+
+
+2010-05-18  Taher Shihadeh  <taher@unixwars.com>
+            svn=5118 git=f92f82c87284329f2b4f95eda2192b1d37314023
+
+    Updates the wizard to the latest Joomla. Fixes http://bugs.cherokee-project.com/836
+    
+ admin/wizards/joomla.py |   76 ++++++++++++++++++++++++++++++++--------------
+ doc/cookbook_joomla.txt |   20 +++++-------
+ 2 files changed, 62 insertions(+), 34 deletions(-)
+
+
+2010-05-18  Taher Shihadeh  <taher@unixwars.com>
+            svn=5117 git=ef811e96f9eedaff3c353f7ac2cd66e45a3a2c95
+
+    Fixes a bug with the wizard cookbook links
+    
+ admin/Wizard.py |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+
+2010-05-18  Taher Shihadeh  <taher@unixwars.com>
+            svn=5116 git=86d6191eff01fdf829fbf4867bf6df6e549b39b9
+
+    Clarifies some aspects about the installation of Joomla
+    
+ doc/cookbook_joomla.txt |   36 +++++++++++++++++++-----------------
+ 1 files changed, 19 insertions(+), 17 deletions(-)
+
+
+2010-05-17  Taher Shihadeh  <taher@unixwars.com>
+            svn=5115 git=82ecc9fc8ca98594eab930d584dac7bbac7ce097
+
+    Improves validation for new port/interface bindings
+    
+ admin/PageGeneral.py |   29 ++++++++++++++++++++++++++++-
+ 1 files changed, 28 insertions(+), 1 deletions(-)
+
+
+2010-05-17  Taher Shihadeh  <taher@unixwars.com>
+            svn=5114 git=366c02914c99f50af929666360a05ef4a79b1c93
+
+    Improves the cookbook helps provided by the wizards
+    
+ admin/Wizard.py            |    9 +++++++--
+ admin/wizards/mediawiki.py |    3 ++-
+ 2 files changed, 9 insertions(+), 3 deletions(-)
+
+
+2010-05-17  Taher Shihadeh  <taher@unixwars.com>
+            svn=5113 git=a6d54b5efc50500842bb58792cf807d39e7cd434
+
+    Document update
+    
+ doc/config_wizards.txt |    2 ++
+ 1 files changed, 2 insertions(+), 0 deletions(-)
+
+
+2010-05-17  Taher Shihadeh  <taher@unixwars.com>
+            svn=5112 git=a4ae52b9e79ab5750b123735809988e83030175f
+
+    Updates translation files
+    
+ po/admin/de.po    |  489 ++++++----
+ po/admin/en.po    |  499 ++++++----
+ po/admin/es.po    |  532 ++++++-----
+ po/admin/fr.po    |  489 ++++++----
+ po/admin/nl.po    | 2745 +++++++++++++++++++++++++++++++++--------------------
+ po/admin/pl.po    |  489 ++++++----
+ po/admin/pt_BR.po | 1841 ++++++++++++++++++++----------------
+ po/admin/sv_SE.po |  502 ++++++----
+ po/admin/zh_CN.po |  487 ++++++----
+ 9 files changed, 4834 insertions(+), 3239 deletions(-)
+
+
+2010-05-17  Taher Shihadeh  <taher@unixwars.com>
+            svn=5111 git=447048af1e65b467d5beb645b389a11a68b7bc70
+
+    Property changes
+    
+
+2010-05-17  Taher Shihadeh  <taher@unixwars.com>
+            svn=5110 git=5c60ae33f31ba99a97726af99f77ce8ee31829bb
+
+    Adds Mediawiki wizard
+    
+ admin/static/images/wizards/Makefile.am   |    1 +
+ admin/static/images/wizards/mediawiki.png |  Bin 0 -> 6045 bytes
+ admin/wizards/List.py                     |    6 +-
+ admin/wizards/Makefile.am                 |    1 +
+ admin/wizards/mediawiki.py                |  308 +++++++++++++++++++++++++++++
+ 5 files changed, 315 insertions(+), 1 deletions(-)
+
+
+2010-05-17  Taher Shihadeh  <taher@unixwars.com>
+            svn=5109 git=59e851c9164d53300c7a30474db1e090d81bf3ea
+
+    CSS class was being "translated"
+    
+ admin/Icons.py |    6 +++---
+ 1 files changed, 3 insertions(+), 3 deletions(-)
+
+
+2010-05-17  Taher Shihadeh  <taher@unixwars.com>
+            svn=5108 git=52423f8c0647d72334db98dd8187ebc5eb289450
+
+    Adds custom document root when no handler is selected
+    
+ admin/PageEntry.py |    6 ++++++
+ 1 files changed, 6 insertions(+), 0 deletions(-)
+
+
+2010-05-17  Taher Shihadeh  <taher@unixwars.com>
+            svn=5107 git=3dd574e3ea19b3373f3bf83d15217e56c59fac90
+
+    Adds some missing gettext calls
+    
+ admin/wizards/rails.py |   18 +++++++++---------
+ 1 files changed, 9 insertions(+), 9 deletions(-)
+
+
+2010-05-17  Taher Shihadeh  <taher@unixwars.com>
+            svn=5106 git=ac3d6125c30108a1d7002cd6a3d55f3d1a6654dc
+
+    Some strings were being missed by gettext
+    
+ admin/plugins/directory.py   |    2 +-
+ admin/plugins/method.py      |    2 +-
+ admin/plugins/post_report.py |    6 +++---
+ admin/plugins/rehost.py      |    2 +-
+ admin/plugins/request.py     |    2 +-
+ admin/plugins/target_ip.py   |    2 +-
+ admin/plugins/wildcard.py    |    2 +-
+ 7 files changed, 9 insertions(+), 9 deletions(-)
+
+
+2010-05-17  Taher Shihadeh  <taher@unixwars.com>
+            svn=5105 git=11a89849991f6d16a042bd0ecba9cf3cc301836e
+
+    Some strings were being missed by gettext
+    
+ admin/PageException.py |    4 ++--
+ admin/PageNewConfig.py |    2 +-
+ admin/PageVServer.py   |    2 +-
+ admin/Rule.py          |    2 +-
+ 4 files changed, 5 insertions(+), 5 deletions(-)
+
+
+2010-05-17  Taher Shihadeh  <taher@unixwars.com>
+            svn=5104 git=facc673c326c2844c0e8dc06ea612f250e27c590
+
+    Rearranges the info
+    
+ doc/basics_installation_osx.txt |   33 +++++++++++++++++++++------------
+ 1 files changed, 21 insertions(+), 12 deletions(-)
+
+
+2010-05-17  Taher Shihadeh  <taher@unixwars.com>
+            svn=5103 git=30f3097e3efb10bbf50c99fec954f296a93a7502
+
+    Documents installation procedure for OSX
+    
+ doc/Makefile.am                 |    1 +
+ doc/basics.txt                  |    1 +
+ doc/basics_installation.txt     |    1 +
+ doc/basics_installation_osx.txt |   70 +++++++++++++++++++++++++++++++++++++++
+ doc/index.txt                   |    1 +
+ 5 files changed, 74 insertions(+), 0 deletions(-)
+
+
+2010-05-17  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=5102 git=be2111311904423a2ad6b0ac431ac7ce99badded
+
+    Extends the 'Broken installation detected' error message. Hopefully it
+    will be slightly more descriptive for people hitting the problem now.
+    
+ cherokee/main.c |    6 ++++++
+ 1 files changed, 6 insertions(+), 0 deletions(-)
+
+
+2010-05-16  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=5099 git=b22c39f863367a0a90d82bed727e35d803d3ad41
+
+    Handler common parameters were not being responsive to events in
+    cherokee-admin. It fixes: http://bugs.cherokee-project.com/872
+    
+ admin/plugins/common.py |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+
+2010-05-16  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=5098 git=600636b68f4a7719b0bf8a3ad3a1946d5b79fd98
+
+    Adds support for MacOS X's launchd. It implements RFE #871:
+    http://bugs.cherokee-project.com/871
+    
+ Makefile.am                     |   36 +++++++++++++++++++-----------------
+ configure.in                    |    1 +
+ org.cherokee.webserver.plist.in |   16 ++++++++++++++++
+ packages/osx/Info.plist.in      |    6 +++---
+ 4 files changed, 39 insertions(+), 20 deletions(-)
+
+
+2010-05-14  Taher Shihadeh  <taher@unixwars.com>
+            svn=5097 git=85f3bff9f13eb9a54f0efb8e903c614f54e61af2
+
+    Some combobox options were not being translated. That should fix the remaining ones
+    
+ admin/Auth.py                |    4 ++--
+ admin/PageAdvanced.py        |    4 ++--
+ admin/PageEntry.py           |    6 +++---
+ admin/PageIndex.py           |    4 ++--
+ admin/PageRule.py            |    6 +++---
+ admin/PageVServer.py         |   18 +++++++++---------
+ admin/Rule.py                |    4 ++--
+ admin/plugins/dbslayer.py    |    4 ++--
+ admin/plugins/fcgi.py        |    2 +-
+ admin/plugins/post_report.py |    2 +-
+ admin/plugins/proxy.py       |    2 +-
+ admin/plugins/scgi.py        |    2 +-
+ admin/plugins/uwsgi.py       |    2 +-
+ 13 files changed, 30 insertions(+), 30 deletions(-)
+
+
+2010-05-14  Taher Shihadeh  <taher@unixwars.com>
+            svn=5096 git=1ae3a300ff697c41533d8ec79919d853c10a95ac
+
+    Documentation updates
+    
+ doc/Makefile.am                                    |    3 +
+ doc/cookbook.txt                                   |    1 +
+ doc/cookbook_https_accelerator.txt                 |   54 ++++++++++++++++++++
+ doc/cookbook_php.txt                               |   22 ++++++++
+ doc/index.txt                                      |    1 +
+ .../images/cookbook_https_accelerator_handler.png  |  Bin 0 -> 37073 bytes
+ .../images/cookbook_https_accelerator_sources.png  |  Bin 0 -> 13816 bytes
+ doc/other_community.txt                            |   44 ++++++++++++++++-
+ doc/other_errors.txt                               |   13 ++++-
+ doc/other_faq.txt                                  |    7 +++
+ 10 files changed, 141 insertions(+), 4 deletions(-)
+
+
+2010-05-13  Taher Shihadeh  <taher@unixwars.com>
+            svn=5089 git=d9e0b7786ad76eba64002cf16f3a61af6810ec17
+
+    Fixes issue with FPM PHP detection
+    
+ admin/wizards/php.py |    5 +++--
+ 1 files changed, 3 insertions(+), 2 deletions(-)
+
+
+2010-05-13  Taher Shihadeh  <taher@unixwars.com>
+            svn=5087 git=295426765492f5641b7a9d43dff8d18cb313d9e2
+
+    Previous fix was incomplete
+    
+ admin/PageVServer.py |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+
+2010-05-13  Taher Shihadeh  <taher@unixwars.com>
+            svn=5086 git=10ca3ae540946e187c92b647a01effd6b760366c
+
+    Fixes issue 832: adding access logger to vhost should not break configuration anymore
+    
+ admin/PageVServer.py |    5 ++++-
+ 1 files changed, 4 insertions(+), 1 deletions(-)
+
+2010-05-13  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=5085 git=25b81f3797f3f55395756503e556a8861a518298
+
+    There were a couple of rule-type plug-ins where the list validation
+    was not being performed for fields containing lists. Thanks a million
+    to Sergio Aguilar Guerrero <chekolyn@gmail.com> for reporting the
+    problem.
+    
+ admin/plugins/exists.py     |    6 +++++-
+ admin/plugins/extensions.py |    7 ++++++-
+ admin/plugins/from.py       |    1 +
+ 3 files changed, 12 insertions(+), 2 deletions(-)
+
+
+2010-05-12  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=5082 git=0997be3cddfc8f9164f7bf675dd5159e4d28ade3
+
+    Fixes an execution error in the 'File Exists' rule plug-in. Thanks a
+    million to Ossama Khayat <okhayat@yahoo.com> for reporting.
+    
+ admin/plugins/exists.py |    3 ++-
+ 1 files changed, 2 insertions(+), 1 deletions(-)
+
+
+2010-05-12  Taher Shihadeh  <taher@unixwars.com>
+            svn=5079 git=d4d7e9179d42e5a48a8417ff5eabd2981416509b
+
+    Minor documentation updates
+    
+ doc/basics_why_cherokee.txt    |    2 +-
+ doc/bundle_cherokee-admin.txt  |    2 +-
+ doc/config_quickstart.txt      |    2 +-
+ doc/cookbook_optimizations.txt |    2 +-
+ doc/dev_cherokee.conf.txt      |    8 ++++----
+ doc/dev_debug.txt              |    2 +-
+ doc/index.txt                  |    2 +-
+ 7 files changed, 10 insertions(+), 10 deletions(-)
+
+
+2010-05-12  Taher Shihadeh  <taher@unixwars.com>
+            svn=5078 git=43441c277bce8a927af42908ebd432a220e77090
+
+    A missing entry was making svnlog2changelog.py fail
+    
+ developers.py |    3 ++-
+ 1 files changed, 2 insertions(+), 1 deletions(-)
+
+
+2010-05-12  Taher Shihadeh  <taher@unixwars.com>
+            svn=5077 git=c962b797985d498aaad0044f9324e6669027d3b7
+
+    Fixes problem with index files when none existed before
+    
+ admin/wizards/php.py |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+
+2010-05-12  Sérgio H. Berlotto Jr <sergio.berlotto@gmail.com>
+            svn=5076 git=031450d2453de13ab75a67aad677ec9c6d69b295
+
+    pt_BR updates
+    
+ po/admin/pt_BR.po | 1720 ++++++++++++++++++++++++++---------------------------
+ 1 files changed, 833 insertions(+), 887 deletions(-)
+
+
+2010-05-11  Taher Shihadeh  <taher@unixwars.com>
+            svn=5075 git=b05e92d53507412e5e92484929080b9bd551ebfc
+
+    Adds a reference to the apropiate cookbook recipe for each wizard that has one
+    
+ admin/wizards/alfresco.py   |    1 +
+ admin/wizards/coldfusion.py |    1 +
+ admin/wizards/concrete5.py  |    1 +
+ admin/wizards/django.py     |    1 +
+ admin/wizards/drupal.py     |    1 +
+ admin/wizards/glassfish.py  |    1 +
+ admin/wizards/joomla.py     |    1 +
+ admin/wizards/liferay.py    |    1 +
+ admin/wizards/mailman.py    |    1 +
+ admin/wizards/mono.py       |    1 +
+ admin/wizards/moodle.py     |    1 +
+ admin/wizards/phpbb.py      |    1 +
+ admin/wizards/phpmyadmin.py |    1 +
+ admin/wizards/rails.py      |    1 +
+ admin/wizards/redirect.py   |    1 +
+ admin/wizards/streaming.py  |    1 +
+ admin/wizards/sugar.py      |    1 +
+ admin/wizards/symfony.py    |    1 +
+ admin/wizards/trac.py       |    1 +
+ admin/wizards/uwsgi.py      |    1 +
+ admin/wizards/wordpress.py  |    1 +
+ admin/wizards/zend.py       |    1 +
+ 22 files changed, 22 insertions(+), 0 deletions(-)
+
+
+2010-05-11  Taher Shihadeh  <taher@unixwars.com>
+            svn=5074 git=d202ad933db7731bd8a0be821c8c4e75b9347870
+
+    Enhances the PHP wizard. Now it can configure new vservers too
+    
+ admin/Wizard.py       |    9 +++
+ admin/wizards/List.py |    2 +-
+ admin/wizards/php.py  |  137 +++++++++++++++++++++++++++++++++++++++++++++---
+ 3 files changed, 138 insertions(+), 10 deletions(-)
+
+
+2010-05-10  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=5073 git=9b3bb3a44f2aa856aebcdbc6d9a5ccfe3b3fbf66
+
+    Cherokee 1.0.0 released
+    
+ configure.in |    6 +++---
+ 1 files changed, 3 insertions(+), 3 deletions(-)
+
+
+2010-05-10  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=5072 git=cc26d07f370b83bbcc8d9b31b2185982b409d565
+
+    Fixes a tiny (theoretical) memory leak. Thanks to Stefan de Konink
+    for the findings and patch.
+    
+ cherokee/thread.c |    1 +
+ 1 files changed, 1 insertions(+), 0 deletions(-)
+
+
+2010-05-10  Stefan de Konink <stefan@konink.de>
+            svn=5070 git=7f38287e77b08eb5a2d8315ec39bcbce8938b7b3
+
+    Dutch updates.
+    
+ po/admin/nl.po | 2404 +++++++++++++++++++++-----------------------------------
+ 1 files changed, 890 insertions(+), 1514 deletions(-)
+
 2010-05-10  Taher Shihadeh  <taher@unixwars.com>
             svn=5068 git=2e4fc1c50228711b0fd5e7bd014c86849252e2c8
 
