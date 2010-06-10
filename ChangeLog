@@ -1,3 +1,606 @@
+2010-06-09  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=5189 git=aa6ce249fefdb409aae073e5c3fd439ae9f16110
+
+    Catalan Translation: Thanks a million to Sergi Gomis
+    <paloky3@gmail.com> for the great job.
+    
+ admin/consts.py  |    3 +-
+ po/admin/LINGUAS |    2 +-
+ po/admin/ca.po   | 5947 ++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 5950 insertions(+), 2 deletions(-)
+
+2010-06-09  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=5188 git=2a2ac6b4e8e90c75961d046b661c0209ddf9726a
+
+    Fixes a HTTP error code validation issue. Reported at:
+    http://lists.octality.com/pipermail/cherokee/2010-June/012942.html
+    
+ cherokee/http.h |    8 ++++----
+ 1 files changed, 4 insertions(+), 4 deletions(-)
+
+
+2010-06-09  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=5187 git=a5c92ee682947172c21ffc605058217bb39aac5a
+
+    Slightly safer TLS/SSL connection close.
+    
+ cherokee/cryptor_libssl.c |   14 ++++++++++++++
+ 1 files changed, 14 insertions(+), 0 deletions(-)
+
+
+2010-06-09  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=5186 git=3c6c2081246afbdcf4bce045729f3eba91a78ef2
+
+    Some SSL/TLS related improvements.
+    
+ cherokee/cryptor_libssl.c |   55 ++++++++++++++++++++++++++++++++++++++++++++-
+ cherokee/error_list.py    |    4 +++
+ cherokee/thread.c         |   18 ++++++++++++--
+ cherokee/util.c           |    3 +-
+ 4 files changed, 75 insertions(+), 5 deletions(-)
+
+2010-06-06  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=5185 git=f3aad3db195816035c43ec9f93b3dc8bafb711f9
+
+    Fixes a conversion issue that caused the "log" tick displayed wrongly
+    in cherokee-admin: http://bugs.cherokee-project.com/898 . Thanks a
+    million to google.com@webstuff.elvenlord.org.
+    
+ admin/PageVServer.py |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+
+2010-06-06  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=5184 git=4fbc478040e2fa46d34c366f410e1f6afc7fce6c
+
+    Add the authentication headers when a custom error page is served.
+    http://lists.octality.com/pipermail/cherokee/2010-June/012928.html
+    
+ cherokee/connection.c |   12 ++++++++----
+ 1 files changed, 8 insertions(+), 4 deletions(-)
+
+
+2010-06-02  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=5183 git=ae62232c249ed360bdae59551d8401d2e6863a7e
+
+    Improves TLS/SSL handshake handling.
+    
+ cherokee/cryptor.c        |   10 +++++++---
+ cherokee/cryptor.h        |    5 +++--
+ cherokee/cryptor_libssl.c |   17 +++++++++++++++--
+ cherokee/socket.c         |    5 +++--
+ cherokee/socket.h         |    2 +-
+ cherokee/thread.c         |   42 ++++++++++++++++++++++++++++++++----------
+ 6 files changed, 61 insertions(+), 20 deletions(-)
+
+
+2010-06-02  Jonathan Hernandez  <ion@suavizado.com>
+            svn=5181 git=c730dfc4391f2383c825bd6b7dd45eae77ebfa1d
+
+    Fix behavior rules table size
+    
+ admin/PageVServer.py |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+
+2010-06-01  Taher Shihadeh  <taher@unixwars.com>
+            svn=5179 git=edb8ffc19de90b3b4550c626552d724e2fc24b80
+
+    Fixes i18n issue (#893)
+    
+ admin/Page.py |    4 ++--
+ 1 files changed, 2 insertions(+), 2 deletions(-)
+
+
+2010-06-01  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=5178 git=24a5793ffb2020bdaf103c66d0ae7c820f0d6063
+
+    Reverts previous patch. It did not use the right encoding.
+    
+ po/admin/de.po |  894 ++++++++++++++++++++++++++++----------------------------
+ 1 files changed, 445 insertions(+), 449 deletions(-)
+
+2010-06-01  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=5177 git=5cd0b9a79b3a727b176c63d27471524528815603
+
+    Updates the German translation. Thanks to Jan Popovic for the update!
+    
+ po/admin/de.po |  894 ++++++++++++++++++++++++++++----------------------------
+ 1 files changed, 449 insertions(+), 445 deletions(-)
+
+
+2010-06-01  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=5176 git=0dd409a3799cc44bdd6b93762ebc05d801dcd835
+
+    Improves the SSL/TLS handshake. It adds a new parameter so a custom
+    timeout value can be specified. By default, the timeout is 15 secs.
+    
+ admin/PageAdvanced.py |    3 +
+ cherokee/cryptor.c    |   17 +++++++-
+ cherokee/cryptor.h    |    1 +
+ cherokee/socket.c     |   18 +++++---
+ cherokee/thread.c     |  112 +++++++++++++++++++++++++++----------------------
+ 5 files changed, 94 insertions(+), 57 deletions(-)
+
+
+2010-05-31  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=5175 git=f9d0d2ded2676881bbd47a59627b023e8e313c75
+
+    Clean up
+    
+ cherokee/fdpoll-epoll.c  |    2 +-
+ cherokee/fdpoll-poll.c   |    2 +-
+ cherokee/fdpoll-port.c   |    2 +-
+ cherokee/fdpoll-select.c |    2 +-
+ cherokee/fdpoll.c        |    6 +++---
+ cherokee/util.c          |    2 +-
+ 6 files changed, 8 insertions(+), 8 deletions(-)
+
+
+2010-05-31  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=5174 git=cad3e17cbab607de94a2915f43926655bb059475
+
+    Better file descriptor limit management: use the system limit whenever
+    it's higher than FD_NUM_CUSTOM_LIMIT. This patch addresses bug #850:
+    http://bugs.cherokee-project.com/850
+    
+ cherokee/server.c |    6 ++++--
+ 1 files changed, 4 insertions(+), 2 deletions(-)
+
+
+2010-05-31  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=5173 git=0a92895e266d2f805715207b4c9f6f343d5cf3ad
+
+    The Cache-Control header was being duplicated whenever a configuration
+    defined max-age for a MIME Type, and a Expiration time for a Rule. It
+    fixes http://bugs.cherokee-project.com/888 . Thanks to Cesar Fernandez
+    for reporting!!
+    
+ cherokee/handler_file.c    |   23 ++++-----------------
+ qa/246-Dup-CacheControl.py |   46 ++++++++++++++++++++++++++++++++++++++++++++
+ qa/Makefile.am             |    3 +-
+ 3 files changed, 53 insertions(+), 19 deletions(-)
+
+
+2010-05-31  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=5172 git=a81b5603b89ca230322e8bcfeaad21fd871d02a0
+
+    Safe TLS socket close()
+    
+ cherokee/cryptor_libssl.c |   17 ++++++++++++++++-
+ 1 files changed, 16 insertions(+), 1 deletions(-)
+
+
+2010-05-31  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=5171 git=c94ae086b38f9000db44d97ea678aba4edb137a6
+
+    Fixes quite a few problems of the libssl cryptor. It works much better
+    now, although it seems there is still a memory management issue to be
+    fixed. Congrats to Stefan de Konink for most of this patch!!
+    
+ cherokee/cryptor_libssl.c |  132 ++++++++++++++++++++++++++++++++++++++------
+ cherokee/socket.c         |    2 +-
+ 2 files changed, 115 insertions(+), 19 deletions(-)
+
+2010-05-31  Taher Shihadeh  <taher@unixwars.com>
+            svn=5170 git=f2b9b42599f5e9bd12550bf65afaff5094369abe
+
+    Fixes issue 891. Thanks to Peter Donka for finding out the problem
+    
+ admin/wizards/joomla.py |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+
+2010-05-31  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=5169 git=d95f8fea4f2e3df478271d514028e01862dcb64a
+
+    Fixes a regression related to the RRDtool support. This patch
+    basically reverts the common r5157. Thanks a million to Paul (pub
+    crawler) for the report, and to Antonio Perez for the findings!
+    
+ cherokee/collector_rrd.c |    4 ++--
+ 1 files changed, 2 insertions(+), 2 deletions(-)
+
+
+2010-05-31  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=5168 git=cb0ff63a99cc97526d1e915b5c7259bc5478fc71
+
+    Do not read the system-wide asciidoc configuration file
+    
+ doc/build/asciidoc.py |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+
+2010-05-30  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=5167 git=977ba35a01b790265a0318a596a8e3108c0fc962
+
+    Removes support for RFC 2817. It's a pity, but since nobody uses it,
+    we are wasting resources maintaining this code.
+    
+ cherokee/connection-protected.h |    2 -
+ cherokee/connection.c           |   60 ---------------------------------------
+ cherokee/connection_info.c      |    4 --
+ cherokee/http.c                 |    2 -
+ cherokee/thread.c               |   28 ------------------
+ 5 files changed, 0 insertions(+), 96 deletions(-)
+
+
+2010-05-30  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=5166 git=e1bffe87bbf4be2463fe163da8a892644b55e831
+
+    Minor change: adds a new parameter to a TRACE entry.
+    
+ cherokee/socket.c |    8 ++++----
+ 1 files changed, 4 insertions(+), 4 deletions(-)
+
+
+2010-05-30  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=5165 git=59a42965ac660d5a7b4fd4daa0dc7dec9b161795
+
+    Skip 'lingering close' when dealing with a https connection.
+    
+ cherokee/thread.c |   10 ++++++++++
+ 1 files changed, 10 insertions(+), 0 deletions(-)
+
+
+2010-05-30  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=5164 git=ee75194ecddd700555c4339d6770c4453977ebae
+
+    Adds a few new TRACE entries to the cryptor-libssl module. There was
+    no way to trace SSL/TLS write operations.
+    
+ cherokee/cryptor_libssl.c |   11 +++++++++++
+ 1 files changed, 11 insertions(+), 0 deletions(-)
+
+
+2010-05-28  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=5163 git=b87a25424091d22dd08add2087c395bc6df46d97
+
+    Reverts the last change in the German translation. It contained
+    non-UTF8 text, and thus the file was corrupted.
+    
+ po/admin/de.po |  486 ++++++++++++++++++++++++++++----------------------------
+ 1 files changed, 243 insertions(+), 243 deletions(-)
+
+2010-05-28  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=5162 git=3026d406da7a0bc77b835efbdc6e5b68d94c9410
+
+    Fixes the RRD handler so it can handle virtual server names with space
+    characters in it. http://bugs.cherokee-project.com/887
+    
+ cherokee/handler_render_rrd.c |   10 +++++-----
+ 1 files changed, 5 insertions(+), 5 deletions(-)
+
+
+2010-05-27  Antonio Perez  <aperez@skarcha.com>
+            svn=5161 git=0e1bb906814a4efd0086989afef9c9ab1888686a
+
+    Fixes a bug in the validation of a Trac installation.
+    "htdocs" is a directory, not a file.
+    Thanks to "bg" on #cherokee for reporting.
+    http://bugs.cherokee-project.com/890
+    
+ admin/wizards/trac.py |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+
+2010-05-26  Jonathan Hernandez  <ion@suavizado.com>
+            svn=5159 git=3d0283f87175afba5a1519d8b4f349a4ffe3acff
+
+    Bugfix #824 Hidden Scrollbar
+    
+ admin/PageGeneral.py |    5 +----
+ 1 files changed, 1 insertions(+), 4 deletions(-)
+
+
+2010-05-26  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=5158 git=35fabdcd21471d5776102355ead6d6c3c424fc60
+
+    German translation improvements. Thanks a million to Jan Popovic
+    <Beatgarantie@online.de> for the patch!
+    
+ po/admin/de.po |  486 ++++++++++++++++++++++++++++----------------------------
+ 1 files changed, 243 insertions(+), 243 deletions(-)
+
+
+2010-05-26  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=5157 git=03378d2826ebf51c843a64aa2725207e1ee67957
+
+    This patch tries to address bug #887: there was a problem when a
+    virtual server had a space in the name and RRDtool was being used:
+    http://bugs.cherokee-project.com/887
+    
+ cherokee/collector_rrd.c |    4 ++--
+ 1 files changed, 2 insertions(+), 2 deletions(-)
+
+
+2010-05-25  Stefan de Konink <stefan@konink.de>
+            svn=5156 git=f0b28315705cd7da2cbb4bf3f6e8f7afde9e27d2
+
+    Update to the Dutch translations
+    
+ po/admin/nl.po | 2343 +++++++++++++++++++++++---------------------------------
+ 1 files changed, 952 insertions(+), 1391 deletions(-)
+
+
+2010-05-25  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=5155 git=f309a74282da237a452c5764ba9667569876cd56
+
+    This patch fixes a problem with the NCSA and Combined loggers. Under
+    some circumstances a wrong transferred information value was being
+    written. Fixes bug #885: http://bugs.cherokee-project.com/885
+    
+ cherokee/connection-protected.h |    4 ++--
+ cherokee/connection.c           |    8 +++++---
+ cherokee/logger_ncsa.c          |    4 ++--
+ 3 files changed, 9 insertions(+), 7 deletions(-)
+
+
+2010-05-25  Taher Shihadeh  <taher@unixwars.com>
+            svn=5154 git=af8f5c5f50789500539886af5988870a3aab56aa
+
+    Reflects an interesting tip of the mailing-list into the appropriate documentation section
+    
+ doc/modules_encoders.txt |   17 +++++++++++++----
+ 1 files changed, 13 insertions(+), 4 deletions(-)
+
+
+2010-05-25  Taher Shihadeh  <taher@unixwars.com>
+            svn=5153 git=b90dbe1950c67ac54f3ae36aa2c5364e5e73db7c
+
+    We stick with the exception behavior. Seems more consistent
+    
+ admin/validations.py |    6 +++---
+ 1 files changed, 3 insertions(+), 3 deletions(-)
+
+
+2010-05-25  Taher Shihadeh  <taher@unixwars.com>
+            svn=5152 git=8a9394cd6a13399bd63c68f2adc050f4190d77a5
+
+    Changes validation for webdirs. It could accept invalid values
+    
+ admin/plugins/directory.py |    2 +-
+ admin/validations.py       |    6 ++++++
+ 2 files changed, 7 insertions(+), 1 deletions(-)
+
+
+2010-05-24  Taher Shihadeh  <taher@unixwars.com>
+            svn=5151 git=b63e2ec405b52e19f25d8d4a79332b2aea9931f7
+
+    Add latest strings to translation files
+    
+ po/admin/de.po    |  490 ++++++-----
+ po/admin/en.po    |  914 ++++++-------------
+ po/admin/es.po    |  495 ----------
+ po/admin/fr.po    |  489 ++++++-----
+ po/admin/nl.po    | 2595 ++++++++++++++++++++++++++++++++---------------------
+ po/admin/pl.po    | 2012 +++++++++++++++++++++++------------------
+ po/admin/pt_BR.po |  489 ++++++-----
+ po/admin/sv_SE.po |  500 ++++++-----
+ po/admin/zh_CN.po |  471 ++++++----
+ 9 files changed, 4346 insertions(+), 4109 deletions(-)
+
+
+2010-05-24  Taher Shihadeh  <taher@unixwars.com>
+            svn=5150 git=cd4a7b3cd8e943de2a03bc4bbd2527f60f127ba1
+
+    Adds two more string to Spanish localization
+    
+ po/admin/es.po |  220 ++++++++++++++++++++++++++++++--------------------------
+ 1 files changed, 118 insertions(+), 102 deletions(-)
+
+
+2010-05-24  Taher Shihadeh  <taher@unixwars.com>
+            svn=5149 git=23c14a5152a7b8ad0934e270e4a9bae27d849529
+
+    Enhances the PHP-dependent wizards. Ports the solution of issue 851 to 867, 878 and the likes
+    
+ admin/wizards/concrete5.py  |   24 ++++++++++++++++++++----
+ admin/wizards/drupal.py     |    9 +++++++--
+ admin/wizards/joomla.py     |   24 ++++++++++++++++++++----
+ admin/wizards/mediawiki.py  |   30 +++++++++++++++++++++++-------
+ admin/wizards/moodle.py     |   24 ++++++++++++++++++++----
+ admin/wizards/phpbb.py      |   24 ++++++++++++++++++++----
+ admin/wizards/phpmyadmin.py |   15 +++++++++++++--
+ admin/wizards/sugar.py      |   24 ++++++++++++++++++++----
+ admin/wizards/symfony.py    |   24 ++++++++++++++++++++----
+ admin/wizards/wordpress.py  |   24 ++++++++++++++++++++----
+ admin/wizards/zend.py       |   24 ++++++++++++++++++++----
+ 11 files changed, 203 insertions(+), 43 deletions(-)
+
+
+2010-05-24  Taher Shihadeh  <taher@unixwars.com>
+            svn=5148 git=cfba1d7e7182e9e851ab6994de1b24d47ba94503
+
+    Typo
+    
+ admin/wizards/php.py |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+2010-05-24  Taher Shihadeh  <taher@unixwars.com>
+            svn=5147 git=29058c4971b6eff1ea5bb66fa5e991b630aea5c3
+
+
+ admin/Graph.py              |    2 +-
+ admin/Icons.py              |    2 +-
+ admin/Mime.py               |    2 +-
+ admin/PageHelp.py           |    2 +-
+ admin/PageIndex.py          |    2 +-
+ admin/PageNewConfig.py      |    2 +-
+ admin/PageSource.py         |    2 +-
+ admin/PageStatus.py         |    2 +-
+ admin/plugins/method.py     |    2 +-
+ admin/wizards/alfresco.py   |    2 +-
+ admin/wizards/coldfusion.py |    2 +-
+ admin/wizards/concrete5.py  |    2 +-
+ admin/wizards/django.py     |    2 +-
+ admin/wizards/glassfish.py  |    2 +-
+ admin/wizards/hotlinking.py |    2 +-
+ admin/wizards/icons.py      |    2 +-
+ admin/wizards/joomla.py     |    2 +-
+ admin/wizards/liferay.py    |    2 +-
+ admin/wizards/mailman.py    |    2 +-
+ admin/wizards/mediawiki.py  |    2 +-
+ admin/wizards/moinmoin.py   |    2 +-
+ admin/wizards/mono.py       |    2 +-
+ admin/wizards/moodle.py     |    2 +-
+ admin/wizards/php.py        |    2 +-
+ admin/wizards/phpbb.py      |    2 +-
+ admin/wizards/phpmyadmin.py |    2 +-
+ admin/wizards/rails.py      |    2 +-
+ admin/wizards/redirect.py   |    2 +-
+ admin/wizards/rtorrent.py   |    2 +-
+ admin/wizards/static.py     |    2 +-
+ admin/wizards/streaming.py  |    2 +-
+ admin/wizards/sugar.py      |    2 +-
+ admin/wizards/symfony.py    |    2 +-
+ admin/wizards/trac.py       |    2 +-
+ admin/wizards/uwsgi.py      |    2 +-
+ admin/wizards/wordpress.py  |    2 +-
+ admin/wizards/zend.py       |    2 +-
+ 37 files changed, 37 insertions(+), 37 deletions(-)
+
+
+2010-05-23  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=5146 git=ae0cd1d6102143a2b312153a134762e02feded3c
+
+    Fixes the Drupal wizard so it puts a new 'PHP Checking' stage in
+    place.  The new stage is automatically skipped whenever the PHP
+    interpreter is successfully found. This same improvement should be
+    ported to the rest of the PHP dependant wizards.
+    
+ admin/wizards/drupal.py |   15 +++++++++++++--
+ admin/wizards/php.py    |   39 +++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 52 insertions(+), 2 deletions(-)
+
+
+2010-05-22  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=5144 git=ee73ff1386e043e74291fc9862a287070d45b2e8
+
+    Ensures that the I/O-cache size is multiple of 4.
+    
+ admin/PageAdvanced.py |    2 +-
+ admin/validations.py  |    7 +++++++
+ 2 files changed, 8 insertions(+), 1 deletions(-)
+
+
+2010-05-21  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=5143 git=efbf632e88020740e575ce20e00804a746ace1ad
+
+    Fixes a problem with Virtual Server with no Rule entries.
+    
+ admin/PageVServer.py |    7 ++++++-
+ 1 files changed, 6 insertions(+), 1 deletions(-)
+
+
+2010-05-21  Antonio Perez  <aperez@skarcha.com>
+            svn=5142 git=99c5f1e9d5bfdda19835489eb0961c61afb5b8da
+
+    Fixes a regression introduced in r3435. It should not clean up the PID file if cherokee is executed in "single time" mode.
+    
+ cherokee/main.c |    5 ++++-
+ 1 files changed, 4 insertions(+), 1 deletions(-)
+
+
+2010-05-21  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=5141 git=792860a958d3e6883db09841bc77a523a1cb8913
+
+    The PHP wizard should create functional virtual server. Now, besides
+    adding the 'Extension PHP' rule it sets a default rule to static
+    content is served. It fixes: http://bugs.cherokee-project.com/880
+    
+ admin/wizards/php.py |    2 ++
+ 1 files changed, 2 insertions(+), 0 deletions(-)
+
+
+2010-05-21  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=5140 git=9c66d0a7797964d5959af3e896524b87253ad6e0
+
+    Clean up: fixes coding style
+    
+ admin/wizards/php.py |   30 ++++++++++++++++++------------
+ 1 files changed, 18 insertions(+), 12 deletions(-)
+
+
+2010-05-21  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=5139 git=3c76c236d94d23ee0759ee8e767a7dc4160eb2a5
+
+    The 'Audio/Video Streaming' wizards configures a webm extension now
+    
+ admin/wizards/streaming.py |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+
+2010-05-21  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=5138 git=dcd6601b302e1edaada7f6a6a07709928cb5e412
+
+    Adds WebM entries (Icon and MIME) to the default configuration file.
+    
+ cherokee.conf.sample.pre |    3 ++-
+ 1 files changed, 2 insertions(+), 1 deletions(-)
+
+
+2010-05-19  Taher Shihadeh  <taher@unixwars.com>
+            svn=5137 git=75647f01186941f03dba531047838f3bdab208a4
+
+    Documentation updates
+    
+ doc/Makefile.am                 |    1 +
+ doc/config_quickstart.txt       |    8 ++++++
+ doc/cookbook_django.txt         |   10 +++++++
+ doc/cookbook_php.txt            |    9 ++++++
+ doc/cookbook_ror.txt            |   10 +++++++
+ doc/cookbook_streaming.txt      |    9 ++++++
+ doc/cookbook_uwsgi.txt          |    9 ++++++
+ doc/cookbook_wordpress.txt      |   53 ++++++++++++++++++++++----------------
+ doc/media/images/screencast.png |  Bin 0 -> 24013 bytes
+ doc/test_images.py              |    4 +-
+ 10 files changed, 89 insertions(+), 24 deletions(-)
+
+2010-05-19  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=5134 git=83149e8cbaf07c38d03d8b49665963a731b15243
+
+    Updates the developers list. Rodrigo was missing.
+    
+ developers.py |    3 ++-
+ 1 files changed, 2 insertions(+), 1 deletions(-)
+
+
+2010-05-19  Antonio Perez  <aperez@skarcha.com>
+            svn=5133 git=ee28aef1391cc5649b950c1107940b528498371e
+
+    Jędrzej's account was missing.
+    
+ developers.py |    1 +
+ 1 files changed, 1 insertions(+), 0 deletions(-)
+
+
+2010-05-18  Jędrzej Nowak <me@pigmej.eu>
+            svn=5132 git=0476037525ea090e5e5baac08aae53c7605e1ca1
+
+    pl translation updates
+    
+ po/admin/pl.po | 2194 +++++++++++++++++++++++++-------------------------------
+ 1 files changed, 965 insertions(+), 1229 deletions(-)
+
+
+2010-05-18  Stefan de Konink <stefan@konink.de>
+            svn=5131 git=ccad5f203747e56909fefc32160e6975cdeac25d
+
+    Some Dutch translation updates.
+    
+ po/admin/nl.po | 2274 +++++++++++++++++++++++---------------------------------
+ 1 files changed, 913 insertions(+), 1361 deletions(-)
+
+
+2010-05-18  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=5129 git=25b8b04bc2e32e09e388eab833a50e68aa0e80f5
+
+    Cherokee 1.0.1 released
+    
+ configure.in |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
 2010-05-18  Alvaro Lopez Ortega  <alvaro@octality.com>
             svn=5128 git=2250b46de58822c91e7d3f28cc92399e3f1d48dd
 

@@ -21,15 +21,14 @@
 common usage is to compress information allowing you to save
 bandwidth. You should do that whenever you can since hardware is
 mostly inexpensive while bandwidth is not. Besides, the performance
-penalization suffered due to the compression process is trivial, and
-if the content is cached you will only suffer it once.</p></div>
+penalization suffered due to the compression process is trivial.</p></div>
 <div class="paragraph"><p>Of course it doesn&#8217;t make sense to apply a processor intensive filter
 to content that can&#8217;t take advantage of it (i.e., it doesn&#8217;t make
 sense to try to compress an already compressed file because there is
 nothing to gain).</p></div>
 <div class="paragraph"><p>The encoders must be enabled or disabled in a per rule basis.</p></div>
 <div class="paragraph"><p>This is the list of currently provided encoders:</p></div>
-<div class="ulist"><ul>
+<div class="olist arabic"><ol class="arabic">
 <li>
 <p>
 <a href="modules_encoders_gzip.html">gzip</a>
@@ -38,6 +37,28 @@ nothing to gain).</p></div>
 <li>
 <p>
 <a href="modules_encoders_deflate.html">deflate</a>
+</p>
+</li>
+</ol></div>
+<div class="paragraph"><p>It is interesting to highlight that Cherokee also supports negative
+encoding rules. This translates into rules that forbid an encoder to
+be used. To prevent encoding files that are already compressed, a
+pretty simple rule such as the following one could be included to
+avoid the problem.</p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+Match: Extensions (jpg,zip,gz,rar,7z)
+</p>
+</li>
+<li>
+<p>
+Final: No
+</p>
+</li>
+<li>
+<p>
+Encoder: Gzip: Forbid
 </p>
 </li>
 </ul></div>

@@ -4,7 +4,7 @@
 #
 # Authors:
 #      Alvaro Lopez Ortega <alvaro@alobbs.com>
-#      Taher Shihadeh <taher@unixwars.com>
+#      Taher Shihadeh <taher@octality.com>
 #
 # Copyright (C) 2010 Alvaro Lopez Ortega
 #
@@ -39,6 +39,10 @@ NOTE_LOCAL_DIR  = N_("Local directory that will contain the web documents. Examp
 NOTE_HOST_H1    = N_("New Virtual Server Details")
 NOTE_HOST       = N_("Host name of the virtual server that is about to be created.")
 
+NOTE_NOT_FOUND_H1 = N_("PHP Interpreter Not Found")
+NOTE_NOT_FOUND    = N_("A valid PHP interpreter could not be found in your system.")
+NOTE_NOT_FOUND2   = N_("Please, check out Cherokee's PHP Documentation to learn how to set it up.")
+
 PHP_DEFAULT_TIMEOUT        = '30'
 SAFE_PHP_FCGI_MAX_REQUESTS = '490'
 
@@ -71,9 +75,27 @@ STD_ETC_PATHS = ['/etc/php*/cgi/php.ini',
 
 CFG_PREFIX    = 'tmp!wizard!php'
 
+
 #
 # Public
 #
+def check_php_interpreter():
+    # PHP Source
+    source = __find_source()
+    if source:
+        return True
+
+    # PHP binary
+    php_path = path_find_binary (DEFAULT_BINS,
+                                 extra_dirs  = DEFAULT_PATHS,
+                                 custom_test = __test_php_fcgi)
+    if php_path:
+        return True
+
+    # No PHP
+    return False
+
+
 def wizard_php_add (key):
     # Sanity check
     if not CTK.cfg[key]:
@@ -162,13 +184,17 @@ class Commit:
     def Commit_VServer (self):
         # Create the new Virtual Server
         next = CTK.cfg.get_next_entry_prefix('vserver')
-        CTK.cfg['%s!nick'%(next)] = CTK.cfg.get_val('%s!host'%(CFG_PREFIX))
-        CTK.cfg['%s!document_root'%(next)] = CTK.cfg.get_val('%s!droot'%(CFG_PREFIX))
+
+        CTK.cfg['%s!nick'%(next)]            = CTK.cfg.get_val('%s!host'%(CFG_PREFIX))
+        CTK.cfg['%s!document_root'%(next)]   = CTK.cfg.get_val('%s!droot'%(CFG_PREFIX))
         CTK.cfg['%s!directory_index'%(next)] = 'index.php,index.html'
+        CTK.cfg['%s!rule!1!match'%(next)]    = 'default'
+        CTK.cfg['%s!rule!1!handler'%(next)]  = 'common'
+
         Wizard.CloneLogsCfg_Apply ('%s!logs_as_vsrv'%(CFG_PREFIX), next)
 
         # PHP
-        error   = wizard_php_add (next)
+        error = wizard_php_add (next)
         if error:
             del CTK.cfg['vserver!%s'%(next)]
             return {'ret': 'error', 'errors': {'msg': error}}
@@ -183,9 +209,11 @@ class Commit:
 
     def Commit_Rule (self):
         vserver = CTK.cfg.get_val ('%s!vsrv_num'%(CFG_PREFIX))
-        error   = wizard_php_add ('vserver!%s'%(vserver))
+
+        error = wizard_php_add ('vserver!%s'%(vserver))
         if error:
             return {'ret': 'error', 'errors': {'msg': error}}
+
         return CTK.cfg_reply_ajax_ok()
 
 
@@ -283,11 +311,10 @@ class WelcomeRule:
         return cont.Render().toStr()
 
 VALS = [
-    ('%s!host'    %(CFG_PREFIX), validations.is_not_empty),
-    ('%s!host'    %(CFG_PREFIX), validations.is_new_vserver_nick),
-
-    ('%s!droot'   %(CFG_PREFIX), validations.is_not_empty),
-    ('%s!droot'   %(CFG_PREFIX), validations.is_local_dir_exists),
+    ('%s!host'  %(CFG_PREFIX), validations.is_not_empty),
+    ('%s!host'  %(CFG_PREFIX), validations.is_new_vserver_nick),
+    ('%s!droot' %(CFG_PREFIX), validations.is_not_empty),
+    ('%s!droot' %(CFG_PREFIX), validations.is_local_dir_exists),
 ]
 
 # Rule
@@ -300,6 +327,23 @@ CTK.publish ('^/wizard/vserver/php/2$', DocumentRoot)
 CTK.publish ('^/wizard/vserver/php/3$', Host)
 CTK.publish (r'^%s$'%(URL_APPLY), Commit, method="POST", validation=VALS)
 
+
+#
+# External Stages
+#
+
+def External_FindPHP():
+    # Add PHP if needed
+    have_php = check_php_interpreter()
+    if not have_php:
+        cont = CTK.Container()
+        cont += CTK.RawHTML ('<h2>%s</h2>' %(_(NOTE_NOT_FOUND_H1)))
+        cont += CTK.RawHTML ('<p>%s</p>' %(_(NOTE_NOT_FOUND)))
+        cont += CTK.RawHTML ('<p>%s</p>' %(_(NOTE_NOT_FOUND2)))
+        cont += CTK.DruidButtonsPanel_Cancel()
+        return cont.Render().toStr()
+
+    return CTK.DruidContent_TriggerNext().Render().toStr()
 
 
 #
@@ -382,12 +426,15 @@ def __source_add_std (php_path):
         return None
 
     next = CTK.cfg.get_next_entry_prefix('source')
+
     CTK.cfg['%s!nick' %(next)]        = 'PHP Interpreter'
     CTK.cfg['%s!type' %(next)]        = 'interpreter'
-    CTK.cfg['%s!interpreter' %(next)] = '%s -b %s:%d' % (php_path, tcp_addr, TCP_PORT)
-    CTK.cfg['%s!host' %(next)]        = '%s:%d' % (tcp_addr, TCP_PORT)
+    CTK.cfg['%s!interpreter' %(next)] = '%s -b %s:%d' %(php_path, tcp_addr, TCP_PORT)
+    CTK.cfg['%s!host' %(next)]        = '%s:%d' %(tcp_addr, TCP_PORT)
+
     CTK.cfg['%s!env!PHP_FCGI_MAX_REQUESTS' %(next)] = SAFE_PHP_FCGI_MAX_REQUESTS
     CTK.cfg['%s!env!PHP_FCGI_CHILDREN' %(next)]     = '5'
+
     return next
 
 def __source_add_fpm (php_path):
@@ -399,7 +446,7 @@ def __source_add_fpm (php_path):
     next = CTK.cfg.get_next_entry_prefix('source')
     CTK.cfg['%s!nick' %(next)]        = 'PHP Interpreter'
     CTK.cfg['%s!type' %(next)]        = 'interpreter'
-    CTK.cfg['%s!interpreter' %(next)] = '%s --fpm-config %s' % (php_path, settings['fpm_conf'])
+    CTK.cfg['%s!interpreter' %(next)] = '%s --fpm-config %s' %(php_path, settings['fpm_conf'])
     CTK.cfg['%s!host' %(next)]        = host
     return next
 

@@ -56,6 +56,12 @@ def is_extension (value):
     is_not_empty(value)
     return value
 
+def is_web_path (value):
+    is_not_empty(value)
+    if value[0] == '/':
+        return value
+    raise ValueError, _('Malformed path')
+
 def is_path (value):
     is_not_empty(value)
     if value[0] == '/':
@@ -393,3 +399,10 @@ def is_safe_icons_suffix (new, safe = None):
 
 def is_safe_icons_file (new, safe = None):
     return is_safe_cfgval ('icons!file', 'icons!file!%s', new, safe)
+
+def is_positive_int_4_multiple (value):
+    tmp = is_positive_int (value)
+    num = int(tmp)
+    while num % 4 != 0:
+        num += 1
+    return str(num)

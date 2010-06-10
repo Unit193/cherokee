@@ -164,7 +164,11 @@ class Commit:
 
         # PHP
         php = CTK.load_module ('php', 'wizards')
+
         error = php.wizard_php_add (next)
+        if error:
+            return {'ret': 'error', 'errors': {'msg': error}}
+
         php_info = php.get_info (next)
 
         # Drupal
@@ -193,7 +197,11 @@ class Commit:
 
         # PHP
         php = CTK.load_module ('php', 'wizards')
+
         error = php.wizard_php_add (next)
+        if error:
+            return {'ret': 'error', 'errors': {'msg': error}}
+
         php_info = php.get_info (next)
 
         # Drupal
@@ -301,6 +309,12 @@ class Welcome:
         return cont.Render().toStr()
 
 
+class PHP:
+    def __call__ (self):
+        php = CTK.load_module ('php', 'wizards')
+        return php.External_FindPHP()
+
+
 def is_drupal_dir (path):
     path = validations.is_local_dir_exists (path)
     module_inc = os.path.join (path, 'includes/module.inc')
@@ -323,13 +337,15 @@ VALS = [
 
 # VServer
 CTK.publish ('^/wizard/vserver/drupal$',   Welcome)
-CTK.publish ('^/wizard/vserver/drupal/2$', LocalSource)
-CTK.publish ('^/wizard/vserver/drupal/3$', Host)
+CTK.publish ('^/wizard/vserver/drupal/2$', PHP)
+CTK.publish ('^/wizard/vserver/drupal/3$', LocalSource)
+CTK.publish ('^/wizard/vserver/drupal/4$', Host)
 
 # Rule
 CTK.publish ('^/wizard/vserver/(\d+)/drupal$',   Welcome)
-CTK.publish ('^/wizard/vserver/(\d+)/drupal/2$', LocalSource)
-CTK.publish ('^/wizard/vserver/(\d+)/drupal/3$', WebDirectory)
+CTK.publish ('^/wizard/vserver/(\d+)/drupal/2$', PHP)
+CTK.publish ('^/wizard/vserver/(\d+)/drupal/3$', LocalSource)
+CTK.publish ('^/wizard/vserver/(\d+)/drupal/4$', WebDirectory)
 
 # Common
 CTK.publish (r'^%s$'%(URL_APPLY), Commit, method="POST", validation=VALS)
