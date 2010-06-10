@@ -598,21 +598,35 @@ process_polling_connections (cherokee_thread_t *thd)
 static ret_t
 process_active_connections (cherokee_thread_t *thd)
 {
-	int                    re;
-	ret_t                  ret;
-	off_t                  len;
-	cherokee_list_t       *i, *tmp;
-	cuint_t                conns_freed = 0;
-	cherokee_connection_t *conn        = NULL;
-	cherokee_server_t     *srv         = SRV(thd->server);
+	int                       re;
+	ret_t                     ret;
+	off_t                     len;
+	cherokee_list_t          *i, *tmp;
+	cuint_t                   conns_freed = 0;
+	cherokee_connection_t    *conn        = NULL;
+	cherokee_server_t        *srv         = SRV(thd->server);
+	cherokee_socket_status_t  blocking;
+
+#ifdef TRACE_ENABLED
+	TRACE (ENTRIES, "Active connections:%s", "\n");
+
+	list_for_each_safe (i, tmp, LIST(&thd->active_list)) {
+		conn = CONN(i);
+
+		TRACE (ENTRIES, "   \\- thread (%p) processing conn (%p), phase %d '%s', socket=%d,%s\n",
+		       thd, conn, conn->phase, cherokee_connection_get_phase_str (conn),
+		       conn->socket.socket, (conn->socket.status == socket_reading)? "read" : (conn->socket.status == socket_writing)? "writing" : "closed");
+	}
+#endif
 
 	/* Process active connections
 	 */
 	list_for_each_safe (i, tmp, LIST(&thd->active_list)) {
 		conn = CONN(i);
 
-		TRACE (ENTRIES, "thread (%p) processing conn (%p), phase %d '%s'\n",
-		       thd, conn, conn->phase, cherokee_connection_get_phase_str (conn));
+		TRACE (ENTRIES, "thread (%p) processing conn (%p), phase %d '%s', socket=%d,%s\n",
+		       thd, conn, conn->phase, cherokee_connection_get_phase_str (conn),
+		       conn->socket.socket, (conn->socket.status == socket_reading)? "read" : (conn->socket.status == socket_writing)? "writing" : "closed");
 
 		/* Thread's error logger
 		 */
@@ -643,7 +657,8 @@ process_active_connections (cherokee_thread_t *thd)
 
 		/* Update the connection timeout
 		 */
-		if ((conn->phase != phase_reading_header) &&
+		if ((conn->phase != phase_tls_handshake) &&
+		    (conn->phase != phase_reading_header) &&
 		    (conn->phase != phase_reading_post) &&
 		    (conn->phase != phase_lingering))
 		{
@@ -686,8 +701,9 @@ process_active_connections (cherokee_thread_t *thd)
 				close_active_connection (thd, conn);
 				continue;
 			case 0:
-				if (! cherokee_socket_pending_read (&conn->socket))
+				if (! cherokee_socket_pending_read (&conn->socket)) {
 					continue;
+				}
 			}
 		}
 
@@ -697,41 +713,33 @@ process_active_connections (cherokee_thread_t *thd)
 		/* Phases
 		 */
 		switch (conn->phase) {
-		case phase_switching_headers:
-			ret = cherokee_connection_send_switching (conn);
-			switch (ret) {
-			case ret_ok:
-				break;
-			case ret_eagain:
-				continue;
-
-			case ret_eof:
-			case ret_error:
-				conns_freed++;
-				goto shutdown;
-
-			default:
-				RET_UNKNOWN(ret);
-				conns_freed++;
-				goto shutdown;
-			}
-			conn->phase = phase_tls_handshake;;
-
 		case phase_tls_handshake:
-			ret = cherokee_socket_init_tls (&conn->socket, CONN_VSRV(conn));
+			blocking = socket_closed;
+
+			ret = cherokee_socket_init_tls (&conn->socket, CONN_VSRV(conn), &blocking);
 			switch (ret) {
 			case ret_eagain:
+				switch (blocking) {
+				case socket_reading:
+					conn_set_mode (thd, conn, socket_reading);
+					break;
+
+				case socket_writing:
+					conn_set_mode (thd, conn, socket_writing);
+					break;
+
+				default:
+					break;
+				}
+
 				continue;
 
 			case ret_ok:
-				/* RFC2817
-				 * Had it upgraded the protocol?
-				 */
-				if (conn->error_code == http_switching_protocols) {
-					conn->phase = phase_setup_connection;
-					conn->error_code = http_ok;
-					continue;
-				}
+				TRACE(ENTRIES, "Handshake %s\n", "finished");
+
+				conn_set_mode (thd, conn, socket_reading);
+				cherokee_connection_update_timeout (conn);
+
 				conn->phase = phase_reading_header;
 				break;
 
@@ -1272,6 +1280,16 @@ process_active_connections (cherokee_thread_t *thd)
 
 		case phase_shutdown:
 		shutdown:
+			/* TLS: Do not use lingering close
+			 */
+			if (conn->socket.is_tls == TLS) {
+				conns_freed++;
+				close_active_connection (thd, conn);
+				continue;
+			}
+
+			/* HTTP: Shutdown socket
+			 */
 			ret = cherokee_connection_shutdown_wr (conn);
 			switch (ret) {
 			case ret_ok:
@@ -1423,6 +1441,52 @@ out:
 
 
 static ret_t
+get_new_connection (cherokee_thread_t *thd, cherokee_connection_t **conn)
+{
+	cherokee_connection_t *new_connection;
+	cherokee_server_t     *server;
+	static cuint_t         last_conn_id = 0;
+
+	server = SRV(thd->server);
+
+	if (cherokee_list_empty (&thd->reuse_list)) {
+		ret_t ret;
+
+		/* Create new connection object
+		 */
+		ret = cherokee_connection_new (&new_connection);
+		if (unlikely(ret < ret_ok)) return ret;
+	} else {
+		/* Reuse an old one
+		 */
+		new_connection = CONN(thd->reuse_list.prev);
+		cherokee_list_del (LIST(new_connection));
+		thd->reuse_list_num--;
+
+		INIT_LIST_HEAD (LIST(new_connection));
+	}
+
+	/* Set the basic information to the connection
+	 */
+	new_connection->id        = last_conn_id++;
+	new_connection->thread    = thd;
+	new_connection->server    = server;
+	new_connection->vserver   = VSERVER(server->vservers.prev);
+
+	new_connection->traffic_next = cherokee_bogonow_now + DEFAULT_TRAFFIC_UPDATE;
+
+	/* Set the default server timeout
+	 */
+	new_connection->timeout        = cherokee_bogonow_now + server->timeout;
+	new_connection->timeout_lapse  = server->timeout;
+	new_connection->timeout_header = &server->timeout_header;
+
+	*conn = new_connection;
+	return ret_ok;
+}
+
+
+static ret_t
 accept_new_connection (cherokee_thread_t *thd,
 		       cherokee_bind_t   *bind)
 {
@@ -1431,6 +1495,7 @@ accept_new_connection (cherokee_thread_t *thd,
 	int                    new_fd;
 	cherokee_sockaddr_t    new_sa;
 	cherokee_connection_t *new_conn;
+	cherokee_server_t     *srv       = THREAD_SRV(thd);
 
 	/* Check whether there are connections waiting
 	 */
@@ -1448,13 +1513,13 @@ accept_new_connection (cherokee_thread_t *thd,
 
 	/* Information collection
 	 */
-	if (THREAD_SRV(thd)->collector != NULL) {
-		cherokee_collector_log_accept (THREAD_SRV(thd)->collector);
+	if (srv->collector != NULL) {
+		cherokee_collector_log_accept (srv->collector);
 	}
 
 	/* We got the new socket, now set it up in a new connection object
 	 */
-	ret = cherokee_thread_get_new_connection (thd, &new_conn);
+	ret = get_new_connection (thd, &new_conn);
 	if (unlikely(ret < ret_ok)) {
 		LOG_ERROR_S (CHEROKEE_ERROR_THREAD_GET_CONN_OBJ);
 		cherokee_fd_close (new_fd);
@@ -1480,6 +1545,15 @@ accept_new_connection (cherokee_thread_t *thd,
 	 */
 	if (bind->socket.is_tls == TLS) {
 		new_conn->phase = phase_tls_handshake;
+
+		/* Set a custom timeout for the handshake
+		 */
+		if ((srv->cryptor != NULL) &&
+		    (srv->cryptor->timeout_handshake > 0))
+		{
+			new_conn->timeout        = cherokee_bogonow_now + srv->cryptor->timeout_handshake;
+			new_conn->timeout_lapse  = srv->cryptor->timeout_handshake;
+		}
 	}
 
 	/* Set the reference to the port
@@ -1831,52 +1905,6 @@ out:
 }
 
 #endif /* HAVE_PTHREAD */
-
-
-ret_t
-cherokee_thread_get_new_connection (cherokee_thread_t *thd, cherokee_connection_t **conn)
-{
-	cherokee_connection_t *new_connection;
-	cherokee_server_t     *server;
-	static cuint_t         last_conn_id = 0;
-
-	server = SRV(thd->server);
-
-	if (cherokee_list_empty (&thd->reuse_list)) {
-		ret_t ret;
-
-		/* Create new connection object
-		 */
-		ret = cherokee_connection_new (&new_connection);
-		if (unlikely(ret < ret_ok)) return ret;
-	} else {
-		/* Reuse an old one
-		 */
-		new_connection = CONN(thd->reuse_list.prev);
-		cherokee_list_del (LIST(new_connection));
-		thd->reuse_list_num--;
-
-		INIT_LIST_HEAD (LIST(new_connection));
-	}
-
-	/* Set the basic information to the connection
-	 */
-	new_connection->id        = last_conn_id++;
-	new_connection->thread    = thd;
-	new_connection->server    = server;
-	new_connection->vserver   = VSERVER(server->vservers.prev);
-
-	new_connection->traffic_next = cherokee_bogonow_now + DEFAULT_TRAFFIC_UPDATE;
-
-	/* Set the default server timeout
-	 */
-	new_connection->timeout        = cherokee_bogonow_now + server->timeout;
-	new_connection->timeout_lapse  = server->timeout;
-	new_connection->timeout_header = &server->timeout_header;
-
-	*conn = new_connection;
-	return ret_ok;
-}
 
 
 ret_t

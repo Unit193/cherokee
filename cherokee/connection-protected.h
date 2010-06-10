@@ -70,7 +70,6 @@
 
 typedef enum {
 	phase_nothing,
-	phase_switching_headers,
 	phase_tls_handshake,
 	phase_reading_header,
 	phase_processing_header,
@@ -171,9 +170,9 @@ struct cherokee_connection {
 
 	/* Traffic
 	 */
-	size_t                        rx;                  /* Bytes received */
+	off_t                         rx;                  /* Bytes received */
 	size_t                        rx_partial;          /* RX partial counter */
-	size_t                        tx;                  /* Bytes sent */
+	off_t                         tx;                  /* Bytes sent */
 	size_t                        tx_partial;          /* TX partial counter */
 	time_t                        traffic_next;        /* Time to update traffic */
 
@@ -257,7 +256,6 @@ ret_t cherokee_connection_linger_read            (cherokee_connection_t *conn);
 ret_t cherokee_connection_send                   (cherokee_connection_t *conn);
 ret_t cherokee_connection_send_header            (cherokee_connection_t *conn);
 ret_t cherokee_connection_send_header_and_mmaped (cherokee_connection_t *conn);
-ret_t cherokee_connection_send_switching         (cherokee_connection_t *conn);
 ret_t cherokee_connection_recv                   (cherokee_connection_t *conn, cherokee_buffer_t *buffer, off_t to_read, off_t *len);
 
 /* Internal

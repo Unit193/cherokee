@@ -11,4 +11,6 @@ DEVELOPERS = {
     'adefacc'      : "A.D.F. <adefacc@tin.it>",
     'cesar'        : "Cesar Fernandez Gago <cesar@pk2.org>",
     'sberlotto'    : "Sérgio H. Berlotto Jr <sergio.berlotto@gmail.com>",
+    'pigmej'       : "Jędrzej Nowak <me@pigmej.eu>",
+    'rodrigo'      : "Rodrigo Fernandez-Vizarra <rfvizarra@gmail.com>"
 }

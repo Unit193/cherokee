@@ -201,14 +201,19 @@ class BehaviorWidget (CTK.Container):
         self += CTK.RawHTML (js=JS_TR_ODD+JS_TR_INACTIVE)
         self += CTK.Indenter (table)
 
-        button = CTK.Button(_('Rule Management'), {'id':'rule-management', 'href': '/vserver/%s/rule/%s'%(vsrv_num, rules[0])})
+        if rules:
+            first_rule = rules[0]
+        else:
+            first_rule = '0'
+
+        button = CTK.Button(_('Rule Management'), {'id':'rule-management', 'href': '/vserver/%s/rule/%s'%(vsrv_num, first_rule)})
         self += CTK.Indenter (button)
 
 
     def _get_row (self, vsrv_num, r):
         rule = Rule ('vserver!%s!rule!%s!match'%(vsrv_num, r))
         rule_name = rule.GetName()
-        link = RuleLink (vsrv_num, r, CTK.RawHTML (rule_name))
+        link = RuleLink (vsrv_num, r, CTK.RawHTML ('<span title="%s">%s</span>' %(rule_name, rule_name)))
 
         handler, auth, root, secure, enc, exp, timeout, shaping, log, final, active = [None for x in range(11)]
 
@@ -256,7 +261,7 @@ class BehaviorWidget (CTK.Container):
             tmp += _(' bytes per second')
             shaping = CTK.ImageStock('tick', {'alt': tmp, 'title': tmp})
 
-        tmp = not bool (CTK.cfg.get_val ('vserver!%s!rule!%s!no_log' %(vsrv_num, r)))
+        tmp = not bool (int (CTK.cfg.get_val ('vserver!%s!rule!%s!no_log' %(vsrv_num, r), "0")))
         if tmp:
             tmp = _('Logging enabled for this rule')
             log = CTK.ImageStock('tick', {'alt': tmp, 'title': tmp})

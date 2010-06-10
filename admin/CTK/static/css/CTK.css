@@ -635,7 +635,7 @@ tr.panel-selected td div.row_content .sel-actions {
   text-align: center;
 }
 
-#rules-table td { text-align: left; }
+#rules-table td { text-align: left; overflow: hidden; white-space: pre; }
 #rules-table td + td { text-align: left; width: 92px; font-size: 11px; }
 #rules-table td + td + td { width: 38px; text-align: center; overflow: hidden; }
 
@@ -673,20 +673,16 @@ tr.panel-selected td div.row_content .sel-actions {
 #body-advanced .dialog-warning { width: 240px; margin-left: 640px; margin-top: 48px; position: absolute; }
 
 /* Page general */
-#Network-1,
-#Ports_to_listen-2,
-#Permissions-3,
-#Icons-4
-{
+#body-general .ui-tabs-panel {
  overflow: auto;
  overflow-x: hidden;
 }
 
-#Mime_types-5 h2 {
+.mime_types h2 {
  border: none;
 }
 
-#Mime_types-5 .button {
+.mime_types .button {
  float: right;
 }
 

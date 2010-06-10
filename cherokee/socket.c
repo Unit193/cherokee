@@ -136,19 +136,24 @@ cherokee_socket_mrproper (cherokee_socket_t *socket)
 ret_t
 cherokee_socket_clean (cherokee_socket_t *socket)
 {
-	socket->socket   = -1;
-	socket->status   = socket_closed;
-	socket->is_tls   = non_TLS;
+	/* TLS
+	 */
+	if (socket->cryptor != NULL) {
+		cherokee_cryptor_socket_free (socket->cryptor);
+		socket->cryptor = NULL;
+	}
+
+	socket->is_tls = non_TLS;
+
+	/* Properties
+	 */
+	socket->socket = -1;
+	socket->status = socket_closed;
 
 	/* Client address
 	 */
 	socket->client_addr_len = -1;
 	memset (&socket->client_addr, 0, sizeof(cherokee_sockaddr_t));
-
-	if (socket->cryptor != NULL) {
-		cherokee_cryptor_socket_clean (socket->cryptor);
-		socket->cryptor = NULL;
-	}
 
 	return ret_ok;
 }
@@ -156,7 +161,8 @@ cherokee_socket_clean (cherokee_socket_t *socket)
 
 ret_t
 cherokee_socket_init_tls (cherokee_socket_t         *socket,
-			  cherokee_virtual_server_t *vserver)
+			  cherokee_virtual_server_t *vserver,
+			  cherokee_socket_status_t  *blocking)
 {
 	ret_t              ret;
 	cherokee_server_t *srv = VSERVER_SRV(vserver);
@@ -167,7 +173,7 @@ cherokee_socket_init_tls (cherokee_socket_t         *socket,
 			return ret;
 	}
 
-	ret = cherokee_cryptor_socket_init_tls (socket->cryptor, socket, vserver);
+	ret = cherokee_cryptor_socket_init_tls (socket->cryptor, socket, vserver, blocking);
 	if (ret != ret_ok) {
 		return ret;
 	}
@@ -192,6 +198,7 @@ cherokee_socket_close (cherokee_socket_t *socket)
 	 */
 	if (socket->cryptor != NULL) {
 		cherokee_cryptor_socket_close (socket->cryptor);
+		cherokee_socket_flush (socket);
 	}
 
 	/* Close the socket
@@ -682,7 +689,7 @@ cherokee_socket_read (cherokee_socket_t *socket,
 	return_if_fail (buf != NULL && buf_size > 0, ret_error);
 
 	if (unlikely (socket->status == socket_closed)) {
-		TRACE(ENTRIES, "Reading a closed socket: fd=%d\n", SOCKET_FD(socket));
+		TRACE(ENTRIES, "Reading a closed socket: fd=%d (TLS=%d)\n", SOCKET_FD(socket), (socket->is_tls == TLS));
 		return ret_eof;
 	}
 
