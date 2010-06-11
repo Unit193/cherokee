@@ -47,93 +47,6 @@ case "$action" in
 	CONFPATH=/etc/cherokee
 	CONFFILE=$CONFPATH/cherokee.conf
 
-	if dpkg --compare-versions "$version" lt-nl 0.6
-	then
-	    ### The 0.5->0.6 migrator uses different semantics to those 
-	    ### provided by all subsequent migrators, and -as it merges 
-	    ### several distinct files into a single output- is quite more 
-	    ### complicated... So there will still some duplication between
-	    ### the snippet here and the code in migrate_conf_versions().
-
-	    # Previous versions included /etc/cherokee/mime*.types -
-	    # Delete them on the spot!
-	    rm -f /etc/cherokee/mime.types /etc/cherokee/mime.compression.types
-
-	    # 0.5 configuration files must be converted - 0.6 uses a
-	    # completely different syntax. 
-	    OLDCONFPATH=$CONFPATH/pre-0.6
-	    TMPCONFPATH=$(mktemp -d /tmp/cherokee_migration.XXXXXXXX)
-	    MIGRATOR=/usr/share/cherokee/05to06.py
-	    LOG=$OLDCONFPATH/0.6_migration.log
-	    README=$OLDCONFPATH/0.6_migration_README
-	    # There are some files we don't want to translate -
-	    # README, MIME types, any possible files present in the
-	    # migrtion directory, ... We will skip them in a regex way
-	    IGNORE='README\|mime.types\|mime.compression.types\|pre-0.6'
-
-	    if [ ! -f $MIGRATOR ]
-		then
-		echo Migrator script $MIGRATOR is not found.
-		echo Please file a bug report, this should never happen!
-		exit 1
-	    fi
-
-	    if [ ! -d $OLDCONFPATH ]; then mkdir -p $OLDCONFPATH; fi
-
-	    echo "Starting Cherokee 0.5 -> 0.6 migration" > $LOG
-
-	    for file in $(find -L $CONFPATH -type f | grep -v $IGNORE); do
-		dirname=$(dirname $file | sed -e "s%^$CONFPATH%%")
-		filename=$(basename $file)
-
-		[ -d $TMPCONFPATH/$dirname ] || mkdir $TMPCONFPATH/$dirname
-		tmpfile=$TMPCONFPATH/$dirname/$filename
-		echo "----------------------------------------" >> $LOG
-		echo "Translating $file (=> $tmpfile)" >> $LOG
-
-		if python $MIGRATOR < $file > $tmpfile 2>>$LOG
-		then
-		    echo $file was successfully migrated to temporary directory >> $LOG
-		else
-		    echo "*** ERROR MIGRATING $file - Follows:" >> $LOG
-		    cat $file >> $LOG
-		fi
-
-	    done
-
-	    for file in $(find -L $CONFPATH -type f | grep -v $IGNORE); do
-		dirname=$(dirname $file | sed -e "s%^$CONFPATH%%")
-		filename=$(basename $file)
-
-		[ -d $OLDCONFPATH/$dirname ] || mkdir $OLDCONFPATH/$dirname
-		oldfile=$OLDCONFPATH/$dirname/$filename
-		if [ -L $file ]
-		then
-		    # Bah for symlinks :-P
-		    cp -L $file $oldfile
-		    rm $file
-		else
-		    # regular file
-		    mv $file $oldfile
-		fi
-	    done
-	    echo "----------------------------------------" >> $LOG
-	    echo "Merging migrated files into $CONFFILE" >> $LOG
-	    cat $TMPCONFPATH/cherokee.conf | /usr/share/cherokee/config_joiner $CONFPATH $TMPCONFPATH > $CONFFILE 2>>$LOG
-
-	    cat <<EOF > $README
-For further information on the migration process, please refer to
-/usr/share/doc/cherokee/README_0.5_to_0.6
-
-Automated configuration conversion is attempted really hard - But it
-cannot be guaranteed. Please file a bug on cherokee if we are missing
-any bits of your configuration.
-
-A log of the migration process will be saved in $LOG. 
-Please include it in any bug reports regarding this migration!
-EOF
-	fi
-
 	# If the conffile has an unmodified md5sum, skip all the rest of the
 	# processing; dpkg conffile upgrading will already do what we need.
 	if [ -e "$CONFFILE" ]; then
@@ -142,11 +55,6 @@ EOF
 	fi
 
 	if [ -e "$CONFFILE" ] && [ "$md5sum" != "$old_md5sum" ]; then
-	    if dpkg --compare-versions "$version" lt-nl 0.7
-	    then
-		migrate_conf_versions 0.6 0.7 06to07.py
-	    fi
-
 	    if dpkg --compare-versions "$version" lt-nl 0.8
 	    then
 		migrate_conf_versions 0.7 0.8 07to08.py
