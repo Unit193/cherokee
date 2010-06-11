@@ -139,7 +139,7 @@ Section: httpd
 Architecture: any
 Replaces: libcherokee-mod-server-info
 Provides: libcherokee-mod-server-info
-Conflicts: libcherokee-mod-server-info
+Conflicts: libcherokee-mod-server-info, libcherokee-mod-admin (<< ${binary:Version}), libcherokee-mod-mysql (<< ${binary:Version}), libcherokee-mod-ldap (<< ${binary:Version}), libcherokee-mod-libssl (<< ${binary:Version}), libcherokee-mod-streaming (<< ${binary:Version}), libcherokee-mod-geoip (<< ${binary:Version}), libcherokee-mod-rrd (<< ${binary:Version})
 Depends: ${misc:Depends}, ${shlibs:Depends}
 Description: Cherokee web server - Server libraries
  Cherokee is a very fast, flexible and easy to configure Web Server.
