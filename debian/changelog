@@ -5,8 +5,10 @@ cherokee (1.0.2-1) unstable; urgency=low
 
   [ Gunnar Wolf ]
   * Refresh use_updated_config_guess patch
+  * Declared versioned restrictions on recommends/suggests (Closes:
+    #573432)
 
- -- Gunnar Wolf <gwolf@debian.org>  Fri, 11 Jun 2010 11:53:11 -0500
+ -- Gunnar Wolf <gwolf@debian.org>  Fri, 11 Jun 2010 12:14:29 -0500
 
 cherokee (1.0.1-1) unstable; urgency=low
 

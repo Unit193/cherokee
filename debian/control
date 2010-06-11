@@ -13,8 +13,8 @@ Package: cherokee
 Architecture: any
 Pre-Depends: libcherokee-config0 (= ${binary:Version})
 Depends: ${misc:Depends}, ${shlibs:Depends}, logrotate, libcherokee-base0 (= ${binary:Version}), libcherokee-server0 (= ${binary:Version})
-Recommends: libcherokee-mod-admin, spawn-fcgi
-Suggests: cherokee-doc, libcherokee-mod-geoip, libcherokee-mod-ldap, libcherokee-mod-libssl, libcherokee-mod-mysql, libcherokee-mod-rrd, libcherokee-mod-streaming
+Recommends: libcherokee-mod-admin (= ${binary:Version}), spawn-fcgi
+Suggests: cherokee-doc, libcherokee-mod-geoip (= ${binary:Version}), libcherokee-mod-ldap (= ${binary:Version}), libcherokee-mod-libssl (= ${binary:Version}), libcherokee-mod-mysql (= ${binary:Version}), libcherokee-mod-rrd (= ${binary:Version}), libcherokee-mod-streaming (= ${binary:Version})
 Provides: httpd, httpd-cgi
 Description: Very fast, flexible and easy to configure web server
  Cherokee is a very fast, flexible and easy to configure Web Server.
