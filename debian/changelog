@@ -1,9 +1,12 @@
 cherokee (1.0.2-1) unstable; urgency=low
 
+  [ Leonel Nunez ]
   * New Upstream Version
-    Removed use_updated_config_guess patch
 
- -- Leonel Nunez <leonel@enelserver.com>  Thu, 10 Jun 2010 07:25:34 -0600
+  [ Gunnar Wolf ]
+  * Refresh use_updated_config_guess patch
+
+ -- Gunnar Wolf <gwolf@debian.org>  Fri, 11 Jun 2010 11:53:11 -0500
 
 cherokee (1.0.1-1) unstable; urgency=low
 
