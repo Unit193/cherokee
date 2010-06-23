@@ -194,13 +194,6 @@ cherokee_socket_close (cherokee_socket_t *socket)
 		return ret_error;
 	}
 
-	/* SSL/TLS shutdown
-	 */
-	if (socket->cryptor != NULL) {
-		cherokee_cryptor_socket_close (socket->cryptor);
-		cherokee_socket_flush (socket);
-	}
-
 	/* Close the socket
 	 */
 #ifdef _WIN32
@@ -425,8 +418,17 @@ cherokee_socket_set_client (cherokee_socket_t *sock, unsigned short int type)
 	 */
 	sock->socket = socket (type, SOCK_STREAM, 0);
 	if (sock->socket < 0) {
-		LOG_ERRNO (errno, cherokee_err_error, CHEROKEE_ERROR_SOCKET_NEW_SOCKET);
-		return ret_error;
+#ifdef HAVE_IPV6
+		if ((type == AF_INET6) &&
+		    (errno == EAFNOSUPPORT))
+		{
+			LOG_WARNING (CHEROKEE_ERROR_SOCKET_NO_IPV6);
+		} else
+#endif
+		{
+			LOG_ERRNO (errno, cherokee_err_error, CHEROKEE_ERROR_SOCKET_NEW_SOCKET);
+			return ret_error;
+		}
 	}
 
 	/* Set the family length

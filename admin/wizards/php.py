@@ -59,7 +59,11 @@ DEFAULT_PATHS = ['/usr/bin',
                  '/usr/local/bin',
                  '/opt/local/bin',
                  '/usr/pkg/libexec/cgi-bin',
-                 '/usr/sbin']
+                 # FPM
+                 '/usr/sbin',
+                 '/usr/local/sbin',
+                 '/opt/local/sbin',
+                 '/usr/gnu/sbin']
 
 FPM_ETC_PATHS = ['/etc/php*/fpm/php*fpm.conf',
                  '/usr/local/etc/php*fpm.conf',
@@ -405,6 +409,8 @@ def __figure_fpm_settings():
     tmp = re.findall (r'<value name="listen_address">(.*?)</value>', content)
     if tmp:
         listen_address = tmp[0]
+    else:
+        listen_address = None
 
     tmp = re.findall (r'<value name="request_terminate_timeout">(\d*)s*</value>', content)
     if tmp:
@@ -413,9 +419,9 @@ def __figure_fpm_settings():
         timeout = PHP_DEFAULT_TIMEOUT
 
     # Done
-    return {'fpm_conf' :           fpm_conf,
-            'fpm_listen_address' : listen_address,
-            'fpm_terminate_timeout' : timeout}
+    return {'fpm_conf':              fpm_conf,
+            'fpm_listen_address':    listen_address,
+            'fpm_terminate_timeout': timeout}
 
 def __source_add_std (php_path):
     # IANA: TCP ports 47809-47999 are unassigned

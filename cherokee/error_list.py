@@ -51,6 +51,11 @@ e('RRD_WRITE',
   title = "Cannot write in %s: ${errno}",
   desc  = SYSTEM_ISSUE)
 
+e('RRD_DIR_PERMS',
+  title = "Insufficient permissions to work with the RRD directory: %s",
+  desc  = SYSTEM_ISSUE,
+  admin = '/general#tabs_general-0')
+
 e('RRD_MKDIR_WRITE',
   title = "Cannot create the '%s' directory",
   desc  = SYSTEM_ISSUE,
@@ -810,6 +815,11 @@ e('HEADER_ADD_HEADER',
 
 # cherokee/socket.c
 #
+e('SOCKET_NO_IPV6',
+  title = "IPv6 support is disabled. Configuring for IPv4 support only.",
+  desc  = SYSTEM_ISSUE,
+  admin = "/general#Network-4")
+
 e('SOCKET_NEW_SOCKET',
   title = "Could not create socket: ${errno}",
   desc  = SYSTEM_ISSUE)
