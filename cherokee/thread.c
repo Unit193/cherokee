@@ -608,9 +608,11 @@ process_active_connections (cherokee_thread_t *thd)
 	cherokee_socket_status_t  blocking;
 
 #ifdef TRACE_ENABLED
-	TRACE (ENTRIES, "Active connections:%s", "\n");
+	if (! cherokee_list_empty (&thd->active_list)) {
+		TRACE (ENTRIES, "Active connections:%s", "\n");
+	}
 
-	list_for_each_safe (i, tmp, LIST(&thd->active_list)) {
+	list_for_each_safe (i, tmp, &thd->active_list) {
 		conn = CONN(i);
 
 		TRACE (ENTRIES, "   \\- thread (%p) processing conn (%p), phase %d '%s', socket=%d,%s\n",
@@ -660,6 +662,7 @@ process_active_connections (cherokee_thread_t *thd)
 		if ((conn->phase != phase_tls_handshake) &&
 		    (conn->phase != phase_reading_header) &&
 		    (conn->phase != phase_reading_post) &&
+		    (conn->phase != phase_shutdown) &&
 		    (conn->phase != phase_lingering))
 		{
 			cherokee_connection_update_timeout (conn);
@@ -743,6 +746,7 @@ process_active_connections (cherokee_thread_t *thd)
 				conn->phase = phase_reading_header;
 				break;
 
+			case ret_eof:
 			case ret_error:
 				conns_freed++;
 				goto shutdown;
@@ -1280,15 +1284,33 @@ process_active_connections (cherokee_thread_t *thd)
 
 		case phase_shutdown:
 		shutdown:
-			/* TLS: Do not use lingering close
+			/* Perform a proper SSL/TLS shutdown
 			 */
 			if (conn->socket.is_tls == TLS) {
-				conns_freed++;
-				close_active_connection (thd, conn);
-				continue;
+				ret = conn->socket.cryptor->shutdown (conn->socket.cryptor);
+				switch (ret) {
+				case ret_ok:
+					break;
+
+				case ret_eagain:
+					conn_set_mode (thd, conn, socket_reading);
+					return ret_eagain;
+
+				case ret_eof:
+				case ret_error:
+					conns_freed++;
+					close_active_connection (thd, conn);
+					continue;
+
+				default:
+					RET_UNKNOWN (ret);
+					conns_freed++;
+					close_active_connection (thd, conn);
+					continue;
+				}
 			}
 
-			/* HTTP: Shutdown socket
+			/* Shutdown socket for writing
 			 */
 			ret = cherokee_connection_shutdown_wr (conn);
 			switch (ret) {
@@ -1307,6 +1329,7 @@ process_active_connections (cherokee_thread_t *thd)
 				close_active_connection (thd, conn);
 				continue;
 			}
+
 			/* fall down */
 
 		case phase_lingering:

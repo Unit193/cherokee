@@ -60,10 +60,11 @@ static DH *dh_param_4096 = NULL;
 
 #define CLEAR_LIBSSL_ERRORS						\
 	do {								\
-		while (ERR_peek_error()) {				\
-			TRACE(ENTRIES, "Ignoring libssl error%s","\n"); \
+		unsigned long openssl_error;				\
+		while ((openssl_error = ERR_get_error())) {		\
+			TRACE(ENTRIES, "Ignoring libssl error: %s\n",	\
+			      ERR_error_string(openssl_error, NULL));	\
 		}							\
-		ERR_clear_error();					\
 	} while(0)
 
 
@@ -313,13 +314,12 @@ _vserver_new (cherokee_cryptor_t          *cryp,
 	      cherokee_virtual_server_t   *vsrv,
 	      cherokee_cryptor_vserver_t **cryp_vsrv)
 {
-	ret_t              ret;
-	int                rc;
-	const char        *error;
-	int                verify_mode = SSL_VERIFY_NONE;
-	cherokee_buffer_t  session_id  = CHEROKEE_BUF_INIT;
-	CHEROKEE_NEW_STRUCT (n, cryptor_vserver_libssl);
+	ret_t       ret;
+	int         rc;
+	const char *error;
+	int         verify_mode = SSL_VERIFY_NONE;
 
+	CHEROKEE_NEW_STRUCT (n, cryptor_vserver_libssl);
 
 	UNUSED(cryp);
 
@@ -367,11 +367,7 @@ _vserver_new (cherokee_cryptor_t          *cryp,
 		}
 	}
 
-#if (OPENSSL_VERSION_NUMBER < 0x0090808fL)
-	/* OpenSSL < 0.9.8h
-	 */
-	ERR_clear_error();
-#endif
+	CLEAR_LIBSSL_ERRORS;
 
 	/* Certificate
 	 */
@@ -434,7 +430,7 @@ _vserver_new (cherokee_cryptor_t          *cryp,
 				return ret_error;
 			}
 
-			ERR_clear_error();
+			CLEAR_LIBSSL_ERRORS;
 
 			SSL_CTX_set_client_CA_list (n->context, X509_clients);
 			TRACE (ENTRIES, "Setting client CA list: %s on '%s'\n", vsrv->certs_ca.buf, vsrv->name.buf);
@@ -447,28 +443,17 @@ _vserver_new (cherokee_cryptor_t          *cryp,
 	SSL_CTX_set_verify_depth (n->context, vsrv->verify_depth);
 
 	SSL_CTX_set_read_ahead (n->context, 1);
-	SSL_CTX_set_mode (n->context, SSL_MODE_ENABLE_PARTIAL_WRITE);
+	SSL_CTX_set_mode (n->context,
+			  SSL_CTX_get_mode(n->context) | SSL_MODE_ACCEPT_MOVING_WRITE_BUFFER);
 
 	/* Set the SSL context cache
 	 */
-	cherokee_buffer_add_ulong10  (&session_id, getpid());
-	cherokee_buffer_add_char     (&session_id, '-');
-	cherokee_buffer_add_buffer   (&session_id, &vsrv->name);
-	cherokee_buffer_add_char     (&session_id, '-');
-	cherokee_buffer_add_ullong10 (&session_id, random());
-
-	TRACE(ENTRIES, "VServer '%s' session: %s\n", vsrv->name.buf, session_id.buf);
-
 	rc = SSL_CTX_set_session_id_context (n->context,
-					     (unsigned char *) session_id.buf,
-					     (unsigned int)    session_id.len);
-
-	cherokee_buffer_mrproper (&session_id);
-
+					     (unsigned char *) vsrv->name.buf,
+					     (unsigned int)    vsrv->name.len);
 	if (rc != 1) {
 		OPENSSL_LAST_ERROR(error);
-		LOG_ERROR (CHEROKEE_ERROR_SSL_SESSION_ID,
-			   vsrv->name.buf, error);
+		LOG_ERROR (CHEROKEE_ERROR_SSL_SESSION_ID, vsrv->name.buf, error);
 	}
 
 	SSL_CTX_set_session_cache_mode (n->context, SSL_SESS_CACHE_SERVER);
@@ -577,7 +562,14 @@ _socket_init_tls (cherokee_cryptor_socket_libssl_t *cryp,
 	CLEAR_LIBSSL_ERRORS;
 
 	re = SSL_do_handshake (cryp->session);
-	if (re <= 0) {
+	if (re == 0) {
+		/* The TLS/SSL handshake was not successful but was
+		 * shut down controlled and by the specifications of
+		 * the TLS/SSL protocol.
+		 */
+		return ret_eof;
+
+	} else if (re <= 0) {
 		int         err;
 		const char *error;
 		int         err_sys = errno;
@@ -637,37 +629,58 @@ _socket_init_tls (cherokee_cryptor_socket_libssl_t *cryp,
 }
 
 static ret_t
-_socket_close (cherokee_cryptor_socket_libssl_t *cryp)
+_socket_shutdown (cherokee_cryptor_socket_libssl_t *cryp)
 {
 	int re;
 	int fd;
+	int ssl_error;
 
-	if (cryp->session != NULL) {
-		/* Send a 'close_notify' SSL message
-		 */
-		re = SSL_shutdown (cryp->session);
-		if (re == 0) {
-			/* Send a TCP FIN segment to trigger the
-			 * client's 'close_notify' - leaving the
-			 * connection open for reading.
-			 */
-			fd = SSL_get_fd (cryp->session);
-			if (fd >= 0) {
-				do {
-					re = shutdown (fd, SHUT_WR);
-				} while ((re == -1) && (errno == EINTR));
+	if (unlikely (cryp->session == NULL)) {
+		return ret_ok;
+	}
+
+	/* Send a 'close_notify' SSL message
+	 */
+	re = SSL_shutdown (cryp->session);
+	if (re == 1) {
+		/* The shutdown was successfully completed. */
+		return ret_ok;
+
+	} else if (re == 0) {
+		/* Not finished yet */
+		return ret_eagain;
+
+	} else if (re < 0) {
+		ssl_error = SSL_get_error (cryp->session, re);
+		switch (ssl_error) {
+		case SSL_ERROR_ZERO_RETURN:
+			return ret_ok;
+
+		case SSL_ERROR_WANT_READ:
+		case SSL_ERROR_WANT_WRITE:
+			return ret_eagain;
+
+		case SSL_ERROR_SYSCALL:
+			CLEAR_LIBSSL_ERRORS;
+
+			switch (errno) {
+			case 0:
+				return ret_ok;
+			case EINTR:
+			case EAGAIN:
+				return ret_eagain;
+			default:
+				return ret_error;
 			}
+			break;
 
-			/* Call it again to finish the shutdown */
-			re = SSL_shutdown (cryp->session);
-		}
-
-		if (re < 0) {
+		default:
 			return ret_error;
 		}
 	}
 
-	return ret_ok;
+	SHOULDNT_HAPPEN;
+	return ret_error;
 }
 
 static ret_t
@@ -854,7 +867,7 @@ _socket_new (cherokee_cryptor_libssl_t         *cryp,
 	CRYPTOR_SOCKET(n)->free     = (cryptor_socket_func_free_t) _socket_free;
 	CRYPTOR_SOCKET(n)->clean    = (cryptor_socket_func_clean_t) _socket_clean;
 	CRYPTOR_SOCKET(n)->init_tls = (cryptor_socket_func_init_tls_t) _socket_init_tls;
-	CRYPTOR_SOCKET(n)->close    = (cryptor_socket_func_close_t) _socket_close;
+	CRYPTOR_SOCKET(n)->shutdown = (cryptor_socket_func_shutdown_t) _socket_shutdown;
 	CRYPTOR_SOCKET(n)->read     = (cryptor_socket_func_read_t) _socket_read;
 	CRYPTOR_SOCKET(n)->write    = (cryptor_socket_func_write_t) _socket_write;
 	CRYPTOR_SOCKET(n)->pending  = (cryptor_socket_func_pending_t) _socket_pending;
@@ -902,7 +915,6 @@ _client_init_tls (cherokee_cryptor_client_libssl_t *cryp,
 	 */
 
 	SSL_CTX_set_verify (cryp->ssl_ctx, SSL_VERIFY_NONE, NULL);
-	SSL_CTX_set_mode (cryp->ssl_ctx, SSL_MODE_ENABLE_PARTIAL_WRITE);
 
 	/* New session
 	 */
@@ -982,7 +994,7 @@ _client_new (cherokee_cryptor_t         *cryp,
 	n->ssl_ctx = NULL;
 
 	/* Socket */
-	CRYPTOR_SOCKET(n)->close    = (cryptor_socket_func_close_t) _socket_close;
+	CRYPTOR_SOCKET(n)->shutdown = (cryptor_socket_func_shutdown_t) _socket_shutdown;
 	CRYPTOR_SOCKET(n)->read     = (cryptor_socket_func_read_t) _socket_read;
 	CRYPTOR_SOCKET(n)->write    = (cryptor_socket_func_write_t) _socket_write;
 	CRYPTOR_SOCKET(n)->pending  = (cryptor_socket_func_pending_t) _socket_pending;
@@ -1072,9 +1084,9 @@ PLUGIN_INIT_NAME(libssl) (cherokee_plugin_loader_t *loader)
 
 	/* Init OpenSSL
 	 */
-	CRYPTO_malloc_init();
-	SSL_load_error_strings();
+	OPENSSL_config (NULL);
 	SSL_library_init();
+	SSL_load_error_strings();
 	OpenSSL_add_all_algorithms();
 
 	/* Ensure PRNG has been seeded with enough data
@@ -1105,6 +1117,7 @@ PLUGIN_INIT_NAME(libssl) (cherokee_plugin_loader_t *loader)
 # if HAVE_OPENSSL_ENGINE_H
 #  if OPENSSL_VERSION_NUMBER >= 0x00907000L
         ENGINE_load_builtin_engines();
+	OpenSSL_add_all_algorithms();
 #  endif
         e = ENGINE_by_id("pkcs11");
         while (e != NULL) {

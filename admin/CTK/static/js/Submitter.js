@@ -113,7 +113,7 @@ if ((typeof submitter_loaded) == 'undefined') {
 
 		  /* Build the post */
 		  info = {};
-		  self.find ("input:text, input:password, input:hidden").each(function(){
+		  self.find ("input:text, input:password, input:hidden, input:radio:checked").each(function(){
 			 if ((!$(this).hasClass('optional')) || (this.value != optional_str)) {
 				info[this.name] = this.value;
 			 }
@@ -209,7 +209,7 @@ if ((typeof submitter_loaded) == 'undefined') {
 		  /* Events */
 		  self.find(":text, :password, textarea").not('.noauto').bind ('keypress', self, input_keypress_cb);
 		  self.find(":text, :password, textarea").not('.noauto').bind ("blur", self, input_blur_cb);
-		  self.find(":checkbox").not('.required,.noauto').bind ("change", self, input_checkbox_cb);
+		  self.find(":checkbox, :radio").not('.required,.noauto').bind ("change", self, input_checkbox_cb);
 		  self.find("select").not('.required,.noauto').bind ("change", self, input_combobox_cb);
 
 		  /* Original values */

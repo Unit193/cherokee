@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: cherokee '0.99.10'\n"
 "Report-Msgid-Bugs-To: http://bugs.cherokee-project.com/\n"
-"POT-Creation-Date: 2010-06-10 11:52+0200\n"
-"PO-Revision-Date: 2010-05-25 17:10+0100\n"
+"POT-Creation-Date: 2010-06-22 16:53+0200\n"
+"PO-Revision-Date: 2010-06-22 14:48+0100\n"
 "Last-Translator: Stefan de Konink <stefan@konink.de>\n"
 "Language-Team: none\n"
 "MIME-Version: 1.0\n"
@@ -381,8 +381,8 @@ msgstr "Staat toe om een alternatieve hoofdmap op te geven."
 
 #: admin/Handler.py:43 admin/PageEntry.py:229 admin/PageVServer.py:302
 #: admin/PageVServers.py:127 admin/wizards/django.py:190
-#: admin/wizards/mono.py:199 admin/wizards/php.py:36 admin/wizards/php.py:257
-#: admin/wizards/uwsgi.py:242
+#: admin/wizards/mono.py:199 admin/wizards/php.py:36 admin/wizards/php.py:261
+#: admin/wizards/uwsgi.py:243
 msgid "Document Root"
 msgstr "Hoofdmap"
 
@@ -696,7 +696,7 @@ msgstr "Pad naar een Diffie Hellman (DH) parameters PEM bestand: 4096bits."
 
 #: admin/PageAdvanced.py:91
 msgid "Timeout for the TLS/SSL handshake. Default: 15 seconds."
-msgstr ""
+msgstr "Uitvaltijd voor de TLS/SSL begroeting. Standaard: 15 seconden."
 
 #: admin/PageAdvanced.py:115
 msgid "Keep Alive"
@@ -796,7 +796,7 @@ msgstr "PID bestand"
 
 #: admin/PageAdvanced.py:172
 msgid "Handshake Timeout"
-msgstr ""
+msgstr "Begroetings Uitvaltijd"
 
 #: admin/PageAdvanced.py:173
 msgid "DH parameters: 512 bits"
@@ -1313,23 +1313,23 @@ msgstr "Inhoudsopgave"
 msgid "Documentation"
 msgstr "Documentatie"
 
-#: admin/PageIndex.py:62
+#: admin/PageIndex.py:66
 msgid "You will be sent an email requesting confirmation"
 msgstr "Je wordt een e-mail ter bevestiging gestuurd"
 
-#: admin/PageIndex.py:63
+#: admin/PageIndex.py:67
 msgid "Optionally provide your name"
 msgstr "Optioneel kun je, je naam opgeven"
 
-#: admin/PageIndex.py:66
+#: admin/PageIndex.py:70
 msgid "Server is Running."
 msgstr "Server draait."
 
-#: admin/PageIndex.py:67
+#: admin/PageIndex.py:71
 msgid "Server is not Running."
 msgstr "Server draait niet."
 
-#: admin/PageIndex.py:68
+#: admin/PageIndex.py:72
 #, python-format
 msgid ""
 "Commercial support for Cherokee is provided by <a target=\"_blank\" href=\"%s"
@@ -1340,7 +1340,7 @@ msgstr ""
 "\" href=\"%s\">Octality</a>. Zij leveren het neusje van de zalm betreft: "
 "advies, oplossingen op maat en zakelijke ondersteuning."
 
-#: admin/PageIndex.py:69
+#: admin/PageIndex.py:73
 msgid ""
 "The Community Mailing List is the place to go for help on Cherokee. <a id="
 "\"subscribe-a\">Subscribe now!</a>"
@@ -1348,7 +1348,7 @@ msgstr ""
 "De Community Mailinglijst is de plek om hulp te vinden voor Cherokee. <a id="
 "\"subscribe-a\">Meld je nu aan!</a>"
 
-#: admin/PageIndex.py:70
+#: admin/PageIndex.py:74
 #, python-format
 msgid ""
 "Join us at the <a target=\"_blank\" href=\"%s\">#cherokee</a> IRC Channel."
@@ -1356,7 +1356,7 @@ msgstr ""
 "Kom gezellig naar het <a target=\"_blank\" href=\"%s\">#cherokee</a> IRC "
 "kanaal."
 
-#: admin/PageIndex.py:71
+#: admin/PageIndex.py:75
 #, python-format
 msgid ""
 "Your feedback is important! Log Bug Reports and Requests for Enhancements in "
@@ -1367,22 +1367,22 @@ msgstr ""
 "voor in onze <a target=\"_blank\" href=\"%s\">problemen lijst</a> om zo "
 "Cherokee te verbeteren."
 
-#: admin/PageIndex.py:72
+#: admin/PageIndex.py:76
 msgid "Find out what's going on with Cherokee on your favorite Social Media!"
 msgstr ""
 "Houd je zelf op de hoogte over Cherokee op je favoriete sociale medium!"
 
-#: admin/PageIndex.py:73
+#: admin/PageIndex.py:77
 #, python-format
 msgid "Follow <a target=\"_blank\" href=\"%s\">Cherokee on Twitter</a>."
 msgstr "Volg <a target=\"_blank\" href=\"%s\">Cherokee op Twitter</a>."
 
-#: admin/PageIndex.py:74
+#: admin/PageIndex.py:78
 #, python-format
 msgid "Join <a target=\"_blank\" href=\"%s\">Cherokee on Facebook</a>."
 msgstr "Volg <a target=\"_blank\" href=\"%s\">Cherokee op Facebook</a>."
 
-#: admin/PageIndex.py:76
+#: admin/PageIndex.py:80
 msgid ""
 "<h3>Beta testing</h3> <p>Individuals like yourself who download and\n"
 "test the latest developer snapshots of Cherokee Web Server help us to\n"
@@ -1393,7 +1393,7 @@ msgstr ""
 "helpen ons\n"
 "een product te maken van het hoogste niveau. Daarvoor bedanken we je.</p>\n"
 
-#: admin/PageIndex.py:82
+#: admin/PageIndex.py:86
 msgid ""
 "We would love to know that you are using Cherokee. Submit your domain\n"
 "name and it will be listed on the Cherokee Project web site.\n"
@@ -1401,11 +1401,11 @@ msgstr ""
 "We zouden graag horen dat je Cherokee gebruikt. Stuur je domeinnaam\n"
 "en het wordt getoond op de Cherokee Projects website.\n"
 
-#: admin/PageIndex.py:88
+#: admin/PageIndex.py:92
 msgid "The information has been successfully sent. Thank you!"
 msgstr "De informatie is succesvol verstuurd. Bedankt!"
 
-#: admin/PageIndex.py:89
+#: admin/PageIndex.py:93
 msgid ""
 "Unfortunatelly something went wrong, and the information could not be "
 "submitted:"
@@ -1413,7 +1413,7 @@ msgstr ""
 "Helaas ging er iets verkeerd, en de volgende informatie kon niet worden "
 "opgestuurd:"
 
-#: admin/PageIndex.py:90
+#: admin/PageIndex.py:94
 msgid ""
 "Please, try again. Do not hesitate to report the problem if it persists."
 msgstr ""
@@ -2419,7 +2419,7 @@ msgstr "Chinees (eenvoudig)"
 
 #: admin/consts.py:35
 msgid "Catalan"
-msgstr ""
+msgstr "Catalaans"
 
 #: admin/consts.py:40
 msgid "Product only"
@@ -2467,7 +2467,7 @@ msgstr "FastCGI"
 msgid "SCGI"
 msgstr "SCGI"
 
-#: admin/consts.py:55 admin/wizards/List.py:108 admin/wizards/uwsgi.py:41
+#: admin/consts.py:55 admin/wizards/List.py:108 admin/wizards/uwsgi.py:43
 msgid "uWSGI"
 msgstr "uWSGI"
 
@@ -2909,9 +2909,9 @@ msgstr "Publieke Web Map waar op de configuratie wordt uitgevoerd."
 #: admin/wizards/liferay.py:153 admin/wizards/mediawiki.py:214
 #: admin/wizards/moinmoin.py:198 admin/wizards/mono.py:182
 #: admin/wizards/phpbb.py:169 admin/wizards/phpmyadmin.py:119
-#: admin/wizards/rails.py:44 admin/wizards/rails.py:298
+#: admin/wizards/rails.py:44 admin/wizards/rails.py:299
 #: admin/wizards/rtorrent.py:99 admin/wizards/sugar.py:199
-#: admin/wizards/symfony.py:209 admin/wizards/uwsgi.py:224
+#: admin/wizards/symfony.py:209 admin/wizards/uwsgi.py:225
 #: admin/wizards/wordpress.py:201 admin/wizards/zend.py:184
 msgid "Web Directory"
 msgstr "Web Map"
@@ -4206,7 +4206,7 @@ msgstr "Poort op computer waarop de dienst draait. (Voorbeeld: 8080)"
 #: admin/wizards/php.py:40 admin/wizards/phpbb.py:47
 #: admin/wizards/phpmyadmin.py:48 admin/wizards/sugar.py:47
 #: admin/wizards/symfony.py:51 admin/wizards/trac.py:43
-#: admin/wizards/uwsgi.py:47 admin/wizards/wordpress.py:44
+#: admin/wizards/uwsgi.py:49 admin/wizards/wordpress.py:44
 #: admin/wizards/zend.py:47
 msgid "Host name of the virtual server that is about to be created."
 msgstr "Computer naam van de virtuele computer die zo wordt gemaakt."
@@ -4220,14 +4220,14 @@ msgstr "Computer naam van de virtuele computer die zo wordt gemaakt."
 #: admin/wizards/php.py:39 admin/wizards/phpbb.py:46
 #: admin/wizards/phpmyadmin.py:47 admin/wizards/sugar.py:46
 #: admin/wizards/symfony.py:50 admin/wizards/trac.py:42
-#: admin/wizards/uwsgi.py:46 admin/wizards/wordpress.py:43
+#: admin/wizards/uwsgi.py:48 admin/wizards/wordpress.py:43
 #: admin/wizards/zend.py:46
 msgid "New Virtual Server Details"
 msgstr "Nieuwe Virtuele Server Details"
 
 #: admin/wizards/alfresco.py:48 admin/wizards/coldfusion.py:48
 #: admin/wizards/glassfish.py:48 admin/wizards/liferay.py:48
-#: admin/wizards/moinmoin.py:48 admin/wizards/uwsgi.py:50
+#: admin/wizards/moinmoin.py:48 admin/wizards/uwsgi.py:52
 msgid "Public web directory to access the project."
 msgstr "Publieke web map om het project te benaderen."
 
@@ -4238,7 +4238,7 @@ msgstr "Publieke web map om het project te benaderen."
 #: admin/wizards/mediawiki.py:45 admin/wizards/moinmoin.py:49
 #: admin/wizards/mono.py:50 admin/wizards/phpbb.py:50
 #: admin/wizards/phpmyadmin.py:51 admin/wizards/sugar.py:50
-#: admin/wizards/symfony.py:54 admin/wizards/uwsgi.py:51
+#: admin/wizards/symfony.py:54 admin/wizards/uwsgi.py:53
 #: admin/wizards/wordpress.py:46 admin/wizards/zend.py:50
 msgid "Public Web Directory"
 msgstr "Publieke Web Map"
@@ -4249,10 +4249,10 @@ msgstr "Publieke Web Map"
 #: admin/wizards/joomla.py:261 admin/wizards/liferay.py:169
 #: admin/wizards/mailman.py:145 admin/wizards/mediawiki.py:230
 #: admin/wizards/moinmoin.py:214 admin/wizards/mono.py:198
-#: admin/wizards/php.py:236 admin/wizards/phpbb.py:186
-#: admin/wizards/rails.py:314 admin/wizards/sugar.py:216
+#: admin/wizards/php.py:240 admin/wizards/phpbb.py:186
+#: admin/wizards/rails.py:315 admin/wizards/sugar.py:216
 #: admin/wizards/symfony.py:226 admin/wizards/trac.py:131
-#: admin/wizards/uwsgi.py:241 admin/wizards/wordpress.py:217
+#: admin/wizards/uwsgi.py:242 admin/wizards/wordpress.py:217
 #: admin/wizards/zend.py:201
 msgid "New Host Name"
 msgstr "Nieuwe computer naam"
@@ -4352,10 +4352,10 @@ msgstr "Web map waar je Concrete5 wilt hebben. (Voorbeeld: /concrete5)"
 #: admin/wizards/concrete5.py:229 admin/wizards/django.py:191
 #: admin/wizards/drupal.py:260 admin/wizards/joomla.py:262
 #: admin/wizards/mailman.py:146 admin/wizards/mediawiki.py:231
-#: admin/wizards/mono.py:200 admin/wizards/php.py:237
-#: admin/wizards/phpbb.py:187 admin/wizards/rails.py:315
+#: admin/wizards/mono.py:200 admin/wizards/php.py:241
+#: admin/wizards/phpbb.py:187 admin/wizards/rails.py:316
 #: admin/wizards/sugar.py:217 admin/wizards/symfony.py:227
-#: admin/wizards/trac.py:132 admin/wizards/uwsgi.py:243
+#: admin/wizards/trac.py:132 admin/wizards/uwsgi.py:244
 #: admin/wizards/wordpress.py:218 admin/wizards/zend.py:202
 msgid "Use Same Logs as"
 msgstr "Gebruik zelfde logs als"
@@ -4399,7 +4399,7 @@ msgstr ""
 msgid "Web directory where you want Django to be accessible. (Example: /blog)"
 msgstr "Web map waar je Django wilt hebben. (Voorbeeld: /blog)"
 
-#: admin/wizards/django.py:47 admin/wizards/uwsgi.py:48
+#: admin/wizards/django.py:47 admin/wizards/uwsgi.py:50
 msgid "Path to use as document root for the new virtual server."
 msgstr "Document hoofdmap voor de nieuwe virtuele server."
 
@@ -4408,7 +4408,7 @@ msgid "Does not look like a Django source directory."
 msgstr "Dat ziet er niet uit als een Drupal broncode map."
 
 #: admin/wizards/django.py:49 admin/wizards/rails.py:56
-#: admin/wizards/uwsgi.py:54
+#: admin/wizards/uwsgi.py:56
 msgid "The document root directory does not exist."
 msgstr "De document hoofdmap bestaat niet."
 
@@ -4874,7 +4874,7 @@ msgstr "Web map waaronder de Mono applicatie wordt gepubliceerd."
 msgid "Directory doesn't look like a Mono based project."
 msgstr "Map ziet er niet uit als een op Mono gebaseerd project."
 
-#: admin/wizards/mono.py:219 admin/wizards/rails.py:366
+#: admin/wizards/mono.py:219 admin/wizards/rails.py:367
 #: admin/wizards/trac.py:151
 msgid "Project Directory"
 msgstr "Project Map"
@@ -4914,19 +4914,19 @@ msgid ""
 "Please, check out Cherokee's PHP Documentation to learn how to set it up."
 msgstr "Lees Cherokee's PHP documentatie om het systeem goed in te stellen."
 
-#: admin/wizards/php.py:102
+#: admin/wizards/php.py:106
 msgid "Invalid Virtual Server reference."
 msgstr "Verkeerde Virtuele Server verwijzing."
 
-#: admin/wizards/php.py:114
+#: admin/wizards/php.py:118
 msgid "Could not find a suitable PHP interpreter."
 msgstr "Kan geen bruikbare PHP interpreter vinden."
 
-#: admin/wizards/php.py:123
+#: admin/wizards/php.py:127
 msgid "Could not determine PHP-fpm settings."
 msgstr "Kan de PHP-fpm instellingen niet bepalen."
 
-#: admin/wizards/php.py:127
+#: admin/wizards/php.py:131
 msgid "Could not determine correct interpreter settings."
 msgstr "Kan de juiste interpreter instellingen niet bepalen."
 
@@ -5118,11 +5118,11 @@ msgstr "Leeg"
 msgid "HTTP proxy"
 msgstr ""
 
-#: admin/wizards/rails.py:367
+#: admin/wizards/rails.py:368
 msgid "RAILS_ENV environment"
 msgstr "RAILS_ENV omgeving"
 
-#: admin/wizards/rails.py:370
+#: admin/wizards/rails.py:371
 msgid "Deployment method"
 msgstr "Implementatiemethode"
 
@@ -5198,22 +5198,22 @@ msgstr "Web map  waar je rTorrent XMLRPC wilt hebben. (Voorbeeld: /RPC2)"
 msgid "Already configured: %s"
 msgstr "Reeds geconfigureerd: %s"
 
-#: admin/wizards/static.py:37
+#: admin/wizards/static.py:38
 msgid "Welcome to the Common Static wizard"
 msgstr "Welkom bij de Standaard Statisch Assistent"
 
-#: admin/wizards/static.py:38
+#: admin/wizards/static.py:39
 msgid ""
 "This wizard adds a rule to optimally serve the most common static files."
 msgstr ""
 "Deze tovenaar voegt een regel toe om de gebruikelijke statische bestanden "
 "optimaal te versturen."
 
-#: admin/wizards/static.py:39
+#: admin/wizards/static.py:40
 msgid "Current rules have been checked"
 msgstr "Huidige regels zijn gecontroleerd"
 
-#: admin/wizards/static.py:40
+#: admin/wizards/static.py:41
 msgid ""
 "The process is very simple. Let the wizard take over and don't worry about a "
 "thing."
@@ -5221,7 +5221,7 @@ msgstr ""
 "Het proces is erg makkelijk. Laat de tovenaar z'n werk doen en maak je niet "
 "druk."
 
-#: admin/wizards/static.py:41
+#: admin/wizards/static.py:42
 msgid ""
 "Common files have been already configured, so there is nothing to be done."
 msgstr ""
@@ -5386,11 +5386,11 @@ msgstr "Dat ziet er niet uit als een Trac installatie."
 msgid "Trac Local Directory"
 msgstr "Trac Lokale Map"
 
-#: admin/wizards/uwsgi.py:37
+#: admin/wizards/uwsgi.py:39
 msgid "Welcome to the uWsgi Wizard"
 msgstr "Welkom bij de uWsgi Assistent"
 
-#: admin/wizards/uwsgi.py:38
+#: admin/wizards/uwsgi.py:40
 msgid ""
 "<a target=\"_blank\" href=\"http://projects.unbit.it/uwsgi/\">uWSGI</a> is a "
 "fast (pure C), self-healing, developer-friendly WSGI server, aimed for "
@@ -5400,7 +5400,7 @@ msgstr ""
 "een snelle (pure C), zelf-reddende, ontwikkelvriendelijke WSGI server, "
 "gericht op professionele python webapplicatie ontwikkeling en inzet."
 
-#: admin/wizards/uwsgi.py:39
+#: admin/wizards/uwsgi.py:41
 msgid ""
 "Over time it has evolved in a complete stack for networked/clustered python "
 "applications, implementing message/object passing and process management. It "
@@ -5412,7 +5412,7 @@ msgstr ""
 "Het gebruikt de uwsgi (kleine letters) protocol voor alle netwerk/"
 "interproces communicatie."
 
-#: admin/wizards/uwsgi.py:42
+#: admin/wizards/uwsgi.py:44
 msgid ""
 "Path to the uWSGI configuration file (XML or Python-only). Its mountpoint "
 "will be used."
@@ -5420,15 +5420,15 @@ msgstr ""
 "Pad naar het uWSGI configuratie bestand (XML of alleen-Python). Zijn "
 "koppelpunt wordt gebruikt."
 
-#: admin/wizards/uwsgi.py:43
+#: admin/wizards/uwsgi.py:45
 msgid "Location of the uWSGI binary"
 msgstr "Locatie van het uWSGI bestand"
 
-#: admin/wizards/uwsgi.py:44
+#: admin/wizards/uwsgi.py:46
 msgid "It does not look like a uWSGI configuration file."
 msgstr "Dit lijkt niet op een uWSGI configuratie bestand."
 
-#: admin/wizards/uwsgi.py:52
+#: admin/wizards/uwsgi.py:54
 msgid ""
 "The default value is extracted from the configuration file. Change it at "
 "your own risk."
@@ -5436,15 +5436,15 @@ msgstr ""
 "De standaard waarde is uit het configuratie bestand gehaald. Verander op "
 "eigen risico."
 
-#: admin/wizards/uwsgi.py:53
+#: admin/wizards/uwsgi.py:55
 msgid "Does not look like a Uwsgi source directory."
 msgstr "Dat ziet er niet uit als Uwsgi broncode map."
 
-#: admin/wizards/uwsgi.py:262
+#: admin/wizards/uwsgi.py:263
 msgid "uWSGI binary"
 msgstr "uWSGI bestand"
 
-#: admin/wizards/uwsgi.py:263
+#: admin/wizards/uwsgi.py:264
 msgid "Configuration File"
 msgstr "Configuratie bestand"
 
