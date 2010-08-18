@@ -529,13 +529,13 @@ do_send_socket (cherokee_socket_t        *sock,
 	return ret_ok;
 }
 
+
 int
-cherokee_post_has_buffered_info (cherokee_post_t   *post,
-				 cherokee_buffer_t *tmp)
+cherokee_post_has_buffered_info (cherokee_post_t *post)
 {
-	cherokee_buffer_t *buffer = tmp ? tmp : &post->send.buffer;
-	return (! cherokee_buffer_is_empty (buffer));
+	return (! cherokee_buffer_is_empty (&post->send.buffer));
 }
+
 
 ret_t
 cherokee_post_send_to_socket (cherokee_post_t          *post,
@@ -704,14 +704,4 @@ cherokee_post_send_to_fd (cherokee_post_t          *post,
 	}
 
 	return ret_error;
-}
-
-
-ret_t
-cherokee_post_send_reset (cherokee_post_t *post)
-{
-	post->send.read  = 0;
-	post->send.phase = cherokee_post_send_phase_read;
-
-	return ret_ok;
 }

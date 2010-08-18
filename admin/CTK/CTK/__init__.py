@@ -20,6 +20,10 @@
 # 02110-1301, USA.
 #
 
+import JS
+import i18n
+import util
+
 # Generic
 from Widget import Widget, RenderResponse
 from Container import Container
@@ -29,9 +33,6 @@ from Page import Page, PageEmpty
 from Config import Config
 from Plugin import Plugin, instance_plugin, load_module
 
-import JS
-import util
-
 # Widgets
 from Table import Table, TableFixed
 from RawHTML import RawHTML
@@ -40,7 +41,7 @@ from Checkbox import Checkbox, CheckCfg, CheckboxText, CheckCfgText
 from Combobox import Combobox, ComboCfg
 from PropsTable import PropsTable, PropsTableAuto, PropsAuto
 from Template import Template
-from Server import Server, run, init, set_synchronous, step, publish, unpublish, cookie, post, request, cfg, error, cfg_reply_ajax_ok, cfg_apply_post
+from Server import Server, run, init, set_synchronous, step, publish, unpublish, cookie, post, request, cfg, error, cfg_reply_ajax_ok, cfg_apply_post, add_plugin_dir
 from Proxy import Proxy
 from iPhoneToggle import iPhoneToggle, iPhoneCfg
 from Tab import Tab
@@ -54,16 +55,18 @@ from Image import Image, ImageStock
 from SortableList import SortableList
 from Indenter import Indenter
 from Notice import Notice
-from Link import Link, LinkIcon
+from Link import Link, LinkWindow, LinkIcon
 from DatePicker import DatePicker
 from Button import Button
 from TextArea import TextArea
 from ToggleButton import ToggleButtonImages, ToggleButtonOnOff
-from Druid import Druid, DruidButtonsPanel, DruidButton, DruidButton_Goto, DruidButton_Close, DruidButton_Submit, DruidButtonsPanel_Next, DruidButtonsPanel_PrevNext, DruidButtonsPanel_PrevCreate, DruidButtonsPanel_Create, DruidButtonsPanel_Cancel, DruidButtonsPanel_Next_Auto, DruidButtonsPanel_PrevNext_Auto, DruidButtonsPanel_PrevCreate_Auto, DruidContent_TriggerNext
+from Druid import Druid, DruidButtonsPanel, DruidButton, DruidButton_Goto, DruidButton_Close, DruidButton_Submit, DruidButtonsPanel_Next, DruidButtonsPanel_PrevNext, DruidButtonsPanel_PrevCreate, DruidButtonsPanel_Create, DruidButtonsPanel_Cancel, DruidButtonsPanel_Next_Auto, DruidButtonsPanel_PrevNext_Auto, DruidButtonsPanel_PrevCreate_Auto, DruidContent_TriggerNext, DruidContent__JS_to_goto
 from List import List, ListEntry
 from ProgressBar import ProgressBar
 from Downloader import Downloader
 from Radio import Radio
+from XMLRPCProxy import XMLRPCProxy
+from AjaxUpload import AjaxUpload
 
 # Comodity
 from cgi import escape as escape_html

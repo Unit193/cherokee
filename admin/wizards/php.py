@@ -147,6 +147,7 @@ def wizard_php_add (key):
 
         CTK.cfg['%s!match' %(next)]                     = 'extensions'
         CTK.cfg['%s!match!extensions' %(next)]          = 'php'
+        CTK.cfg['%s!match!check_local_file' %(next)]    = '1'
         CTK.cfg['%s!match!final' %(next)]               = '0'
         CTK.cfg['%s!handler' %(next)]                   = 'fcgi'
         CTK.cfg['%s!handler!balancer' %(next)]          = 'round_robin'
@@ -410,13 +411,21 @@ def __figure_fpm_settings():
     if tmp:
         listen_address = tmp[0]
     else:
-        listen_address = None
+        tmp = re.findall (r'listen = (.*)', content)
+        if tmp:
+            listen_address = tmp[0]
+        else:
+            listen_address = None
 
     tmp = re.findall (r'<value name="request_terminate_timeout">(\d*)s*</value>', content)
     if tmp:
         timeout = tmp[0]
     else:
-        timeout = PHP_DEFAULT_TIMEOUT
+        tmp = re.findall (r'request_terminate_timeout[ ]*=[ ]*(\d*)s*', content)
+        if tmp:
+            timeout = tmp[0]
+        else:
+            timeout = PHP_DEFAULT_TIMEOUT
 
     # Done
     return {'fpm_conf':              fpm_conf,

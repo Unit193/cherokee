@@ -7,10 +7,11 @@ msgid ""
 msgstr ""
 "Project-Id-Version: cherokee '0.99.10'\n"
 "Report-Msgid-Bugs-To: http://bugs.cherokee-project.com/\n"
-"POT-Creation-Date: 2010-06-22 16:53+0200\n"
-"PO-Revision-Date: 2010-06-22 14:48+0100\n"
+"POT-Creation-Date: 2010-08-11 20:56+0200\n"
+"PO-Revision-Date: 2010-07-02 18:54+0100\n"
 "Last-Translator: Stefan de Konink <stefan@konink.de>\n"
 "Language-Team: none\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -44,6 +45,154 @@ msgstr "Gebruikers"
 #: admin/Auth.py:60
 msgid "Authentication Details"
 msgstr "Authenticatie Details"
+
+#: admin/Backup.py:46
+msgid "Remote Configuration Back Up"
+msgstr "Configuratie Backup vanaf afstand"
+
+#: admin/Backup.py:47
+msgid "Your current configuration is about to be backed up."
+msgstr "De geselecteerde configurati wordt gebackupt."
+
+#: admin/Backup.py:48
+msgid ""
+"By submitting the form it will be stored at a remote location and will be "
+"made available to you for future use."
+msgstr ""
+"Door het formulier op te sturen wordt het op afstand opgeslagen en wordt het "
+"beschikbaar gemaakt voor toekomstig gebruik."
+
+#: admin/Backup.py:49
+msgid "Could not Upload the Configuration File"
+msgstr "Kan het Configuratie bestand niet uploaden"
+
+#: admin/Backup.py:50
+msgid ""
+"An error occurred while upload your configuration file. Please try again "
+"later."
+msgstr ""
+"Er is een fout opgetreden tijdens het uploaden van je configuratie bestand. "
+"Probeer het later nog een keer."
+
+#: admin/Backup.py:51
+msgid "Configuration File Successfully uploaded"
+msgstr "Configuratie Bestand Succesvol geupload"
+
+#: admin/Backup.py:52
+msgid ""
+"Your configuration file has been saved. From now on the back-up will be "
+"available for restoration."
+msgstr ""
+"Je configuratie bestand is opgeslagen. Vanaf nu is de backup beschikbaar "
+"voor herstel later."
+
+#: admin/Backup.py:54
+msgid "Remote Configuration Restoration"
+msgstr "Configuratieherstel vanaf afstand"
+
+#: admin/Backup.py:55
+msgid ""
+"Select a configuration state to restore. Submitting the form will download "
+"and restore a previous configuration."
+msgstr ""
+"Selecteer een configuratie versie om te herstellen. Het formulier op sturen "
+"zal de vorige configuratie downloaden en herstellen."
+
+#: admin/Backup.py:56
+msgid "You might want to save the current one before you proceed."
+msgstr ""
+"Je zou de huidige configuratie mogelijk willen opslaan, voordat je verder "
+"gaat."
+
+#: admin/Backup.py:57
+msgid ""
+"No configurations could be retireved. It seems you have not uploaded any "
+"configuration yet."
+msgstr ""
+"Geen configuraties kunnen worden gevonden. Het lijkt er op of je nog geen "
+"configuraties heb geupload."
+
+#: admin/Backup.py:59
+msgid "Could not retrieve the configuration file list"
+msgstr "Kan de configuratie bestanden lijst niet vinden"
+
+#: admin/Backup.py:60
+msgid ""
+"An error occurred while trying to fetch the configuration file list from the "
+"remote server."
+msgstr ""
+"Er is een fout opgetreden bij het ophalen van de configuratie bestanden van "
+"de backup server."
+
+#: admin/Backup.py:61
+msgid "Could not restore the selected configuration file"
+msgstr "Kan het geselecteerde configuratie bestand niet herstellen"
+
+#: admin/Backup.py:62
+msgid ""
+"An error occurred while trying to restore a remotely-storaged configuration "
+"file."
+msgstr ""
+"Er is een fout opgetreden tijdens het herstellen van het backup configuratie "
+"bestand."
+
+#: admin/Backup.py:63
+msgid "The Configuration File was restored successfuly"
+msgstr "Het configuratiebestand is succesvol hersteld"
+
+#: admin/Backup.py:64
+msgid ""
+"The configuration has been rolled back to a previous version. Please, click "
+"the Save button if you want to commit the changes."
+msgstr ""
+"De configuratie is terug gegaan naar een vorige versie. Druk op de Bewaar "
+"knop om de wijzigingen toe te passen."
+
+#: admin/Backup.py:129
+msgid "Back Up..."
+msgstr "Backup..."
+
+#: admin/Backup.py:150
+msgid "Back Up"
+msgstr "Backup"
+
+#: admin/Backup.py:151 admin/Backup.py:252 admin/CTK/CTK/Druid.py:153
+#: admin/CTK/CTK/Druid.py:160 admin/CTK/CTK/Druid.py:168
+#: admin/CTK/CTK/Druid.py:176 admin/CTK/CTK/Druid.py:182 admin/Icons.py:358
+#: admin/Mime.py:101 admin/PageGeneral.py:214 admin/PageIndex.py:331
+#: admin/PageRule.py:213 admin/PageRule.py:261 admin/PageRule.py:287
+#: admin/PageSource.py:240 admin/PageSource.py:422 admin/PageSource.py:436
+#: admin/PageSource.py:450 admin/PageVServers.py:203 admin/PageVServers.py:238
+#: admin/PageVServers.py:264 admin/plugins/redir.py:115
+msgid "Cancel"
+msgstr "Annuleer"
+
+#: admin/Backup.py:157
+msgid "Notes"
+msgstr "Aantekeningen"
+
+#: admin/Backup.py:166 admin/Backup.py:179 admin/Backup.py:229
+#: admin/Backup.py:237 admin/Backup.py:259 admin/Backup.py:271
+#: admin/CTK/CTK/Dialog.py:206 admin/Login.py:92 admin/PageException.py:89
+#: admin/PageException.py:93 admin/PageIndex.py:251 admin/PageSource.py:409
+msgid "Close"
+msgstr "Sluit"
+
+#: admin/Backup.py:199
+msgid "Back Up Date"
+msgstr "Backup Datum"
+
+#: admin/Backup.py:199
+msgid "Annotations"
+msgstr "Annotaties"
+
+#: admin/Backup.py:251
+msgid "Restore"
+msgstr "Herstel"
+
+#: admin/Backup.py:289
+msgid "Restore..."
+msgstr "Herstel..."
 
 #: admin/Balancer.py:32
 msgid "Specifies the policy used to dispatch the connections."
@@ -92,7 +241,7 @@ msgstr "Informatie Bronnen"
 msgid "Assign Information Sources"
 msgstr "Koppel Informatie Bron"
 
-#: admin/Balancer.py:117 admin/PageIndex.py:202 admin/PageRule.py:112
+#: admin/Balancer.py:117 admin/PageIndex.py:199 admin/PageRule.py:112
 #: admin/plugins/bind.py:69 admin/plugins/bind.py:121
 #: admin/plugins/custom_error.py:41 admin/plugins/method.py:31
 msgid "Choose"
@@ -102,6 +251,10 @@ msgstr "Kies"
 msgid "Application Server"
 msgstr "Applicatie Server"
 
+#: admin/CTK/CTK/AjaxUpload.py:83
+msgid "Upload"
+msgstr ""
+
 #: admin/CTK/CTK/Config.py:237
 #, python-format
 msgid "ERROR: Couldn't unpack '%s'"
@@ -110,22 +263,6 @@ msgstr "FOUT: Kan '%s' niet uitpakken"
 #: admin/CTK/CTK/Config.py:370
 msgid "Could not copy configuration to "
 msgstr "Kan de configuratie niet kopieren naar"
-
-#: admin/CTK/CTK/Dialog.py:213 admin/PageException.py:89
-#: admin/PageException.py:93 admin/PageIndex.py:254 admin/PageSource.py:409
-msgid "Close"
-msgstr "Sluit"
-
-#: admin/CTK/CTK/Druid.py:153 admin/CTK/CTK/Druid.py:160
-#: admin/CTK/CTK/Druid.py:168 admin/CTK/CTK/Druid.py:176
-#: admin/CTK/CTK/Druid.py:182 admin/Icons.py:348 admin/Mime.py:101
-#: admin/PageGeneral.py:214 admin/PageIndex.py:348 admin/PageRule.py:213
-#: admin/PageRule.py:261 admin/PageRule.py:287 admin/PageSource.py:240
-#: admin/PageSource.py:422 admin/PageSource.py:436 admin/PageSource.py:450
-#: admin/PageVServers.py:203 admin/PageVServers.py:238
-#: admin/PageVServers.py:264 admin/plugins/redir.py:115
-msgid "Cancel"
-msgstr "Annuleer"
 
 #: admin/CTK/CTK/Druid.py:154 admin/CTK/CTK/Druid.py:161
 msgid "Next"
@@ -170,7 +307,7 @@ msgstr "Laden"
 msgid "Enabled"
 msgstr "Geactiveerd"
 
-#: admin/CTK/CTK/Submitter.py:73 admin/CTK/CTK/TextField.py:66
+#: admin/CTK/CTK/Submitter.py:73 admin/CTK/CTK/TextField.py:76
 msgid "Optional"
 msgstr "Optioneel"
 
@@ -235,11 +372,11 @@ msgstr ""
 msgid "Read X-Real-IP"
 msgstr "Lees X-Real-IP"
 
-#: admin/CgiBase.py:70 admin/PageVServer.py:415
+#: admin/CgiBase.py:70 admin/PageVServer.py:416
 msgid "Don't check origin"
 msgstr "Controleer bron niet"
 
-#: admin/CgiBase.py:72 admin/PageVServer.py:418
+#: admin/CgiBase.py:72 admin/PageVServer.py:419
 msgid "Accept from Hosts"
 msgstr "Accepteer van Computers"
 
@@ -292,7 +429,7 @@ msgstr "Vaste Authenticatie Lijst"
 msgid "Custom Environment Variables"
 msgstr "Eigen Omgevings Variabelen"
 
-#: admin/CgiBase.py:150 admin/Icons.py:342 admin/Mime.py:100
+#: admin/CgiBase.py:150 admin/Icons.py:352 admin/Mime.py:100
 #: admin/PageGeneral.py:213 admin/PageRule.py:260 admin/PageSource.py:239
 #: admin/PageSource.py:435 admin/PageVServers.py:237
 #: admin/plugins/authlist.py:93 admin/plugins/error_redir.py:94
@@ -367,7 +504,7 @@ msgid ""
 msgstr "Worden verkeers statistieken voor deze server wel of niet verzameld."
 
 #: admin/Graph.py:117 admin/PageEntry.py:240 admin/PageSource.py:270
-#: admin/PageStatus.py:70 admin/PageVServer.py:518 admin/PageVServers.py:194
+#: admin/PageStatus.py:70 admin/PageVServer.py:519 admin/PageVServers.py:194
 msgid "Unknown"
 msgstr "Onbekend"
 
@@ -379,63 +516,97 @@ msgstr "Verzamel Statistieken"
 msgid "Allows to specify an alternative Document Root path."
 msgstr "Staat toe om een alternatieve hoofdmap op te geven."
 
-#: admin/Handler.py:43 admin/PageEntry.py:229 admin/PageVServer.py:302
+#: admin/Handler.py:43 admin/PageEntry.py:229 admin/PageVServer.py:303
 #: admin/PageVServers.py:127 admin/wizards/django.py:190
-#: admin/wizards/mono.py:199 admin/wizards/php.py:36 admin/wizards/php.py:261
+#: admin/wizards/mono.py:199 admin/wizards/php.py:36 admin/wizards/php.py:262
 #: admin/wizards/uwsgi.py:243
 msgid "Document Root"
 msgstr "Hoofdmap"
 
-#: admin/Icons.py:118 admin/Icons.py:313 admin/Mime.py:86 admin/Mime.py:120
-#: admin/consts.py:183 admin/plugins/extensions.py:59
-msgid "Extensions"
-msgstr "Extenties"
-
-#: admin/Icons.py:134
+#: admin/Icons.py:113
 msgid "Extension List"
 msgstr "Extensie lijst"
 
-#: admin/Icons.py:138
+#: admin/Icons.py:124 admin/Icons.py:323 admin/Mime.py:86 admin/Mime.py:120
+#: admin/consts.py:183 admin/plugins/extensions.py:61
+msgid "Extensions"
+msgstr "Extenties"
+
+#: admin/Icons.py:143
 msgid "Add New Extension"
 msgstr "Nieuwe Extensie Toevoegen"
 
-#: admin/Icons.py:152 admin/plugins/exists.py:75 admin/plugins/exists.py:114
-msgid "Files"
-msgstr "Bestanden"
-
-#: admin/Icons.py:167
+#: admin/Icons.py:152
 msgid "File Matches"
 msgstr "Bestand Komt Overeen"
 
-#: admin/Icons.py:171
+#: admin/Icons.py:163 admin/plugins/exists.py:75 admin/plugins/exists.py:114
+msgid "Files"
+msgstr "Bestanden"
+
+#: admin/Icons.py:181
 msgid "Add New File"
 msgstr "Voeg Nieuw Bestand Toe"
 
-#: admin/Icons.py:182 admin/Icons.py:314 admin/Rule.py:171 admin/consts.py:39
+#: admin/Icons.py:192 admin/Icons.py:324 admin/Rule.py:171 admin/consts.py:39
 #: admin/consts.py:123
 msgid "Default"
 msgstr "Standaard"
 
-#: admin/Icons.py:183 admin/Icons.py:315 admin/consts.py:182
+#: admin/Icons.py:193 admin/Icons.py:325 admin/consts.py:182
 #: admin/plugins/directory.py:31
 msgid "Directory"
 msgstr "Map"
 
-#: admin/Icons.py:184 admin/Icons.py:316
+#: admin/Icons.py:194 admin/Icons.py:326
 msgid "Go to Parent"
 msgstr "Ga naar Ouder"
 
-#: admin/Icons.py:191
+#: admin/Icons.py:201
 msgid "Modify"
 msgstr "Verander"
 
-#: admin/Icons.py:199 admin/PageAdvanced.py:164 admin/PageAdvanced.py:187
+#: admin/Icons.py:209 admin/PageAdvanced.py:164 admin/PageAdvanced.py:187
 msgid "Special Files"
 msgstr "Speciale Bestanden"
 
-#: admin/Icons.py:312 admin/consts.py:100
+#: admin/Icons.py:322 admin/consts.py:100
 msgid "File"
 msgstr "Bestand"
+
+#: admin/Login.py:32
+msgid "Your email address is used as user account"
+msgstr "Je e-mail adres wordt gebruikt als gebruikers account"
+
+#: admin/Login.py:33
+msgid "Password of your account"
+msgstr "Wachtwoord van je account"
+
+#: admin/Login.py:34
+#, python-format
+msgid "Not registered yet? <a target = \"_blank\" href=\"%s\">Join today</a>."
+msgstr ""
+"Nog niet geregistreerd? <a target=\"_blank\" href=\"%s\">Meld je nu aan</a>."
+
+#: admin/Login.py:77
+msgid "Email address"
+msgstr "E-mail adres"
+
+#: admin/Login.py:78 admin/plugins/authlist.py:63 admin/plugins/authlist.py:97
+msgid "Password"
+msgstr "Wachtwoord"
+
+#: admin/Login.py:87
+msgid "Login"
+msgstr ""
+
+#: admin/Login.py:90
+msgid "Octality Account Login"
+msgstr ""
+
+#: admin/Login.py:91
+msgid "Sign in"
+msgstr "Inloggen"
 
 #: admin/Mime.py:37
 msgid "New MIME type to be added."
@@ -517,7 +688,7 @@ msgstr "Bewaar"
 msgid "Home"
 msgstr "Begin"
 
-#: admin/Page.py:116 admin/PageAdvanced.py:146 admin/PageIndex.py:97
+#: admin/Page.py:116 admin/PageAdvanced.py:146 admin/PageIndex.py:94
 #: admin/PageStatus.py:40 admin/PageStatus.py:112
 msgid "Status"
 msgstr "Status"
@@ -894,7 +1065,7 @@ msgstr "Authenticatie modules"
 msgid "Leave unset"
 msgstr "Laat niet ingesteld"
 
-#: admin/PageEntry.py:71 admin/PageVServer.py:310 admin/plugins/common.py:42
+#: admin/PageEntry.py:71 admin/PageVServer.py:311 admin/plugins/common.py:42
 #: admin/plugins/common.py:43 admin/plugins/dirlist.py:55
 #: admin/plugins/proxy.py:237
 msgid "Allow"
@@ -916,7 +1087,7 @@ msgstr "Verkeer Limiteren"
 msgid "Skip Logging"
 msgstr "Log Registratie Overslaan"
 
-#: admin/PageEntry.py:109 admin/PageVServer.py:507
+#: admin/PageEntry.py:109 admin/PageVServer.py:508
 msgid "Logging"
 msgstr "Log registratie"
 
@@ -991,7 +1162,7 @@ msgstr "Codering"
 msgid "Time"
 msgstr "Tijd"
 
-#: admin/PageEntry.py:258 admin/PageVServer.py:508
+#: admin/PageEntry.py:258 admin/PageVServer.py:509
 msgid "Security"
 msgstr "Beveiliging"
 
@@ -999,7 +1170,7 @@ msgstr "Beveiliging"
 #, python-format
 msgid ""
 "The server suggests to check <a href=\"%s\">this page</a>. Most probably the "
-"problem can he solved in there."
+"problem can be solved in there."
 msgstr ""
 "De server geeft aan <a href=\"%s\">deze pagina</a> te bekijken. "
 "Waarschijnlijk kan het probleem daarmee worden opgelost."
@@ -1235,8 +1406,8 @@ msgid "Upload Tracking"
 msgstr "Upload Volgen"
 
 #: admin/PageGeneral.py:168 admin/PageGeneral.py:206 admin/plugins/bind.py:92
-#: admin/plugins/bind.py:154 admin/plugins/ldap.py:48
-#: admin/plugins/mysql.py:74
+#: admin/plugins/bind.py:155 admin/plugins/bind.py:157
+#: admin/plugins/ldap.py:48 admin/plugins/mysql.py:74
 msgid "Port"
 msgstr "Poort"
 
@@ -1285,7 +1456,7 @@ msgstr "Groep"
 msgid "Chroot"
 msgstr "Chroot"
 
-#: admin/PageGeneral.py:252 admin/PageVServer.py:313
+#: admin/PageGeneral.py:252 admin/PageVServer.py:314
 msgid "Network"
 msgstr "Netwerk"
 
@@ -1313,23 +1484,23 @@ msgstr "Inhoudsopgave"
 msgid "Documentation"
 msgstr "Documentatie"
 
-#: admin/PageIndex.py:66
+#: admin/PageIndex.py:63
 msgid "You will be sent an email requesting confirmation"
 msgstr "Je wordt een e-mail ter bevestiging gestuurd"
 
-#: admin/PageIndex.py:67
+#: admin/PageIndex.py:64
 msgid "Optionally provide your name"
 msgstr "Optioneel kun je, je naam opgeven"
 
-#: admin/PageIndex.py:70
+#: admin/PageIndex.py:67
 msgid "Server is Running."
 msgstr "Server draait."
 
-#: admin/PageIndex.py:71
+#: admin/PageIndex.py:68
 msgid "Server is not Running."
 msgstr "Server draait niet."
 
-#: admin/PageIndex.py:72
+#: admin/PageIndex.py:69
 #, python-format
 msgid ""
 "Commercial support for Cherokee is provided by <a target=\"_blank\" href=\"%s"
@@ -1340,7 +1511,7 @@ msgstr ""
 "\" href=\"%s\">Octality</a>. Zij leveren het neusje van de zalm betreft: "
 "advies, oplossingen op maat en zakelijke ondersteuning."
 
-#: admin/PageIndex.py:73
+#: admin/PageIndex.py:70
 msgid ""
 "The Community Mailing List is the place to go for help on Cherokee. <a id="
 "\"subscribe-a\">Subscribe now!</a>"
@@ -1348,7 +1519,7 @@ msgstr ""
 "De Community Mailinglijst is de plek om hulp te vinden voor Cherokee. <a id="
 "\"subscribe-a\">Meld je nu aan!</a>"
 
-#: admin/PageIndex.py:74
+#: admin/PageIndex.py:71
 #, python-format
 msgid ""
 "Join us at the <a target=\"_blank\" href=\"%s\">#cherokee</a> IRC Channel."
@@ -1356,7 +1527,7 @@ msgstr ""
 "Kom gezellig naar het <a target=\"_blank\" href=\"%s\">#cherokee</a> IRC "
 "kanaal."
 
-#: admin/PageIndex.py:75
+#: admin/PageIndex.py:72
 #, python-format
 msgid ""
 "Your feedback is important! Log Bug Reports and Requests for Enhancements in "
@@ -1367,22 +1538,22 @@ msgstr ""
 "voor in onze <a target=\"_blank\" href=\"%s\">problemen lijst</a> om zo "
 "Cherokee te verbeteren."
 
-#: admin/PageIndex.py:76
+#: admin/PageIndex.py:73
 msgid "Find out what's going on with Cherokee on your favorite Social Media!"
 msgstr ""
 "Houd je zelf op de hoogte over Cherokee op je favoriete sociale medium!"
 
-#: admin/PageIndex.py:77
+#: admin/PageIndex.py:74
 #, python-format
 msgid "Follow <a target=\"_blank\" href=\"%s\">Cherokee on Twitter</a>."
 msgstr "Volg <a target=\"_blank\" href=\"%s\">Cherokee op Twitter</a>."
 
-#: admin/PageIndex.py:78
+#: admin/PageIndex.py:75
 #, python-format
 msgid "Join <a target=\"_blank\" href=\"%s\">Cherokee on Facebook</a>."
 msgstr "Volg <a target=\"_blank\" href=\"%s\">Cherokee op Facebook</a>."
 
-#: admin/PageIndex.py:80
+#: admin/PageIndex.py:77
 msgid ""
 "<h3>Beta testing</h3> <p>Individuals like yourself who download and\n"
 "test the latest developer snapshots of Cherokee Web Server help us to\n"
@@ -1393,7 +1564,7 @@ msgstr ""
 "helpen ons\n"
 "een product te maken van het hoogste niveau. Daarvoor bedanken we je.</p>\n"
 
-#: admin/PageIndex.py:86
+#: admin/PageIndex.py:83
 msgid ""
 "We would love to know that you are using Cherokee. Submit your domain\n"
 "name and it will be listed on the Cherokee Project web site.\n"
@@ -1401,11 +1572,11 @@ msgstr ""
 "We zouden graag horen dat je Cherokee gebruikt. Stuur je domeinnaam\n"
 "en het wordt getoond op de Cherokee Projects website.\n"
 
-#: admin/PageIndex.py:92
+#: admin/PageIndex.py:89
 msgid "The information has been successfully sent. Thank you!"
 msgstr "De informatie is succesvol verstuurd. Bedankt!"
 
-#: admin/PageIndex.py:93
+#: admin/PageIndex.py:90
 msgid ""
 "Unfortunatelly something went wrong, and the information could not be "
 "submitted:"
@@ -1413,138 +1584,138 @@ msgstr ""
 "Helaas ging er iets verkeerd, en de volgende informatie kon niet worden "
 "opgestuurd:"
 
-#: admin/PageIndex.py:94
+#: admin/PageIndex.py:91
 msgid ""
 "Please, try again. Do not hesitate to report the problem if it persists."
 msgstr ""
 "Probeer het opnieuw. Aarzel niet om het probleem te rapporteren als het "
 "vaker voorkomt."
 
-#: admin/PageIndex.py:143
+#: admin/PageIndex.py:140
 msgid "Stop Server"
 msgstr "Stop Server"
 
-#: admin/PageIndex.py:147
+#: admin/PageIndex.py:144
 msgid "Start Server"
 msgstr "Start Server"
 
-#: admin/PageIndex.py:157
+#: admin/PageIndex.py:154
 msgid "Information"
 msgstr "Informatie"
 
-#: admin/PageIndex.py:162
+#: admin/PageIndex.py:159
 msgid "PID"
 msgstr "PID"
 
-#: admin/PageIndex.py:162
+#: admin/PageIndex.py:159
 msgid "Not running"
 msgstr "Draait niet"
 
-#: admin/PageIndex.py:163
+#: admin/PageIndex.py:160
 msgid "Version"
 msgstr "Versie"
 
-#: admin/PageIndex.py:164
+#: admin/PageIndex.py:161
 msgid "Default WWW"
 msgstr "Standaard WWW"
 
-#: admin/PageIndex.py:165
+#: admin/PageIndex.py:162
 msgid "Prefix"
 msgstr "Voorvoegsel"
 
-#: admin/PageIndex.py:166
+#: admin/PageIndex.py:163
 msgid "Config File"
 msgstr "Configuratie Bestand"
 
-#: admin/PageIndex.py:166
+#: admin/PageIndex.py:163
 msgid "Not found"
 msgstr "Niet gevonden"
 
-#: admin/PageIndex.py:167
+#: admin/PageIndex.py:164
 msgid "Modified"
 msgstr "Veranderd"
 
-#: admin/PageIndex.py:209 admin/plugins/dbslayer.py:49
+#: admin/PageIndex.py:206 admin/plugins/dbslayer.py:49
 msgid "Language"
 msgstr "Taal"
 
-#: admin/PageIndex.py:253
+#: admin/PageIndex.py:250
 msgid "Proud Cherokee User List Submission"
 msgstr "Inzending Lijst Van Trotse Cherokee Gebruikers"
 
-#: admin/PageIndex.py:256
+#: admin/PageIndex.py:253
 msgid "Proud Cherokee Users"
 msgstr "Trotse Cherokee Gebruikers"
 
-#: admin/PageIndex.py:258
+#: admin/PageIndex.py:255
 msgid "View list"
 msgstr "Bekijk lijst"
 
-#: admin/PageIndex.py:258
+#: admin/PageIndex.py:255
 msgid "Send your domains"
 msgstr "Stuur je domeinen"
 
-#: admin/PageIndex.py:274
+#: admin/PageIndex.py:271
 msgid "Latest Release"
 msgstr "Laatste Uitgave"
 
-#: admin/PageIndex.py:278
+#: admin/PageIndex.py:274
 msgid "Latest version could not be determined at the moment."
 msgstr "Laatste versie kan momenteel niet worden bepaald."
 
-#: admin/PageIndex.py:280
+#: admin/PageIndex.py:276
 msgid "Cherokee is up to date."
 msgstr "Cherokee is recent."
 
-#: admin/PageIndex.py:283
+#: admin/PageIndex.py:278
 msgid "You are running Cherokee"
 msgstr "Je draait Cherokee"
 
-#: admin/PageIndex.py:285
+#: admin/PageIndex.py:279
 msgid "Latest release is "
 msgstr "De laatste versie is"
 
-#: admin/PageIndex.py:323
+#: admin/PageIndex.py:306
 msgid "Your email address"
 msgstr "Je email adres"
 
-#: admin/PageIndex.py:324
+#: admin/PageIndex.py:307
 msgid "Your name"
 msgstr "Je naam"
 
-#: admin/PageIndex.py:336
+#: admin/PageIndex.py:319
 msgid "IRC"
 msgstr "IRC"
 
-#: admin/PageIndex.py:341
+#: admin/PageIndex.py:324
 msgid "Mailing List"
 msgstr "Mailing lijst"
 
-#: admin/PageIndex.py:346
+#: admin/PageIndex.py:329
 msgid "Mailing list subscription"
 msgstr "Mailing lijst abonnement"
 
-#: admin/PageIndex.py:347
+#: admin/PageIndex.py:330
 msgid "Subscribe"
 msgstr "Abonneer"
 
-#: admin/PageIndex.py:355
+#: admin/PageIndex.py:338
 msgid "Bug Tracker"
 msgstr "Problemenlijst"
 
-#: admin/PageIndex.py:380
+#: admin/PageIndex.py:363
 msgid "Community"
 msgstr "Groep"
 
-#: admin/PageIndex.py:396
+#: admin/PageIndex.py:379
 msgid "Commercial Support"
 msgstr "Commerciële Ondersteuning"
 
-#: admin/PageIndex.py:398
+#: admin/PageIndex.py:381
 msgid "Purchase Support"
 msgstr "Ondersteuning Aanschaffen"
 
-#: admin/PageIndex.py:405 admin/PageIndex.py:407
+#: admin/PageIndex.py:388 admin/PageIndex.py:390
 msgid "Welcome to Cherokee Admin"
 msgstr "Welkom bij de Cherokee Admin"
 
@@ -1662,7 +1833,7 @@ msgstr "Kloon"
 msgid "Clone Selected Behavior Rule"
 msgstr "Dupliceer de geselecteerde gedragsregel"
 
-#: admin/PageRule.py:298 admin/PageVServer.py:505
+#: admin/PageRule.py:298 admin/PageVServer.py:506
 msgid "Behavior"
 msgstr "Gedrag"
 
@@ -1793,12 +1964,12 @@ msgstr "Voeg een nieuwe Omgevings variable toe"
 msgid "Add new variable"
 msgstr "Voeg een nieuwe Omgevings Variabele toe"
 
-#: admin/PageSource.py:266 admin/PageVServer.py:510
+#: admin/PageSource.py:266 admin/PageVServer.py:511
 msgid "Virtual Server"
 msgstr "Virtuele Server"
 
 #: admin/PageSource.py:297 admin/plugins/error_redir.py:87
-#: admin/plugins/redir.py:74 admin/wizards/hotlinking.py:144
+#: admin/plugins/header.py:83 admin/plugins/redir.py:74
 msgid "Type"
 msgstr "Type"
 
@@ -2133,7 +2304,7 @@ msgstr "Regel is Actief"
 msgid "Host Names"
 msgstr "Computer namen"
 
-#: admin/PageVServer.py:155 admin/PageVServer.py:319 admin/PageVServer.py:335
+#: admin/PageVServer.py:155 admin/PageVServer.py:320 admin/PageVServer.py:336
 #: admin/plugins/method.py:94 admin/plugins/method.py:104
 msgid "Method"
 msgstr "Methode"
@@ -2146,167 +2317,167 @@ msgstr "Gedragregels"
 msgid "Rule Management"
 msgstr "Regel beheer"
 
-#: admin/PageVServer.py:234
+#: admin/PageVServer.py:235
 msgid "Only accept Secure Connections"
 msgstr "Accepteer alleen beveiligde verbindingen"
 
-#: admin/PageVServer.py:239
+#: admin/PageVServer.py:240
 msgid "Encoding enabled"
 msgstr "Encodering geactiveerd"
 
-#: admin/PageVServer.py:245
+#: admin/PageVServer.py:246
 msgid "no"
 msgstr "nee"
 
-#: admin/PageVServer.py:256
+#: admin/PageVServer.py:257
 msgid " seconds"
 msgstr " seconden"
 
-#: admin/PageVServer.py:261
+#: admin/PageVServer.py:262
 msgid " bytes per second"
 msgstr " bytes per seconde"
 
-#: admin/PageVServer.py:266
+#: admin/PageVServer.py:267
 msgid "Logging enabled for this rule"
 msgstr "Log registratie voor deze regel is geactiveerd"
 
-#: admin/PageVServer.py:271
+#: admin/PageVServer.py:272
 msgid "Prevents further rule evaluation"
 msgstr "Voorkomt het gebruik van opvolgende regels"
 
-#: admin/PageVServer.py:276
+#: admin/PageVServer.py:277
 msgid "Rule is active"
 msgstr "Regel is actief"
 
-#: admin/PageVServer.py:295
+#: admin/PageVServer.py:296
 msgid "Virtual Server nickname"
 msgstr "Virtuele Server naam"
 
-#: admin/PageVServer.py:297
+#: admin/PageVServer.py:298
 msgid "Server ID"
 msgstr "Server ID"
 
-#: admin/PageVServer.py:303
+#: admin/PageVServer.py:304
 msgid "Directory Indexes"
 msgstr "Map indices"
 
-#: admin/PageVServer.py:305 admin/plugins/fullpath.py:115
+#: admin/PageVServer.py:306 admin/plugins/fullpath.py:115
 msgid "Paths"
 msgstr "Paden"
 
-#: admin/PageVServer.py:310
+#: admin/PageVServer.py:311
 msgid "Keep-alive"
 msgstr "Blijf-in-leven"
 
-#: admin/PageVServer.py:311
+#: admin/PageVServer.py:312
 msgid "Max Upload Size"
 msgstr "Max Upload grootte"
 
-#: admin/PageVServer.py:321 admin/plugins/evhost.py:33
+#: admin/PageVServer.py:322 admin/plugins/evhost.py:33
 msgid "Advanced Virtual Hosting"
 msgstr "Geavanceerde Virtuele Hosting"
 
-#: admin/PageVServer.py:337
+#: admin/PageVServer.py:338
 msgid "Error Handling hook"
 msgstr "Fout Afhandelaar onderbreking"
 
-#: admin/PageVServer.py:348 admin/consts.py:226 admin/consts.py:243
+#: admin/PageVServer.py:349 admin/consts.py:227 admin/consts.py:244
 msgid "Disabled"
 msgstr "Uitgeschakeld"
 
-#: admin/PageVServer.py:352
+#: admin/PageVServer.py:353
 msgid "Write errors to"
 msgstr "Schrijf fouten naar"
 
-#: admin/PageVServer.py:356 admin/PageVServer.py:395
+#: admin/PageVServer.py:357 admin/PageVServer.py:396
 msgid "Filename"
 msgstr "Bestandsnaam"
 
-#: admin/PageVServer.py:358 admin/PageVServer.py:398
+#: admin/PageVServer.py:359 admin/PageVServer.py:399
 msgid "Command"
 msgstr "Commando"
 
-#: admin/PageVServer.py:364
+#: admin/PageVServer.py:365
 msgid "Error Logging"
 msgstr "Fout Loggen"
 
-#: admin/PageVServer.py:375
+#: admin/PageVServer.py:376
 msgid "Format"
 msgstr "Formaat"
 
-#: admin/PageVServer.py:382
+#: admin/PageVServer.py:383
 msgid "Write accesses to"
 msgstr "Schrijf toegang naar"
 
-#: admin/PageVServer.py:403
+#: admin/PageVServer.py:404
 msgid "Template: "
 msgstr "Sjabloon:"
 
-#: admin/PageVServer.py:405
+#: admin/PageVServer.py:406
 msgid "Access Logging"
 msgstr "Toegangslogging"
 
-#: admin/PageVServer.py:411
+#: admin/PageVServer.py:412
 msgid "Time standard"
 msgstr "Tijd standaard"
 
-#: admin/PageVServer.py:412
+#: admin/PageVServer.py:413
 msgid "Accept Forwarded IPs"
 msgstr "Accepteer Doorgestuurde IPs"
 
-#: admin/PageVServer.py:412 admin/consts.py:221
+#: admin/PageVServer.py:413 admin/consts.py:222
 msgid "Accept"
 msgstr "Accepteer"
 
-#: admin/PageVServer.py:415
+#: admin/PageVServer.py:416
 msgid "Do not check"
 msgstr "Controleer niet"
 
-#: admin/PageVServer.py:424
+#: admin/PageVServer.py:425
 msgid "Logging Options"
 msgstr "Log opties"
 
-#: admin/PageVServer.py:460
+#: admin/PageVServer.py:461
 msgid "Certificate"
 msgstr "Certificaat"
 
-#: admin/PageVServer.py:461
+#: admin/PageVServer.py:462
 msgid "Certificate key"
 msgstr "Certificaat sleutel"
 
-#: admin/PageVServer.py:466
+#: admin/PageVServer.py:467
 msgid "Required SSL/TLS Values"
 msgstr "Verplichte SSL/TLS waarden"
 
-#: admin/PageVServer.py:471
+#: admin/PageVServer.py:472
 msgid "Ciphers"
 msgstr "Versleutelingen"
 
-#: admin/PageVServer.py:472
+#: admin/PageVServer.py:473
 msgid "Client Certs. Request"
 msgstr "Gebruiker Certificaat Aanvragen"
 
-#: admin/PageVServer.py:475
+#: admin/PageVServer.py:476
 msgid "CA List"
 msgstr "CA lijst"
 
-#: admin/PageVServer.py:478
+#: admin/PageVServer.py:479
 msgid "Verify Depth"
 msgstr "Verifiëer Diepte"
 
-#: admin/PageVServer.py:484
+#: admin/PageVServer.py:485
 msgid "Advanced Options"
 msgstr "Uitgebreide opties"
 
-#: admin/PageVServer.py:503
+#: admin/PageVServer.py:504
 msgid "Basics"
 msgstr "Basis"
 
-#: admin/PageVServer.py:504
+#: admin/PageVServer.py:505
 msgid "Host Match"
 msgstr "Computernaam Gelijk"
 
-#: admin/PageVServer.py:506
+#: admin/PageVServer.py:507
 msgid "Error Handler"
 msgstr "Fout afhandelaar"
 
@@ -2455,7 +2626,7 @@ msgid "Only Listing"
 msgstr "Alleen lijst"
 
 #: admin/consts.py:52 admin/plugins/error_redir.py:86
-#: admin/wizards/hotlinking.py:146 admin/wizards/hotlinking.py:165
+#: admin/wizards/hotlinking.py:146
 msgid "Redirection"
 msgstr "Herleiding"
 
@@ -2512,7 +2683,7 @@ msgstr "HTTP Fout"
 msgid "Remote Administration"
 msgstr "Beheer op afstand"
 
-#: admin/consts.py:66 admin/wizards/hotlinking.py:85
+#: admin/consts.py:66 admin/wizards/hotlinking.py:91
 msgid "1x1 Transparent GIF"
 msgstr "1x1 Transparante GIF"
 
@@ -2640,14 +2811,14 @@ msgstr "Externe"
 msgid "Internal"
 msgstr "Interne"
 
-#: admin/consts.py:184 admin/plugins/header.py:72 admin/plugins/proxy.py:91
+#: admin/consts.py:184 admin/plugins/header.py:86 admin/plugins/proxy.py:91
 #: admin/plugins/proxy.py:141 admin/plugins/redir.py:74
 #: admin/plugins/redir.py:101 admin/plugins/request.py:31
 #: admin/plugins/url_arg.py:76 admin/plugins/url_arg.py:95
 msgid "Regular Expression"
 msgstr "Reguliere Expressie"
 
-#: admin/consts.py:185 admin/plugins/header.py:71 admin/plugins/header.py:86
+#: admin/consts.py:185 admin/plugins/header.py:82 admin/plugins/header.py:113
 #: admin/plugins/proxy.py:190
 msgid "Header"
 msgstr "Hoofdregel"
@@ -2664,108 +2835,112 @@ msgstr "HTTP Methode"
 msgid "Incoming IP/Port"
 msgstr "Binnenkomende IP/Poort"
 
-#: admin/consts.py:189 admin/plugins/fullpath.py:66
+#: admin/consts.py:189
+msgid "SSL / TLS"
+msgstr ""
+
+#: admin/consts.py:190 admin/plugins/fullpath.py:66
 #: admin/plugins/fullpath.py:98
 msgid "Full Path"
 msgstr "Volledig pad"
 
-#: admin/consts.py:190 admin/plugins/from.py:71
+#: admin/consts.py:191 admin/plugins/from.py:71
 msgid "Connected from"
 msgstr "Verbonden van"
 
-#: admin/consts.py:191
+#: admin/consts.py:192
 msgid "URL Argument"
 msgstr "URL argument"
 
-#: admin/consts.py:192
+#: admin/consts.py:193
 msgid "GeoIP"
 msgstr "GeoIP"
 
-#: admin/consts.py:196
+#: admin/consts.py:197
 msgid "Match Nickname"
 msgstr "Bijnaam gelijk"
 
-#: admin/consts.py:197
+#: admin/consts.py:198
 msgid "Wildcards"
 msgstr "Jokers"
 
-#: admin/consts.py:198 admin/plugins/redir.py:37 admin/plugins/rehost.py:53
+#: admin/consts.py:199 admin/plugins/redir.py:37 admin/plugins/rehost.py:53
 msgid "Regular Expressions"
 msgstr "Reguliere Expressies"
 
-#: admin/consts.py:199
+#: admin/consts.py:200
 msgid "Server IP"
 msgstr "Server IP"
 
-#: admin/consts.py:203
+#: admin/consts.py:204
 msgid "Not set"
 msgstr "Niet gezet"
 
-#: admin/consts.py:204
+#: admin/consts.py:205
 msgid "Already expired on 1970"
 msgstr "Reeks vervallen in 1970"
 
-#: admin/consts.py:205
+#: admin/consts.py:206
 msgid "Do not expire until 2038"
 msgstr "Vervalt niet tot 2038"
 
-#: admin/consts.py:206
+#: admin/consts.py:207
 msgid "Custom value"
 msgstr "Eigen waarde"
 
-#: admin/consts.py:210
+#: admin/consts.py:211
 msgid "No TLS/SSL"
 msgstr "Geen TLS/SSL"
 
-#: admin/consts.py:211
+#: admin/consts.py:212
 msgid "OpenSSL / libssl"
 msgstr "OpenSSL / libssl"
 
-#: admin/consts.py:215 admin/util.py:38
+#: admin/consts.py:216 admin/util.py:38
 msgid "Off"
 msgstr "Uit"
 
-#: admin/consts.py:216
+#: admin/consts.py:217
 msgid "Enhanced Virtual Hosting"
 msgstr "Uitgebreide Virtuele Hosting"
 
-#: admin/consts.py:220
+#: admin/consts.py:221
 msgid "Skip"
 msgstr "Sla over"
 
-#: admin/consts.py:222
+#: admin/consts.py:223
 msgid "Require"
 msgstr "Vereist"
 
-#: admin/consts.py:227
+#: admin/consts.py:228
 msgid "RRDtool graphs"
 msgstr "RRDtool grafieken"
 
-#: admin/consts.py:231
+#: admin/consts.py:232
 msgid "Local time"
 msgstr "Lokale tijd"
 
-#: admin/consts.py:232
+#: admin/consts.py:233
 msgid "UTC: Coordinated Universal Time"
 msgstr "UTC: Coordinated Universal Time"
 
-#: admin/consts.py:236
+#: admin/consts.py:237
 msgid "JSON"
 msgstr "JSON"
 
-#: admin/consts.py:237
+#: admin/consts.py:238
 msgid "Python"
 msgstr "Python"
 
-#: admin/consts.py:238 admin/wizards/List.py:119
+#: admin/consts.py:239 admin/wizards/List.py:119
 msgid "PHP"
 msgstr "PHP"
 
-#: admin/consts.py:239
+#: admin/consts.py:240
 msgid "Ruby"
 msgstr "Ruby"
 
-#: admin/consts.py:244
+#: admin/consts.py:245
 msgid "POST tracker"
 msgstr "POST volger"
 
@@ -2778,10 +2953,6 @@ msgstr ""
 #: admin/plugins/authlist.py:60
 msgid "Authentication list"
 msgstr "Authenticatie lijst"
-
-#: admin/plugins/authlist.py:63 admin/plugins/authlist.py:97
-msgid "Password"
-msgstr "Wachtwoord"
 
 #: admin/plugins/authlist.py:105
 msgid "Add New Pair"
@@ -2811,7 +2982,7 @@ msgstr "Geselecteerde Poorten"
 msgid "Assign new IP/Port"
 msgstr "Koppel nieuwe IP/Poort"
 
-#: admin/plugins/bind.py:156
+#: admin/plugins/bind.py:159
 msgid "Ports"
 msgstr "Poorten"
 
@@ -3122,6 +3293,20 @@ msgstr ""
 "Komma gescheiden lijst van Bestands Extensies waar tegen de configuratie "
 "wordt uitgevoerd."
 
+#: admin/plugins/extensions.py:32
+msgid "Ensure that the matched extension if part of a local file name."
+msgstr ""
+
+#: admin/plugins/extensions.py:62
+#, fuzzy
+msgid "Check local file"
+msgstr "Controleer bestand"
+
+#: admin/plugins/extensions.py:62
+#, fuzzy
+msgid "Check"
+msgstr "Controleer bestand"
+
 #: admin/plugins/fcgi.py:49
 msgid "FastCGI Specific"
 msgstr "FastCGI Specifiek"
@@ -3206,6 +3391,24 @@ msgstr "Hoofdregel waar tegen de reguliere expressie wordt geevalueerd."
 #: admin/plugins/header.py:31
 msgid "Regular expression."
 msgstr "Reguliere expressie."
+
+#: admin/plugins/header.py:32
+msgid "It defines how this match has to be evaluated."
+msgstr ""
+
+#: admin/plugins/header.py:45
+#, fuzzy
+msgid "Matches a Regular Expression"
+msgstr "Nieuwe Reguliere Expressie"
+
+#: admin/plugins/header.py:46
+msgid "Is Provided"
+msgstr ""
+
+#: admin/plugins/header.py:111
+#, python-format
+msgid "Header %s is provided"
+msgstr ""
 
 #: admin/plugins/htdigest.py:32
 msgid "Full path to the Htdigest formated password file."
@@ -3675,6 +3878,10 @@ msgstr "Maak nieuwe regel"
 #: admin/plugins/target_ip.py:100
 msgid "Accepted Server IP Addresses and Subnets"
 msgstr "Geaccepteerde Server IP adressen en subnetten"
+
+#: admin/plugins/tls.py:56
+msgid "Is SSL/TLS"
+msgstr ""
 
 #: admin/plugins/url_arg.py:31
 msgid "Argument name"
@@ -4249,7 +4456,7 @@ msgstr "Publieke Web Map"
 #: admin/wizards/joomla.py:261 admin/wizards/liferay.py:169
 #: admin/wizards/mailman.py:145 admin/wizards/mediawiki.py:230
 #: admin/wizards/moinmoin.py:214 admin/wizards/mono.py:198
-#: admin/wizards/php.py:240 admin/wizards/phpbb.py:186
+#: admin/wizards/php.py:241 admin/wizards/phpbb.py:186
 #: admin/wizards/rails.py:315 admin/wizards/sugar.py:216
 #: admin/wizards/symfony.py:226 admin/wizards/trac.py:131
 #: admin/wizards/uwsgi.py:242 admin/wizards/wordpress.py:217
@@ -4352,7 +4559,7 @@ msgstr "Web map waar je Concrete5 wilt hebben. (Voorbeeld: /concrete5)"
 #: admin/wizards/concrete5.py:229 admin/wizards/django.py:191
 #: admin/wizards/drupal.py:260 admin/wizards/joomla.py:262
 #: admin/wizards/mailman.py:146 admin/wizards/mediawiki.py:231
-#: admin/wizards/mono.py:200 admin/wizards/php.py:241
+#: admin/wizards/mono.py:200 admin/wizards/php.py:242
 #: admin/wizards/phpbb.py:187 admin/wizards/rails.py:316
 #: admin/wizards/sugar.py:217 admin/wizards/symfony.py:227
 #: admin/wizards/trac.py:132 admin/wizards/uwsgi.py:244
@@ -4498,61 +4705,44 @@ msgstr ""
 "Computernaam of IP van de server die GlassFish draait. Je kunt er later mee "
 "toevoegen om de belasting te verdelen."
 
-#: admin/wizards/hotlinking.py:39
+#: admin/wizards/hotlinking.py:40
 msgid "Welcome to the Hotlinking Wizard"
 msgstr "Welkom bij de Hotlinken Assistent"
 
-#: admin/wizards/hotlinking.py:40
+#: admin/wizards/hotlinking.py:41
 msgid "This wizard stops other domains from hot-linking your media files."
 msgstr ""
 "Deze tovenaar stop andere domeinen gebruik te maken van je media bestanden."
 
-#: admin/wizards/hotlinking.py:41
+#: admin/wizards/hotlinking.py:42
 msgid "Anti-HotLinking Information"
 msgstr "Anti-HotLinken Informatie"
 
-#: admin/wizards/hotlinking.py:42
+#: admin/wizards/hotlinking.py:43
 msgid "Domain allowed to access the files. Eg: example.com"
 msgstr "Domein dat bij de bestanden mag. Vb.: voorbeeld.nl"
 
-#: admin/wizards/hotlinking.py:43
+#: admin/wizards/hotlinking.py:44
 msgid "Path to the public resource to use. Eg: /images/forbidden.jpg"
 msgstr "Pad voor het publiek te gebruiken. Vb.: /images/forbidden.jpg"
 
-#: admin/wizards/hotlinking.py:44
+#: admin/wizards/hotlinking.py:45
 msgid "How to handle hot-linking requests."
 msgstr "Hoe hete-links te behandelen."
 
-#: admin/wizards/hotlinking.py:45
-#, fuzzy
-msgid "Recollection completed"
-msgstr "Herinnering afgesloten"
-
-#: admin/wizards/hotlinking.py:46
-msgid ""
-"The required Information has been collected. Proceed to create the necessary "
-"rules to prevent hot-linking from happening."
-msgstr ""
-"De benodigde Informatie is verzameld. Ga verder om de benodigde regels aan "
-"te brengen om hot-linken te voorkomen."
-
-#: admin/wizards/hotlinking.py:83
+#: admin/wizards/hotlinking.py:89
 msgid "Show error"
 msgstr "Toon fout"
 
-#: admin/wizards/hotlinking.py:84
+#: admin/wizards/hotlinking.py:90
 msgid "Redirect"
 msgstr "Herleiding"
 
-#: admin/wizards/hotlinking.py:143
-msgid "Domain"
-msgstr "Domein"
-
-#: admin/wizards/hotlinking.py:181
+#: admin/wizards/hotlinking.py:166
 msgid "Domain Name"
 msgstr "Domein Naam"
 
-#: admin/wizards/hotlinking.py:182
+#: admin/wizards/hotlinking.py:167
 msgid "Reply type"
 msgstr "Antwoord type"
 
@@ -5530,6 +5720,20 @@ msgstr "Dat ziet er niet uit als een Zend broncode map."
 #: admin/wizards/zend.py:49
 msgid "Web directory where you want Zend to be accessible. (Example: /zend)"
 msgstr "Web map waar je Zend wilt hebben. (Voorbeeld: /zend)"
+
+#, fuzzy
+#~ msgid "Recollection completed"
+#~ msgstr "Herinnering afgesloten"
+
+#~ msgid ""
+#~ "The required Information has been collected. Proceed to create the "
+#~ "necessary rules to prevent hot-linking from happening."
+#~ msgstr ""
+#~ "De benodigde Informatie is verzameld. Ga verder om de benodigde regels "
+#~ "aan te brengen om hot-linken te voorkomen."
+
+#~ msgid "Domain"
+#~ msgstr "Domein"
 
 #~ msgid "Add new"
 #~ msgstr "Voeg toe"

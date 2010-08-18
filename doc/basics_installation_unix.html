@@ -64,7 +64,7 @@ Install the programs and any data files:
 </li>
 <li>
 <p>
-Start <a href="bundle_cherokee-admin.html">cherokee-admin</a>
+Start <a href="other_bundle_cherokee-admin.html">cherokee-admin</a>
 </p>
 </li>
 </ol></div>
@@ -152,18 +152,6 @@ cellspacing="0" cellpadding="4">
 <td align="left" valign="top"><p class="table">Disable epoll() support</p></td>
 </tr>
 <tr>
-<td align="left" valign="top"><p class="table"><tt>--disable-pthread</tt></p></td>
-<td align="left" valign="top"><p class="table">Disable threading support</p></td>
-</tr>
-<tr>
-<td align="left" valign="top"><p class="table"><tt>--disable-ipv6</tt></p></td>
-<td align="left" valign="top"><p class="table">Disable IPv6 support</p></td>
-</tr>
-<tr>
-<td align="left" valign="top"><p class="table"><tt>--disable-pam</tt></p></td>
-<td align="left" valign="top"><p class="table">Disable PAM support</p></td>
-</tr>
-<tr>
 <td align="left" valign="top"><p class="table"><tt>--enable-static-module=MODULE</tt></p></td>
 <td align="left" valign="top"><p class="table">build listed modules as static. Accepts ALL</p></td>
 </tr>
@@ -183,19 +171,40 @@ of the appropriate runlevel. This can be done in many ways and usually
 each distribution offers its own tools to do so.</p></div>
 <h3 id="APT">APT</h3><div style="clear:left"></div>
 <div class="paragraph"><p>This section is intended for those who use Debian and Ubuntu and want
-to use the latest
-If the latest and greatest version of Cherokee is not yet available on
-your APT repositories, you can do several things besides installing
-manually.</p></div>
+to use the latest -and greatest- version of Cherokee when it is not
+yet available on the APT repositories. You can do several things
+besides installing manually.</p></div>
 <div class="paragraph"><p>For Ubuntu users, simply use the PPA repository. Normally when a new
-Cherokee version is released, the repository will have it almost in
-real time. Simply type:</p></div>
+Cherokee version is released, the repositories will be swiftly
+updated. Simply type:</p></div>
 <div class="listingblock">
 <div class="content">
 <pre><tt>sudo add-apt-repository ppa:cherokee-webserver</tt></pre>
 </div></div>
 <div class="paragraph"><p>That will add the PPA keys. You just need to sudo apt-get update
 afterwards.</p></div>
+<div class="paragraph"><p>Please note that there are two Launchpad Cherokee repositories: the
+<a href="https://edge.launchpad.net/<sub>cherokee-webserver/+archive/ppa/+packages">current</a>
+(stable) repository and the new repository called
+<a href="https://edge.launchpad.net/</sub>cherokee-webserver/+archive/i-tse">i-tse</a>
+(<em>new</em> in Cherokee language).</p></div>
+<div class="paragraph"><p>Everytime a new cherokee version is released it goes straight to the
+the i-tse repository. If no critical bugs are found or no new version
+is released within 8 days, this version is then moved moved to the
+current PPA. It is also pushed to Debian Unstable.</p></div>
+<div class="paragraph"><p>Doing this ensures that production servers using the current version
+get a tested version every time they upgrade.</p></div>
+<div class="paragraph"><p>If you want to use the i-tse ( NEW ) version just add the new repository:</p></div>
+<div class="listingblock">
+<div class="title">Ubuntu Lucid</div>
+<div class="content">
+<pre><tt>sudo add-apt-repository ppa:cherokee-webserver/i-tse</tt></pre>
+</div></div>
+<div class="listingblock">
+<div class="title">Karmic, Jaunty, Hardy: add this to your sources.list</div>
+<div class="content">
+<pre><tt>deb http://ppa.launchpad.net/cherokee-webserver/i-tse/ubuntu YOURVERSION main</tt></pre>
+</div></div>
 <div class="paragraph"><p>For Debian users, you will have to use packages from <em>Unstable</em> or
 <em>Testing</em> if you want to keep up.</p></div>
 <div class="paragraph"><p>Cherokee does not have deep dependencies, so apt-pinning might be
@@ -232,6 +241,45 @@ full lists, and install Cherokee from unstable:</p></div>
 mysql-common to fulfill dependencies. Of course, this <em>might</em> break
 other packages depending on those specific versions, but it is not
 very likely.</p></div>
+<h3 id="debian_from_source">Debian package from source</h3><div style="clear:left"></div>
+<div class="paragraph"><p>PPA and Unstable repositories keep up to date with the latest Cherokee
+releases. Usually the time lapse between releasing a new version and
+having the repositories updated is really short.</p></div>
+<div class="paragraph"><p>However, in the event that they arent, some options remain if you want
+to enjoy the latest Cherokee enhancements. Besides building directly
+from our SVN repository, you can build from source for
+Debian/Ubuntu. You will be able to build it cleanly in a <tt>.deb</tt>
+package with dependencies, and push the new release as fast as
+possible to production.</p></div>
+<div class="paragraph"><p>The process is very straight forward. As with any Debian package, it
+should be enough just to download the source package, get its
+build-dependencies, and build.</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>$ apt-get source cherokee
+(...)
+$ sudo apt-get build-dep cherokee
+(...)
+$ cd cherokee-*     # depending on your version
+$ debuild</tt></pre>
+</div></div>
+<div class="paragraph"><p>Of course, if you want to contribute to Debian/Ubuntu packaging, it is
+a <em>bit</em> more involved.</p></div>
+<div class="paragraph"><p>You should instead clone the Git repository at
+<a href="git://git.debian.org/collab-maint/cherokee.git">git://git.debian.org/collab-maint/cherokee.git</a></p></div>
+<div class="paragraph"><p>After that, the process for building is very similar. You only need to
+get Cherokee&#8217;s official sources, which can be done running the
+following command within the Cherokee tree:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>$ uscan --force</tt></pre>
+</div></div>
+<div class="paragraph"><p>And build using git-buildpackage:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>$ git-buildpackage</tt></pre>
+</div></div>
+<div class="paragraph"><p>That&#8217;s it.</p></div>
 </div>
 <div id="footer">
 <div id="footer-text">

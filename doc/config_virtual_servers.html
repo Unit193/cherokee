@@ -67,13 +67,24 @@ server details page.</p></div>
 <p>
 <strong>Document Root</strong>
 </p>
-<div class="paragraph"><p>This is the directory from which Cherokee will serve files. The set of
-rules is checked from the highest to the lowest possible
-priority. Once a rule is matched, the server appends the path from the
-requested URL to the document root to make the path to the
-document. If it is a directory, this information is used. If other
-rules apply to a parent directory, those are applied as well without
-overwriting the original behavior:</p></div>
+<div class="paragraph"><p>This is the directory from which Cherokee will serve files. For
+example, if the Document Root is <tt>/var/www</tt>, then a client&#8217;s request
+for <tt>http://www.example.com/index.html</tt> refers to
+<tt>/var/www/index.html</tt> on the server.</p></div>
+<div class="paragraph"><p>In the simplest case, the server might return the contents of the file
+to the client. But Cherokee provides a richer mechanism of behaviors,
+based on the the URL. Behaviors are described
+<a href="#behavior">below</a>. For now, just know that the combination of a
+URL and the Document Root specifies the match (for instance, a file on
+the server), but does not specify how that file will be served. Note
+that not all rules will necessarily match files to be sent to the
+client, so the Document Root is not always used.</p></div>
+<div class="paragraph"><p>This is controlled by behavior rules. The set of rules is checked from
+the highest to the lowest possible priority. Once a rule is matched,
+the server appends the path from the requested URL to the document
+root to make the path to the document. If it is a directory, this
+information is used. If other rules apply to a parent directory, those
+are applied as well without overwriting the original behavior:</p></div>
 <div class="listingblock">
 <div class="content">
 <pre><tt>        http://www.example.com/index.html refers to /var/www/index.html</tt></pre>
@@ -101,7 +112,13 @@ be added to the existing one. To use the wizards in this manner you
 will have to trigger them from the <tt>Behavior</tt> panel instead of the
 <tt>Virtual Server Panel</tt>. This <tt>Behavior</tt> panel is specific to a given
 virtual host, and can be activated using the <tt>Rule Management</tt> button
-of the <tt>Behavior</tt> tab.</p></div>
+of the <tt>Behavior</tt> tab. You can read more about automatic configuration
+on the <a href="config_wizards.html">wizards</a> section. Regardless of them
+being used from the <tt>Virtual Server</tt> panel or the <tt>Behavior</tt> panel,
+one or more rules will be created to suit a particular scenario. The
+main difference will lay on the wizard creating a new virtual server
+or just customizing an existing one, depending on the instantiation
+context.</p></div>
 <div class="paragraph"><p><strong>Clone Selected Virtual Server</strong> is simply a matter of selecting a
 target name and a source virtual server currently present. Every
 setting will be duplicated. From then onwards changes applied to any
@@ -176,8 +193,8 @@ domains</a>.</p></div>
 <h3 id="domain_names">Host Match</h3><div style="clear:left"></div>
 <div class="paragraph"><p>This section allows to define the list of domains that the virtual
 server implements.</p></div>
-<div class="paragraph"><p>It can accept either FQDN (Fully Qualified Domain Names) or wild
-card entries.</p></div>
+<div class="paragraph"><p>It can accept either FQDN (Fully Qualified Domain Names), wild card
+entries, regular expressions or IPs.</p></div>
 <div class="dlist"><dl>
 <dt class="hdlist1">
 For instance
@@ -187,6 +204,26 @@ For instance
 <div class="content">
 <pre><tt>          example.com
         *.example.org</tt></pre>
+</div></div>
+</dd>
+</dl></div>
+<div class="paragraph"><p>Hint: Although it is rare, there are some web-broswsers out there that
+do not seem to convert the FQDN to lowercase before sending the
+requests. This mainly happens with built-in browsers or very-early
+implementations. Even in those cases it is possible to have
+case-insensitive host matching by using regular-expression
+matching. For example, if you&#8217;re domain name was <tt>Example.com</tt> and
+were dealing with one such browser, you would have to prepend <strong>(?i)</strong>
+to your regular expression. That in turn would perform a
+case-insensitive evaluation, effectively solving the problem.</p></div>
+<div class="dlist"><dl>
+<dt class="hdlist1">
+The followgin Case-insensitive RegEx matches both example.com and Example.com
+</dt>
+<dd>
+<div class="listingblock">
+<div class="content">
+<pre><tt>        (?i)example.com</tt></pre>
 </div></div>
 </dd>
 </dl></div>

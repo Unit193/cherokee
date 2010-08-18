@@ -587,8 +587,9 @@ build_response_header_authentication (cherokee_connection_t *conn, cherokee_buff
 }
 
 
-static void
-build_response_header_expiration (cherokee_connection_t *conn, cherokee_buffer_t *buffer)
+void
+cherokee_connection_add_expiration_header (cherokee_connection_t *conn,
+					   cherokee_buffer_t     *buffer)
 {
 	time_t    exp_time;
 	struct tm exp_tm;
@@ -700,7 +701,7 @@ build_response_header (cherokee_connection_t *conn, cherokee_buffer_t *buffer)
 	/* Expiration
 	 */
 	if (conn->expiration != cherokee_expiration_none) {
-		build_response_header_expiration (conn, buffer);
+		cherokee_connection_add_expiration_header (conn, buffer);
 	}
 
 	/* Redirected connections
@@ -1082,20 +1083,21 @@ cherokee_connection_send (cherokee_connection_t *conn)
 					  conn->chunked_sent);
 
 		ret = cherokee_socket_writev (&conn->socket, conn->chunks, conn->chunksn, &sent);
-		if (unlikely (ret != ret_ok)) {
-			switch (ret) {
-			case ret_eof:
-			case ret_eagain:
-				return ret;
+		switch (ret) {
+		case ret_ok:
+			break;
 
-			case ret_error:
-				conn->keepalive = 0;
-				return ret_error;
+		case ret_eof:
+		case ret_eagain:
+			return ret;
 
-			default:
-				RET_UNKNOWN(ret);
-				return ret_error;
-			}
+		case ret_error:
+			conn->keepalive = 0;
+			return ret_error;
+
+		default:
+			RET_UNKNOWN(ret);
+			return ret_error;
 		}
 
 		conn->chunked_sent += sent;
@@ -1209,6 +1211,8 @@ error:
 ret_t
 cherokee_connection_shutdown_wr (cherokee_connection_t *conn)
 {
+	ret_t ret;
+
 	/* Turn TCP-cork off
 	 */
 	if (conn->options & conn_op_tcp_cork) {
@@ -1221,15 +1225,17 @@ cherokee_connection_shutdown_wr (cherokee_connection_t *conn)
 	 */
 	conn->socket.is_tls = non_TLS;
 
-	/* Set the timeout for future linger read(s) leaving the
-	 * non-blocking mode.
-         */
-	conn->timeout = cherokee_bogonow_now + (MSECONDS_TO_LINGER / 1000) + 1;
-
 	/* Shut down the socket for write, which will send a FIN to
 	 * the peer. If shutdown fails then the socket is unusable.
          */
-	return cherokee_socket_shutdown (&conn->socket, SHUT_WR);
+	ret = cherokee_socket_shutdown (&conn->socket, SHUT_WR);
+	if (unlikely (ret != ret_ok)) {
+		TRACE (ENTRIES, "Could not shutdown (%d, SHUT_WR)\n", conn->socket.socket);
+		return ret_error;
+	}
+
+	TRACE (ENTRIES, "Shutdown (%d, SHUT_WR): successful\n", conn->socket.socket);
+	return ret_ok;
 }
 
 
@@ -1242,22 +1248,24 @@ cherokee_connection_linger_read (cherokee_connection_t *conn)
 	cherokee_thread_t *thread   = CONN_THREAD(conn);
 	cherokee_buffer_t *tmp1     = THREAD_TMP_BUF1(thread);
 
+	TRACE(ENTRIES",linger", "Linger read, socket status %d\n", conn->socket.status);
+
 	while (true) {
 		/* Read from the socket to nowhere
 		 */
 		ret = cherokee_socket_read (&conn->socket, tmp1->buf, tmp1->size, &cnt_read);
 		switch (ret) {
 		case ret_eof:
-			TRACE(ENTRIES, "%s\n", "eof");
-			return ret;
+			TRACE(ENTRIES, "%s\n", "EOF");
+			return ret_eof;
 		case ret_error:
 			TRACE(ENTRIES, "%s\n", "error");
-			return ret;
+			return ret_error;
 		case ret_eagain:
 			TRACE(ENTRIES, "read %u, eagain\n", cnt_read);
-			return ret;
+			return ret_eagain;
 		case ret_ok:
-			TRACE(ENTRIES, "read %u, ok\n", cnt_read);
+			TRACE(ENTRIES, "%u bytes tossed away\n", cnt_read);
 			retries--;
 			if (cnt_read == tmp1->size && retries > 0)
 				continue;

@@ -263,7 +263,6 @@ libdir = @libdir@
 libexecdir = @libexecdir@
 localedir = @localedir@
 localstatedir = @localstatedir@
-lt_ECHO = @lt_ECHO@
 mandir = @mandir@
 mkdir_p = @mkdir_p@
 oldincludedir = @oldincludedir@
@@ -292,6 +291,7 @@ adminpydir = "$(datadir)/cherokee/admin"
 adminpy_SCRIPTS = $(admin_scripts)
 @INSTALL_ADMIN_TRUE@admin_data = \
 @INSTALL_ADMIN_TRUE@Auth.py \
+@INSTALL_ADMIN_TRUE@Backup.py \
 @INSTALL_ADMIN_TRUE@Balancer.py \
 @INSTALL_ADMIN_TRUE@CgiBase.py \
 @INSTALL_ADMIN_TRUE@Cherokee.py \
@@ -299,6 +299,7 @@ adminpy_SCRIPTS = $(admin_scripts)
 @INSTALL_ADMIN_TRUE@Graph.py \
 @INSTALL_ADMIN_TRUE@Handler.py \
 @INSTALL_ADMIN_TRUE@Icons.py \
+@INSTALL_ADMIN_TRUE@Login.py \
 @INSTALL_ADMIN_TRUE@Mime.py \
 @INSTALL_ADMIN_TRUE@Page.py \
 @INSTALL_ADMIN_TRUE@PageAdvanced.py \

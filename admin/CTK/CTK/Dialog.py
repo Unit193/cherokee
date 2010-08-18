@@ -47,16 +47,6 @@ var dialog_obj = $("#%(id)s");
 /* Initialize */
 dialog_obj.dialog (%(dialog_props)s);
 
-/* Events */
-dialog_obj.bind ('dialogopen', function(event, ui){
-   $('.ui-dialog-buttonpane :button').each (function(){
-       var html = $(this).html();
-       if (! html || html.indexOf('<span') != 0) {
-          $(this).wrapInner('<span class=\"button-outter\"><span class=\"button-inner\"></span></span>');
-       }
-   });
-});
-
 /* Positioning */
 dialog_obj.dialog ('option', 'position', ['center', 85]);
 """
@@ -87,9 +77,12 @@ class Dialog (Container):
 
         self.js_props = js_props.copy()
         self.props    = props.copy()
-        self.id       = 'dialog%d'%(self.uniq_id)
         self.title    = self.js_props.pop('title', '')
         self.buttons  = []
+        if 'id' in self.props:
+            self.id = self.props.pop('id')
+        else:
+            self.id = 'dialog%d'%(self.uniq_id)
 
         # Defaults
         if 'modal' not in self.js_props:

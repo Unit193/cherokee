@@ -34,9 +34,10 @@
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
-
+#include <limits.h>
 
 CHEROKEE_BEGIN_DECLS
+
 
 typedef struct {
 	char    *buf;        /**< Memory chunk           */
@@ -45,7 +46,8 @@ typedef struct {
 } cherokee_buffer_t;
 
 #define BUF(x) ((cherokee_buffer_t *)(x))
-#define CHEROKEE_BUF_INIT      {NULL, 0, 0}
+#define CHEROKEE_BUF_INIT       {NULL, 0, 0}
+#define CHEROKEE_BUF_SLIDE_NONE INT_MIN
 
 #define cherokee_buffer_is_empty(b)        (BUF(b)->len == 0)
 #define cherokee_buffer_add_str(b,s)       cherokee_buffer_add (b, s, CSZLEN(s))
@@ -78,6 +80,7 @@ ret_t cherokee_buffer_add_va_list        (cherokee_buffer_t  *buf, const char *f
 ret_t cherokee_buffer_add_char           (cherokee_buffer_t  *buf, char c);
 ret_t cherokee_buffer_add_char_n         (cherokee_buffer_t  *buf, char c, int n);
 ret_t cherokee_buffer_add_buffer         (cherokee_buffer_t  *buf, cherokee_buffer_t *buf2);
+ret_t cherokee_buffer_add_buffer_slice   (cherokee_buffer_t  *buf, cherokee_buffer_t *buf2, ssize_t begin, ssize_t end);
 ret_t cherokee_buffer_add_fsize          (cherokee_buffer_t  *buf, CST_OFFSET size);
 ret_t cherokee_buffer_prepend            (cherokee_buffer_t  *buf, const char *txt, size_t size);
 
@@ -99,6 +102,8 @@ ret_t cherokee_buffer_remove_chunk       (cherokee_buffer_t  *buf, cuint_t from,
 ret_t cherokee_buffer_replace_string     (cherokee_buffer_t  *buf, const char *subs, int subs_len, const char *repl, int repl_len);
 ret_t cherokee_buffer_substitute_string  (cherokee_buffer_t  *bufsrc, cherokee_buffer_t *bufdst, char *subs, int subs_len, char *repl, int repl_len);
 ret_t cherokee_buffer_trim               (cherokee_buffer_t  *buf);
+ret_t cherokee_buffer_insert             (cherokee_buffer_t  *buf, char *txt, size_t txt_len, size_t pos);
+ret_t cherokee_buffer_insert_buffer      (cherokee_buffer_t  *buf, cherokee_buffer_t *src, size_t pos);
 
 ret_t cherokee_buffer_get_utf8_len       (cherokee_buffer_t  *buf, cuint_t *len);
 ret_t cherokee_buffer_ensure_addlen      (cherokee_buffer_t  *buf, size_t alen);
@@ -121,6 +126,7 @@ ret_t cherokee_buffer_encode_hex         (cherokee_buffer_t  *buf, cherokee_buff
 ret_t cherokee_buffer_decode_hex         (cherokee_buffer_t  *buf);
 ret_t cherokee_buffer_unescape_uri       (cherokee_buffer_t  *buf);
 ret_t cherokee_buffer_escape_uri         (cherokee_buffer_t  *buf, cherokee_buffer_t *src);
+ret_t cherokee_buffer_escape_uri_delims  (cherokee_buffer_t  *buf, cherokee_buffer_t *src);
 ret_t cherokee_buffer_escape_arg         (cherokee_buffer_t  *buf, cherokee_buffer_t *src);
 ret_t cherokee_buffer_add_escape_html    (cherokee_buffer_t  *buf, cherokee_buffer_t *src);
 ret_t cherokee_buffer_escape_html        (cherokee_buffer_t  *buf, cherokee_buffer_t *src);

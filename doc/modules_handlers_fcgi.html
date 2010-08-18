@@ -36,7 +36,11 @@ a single host or interpreter (it has no performance penalty).</p></div>
 parameters shared with the <a href="modules_handlers_cgi.html">Common CGI
 options</a> handler. All of them apply with the exception of <tt>Check
 file</tt>, which will only be present if the manager is handling an
-extension.</p></div>
+extension. Be sure to understand what that parameter does. It is
+<a href="modules_handlers_cgi.html#check_file_warning">explained in detail</a>
+among the rest of CGI options, and depending of how you are using
+FastCGI it can make all the difference between succeeding and failing
+to run your application.</p></div>
 <div class="paragraph"><p>To set up the FastCGI specifics, read the
 <a href="modules_balancers.html">Balancers</a> section for general information
 and the <a href="config_info_sources.html">information sources</a> section for

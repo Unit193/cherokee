@@ -251,7 +251,11 @@ run-tests.py \
 243-custom-error-1.py \
 244-Directory-Overwrite.py \
 245-0x9b.py \
-246-Dup-CacheControl.py
+246-Dup-CacheControl.py \
+247-UTF8-QueryString.py \
+248-Colon-UTF8.py \
+249-https-redir.py \
+250-https-redir-2.py
 
 test:
 	./run-tests.py

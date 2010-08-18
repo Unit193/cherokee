@@ -26,7 +26,7 @@ from util import *
 
 URL_APPLY = '/plugin/bind/apply'
 
-def apply():
+def commit():
     # POST info
     key      = CTK.post.pop ('key', None)
     vsrv_num = CTK.post.pop ('vsrv_num', None)
@@ -150,6 +150,9 @@ class Plugin_bind (RulePlugin):
             return txt
 
         tmp.sort (lambda x,y: cmp(int(x[0]),int(y[0])))
+
+        if len(tmp) == 0:
+            return _("Port")
         if len(tmp) == 1:
             return "%s %s" %(_("Port"), render_entry(tmp[0]))
 
@@ -158,4 +161,4 @@ class Plugin_bind (RulePlugin):
         txt += " or %s" %(render_entry(tmp[-1]))
         return txt
 
-CTK.publish (URL_APPLY, apply, method="POST")
+CTK.publish (URL_APPLY, commit, method="POST")

@@ -220,15 +220,9 @@ cherokee_socket_shutdown (cherokee_socket_t *socket, int how)
 {
 	int re;
 
-	/* If the read side of the socket has been closed but the
-	 * write side is not, then don't bother to call shutdown
-	 * because the socket is going to be closed anyway.
-	 */
-	if (unlikely (socket->status == socket_closed))
-		return ret_eof;
-
-	if (unlikely (socket->socket < 0))
+	if (unlikely (socket->socket < 0)) {
 		return ret_error;
+	}
 
 	/* Shutdown the socket
 	 */
@@ -237,6 +231,36 @@ cherokee_socket_shutdown (cherokee_socket_t *socket, int how)
 	} while ((re == -1) && (errno == EINTR));
 
 	if (unlikely (re != 0)) {
+		switch (errno) {
+		case ENOTCONN:
+			break;
+		default:
+			TRACE (ENTRIES, "shutdown(%d, %d) = %s\n", socket->socket, how, strerror(errno));
+			return ret_error;
+		}
+	}
+
+	return ret_ok;
+}
+
+
+ret_t
+cherokee_socket_reset (cherokee_socket_t *socket)
+{
+	int           re;
+	struct linger linger;
+
+	if (unlikely (socket->socket < 0)) {
+		return ret_error;
+	}
+
+	linger.l_onoff  = 1;
+	linger.l_linger = 0;
+
+	re = setsockopt (socket->socket, SOL_SOCKET, SO_LINGER, &linger, sizeof(linger));
+	if (re == -1) {
+		LOG_ERRNO (errno, cherokee_err_warning,
+			   CHEROKEE_ERROR_SOCKET_SET_LINGER, socket->socket);
 		return ret_error;
 	}
 
@@ -344,11 +368,9 @@ cherokee_socket_accept_fd (cherokee_socket_t   *server_socket,
 			   int                 *new_fd,
 			   cherokee_sockaddr_t *sa)
 {
-	int           re;
-	ret_t         ret;
-	socklen_t     len;
-	int           new_socket;
-	struct linger linger;
+	ret_t     ret;
+	socklen_t len;
+	int       new_socket;
 
 	/* Get the new connection
 	 */
@@ -362,6 +384,8 @@ cherokee_socket_accept_fd (cherokee_socket_t   *server_socket,
 		return ret_error;
 	}
 
+#if 0 /* DISABLED */
+
 	/* Deal with the FIN_WAIT2 state
 	 */
 	re = 1;
@@ -372,17 +396,28 @@ cherokee_socket_accept_fd (cherokee_socket_t   *server_socket,
 	}
 
 	linger.l_onoff  = 1;
-	linger.l_linger = 0;
+	linger.l_linger = SECONDS_TO_LINGER;
 
 	re = setsockopt (new_socket, SOL_SOCKET, SO_LINGER, &linger, sizeof(linger));
 	if (re == -1) {
 		LOG_ERRNO (errno, cherokee_err_warning,
 			   CHEROKEE_ERROR_SOCKET_SET_LINGER, new_socket);
 	}
+#endif
 
 	/* Close-on-exec: Child processes won't inherit this fd
 	 */
 	cherokee_fd_set_closexec (new_socket);
+
+	/* Enables nonblocking I/O.
+	 */
+	ret = cherokee_fd_set_nonblocking (new_socket, true);
+	if (ret != ret_ok) {
+		LOG_WARNING (CHEROKEE_ERROR_SOCKET_NON_BLOCKING, new_socket);
+
+		cherokee_fd_close (new_socket);
+		return ret_error;
+	}
 
 	/* Disable Nagle's algorithm for this connection
 	 * so that there is no delay involved when sending data
@@ -391,16 +426,6 @@ cherokee_socket_accept_fd (cherokee_socket_t   *server_socket,
 	ret = cherokee_fd_set_nodelay (new_socket, true);
 	if (ret != ret_ok) {
 		LOG_WARNING_S (CHEROKEE_ERROR_SOCKET_RM_NAGLES);
-
-		cherokee_fd_close (new_socket);
-		return ret_error;
-	}
-
-	/* Enables nonblocking I/O.
-	 */
-	ret = cherokee_fd_set_nonblocking (new_socket, true);
-	if (ret != ret_ok) {
-		LOG_WARNING (CHEROKEE_ERROR_SOCKET_NON_BLOCKING, new_socket);
 
 		cherokee_fd_close (new_socket);
 		return ret_error;
@@ -617,8 +642,8 @@ cherokee_socket_write (cherokee_socket_t *socket,
 			return ret_ok;
 		}
 		if (len == 0) {
-			/* Very strange, socket is ready but nothing has been written,
-			 * retry later.
+			/* Very strange, socket is ready but nothing
+			 * has been written, retry later.
 			 */
 			return ret_eagain;
 		}
@@ -786,7 +811,7 @@ cherokee_socket_flush (cherokee_socket_t *socket)
 	int re;
 	int op = 1;
 
-	TRACE (ENTRIES, "flushing fd=%d\n", socket->socket);
+	TRACE (ENTRIES",flush", "flushing fd=%d\n", socket->socket);
 
 	do {
 		re = setsockopt (SOCKET_FD(socket), IPPROTO_TCP, TCP_NODELAY,
@@ -957,22 +982,19 @@ cherokee_socket_writev (cherokee_socket_t  *socket,
 
 		cnt = 0;
 		ret = cherokee_socket_write (socket, vector[i].iov_base, vector[i].iov_len, &cnt);
-		*pcnt_written += cnt;
+		if (ret != ret_ok) {
+			return ret;
+		}
 
-		if ((ret == ret_ok) &&
-		    (cnt == vector[i].iov_len))
+		*pcnt_written += cnt;
+		if (cnt == vector[i].iov_len)
 			continue;
 
-		/* else != ret_ok || cnt != vector[i].iov_len
-		 */
-		if (*pcnt_written != 0)
-			return ret_ok;
-
-		/* Nothing has been written, return error code.
-		 */
-		return ret;
+		/* Unfinished */
+		return ret_ok;
 	}
 
+	/* Did send everything */
 	return ret_ok;
 }
 
