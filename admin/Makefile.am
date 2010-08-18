@@ -34,6 +34,7 @@ adminpy_SCRIPTS = $(admin_scripts)
 if INSTALL_ADMIN
 admin_data = \
 Auth.py \
+Backup.py \
 Balancer.py \
 CgiBase.py \
 Cherokee.py \
@@ -41,6 +42,7 @@ Flags.py \
 Graph.py \
 Handler.py \
 Icons.py \
+Login.py \
 Mime.py \
 Page.py \
 PageAdvanced.py \

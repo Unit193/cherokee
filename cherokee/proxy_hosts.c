@@ -127,12 +127,21 @@ cherokee_handler_proxy_poll_new (cherokee_handler_proxy_poll_t **poll,
 ret_t
 cherokee_handler_proxy_poll_free (cherokee_handler_proxy_poll_t *poll)
 {
-	cherokee_list_t *i, *j;
+	cherokee_list_t               *i, *j;
+	cherokee_handler_proxy_conn_t *poll_conn;
 
 	list_for_each_safe (i, j, &poll->active) {
+		poll_conn = PROXY_CONN(i);
+		cherokee_list_del (&poll_conn->listed);
+		cherokee_handler_proxy_conn_free (poll_conn);
 	}
 
 	list_for_each_safe (i, j, &poll->reuse) {
+		poll_conn = PROXY_CONN(i);
+
+		poll->reuse_len -= 1;
+		cherokee_list_del (&poll_conn->listed);
+		cherokee_handler_proxy_conn_free (poll_conn);
 	}
 
 	CHEROKEE_MUTEX_DESTROY (&poll->mutex);
@@ -218,6 +227,10 @@ poll_release (cherokee_handler_proxy_poll_t *poll,
 	pconn->sent_out     = 0;
 	pconn->enc          = pconn_enc_none;
 
+	pconn->post.do_buf_sent = true;
+	pconn->post.sent        = 0;
+
+	cherokee_buffer_clean (&pconn->post.buf_temp);
 	cherokee_buffer_clean (&pconn->header_in_raw);
 
 	/* Store it to be reused
@@ -241,6 +254,10 @@ cherokee_handler_proxy_conn_new (cherokee_handler_proxy_conn_t **pconn)
 	 */
 	cherokee_socket_init (&n->socket);
 
+	n->post.sent        = 0;
+	n->post.do_buf_sent = true;
+	cherokee_buffer_init (&n->post.buf_temp);
+
 	cherokee_buffer_init (&n->header_in_raw);
 	cherokee_buffer_ensure_size (&n->header_in_raw, 512);
 
@@ -261,6 +278,7 @@ cherokee_handler_proxy_conn_free (cherokee_handler_proxy_conn_t *pconn)
 	cherokee_socket_close    (&pconn->socket);
 	cherokee_socket_mrproper (&pconn->socket);
 
+	cherokee_buffer_mrproper (&pconn->post.buf_temp);
 	cherokee_buffer_mrproper (&pconn->header_in_raw);
 
 	return ret_ok;
@@ -344,14 +362,18 @@ cherokee_handler_proxy_conn_recv_headers (cherokee_handler_proxy_conn_t *pconn,
 	 */
 	ret = cherokee_socket_bufread (&pconn->socket,
 				       &pconn->header_in_raw,
-				       512, &size);
+				       DEFAULT_RECV_SIZE, &size);
 	switch (ret) {
 	case ret_ok:
 		break;
 	case ret_eof:
 	case ret_error:
-	case ret_eagain:
 		return ret;
+	case ret_eagain:
+		if (cherokee_buffer_is_empty (&pconn->header_in_raw)) {
+			return ret_eagain;
+		}
+		break;
 	default:
 		RET_UNKNOWN(ret);
 	}
@@ -414,6 +436,9 @@ cherokee_proxy_util_init_socket (cherokee_socket_t *socket,
 {
 	ret_t                    ret;
 	cherokee_resolv_cache_t *resolv;
+
+	TRACE (ENTRIES, "Initializing proxy socket: %s\n",
+	       cherokee_string_is_ipv6 (&src->host) ? "IPv6": "IPv4");
 
 	/* Family */
 	if (cherokee_string_is_ipv6 (&src->host)) {

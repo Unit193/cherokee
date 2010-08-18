@@ -329,7 +329,29 @@ is_file_in_list (cherokee_list_t *list, char *filename, cuint_t len)
 
 
 static ret_t
-generate_file_entry (cherokee_handler_dirlist_t *dhdl, DIR *dir, cherokee_buffer_t *path, file_entry_t **ret_entry)
+realpath_buf (cherokee_buffer_t *in,
+	      cherokee_buffer_t *resolved)
+{
+	char *re;
+
+	cherokee_buffer_ensure_size (resolved, PATH_MAX);
+
+	re = realpath (in->buf, resolved->buf);
+	if (re == NULL) {
+		return ret_error;
+	}
+
+	resolved->len = strlen (resolved->buf);
+	return ret_ok;
+}
+
+
+static ret_t
+generate_file_entry (cherokee_handler_dirlist_t  *dhdl,
+		     DIR                         *dir,
+		     cherokee_buffer_t           *path,
+		     cherokee_buffer_t           *local_realpath,
+		     file_entry_t               **ret_entry)
 {
 	int            re;
 	ret_t          ret;
@@ -400,13 +422,25 @@ generate_file_entry (cherokee_handler_dirlist_t *dhdl, DIR *dir, cherokee_buffer
 			cherokee_stat (path->buf, &n->rstat);
 
 			if (HDL_DIRLIST_PROP(dhdl)->redir_symlinks) {
-				char *res;
-
-				/* Read the real path
+				/* The local directory realpath is build lazily
 				 */
-				cherokee_buffer_ensure_size (&n->realpath, PATH_MAX);
-				res = realpath (path->buf, n->realpath.buf);
-				if (res == NULL) {
+				if (cherokee_buffer_is_empty (local_realpath))
+				{
+					cherokee_buffer_drop_ending (path, n->name_len);
+
+					ret = realpath_buf (path, local_realpath);
+					if (unlikely (ret != ret_ok)) {
+						file_entry_free (n);
+						return ret_error;
+					}
+
+					cherokee_buffer_add (path, name, n->name_len);
+				}
+
+				/* Read the real path of the entry
+				 */
+				ret = realpath_buf (path, &n->realpath);
+				if (unlikely (ret != ret_ok)) {
 					cherokee_buffer_drop_ending (path, n->name_len);
 
 					file_entry_free (n);
@@ -415,17 +449,14 @@ generate_file_entry (cherokee_handler_dirlist_t *dhdl, DIR *dir, cherokee_buffer
 
 				/* Check it is within the limits
 				 */
-				n->realpath.len = strlen (n->realpath.buf);
-				re = strncmp (n->realpath.buf, path->buf,
-					      path->len - n->name_len);
-
+				re = strncmp (n->realpath.buf, local_realpath->buf, local_realpath->len);
 				if (re != 0) {
+					cherokee_buffer_drop_ending (path, n->name_len);
 					file_entry_free (n);
 					return ret_error;
 				}
 
-				cherokee_buffer_move_to_begin (&n->realpath,
-							       path->len - n->name_len);
+				cherokee_buffer_move_to_begin (&n->realpath, local_realpath->len +1);
 			}
 		}
 
@@ -658,13 +689,14 @@ build_file_list (cherokee_handler_dirlist_t *dhdl)
 	file_entry_t          *item;
 	int                    is_dir;
 	int                    is_link;
-	cherokee_connection_t *conn    = HANDLER_CONN(dhdl);
+	cherokee_connection_t *conn           = HANDLER_CONN(dhdl);
+	cherokee_buffer_t      local_realpath = CHEROKEE_BUF_INIT;
 
 	/* Build the local directory path
 	 */
-	cherokee_buffer_add_buffer (&conn->local_directory, &conn->request);        /* 1 */
-	dir = opendir (conn->local_directory.buf);
+	cherokee_buffer_add_buffer (&conn->local_directory, &conn->request);     /* 1 */
 
+	dir = opendir (conn->local_directory.buf);
 	if (dir == NULL) {
 		conn->error_code = http_not_found;
 		return ret_error;
@@ -675,7 +707,7 @@ build_file_list (cherokee_handler_dirlist_t *dhdl)
 	for (;;) {
 		ret_t ret;
 
-		ret = generate_file_entry (dhdl, dir, &conn->local_directory, &item);
+		ret = generate_file_entry (dhdl, dir, &conn->local_directory, &local_realpath, &item);
 		if (ret == ret_eof)
 			break;
 		if ((ret == ret_nomem) ||
@@ -700,6 +732,11 @@ build_file_list (cherokee_handler_dirlist_t *dhdl)
 	 */
 	closedir(dir);
 	cherokee_buffer_drop_ending (&conn->local_directory, conn->request.len); /* 2 */
+
+	/* Free local_realpath. It might have been built lazily,
+	 * inside the generate_file_entry() function.
+	 */
+	cherokee_buffer_mrproper (&local_realpath);
 
 	/* Sort the file list
 	 */
@@ -861,28 +898,6 @@ substitute_vbuf_token (cherokee_buffer_t **vbuf,
 
 
 static ret_t
-copy_buffer_escape (cherokee_buffer_t *src,
-		    cherokee_buffer_t *trg)
-{
-	ret_t   ret;
-	cuint_t utf8_len;
-
-	ret = cherokee_buffer_get_utf8_len (src, &utf8_len);
-	if (ret != ret_ok) {
-		return ret_error;
-	}
-
-	if (utf8_len != src->len) {
-		cherokee_buffer_add_buffer (trg, src);
-	} else {
-		cherokee_buffer_escape_uri (trg, src);
-	}
-
-	return ret_ok;
-}
-
-
-static ret_t
 render_file (cherokee_handler_dirlist_t *dhdl, cherokee_buffer_t *buffer, file_entry_t *file)
 {
 	ret_t                             ret;
@@ -961,17 +976,17 @@ render_file (cherokee_handler_dirlist_t *dhdl, cherokee_buffer_t *buffer, file_e
 		}
 
 		cherokee_buffer_clean (tmp);
-		copy_buffer_escape (&file->realpath, tmp);
+		cherokee_buffer_escape_uri_delims (tmp, &file->realpath);
 		VTMP_SUBSTITUTE_TOKEN ("%file_link%", tmp->buf);
 
 	} else if (! is_dir) {
 		cherokee_buffer_clean (tmp);
-		copy_buffer_escape (&name_buf, tmp);
+		cherokee_buffer_escape_uri_delims (tmp, &name_buf);
 		VTMP_SUBSTITUTE_TOKEN ("%file_link%", tmp->buf);
 
 	} else {
 		cherokee_buffer_clean (tmp);
-		copy_buffer_escape (&name_buf, tmp);
+		cherokee_buffer_escape_uri_delims (tmp, &name_buf);
 		cherokee_buffer_add_str (tmp, "/");
 		VTMP_SUBSTITUTE_TOKEN ("%file_link%", tmp->buf);
 	}

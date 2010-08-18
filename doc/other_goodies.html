@@ -35,7 +35,7 @@ downtime at all. No connections are lost. No delay happens. It can
 also be used to trace Cherokee&#8217;s state on the fly, even remotely and
 on production servers.</p></div>
 <div class="paragraph"><p>This tool has its own documentation under the
-<a href="bundle_cherokee-tweak.html">cherokee-tweak</a> section.</p></div>
+<a href="other_bundle_cherokee-tweak.html">cherokee-tweak</a> section.</p></div>
 <h3 id="x-sendifle">X-Sendfile</h3><div style="clear:left"></div>
 <div class="paragraph"><p>X-Sendfile is a special, non-standard HTTP header that has been
 supported by Cherokee for a while. At first you might think it is no
@@ -172,6 +172,19 @@ Mitigation Guide</a>.</p></div>
 data. If this feature is enabled, you will access a wide variety of
 information. Check the <a href="other_graphs.html">usage graphs</a> section
 for more details.</p></div>
+<h3 id="templating">Template subsystem</h3><div style="clear:left"></div>
+<div class="paragraph"><p>There is an advanced template subsystem used for both the
+<a href="config_virtual_servers_evhost.html">Advanced Virtual Hosting</a>
+module and the <a href="modules_loggers_custom.html">Custom logger</a>.</p></div>
+<div class="paragraph"><p>These modules can perform macro substitution to provide fine-grained
+control over their capabilities. The template subsystem provides
+slicing support in pretty much the same way the Python syntax does, so
+it can basically allow to use portion of the replacement strings
+instead of the whole thing.</p></div>
+<div class="paragraph"><p>You can read more about the specifics of the syntax and practical
+examples on the config_virtual_servers_evhost.html#slicing[Slicing]
+section of the <a href="config_virtual_servers_evhost.html">Advanced
+Virtual Hosting</a> documentation.</p></div>
 </div>
 <div id="footer">
 <div id="footer-text">

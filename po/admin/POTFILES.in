@@ -1,5 +1,7 @@
 admin/Auth.py
+admin/Backup.py
 admin/Balancer.py
+admin/CTK/CTK/AjaxUpload.py
 admin/CTK/CTK/Config.py
 admin/CTK/CTK/Dialog.py
 admin/CTK/CTK/Druid.py
@@ -17,6 +19,7 @@ admin/Flags.py
 admin/Graph.py
 admin/Handler.py
 admin/Icons.py
+admin/Login.py
 admin/Mime.py
 admin/Page.py
 admin/PageAdvanced.py
@@ -75,6 +78,7 @@ admin/plugins/server_info.py
 admin/plugins/ssi.py
 admin/plugins/streaming.py
 admin/plugins/target_ip.py
+admin/plugins/tls.py
 admin/plugins/url_arg.py
 admin/plugins/uwsgi.py
 admin/plugins/wildcard.py

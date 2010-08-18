@@ -487,8 +487,9 @@ cherokee_handler_file_custom_init (cherokee_handler_file_t *fhdl,
 	 */
 	if (! use_io) {
 		ret = open_local_directory (fhdl, local_file);
-		if (ret != ret_ok)
+		if (ret != ret_ok) {
 			goto out;
+		}
 	}
 
 	/* Is it a directory?
@@ -501,8 +502,7 @@ cherokee_handler_file_custom_init (cherokee_handler_file_t *fhdl,
 
 	/* Range 1: Check the range and file size
 	 */
-	if (unlikely ((conn->range_start >= fhdl->info->st_size) ||
-		      (conn->range_end   >= fhdl->info->st_size)))
+	if (unlikely (conn->range_start >= fhdl->info->st_size))
 	{
 		/* Sets the range limits, so the error handler can
 		 * report the error properly.
@@ -513,6 +513,14 @@ cherokee_handler_file_custom_init (cherokee_handler_file_t *fhdl,
 
 		ret = ret_error;
 		goto out;
+	}
+
+	if (unlikely ((conn->range_end >= fhdl->info->st_size)))
+	{
+		/* Range-end out of bounds. Set it to -1 so it is
+		 * updated with the file size later on.
+		 */
+		conn->range_end = -1;
 	}
 
 	/* Set the error code

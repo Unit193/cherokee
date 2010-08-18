@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 # CTK: Cherokee Toolkit
 #
 # Authors:
@@ -34,6 +36,8 @@ import Config
 from util import json_dump
 from Post import Post
 from HTTP import HTTP_Response, HTTP_Error
+
+from cgi import escape as escape_html
 
 
 class PostValidator:
@@ -139,9 +143,6 @@ class ServerHandler (pyscgi.SCGIHandler):
             print >> sys.stderr, info
 
             # Custom error management
-            #page = error.page (info, desc)
-            #response = HTTP_Response (error=500, body=page.Render())
-            #self.send (str(response))
             if error.page:
                 try:
                     page = error.page (info, desc)
@@ -153,7 +154,7 @@ class ServerHandler (pyscgi.SCGIHandler):
                     pass
 
             # No error handling page
-            html = '<pre>%s</pre>'%(info)
+            html = '<pre>%s</pre>' %(escape_html(info))
             self.send (str(HTTP_Error(desc=html)))
 
         try:
@@ -174,9 +175,10 @@ class ServerHandler (pyscgi.SCGIHandler):
 class Server:
     def __init__ (self):
         self._web_paths = []
-        self._scgi      = None
-        self._is_init   = False
-        self.lock       = threading.RLock()
+        self._scgi        = None
+        self._is_init     = False
+        self.lock         = threading.RLock()
+        self.plugin_paths = []
 
     def init_server (self, *args, **kwargs):
         # Is it already init?
@@ -186,6 +188,10 @@ class Server:
 
         # Instance SCGI server
         self._scgi = pyscgi.ServerFactory (*args, **kwargs)
+
+        # Figure plug-in paths
+        from Plugin import figure_plugin_paths
+        self.plugin_paths = figure_plugin_paths()
 
     def sort_routes (self):
         def __cmp(x,y):
@@ -267,6 +273,12 @@ def get_scgi():
     return my_thread.scgi_conn
 
 def init (*args, **kwargs):
+    # Deals with UTF-8
+    if sys.getdefaultencoding() != 'utf-8':
+        reload (sys)
+        sys.setdefaultencoding('utf-8')
+
+    # Server
     srv = get_server()
 
     if not 'threading' in kwargs:
@@ -278,6 +290,10 @@ def init (*args, **kwargs):
 def set_synchronous (sync):
     srv = get_server()
     srv._scgi.set_synchronous (sync)
+
+def add_plugin_dir (path):
+    srv = get_server()
+    srv.plugin_paths.insert (0, path)
 
 def run (*args, **kwargs):
     init (*args, **kwargs)

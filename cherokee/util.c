@@ -26,6 +26,7 @@
 #include "util.h"
 #include "logger.h"
 #include "bogotime.h"
+#include "socket.h"
 
 #include <stdlib.h>
 #include <stdarg.h>
@@ -818,20 +819,32 @@ cherokee_fd_set_nodelay (int fd, cherokee_boolean_t enable)
 	int re;
 	int flags;
 
-	/* TCP_NODELAY: Disable the Nagle algorithm. This means that
-         * segments are always sent as soon as possible, even if there
-         * is only a small amount of data.  When not set, data is
-         * buffered until there is a sufficient amount to send out,
-         * thereby avoiding the frequent sending of small packets,
-         * which results in poor utilization of the network.
+	/* Disable the Nagle algorithm. This means that segments are
+         * always sent as soon as possible, even if there is only a
+         * small amount of data. When not set, data is buffered until
+         * there is a sufficient amount to send out, thereby avoiding
+         * the frequent sending of small packets, which results in
+         * poor utilization of the network.
 	 */
+
 #ifdef _WIN32
 	flags = enable;
 	re = ioctlsocket (fd, FIONBIO, (u_long) &flags);
+
+#elif defined(FIONBIO)
+	/* Even though the right thing to do would be to use POSIX's
+	 * O_NONBLOCK, we are using FIONBIO here. It requires a single
+	 * syscall, while using O_NONBLOCK would require us to call
+	 * fcntl(F_GETFL) and fcntl(F_SETFL, O_NONBLOCK)
+	 */
+	re = ioctl (fd, FIONBIO, &enable);
+
 #else
+	/* Use POSIX's O_NONBLOCK
+	 */
  	flags = fcntl (fd, F_GETFL, 0);
 	if (unlikely (flags == -1)) {
-		LOG_ERRNO (errno, cherokee_err_error, CHEROKEE_ERROR_UTIL_F_GETFL, fd);
+		LOG_ERRNO (errno, cherokee_err_warning, CHEROKEE_ERROR_UTIL_F_GETFL, fd);
 		return ret_error;
 	}
 
@@ -842,8 +855,9 @@ cherokee_fd_set_nodelay (int fd, cherokee_boolean_t enable)
 
 	re = fcntl (fd, F_SETFL, flags);
 #endif
+
 	if (unlikely (re < 0)) {
-		LOG_ERRNO (errno, cherokee_err_error, CHEROKEE_ERROR_UTIL_F_SETFL, fd, flags, "O_NDELAY");
+		LOG_ERRNO (errno, cherokee_err_warning, CHEROKEE_ERROR_UTIL_F_SETFL, fd, flags, "O_NDELAY");
 		return ret_error;
 	}
 
@@ -861,7 +875,7 @@ cherokee_fd_set_nonblocking (int fd, cherokee_boolean_t enable)
 #else
 	flags = fcntl (fd, F_GETFL, 0);
 	if (flags < 0) {
-		LOG_ERRNO (errno, cherokee_err_error, CHEROKEE_ERROR_UTIL_F_GETFL, fd);
+		LOG_ERRNO (errno, cherokee_err_warning, CHEROKEE_ERROR_UTIL_F_GETFL, fd);
 		return ret_error;
 	}
 
@@ -873,7 +887,7 @@ cherokee_fd_set_nonblocking (int fd, cherokee_boolean_t enable)
 	re = fcntl (fd, F_SETFL, flags);
 #endif
 	if (re < 0) {
-		LOG_ERRNO (errno, cherokee_err_error, CHEROKEE_ERROR_UTIL_F_SETFL, fd, flags, "O_NONBLOCK");
+		LOG_ERRNO (errno, cherokee_err_warning, CHEROKEE_ERROR_UTIL_F_SETFL, fd, flags, "O_NONBLOCK");
 		return ret_error;
 	}
 
@@ -890,7 +904,7 @@ cherokee_fd_set_closexec (int fd)
 #ifndef _WIN32
 	flags = fcntl (fd, F_GETFD, 0);
 	if (flags < 0) {
-		LOG_ERRNO (errno, cherokee_err_error, CHEROKEE_ERROR_UTIL_F_GETFD, fd);
+		LOG_ERRNO (errno, cherokee_err_warning, CHEROKEE_ERROR_UTIL_F_GETFD, fd);
 		return ret_error;
 	}
 
@@ -898,7 +912,7 @@ cherokee_fd_set_closexec (int fd)
 
 	re = fcntl (fd, F_SETFD, flags);
 	if (re < 0) {
-		LOG_ERRNO (errno, cherokee_err_error, CHEROKEE_ERROR_UTIL_F_SETFD, fd, flags, "FD_CLOEXEC");
+		LOG_ERRNO (errno, cherokee_err_warning, CHEROKEE_ERROR_UTIL_F_SETFD, fd, flags, "FD_CLOEXEC");
 		return ret_error;
 	}
 #endif
@@ -1994,5 +2008,35 @@ cherokee_atoi (const char *str, int *ret_value)
 	}
 
 	*ret_value = tmp;
+	return ret_ok;
+}
+
+ret_t
+cherokee_copy_local_address (void              *sock,
+			     cherokee_buffer_t *buf)
+{
+	int                 re;
+	cherokee_sockaddr_t my_address;
+	cuint_t             my_address_len = 0;
+	char                ip_str[CHE_INET_ADDRSTRLEN+1];
+	cherokee_socket_t  *socket = SOCKET(sock);
+
+	/* Get the address
+	 */
+	my_address_len = sizeof(my_address);
+	re = getsockname (SOCKET_FD(socket), (struct sockaddr *)&my_address, &my_address_len);
+	if (re != 0) {
+		return ret_error;
+	}
+
+	/* Build the string
+	 */
+	cherokee_ntop (my_address.sa_in.sin_family,
+		       (struct sockaddr *) &my_address,
+		       ip_str, sizeof(ip_str)-1);
+
+	/* Copy it to the buffer
+	 */
+	cherokee_buffer_add (buf, ip_str, strlen(ip_str));
 	return ret_ok;
 }
