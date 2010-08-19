@@ -1,3 +1,11 @@
+cherokee (1.0.8-2) unstable; urgency=low
+
+  * Upgrading standards-version 3.8.4 → 3.9.1.0
+  * Replaced libcherokeee-server0's 'Provides' relationship with
+    'Breaks', as now specifies policy 7.4
+
+ -- Gunnar Wolf <gwolf@debian.org>  Thu, 19 Aug 2010 12:04:16 -0500
+
 cherokee (1.0.8-1) unstable; urgency=low
 
   * New Upstream Version

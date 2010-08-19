@@ -4,7 +4,7 @@ Priority: optional
 Maintainer: Gunnar Wolf <gwolf@debian.org>
 Uploaders: Alvaro Lopez Ortega <alvaro@gnu.org>, Leonel Nunez <leonel@enelserver.com>
 Build-Depends: bison, flex, debhelper (>= 7.0.50), autotools-dev, libpam0g-dev, python-support, libssl-dev, libldap-dev, libmysqlclient-dev,  libavformat-dev, libavcodec-dev, libavutil-dev, libgeoip-dev
-Standards-Version: 3.8.4
+Standards-Version: 3.9.1.0
 Homepage: http://cherokee-project.org/
 Vcs-Git: git://git.debian.org/git/collab-maint/cherokee.git
 Vcs-Browser: http://git.debian.org/git/collab-maint/cherokee.git
@@ -139,7 +139,7 @@ Section: httpd
 Architecture: any
 Replaces: libcherokee-mod-server-info
 Provides: libcherokee-mod-server-info
-Conflicts: libcherokee-mod-server-info, libcherokee-mod-admin (<< ${binary:Version}), libcherokee-mod-mysql (<< ${binary:Version}), libcherokee-mod-ldap (<< ${binary:Version}), libcherokee-mod-libssl (<< ${binary:Version}), libcherokee-mod-streaming (<< ${binary:Version}), libcherokee-mod-geoip (<< ${binary:Version}), libcherokee-mod-rrd (<< ${binary:Version})
+Breaks: libcherokee-mod-server-info, libcherokee-mod-admin (<< ${binary:Version}), libcherokee-mod-mysql (<< ${binary:Version}), libcherokee-mod-ldap (<< ${binary:Version}), libcherokee-mod-libssl (<< ${binary:Version}), libcherokee-mod-streaming (<< ${binary:Version}), libcherokee-mod-geoip (<< ${binary:Version}), libcherokee-mod-rrd (<< ${binary:Version})
 Depends: ${misc:Depends}, ${shlibs:Depends}
 Description: Cherokee web server - Server libraries
  Cherokee is a very fast, flexible and easy to configure Web Server.
