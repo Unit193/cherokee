@@ -38,6 +38,9 @@ endif
 %:
 	dh $@
 
+override_dh_pysupport:
+       dh_pysupport /usr/share/cherokee/
+
 override_dh_install:
 	dh_install
 	dh binary-arch --until dh_install
