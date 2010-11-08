@@ -39,7 +39,7 @@ endif
 	dh $@
 
 override_dh_pysupport:
-       dh_pysupport /usr/share/cherokee/
+	dh_pysupport /usr/share/cherokee/
 
 override_dh_install:
 	dh_install

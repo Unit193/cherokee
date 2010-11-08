@@ -139,7 +139,7 @@ Section: httpd
 Architecture: any
 Replaces: libcherokee-mod-server-info
 Provides: libcherokee-mod-server-info
-Breaks: libcherokee-mod-server-info, libcherokee-mod-admin (<< ${binary:Version}), libcherokee-mod-mysql (<< ${binary:Version}), libcherokee-mod-ldap (<< ${binary:Version}), libcherokee-mod-libssl (<< ${binary:Version}), libcherokee-mod-streaming (<< ${binary:Version}), libcherokee-mod-geoip (<< ${binary:Version}), libcherokee-mod-rrd (<< ${binary:Version})
+Breaks: libcherokee-mod-server-info (<< ${binary:Version}), libcherokee-mod-admin (<< ${binary:Version}), libcherokee-mod-mysql (<< ${binary:Version}), libcherokee-mod-ldap (<< ${binary:Version}), libcherokee-mod-libssl (<< ${binary:Version}), libcherokee-mod-streaming (<< ${binary:Version}), libcherokee-mod-geoip (<< ${binary:Version}), libcherokee-mod-rrd (<< ${binary:Version})
 Depends: ${misc:Depends}, ${shlibs:Depends}
 Description: Cherokee web server - Server libraries
  Cherokee is a very fast, flexible and easy to configure Web Server.
@@ -157,7 +157,7 @@ Description: Cherokee web server - Server libraries
 Package: libcherokee-server0-dev
 Section: libdevel
 Architecture: any
-Replaces: libcherokee-mod-server-info
+Replaces: libcherokee-mod-server-info, libcherokee-server0 (<< 0.8.1-1)
 Depends: ${misc:Depends}, libcherokee-server0 (= ${binary:Version}), libcherokee-base0-dev (= ${binary:Version})
 Description: Cherokee web server - Server librardevelopment files
  Cherokee is a very fast, flexible and easy to configure Web Server.

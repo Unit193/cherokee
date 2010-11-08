@@ -1,10 +1,14 @@
-cherokee (1.0.8-2) UNRELEASED; urgency=low
+cherokee (1.0.8-2) unstable; urgency=low
 
   * Override dh_pysupport to byte-compile private Python modules -
     Thanks to Jakub Wilk! (Closes: #592384)
   * Upgrading standards-version 3.8.4 → 3.9.1.0
-  * Replaced libcherokeee-server0's 'Provides' relationship with
+  * Replaced libcherokeee-server0's 'Conflicts' relationship with
     'Breaks', as now specifies policy 7.4
+  * Fix "file conflict during upgrade from lenny": add
+    'libcherokee-server0 (<< 0.8.1-1)' to Replaces for
+    libcherokee-server0-dev (closes: #601979). Thanks to Gregor Herrmann
+    for the patch and the prodding!
 
  -- Gunnar Wolf <gwolf@debian.org>  Tue, 24 Aug 2010 13:29:50 -0500
 
