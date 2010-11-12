@@ -1,8 +1,13 @@
 cherokee (1.0.9-1) unstable; urgency=low
 
   * New Upstream Version
+  * Refreshed  debian/patches/fix_man_section,
+               debian/patches/move_helper_programs_to_usr_share
+               debian/patches/series
+               debian/patches/set_user
+    Removed    debian/patches/include_paths_in_migrators
 
- -- leonel@enelserver.com <leonel@enelserver.com>  Fri, 12 Nov 2010 11:49:47 -0700
+ -- leonel@enelserver.com <leonel@enelserver.com>  Fri, 12 Nov 2010 11:51:26 -0700
 
 cherokee (1.0.8-2) unstable; urgency=low
 
