@@ -1,3 +1,9 @@
+cherokee (1.0.9-1) unstable; urgency=low
+
+  * New Upstream Version
+
+ -- leonel@enelserver.com <leonel@enelserver.com>  Fri, 12 Nov 2010 11:49:47 -0700
+
 cherokee (1.0.8-2) unstable; urgency=low
 
   * Override dh_pysupport to byte-compile private Python modules -

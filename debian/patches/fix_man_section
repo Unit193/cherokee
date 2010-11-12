@@ -1,16 +1,10 @@
-From: Gunnar Wolf <gwolf@debian.org>
-Origin: vendor
-Forwarded: not-needed
-Last-Update: 2009-12-03
-Description: Move manpage to the right section
-
-Index: cherokee-0.99.41/cherokee-admin.1
+Index: cherokee-1.0.9/cherokee-admin.1
 ===================================================================
---- cherokee-0.99.41.orig/cherokee-admin.1	2010-01-27 12:05:31.000000000 -0600
-+++ cherokee-0.99.41/cherokee-admin.1	2010-01-27 12:17:16.000000000 -0600
+--- cherokee-1.0.9.orig/cherokee-admin.1	2010-11-12 05:13:22.437879141 -0700
++++ cherokee-1.0.9/cherokee-admin.1	2010-11-12 05:13:45.169879087 -0700
 @@ -1,4 +1,4 @@
--.TH cherokee-admin 8 "July 28, 2008"
-+.TH cherokee-admin 1 "July 28, 2008"
+-.TH cherokee-admin 8 "September 20, 2010"
++.TH cherokee-admin 1 "September 20, 2010"
  .SH NAME
  cherokee-admin - Runs Cherokee's administrative interface
  .SH SYNOPSIS
