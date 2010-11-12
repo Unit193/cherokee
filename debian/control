@@ -116,24 +116,6 @@ Description: Cherokee web server - Configuration libraries
  .
  This is the configuration handler's runtime library
 
-Package: libcherokee-config0-dev
-Section: libdevel
-Architecture: any
-Depends: ${misc:Depends}, libcherokee-config0 (= ${binary:Version}), libcherokee-base0-dev (= ${binary:Version})
-Description: Cherokee web server - Configuration libraries' development files
- Cherokee is a very fast, flexible and easy to configure Web Server.
- It supports the widespread technologies nowadays: FastCGI, SCGI, PHP,
- CGI, TLS and SSL encrypted connections, Virtual hosts, Authentication,
- on the fly encoding, Apache compatible log files, HTTP Load Balancing,
- Data Base Balancing, SSI, Reverse HTTP Proxy and much more.
- .
- Cherokee also provides an easy to use configuration interface that
- allows to configure the server from top to bottom without having to
- edit a text configuration file.
- .
- This package contains the development files for the configuration
- handler - headers, .so and .a files.
-
 Package: libcherokee-server0
 Section: httpd
 Architecture: any

@@ -10,8 +10,11 @@ cherokee (1.0.9-1) unstable; urgency=low
                contrib/0*to0*.py and /usr/lib/libcherokee-config.so.*
   * Edited     libcherokee-config0-dev.install removed the reference to
                libcherokee-config.a
+  * Removed    debian/libcherokee-config0-dev.docs
+               debian/libcherokee-config0-dev.install
+  * Edited     debian/control removed the reference to libcherokee-config-dev
 
- -- leonel@enelserver.com <leonel@enelserver.com>  Fri, 12 Nov 2010 14:51:52 -0700
+ -- Leonel Nunez <leonel@enelserver.com>  Fri, 12 Nov 2010 16:31:47 -0700
 
 cherokee (1.0.8-2) unstable; urgency=low
 
