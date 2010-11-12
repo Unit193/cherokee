@@ -421,7 +421,8 @@ class Config:
             n += step
 
         del (self[pre])
-        self.rename ('tmp!normalize!%s'%(pre), pre)
+        if self['tmp!normalize']:
+            self.rename ('tmp!normalize!%s'%(pre), pre)
 
     def apply_chunk (self, chunk):
         lines = [l.strip() for l in chunk.split('\n')]
@@ -432,4 +433,17 @@ class Config:
             self[left] = right
 
     def has_changed (self):
-        return not self.root == self.root_orig
+        root = copy.deepcopy (self.root)
+        orig = copy.deepcopy (self.root_orig)
+
+        if not root and orig:
+            return True
+        if not orig and root:
+            return True
+
+        if 'tmp' in root:
+            del (root['tmp'])
+        if 'tmp' in orig:
+            del (orig['tmp'])
+
+        return not root == orig

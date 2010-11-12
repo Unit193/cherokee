@@ -79,8 +79,40 @@ Type: [External | Internal]
    the intended target of such petition. Getting into details of
    regular expressions is out of the scope of this document. Besides,
    there are many <a href="http://perldoc.perl.org/perlre.html">Perl
-   regular expressions</a> references.
+   regular expressions</a> references. Macros can be used for these
+   substitutions, which is specially handy for some cases that cannot
+   be covered any other way, such as uniformly managing virtual
+   servers with multiple matches. Take a look at the examples at the
+   end of this section for further clarification.
 </p>
+<div class="tableblock">
+<table rules="all"
+width="100%"
+frame="border"
+cellspacing="0" cellpadding="4">
+<col width="33%" />
+<col width="33%" />
+<col width="33%" />
+<thead>
+<tr>
+<th align="left" valign="top">Variable           </th>
+<th align="left" valign="top">Example          </th>
+<th align="left" valign="top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left" valign="top"><p class="table"><tt>${host}</tt></p></td>
+<td align="left" valign="top"><p class="table">example.com</p></td>
+<td align="left" valign="top"><p class="table">Host of the matching virtual server</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="paragraph"><p>This macro uses the standard template subsystem , which provides
+<a href="config_virtual_servers_evhost.html#slicing">slicing support</a>. You
+should read more about this powerful feature if you are not already
+familiar with it.</p></div>
 </li>
 </ul></div>
 <h3 id="vhosts">Virtual hosts and redirections</h3><div style="clear:left"></div>
@@ -119,7 +151,7 @@ cellspacing="0" cellpadding="4">
 <col width="70%" />
 <thead>
 <tr>
-<th align="left" valign="top">Regular Expression </th>
+<th align="left" valign="top">Regular Expression    </th>
 <th align="left" valign="top">Substitution</th>
 </tr>
 </thead>
@@ -135,6 +167,10 @@ cellspacing="0" cellpadding="4">
 <tr>
 <td align="left" valign="top"><p class="table"><em>/(\d+)/delete</em></p></td>
 <td align="left" valign="top"><p class="table"><a href="http://example.com/inst/photogallery/admin?photoid=$1&amp;method=delete">http://example.com/inst/photogallery/admin?photoid=$1&amp;method=delete</a></p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><em>/https_redir/(\d+)</em></p></td>
+<td align="left" valign="top"><p class="table"></p></td>
 </tr>
 </tbody>
 </table>
@@ -167,9 +203,14 @@ cellspacing="0" cellpadding="4">
 <td align="left" valign="top"><p class="table"><em>/photo/501/delete</em></p></td>
 <td align="left" valign="top"><p class="table"><a href="http://example.com/inst/photogallery/admin?photoid=501&amp;method=delete">http://example.com/inst/photogallery/admin?photoid=501&amp;method=delete</a></p></td>
 </tr>
+<tr>
+<td align="left" valign="top"><p class="table"><em>/https_redir/555</em></p></td>
+<td align="left" valign="top"><p class="table"><a href="https://example.com/secure?photoid=555">https://example.com/secure?photoid=555</a></p></td>
+</tr>
 </tbody>
 </table>
 </div>
+<div class="paragraph"><p>You might also want to check out the cookbook entry titled <a href="cookbook_http_to_https.html">HTTP to HTTPS</a> on how to redirect all traffic from HTTP to HTTPS.</p></div>
 </div>
 <div id="footer">
 <div id="footer-text">

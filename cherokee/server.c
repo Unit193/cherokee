@@ -840,11 +840,10 @@ initialize_collectors (cherokee_server_t *srv)
 ret_t
 cherokee_server_initialize (cherokee_server_t *srv)
 {
-	int                 re;
-	ret_t               ret;
-	cherokee_list_t    *i, *tmp;
-	struct passwd      *ent          = NULL;
-	cherokee_boolean_t  loggers_done = false;
+	int              re;
+	ret_t            ret;
+	cherokee_list_t *i, *tmp;
+	struct passwd   *ent      = NULL;
 
 	/* Build the server string
 	 */
@@ -980,17 +979,16 @@ cherokee_server_initialize (cherokee_server_t *srv)
 		cherokee_spawner_init();
 	}
 
+	/* Initialize loggers
+	 */
+	ret = initialize_loggers (srv);
+	if (unlikely(ret < ret_ok)) {
+		return ret;
+	}
+
 	/* Chroot
 	 */
 	if (! cherokee_buffer_is_empty (&srv->chroot)) {
-		/* Open the logs */
-		ret = initialize_loggers (srv);
-		if (unlikely(ret < ret_ok)) {
-			return ret;
-		}
-
-		loggers_done = true;
-
 		/* Jail the process */
 		re = chroot (srv->chroot.buf);
 		srv->chrooted = (re == 0);
@@ -1019,15 +1017,6 @@ cherokee_server_initialize (cherokee_server_t *srv)
 		LOG_ERRNO (errno, cherokee_err_error,
 			   CHEROKEE_ERROR_SERVER_CHDIR, "/");
 		return ret_error;
-	}
-
-	/* Initialize loggers
-	 */
-	if (! loggers_done) {
-		ret = initialize_loggers (srv);
-		if (unlikely(ret < ret_ok)) {
-			return ret;
-		}
 	}
 
 	/* Collectors
@@ -1472,18 +1461,20 @@ configure_server_property (cherokee_config_node_t *conf, void *data)
 		cryptor_func_new_t      instance;
 		cherokee_plugin_info_t *info      = NULL;
 
-		ret = cherokee_plugin_loader_get (&srv->loader, conf->val.buf, &info);
-		if ((ret != ret_ok) || (info == NULL))
-			return ret;
+		if (! cherokee_buffer_is_empty (&conf->val)) {
+			ret = cherokee_plugin_loader_get (&srv->loader, conf->val.buf, &info);
+			if ((ret != ret_ok) || (info == NULL))
+				return ret;
 
-		instance = (cryptor_func_new_t) info->instance;
-		ret = instance ((void **) &srv->cryptor);
-		if (ret != ret_ok)
-			return ret;
+			instance = (cryptor_func_new_t) info->instance;
+			ret = instance ((void **) &srv->cryptor);
+			if (ret != ret_ok)
+				return ret;
 
-		ret = cherokee_cryptor_configure (srv->cryptor, conf, srv);
-		if (ret != ret_ok)
-			return ret;
+			ret = cherokee_cryptor_configure (srv->cryptor, conf, srv);
+			if (ret != ret_ok)
+				return ret;
+		}
 
 	} else if (equal_buf_str (&conf->key, "collector")) {
 		collector_func_new_t    instance;
@@ -1812,8 +1803,10 @@ cherokee_server_handle_HUP (cherokee_server_t *srv)
 		 * fd and set it to -1. If a thread added it to its
 		 * fdpoll, it couldn't take the fd out of the poll.
 		 */
-		close (BIND(i)->socket.socket);
+		TRACE (ENTRIES, "Closing listener fd=%d\n", BIND(i)->socket.socket);
+		cherokee_fd_close (BIND(i)->socket.socket);
 	}
+
 
 	return ret_ok;
 }
@@ -1962,6 +1955,8 @@ cherokee_server_get_vserver (cherokee_server_t          *srv,
 	ret_t                      ret;
 	cherokee_list_t           *i;
 	cherokee_virtual_server_t *vserver;
+
+	TRACE (ENTRIES, "Trying to match '%s'\n", host->buf);
 
 	/* Evaluate the vrules
 	 */

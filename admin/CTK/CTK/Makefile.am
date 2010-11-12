@@ -50,7 +50,12 @@ Downloader.py \
 Radio.py \
 XMLRPCProxy.py \
 AjaxUpload.py \
-i18n.py
+i18n.py \
+Init.py \
+Paginator.py \
+StarRating.py \
+Carousel.py \
+Collapsible.py
 
 EXTRA_DIST = \
 $(ctk_DATA)

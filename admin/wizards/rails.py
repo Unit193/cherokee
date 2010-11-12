@@ -24,6 +24,7 @@
 
 #
 # Tested:
+# 2010/09/13: Rails 3.0.0 / Cherokee 1.0.9b
 # 2010/04/14: Rails 2.2.3 / Cherokee 0.99.41
 #
 
@@ -32,6 +33,7 @@ import re
 import CTK
 import Wizard
 import validations
+
 from util import *
 from consts import *
 
@@ -86,6 +88,10 @@ source!%(src_num)d!interpreter = spawn-fcgi -n -d %(ror_dir)s -f %(ror_dir)s/pub
 
 SOURCE_PROXY = """
 source!%(src_num)d!interpreter = %(ror_dir)s/script/server -p %(src_port)d
+"""
+
+SOURCE_PROXY3 = """
+source!%(src_num)d!interpreter = %(ror_dir)s/script/rails s -p %(src_port)d
 """
 
 SOURCE_ENV = """
@@ -195,7 +201,7 @@ class Commit:
             SRC    += SOURCE_FCGI
         else:
             CONFIG += CONFIG_VSRV_PROXY
-            SRC    += SOURCE_PROXY
+            SRC    += get_proxy_source (ror_dir)
 
         # Add the new main rules
         config = CONFIG % (locals())
@@ -254,7 +260,7 @@ class Commit:
             SRC    += SOURCE_FCGI
         else:
             CONFIG += CONFIG_RULES_PROXY
-            SRC    += SOURCE_PROXY
+            SRC    += get_proxy_source (ror_dir)
 
         # Add the new rules
         config = CONFIG % (locals())
@@ -331,6 +337,10 @@ class Dispatcher (CTK.Container):
     def __init__ (self):
         CTK.Container.__init__ (self)
 
+        ror_method = CTK.cfg.get_val('%s!ror_method'%(PREFIX))
+        if ror_method != 'fcgi':
+            return
+
         if self._fcgi_ok():
             return
 
@@ -365,12 +375,12 @@ class LocalSource:
         submit += table
 
         table.Add (_('Project Directory'), CTK.TextCfg ('%s!ror_dir'%(PREFIX), False), _(NOTE_ROR_DIR))
-        table.Add (_('RAILS_ENV environment'), CTK.ComboCfg ('%s!ror_env'%(PREFIX), trans (RAILS_ENV), {'class': 'noauto'}), _(NOTE_ENV))
+        table.Add (_('RAILS_ENV environment'), CTK.ComboCfg ('%s!ror_env'%(PREFIX), trans_options(RAILS_ENV), {'class': 'noauto'}), _(NOTE_ENV))
 
         if len(RAILS_METHOD) > 1:
-            table.Add (_('Deployment method'), CTK.ComboCfg ('%s!ror_method'%(PREFIX), trans (RAILS_METHOD), {'class': 'noauto'}), _(NOTE_METHOD))
+            table.Add (_('Deployment method'), CTK.ComboCfg ('%s!ror_method'%(PREFIX), trans_options(RAILS_METHOD), {'class': 'noauto'}), _(NOTE_METHOD))
         else:
-            submit += CTK.Hidden('%s!ror_env'%(PREFIX), RAILS_METHOD[0][0])
+            submit += CTK.Hidden('%s!ror_method'%(PREFIX), RAILS_METHOD[0][0])
 
         cont = CTK.Container()
         cont += CTK.RawHTML ('<h2>%s</h2>' %(_(NOTE_LOCAL_H1)))
@@ -415,6 +425,34 @@ def is_ror_dir (path):
             raise ValueError, _(ERROR_NO_ROR)
 
     return path
+
+
+def is_ror3_dir (path):
+    try:
+        path    = validations.is_local_dir_exists (path)
+        gemfile = validations.is_local_file_exists (os.path.join (path, 'Gemfile'))
+
+        data    = open(gemfile, 'r').read()
+        tmp     = re.findall("^gem\s+'rails',\s+'3[.0-9]*'", data, re.MULTILINE)
+        if tmp:
+            return True
+    except:
+        pass
+
+    return False
+
+
+def get_proxy_source (ror_dir):
+    if is_ror3_dir (ror_dir):
+        return SOURCE_PROXY3
+
+    try:
+        validations.is_local_file_exists (os.path.join (path, "script/server"))
+        return SOURCE_PROXY
+    except:
+        pass
+
+    return SOURCE_PROXY.replace('/script/server', '/script/rails')
 
 
 VALS = [

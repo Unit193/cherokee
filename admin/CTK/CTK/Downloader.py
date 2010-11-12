@@ -24,7 +24,7 @@ import os
 import time
 import urllib2
 import tempfile
-from threading import Thread
+import threading
 
 import JS
 from Box import Box
@@ -57,6 +57,9 @@ function update_progress_%(id)s() {
       (info.status == 'downloading')) {
         window.setTimeout (update_progress_%(id)s, 1000);
 
+  } else if (info.status == 'stopped') {
+        $('#%(progressbar_id)s').trigger ({'type':'stopped'});
+
   } else if (info.status == 'finished') {
         $('#%(progressbar_id)s').trigger ({'type':'finished'});
 
@@ -74,20 +77,28 @@ $.ajax ({type: 'GET', url: "%(url)s/start", async: false,
 });
 """
 
+STOP_DOWNLOAD_JS = """
+$.ajax ({type: 'GET', url: "%(url)s/stop", async: false});
+"""
+
 
 # Current downloads
 downloads = {}
 
-
-class DownloadEntry (Thread):
+class DownloadEntry (threading.Thread):
     def __init__ (self, url):
-        Thread.__init__ (self)
+        threading.Thread.__init__ (self)
 
         self.url        = url
         self.size       = 0
         self.percent    = 0
         self.downloaded = 0
         self.status     = 'init'
+        self.wanna_exit = False
+
+    def stop (self):
+        self.status     = 'stopped'
+        self.wanna_exit = True
 
     def run (self):
         self.opener  = urllib2.build_opener()
@@ -112,13 +123,15 @@ class DownloadEntry (Thread):
         self.target_path = path
 
         # Read response
-        while True:
+        while not self.wanna_exit:
             # I/O
             try:
                 chunk = self.response.read(1024)
                 if not chunk:
                     # Download finished
                     self.status = 'finished'
+                    self.target_temp.flush()
+                    self.target_temp.close()
                     break
                 self.target_temp.write (chunk)
             except Exception, e:
@@ -130,8 +143,6 @@ class DownloadEntry (Thread):
             # Stats
             self.downloaded += len(chunk)
             self.percent = int(self.downloaded * 100 / self.size)
-            print "Downloading thread", "%d%%" %(self.percent)
-
 
 
 def DownloadEntry_Factory (url, *args, **kwargs):
@@ -144,30 +155,48 @@ def DownloadEntry_Factory (url, *args, **kwargs):
 
 
 class DownloadReport:
-   def __call__ (self, url):
+    lock = threading.RLock()
+
+    def __call__ (self, url):
        if request.url.endswith('/info'):
            d = downloads[url]
            return '{"status": "%s", "percent": %d, "size": %d, "downloaded": %d}' %(
                d.status, d.percent, d.size, d.downloaded)
 
-       elif request.url.endswith('/start'):
-           # Current Downloads
+       elif request.url.endswith('/stop'):
            d = downloads[url]
-           d.start()
+           d.stop()
            return 'ok'
 
+       elif request.url.endswith('/start'):
+           self.lock.acquire()
+
+           # Current Downloads
+           d = downloads[url]
+           if d.status == 'init':
+               try:
+                   d.start()
+               except:
+                   self.lock.release()
+                   raise
+
+           self.lock.release()
+           return 'ok'
+
+
 class Downloader (Box):
-    def __init__ (self, url, props={}):
+    def __init__ (self, name, url, props={}):
         Box.__init__ (self)
-        self.url = url
-        self.id  = "downloader_%d" %(self.uniq_id)
+        self.url  = url
+        self.name = name
+        self.id   = "downloader_%s" %(name)
 
         # Other GUI components
         self.progressbar = ProgressBar()
         self += self.progressbar
 
         # Register the uploader path
-        self._url_local = "/downloader_%d_report" %(self.uniq_id)
+        self._url_local = "/downloader_%s_report" %(name)
         publish (self._url_local, DownloadReport, url=url)
 
         download = DownloadEntry_Factory (self.url)
@@ -188,3 +217,8 @@ class Downloader (Box):
 
         return LAUNCH_DOWNLOAD_JS %(props)
 
+    def JS_to_stop (self):
+        props = {'id':  self.id,
+                 'url': self._url_local}
+
+        return STOP_DOWNLOAD_JS %(props)

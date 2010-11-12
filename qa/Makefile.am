@@ -255,7 +255,19 @@ run-tests.py \
 247-UTF8-QueryString.py \
 248-Colon-UTF8.py \
 249-https-redir.py \
-250-https-redir-2.py
+250-https-redir-2.py \
+251-php-localcheck.py \
+252-XForwardedFor-1.py \
+253-XForwardedFor-2.py \
+254-XForwardedFor-3.py \
+255-header_op-add1.py \
+256-header_op-add2.py \
+257-header_op-add3.py \
+258-header_op-add4.py \
+259-Vrule-OR-1.py \
+260-Vrule-OR-2.py \
+261-ErrorRedir-Default1.py
 
 test:
+	python -m compileall .
 	./run-tests.py

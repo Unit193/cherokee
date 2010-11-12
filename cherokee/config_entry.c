@@ -29,6 +29,7 @@
 #include "http.h"
 #include "util.h"
 #include "encoder.h"
+#include "header_op.h"
 
 #define ENTRIES "config,rules"
 
@@ -59,12 +60,14 @@ cherokee_config_entry_init (cherokee_config_entry_t *entry)
 	entry->access               = NULL;
 	entry->authentication       = http_auth_nothing;
 	entry->only_secure          = false;
+	entry->header_ops           = NULL;
 
 	entry->document_root        = NULL;
 	entry->users                = NULL;
 
 	entry->expiration           = cherokee_expiration_none;
 	entry->expiration_time      = 0;
+	entry->expiration_prop      = cherokee_expiration_prop_none;
 
 	entry->encoders             = NULL;
 	entry->limit_bps            = 0;
@@ -80,6 +83,8 @@ cherokee_config_entry_init (cherokee_config_entry_t *entry)
 ret_t
 cherokee_config_entry_mrproper (cherokee_config_entry_t *entry)
 {
+	cherokee_list_t *i, *tmp;
+
 	if (entry->handler_properties != NULL) {
 		cherokee_module_props_free (entry->handler_properties);
 		entry->handler_properties = NULL;
@@ -113,6 +118,16 @@ cherokee_config_entry_mrproper (cherokee_config_entry_t *entry)
 	if (entry->encoders) {
 		cherokee_avl_free (entry->encoders, free);
 		entry->encoders = NULL;
+	}
+
+	if (entry->header_ops != NULL) {
+		list_for_each_safe (i, tmp, entry->header_ops) {
+			cherokee_list_del (i);
+			cherokee_header_op_free (HEADER_OP(i));
+		}
+
+		free (entry->header_ops);
+		entry->header_ops = NULL;
 	}
 
 	return ret_ok;
@@ -209,6 +224,7 @@ cherokee_config_entry_complete (cherokee_config_entry_t *entry, cherokee_config_
 	{
 		entry->expiration      = source->expiration;
 		entry->expiration_time = source->expiration_time;
+		entry->expiration_prop = source->expiration_prop;
 	}
 
 	if (! entry->encoders)
@@ -225,6 +241,10 @@ cherokee_config_entry_complete (cherokee_config_entry_t *entry, cherokee_config_
 	{
 		entry->timeout_lapse  = source->timeout_lapse;
 		entry->timeout_header = source->timeout_header;
+	}
+
+	if ((! entry->header_ops) && (source->header_ops)) {
+		entry->header_ops = source->header_ops;
 	}
 
 	return ret_ok;

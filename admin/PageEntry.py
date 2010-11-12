@@ -31,12 +31,14 @@ import Handler
 import re
 
 from Rule import Rule
+from util import *
 from consts import *
 from configured import *
 
-URL_BASE  = r'^/vserver/([\d]+)/rule/content/([\d]+)/?$'
-URL_APPLY = r'^/vserver/([\d]+)/rule/content/([\d]+)/apply$'
-URL_CLONE = r'^/vserver/([\d]+)/rule/content/([\d]+)/clone$'
+URL_BASE            = r'^/vserver/([\d]+)/rule/content/([\d]+)/?$'
+URL_APPLY           = r'^/vserver/([\d]+)/rule/content/([\d]+)/apply$'
+URL_CLONE           = r'^/vserver/([\d]+)/rule/content/([\d]+)/clone$'
+URL_HEADER_OP_APPLY = r'^/vserver/([\d]+)/rule/content/([\d]+)/header_op$'
 
 NOTE_TIMEOUT         = N_('Apply a custom timeout to the connections matching this rule.')
 NOTE_HANDLER         = N_('How the connection will be handled.')
@@ -49,6 +51,12 @@ NOTE_NO_LOG          = N_("Do not log requests matching this rule.")
 NOTE_EXPIRATION_TIME = N_("""How long from the object can be cached.<br />
 The <b>m</b>, <b>h</b>, <b>d</b> and <b>w</b> suffixes are allowed for minutes, hours, days, and weeks. Eg: 2d.
 """)
+
+NOTE_CACHING_OPTIONS          = N_("How an intermediate cache should treat the content.")
+NOTE_CACHING_NO_STORE         = N_("Prevents the retention of sensitive information. Caches must not store this content.")
+NOTE_CACHING_NO_TRANSFORM     = N_("Forbid intermediate caches from transforming the content.")
+NOTE_CACHING_MUST_REVALIDATE  = N_("The client must contact the server to revalidate the object.")
+NOTE_CACHING_PROXY_REVALIDATE = N_("Proxy servers must contact the server to revalidate the object.")
 
 VALIDATIONS = [
     ("vserver![\d]+!rule![\d]+!document_root",   validations.is_dev_null_or_local_dir_exists),
@@ -70,6 +78,11 @@ ENCODE_OPTIONS = [
     ('',       N_('Leave unset')),
     ('allow',  N_('Allow')),
     ('forbid', N_('Forbid'))
+]
+
+HEADER_OP_OPTIONS = [
+    ('add', N_('Add')),
+    ('del', N_('Remove'))
 ]
 
 
@@ -120,7 +133,7 @@ class SecurityWidget (CTK.Container):
         self += CTK.Indenter (submit)
 
         # Authentication
-        modul = CTK.PluginSelector('%s!auth'%(pre), trans (Cherokee.support.filter_available (VALIDATORS)))
+        modul = CTK.PluginSelector('%s!auth'%(pre), trans_options(Cherokee.support.filter_available (VALIDATORS)))
 
         table = CTK.PropsTable()
         table.Add (_('Validation Mechanism'), modul.selector_widget, _(NOTE_VALIDATOR))
@@ -130,16 +143,130 @@ class SecurityWidget (CTK.Container):
         self += modul
 
 
+def HeaderOp_Apply():
+    tmp = re.findall (r'^/vserver/([\d]+)/rule/content/([\d]+)/', CTK.request.url)
+    vsrv  = tmp[0][0]
+    rule  = tmp[0][1]
+
+    tipe  = CTK.post.pop('new_header_op_type')
+    name  = CTK.post.pop('new_header_op_name')
+    value = CTK.post.pop('new_header_op_value')
+
+    # Validation
+    if not name:
+        return {'ret':'error', 'errors': {'new_header_op_name': _("Can not be empty")}}
+
+    if tipe == 'add' and not value:
+        return {'ret':'error', 'errors': {'new_header_op_value': _("Can not be empty")}}
+
+    #("new_header_op_name",                       validations.is_header_name),
+    #("new_header_op_value",                      validations.is_not_empty),
+
+    next_pre = CTK.cfg.get_next_entry_prefix ('vserver!%s!rule!%s!header_op'%(vsrv, rule))
+
+    # Add the configuration entries
+    CTK.cfg['%s!type'%(next_pre)]   = tipe
+    CTK.cfg['%s!header'%(next_pre)] = name
+
+    if tipe == 'add':
+        CTK.cfg['%s!value'%(next_pre)] = value
+
+    return CTK.cfg_reply_ajax_ok()
+
+
+class HeaderOps (CTK.Container):
+    class OpsTable (CTK.Box):
+        def __init__ (self, pre, apply, refresh):
+            CTK.Box.__init__ (self)
+
+            def reorder (arg, pre=pre):
+                return CTK.SortableList__reorder_generic (arg, '%s!header_op'%(pre))
+
+            if CTK.cfg.keys('%s!header_op'%(pre)):
+                table = CTK.SortableList (reorder, self.id)
+                table += [CTK.RawHTML(x) for x in ('', '', _('Type'), _('Header'))]
+                table.set_header (1)
+
+                CTK.cfg.normalize ('%s!header_op'%(pre))
+                keys = CTK.cfg.keys('%s!header_op'%(pre))
+                keys.sort (lambda x,y: cmp(int(x), int(y)))
+
+                for n in keys:
+                    pre2  = '%s!header_op!%s' %(pre,n)
+                    type_ = CTK.cfg.get_val('%s!type'%(pre2))
+
+                    type_name = CTK.RawHTML (_(dict(HEADER_OP_OPTIONS)[type_]))
+                    header    = CTK.TextCfg('%s!header'%(pre2))
+                    value     = CTK.TextCfg('%s!value' %(pre2))
+
+                    delete = CTK.ImageStock('del')
+                    delete.bind('click', CTK.JS.Ajax (apply, data = {pre2: ''},
+                                                      complete = refresh.JS_to_refresh()))
+
+                    if type_ == 'add':
+                        table += [None, type_name, header, value, delete]
+                    elif type_ == 'del':
+                        table += [None, type_name, header, None, delete]
+
+                    table[-1].props['id']       = n
+                    table[-1][1].props['class'] = 'dragHandle'
+
+                self += table
+
+    def __init__ (self, vsrv, rule, apply):
+        CTK.Container.__init__ (self)
+        pre = 'vserver!%s!rule!%s' %(vsrv, rule)
+
+        # Operation Table
+        refresh = CTK.Refreshable({'id': 'header_op'})
+        refresh.register (lambda: HeaderOps.OpsTable(pre, apply, refresh).Render())
+
+        self += CTK.RawHTML ("<h2>%s</h2>" % (_('Header Operations')))
+        self += CTK.Indenter (refresh)
+
+        # New Entries
+        tipe   = CTK.Combobox  ({'name': 'new_header_op_type',  'class': 'noauto'}, HEADER_OP_OPTIONS)
+        header = CTK.TextField ({'name': 'new_header_op_name',  'class': 'noauto'})
+        value  = CTK.TextField ({'name': 'new_header_op_value', 'class': 'noauto'})
+        button = CTK.SubmitterButton (_('Add'))
+
+        table = CTK.Table()
+        table.set_header (num=1)
+        table += [CTK.RawHTML(x) for x in (_('Action'), _('Header'), _('Value'))]
+        table += [tipe, header, value, button]
+
+        # Manage 3rd column
+        selector = ','.join (['#%s'%(row[3].id) for row in table])
+        tipe.bind('change', "if ($(this).val()=='add'){ $('%s').show(); }else{ $('%s').hide();}" %(selector, selector))
+
+        submit = CTK.Submitter ('/vserver/%s/rule/content/%s/header_op'%(vsrv, rule))
+        submit.bind ('submit_success', refresh.JS_to_refresh())
+        submit += table
+
+        self += CTK.RawHTML ('<h3>%s</h3>'%(_('Add New Header')))
+        self += CTK.Indenter (submit)
+
+
 class TimeWidget (CTK.Container):
     class Expiration (CTK.Container):
         def __init__ (self, pre, apply, refresh):
             CTK.Container.__init__ (self)
 
+            # Expiration
             table = CTK.PropsTable()
-            table.Add (_('Expiration'), CTK.ComboCfg ('%s!expiration'%(pre), trans (EXPIRATION_TYPE)), _(NOTE_EXPIRATION))
+            table.Add (_('Expiration'), CTK.ComboCfg ('%s!expiration'%(pre), trans_options(EXPIRATION_TYPE)), _(NOTE_EXPIRATION))
 
             if CTK.cfg.get_val ('%s!expiration'%(pre)) == 'time':
                 table.Add (_('Time to expire'), CTK.TextCfg ('%s!expiration!time'%(pre), False), _(NOTE_EXPIRATION_TIME))
+
+            # Caching options
+            if CTK.cfg.get_val ('%s!expiration'%(pre)):
+                table.Add (_('Management by caches'), CTK.ComboCfg('%s!expiration!caching'%(pre), trans_options(CACHING_OPTIONS)), _(NOTE_CACHING_OPTIONS))
+                if CTK.cfg.get_val ('%s!expiration!caching'%(pre)):
+                    table.Add (_('No Store'),           CTK.CheckCfgText('%s!expiration!caching!no-store'%(pre),         False), _(NOTE_CACHING_NO_STORE))
+                    table.Add (_('No Transform'),       CTK.CheckCfgText('%s!expiration!caching!no-transform'%(pre),     False), _(NOTE_CACHING_NO_TRANSFORM))
+                    table.Add (_('Must Revalidate'),    CTK.CheckCfgText('%s!expiration!caching!must-revalidate'%(pre),  False), _(NOTE_CACHING_MUST_REVALIDATE))
+                    table.Add (_('Proxies Revalidate'), CTK.CheckCfgText('%s!expiration!caching!proxy-revalidate'%(pre), False), _(NOTE_CACHING_PROXY_REVALIDATE))
 
             submit = CTK.Submitter (apply)
             submit.bind ('submit_success', refresh.JS_to_refresh())
@@ -166,17 +293,20 @@ class TimeWidget (CTK.Container):
         self += CTK.RawHTML ("<h2>%s</h2>" % (_('Content Expiration')))
         self += CTK.Indenter (refresh)
 
+        # tmp
+        self += HeaderOps (vsrv, rule, apply)
+
 
 class EncodingWidget (CTK.Container):
     def __init__ (self, vsrv, rule, apply):
         CTK.Container.__init__ (self)
         pre = 'vserver!%s!rule!%s!encoder' %(vsrv, rule)
-        encoders = trans (Cherokee.support.filter_available (ENCODERS))
+        encoders = trans_options(Cherokee.support.filter_available (ENCODERS))
 
         table = CTK.PropsTable()
         for e,e_name in encoders:
             note  = _("Use the %s encoder whenever the client requests it.") %(_(e_name))
-            table.Add ('%s %s'% (_(e_name), _("support")), CTK.ComboCfg('%s!%s'%(pre,e), trans (ENCODE_OPTIONS)), note)
+            table.Add ('%s %s'% (_(e_name), _("support")), CTK.ComboCfg('%s!%s'%(pre,e), trans_options(ENCODE_OPTIONS)), note)
 
         submit = CTK.Submitter (apply)
         submit += table
@@ -218,18 +348,29 @@ class HandlerWidget (CTK.Container):
         CTK.Container.__init__ (self)
         pre = 'vserver!%s!rule!%s!handler' %(vsrv, rule)
 
-        modul = CTK.PluginSelector(pre, trans (Cherokee.support.filter_available (HANDLERS)))
+        modul = CTK.PluginSelector(pre, trans_options(Cherokee.support.filter_available (HANDLERS)))
 
         table = CTK.PropsTable()
         table.Add (_('Handler'), modul.selector_widget, _(NOTE_HANDLER))
 
         # Exceptionally, a custom document root option must be
         # available when the handler is not yet set
+        submit = None
         if CTK.cfg.get_val (pre) == None:
-            table.Add (_('Document Root'), CTK.TextCfg('vserver!%s!rule!%s!document_root'%(vsrv, rule), True), _(Handler.NOTE_DOCUMENT_ROOT))
+            key = 'vserver!%s!rule!%s!document_root'%(vsrv, rule)
+
+            table2 = CTK.PropsTable()
+            if not CTK.cfg.get_val (key, '').startswith(CHEROKEE_OWS_ROOT):
+                table2.Add (_('Document Root'), CTK.TextCfg(key, True), _(Handler.NOTE_DOCUMENT_ROOT))
+            else:
+                table2.Add (_('Document Root'), CTK.TextCfg(key, True, {'disabled':True}), _(Handler.NOTE_DOCUMENT_ROOT))
+
+            submit = CTK.Submitter (apply)
+            submit += table2
 
         self += CTK.RawHTML ('<h2>%s</h2>' %(_('Handler')))
         self += CTK.Indenter (table)
+        self += CTK.Indenter (submit)
         self += modul
 
 
@@ -269,3 +410,4 @@ class Render:
 CTK.publish (URL_BASE, Render)
 CTK.publish (URL_CLONE, Clone, method="POST")
 CTK.publish (URL_APPLY, CTK.cfg_apply_post, validation=VALIDATIONS, method="POST")
+CTK.publish (URL_HEADER_OP_APPLY, HeaderOp_Apply, validation=VALIDATIONS, method="POST")

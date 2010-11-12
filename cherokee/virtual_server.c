@@ -32,6 +32,7 @@
 #include "handler_error.h"
 #include "rule_default.h"
 #include "gen_evhost.h"
+#include "header_op.h"
 
 #include <errno.h>
 
@@ -237,11 +238,45 @@ add_access (char *address, void *data)
 
 
 static ret_t
+add_header_op (cherokee_config_entry_t *entry,
+	       cherokee_config_node_t  *conf)
+{
+	ret_t                 ret;
+	cherokee_header_op_t *op   = NULL;
+
+	ret = cherokee_header_op_new (&op);
+	if (unlikely (ret != ret_ok)) {
+		return ret_error;
+	}
+
+	ret = cherokee_header_op_configure (op, conf);
+	if (unlikely (ret != ret_ok)) {
+		return ret_error;
+	}
+
+	if (entry->header_ops == NULL) {
+		/* Create an empty list object under demand
+		 */
+		entry->header_ops = (cherokee_list_t *) malloc (sizeof (cherokee_list_t));
+		if (unlikely (entry->header_ops == NULL)) {
+			return ret_error;
+		}
+		INIT_LIST_HEAD (entry->header_ops);
+	}
+
+	cherokee_list_add (&op->entry, entry->header_ops);
+	return ret_ok;
+}
+
+
+static ret_t
 init_entry_property (cherokee_config_node_t *conf, void *data)
 {
 	ret_t                      ret;
 	cherokee_buffer_t         *tmp;
-	cherokee_list_t           *i;
+	cherokee_list_t           *i, *j;
+	cherokee_config_node_t    *subconf   = NULL;
+	cherokee_config_node_t    *subconf2  = NULL;
 	cherokee_plugin_info_t    *info      = NULL;
 	cherokee_virtual_server_t *vserver   = ((void **)data)[0];
 	cherokee_config_entry_t   *entry     = ((void **)data)[1];
@@ -252,6 +287,13 @@ init_entry_property (cherokee_config_node_t *conf, void *data)
 		ret = cherokee_config_node_read_list (conf, NULL, add_access, entry);
 		if (ret != ret_ok)
 			return ret;
+
+	} else if (equal_buf_str (&conf->key, "header_op")) {
+		cherokee_config_node_foreach (i, conf) {
+			ret = add_header_op (entry, CONFIG_NODE(i));
+			if (ret != ret_ok)
+				return ret;
+		}
 
 	} else if (equal_buf_str (&conf->key, "document_root")) {
 		cherokee_config_node_read_path (conf, NULL, &tmp);
@@ -362,6 +404,8 @@ init_entry_property (cherokee_config_node_t *conf, void *data)
 		entry->only_secure = !! atoi(conf->val.buf);
 
 	} else if (equal_buf_str (&conf->key, "expiration")) {
+		/* Expiration
+		 */
 		if (equal_buf_str (&conf->val, "none")) {
 			entry->expiration = cherokee_expiration_none;
 
@@ -381,6 +425,44 @@ init_entry_property (cherokee_config_node_t *conf, void *data)
 			}
 
 			entry->expiration_time = cherokee_eval_formated_time (tmp);
+		}
+
+		/* Caching policies
+		 */
+		cherokee_config_node_foreach (i, conf) {
+			subconf = CONFIG_NODE(i);
+
+			if (equal_buf_str (&subconf->key, "caching")) {
+				if (equal_buf_str (&subconf->val, "public")) {
+					BIT_SET (entry->expiration_prop, cherokee_expiration_prop_public);
+				} else if (equal_buf_str (&subconf->val, "private")) {
+					BIT_SET (entry->expiration_prop, cherokee_expiration_prop_private);
+				} else if (equal_buf_str (&subconf->val, "no-cache")) {
+					BIT_SET (entry->expiration_prop, cherokee_expiration_prop_no_cache);
+				}
+
+				cherokee_config_node_foreach (j, subconf) {
+					subconf2 = CONFIG_NODE(j);
+
+					if (equal_buf_str (&subconf2->key, "no-store")) {
+						if (atoi (subconf2->val.buf)) {
+							BIT_SET (entry->expiration_prop, cherokee_expiration_prop_no_store);
+						}
+					} else if (equal_buf_str (&subconf2->key, "no-transform")) {
+						if (atoi (subconf2->val.buf)) {
+							BIT_SET (entry->expiration_prop, cherokee_expiration_prop_no_transform);
+						}
+					} else if (equal_buf_str (&subconf2->key, "must-revalidate")) {
+						if (atoi (subconf2->val.buf)) {
+							BIT_SET (entry->expiration_prop, cherokee_expiration_prop_must_revalidate);
+						}
+					} else if (equal_buf_str (&subconf2->key, "proxy-revalidate")) {
+						if (atoi (subconf2->val.buf)) {
+							BIT_SET (entry->expiration_prop, cherokee_expiration_prop_proxy_revalidate);
+						}
+					}
+				}
+			}
 		}
 
 	} else if (equal_buf_str (&conf->key, "rate")) {
@@ -463,6 +545,47 @@ add_error_handler (cherokee_config_node_t *config, cherokee_virtual_server_t *vs
 
 	cherokee_config_entry_set_handler (entry, PLUGIN_INFO_HANDLER(info));
 	vserver->error_handler = entry;
+
+	return ret_ok;
+}
+
+
+ret_t
+cherokee_virtual_server_new_vrule (cherokee_virtual_server_t  *vserver,
+				   cherokee_config_node_t     *config,
+				   cherokee_vrule_t          **vrule)
+{
+	ret_t                   ret;
+	vrule_func_new_t        func_new;
+	cherokee_plugin_info_t *info      = NULL;
+	cherokee_buffer_t      *type      = &config->val;
+	cherokee_server_t      *srv       = VSERVER_SRV(vserver);
+
+	/* Load plug-in
+	 */
+	TRACE (ENTRIES, "Loading %s\n", type->buf);
+
+	ret = cherokee_plugin_loader_get (&srv->loader, type->buf, &info);
+	if (ret < ret_ok) {
+		LOG_CRITICAL (CHEROKEE_ERROR_VSERVER_LOAD_MODULE, type->buf, 0);
+		return ret_error;
+	}
+
+	/* Instance the rule object
+	 */
+	func_new = (rule_func_new_t) info->instance;
+	if (func_new == NULL)
+		return ret_error;
+
+	ret = func_new ((void **) vrule);
+	if ((ret != ret_ok) || (*vrule == NULL))
+		return ret_error;
+
+	/* Configure it
+	 */
+	ret = cherokee_vrule_configure (*vrule, config, vserver);
+	if (ret != ret_ok)
+		return ret_error;
 
 	return ret_ok;
 }

@@ -240,7 +240,7 @@ class Server:
                 # Handle request
                 self._scgi.handle_request()
         except KeyboardInterrupt:
-            print "\r", "Server exiting.."
+            print "\r", "CTK Back-end Server exiting.."
             self._scgi.server_close()
 
 
@@ -273,10 +273,9 @@ def get_scgi():
     return my_thread.scgi_conn
 
 def init (*args, **kwargs):
-    # Deals with UTF-8
-    if sys.getdefaultencoding() != 'utf-8':
-        reload (sys)
-        sys.setdefaultencoding('utf-8')
+    # Init CTK
+    import Init
+    Init.Init()
 
     # Server
     srv = get_server()
@@ -396,12 +395,15 @@ class _Request:
         my_thread = threading.currentThread()
         return my_thread.request_url
 
+    def _get_request_headers (self):
+        return get_scgi().env
+
     def _get_scgi_conn (self):
         return get_scgi()
 
-    url  = property (_get_request_url)
-    scgi = property (_get_scgi_conn)
-
+    scgi    = property (_get_scgi_conn)
+    url     = property (_get_request_url)
+    headers = property (_get_request_headers)
 
 class _Error:
     def __init__ (self):

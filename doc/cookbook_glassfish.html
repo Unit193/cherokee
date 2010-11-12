@@ -156,7 +156,8 @@ choice, since typically you will be wanting to get the best possible
 performance from your proxy server.</p></div>
 <div class="paragraph"><p>Launch Cherokee-Admin on your proxy machine, delete every rule of your
 virtual server of choice, and redefine the <tt>Default</tt> rule to use the
-<tt>HTTP reverse proxy</tt> handler from within the <tt>Handler</tt> tab.</p></div>
+<tt>HTTP reverse proxy</tt> handler from within the <tt>Handler</tt> tab. Make sure
+to enable the <tt>Preserve Host</tt> checkbox.</p></div>
 <div class="paragraph"><p>You will need to assign it every information source that you have
 previously defined, which must be the list of Glassfish-enabled
 machines in your cluster.</p></div>

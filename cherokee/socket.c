@@ -162,6 +162,7 @@ cherokee_socket_clean (cherokee_socket_t *socket)
 ret_t
 cherokee_socket_init_tls (cherokee_socket_t         *socket,
 			  cherokee_virtual_server_t *vserver,
+			  cherokee_connection_t     *conn,
 			  cherokee_socket_status_t  *blocking)
 {
 	ret_t              ret;
@@ -173,7 +174,7 @@ cherokee_socket_init_tls (cherokee_socket_t         *socket,
 			return ret;
 	}
 
-	ret = cherokee_cryptor_socket_init_tls (socket->cryptor, socket, vserver, blocking);
+	ret = cherokee_cryptor_socket_init_tls (socket->cryptor, socket, vserver, conn, blocking);
 	if (ret != ret_ok) {
 		return ret;
 	}
@@ -545,7 +546,7 @@ cherokee_bind_local (cherokee_socket_t *sock, cherokee_buffer_t *listen_to)
 
 	/* Remove the socket if it already exists
 	 */
-	re = stat (listen_to->buf, &buf);
+	re = cherokee_stat (listen_to->buf, &buf);
 	if (re == 0) {
 		if (! S_ISSOCK(buf.st_mode)) {
 			LOG_CRITICAL (CHEROKEE_ERROR_SOCKET_NO_SOCKET, listen_to->buf);
@@ -1162,7 +1163,9 @@ cherokee_socket_sendfile (cherokee_socket_t *socket,
 		}
 
 	} else if (_sent == 0) {
-		/* It isn't an error, but it wrote nothing */
+		/* It wrote nothing. Most likely the file was
+		 * truncated and the fd offset is off-limits.
+		 */
 		return ret_error;
 	}
 

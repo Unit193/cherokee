@@ -74,7 +74,9 @@ ones handling the requests in the end.</p></div>
 <img src="media/images/admin_handler_proxy.png" alt="media/images/admin_handler_proxy.png" />
 </div>
 </div>
-<div class="paragraph"><p>Then you will have to specify:</p></div>
+<div class="paragraph"><p>Then you will have to specify the Reverse Proxy Settings by adjusting
+the following settings.</p></div>
+<h3 id="handler">Handler</h3><div style="clear:left"></div>
 <div class="ulist"><ul>
 <li>
 <p>
@@ -85,9 +87,33 @@ Reuse connections: the maximum number of connections per server to be
 </li>
 <li>
 <p>
-Header additions: to add specific HTTP headers.
+Allow Keepalive: Allow the server to use Keep-alive connections with
+  the back-end servers, which is a good idea.
 </p>
 </li>
+<li>
+<p>
+Preserve Host Header: Preserve the original "Host:" header sent by
+  the client. It defaults to no, but it is of use in scenarios where
+  you need to uniquely identify a proxied machine. In these cases, IP
+  and port might not be enough, particularly if you are proxying a
+  server on a different port of that which it uses by default. For
+  example, when proxying a Java Server on the same machine through
+  port 80, resorting to the host header will most likely make things
+  work as expected.
+</p>
+</li>
+<li>
+<p>
+Preserve Server Header: Preserve the "Server:" header sent by the
+  back-end server. As before, it default to no, but the mechanism is
+  completely analogous.
+</p>
+</li>
+</ul></div>
+<h3 id="request_reply">Request / Reply</h3><div style="clear:left"></div>
+<div class="paragraph"><p>These setting apply respectively to the HTTP request or response.</p></div>
+<div class="ulist"><ul>
 <li>
 <p>
 URL rewriting rules, which are specified using regular expressions
@@ -96,12 +122,20 @@ URL rewriting rules, which are specified using regular expressions
 </li>
 <li>
 <p>
-Hidden returned headers: to eliminate specific HTTP headers.
+Header additions: to add specific HTTP headers.
 </p>
 </li>
 <li>
 <p>
-Balancer: the type of load balancing strategy to be used.
+Hidden returned headers: to eliminate specific HTTP headers.
+</p>
+</li>
+</ul></div>
+<h3 id="backend">Back-end Servers</h3><div style="clear:left"></div>
+<div class="ulist"><ul>
+<li>
+<p>
+Balancer: the type of load balancing strategy to be used to dispatch connections.
 </p>
 </li>
 <li>

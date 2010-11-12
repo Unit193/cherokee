@@ -32,6 +32,7 @@
 #include "socket.h"
 #include "spawner.h"
 #include "config_reader.h"
+#include "server-protected.h"
 #include "util.h"
 
 #ifdef HAVE_GETOPT_LONG
@@ -59,13 +60,16 @@
 #define DEFAULT_BIND         "127.0.0.1"
 #define RULE_PRE             "vserver!1!rule!"
 
-static int         port          = DEFAULT_PORT;
-static const char *document_root = DEFAULT_DOCUMENTROOT;
-static const char *config_file   = DEFAULT_CONFIG_FILE;
-static const char *bind_to       = DEFAULT_BIND;
-static int         debug         = 0;
-static int         unsecure      = 0;
-static int         scgi_port     = 0;
+static int                port          = DEFAULT_PORT;
+static const char        *document_root = DEFAULT_DOCUMENTROOT;
+static const char        *config_file   = DEFAULT_CONFIG_FILE;
+static const char        *bind_to       = DEFAULT_BIND;
+static int                debug         = 0;
+static int                unsecure      = 0;
+static int                scgi_port     = 4000;
+static cherokee_server_t *srv           = NULL;
+static cherokee_buffer_t  password      = CHEROKEE_BUF_INIT;
+
 
 static ret_t
 find_empty_port (int starting, int *port)
@@ -122,7 +126,7 @@ remove_old_socket (const char *path)
 
 	/* It might not exist
 	 */
-	re = stat (path, &info);
+	re = cherokee_stat (path, &info);
 	if (re != 0) {
 		return ret_ok;
 	}
@@ -147,25 +151,11 @@ remove_old_socket (const char *path)
 
 
 static ret_t
-config_server (cherokee_server_t *srv)
+print_connection_info (void)
 {
-	ret_t                  ret;
-	cherokee_config_node_t conf;
-	cherokee_buffer_t      buf       = CHEROKEE_BUF_INIT;
-	cherokee_buffer_t      password  = CHEROKEE_BUF_INIT;
-	cherokee_buffer_t      rrd_dir   = CHEROKEE_BUF_INIT;
-	cherokee_buffer_t      rrd_bin   = CHEROKEE_BUF_INIT;
-	cherokee_buffer_t      fake;
-
-	/* Print some information
-	 */
 	printf ("\n");
 
-	if (unsecure == 0) {
-		ret = generate_admin_password (&password);
-		if (ret != ret_ok)
-			return ret;
-
+	if (! cherokee_buffer_is_empty (&password)) {
 		printf ("Login:\n"
 			"  User:              admin\n"
 			"  One-time Password: %s\n\n", password.buf);
@@ -174,6 +164,26 @@ config_server (cherokee_server_t *srv)
 	printf ("Web Interface:\n"
 		"  URL:               http://%s:%d/\n\n",
 		(bind_to) ? bind_to : "localhost", port);
+}
+
+
+static ret_t
+config_server (cherokee_server_t *srv)
+{
+	ret_t                  ret;
+	cherokee_config_node_t conf;
+	cherokee_buffer_t      buf       = CHEROKEE_BUF_INIT;
+	cherokee_buffer_t      rrd_dir   = CHEROKEE_BUF_INIT;
+	cherokee_buffer_t      rrd_bin   = CHEROKEE_BUF_INIT;
+	cherokee_buffer_t      fake;
+
+	/* Generate the password
+	 */
+	if (unsecure == 0) {
+		ret = generate_admin_password (&password);
+		if (ret != ret_ok)
+			return ret;
+	}
 
 	/* Configure the embedded server
 	 */
@@ -187,7 +197,6 @@ config_server (cherokee_server_t *srv)
 	}
 
 	cherokee_buffer_add_va  (&buf, "server!bind!1!port = %d\n", port);
-	cherokee_buffer_add_str (&buf, "server!thread_number = 1\n");
 	cherokee_buffer_add_str (&buf, "server!ipv6 = 1\n");
 	cherokee_buffer_add_str (&buf, "server!max_connection_reuse = 0\n");
 
@@ -256,49 +265,38 @@ config_server (cherokee_server_t *srv)
 				 RULE_PRE "3!match = directory\n"
 				 RULE_PRE "3!match!directory = /static\n"
 				 RULE_PRE "3!handler = file\n"
-				 RULE_PRE "3!handler!iocache = 0\n");
-
-	if (! debug) {
-		cherokee_buffer_add_str (&buf, RULE_PRE "3!expiration = time\n");
-		cherokee_buffer_add_str (&buf, RULE_PRE "3!expiration!time = 30d\n");
-	}
+				 RULE_PRE "3!handler!iocache = 0\n"
+				 RULE_PRE "3!expiration = time\n"
+				 RULE_PRE "3!expiration!time = 30d\n");
 
 	cherokee_buffer_add_va  (&buf,
 				 RULE_PRE "4!match = request\n"
 				 RULE_PRE "4!match!request = ^/favicon.ico$\n"
 				 RULE_PRE "4!document_root = %s/static/images\n"
-				 RULE_PRE "4!handler = file\n", document_root);
-
-	if (! debug) {
-		cherokee_buffer_add_str (&buf, RULE_PRE "4!expiration = time\n");
-		cherokee_buffer_add_str (&buf, RULE_PRE "4!expiration!time = 30d\n");
-	}
+				 RULE_PRE "4!handler = file\n"
+				 RULE_PRE "4!expiration = time\n"
+				 RULE_PRE "4!expiration!time = 30d\n",
+				 document_root);
 
 	cherokee_buffer_add_va  (&buf,
 				 RULE_PRE "5!match = directory\n"
 				 RULE_PRE "5!match!directory = /icons_local\n"
 				 RULE_PRE "5!handler = file\n"
 				 RULE_PRE "5!handler!iocache = 0\n"
-				 RULE_PRE "5!document_root = %s\n", CHEROKEE_ICONSDIR);
-
-	if (! debug) {
-		cherokee_buffer_add_str (&buf, RULE_PRE "5!expiration = time\n");
-		cherokee_buffer_add_str (&buf, RULE_PRE "5!expiration!time = 30d\n");
-	}
-
+				 RULE_PRE "5!document_root = %s\n"
+				 RULE_PRE "5!expiration = time\n"
+				 RULE_PRE "5!expiration!time = 30d\n",
+				 CHEROKEE_ICONSDIR);
 
 	cherokee_buffer_add_va  (&buf,
 				 RULE_PRE "6!match = directory\n"
 				 RULE_PRE "6!match!directory = /CTK\n"
 				 RULE_PRE "6!handler = file\n"
 				 RULE_PRE "6!handler!iocache = 0\n"
-				 RULE_PRE "6!document_root = %s/CTK/static\n", document_root);
-
-	if (! debug) {
-		cherokee_buffer_add_str (&buf, RULE_PRE "6!expiration = time\n");
-		cherokee_buffer_add_str (&buf, RULE_PRE "6!expiration!time = 30d\n");
-	}
-
+				 RULE_PRE "6!document_root = %s/CTK/static\n"
+				 RULE_PRE "6!expiration = time\n"
+				 RULE_PRE "6!expiration!time = 30d\n",
+				 document_root);
 
 	/* Embedded help
 	 */
@@ -368,7 +366,10 @@ config_server (cherokee_server_t *srv)
 	cherokee_buffer_add_str (&buf,
 				 RULE_PRE "20!match = directory\n"
 				 RULE_PRE "20!match!directory = /graphs\n"
-				 RULE_PRE "20!handler = render_rrd\n");
+				 RULE_PRE "20!handler = render_rrd\n"
+				 RULE_PRE "20!expiration = epoch\n"
+				 RULE_PRE "20!expiration!caching = no-cache\n"
+				 RULE_PRE "20!expiration!caching!no-store = 1\n");
 
 	cherokee_buffer_add_str (&buf, RULE_PRE "20!document_root = ");
 	cherokee_tmp_dir_copy   (&buf);
@@ -394,7 +395,6 @@ config_server (cherokee_server_t *srv)
 
 	cherokee_buffer_mrproper (&rrd_bin);
 	cherokee_buffer_mrproper (&rrd_dir);
-	cherokee_buffer_mrproper (&password);
 	cherokee_buffer_mrproper (&buf);
 
 	return ret_ok;
@@ -413,7 +413,7 @@ print_help (void)
 		"  -b,  --bind[=IP]              Bind net iface; no arg means all\n"
 		"  -d,  --appdir=DIR             Application directory\n"
 		"  -p,  --port=NUM               TCP port\n"
-		"  -t,  --internal-tcp           Use TCP for internal communications\n"
+		"  -t,  --internal-unix          Use a Unix domain socket internally\n"
 		"  -C,  --target=PATH            Configuration file to modify\n\n"
 		"Report bugs to " PACKAGE_BUGREPORT "\n");
 }
@@ -460,7 +460,7 @@ process_parameters (int argc, char **argv)
 			unsecure = 1;
 			break;
 		case 't':
-			scgi_port = 4000;
+			scgi_port = 0;
 			break;
 		case 'V':
 			printf (APP_NAME " " PACKAGE_VERSION "\n" APP_COPY_NOTICE);
@@ -474,20 +474,85 @@ process_parameters (int argc, char **argv)
 	}
 }
 
+static ret_t
+check_for_python (void)
+{
+	int         re;
+	pid_t       pid;
+	int         exitcode = -1;
+	char *const args[]   = {"env", "python", "-c", "raise SystemExit", NULL};
+
+	pid = fork();
+	if (pid == -1) {
+		return ret_error;
+
+	} else if (pid == 0) {
+		execv ("/usr/bin/env", args);
+
+	} else {
+		do {
+			re = waitpid (pid, &exitcode, 0);
+		} while (re == -1 && errno == EINTR);
+
+		return (WEXITSTATUS(exitcode) == 0)? ret_ok : ret_error;
+	}
+
+	SHOULDNT_HAPPEN;
+	return ret_error;
+}
+
+static void
+signals_handler (int sig, siginfo_t *si, void *context)
+{
+	ret_t ret;
+	int   retcode;
+
+	UNUSED(context);
+
+	switch (sig) {
+	case SIGCHLD:
+		ret = cherokee_wait_pid (si->si_pid, &retcode);
+		break;
+
+	case SIGINT:
+	case SIGTERM:
+		if (srv->wanna_exit) {
+			break;
+		}
+
+		printf ("Cherokee-admin is exiting..\n");
+		cherokee_server_handle_TERM (srv);
+		break;
+
+	default:
+		PRINT_ERROR ("Unknown signal: %d\n", sig);
+	}
+}
 
 int
 main (int argc, char **argv)
 {
-	ret_t              ret;
-	cherokee_server_t *srv;
+	ret_t            ret;
+	struct sigaction act;
 
-#ifdef SIGPIPE
-        signal (SIGPIPE, SIG_IGN);
-#endif
-#ifdef SIGCHLD
-        signal (SIGCHLD, SIG_IGN);
-#endif
+	ret = check_for_python();
+	if (ret != ret_ok) {
+		PRINT_MSG ("ERROR: Couldn't find python.\n");
+		exit (EXIT_ERROR);
+	}
 
+	/* Signal handling */
+	act.sa_handler = SIG_IGN;
+	sigaction (SIGPIPE, &act, NULL);
+
+	memset(&act, 0, sizeof(act));
+	act.sa_sigaction = signals_handler;
+	act.sa_flags     = SA_SIGINFO;
+	sigaction (SIGCHLD, &act, NULL);
+	sigaction (SIGINT,  &act, NULL);
+	sigaction (SIGTERM, &act, NULL);
+
+	/* Initialize the embedded server */
 	cherokee_init();
 	cherokee_spawner_set_active (false);
 	process_parameters (argc, argv);
@@ -504,9 +569,15 @@ main (int argc, char **argv)
 	if (ret != ret_ok)
 		exit (EXIT_ERROR);
 
-	for (;;) {
-		cherokee_server_step (srv);
-	}
+	print_connection_info();
+
+	ret = cherokee_server_unlock_threads (srv);
+	if (ret != ret_ok)
+		exit (EXIT_ERROR);
+
+	do {
+		ret = cherokee_server_step (srv);
+	} while (ret == ret_eagain);
 
 	cherokee_server_stop (srv);
 	cherokee_server_free (srv);

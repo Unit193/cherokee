@@ -109,7 +109,7 @@ def NewManual():
     vsrv_num = re.findall (URL_NEW_MANUAL_R, CTK.request.url)[0]
 
     # Add New Rule: Content
-    rules = [('',_('Choose'))] + trans (RULES)
+    rules = [('',_('Choose'))] + trans_options(RULES)
 
     table = CTK.PropsTable()
     modul = CTK.PluginSelector ('tmp', rules, vsrv_num=vsrv_num)
@@ -230,9 +230,9 @@ class Render:
                     # Final
                     is_final = bool (int (CTK.cfg.get_val('vserver!%s!rule!%s!match!final'%(vsrv_num,r), "1")))
 
-                    final = CTK.ToggleButtonImages (CTK.Box({'class': 'final-on'},  CTK.RawHTML(_('Final'))),
-                                                    CTK.Box({'class': 'final-off'}, CTK.RawHTML(_('Non Final'))),
-                                                    is_final)
+                    final = CTK.ToggleButton (CTK.Box({'class': 'final-on'},  CTK.RawHTML(_('Final'))),
+                                              CTK.Box({'class': 'final-off'}, CTK.RawHTML(_('Non Final'))),
+                                              is_final)
                     final.bind ('changed',
                                 CTK.JS.Ajax (url_apply, async=True,
                                              data = '{"vserver!%s!rule!%s!match!final": parseInt(event.value)?"0":"1"}'%(vsrv_num,r)))
@@ -268,7 +268,7 @@ class Render:
                         wizard.JS_to_close() +
                         self.JS_to_trigger('submit_success'))
 
-            button = CTK.Button(_('New'), {'id': 'rule-new-button', 'class': 'panel-button', 'title': _('Add Behavior Rule')})
+            button = CTK.Button('<img src="/static/images/panel-new.png" />', {'id': 'rule-new-button', 'class': 'panel-button', 'title': _('Add Behavior Rule')})
             button.bind ('click', dialog.JS_to_show())
             dialog.bind ('submit_success', dialog.JS_to_close())
             dialog.bind ('submit_success', self.JS_to_trigger('submit_success'));
@@ -287,7 +287,7 @@ class Render:
             dialog.AddButton (_('Cancel'), "close")
             dialog += CTK.RawHTML ('<p>%s</p>' %(_(NOTE_CLONE_DIALOG)))
 
-            button = CTK.Button(_('Clone'), {'id': 'rule-clone-button', 'class': 'panel-button', 'title': _('Clone Selected Behavior Rule')})
+            button = CTK.Button('<img src="/static/images/panel-clone.png" />', {'id': 'rule-clone-button', 'class': 'panel-button', 'title': _('Clone Selected Behavior Rule')})
             button.bind ('click', dialog.JS_to_show())
 
             self += dialog

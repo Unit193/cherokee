@@ -96,7 +96,7 @@ AM_RECURSIVE_TARGETS = $(RECURSIVE_TARGETS:-recursive=) \
 	distdir
 ETAGS = etags
 CTAGS = ctags
-DIST_SUBDIRS = plugins wizards CTK static
+DIST_SUBDIRS = market plugins wizards CTK static
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 am__relativize = \
   dir0=`pwd`; \
@@ -212,6 +212,7 @@ PATH_SEPARATOR = @PATH_SEPARATOR@
 PHPCGI = @PHPCGI@
 PTHREAD_CFLAGS = @PTHREAD_CFLAGS@
 PTHREAD_LIBS = @PTHREAD_LIBS@
+PYTHON = @PYTHON@
 RANLIB = @RANLIB@
 RT_LIBS = @RT_LIBS@
 SED = @SED@
@@ -278,7 +279,7 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-SUBDIRS = plugins wizards CTK $(am__append_1)
+SUBDIRS = market plugins wizards CTK $(am__append_1)
 SUFFIXES = .py.pre .py
 PY_PRE = \
 configured.py.pre
@@ -290,8 +291,8 @@ generated_DATA = $(gen_data)
 adminpydir = "$(datadir)/cherokee/admin"
 adminpy_SCRIPTS = $(admin_scripts)
 @INSTALL_ADMIN_TRUE@admin_data = \
+@INSTALL_ADMIN_TRUE@About.py \
 @INSTALL_ADMIN_TRUE@Auth.py \
-@INSTALL_ADMIN_TRUE@Backup.py \
 @INSTALL_ADMIN_TRUE@Balancer.py \
 @INSTALL_ADMIN_TRUE@CgiBase.py \
 @INSTALL_ADMIN_TRUE@Cherokee.py \
@@ -299,8 +300,11 @@ adminpy_SCRIPTS = $(admin_scripts)
 @INSTALL_ADMIN_TRUE@Graph.py \
 @INSTALL_ADMIN_TRUE@Handler.py \
 @INSTALL_ADMIN_TRUE@Icons.py \
-@INSTALL_ADMIN_TRUE@Login.py \
 @INSTALL_ADMIN_TRUE@Mime.py \
+@INSTALL_ADMIN_TRUE@OWS_Backup.py \
+@INSTALL_ADMIN_TRUE@OWS_Cherokee_Info.py \
+@INSTALL_ADMIN_TRUE@OWS_Login.py \
+@INSTALL_ADMIN_TRUE@OWS_Market_Info.py \
 @INSTALL_ADMIN_TRUE@Page.py \
 @INSTALL_ADMIN_TRUE@PageAdvanced.py \
 @INSTALL_ADMIN_TRUE@PageEntry.py \
@@ -318,14 +322,18 @@ adminpy_SCRIPTS = $(admin_scripts)
 @INSTALL_ADMIN_TRUE@PageVServers.py \
 @INSTALL_ADMIN_TRUE@Rule.py \
 @INSTALL_ADMIN_TRUE@RuleSimple.py \
+@INSTALL_ADMIN_TRUE@SaveButton.py \
 @INSTALL_ADMIN_TRUE@SelectionPanel.py \
+@INSTALL_ADMIN_TRUE@SystemInfo.py \
+@INSTALL_ADMIN_TRUE@SystemStats.py \
+@INSTALL_ADMIN_TRUE@SystemStatsWidgets.py \
 @INSTALL_ADMIN_TRUE@Wizard.py \
 @INSTALL_ADMIN_TRUE@XMLServerDigest.py \
 @INSTALL_ADMIN_TRUE@config_version.py \
+@INSTALL_ADMIN_TRUE@configured.py \
 @INSTALL_ADMIN_TRUE@consts.py \
-@INSTALL_ADMIN_TRUE@server.py \
-@INSTALL_ADMIN_TRUE@upgrade_config.py \
 @INSTALL_ADMIN_TRUE@util.py \
+@INSTALL_ADMIN_TRUE@popen.py \
 @INSTALL_ADMIN_TRUE@validations.py
 
 @INSTALL_ADMIN_TRUE@html_data = \
@@ -800,6 +808,9 @@ uninstall-am: uninstall-adminhelpDATA uninstall-adminpyDATA \
 
 .py.pre.py:
 	sed -e "s|%sysconfdir%|${sysconfdir}|g; s|%sbindir%|${sbindir}|g; s|%docdir%|${docdir}|g; s|%prefix%|${prefix}|g; s|%localstatedir%|${localstatedir}|g; s|%libdir%|${libdir}|g; s|%wwwroot%|${WWW_ROOT}|g; s|%version%|${PACKAGE_VERSION}|g; s|%phpcgi%|${PHPCGI}|g; s|%datadir%|${datadir}|g; s|%localedir%|${localedir}|g" $< > $@
+
+test:
+	python -m compileall .
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

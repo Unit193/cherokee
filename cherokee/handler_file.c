@@ -355,7 +355,7 @@ stat_local_directory (cherokee_handler_file_t   *fhdl,
 	/* Without cache
 	 */
 without:
-	re = stat (local_file->buf, &fhdl->cache_info);
+	re = cherokee_stat (local_file->buf, &fhdl->cache_info);
 	TRACE (ENTRIES, "%s, use_iocache=0 ret=%d\n", local_file->buf, re);
 
 	if (re >= 0) {
@@ -766,8 +766,9 @@ cherokee_handler_file_step (cherokee_handler_file_t *fhdl, cherokee_buffer_t *bu
 			goto exit_sendfile;
 		}
 
-		if (ret < ret_ok)
+		if (ret != ret_ok) {
 			return ret;
+		}
 
 		/* This connection is not using the cherokee_connection_send() method,
 		 * so we have to update the connection traffic counter here.

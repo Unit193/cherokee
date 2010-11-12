@@ -233,6 +233,36 @@ Custom Value: set a value by hand.
 </p>
 </li>
 </ol></div>
+<div class="paragraph"><p>Additionaly, if a content expiration option is set, it is possible to
+specify the way in which an intermediate cache should treat the
+content, for situations such as when the content is requested to
+Cherokee through an HTTP proxy. This is done through the <tt>Management
+by caches</tt> setting, that can be specified to any of the following
+values: <tt>Not set</tt>, <tt>Private</tt>, <tt>Public</tt>, <tt>No Cache</tt>.</p></div>
+<div class="paragraph"><p>If the setting is enabled, four additional parameters can be
+individually turned on and off to fine tune the behavior:</p></div>
+<div class="olist arabic"><ol class="arabic">
+<li>
+<p>
+No Store: Prevents the retention of sensitive information. Caches must not store this content.
+</p>
+</li>
+<li>
+<p>
+No Transform: Forbid intermediate caches from transforming the content.
+</p>
+</li>
+<li>
+<p>
+Must Revalidate: The client must contact the server to revalidate the object.
+</p>
+</li>
+<li>
+<p>
+Proxies Revalidate: Proxy servers must contact the server to revalidate the object.
+</p>
+</li>
+</ol></div>
 <h3 id="security">Security</h3><div style="clear:left"></div>
 <div class="paragraph"><p>This section will give access to access restriction settings and
 authentication settings.</p></div>

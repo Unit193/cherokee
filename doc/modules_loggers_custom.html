@@ -27,9 +27,9 @@ evaluated right before writing each log entry:</p></div>
 width="100%"
 frame="border"
 cellspacing="0" cellpadding="4">
-<col width="33%" />
-<col width="33%" />
-<col width="33%" />
+<col width="10%" />
+<col width="40%" />
+<col width="50%" />
 <thead>
 <tr>
 <th align="left" valign="top">Variable                </th>
@@ -49,14 +49,9 @@ cellspacing="0" cellpadding="4">
 <td align="left" valign="top"><p class="table">Local IP-address</p></td>
 </tr>
 <tr>
-<td align="left" valign="top"><p class="table"><tt>${request}</tt></p></td>
-<td align="left" valign="top"><p class="table">/file.txt</p></td>
-<td align="left" valign="top"><p class="table">URL path requested</p></td>
-</tr>
-<tr>
-<td align="left" valign="top"><p class="table"><tt>${request_original}</tt></p></td>
-<td align="left" valign="top"><p class="table">/file.txt</p></td>
-<td align="left" valign="top"><p class="table">URL path requested before any rewrite</p></td>
+<td align="left" valign="top"><p class="table"><tt>${port_server}</tt></p></td>
+<td align="left" valign="top"><p class="table">80</p></td>
+<td align="left" valign="top"><p class="table">Port of the server serving the request</p></td>
 </tr>
 <tr>
 <td align="left" valign="top"><p class="table"><tt>${protocol}</tt></p></td>
@@ -64,19 +59,29 @@ cellspacing="0" cellpadding="4">
 <td align="left" valign="top"><p class="table">Request Protocol</p></td>
 </tr>
 <tr>
-<td align="left" valign="top"><p class="table"><tt>${port_server}</tt></p></td>
-<td align="left" valign="top"><p class="table">80</p></td>
-<td align="left" valign="top"><p class="table">Port of the server serving the request</p></td>
-</tr>
-<tr>
 <td align="left" valign="top"><p class="table"><tt>${query_string}</tt></p></td>
 <td align="left" valign="top"><p class="table">?bar=foo</p></td>
 <td align="left" valign="top"><p class="table">"The query string, if exists"</p></td>
 </tr>
 <tr>
+<td align="left" valign="top"><p class="table"><tt>${request}</tt></p></td>
+<td align="left" valign="top"><p class="table">/file.txt</p></td>
+<td align="left" valign="top"><p class="table">URL path requested</p></td>
+</tr>
+<tr>
 <td align="left" valign="top"><p class="table"><tt>${request_first_line}</tt></p></td>
 <td align="left" valign="top"><p class="table">GET / HTTP/1.0</p></td>
 <td align="left" valign="top"><p class="table">First line of request</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><tt>${request_original}</tt></p></td>
+<td align="left" valign="top"><p class="table">/file.txt</p></td>
+<td align="left" valign="top"><p class="table">URL path requested before any rewrite</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><tt>${response_size}</tt></p></td>
+<td align="left" valign="top"><p class="table">1234</p></td>
+<td align="left" valign="top"><p class="table">Size of the response in bytes</p></td>
 </tr>
 <tr>
 <td align="left" valign="top"><p class="table"><tt>${status}</tt></p></td>
@@ -99,6 +104,11 @@ cellspacing="0" cellpadding="4">
 <td align="left" valign="top"><p class="table">Time: milliseconds since Epoch</p></td>
 </tr>
 <tr>
+<td align="left" valign="top"><p class="table"><tt>${transport}</tt></p></td>
+<td align="left" valign="top"><p class="table">https</p></td>
+<td align="left" valign="top"><p class="table">Transport type: <tt>http</tt> or <tt>https</tt></p></td>
+</tr>
+<tr>
 <td align="left" valign="top"><p class="table"><tt>${user_remote}</tt></p></td>
 <td align="left" valign="top"><p class="table">guest</p></td>
 <td align="left" valign="top"><p class="table">Remote user (authentication)</p></td>
@@ -107,6 +117,11 @@ cellspacing="0" cellpadding="4">
 <td align="left" valign="top"><p class="table"><tt>${vserver_name}</tt></p></td>
 <td align="left" valign="top"><p class="table">default</p></td>
 <td align="left" valign="top"><p class="table">Virtual Server nick name</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><tt>${vserver_name_req}</tt></p></td>
+<td align="left" valign="top"><p class="table">example.com</p></td>
+<td align="left" valign="top"><p class="table">Requested host (Host: header)</p></td>
 </tr>
 </tbody>
 </table>

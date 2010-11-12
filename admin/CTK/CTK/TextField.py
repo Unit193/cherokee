@@ -22,20 +22,16 @@
 # 02110-1301, USA.
 #
 
+from cgi import escape
+
 from RawHTML import RawHTML
 from Widget import Widget
 from Server import cfg
+from util import to_utf8
 
 HEADER = [
     '<script type="text/javascript" src="/CTK/js/jquery.form-defaults.js"></script>'
 ]
-
-def to_utf8 (something):
-    if type(something) == unicode:
-        return something.encode('utf-8')
-    elif type(something) == str:
-        return unicode(something).encode('utf-8')
-    return str(something)
 
 class TextField (Widget):
     def __init__ (self, props=None):
@@ -118,7 +114,7 @@ class TextCfg (TextField):
         # Read the key value
         val = cfg.get_val(key)
         if val:
-            props['value'] = val
+            props['value'] = escape(val, quote=True)
 
         if optional:
             props['optional'] = True
@@ -128,6 +124,13 @@ class TextCfg (TextField):
 
         # Init parent
         TextField.__init__ (self, props)
+
+
+class TextCfgPassword (TextCfg):
+    def __init__ (self, *a, **kw):
+        TextCfg.__init__ (self, *a, **kw)
+        self.type = "password"
+
 
 
 JS = """

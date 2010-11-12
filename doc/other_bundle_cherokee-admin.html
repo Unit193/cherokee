@@ -114,7 +114,7 @@ path:</p></div>
 </dt>
 <dd>
 <p>
-       <tt>cherokee-admin</tt> [-d DIR] [-p PORT] [-C FILE] [-a]
+       <tt>cherokee-admin</tt> [-d DIR] [-p PORT] [-C FILE] [-b] [-x] [-u] [-t]
 </p>
 </dd>
 <dt class="hdlist1">
@@ -161,6 +161,18 @@ path:</p></div>
 </p>
 </dd>
 <dt class="hdlist1">
+-u, --unsecure
+</dt>
+<dd>
+<p>
+               Allows accessing cherokee-admin&#8217;s interface without
+               requiring the user to authenticate. This disables a
+               security measure and is only meant to ease the
+               development process. The usage of this parameter is
+               strongly discouraged for regular users.
+</p>
+</dd>
+<dt class="hdlist1">
 -b, --bind[=IP]
 </dt>
 <dd>
@@ -173,20 +185,12 @@ path:</p></div>
 </p>
 </dd>
 <dt class="hdlist1">
--C, --target=PATH
-</dt>
-<dd>
-<p>
-               Requests  a  configuration  file  different  than  the  default
-               /etc/cherokee/cherokee.conf to be used
-</p>
-</dd>
-<dt class="hdlist1">
 -d, --appdir=DIR
 </dt>
 <dd>
 <p>
-               Uses a custom admin-interface path
+               Uses a custom admin-interface path where the source
+               files of cherokee-admin reside.
 </p>
 </dd>
 <dt class="hdlist1">
@@ -198,15 +202,24 @@ path:</p></div>
 </p>
 </dd>
 <dt class="hdlist1">
--u, --unsecure
+-t, --internal-unix
 </dt>
 <dd>
 <p>
-               Allows accessing cherokee-admin&#8217;s interface without
-               requiring the user to authenticate. This disables a
-               security measure and is only meant to ease the
-               development process. The usage of this parameter is
-               strongly discouraged for regular users.
+               By default, cherokee-admin uses TCP for internal
+               communications. This parameter specifies that a Unix
+               domain socket should be used instead. The default
+               behavior is the safest one, so this parameter should
+               rarely by used.
+</p>
+</dd>
+<dt class="hdlist1">
+-C, --target=PATH
+</dt>
+<dd>
+<p>
+               Requests  a  configuration  file  different  than  the  default
+               /etc/cherokee/cherokee.conf to be used
 </p>
 </dd>
 </dl></div>

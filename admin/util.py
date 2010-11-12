@@ -26,7 +26,60 @@ import os
 import sys
 import glob
 import socket
+import subprocess
+
 import CTK
+
+
+#
+# Deal with os.popen and subprocess issues in Python 2.4
+#
+def run (command, stdout=True, stderr=False, retcode=False):
+    returns = 0
+
+    args = {'shell': True, 'close_fds': True}
+    if stdout:
+        args['stdout'] = subprocess.PIPE
+        returns += 1
+    if stderr:
+        args['stderr'] = subprocess.PIPE
+        returns += 1
+    if retcode:
+        returns += 1
+
+    p = subprocess.Popen (command, **args)
+
+    if stdout:
+        stdout_output = p.stdout.read()
+    if stderr:
+        stderr_output = p.stderr.read()
+
+    if stdout:
+        p.stdout.close()
+    if stderr:
+        p.stderr.close()
+
+    ret = p.poll()
+
+    if returns > 1:
+        d = {}
+        if stdout:
+            d['stdout'] = stdout_output
+        if stderr:
+            d['stderr'] = stderr_output
+        if retcode:
+            d['retcode'] = ret
+        return d
+
+    if stdout:
+        return stdout_output
+    elif stderr:
+        return stderr_output
+    elif retcode:
+        return ret
+
+    assert False, "Should not happened"
+
 
 #
 # Strings
@@ -39,6 +92,10 @@ def bool_to_onoff (b):
 
 def bool_to_yesno (b):
     return (_('No'), _('Yes'))[bool(b)]
+
+def trans_options (options):
+    """Translate the options with gettext"""
+    return [(x[0], _(x[1])) for x in options]
 
 
 #
@@ -119,8 +176,12 @@ def cfg_source_find_empty_port (n_ports=1):
         ports.append (port)
 
     pport = 1025
-    for x in ports:
-        if pport + n_ports < x:
+    while pport+n_ports < 65535:
+        pports = range(pport, pport + n_ports)
+        for x in pports:
+            if x in ports:
+                pport += 1
+                break
             return pport
 
     assert (False)
@@ -213,12 +274,20 @@ def path_find_binary (executable, extra_dirs=[], custom_test=None):
 
     assert (type(executable) in [str, list])
 
-    dirs = extra_dirs
+    # Extra dirs evaluation
+    dirs = []
+    for d in extra_dirs:
+        if '*' in d or '?' in d:
+            dirs += glob.glob (d)
+        else:
+            dirs.append(d)
 
+    # $PATH
     env_path = os.getenv("PATH")
     if env_path:
         dirs += filter (lambda x: x, env_path.split(":"))
 
+    # Check
     for dir in dirs:
         if type(executable) == str:
             tmp = os.path.join (dir, executable)

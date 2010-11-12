@@ -167,6 +167,7 @@ PATH_SEPARATOR = @PATH_SEPARATOR@
 PHPCGI = @PHPCGI@
 PTHREAD_CFLAGS = @PTHREAD_CFLAGS@
 PTHREAD_LIBS = @PTHREAD_LIBS@
+PYTHON = @PYTHON@
 RANLIB = @RANLIB@
 RT_LIBS = @RT_LIBS@
 SED = @SED@
@@ -283,7 +284,12 @@ Downloader.py \
 Radio.py \
 XMLRPCProxy.py \
 AjaxUpload.py \
-i18n.py
+i18n.py \
+Init.py \
+Paginator.py \
+StarRating.py \
+Carousel.py \
+Collapsible.py
 
 EXTRA_DIST = \
 $(ctk_DATA)

@@ -29,7 +29,7 @@ from Server import request
 from RawHTML import RawHTML
 
 JS_BUTTON_GOTO = """
-var druid      = $(this).parents('.druid:first');
+var druid      = $(this).parents('.ui-dialog:first').find('.druid:first');
 var refresh    = druid.find('.refreshable-url');
 var submitters = refresh.find('.submitter');
 
@@ -58,7 +58,7 @@ submitters.trigger ({'type': 'submit'});
 """
 
 JS_BUTTON_CLOSE = """
-$(this).parents('.ui-dialog-content:first').dialog('close');
+$(this).parents('.ui-dialog:first').find('.ui-dialog-content:first').dialog('close');
 return false;
 """
 
@@ -91,7 +91,7 @@ class Druid (Box):
 #
 
 class DruidButton (Button):
-    def __init__ (self, caption, url, _props={}):
+    def __init__ (self, caption, _props={}):
         # Properties
         props = _props.copy()
         if 'class' in props:
@@ -100,11 +100,11 @@ class DruidButton (Button):
             props['class'] = 'druid-button'
 
         # Parent's constructor
-        Button.__init__ (self, caption, props.copy())
+        Button.__init__ (self, caption, props)
 
 class DruidButton_Goto (DruidButton):
     def __init__ (self, caption, url, do_submit, _props={}):
-        DruidButton.__init__ (self, caption, url, _props.copy())
+        DruidButton.__init__ (self, caption, _props.copy())
 
         props = {'url':       url,
                  'do_submit': ('false', 'true')[do_submit]}
@@ -133,18 +133,46 @@ class DruidButton_Submit (DruidButton):
 # Button Panels
 #
 
+BUTTONS_PANEL_JS = """
+var dialog     = $('#%s').parents('.ui-dialog');
+var panel_orig = dialog.find('.ui-dialog-content .ui-dialog-buttonpane');
+
+dialog.find('.ui-dialog-buttonpane').remove();
+panel_orig.appendTo (dialog);
+"""
+
+# If a CTK.DruidButtonsPanel (ui-dialog-buttonpane) is added within
+# the dialog content, it has to be reparented to the uppper level. A
+# regular dialog has three main sections:
+#
+#   ui-dialog-titlebar
+#   ui-dialog-content
+#   ui-dialog-buttonpane
+#
+# For convenience reasons, a ui-dialog-buttonpane section can be added
+# inside ui-dialog-content, and CTK.DruidButtonsPanel take care of
+# moving it to the right place.
+
 class DruidButtonsPanel (Box):
     def __init__ (self, _props={}):
         # Properties
         props = _props.copy()
         if 'class' in props:
-            props['class'] += ' druid-button-panel'
+            props['class'] += ' ui-dialog-buttonpane'
         else:
-            props['class'] = 'druid-button-panel'
+            props['class'] = 'ui-dialog-buttonpane'
+
+        props['class'] += ' ui-widget-content ui-helper-clearfix'
 
         # Parent's constructor
         Box.__init__ (self, props)
         self.buttons = []
+
+    def Render (self):
+        render = Box.Render(self)
+        render.js = BUTTONS_PANEL_JS%(self.id) + render.js
+        return render
+
 
 class DruidButtonsPanel_Next (DruidButtonsPanel):
     def __init__ (self, url, cancel=True, do_submit=True, props={}):
@@ -227,6 +255,8 @@ def DruidContent__JS_to_goto (internal_id, url):
                        'goto': '%s'
                });""" %(internal_id, url)
 
+def DruidContent__JS_to_close (internal_id):
+    return '$("#%s").each(function() { %s });' %(internal_id, JS_BUTTON_CLOSE)
 
 class DruidContent_TriggerNext (Box):
     def __init__ (self):
