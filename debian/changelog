@@ -7,7 +7,7 @@ cherokee (1.0.9-1) unstable; urgency=low
                debian/patches/set_user
     Removed    debian/patches/include_paths_in_migrators
 
- -- leonel@enelserver.com <leonel@enelserver.com>  Fri, 12 Nov 2010 11:51:26 -0700
+ -- leonel@enelserver.com <leonel@enelserver.com>  Fri, 12 Nov 2010 11:54:17 -0700
 
 cherokee (1.0.8-2) unstable; urgency=low
 
