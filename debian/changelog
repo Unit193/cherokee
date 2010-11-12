@@ -8,8 +8,10 @@ cherokee (1.0.9-1) unstable; urgency=low
   * Removed    debian/patches/include_paths_in_migrators
   * Edited     debian/libcherokee-config0.install and removed 
                contrib/0*to0*.py and /usr/lib/libcherokee-config.so.*
-                
- -- leonel@enelserver.com <leonel@enelserver.com>  Fri, 12 Nov 2010 14:43:46 -0700
+  * Edited     libcherokee-config0-dev.install removed the reference to
+               libcherokee-config.a
+
+ -- leonel@enelserver.com <leonel@enelserver.com>  Fri, 12 Nov 2010 14:51:52 -0700
 
 cherokee (1.0.8-2) unstable; urgency=low
 
