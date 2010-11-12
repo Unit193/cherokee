@@ -78,7 +78,7 @@ typedef enum {
 	phase_reading_post,
 	phase_add_headers,
 	phase_send_headers,
-	phase_steping,
+	phase_stepping,
 	phase_shutdown,
 	phase_lingering
 } cherokee_connection_phase_t;
@@ -137,6 +137,7 @@ struct cherokee_connection {
 	/* Headers
 	 */
 	cherokee_header_t             header;
+	cherokee_list_t              *header_ops;
 
 	/* Encoders
 	 */
@@ -208,6 +209,7 @@ struct cherokee_connection {
 	 */
 	cherokee_expiration_t         expiration;
 	time_t                        expiration_time;
+	cherokee_expiration_props_t   expiration_prop;
 
 	/* Chunked encoding
 	 */

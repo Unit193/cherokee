@@ -144,6 +144,10 @@ PATH_SEPARATOR = @PATH_SEPARATOR@
 PHPCGI = @PHPCGI@
 PTHREAD_CFLAGS = @PTHREAD_CFLAGS@
 PTHREAD_LIBS = @PTHREAD_LIBS@
+PYTHON = \
+utils.py              \
+build.py
+
 RANLIB = @RANLIB@
 RT_LIBS = @RT_LIBS@
 SED = @SED@
@@ -213,10 +217,6 @@ top_srcdir = @top_srcdir@
 BINARIES = \
 License.rtf           \
 background.tiff.gz
-
-PYTHON = \
-utils.py              \
-build.py
 
 EXTRA_DIST = \
 $(PYTHON)             \

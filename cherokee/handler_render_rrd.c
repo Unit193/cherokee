@@ -34,7 +34,7 @@
 
 #define DISABLED_MSG "Graphs generation is disabled because RRDtool was not found." CRLF
 
-PLUGIN_INFO_HANDLER_EASY_INIT (render_rrd, http_get);
+PLUGIN_INFO_HANDLER_EASY_INIT (render_rrd, http_get | http_head);
 
 
 /* Functions
@@ -72,7 +72,7 @@ check_image_freshness (cherokee_buffer_t                 *buf,
 	cherokee_buffer_add         (buf, interval->interval, strlen(interval->interval));
 	cherokee_buffer_add_str     (buf, ".png");
 
-	re = stat (buf->buf, &info);
+	re = cherokee_stat (buf->buf, &info);
 	if (re != 0) {
 		TRACE(ENTRIES, "Image does not exist: '%s'\n", buf->buf);
 		return false;

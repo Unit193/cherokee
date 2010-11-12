@@ -22,13 +22,19 @@
 # 02110-1301, USA.
 #
 
+import re
+import string
+
 from consts import *
 from util import json_dump
 from PageCleaner import Postprocess
 
-
-widget_uniq_id = 1;
-
+SYNC_JS_LOAD_JS = """
+if (typeof (__loaded_%(name)s) == 'undefined') {
+    $.ajax ({url: '%(url)s', type:'get', dataType:'script', async:false, global:false, cache:true, ifModified:true});
+    __loaded_%(name)s = true;
+}
+"""
 
 class RenderResponse:
     def __init__ (self, html='', js='', headers=[], helps=[]):
@@ -60,11 +66,20 @@ class RenderResponse:
 
     def toStr (self):
         txt = self.html
+        alpha = string.letters + string.digits
+
+        # Synchronous JS loading..
+        # Jquery MUST be loaded for this code to work
+        sync_js_load = ""
 
         for js_header in filter(lambda x: x.startswith('<script'), self.headers):
-            txt += '%s\n'%(js_header)
-        if self.js:
-            txt += HTML_JS_ON_READY_BLOCK %(self.js)
+            url_js  = re.findall (r'src="(.+)"', js_header)[0]
+            name_js = ''.join (map (lambda x: ('_',x)[x in alpha], re.findall (r'src=".+/(.+)\.js"', js_header)[0]))
+            sync_js_load += SYNC_JS_LOAD_JS %({'name':name_js, 'url':url_js})
+
+        # Render the Javascript block
+        if self.js or sync_js_load:
+            txt += HTML_JS_ON_READY_BLOCK %(sync_js_load + self.js)
 
         return Postprocess(txt)
 
@@ -85,12 +100,13 @@ class RenderResponse:
 
 
 class Widget:
-    def __init__ (self):
-        global widget_uniq_id;
+    # Class prop
+    widget_uniq_id = 1
 
-        widget_uniq_id += 1;
-        self.uniq_id = widget_uniq_id;
-        self.id      = "widget_%d" %(widget_uniq_id)
+    def __init__ (self):
+        Widget.widget_uniq_id += 1;
+        self.uniq_id = Widget.widget_uniq_id;
+        self.id      = "widget_%d" %(Widget.widget_uniq_id)
         self.binds   = []
 
     def Render (self):
@@ -115,3 +131,12 @@ class Widget:
         else:
             return "%s.trigger('%s');" %(selector, event)
 
+    def JS_to_show (self, how='', selector=None):
+        if not selector:
+            selector = "$('#%s')" %(self.id)
+        return '%s.show(%s);' %(selector, how)
+
+    def JS_to_hide (self, how='', selector=None):
+        if not selector:
+            selector = "$('#%s')" %(self.id)
+        return '%s.hide(%s);' %(selector, how)

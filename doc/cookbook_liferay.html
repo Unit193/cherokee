@@ -102,7 +102,8 @@ server running Liferay at port 8080.</p></div>
 <div class="paragraph"><p>Launch Cherokee-Admin on your proxy machine, create a rule that
 matches the desired path on your web server hierarchy -<tt>/liferay</tt> for
 instance- in your virtual server of choice, and define the <tt>HTTP
-reverse proxy</tt> handler from within the <tt>Handler</tt> tab.</p></div>
+reverse proxy</tt> handler from within the <tt>Handler</tt> tab. Make sure to
+enable the <tt>Preserve Host</tt> checkbox.</p></div>
 <div class="paragraph"><p>You will need to assign it an information source you define for the
 server running Liferay. We will assume the IP is <tt>192.168.1.100</tt> in
 your firewalled local network, and your reverse proxy is accessible as

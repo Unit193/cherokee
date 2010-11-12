@@ -34,6 +34,8 @@ from subprocess import *
 from select import select
 
 # Cheroke-admin
+import popen
+from util import *
 from consts import *
 from configured import *
 from config_version import *
@@ -82,14 +84,8 @@ class PID:
 
     def _figure_pid (self):
         # Execture ps
-        try:
-            f = os.popen ("ps aux")
-        except: return
-
-        ps = f.read()
-
-        try: f.close()
-        except: pass
+        ret = popen.popen_sync ("ps aux")
+        ps  = ret['stdout']
 
         # Try to find the Cherokee process
         for l in ps.split("\n"):
@@ -148,7 +144,8 @@ class Server:
 
             nl = stderr.find('\n')
             if nl != -1:
-                for e in ["{'type': ", 'ERROR', '(error) ', '(critical) ']:
+                for e in ["{'type': \"error\"",
+                          "{'type': \"critical\"", 'ERROR', '(error) ', '(critical) ']:
                     if e in stderr:
                         _pid_kill (p.pid)
                         return stderr
@@ -161,17 +158,21 @@ class Server:
         return None
 
 
+class Admin:
+    def halt (self):
+        parent_pid = os.getppid()
+        os.kill (parent_pid, signal.SIGTERM)
+        raise SystemExit
+
+
 class Support:
     def __init__ (self):
         # Get server info
         try:
-            f = os.popen ("%s -i" % (CHEROKEE_WORKER))
-            self._server_info = f.read()
+            ret = popen.popen_sync ("%s -i" %(CHEROKEE_WORKER))
+            self._server_info = ret['stdout']
         except:
             self._server_info = ''
-
-        try: f.close()
-        except: pass
 
     def get_info_section (self, filter):
         filter_string = " %s: " % (filter)
@@ -225,6 +226,7 @@ class Support:
 pid     = PID()
 server  = Server()
 support = Support()
+admin   = Admin()
 
 
 #

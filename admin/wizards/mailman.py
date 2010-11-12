@@ -4,6 +4,7 @@
 #
 # Authors:
 #      Taher Shihadeh <taher@octality.com>
+#      Alvaro Lopez Ortega <alvaro@alobbs.com>
 #
 # Copyright (C) 2010 Alvaro Lopez Ortega
 #
@@ -33,24 +34,30 @@ import Wizard
 import validations
 from util import *
 
-NOTE_WELCOME_H1   = N_("Welcome to the Mailman Wizard")
-NOTE_WELCOME_P1   = N_('<a target="_blank" href="http://www.gnu.org/software/mailman/">Mailman</a> is free software for managing electronic mail discussion and e-newsletter lists.')
-NOTE_WELCOME_P2   = N_('Mailman supports built-in archiving, automatic bounce processing, content filtering, digest delivery, spam filters, and more.')
+NOTE_WELCOME_H1     = N_("Welcome to the Mailman Wizard")
+NOTE_WELCOME_P1     = N_('<a target="_blank" href="http://www.gnu.org/software/mailman/">Mailman</a> is free software for managing electronic mail discussion and e-newsletter lists.')
+NOTE_WELCOME_P2     = N_('Mailman supports built-in archiving, automatic bounce processing, content filtering, digest delivery, spam filters, and more.')
 
-NOTE_LOCAL_H1     = N_('Mailman Details')
+NOTE_LOCAL_H1       = N_('Mailman Details')
 NOTE_LOCAL_CGI_DIR  = N_("Local path to the Mailman CGI directory.")
 NOTE_LOCAL_DATA_DIR = N_("Local path to the Mailman data directory.")
 NOTE_LOCAL_ARCH_DIR = N_("Local path to the Mailman mail archive directory.")
+NOTE_LOCAL_IMGS_DIR = N_("Local path to the Mailman mail images directory.")
 
-NOTE_HOST_H1    = N_("New Virtual Server Details")
-NOTE_HOST       = N_("Host name of the virtual server that is about to be created.")
+NOTE_HOST_H1        = N_("New Virtual Server Details")
+NOTE_HOST           = N_("Host name of the virtual server that is about to be created.")
 
-PREFIX          = 'tmp!wizard!mailman'
-URL_APPLY       = r'/wizard/vserver/mailman/apply'
+PREFIX    = 'tmp!wizard!mailman'
+URL_APPLY = r'/wizard/vserver/mailman/apply'
 
 CONFIG_VSERVER = """
 %(vsrv_pre)s!nick = %(new_host)s
 %(vsrv_pre)s!document_root = /dev/null
+
+%(vsrv_pre)s!rule!500!document_root = %(mailman_imgs_dir)s
+%(vsrv_pre)s!rule!500!handler = file
+%(vsrv_pre)s!rule!500!match = directory
+%(vsrv_pre)s!rule!500!match!directory = /images/mailman
 
 %(vsrv_pre)s!rule!400!match = directory
 %(vsrv_pre)s!rule!400!match!directory = /pipermail
@@ -90,21 +97,28 @@ CONFIG_VSERVER = """
 SRC_PATHS_CGI = [
     "/usr/local/mailman/cgi-bin",
     "/usr/lib/cgi-bin/mailman",
-    "/opt/mailman*/cgi-bin"
+    "/opt/local/libexec/mailman/cgi-bin"
 ]
 
 SRC_PATHS_DATA = [
+    "/usr/lib/mailman",
     "/usr/local/mailman",
     "/usr/share/mailman",
-    "/opt/mailman*"
+    "/opt/local/share/mailman"
 ]
 
 SRC_PATHS_ARCH = [
+    "/var/lib/mailman",
     "/usr/local/mailman",
     "/var/share/mailman",
-    "/opt/mailman*"
+    "/opt/local/var/mailman/"
 ]
 
+SRC_PATHS_IMGS = [
+    "/usr/share/images/mailman",
+    "/opt/local/share/mailman/icons",
+    "/opt/mailman*/admin/www/images"
+]
 
 class Commit:
     def Commit_VServer (self):
@@ -112,6 +126,7 @@ class Commit:
         mailman_cgi_dir  = CTK.cfg.get_val('%s!mailman_cgi_dir'%(PREFIX))
         mailman_data_dir = CTK.cfg.get_val('%s!mailman_data_dir'%(PREFIX))
         mailman_arch_dir = CTK.cfg.get_val('%s!mailman_arch_dir'%(PREFIX))
+        mailman_imgs_dir = CTK.cfg.get_val('%s!mailman_imgs_dir'%(PREFIX))
         new_host         = CTK.cfg.get_val('%s!new_host'%(PREFIX))
 
         # Create the new Virtual Server
@@ -161,11 +176,13 @@ class LocalSource:
         guessed_cgi  = path_find_w_default (SRC_PATHS_CGI)
         guessed_data = path_find_w_default (SRC_PATHS_DATA)
         guessed_arch = path_find_w_default (SRC_PATHS_ARCH)
+        guessed_imgs = path_find_w_default (SRC_PATHS_IMGS)
 
         table = CTK.PropsTable()
         table.Add (_('Mailman CGI directory'),  CTK.TextCfg ('%s!mailman_cgi_dir'%(PREFIX),  False, {'value':guessed_cgi}),  _(NOTE_LOCAL_CGI_DIR))
         table.Add (_('Mailman Data directory'), CTK.TextCfg ('%s!mailman_data_dir'%(PREFIX), False, {'value':guessed_data}), _(NOTE_LOCAL_DATA_DIR))
         table.Add (_('Mail Archive directory'), CTK.TextCfg ('%s!mailman_arch_dir'%(PREFIX), False, {'value':guessed_arch}), _(NOTE_LOCAL_ARCH_DIR))
+        table.Add (_('Mail Images directory'),  CTK.TextCfg ('%s!mailman_imgs_dir'%(PREFIX), False, {'value':guessed_imgs}), _(NOTE_LOCAL_IMGS_DIR))
 
         submit = CTK.Submitter (URL_APPLY)
         submit += table
@@ -203,36 +220,45 @@ def is_mailman_data_dir (path):
     path = validations.is_local_dir_exists (path)
     file = os.path.join (path, "bin/newlist")
     if not os.path.exists (file):
-        raise ValueError, _("It doesn't look like a Mailman data directory.")
+        raise ValueError, _("It does not look like a Mailman data directory.")
     return path
 
 def is_mailman_cgi_dir (path):
     path = validations.is_local_dir_exists (path)
     file = os.path.join (path, "listinfo")
     if not os.path.exists (file):
-        raise ValueError, _("It doesn't look like a Mailman CGI directory.")
+        raise ValueError, _("It does not look like a Mailman CGI directory.")
     return path
 
 def is_mailman_arch_dir (path):
     path = validations.is_local_dir_exists (path)
-    module_inc = os.path.join (path, "archives/public")
+    file = os.path.join (path, "archives/public")
     try:
-        validations.is_local_file_exists (module_inc)
+        validations.is_local_dir_exists (file)
     except:
-        raise ValueError, _("It doesn't look like a Mailman archive directory.")
+        raise ValueError, _("It does not look like a Mailman archive directory.")
+    return path
+
+def is_mailman_imgs_dir (path):
+    path = validations.is_local_dir_exists (path)
+    file = os.path.join (path, "mailman.jpg")
+    if not os.path.exists (file):
+        raise ValueError, _("It does not look like a Mailman images directory.")
     return path
 
 
 VALS = [
     ('%s!new_host'        %(PREFIX), validations.is_not_empty),
-    ('%s!mailman_data_dir'%(PREFIX), validations.is_not_empty),
     ('%s!mailman_cgi_dir' %(PREFIX), validations.is_not_empty),
+    ('%s!mailman_data_dir'%(PREFIX), validations.is_not_empty),
     ('%s!mailman_arch_dir'%(PREFIX), validations.is_not_empty),
+    ('%s!mailman_imgs_dir'%(PREFIX), validations.is_not_empty),
 
     ("%s!new_host"        %(PREFIX), validations.is_new_vserver_nick),
-    ("%s!mailman_data_dir"%(PREFIX), is_mailman_data_dir),
     ("%s!mailman_cgi_dir" %(PREFIX), is_mailman_cgi_dir),
+    ("%s!mailman_data_dir"%(PREFIX), is_mailman_data_dir),
     ("%s!mailman_arch_dir"%(PREFIX), is_mailman_arch_dir),
+    ("%s!mailman_imgs_dir"%(PREFIX), is_mailman_imgs_dir),
 ]
 
 # VServer

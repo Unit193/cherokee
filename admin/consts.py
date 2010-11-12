@@ -27,12 +27,14 @@ AVAILABLE_LANGUAGES = [
     ('es',           N_('Spanish')),
     ('de',           N_('German')),
     ('fr',           N_('French')),
+    ('it',           N_('Italian')),
     ('nl',           N_('Dutch')),
     ('pl',           N_('Polish')),
     ('sv_SE',        N_('Swedish')),
     ('po_BR',        N_('Brazilian Portuguese')),
     ('zh_CN',        N_('Chinese Simplified')),
-    ('ca',           N_('Catalan'))
+    ('ca',           N_('Catalan')),
+    ('gl',           N_('Galician'))
 ]
 
 PRODUCT_TOKENS = [
@@ -245,6 +247,9 @@ POST_TRACKERS = [
     ('post_track', N_('POST tracker'))
 ]
 
-def trans (options):
-    """Translate the options with gettext"""
-    return [(x[0], _(x[1])) for x in options]
+CACHING_OPTIONS = [
+    ('',         N_('Not set')),
+    ('public',   N_('Public')),
+    ('private',  N_('Private')),
+    ('no-cache', N_('No Cache'))
+]

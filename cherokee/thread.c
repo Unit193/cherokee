@@ -219,6 +219,7 @@ cherokee_thread_new  (cherokee_thread_t      **thd,
 	 */
 	if (type == thread_async) {
 #ifdef HAVE_PTHREAD
+		int            re;
 		pthread_attr_t attr;
 
 		/* Init the thread attributes
@@ -241,7 +242,10 @@ cherokee_thread_new  (cherokee_thread_t      **thd,
 
 		/* Finally, create the system thread
 		 */
-		if (pthread_create (&n->thread, &attr, thread_routine, n) != 0) {
+		re = pthread_create (&n->thread, &attr, thread_routine, n);
+		if (unlikely (re != 0)) {
+			LOG_ERRNO (re, cherokee_err_error, CHEROKEE_ERROR_THREAD_CREATE, re);
+
 			cherokee_thread_free (n);
 			return ret_error;
 		}
@@ -747,7 +751,7 @@ process_active_connections (cherokee_thread_t *thd)
 		case phase_tls_handshake:
 			blocking = socket_closed;
 
-			ret = cherokee_socket_init_tls (&conn->socket, CONN_VSRV(conn), &blocking);
+			ret = cherokee_socket_init_tls (&conn->socket, CONN_VSRV(conn), conn, &blocking);
 			switch (ret) {
 			case ret_eagain:
 				switch (blocking) {
@@ -1022,6 +1026,10 @@ process_active_connections (cherokee_thread_t *thd)
 				conn->timeout_header = entry.timeout_header;
 			}
 
+			if (entry.header_ops) {
+				conn->header_ops = entry.header_ops;
+			}
+
 			/* Create the handler
 			 */
 			ret = cherokee_connection_create_handler (conn, &entry);
@@ -1228,9 +1236,9 @@ process_active_connections (cherokee_thread_t *thd)
 			}
 
 		phase_send_headers_EXIT:
-			conn->phase = phase_steping;
+			conn->phase = phase_stepping;
 
-		case phase_steping:
+		case phase_stepping:
 			/* Special case:
 			 * If the content is mmap()ed, it has to send the header +
 			 * the file content and stop processing the connection.

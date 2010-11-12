@@ -194,7 +194,11 @@ domains</a>.</p></div>
 <div class="paragraph"><p>This section allows to define the list of domains that the virtual
 server implements.</p></div>
 <div class="paragraph"><p>It can accept either FQDN (Fully Qualified Domain Names), wild card
-entries, regular expressions or IPs.</p></div>
+entries, regular expressions, IPs, or a combination of methods that
+will be evaluated as a logical OR. This can be useful for some rare
+cases where you might need to match by IP OR wildcards simultaneously,
+such as the <a href="cookbook_ssl.html#workaround">HTTPS-without-SNI workaround</a>
+documented in the <a href="cookbook.html">cookbook</a>.</p></div>
 <div class="dlist"><dl>
 <dt class="hdlist1">
 For instance
@@ -212,7 +216,7 @@ do not seem to convert the FQDN to lowercase before sending the
 requests. This mainly happens with built-in browsers or very-early
 implementations. Even in those cases it is possible to have
 case-insensitive host matching by using regular-expression
-matching. For example, if you&#8217;re domain name was <tt>Example.com</tt> and
+matching. For example, if your domain name was <tt>Example.com</tt> and
 were dealing with one such browser, you would have to prepend <strong>(?i)</strong>
 to your regular expression. That in turn would perform a
 case-insensitive evaluation, effectively solving the problem.</p></div>
@@ -238,7 +242,22 @@ host to send the appropriate response.</p></div>
 of virtual hosts trying to match the request against the <tt>Nicknames</tt>,
 also using the priorities defined by the virtual host order.</p></div>
 <div class="paragraph"><p>Only after failing both with the domain names and the nicknames will
-Cherokee issue the failure.</p></div>
+Cherokee issue the failure, in which case the default virtual server
+is used to handle the request.</p></div>
+<div class="admonitionblock">
+<table><tr>
+<td class="icon">
+<div class="title">Important</div>
+</td>
+<td class="content">It is easy to overlook the way in which virtual servers are
+evaluated, which leads to the common problem of not knowing exactly
+why some virtual servers work and some don&#8217;t. The list of Frequently
+Asked Questions includes <a href="other_faq.html#faq19">"Why are my
+nicknames not matched, while *.example.com does work?"</a>. A careful
+reinterpretation of what has just been explained in this section
+should clarify any doubts.</td>
+</tr></table>
+</div>
 <h3 id="behavior">Behavior</h3><div style="clear:left"></div>
 <div class="paragraph"><p>This sections allows to define a set of rules to define how the server
 should handle the different requests. A summary of the existing rules
@@ -401,6 +420,10 @@ errors to a custom path or website.</p></div>
 <img src="media/images/admin_vserver_errors.png" alt="media/images/admin_vserver_errors.png" />
 </div>
 </div>
+<div class="paragraph"><p>In this case, the handled errors will be redirected to the specified
+resource, while non-defined errors will trigger an HTTP 500 error. In
+case this is not the desired behavior, you can set a <tt>Default Error</tt>
+to catch and redirect the non-defined ones.</p></div>
 <div class="paragraph"><p>The <em>Closest match</em> error handler should never fail to deliver
 something. If a requested resource is not available, the closest match
 will be sent. The only exception to this is when nothing at all is at
@@ -462,7 +485,7 @@ might help to generate SSL <a href="cookbook_ssl.html">keys</a> and that
 should provide tips and information on how to configure SSL, TLS and
 certificates.</p></div>
 <div class="paragraph"><p>Cherokee fully supports the usage of different certificates for each
-virtual server in a given host by it using SNI as defined in
+virtual server in a given host by using SNI as defined in
 <a href="http://www.rfc-archive.org/getrfc.php?rfc=3546">RFC 3546</a>.</p></div>
 <div class="imageblock">
 <div class="content">
@@ -487,7 +510,7 @@ If you have several virtual servers, the <tt>Security</tt> section must be
   with HTTPS and some without. This makes sense, since by enabling the
   feature in any one of them you are opening the HTTPS port in your
   host, and receiving HTTPS requests for a virtual server that does
-  not provide the service would not be handled in a coherente
+  not provide the service would not be handled in a coherent
   manner. None of the alternatives is very elegant in design: falling
   back to HTTP, issuing an error that is likely to restart the HTTPS
   handshake, etc. This behavior, however, might change in the future

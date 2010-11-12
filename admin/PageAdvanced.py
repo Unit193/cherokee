@@ -27,6 +27,7 @@ import Page
 import Cherokee
 import validations
 
+from util import *
 from consts import *
 from configured import *
 
@@ -52,6 +53,7 @@ VALIDATIONS = [
     ("server!iocache!max_file_size",  validations.is_positive_int),
     ("server!iocache!lasting_stat",   validations.is_positive_int),
     ("server!iocache!lasting_mmap",   validations.is_positive_int),
+    ("server!tls!protocol!SSLv2",     validations.is_boolean),
     ("server!tls!timeout_handshake",  validations.is_positive_int),
     ("server!tls!dh_param512",        validations.is_local_file_exists),
     ("server!tls!dh_param1024",       validations.is_local_file_exists),
@@ -89,6 +91,8 @@ NOTE_DH1024       = N_('Path to a Diffie Hellman (DH) parameters PEM file: 1024 
 NOTE_DH2048       = N_('Path to a Diffie Hellman (DH) parameters PEM file: 2048 bits.')
 NOTE_DH4096       = N_('Path to a Diffie Hellman (DH) parameters PEM file: 4096 bits.')
 NOTE_TLS_TIMEOUT  = N_('Timeout for the TLS/SSL handshake. Default: 15 seconds.')
+NOTE_TLS_SSLv2    = N_("Allow clients to use SSL version 2 - Beware: it is vulnerable. (Default: No)")
+
 
 HELPS = [('config_advanced', N_('Advanced'))]
 
@@ -115,7 +119,7 @@ class ConnectionsWidget (CTK.Container):
         table.Add (_('Keep Alive'),         CTK.CheckCfgText('server!keepalive', True, _("Allowed")), _(NOTE_KEEPALIVE))
         table.Add (_('Max keepalive reqs'), CTK.TextCfg('server!keepalive_max_requests'), _(NOTE_KEEPALIVE_RS))
         table.Add (_('Chunked Encoding'),   CTK.CheckCfgText('server!chunked_encoding', True, _("Allowed")), _(NOTE_CHUNKED))
-        table.Add (_('Polling Method'),     CTK.ComboCfg('server!poll_method', trans (Cherokee.support.filter_polling_methods(POLL_METHODS))), _(NOTE_POLLING))
+        table.Add (_('Polling Method'),     CTK.ComboCfg('server!poll_method', trans_options(Cherokee.support.filter_polling_methods(POLL_METHODS))), _(NOTE_POLLING))
         table.Add (_('Sendfile min size'),  CTK.TextCfg('server!sendfile_min', True), _(NOTE_SENDFILE_MIN))
         table.Add (_('Sendfile max size'),  CTK.TextCfg('server!sendfile_max', True), _(NOTE_SENDFILE_MAX))
 
@@ -128,7 +132,7 @@ class ResourcesWidget (CTK.Container):
 
         table = CTK.PropsAuto(URL_APPLY)
         table.Add (_('Thread Number'),          CTK.TextCfg('server!thread_number', True), _(NOTE_THREAD_NUM))
-        table.Add (_('Thread Policy'),          CTK.ComboCfg('server!thread_policy', trans (THREAD_POLICY)), _(NOTE_THREAD))
+        table.Add (_('Thread Policy'),          CTK.ComboCfg('server!thread_policy', trans_options(THREAD_POLICY)), _(NOTE_THREAD))
         table.Add (_('File descriptors'),       CTK.TextCfg('server!fdlimit',              True), _(NOTE_FD_NUM))
         table.Add (_('Listening queue length'), CTK.TextCfg('server!listen_queue',         True), _(NOTE_LISTEN_Q))
         table.Add (_('Reuse connections'),      CTK.TextCfg('server!max_connection_reuse', True), _(NOTE_REUSE_CONNS))
@@ -169,6 +173,7 @@ class TLSWidget (CTK.Container):
         CTK.Container.__init__ (self)
 
         table = CTK.PropsAuto(URL_APPLY)
+        table.Add (_('Allow SSL v2'),             CTK.CheckCfgText('server!tls!protocol!SSLv2', False, _("Allow")), _(NOTE_TLS_SSLv2))
         table.Add (_('Handshake Timeout'),        CTK.TextCfg('server!tls!timeout_handshake', True), _(NOTE_TLS_TIMEOUT))
         table.Add (_('DH parameters: 512 bits'),  CTK.TextCfg('server!tls!dh_param512',  True), _(NOTE_DH512))
         table.Add (_('DH parameters: 1024 bits'), CTK.TextCfg('server!tls!dh_param1024', True), _(NOTE_DH1024))

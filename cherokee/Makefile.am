@@ -7,7 +7,7 @@ $(PTHREAD_CFLAGS)
 #
 # Scripts
 #
-bin_SCRIPTS = cherokee-panic
+bin_SCRIPTS = cherokee-panic cherokee-tweak
 
 #
 # Data
@@ -372,6 +372,23 @@ endif
 
 
 #
+# VRule or
+#
+vrule_or = \
+vrule_or.c \
+vrule_or.h
+
+libplugin_v_or_la_LDFLAGS = $(module_ldflags)
+libplugin_v_or_la_SOURCES = $(vrule_or)
+
+if STATIC_VRULE_OR
+static_vrule_or_src = $(vrule_or)
+else
+dynamic_vrule_or_lib = libplugin_v_or.la
+endif
+
+
+#
 # VRule wildcard
 #
 vrule_wildcard = \
@@ -505,7 +522,6 @@ logo.inc
 
 libplugin_server_info_la_LDFLAGS = $(module_ldflags)
 libplugin_server_info_la_SOURCES = $(handler_server_info)
-libplugin_server_info_la_LIBADD  = libcherokee-config.la
 
 if STATIC_HANDLER_SERVER_INFO
 static_handler_server_info_src = $(handler_server_info)
@@ -827,12 +843,14 @@ libplugin_streaming_la_SOURCES = $(handler_streaming)
 libplugin_streaming_la_LIBADD  = $(FFMPEG_LIBS)
 libplugin_streaming_la_CFLAGS  = $(FFMPEG_CFLAGS)
 
+if HAVE_FFMPEG
 if STATIC_HANDLER_STREAMING
 static_handler_streaming_src   = $(handler_streaming)
 static_handler_streaming_lib   = $(FFMPEG_LIBS)
 static_handler_streaming_flags = $(FFMPEG_CFLAGS)
 else
 dynamic_handler_streaming_lib = libplugin_streaming.la
+endif
 endif
 
 
@@ -887,7 +905,7 @@ admin_server.c
 
 libplugin_admin_la_LDFLAGS = $(module_ldflags)
 libplugin_admin_la_SOURCES = $(handler_admin)
-libplugin_admin_la_LIBADD  = libcherokee-config.la libcherokee-client.la
+libplugin_admin_la_LIBADD  = libcherokee-client.la
 
 if STATIC_HANDLER_ADMIN
 static_handler_admin_src = $(handler_admin)
@@ -1203,8 +1221,7 @@ endif
 lib_LTLIBRARIES = \
 libcherokee-base.la \
 libcherokee-client.la \
-libcherokee-server.la \
-libcherokee-config.la
+libcherokee-server.la
 
 
 # the macro puts -pthread into cflags, but we want to link
@@ -1244,14 +1261,6 @@ $(static_handler_dbslayer_lib) \
 $(static_handler_streaming_lib) \
 $(static_cryptor_libssl_lib) \
 libcherokee-base.la
-
-libcherokee_config_la_LDFLAGS = $(common_ldflags) $(library_soname)
-libcherokee_config_la_LIBADD = \
-$(PTHREAD_LIBS) \
-$(PTHREAD_CFLAGS) \
-libcherokee-base.la \
-libcherokee-client.la \
-libcherokee-server.la
 
 
 if COMPILE_EPOLL
@@ -1469,6 +1478,7 @@ $(static_rule_not_src) \
 $(static_rule_and_src) \
 $(static_rule_or_src) \
 \
+$(static_vrule_or_src) \
 $(static_vrule_wildcard_src) \
 $(static_vrule_rehost_src) \
 $(static_vrule_target_ip_src) \
@@ -1579,12 +1589,10 @@ limiter.c \
 spawner.h \
 spawner.c \
 collector.h \
-collector.c
+collector.c \
+header_op.h \
+header_op.c
 
-
-libcherokee_config_la_SOURCES = \
-admin_client.h \
-admin_client.c
 
 #
 # Header files
@@ -1631,7 +1639,6 @@ validator.h \
 \
 downloader.h \
 \
-admin_client.h \
 connection_info.h \
 \
 avl.h \
@@ -1658,6 +1665,7 @@ $(dynamic_rule_geoip_lib) \
 $(dynamic_rule_not_lib) \
 $(dynamic_rule_and_lib) \
 $(dynamic_rule_or_lib) \
+$(dynamic_vrule_or_lib) \
 $(dynamic_vrule_wildcard_lib) \
 $(dynamic_vrule_rehost_lib) \
 $(dynamic_vrule_target_ip_lib) \
@@ -1733,21 +1741,6 @@ cherokee_admin_LDFLAGS = $(cherokee_worker_LDFLAGS)
 
 
 #
-# Log rotate utility
-#
-bin_PROGRAMS = cherokee-tweak
-
-cherokee_tweak_SOURCES = main_tweak.c
-cherokee_tweak_LDADD = \
-$(libcherokee_server_la_LIBADD) \
-libcherokee-base.la \
-libcherokee-client.la \
-libcherokee-server.la \
-libcherokee-config.la
-
-
-
-#
 # Win32 service
 #
 if PLATFORM_WIN32
@@ -1757,7 +1750,7 @@ win32_cherokeeserv =
 endif
 
 win32_cherokeeserv_SOURCES = win32_cherokeeserv.c
-win32_cherokeeserv_LDADD = libcherokee-config.la libcherokee-base.la libcherokee-client.la
+win32_cherokeeserv_LDADD = libcherokee-base.la libcherokee-client.la
 
 #
 # Test programs
@@ -1765,7 +1758,7 @@ win32_cherokeeserv_LDADD = libcherokee-config.la libcherokee-base.la libcherokee
 noinst_PROGRAMS = $(win32_cherokeeserv)
 
 # test_SOURCES = test.c
-# test_LDADD = libcherokee-config.la libcherokee-base.la libcherokee-client.la
+# test_LDADD = libcherokee-base.la libcherokee-client.la
 
 
 CLEANFILES = \

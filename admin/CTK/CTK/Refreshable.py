@@ -81,40 +81,38 @@ class Refreshable (Widget):
         render.html = HTML %(props)
         return render
 
-    def JS_to_refresh (self, on_success='', selector=None):
+    def JS_to_refresh (self, on_success='', selector=None, url=None):
         if not selector:
             selector = "$('#%s')" %(self.id)
 
         props = {'selector':   selector,
-                 'url':        self.url,
+                 'url':        url or self.url,
                  'on_success': on_success}
         return REFRESHABLE_UPDATE_JS %(props)
 
 
-JS_URL_LOAD = """
-var refresh = $('#%(id)s');
-refresh.data('url', "%(url)s");
+JS_URL_INIT = """
+$('#%(id)s').bind('refresh_goto', function(event) {
+  $(this).data('url', "%(url)s", event.goto);
 
-if ("%(url)s".length > 0) {
-  $.ajax({type: "GET", url: "%(url)s", async: true,
-     success: function(msg){
-        refresh.html(msg);
-     }
-  });
-}
+  $.ajax ({type: "GET", url: event.goto, async: true,
+           success: function (msg){
+              $('#%(id)s').html(msg);
+           }
+         });
+});
 """
 
-JS_URL_INIT = """
-refresh.bind('refresh_goto', function(event) {
-  var refresh = $('#%(id)s');
-  refresh.data('url', "%(url)s", event.goto);
+JS_URL_LOAD = """
+$('#%(id)s').data('url', "%(url)s");
 
-  $.ajax({type: "GET", url: event.goto, async: true,
-     success: function(msg){
-        refresh.html(msg);
-     }
-  });
-});
+if ("%(url)s".length > 0) {
+  $.ajax ({type: "GET", url: "%(url)s", async: true,
+            success: function (msg){
+               $('#%(id)s').html(msg);
+            }
+         });
+}
 """
 
 class RefreshableURL (Widget):
@@ -127,6 +125,9 @@ class RefreshableURL (Widget):
             props['class'] += ' refreshable-url'
         else:
             props['class'] = 'refreshable-url'
+
+        if 'id' in props:
+            self.id = props.pop('id')
 
         self.props = props
         self.url   = url

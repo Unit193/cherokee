@@ -29,7 +29,7 @@ from Container import Container
 from Template import Template
 from PageCleaner import Postprocess
 from Help import HelpEntry, HelpMenu
-from util import formater
+from util import formatter
 
 PAGE_TEMPLATE_DEFAULT = """\
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
@@ -38,6 +38,7 @@ PAGE_TEMPLATE_DEFAULT = """\
 <html xmlns="http://www.w3.org/1999/xhtml">
  <head>
 %(head)s
+   <script type="text/javascript" src="/CTK/js/jquery-1.3.2.min.js"></script>
  </head>
  <body%(body_props)s>
 %(body)s
@@ -56,7 +57,6 @@ HEADERS = [
     '<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />',
     '<link rel="stylesheet" type="text/css" href="/CTK/css/CTK.css" />',
     '<script type="text/javascript" src="/CTK/js/common.js"></script>',
-    '<script type="text/javascript" src="/CTK/js/jquery-1.3.2.min.js"></script>',
     '<script type="text/javascript" src="/CTK/js/Help.js"></script>',
 ]
 
@@ -134,7 +134,7 @@ class Page (Container):
             js += "\n".join (filter (lambda l: '<script' in l, uniq(self._headers)))
 
         if render.js:
-            js += formater (HTML_JS_ON_READY_BLOCK, render.js)
+            js += formatter (HTML_JS_ON_READY_BLOCK, render.js)
 
         # Build the <body>
         body = render.html + render_helps

@@ -24,31 +24,31 @@
 # 02110-1301, USA.
 #
 
+# System
 import os
 import sys
 import stat
 import signal
-import gettext
-import config_version
+import thread
 
 # Import CTK
 sys.path.append (os.path.abspath (os.path.realpath(__file__) + '/../CTK'))
 import CTK
+import OWS_Login
 
 # Cherokee imports
+import config_version
 from configured import *
 
 
 def init (scgi_port, cfg_file):
     # Translation support
-    gettext.install('cherokee', LOCALEDIR)
+    CTK.i18n.install ('cherokee', LOCALEDIR, unicode=True)
 
-    import __builtin__
-    __builtin__.__dict__['N_'] = lambda x: x
-
-    # Try to avoid zombie processes
-    if hasattr(signal, "SIGCHLD"):
-        signal.signal(signal.SIGCHLD, signal.SIG_IGN)
+    # Ensure SIGCHLD is set. It needs to receive the signal in order
+    # to detect when its child processes finish.
+    if signal.getsignal (signal.SIGCHLD) == signal.SIG_IGN:
+        signal.signal (signal.SIGCHLD, signal.SIG_DFL)
 
     # Move to the server directory
     pathname, scriptname = os.path.split(sys.argv[0])
@@ -72,7 +72,7 @@ def init (scgi_port, cfg_file):
 
     # Init CTK
     if scgi_port.isdigit():
-        CTK.init (port=8000)
+        CTK.init (port=int(scgi_port))
 
     else:
         # Remove the unix socket if it already exists
@@ -123,6 +123,22 @@ def debug_set_up():
     signal.signal (signal.SIGUSR2, trace_callback)
 
 
+def do_OWS_login():
+    def thread_func (username, password):
+        try:
+            OWS_Login.log_in (username, password)
+        except ProtocolError:
+            # Do not give up so easily
+            OWS_Login.log_in (username, password)
+
+    username   = CTK.cfg.get_val("admin!ows!login!user")
+    password   = CTK.cfg.get_val("admin!ows!login!password")
+    ows_enable = int(CTK.cfg.get_val("admin!ows!enabled", OWS_ENABLE))
+
+    if all((ows_enable, username, password)):
+        thread.start_new_thread (thread_func, (username, password))
+
+
 if __name__ == "__main__":
     # Read the arguments
     try:
@@ -154,6 +170,15 @@ if __name__ == "__main__":
         CTK.unpublish (r'')
 
     # Check config file and set up
+    if os.path.exists (cfg_file) and os.path.isdir (cfg_file):
+        import PageError
+        CTK.publish (r'', PageError.NotWritable, file=cfg_file)
+
+        while os.path.isdir (cfg_file):
+            CTK.step()
+
+        CTK.unpublish (r'')
+
     if not os.path.exists (cfg_file):
         import PageNewConfig
         CTK.publish (r'', PageNewConfig.Render)
@@ -183,9 +208,44 @@ if __name__ == "__main__":
 
         CTK.unpublish (r'')
 
+    # OWS related checks
+    if not os.path.isdir (CHEROKEE_OWS_DIR):
+        try: os.makedirs (CHEROKEE_OWS_DIR, 0755)
+        except OSError: pass
+
+    if not os.path.isdir (CHEROKEE_OWS_ROOT):
+        try: os.makedirs (CHEROKEE_OWS_ROOT, 0755)
+        except OSError: pass
+
+    if not os.access (CHEROKEE_OWS_DIR,  os.W_OK) or \
+       not os.access (CHEROKEE_OWS_ROOT, os.W_OK):
+        import PageError
+
+        CTK.publish (r'', PageError.OWSDirectory)
+        while not os.access (CHEROKEE_OWS_DIR,  os.W_OK) or \
+              not os.access (CHEROKEE_OWS_ROOT, os.W_OK):
+            CTK.step()
+
+            if not os.path.isdir (CHEROKEE_OWS_DIR):
+                try: os.makedirs (CHEROKEE_OWS_DIR, 0755)
+                except OSError: pass
+
+            if not os.path.isdir (CHEROKEE_OWS_ROOT):
+                try: os.makedirs (CHEROKEE_OWS_ROOT, 0755)
+                except OSError: pass
+
+        CTK.unpublish (r'')
+
+    # Add the OWS plug-in directory
+    CTK.add_plugin_dir (CHEROKEE_OWS_DIR)
+
     # Set up the error page
     import PageException
     CTK.error.page = PageException.Page
+
+    # Launch the SystemStats ASAP
+    import SystemStats
+    SystemStats.get_system_stats()
 
     # Import the Pages
     import PageIndex
@@ -200,9 +260,17 @@ if __name__ == "__main__":
     import PageNewConfig
     import PageHelp
     import PageStatus
+    import market
+
+    # Init translation
+    if CTK.cfg['admin!lang']:
+        PageIndex.language_set (CTK.cfg.get_val('admin!lang'))
 
     # Let's get asyncronous..
     CTK.set_synchronous (False)
+
+    # Log into OWS if feature is enabled
+    do_OWS_login()
 
     # Run forever
     CTK.run()

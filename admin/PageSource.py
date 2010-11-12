@@ -31,11 +31,14 @@ import SelectionPanel
 import validations
 import Rule
 
+from util import *
 from consts import *
+
 from CTK.util import find_copy_name
 from CTK.Submitter import HEADER as Submit_HEADER
 from CTK.TextField import HEADER as TextField_HEADER
 
+COOKIE = 'source_panel'
 
 URL_BASE    = '/source'
 URL_CONTENT = '/source/content'
@@ -85,7 +88,7 @@ JS_CLONE = """
 JS_PARTICULAR = """
   var source = window.location.pathname.match (/^\/source\/(\d+)/)[1];
   $.cookie ('%(cookie_name)s', source, { path: '/source' });
-  window.location.replace ('%(url_base)s');
+  window.location.replace ('%(url_base)s' + window.location.hash);
 """
 
 def commit_clone():
@@ -189,7 +192,7 @@ def _protected_sources ():
     for rule in rules:
         sources = rule.values()[0]
         if len(sources) == 1:
-            protect += sources[0]
+            protect.append(sources[0])
     return protect
 
 
@@ -294,7 +297,7 @@ class Render_Source:
         workarea = CTK.Box ({'id': 'source-workarea'})
 
         table = CTK.PropsTable()
-        table.Add (_('Type'),       CTK.ComboCfg ('source!%s!type'%(num), trans(SOURCE_TYPES)), _(NOTE_TYPE))
+        table.Add (_('Type'),       CTK.ComboCfg ('source!%s!type'%(num), trans_options(SOURCE_TYPES)), _(NOTE_TYPE))
         table.Add (_('Nick'),       CTK.TextCfg ('source!%s!nick'%(num), False), _(NOTE_NICK))
         table.Add (_('Connection'), CTK.TextCfg ('source!%s!host'%(num), False), _(NOTE_HOST))
         if tipe == 'interpreter':
@@ -347,7 +350,7 @@ class Render_Particular:
         page    = CTK.Page(headers=headers)
 
         props = {'url_base':    URL_BASE,
-                 'cookie_name': SelectionPanel.COOKIE_NAME_DEFAULT}
+                 'cookie_name': COOKIE}
 
         page += CTK.RawHTML (js=JS_PARTICULAR %(props))
         return page.Render()
@@ -361,7 +364,7 @@ class Render:
             entry = lambda klass, key: CTK.Box ({'class': klass}, CTK.RawHTML (CTK.escape_html (CTK.cfg.get_val(key, ''))))
 
             # Build the panel list
-            panel = SelectionPanel.SelectionPanel (None, right_box.id, "/source", '%s/empty'%(URL_CONTENT), draggable=False, container='source_panel')
+            panel = SelectionPanel.SelectionPanel (None, right_box.id, "/source", '%s/empty'%(URL_CONTENT), draggable=False, container='source_panel', cookie_name=COOKIE)
             self += panel
 
             sources = CTK.cfg.keys('source')
@@ -436,7 +439,7 @@ class Render:
             dialog.AddButton (_('Cancel'), "close")
             dialog += AddSource()
 
-            button = CTK.Button(_('New'), {'id': 'source-new-button', 'class': 'panel-button', 'title': _('Add New Information Source')})
+            button = CTK.Button('<img src="/static/images/panel-new.png" />', {'id': 'source-new-button', 'class': 'panel-button', 'title': _('Add New Information Source')})
             button.bind ('click', dialog.JS_to_show())
             dialog.bind ('submit_success', dialog.JS_to_close())
             dialog.bind ('submit_success', self.JS_to_trigger('submit_success'));
@@ -450,7 +453,7 @@ class Render:
             dialog.AddButton (_('Cancel'), "close")
             dialog += CloneSource()
 
-            button = CTK.Button(_('Clone'), {'id': 'source-clone-button', 'class': 'panel-button', 'title': _('Clone Selected Information Source')})
+            button = CTK.Button('<img src="/static/images/panel-clone.png" />', {'id': 'source-clone-button', 'class': 'panel-button', 'title': _('Clone Selected Information Source')})
             button.bind ('click', dialog.JS_to_show())
 
             self += dialog

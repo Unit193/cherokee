@@ -39,13 +39,13 @@ on production servers.</p></div>
 <h3 id="x-sendifle">X-Sendfile</h3><div style="clear:left"></div>
 <div class="paragraph"><p>X-Sendfile is a special, non-standard HTTP header that has been
 supported by Cherokee for a while. At first you might think it is no
-big deal, but think again.It can be enabled in any CGI, FastCGI or
-SCGI backend. Basically its job is to instruct the web server to ignore
-the content of the response and replace it by whatever is specified in
-the header. The main advantage of this is that it will be Cherokee the
-one serving the file, making use of all its optimizations. It is
-useful for processing script-output of e.g. php, perl, ruby or any
-cgi.</p></div>
+big deal, but think again.It can be enabled in any CGI, FastCGI, SCGI,
+or uWSGI backend. Basically its job is to instruct the web server to
+ignore the content of the response and replace it by whatever is
+specified in the header. The main advantage of this is that it will be
+Cherokee the one serving the file, making use of all its
+optimizations. It is useful for processing script-output of e.g. php,
+perl, ruby or any cgi.</p></div>
 <div class="paragraph"><p>This is particularly useful because it hands the load to Cherokee, all
 the response headers from the backend are forwarded, the whole
 application uses a lot less resources and performs several times
@@ -61,6 +61,9 @@ absolutely no cost.</p></div>
 header, a similar feature offered by other web servers.
 This is to allow the migration of applications supporting it without
 having to make major code rewrites.</p></div>
+<div class="paragraph"><p>Of course, this feature can be enabled or disabled in a per-rule
+basis, so you can have several rules and handlers on your virtual
+servers with the feature ON or OFF according to your needs.</p></div>
 <h3 id="zero-downtime">Zero Downtime Updates, AKA "Graceful restart"</h3><div style="clear:left"></div>
 <div class="paragraph"><p>Cherokee has an ability hardly ever seen in any service delivering
 application, be it web content, multimedia streaming or almost any
@@ -108,6 +111,9 @@ Cherokee has TLS SNI support for the OpenSSL backends.</p></div>
 known to support it are Mozilla Firefox 2.0+ and Opera 8.0+ in all its
 variants, Safari 3.2.1+ on OS X and Vista, Internet Explorer 7+
 (Vista, not XP) or later, and Google Chrome (Vista, not XP).</p></div>
+<div class="paragraph"><p>When using SNI is not possible, other workarounds can still be
+used. Check the <a href="cookbook_ssl.html">SSL recipe</a> of our
+<a href="cookbook.html">cookbook</a> for more details.</p></div>
 <h3 id="dbslayer">Database load balancing</h3><div style="clear:left"></div>
 <div class="paragraph"><p>Ever heard of the <strong>DB Access Layer</strong>, AKA
 <a href="http://code.nytimes.com/projects/dbslayer/">DBSlayer</a>?</p></div>

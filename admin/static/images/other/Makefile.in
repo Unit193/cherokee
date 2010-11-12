@@ -167,6 +167,7 @@ PATH_SEPARATOR = @PATH_SEPARATOR@
 PHPCGI = @PHPCGI@
 PTHREAD_CFLAGS = @PTHREAD_CFLAGS@
 PTHREAD_LIBS = @PTHREAD_LIBS@
+PYTHON = @PYTHON@
 RANLIB = @RANLIB@
 RT_LIBS = @RT_LIBS@
 SED = @SED@
@@ -236,12 +237,16 @@ top_srcdir = @top_srcdir@
 otherdir = "$(datadir)/cherokee/admin/static/images/other"
 other_DATA = \
 contact-bug.png \
-contact-irc.png \
 contact-list.png \
 facebook.png \
+linkedin.png \
+irc.png \
+left.png \
 octality-logo.png \
 proud.png \
-twitter.png
+right.png \
+twitter.png \
+web.png
 
 EXTRA_DIST = \
 $(other_DATA)

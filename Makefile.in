@@ -232,6 +232,7 @@ PATH_SEPARATOR = @PATH_SEPARATOR@
 PHPCGI = @PHPCGI@
 PTHREAD_CFLAGS = @PTHREAD_CFLAGS@
 PTHREAD_LIBS = @PTHREAD_LIBS@
+PYTHON = @PYTHON@
 RANLIB = @RANLIB@
 RT_LIBS = @RT_LIBS@
 SED = @SED@
@@ -1091,6 +1092,7 @@ uninstall-local: uninstall-local-config
 
 test:
 	$(MAKE) -C doc test
+	$(MAKE) -C admin test
 	$(MAKE) -C qa test
 
 update-po:

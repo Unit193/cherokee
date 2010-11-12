@@ -78,6 +78,8 @@
 	"icons!directory = folder.png\n"				\
 	"icons!parent_directory = arrow_turn_left.png\n"
 
+#define ENTRIES "main"
+
 static cherokee_server_t  *srv           = NULL;
 static char               *config_file   = NULL;
 static char               *document_root = NULL;
@@ -96,6 +98,8 @@ wait_process (pid_t pid)
 	int re;
 	int exitcode;
 
+	TRACE(ENTRIES",signal", "Handling SIGCHLD, waiting PID %d\n", pid);
+
 	while (true) {
 		re = waitpid (pid, &exitcode, 0);
 		if (re > 0)
@@ -105,7 +109,7 @@ wait_process (pid_t pid)
 		else if (errno == EINTR)
 			continue;
 		else {
-			PRINT_ERROR ("ERROR: waitting PID %d, error %d\n", pid, errno);
+			PRINT_ERROR ("ERROR: waiting PID %d, error %d\n", pid, errno);
 			return;
 		}
 	}

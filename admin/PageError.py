@@ -24,7 +24,9 @@
 
 import os
 import CTK
+
 from urllib import quote
+from configured import *
 
 ERROR_LAUNCH_URL_ADMIN = N_('The server suggests to check <a href="%s">this page</a>. Most probably the problem can be solved in there.')
 
@@ -86,9 +88,13 @@ class PageErrorLaunch (CTK.Page):
 
 
 
-NOT_WRITABLE_TITLE = N_('The configuration file <code>%s</code> cannot be modified.')
-NOT_WRITABLE_1     = N_('You have to change its permissions in order to allow cherokee-admin to work with it. You can try to fix it by changing the file permissions:')
-NOT_WRITABLE_2     = N_('or by launching cherokee-admin as root.')
+NOT_WRITABLE_F_TITLE = N_('The configuration file <code>%s</code> cannot be modified.')
+NOT_WRITABLE_F_1     = N_('You have to change its permissions in order to allow cherokee-admin to work with it. You can try to fix it by changing the file permissions:')
+NOT_WRITABLE_F_2     = N_('or by launching cherokee-admin as root.')
+
+NOT_WRITABLE_D_TITLE = N_('The specified configuration file <code>%s</code> is a directory.')
+NOT_WRITABLE_D_1     = N_('You must change the name in order to allow cherokee-admin to work with it. You can try to fix it by renaming the directory so the file can be created: ')
+NOT_WRITABLE_D_2     = N_('or by launching cherokee-admin specifying a different configuration file.')
 
 class ConfigNotWritable (CTK.Page):
     def __init__ (self, file, **kwargs):
@@ -104,11 +110,19 @@ class ConfigNotWritable (CTK.Page):
         CTK.Page.__init__ (self, template, **kwargs)
 
         # Body
-        self += CTK.RawHTML ('<h1>%s</h1>' %(_('Configuration file is not writable')))
-        self += CTK.RawHTML ('<p><strong>%s</strong></p>' %(NOT_WRITABLE_TITLE %(file)))
-        self += CTK.RawHTML ('<p>%s</p>' %(NOT_WRITABLE_1))
-        self += CTK.RawHTML ('<div class="shell">chmod u+w %s</div>' %(file))
-        self += CTK.RawHTML ('<p>%s</p>' %(NOT_WRITABLE_2))
+        if os.path.isfile (file):
+            self += CTK.RawHTML ('<h1>%s</h1>' %(_('Configuration file is not writable')))
+            self += CTK.RawHTML ('<p><strong>%s</strong></p>' %(NOT_WRITABLE_F_TITLE %(file)))
+            self += CTK.RawHTML ('<p>%s</p>' %(NOT_WRITABLE_F_1))
+            self += CTK.RawHTML ('<div class="shell">chmod u+w %s</div>' %(file))
+            self += CTK.RawHTML ('<p>%s</p>' %(NOT_WRITABLE_F_2))
+        else:
+            self += CTK.RawHTML ('<h1>%s</h1>' %(_('Incorrect configuration file specified')))
+            self += CTK.RawHTML ('<p><strong>%s</strong></p>' %(NOT_WRITABLE_D_TITLE %(file)))
+            self += CTK.RawHTML ('<p>%s</p>' %(NOT_WRITABLE_D_1))
+            self += CTK.RawHTML ('<div class="shell">mv %s %s.dir</div>' %(file, file))
+            self += CTK.RawHTML ('<p>%s</p>' %(NOT_WRITABLE_D_2))
+
 
 def NotWritable (file):
     return ConfigNotWritable (file).Render()
@@ -165,3 +179,56 @@ class AncientConfigError (CTK.Page):
 
 def AncientConfig (file):
     return AncientConfigError(file).Render()
+
+
+
+OWS_DIR_P1 = N_("A problem with the installation directories has been found.  The %s directory is missing and it could not be created by Cherokee-Admin.")
+OWS_DIR_P2 = N_("Please, create it and try again:")
+
+OWS_PERM_P1 = N_("A problem with the installation directories has been found.  The %(dir)s directory has the wrong permissions. It must be writable by the UID %(uid)s.")
+OWS_PERM_P2 = N_("Please, fix it and try again:")
+
+class OWSDirectoryError (CTK.Page):
+    def __init__ (self, **kwargs):
+        srcdir = os.path.dirname (os.path.realpath (__file__))
+        theme_file = os.path.join (srcdir, 'exception.html')
+
+        # Set up the template
+        template = CTK.Template (filename = theme_file)
+        template['body_props'] = ' id="body-error"'
+        template['title']      = _('An Incomplete Installation was detected')
+
+        # Parent's constructor
+        CTK.Page.__init__ (self, template, **kwargs)
+
+        # Write the right message
+        errors = False
+
+        for d in (CHEROKEE_OWS_DIR, CHEROKEE_OWS_ROOT):
+            if not os.path.isdir (d):
+                self += CTK.RawHTML ('<h1>%s</h1>'%(_('Missing Directory')))
+                self += CTK.RawHTML ('<p>%s</p>'%(_(OWS_DIR_P1)%(d)))
+                self += CTK.RawHTML ('<p>%s</p>'%(_(OWS_DIR_P2)))
+                self += CTK.RawHTML ("<p><pre>mkdir -p -m 0755 '%s'</pre>" %(d))
+                self += CTK.RawHTML ("<pre>chown -R %d '%s'</pre></p>" %(os.getuid(), d))
+                errors = True
+                break
+
+            if not os.access (d, os.W_OK):
+                self += CTK.RawHTML ('<h1>%s</h1>'%(_('Installation Problem')))
+                self += CTK.RawHTML ('<p>%s</p>'%(_(OWS_PERM_P1)%({'dir':d, 'uid':os.getuid()})))
+                self += CTK.RawHTML ('<p>%s</p>'%(_(OWS_PERM_P2)))
+                self += CTK.RawHTML ("<pre>chown -R %d '%s'</pre></p>" %(os.getuid(), d))
+                self += CTK.RawHTML ("<pre>chmod -R 0775 '%s'</pre></p>" %(d))
+                errors = True
+                break
+
+        if errors:
+            button = CTK.Button (_("Try Again"))
+            button.bind ('click', CTK.JS.ReloadURL())
+            self += button
+        else:
+            self += CTK.RawHTML (js = CTK.JS.ReloadURL())
+
+def OWSDirectory():
+    return OWSDirectoryError().Render()

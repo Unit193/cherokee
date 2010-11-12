@@ -23,6 +23,7 @@
 #
 
 import CTK
+import copy
 import Page
 import Cherokee
 import validations
@@ -30,9 +31,11 @@ import validations
 import os
 import re
 
+from util import *
 from consts import *
-from Rule import Rule
 from configured import *
+
+from Rule import Rule
 from CTK.util import find_copy_name
 
 URL_BASE  = '/vserver/content'
@@ -64,10 +67,11 @@ NOTE_X_REAL_IP        = N_('Whether the logger should read and use the X-Real-IP
 NOTE_X_REAL_IP_ALL    = N_('Accept all the X-Real-IP and X-Forwarded-For headers. WARNING: Turn it on only if you are centain of what you are doing.')
 NOTE_X_REAL_IP_ACCESS = N_('List of IP addresses and subnets that are allowed to send X-Real-IP and X-Forwarded-For headers.')
 NOTE_EVHOST           = N_('How to support the "Advanced Virtual Hosting" mechanism. (Default: off)')
-NOTE_LOGGER_TEMPLATE  = N_('The following variables are accepted: <br/>${ip_remote}, ${ip_local}, ${protocol}, ${transport}, ${port_server}, ${query_string}, ${request_first_line}, ${status}, ${now}, ${time_secs}, ${time_nsecs}, ${user_remote}, ${request}, ${request_original}, ${vserver_name}, ${response_size}')
+NOTE_LOGGER_TEMPLATE  = N_('The following variables are accepted: <br/>${ip_remote}, ${ip_local}, ${protocol}, ${transport}, ${port_server}, ${query_string}, ${request_first_line}, ${status}, ${now}, ${time_secs}, ${time_nsecs}, ${user_remote}, ${request}, ${request_original}, ${vserver_name}, ${vserver_name_req}, ${response_size}')
 NOTE_MATCHING_METHOD  = N_('Allows the selection of domain matching method.')
 NOTE_COLLECTOR        = N_('Whether or not it should collected statistics about the traffic of this virtual server.')
 NOTE_UTC_TIME         = N_('Time standard to use in the log file entries.')
+NOTE_INDEX_USAGE      = N_('Remember that only "File Exists" rules and "List & Send" handlers use the Directory Indexes setting.')
 
 DEFAULT_HOST_NOTE     = N_("<p>The 'default' virtual server matches all the domain names.</p>")
 
@@ -141,20 +145,105 @@ class HostMatchWidget (CTK.Container):
         pre        = "vserver!%s" %(vsrv_num)
         url_apply  = "%s/%s" %(URL_APPLY, vsrv_num)
         is_default = CTK.cfg.get_lowest_entry("vserver") == int(vsrv_num)
+        is_complex = CTK.cfg.get_val ('%s!match'%(pre)) == 'v_or'
 
-        self += CTK.RawHTML ('<h2>%s</h2>' %(_('Host Names')))
+        self += CTK.RawHTML ('<h2>%s</h2>' %(_('Host Match')))
 
+        # Default Virtual Server
         if is_default:
             notice  = CTK.Notice()
             notice += CTK.RawHTML(_(DEFAULT_HOST_NOTE))
             self += notice
             return
 
-        table = CTK.PropsAuto (url_apply)
-        modul = CTK.PluginSelector ('%s!match'%(pre), trans (Cherokee.support.filter_available(VRULES)), vsrv_num=vsrv_num)
-        table.Add (_('Method'), modul.selector_widget, _(NOTE_MATCHING_METHOD), False)
-        self += CTK.Indenter (table)
-        self += modul
+        # Complex matches
+        if is_complex:
+            table = CTK.PropsAuto (url_apply)
+            modul = CTK.PluginSelector ('%s!match!left'%(pre), trans_options(Cherokee.support.filter_available(VRULES)), vsrv_num=vsrv_num)
+            table.Add ('%s 1'%(_('Method')), modul.selector_widget, _(NOTE_MATCHING_METHOD), False)
+            self += CTK.Indenter (table)
+            self += modul
+
+            submit = CTK.Submitter ('%s/%s/vmatch'%(URL_APPLY, vsrv_num))
+            submit += CTK.Hidden ('op', 'del_1')
+            remove_1 = CTK.Link (None, CTK.RawHTML(_('Remove criteria')))
+            remove_1.bind ('click', submit.JS_to_submit())
+            self += submit
+            self += remove_1
+
+            table = CTK.PropsAuto (url_apply)
+            modul = CTK.PluginSelector ('%s!match!right'%(pre), trans_options(Cherokee.support.filter_available(VRULES)), vsrv_num=vsrv_num)
+            table.Add ('%s 2'%(_('Method')), modul.selector_widget, _(NOTE_MATCHING_METHOD), False)
+            self += CTK.Indenter (table)
+            self += modul
+
+            submit = CTK.Submitter ('%s/%s/vmatch'%(URL_APPLY, vsrv_num))
+            submit += CTK.Hidden ('op', 'del_2')
+            remove_2 = CTK.Link (None, CTK.RawHTML(_('Remove criteria')))
+            remove_2.bind ('click', submit.JS_to_submit())
+            self += submit
+            self += remove_2
+
+        # Simple match
+        else:
+            table = CTK.PropsAuto (url_apply)
+            modul = CTK.PluginSelector ('%s!match'%(pre), trans_options(Cherokee.support.filter_available(VRULES)), vsrv_num=vsrv_num)
+            table.Add (_('Method'), modul.selector_widget, _(NOTE_MATCHING_METHOD), False)
+            self += CTK.Indenter (table)
+            self += modul
+
+            submit = CTK.Submitter ('%s/%s/vmatch'%(URL_APPLY, vsrv_num))
+            submit += CTK.Hidden ('op', 'or')
+
+            link_add = CTK.Link (None, CTK.RawHTML (_('Add an additional matching criteria')))
+            link_add.bind ('click', submit.JS_to_submit())
+
+            self += submit
+            self += link_add
+
+
+def HostMatchWidget_Apply():
+    def move (old, new):
+        val = CTK.cfg.get_val(old)
+        tmp = copy.deepcopy (CTK.cfg[old])
+        del (CTK.cfg[old])
+
+        CTK.cfg[new] = val
+        CTK.cfg.set_sub_node (new, tmp)
+
+    vsrv_num = re.findall (r'^%s/(\d+)/vmatch'%(URL_APPLY), CTK.request.url)[0]
+    pre      = 'vserver!%s!match' %(vsrv_num)
+
+    op = CTK.post.get_val ('op')
+    if op == 'or':
+        # Ensure the first match is set
+        # before adding a second entry.
+        if not CTK.cfg.get_val (pre):
+            return CTK.cfg_reply_ajax_ok()
+
+        move (pre, "%s!left"%(pre))
+        CTK.cfg[pre] = 'v_or'
+        return CTK.cfg_reply_ajax_ok()
+
+    elif op == 'del_1':
+        # Is the second rule empty?
+        if not CTK.cfg.get_val ('%s!right'%(pre)):
+            del (CTK.cfg[pre])
+            return CTK.cfg_reply_ajax_ok()
+
+        move ('%s!right'%(pre), pre)
+        return CTK.cfg_reply_ajax_ok()
+
+    elif op == 'del_2':
+        # Is the first rule empty?
+        if not CTK.cfg.get_val ('%s!left'%(pre)):
+            del (CTK.cfg[pre])
+            return CTK.cfg_reply_ajax_ok()
+
+        move ('%s!left'%(pre), pre)
+        return CTK.cfg_reply_ajax_ok()
+
+    return {'ret': 'fail'}
 
 
 class RuleLink (CTK.Link):
@@ -207,7 +296,7 @@ class BehaviorWidget (CTK.Container):
             first_rule = '0'
 
         button = CTK.Button(_('Rule Management'), {'id':'rule-management'})
-        button.bind('click', CTK.JS.GotoURL('/vserver/%s/rule/%s'%(vsrv_num, first_rule)))
+        button.bind ('click', "window.location = '/vserver/%s/rule/%s'"%(vsrv_num, first_rule))
         self += CTK.Indenter (button)
 
 
@@ -300,11 +389,21 @@ class BasicsWidget (CTK.Container):
 
         # Paths
         table = CTK.PropsAuto (url_apply)
-        table.Add (_('Document Root'),     CTK.TextCfg('%s!document_root'%(pre)),   _(NOTE_DOCUMENT_ROOT))
+        if not CTK.cfg.get_val ('%s!document_root'%(pre),'').startswith(CHEROKEE_OWS_ROOT):
+            table.Add (_('Document Root'), CTK.TextCfg('%s!document_root'%(pre)),   _(NOTE_DOCUMENT_ROOT))
+        else:
+            table.Add (_('Document Root'), CTK.TextCfg('%s!document_root'%(pre), False, {'disabled':True}), _(NOTE_DOCUMENT_ROOT))
+
         table.Add (_('Directory Indexes'), CTK.TextCfg('%s!directory_index'%(pre)), _(NOTE_DIRECTORY_INDEX))
 
         self += CTK.RawHTML ('<h2>%s</h2>' %(_('Paths')))
         self += CTK.Indenter (table)
+
+        if self.is_index_used (vsrv_num):
+            tip = _(NOTE_INDEX_USAGE)
+        else:
+            tip = '%s %s' %(_(NOTE_INDEX_USAGE), _('Neither are in use at the moment.'))
+        self += CTK.Indenter (CTK.Notice ('information', CTK.RawHTML(tip)))
 
         # Network
         table = CTK.PropsAuto (url_apply)
@@ -316,12 +415,31 @@ class BasicsWidget (CTK.Container):
 
         # Advanced Virtual Hosting
         table = CTK.PropsAuto (url_apply)
-        modul = CTK.PluginSelector('%s!evhost'%(pre), trans (Cherokee.support.filter_available(EVHOSTS)))
+        modul = CTK.PluginSelector('%s!evhost'%(pre), trans_options(Cherokee.support.filter_available(EVHOSTS)))
         table.Add (_('Method'), modul.selector_widget, _(NOTE_EVHOST), False)
 
         self += CTK.RawHTML ('<h2>%s</h2>' %(_('Advanced Virtual Hosting')))
         self += CTK.Indenter (table)
         self += CTK.Indenter (modul)
+
+
+    def is_index_used (self, vsrv_num):
+        key     = 'vserver!%s!rule' %(vsrv_num)
+        matches = ['common', 'exists']
+
+        def recursive_find (key):
+            if CTK.cfg.get_val(key) in matches:
+                return True
+
+            for k in CTK.cfg[key].keys():
+                if recursive_find ('%s!%s' %(key,k)):
+                    return True
+
+            return False
+
+        if recursive_find (key):
+            return True
+        return False
 
 
 class ErrorHandlerWidget (CTK.Container):
@@ -332,7 +450,7 @@ class ErrorHandlerWidget (CTK.Container):
         url_apply  = "%s/%s" %(URL_APPLY, vsrv_num)
 
         table = CTK.PropsAuto (url_apply)
-        modul = CTK.PluginSelector ('%s!error_handler'%(pre), trans (Cherokee.support.filter_available(ERROR_HANDLERS)), vsrv_num=vsrv_num)
+        modul = CTK.PluginSelector ('%s!error_handler'%(pre), trans_options(Cherokee.support.filter_available(ERROR_HANDLERS)), vsrv_num=vsrv_num)
         table.Add (_('Method'), modul.selector_widget, _(NOTE_ERROR_HANDLER), False)
 
         self += CTK.RawHTML ('<h2>%s</h2>' %(_('Error Handling hook')))
@@ -346,7 +464,7 @@ class LogginWidgetContent (CTK.Container):
 
         pre        = "vserver!%s" %(vsrv_num)
         url_apply  = "%s/%s/log" %(URL_APPLY, vsrv_num)
-        writers    = [('', _('Disabled'))] + trans (LOGGER_WRITERS)
+        writers    = [('', _('Disabled'))] + trans_options(LOGGER_WRITERS)
 
         # Error writer
         table = CTK.PropsTable()
@@ -370,7 +488,7 @@ class LogginWidgetContent (CTK.Container):
 
         submit = CTK.Submitter(url_apply)
         submit.bind ('submit_success', refreshable.JS_to_refresh())
-        submit += CTK.ComboCfg(pre, trans (Cherokee.support.filter_available(LOGGERS)))
+        submit += CTK.ComboCfg(pre, trans_options(Cherokee.support.filter_available(LOGGERS)))
 
         table = CTK.PropsTable()
         table.Add (_('Format'), submit, _(NOTE_LOGGERS))
@@ -379,7 +497,7 @@ class LogginWidgetContent (CTK.Container):
         if format:
             submit = CTK.Submitter(url_apply)
             submit.bind ('submit_success', refreshable.JS_to_refresh())
-            submit += CTK.ComboCfg('%s!access!type'%(pre), trans (LOGGER_WRITERS))
+            submit += CTK.ComboCfg('%s!access!type'%(pre), trans_options(LOGGER_WRITERS))
             table.Add (_('Write accesses to'), submit, _(NOTE_ACCESSES))
 
             submit = CTK.Submitter(url_apply)
@@ -409,7 +527,7 @@ class LogginWidgetContent (CTK.Container):
         # Properties
         if CTK.cfg.get_val (pre):
             table = CTK.PropsTable()
-            table.Add (_('Time standard'), CTK.ComboCfg ('%s!utc_time'%(pre), trans (UTC_TIME)), _(NOTE_UTC_TIME))
+            table.Add (_('Time standard'), CTK.ComboCfg ('%s!utc_time'%(pre), trans_options(UTC_TIME)), _(NOTE_UTC_TIME))
             table.Add (_('Accept Forwarded IPs'), CTK.CheckCfgText ('%s!x_real_ip_enabled'%(pre), False, _('Accept')), _(NOTE_X_REAL_IP))
 
             if int (CTK.cfg.get_val('%s!x_real_ip_enabled'%(pre), "0")):
@@ -430,7 +548,7 @@ def LogginWidgetContent_Apply():
     ret = CTK.cfg_apply_post()
 
     # Check Error Writer stale-entries
-    vsrv_num = re.findall (r'^%s/(\d+)/log'%URL_APPLY,  CTK.request.url)[0]
+    vsrv_num = re.findall (r'^%s/(\d+)/log'%(URL_APPLY), CTK.request.url)[0]
     pre      = 'vserver!%s!error_writer' %(vsrv_num)
 
     if not CTK.cfg.get_val ('%s!type'%(pre)):
@@ -470,7 +588,7 @@ class SecutiryWidgetContent (CTK.Container):
         # Advanced options
         table = CTK.PropsTable()
         table.Add (_('Ciphers'),               CTK.TextCfg ('%s!ssl_ciphers' %(pre), True), _(NOTE_CIPHERS))
-        table.Add (_('Client Certs. Request'), CTK.ComboCfg('%s!ssl_client_certs' %(pre), trans (CLIENT_CERTS)), _(NOTE_CLIENT_CERTS))
+        table.Add (_('Client Certs. Request'), CTK.ComboCfg('%s!ssl_client_certs' %(pre), trans_options(CLIENT_CERTS)), _(NOTE_CLIENT_CERTS))
 
         if CTK.cfg.get_val('%s!ssl_client_certs' %(pre)):
             table.Add (_('CA List'), CTK.TextCfg ('%s!ssl_ca_list_file' %(pre), False), _(NOTE_CA_LIST))
@@ -527,8 +645,9 @@ class Render:
         return cont.Render().toJSON()
 
 
-CTK.publish (r'^%s/[\d]+$'      %(URL_BASE), Render)
-CTK.publish (r'^%s/[\d]+$'      %(URL_APPLY), CTK.cfg_apply_post, validation=VALIDATIONS, method="POST")
-CTK.publish (r'^%s/[\d]+/log$'  %(URL_APPLY), LogginWidgetContent_Apply, validation=VALIDATIONS, method="POST")
-CTK.publish ('^%s/[\d]+/clone$' %(URL_BASE), commit_clone)
+CTK.publish (r'^%s/[\d]+$'        %(URL_BASE),  Render)
+CTK.publish (r'^%s/[\d]+$'        %(URL_APPLY), CTK.cfg_apply_post,        validation=VALIDATIONS, method="POST")
+CTK.publish (r'^%s/[\d]+/log$'    %(URL_APPLY), LogginWidgetContent_Apply, validation=VALIDATIONS, method="POST")
+CTK.publish (r'^%s/[\d]+/vmatch$' %(URL_APPLY), HostMatchWidget_Apply, method="POST")
+CTK.publish (r'^%s/[\d]+/clone$'  %(URL_BASE),  commit_clone)
 

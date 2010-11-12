@@ -171,21 +171,6 @@ e('VALIDATOR_METHOD_UNKNOWN',
   desc  = BROKEN_CONFIG)
 
 
-# cherokee/admin_client.c
-#
-e('ADMIN_CLIENT_INTERNAL',
-  title = "Internal error",
-  desc  = CODING_BUG)
-
-e('ADMIN_CLIENT_BAD_RESPONSE',
-  title = "Uknown response len(%d): '%s'",
-  desc  = CODING_BUG)
-
-e('ADMIN_CLIENT_LITERAL',
-  title = "Could not find len(%d):'%s' in len(%d):'%s'",
-  desc  = CODING_BUG)
-
-
 # cherokee/handler_*.c
 #
 e('HANDLER_REGEX_GROUPS',
@@ -389,7 +374,7 @@ e('LOGGER_WRITER_READ',
 
 e('LOGGER_WRITER_APPEND',
   title = "Could not open '%s' for appending",
-  desc  = SYSTEM_ISSUE)
+  desc  = "This is probably related to the file permissions. Please make sure that it is writable for the user under which Cherokee is run.")
 
 e('LOGGER_WRITER_ALLOC',
   title = "Allocation logger->max_bufsize %d failed.",
@@ -647,7 +632,7 @@ e('SERVER_THREAD_POLL',
   desc  = "It seems that an internal server thread assumed a file descriptor limit of %d. However, its FD poll has a lower limit of %d descriptors. The limit has been reduced to the poll limit.")
 
 e('SERVER_NEW_THREAD',
-  title = "Could not create a cherokee_thread_t",
+  title = "Could not create an internal server thread",
   desc  = "This is a extremely unusual error. For some reason the server could not create a thread while launching the server.",
   debug = "ret = %d")
 
@@ -910,7 +895,12 @@ e('THREAD_GET_CONN_OBJ',
 
 e('THREAD_SET_SOCKADDR',
   title = "Could not set sockaddr",
-  desc  = CODING_BUG);
+  desc  = CODING_BUG)
+
+e('THREAD_CREATE',
+  title = "Could not create a system thread: '${errno}'",
+  desc  = "This is a extremely unusual error. For some reason your system could not create a thread while launching the server. You might have hit some system restriction.",
+  debug = "pthread_create() error = %d")
 
 
 # cherokee/connection.c

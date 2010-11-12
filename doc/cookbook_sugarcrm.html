@@ -166,15 +166,15 @@ your system, each one for its own PHP: the CGI version, the CLI,
 etc. Cherokee uses PHP through FastCGI, so edit that one with your
 favorite editor.</p></div>
 <div class="listingblock">
-<div class="title">Editing with Emacs</div>
+<div class="title">Editing the PHP configuration</div>
 <div class="content">
-<pre><tt># emacs /etc/php5/cgi/php.ini</tt></pre>
+<pre><tt># editor /etc/php5/cgi/php.ini</tt></pre>
 </div></div>
 <div class="sidebarblock">
 <div class="sidebar-content">
 <div class="sidebar-title">Required adjustments in this case</div>
-<div class="paragraph"><p>memory_limit = 40M
-upload_max_filesize = 8M</p></div>
+<div class="paragraph"><p>memory_limit = 40M</p></div>
+<div class="paragraph"><p>upload_max_filesize = 8M</p></div>
 </div></div>
 <div class="paragraph"><p>To see the changes reflected in the installer you would have to
 respawn the php instances. Simply kill them and Cherokee will do the
