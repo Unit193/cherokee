@@ -3,7 +3,6 @@ cherokee (1.0.9-1) unstable; urgency=low
   * New Upstream Version
   * Refreshed  debian/patches/fix_man_section,
                debian/patches/move_helper_programs_to_usr_share
-               debian/patches/series
                debian/patches/set_user
   * Removed    debian/patches/include_paths_in_migrators
   * Edited     debian/libcherokee-config0.install and removed 
@@ -12,7 +11,7 @@ cherokee (1.0.9-1) unstable; urgency=low
                debian/libcherokee-config0-dev.install
   * Edited     debian/control removed the reference to libcherokee-config-dev
 
- -- Leonel Nunez <leonel@enelserver.com>  Fri, 12 Nov 2010 17:09:44 -0700
+ -- Leonel Nunez <leonel@enelserver.com>  Fri, 12 Nov 2010 17:11:22 -0700
 
 cherokee (1.0.8-2) unstable; urgency=low
 
