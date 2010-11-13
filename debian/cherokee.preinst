@@ -8,40 +8,6 @@ set -e
 action=$1
 version=$2
 
-migrate_conf_versions() {
-    OLD_VERSION=$1
-    NEW_VERSION=$2
-    MIGRATOR=/usr/share/cherokee/$3
-    CONFPATH=/etc/cherokee
-    OLDCONFPATH=${CONFPATH}/pre-${NEW_VERSION}
-    LOG=${OLDCONFPATH}/${NEW_VERSION}_migration_log
-    README=${OLDCONFPATH}/${NEW_VERSION}_migration_README
-
-    mkdir -p $OLDCONFPATH
-    file=$CONFPATH/cherokee.conf
-    oldfile=$OLDCONFPATH/cherokee.conf
-    echo "----------------------------------------" >> $LOG
-    echo "Translating $file" >> $LOG
-    mv $file $oldfile
-    if python $MIGRATOR $oldfile $file 2>>$LOG
-    then
-	echo $file was successfully migrated >> $LOG
-    else
-	echo "*** ERROR MIGRATING $file - Follows:" >> $LOG
-	cat $file >> $LOG
-    fi
-
-    cat <<EOF > $README
-Your Cherokee ${OLD_VERSION} configuration file has been converted to
-the ${NEW_VERSION} format. Automatic conversion is expected to succeed
-- but in case your server no longer works as expected, your original
-file is still available in this directory.
-
-A log of the migration process has been saved in $LOG. Please include
-it in any bug reports regarding this migration!
-EOF
-}
-
 case "$action" in
     install|upgrade)
 	CONFPATH=/etc/cherokee
@@ -55,36 +21,6 @@ case "$action" in
 	fi
 
 	if [ -e "$CONFFILE" ] && [ "$md5sum" != "$old_md5sum" ]; then
-	    if dpkg --compare-versions "$version" lt-nl 0.8
-	    then
-		migrate_conf_versions 0.7 0.8 07to08.py
-	    fi
-
-	    if dpkg --compare-versions "$version" lt-nl 0.8
-	    then
-		migrate_conf_versions 0.8 0.9 08to09.py
-	    fi
-
-	    if dpkg --compare-versions "$version" lt-nl 0.9
-	    then
-		migrate_conf_versions 0.9 0.10 09to010.py
-	    fi
-
-	    if dpkg --compare-versions "$version" lt-nl 0.98
-	    then
-		migrate_conf_versions 0.11 0.98 011to098.py
-	    fi
-
-	    if dpkg --compare-versions "$version" lt-nl 0.99
-	    then
-		migrate_conf_versions 0.98 0.99 098to099.py
-	    fi
-
-	    if dpkg --compare-versions "$version" lt-nl 0.9910
-	    then
-		migrate_conf_versions 0.99 0.9910 0999to09910.py
-	    fi
-
 	    # Finally, starting 0.99.31, there is just a generic migrator
 	    # able to do it all. We will deprecate older migrators soon.
 	    /usr/share/cherokee/admin/upgrade_config.py $CONFFILE
