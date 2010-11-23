@@ -1,3 +1,10 @@
+cherokee (1.0.8-4) unstable; urgency=low
+
+  * Added a missing bit to the problem fixed at 1.0.8-3, by request of
+    the upstream author
+
+ -- Gunnar Wolf <gwolf@debian.org>  Tue, 23 Nov 2010 12:33:41 -0600
+
 cherokee (1.0.8-3) unstable; urgency=low
 
   * Fixes a security issue where the logger skips reporting information
