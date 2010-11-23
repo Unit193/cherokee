@@ -1,3 +1,11 @@
+cherokee (1.0.8-3) unstable; urgency=low
+
+  * Fixes a security issue where the logger skips reporting information
+    regarding unparsable connections (reported by upstream, patch
+    "fix_log_file_skipping_info" generated from their SVN tree)
+
+ -- Gunnar Wolf <gwolf@debian.org>  Tue, 23 Nov 2010 09:42:11 -0600
+
 cherokee (1.0.8-2) unstable; urgency=low
 
   * Override dh_pysupport to byte-compile private Python modules -

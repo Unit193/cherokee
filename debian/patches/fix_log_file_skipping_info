@@ -1,0 +1,49 @@
+From: Álvaro López Ortega <alvaro@alobbs.com>
+Origin: upstream
+Forwarded: not-needed
+Last-update: 2010-11-23
+Reviewed-by: Gunnar Wolf <gwolf@debian.org>
+Applied-Upstream: 1.0.10,
+http://svn.cherokee-project.com/changeset/5786
+
+# Fixes a security issue where the logger skips reporting information
+# regarding unparsable connections
+Index: cherokee/cherokee/connection.c
+===================================================================
+--- cherokee.orig/cherokee/connection.c	2010-11-23 09:27:14.000000000 -0600
++++ cherokee/cherokee/connection.c	2010-11-23 09:27:35.000000000 -0600
+@@ -1984,6 +1984,11 @@
+ 
+ error:
+ 	conn->error_code = error_code;
++
++        /* Since the request could not be parsed, the connection is
++         * about to be closed. Log the error now before it's too late.
++         */
++        cherokee_logger_write_access (CONN_VSRV(conn)->logger, conn);
+ 	return ret_error;
+ }
+ 
+Index: cherokee/cherokee/logger_ncsa.c
+===================================================================
+--- cherokee.orig/cherokee/logger_ncsa.c	2010-11-23 09:27:14.000000000 -0600
++++ cherokee/cherokee/logger_ncsa.c	2010-11-23 09:29:45.000000000 -0600
+@@ -223,10 +223,16 @@
+ 	/* Get the method and version strings
+ 	 */
+ 	ret = cherokee_http_method_to_string (cnt->header.method, &method, &method_len);
+-	if (unlikely(ret < ret_ok)) return ret;
++	if (unlikely(ret < ret_ok)) {
++		method = "";
++		method_len = 0;
++	}
+ 
+ 	ret = cherokee_http_version_to_string (cnt->header.version, &version, &version_len);
+-	if (unlikely(ret < ret_ok)) return ret;
++	if (unlikely(ret < ret_ok)) {
++		version = "";
++		version_len = 0;
++	}
+ 
+ 	/* Build the log string
+ 	 *
