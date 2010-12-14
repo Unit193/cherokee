@@ -1,3 +1,13 @@
+cherokee (1.0.14-1) experimental; urgency=low
+
+  * New Upstream Version (Closes: #606865)
+  * Targetting at experimental in order not to interfere with to
+    Squeeze's freeze
+  * No longer building libcherokee-config0-dev due to upstream
+    restructuring
+
+ -- Gunnar Wolf <gwolf@debian.org>  Tue, 14 Dec 2010 16:06:46 -0600
+
 cherokee (1.0.9-1) unstable; urgency=low
 
   * New Upstream Version
