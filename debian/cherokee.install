@@ -1,5 +1,4 @@
 /usr/sbin/cherokee-worker	/usr/sbin
-/usr/sbin/cherokee-admin	/usr/sbin
 /usr/sbin/cherokee		/usr/sbin
 /usr/bin/cherokee-panic		/usr/share/cherokee
 /var/www/index.html		/usr/share/cherokee/default-site

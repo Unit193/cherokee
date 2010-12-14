@@ -11,9 +11,8 @@ Vcs-Browser: http://git.debian.org/git/collab-maint/cherokee.git
 
 Package: cherokee
 Architecture: any
-Pre-Depends: libcherokee-config0 (= ${binary:Version})
 Depends: ${misc:Depends}, ${shlibs:Depends}, logrotate, libcherokee-base0 (= ${binary:Version}), libcherokee-server0 (= ${binary:Version})
-Recommends: libcherokee-mod-admin (= ${binary:Version}), spawn-fcgi
+Recommends: cherokee-admin (= ${binary:Version}), spawn-fcgi
 Suggests: cherokee-doc, libcherokee-mod-geoip (= ${binary:Version}), libcherokee-mod-ldap (= ${binary:Version}), libcherokee-mod-libssl (= ${binary:Version}), libcherokee-mod-mysql (= ${binary:Version}), libcherokee-mod-rrd (= ${binary:Version}), libcherokee-mod-streaming (= ${binary:Version})
 Provides: httpd, httpd-cgi
 Description: Very fast, flexible and easy to configure web server
@@ -98,30 +97,12 @@ Description: Cherokee web server - Client libraries' development files
  This package contains the client development files - headers, .so 
  and .a files.
 
-Package: libcherokee-config0
-Section: httpd
-Architecture: any
-Depends: ${misc:Depends}, ${shlibs:Depends}, ${python:Depends}
-Replaces: libcherokee-server0 (<< 0.8.1-1)
-Description: Cherokee web server - Configuration libraries
- Cherokee is a very fast, flexible and easy to configure Web Server.
- It supports the widespread technologies nowadays: FastCGI, SCGI, PHP,
- CGI, TLS and SSL encrypted connections, Virtual hosts, Authentication,
- on the fly encoding, Apache compatible log files, HTTP Load Balancing,
- Data Base Balancing, SSI, Reverse HTTP Proxy and much more.
- .
- Cherokee also provides an easy to use configuration interface that
- allows to configure the server from top to bottom without having to
- edit a text configuration file.
- .
- This is the configuration handler's runtime library
-
 Package: libcherokee-server0
 Section: httpd
 Architecture: any
 Replaces: libcherokee-mod-server-info
 Provides: libcherokee-mod-server-info
-Breaks: libcherokee-mod-server-info (<< ${binary:Version}), libcherokee-mod-admin (<< ${binary:Version}), libcherokee-mod-mysql (<< ${binary:Version}), libcherokee-mod-ldap (<< ${binary:Version}), libcherokee-mod-libssl (<< ${binary:Version}), libcherokee-mod-streaming (<< ${binary:Version}), libcherokee-mod-geoip (<< ${binary:Version}), libcherokee-mod-rrd (<< ${binary:Version})
+Breaks: libcherokee-mod-server-info (<< ${binary:Version}), cherokee-admin (<< ${binary:Version}), libcherokee-mod-mysql (<< ${binary:Version}), libcherokee-mod-ldap (<< ${binary:Version}), libcherokee-mod-libssl (<< ${binary:Version}), libcherokee-mod-streaming (<< ${binary:Version}), libcherokee-mod-geoip (<< ${binary:Version}), libcherokee-mod-rrd (<< ${binary:Version})
 Depends: ${misc:Depends}, ${shlibs:Depends}
 Description: Cherokee web server - Server libraries
  Cherokee is a very fast, flexible and easy to configure Web Server.
@@ -155,10 +136,13 @@ Description: Cherokee web server - Server librardevelopment files
  This package contains the server development files - headers, .so 
  and .a files.
 
-Package: libcherokee-mod-admin
+Package: cherokee-admin
 Section: httpd
 Architecture: any
-Depends: ${misc:Depends}, ${shlibs:Depends}, libcherokee-server0 (= ${binary:Version})
+Provides: libcherokee-mod-admin
+Replaces: libcherokee-mod-config0, libcherokee-mod-admin
+Conflicts: libcherokee-mod-config0, libcherokee-mod-admin
+Depends: ${misc:Depends}, ${shlibs:Depends}, libcherokee-server0 (= ${binary:Version}), ${python:Depends}
 Description: Cherokee web server - Administrative plugin
  Cherokee is a very fast, flexible and easy to configure Web Server.
  It supports the widespread technologies nowadays: FastCGI, SCGI, PHP,

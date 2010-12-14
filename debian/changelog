@@ -5,8 +5,11 @@ cherokee (1.0.14-1) experimental; urgency=low
     Squeeze's freeze
   * No longer building libcherokee-config0-dev due to upstream
     restructuring
+  * Dropped libcherokee-config0 and libcherokee-config-dev packages, due
+    to upstream restructuring (Closes: #566994)
+  * Renamed libcherokee-mod-admin to cherokee-admin
 
- -- Gunnar Wolf <gwolf@debian.org>  Tue, 14 Dec 2010 16:06:46 -0600
+ -- Gunnar Wolf <gwolf@debian.org>  Tue, 14 Dec 2010 17:12:33 -0600
 
 cherokee (1.0.9-1) unstable; urgency=low
 
