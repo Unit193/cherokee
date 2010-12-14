@@ -206,11 +206,19 @@ cherokee_handler_proxy_configure (cherokee_config_node_t   *conf,
 			if (ret != ret_ok)
 				return ret;
 
+			/* Rewrite entries were fed in a decreasing
+			 * order, but they should be evaluated from
+			 * the lower to the highest: Revert them now.
+			 */
+			cherokee_list_invert (&props->in_request_regexs);
+
 		} else if (equal_buf_str (&subconf->key, "out_rewrite_request")) {
 			ret = cherokee_regex_list_configure (&props->out_request_regexs,
 							     subconf, srv->regexs);
 			if (ret != ret_ok)
 				return ret;
+
+			cherokee_list_invert (&props->out_request_regexs);
 		}
 	}
 
@@ -410,10 +418,14 @@ build_request (cherokee_handler_proxy_t *hdl,
 	    (! cherokee_buffer_is_empty (&conn->host)))
 	{
 		cherokee_buffer_add_buffer (buf, &conn->host);
+		if (conn->host_port.len > 0) {
+			cherokee_buffer_add_str    (buf, ":");
+			cherokee_buffer_add_buffer (buf, &conn->host_port);
+		}
 	}
 	else {
 		cherokee_buffer_add_buffer (buf, &hdl->src_ref->host);
-		if (hdl->src_ref->port != 80) {
+		if (! http_port_is_standard (hdl->src_ref->port, conn->socket.is_tls)) {
 			cherokee_buffer_add_char    (buf, ':');
 			cherokee_buffer_add_ulong10 (buf, hdl->src_ref->port);
 		}
@@ -560,8 +572,7 @@ build_request (cherokee_handler_proxy_t *hdl,
 		cherokee_buffer_add_str    (buf, "X-Forwarded-Host: ");
 		cherokee_buffer_add_buffer (buf, &conn->host);
 
-		if (((! conn->socket.is_tls) && (conn->bind->port != 80)) ||
-		    ((  conn->socket.is_tls) && (conn->bind->port != 443)))
+		if (! http_port_is_standard (conn->bind->port, conn->socket.is_tls))
 		{
 			cherokee_buffer_add_char    (buf, ':');
 			cherokee_buffer_add_ulong10 (buf, conn->bind->port);

@@ -118,7 +118,8 @@ render_python_error (cherokee_error_type_t   type,
 		     cherokee_buffer_t      *output,
 		     va_list                 ap)
 {
-	cherokee_buffer_t tmp = CHEROKEE_BUF_INIT;
+	va_list           ap_tmp;
+	cherokee_buffer_t tmp     = CHEROKEE_BUF_INIT;
 
 	/* Dict: open */
 	cherokee_buffer_add_char (output, '{');
@@ -147,8 +148,9 @@ render_python_error (cherokee_error_type_t   type,
 	cherokee_buffer_add_str  (output, "\", ");
 
 	/* Render the title */
+	va_copy (ap_tmp, ap);
 	cherokee_buffer_add_str     (output, "'title': \"");
-	cherokee_buffer_add_va_list (output, error->title, ap);
+	cherokee_buffer_add_va_list (output, error->title, ap_tmp);
 	cherokee_buffer_add_str     (output, "\", ");
 	skip_args (ap, error->title);
 
@@ -164,18 +166,22 @@ render_python_error (cherokee_error_type_t   type,
 
 	/* Description */
 	if (error->description) {
-		cherokee_buffer_add_str     (output, "'description': \"");
-		cherokee_buffer_clean       (&tmp);
-		cherokee_buffer_add_va_list (&tmp, error->description, ap);
+		va_copy (ap_tmp, ap);
+		cherokee_buffer_clean           (&tmp);
+		cherokee_buffer_add_str         (output, "'description': \"");
+		cherokee_buffer_add_va_list     (&tmp, error->description, ap_tmp);
 		cherokee_buffer_add_escape_html (output, &tmp);
-		cherokee_buffer_add_str     (output, "\", ");
+		cherokee_buffer_add_str         (output, "\", ");
+
+		/* ARGS: Skip 'description' */
 		skip_args (ap, error->description);
 	}
 
 	/* Admin URL */
 	if (error->admin_url) {
+		va_copy (ap_tmp, ap);
 		cherokee_buffer_add_str     (output, "'admin_url': \"");
-		cherokee_buffer_add_va_list (output, error->admin_url, ap);
+		cherokee_buffer_add_va_list (output, error->admin_url, ap_tmp);
 		cherokee_buffer_add_str     (output, "\", ");
 
 		/* ARGS: Skip 'admin_url' */
@@ -184,9 +190,12 @@ render_python_error (cherokee_error_type_t   type,
 
 	/* Debug information */
 	if (error->debug) {
-		cherokee_buffer_add_str     (output, "'debug': \"");
-		cherokee_buffer_add_va_list (output, error->debug, ap);
-		cherokee_buffer_add_str     (output, "\", ");
+		va_copy (ap_tmp, ap);
+		cherokee_buffer_clean           (&tmp);
+		cherokee_buffer_add_str         (output, "'debug': \"");
+		cherokee_buffer_add_va_list     (&tmp, error->debug, ap_tmp);
+		cherokee_buffer_add_escape_html (output, &tmp);
+		cherokee_buffer_add_str         (output, "\", ");
 
 		/* ARGS: Skip 'debug' */
 		skip_args (ap, error->debug);
@@ -209,13 +218,15 @@ render_python_error (cherokee_error_type_t   type,
 	cherokee_buffer_add_str (output, "\", ");
 
 	/* Backtrace */
-	cherokee_buffer_add_str (output, "'backtrace': \"");
+	if (error->show_backtrace) {
+		cherokee_buffer_add_str (output, "'backtrace': \"");
 #ifdef BACKTRACES_ENABLED
-	cherokee_buffer_clean (&tmp);
-	cherokee_buf_add_backtrace (&tmp, 2, "\\n", "");
-	cherokee_buffer_add_escape_html (output, &tmp);
+		cherokee_buffer_clean (&tmp);
+		cherokee_buf_add_backtrace (&tmp, 2, "\\n", "");
+		cherokee_buffer_add_escape_html (output, &tmp);
 #endif
-	cherokee_buffer_add_str (output, "\", ");
+		cherokee_buffer_add_str (output, "\", ");
+	}
 
 	/* Let's finish here.. */
 	if (strcmp (output->buf + output->len - 2, ", ") == 0) {
@@ -268,7 +279,9 @@ render_human_error (cherokee_error_type_t   type,
 
 	/* Backtrace */
 #ifdef BACKTRACES_ENABLED
-	cherokee_buf_add_backtrace (output, 2, "\n", "  ");
+	if (error->show_backtrace) {
+		cherokee_buf_add_backtrace (output, 2, "\n", "  ");
+	}
 #endif
 }
 

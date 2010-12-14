@@ -233,19 +233,35 @@ done:
 }
 
 static ret_t
+command_has_env_variables (cherokee_buffer_t *command)
+{
+	int                n     = 0;
+	cherokee_boolean_t equal = false;
+
+	while (n < command->len) {
+		if (command->buf[n] == '=') {
+			equal = true;
+		} else if (command->buf[n] == ' ') {
+			return (equal)? ret_error : ret_ok;
+		}
+		n++;
+	}
+
+	return ret_ok;
+}
+
+static ret_t
 check_interpreter (cherokee_source_interpreter_t *src)
 {
 	ret_t ret;
 
 	if (src->interpreter.buf[0] == '/') {
 		ret = check_interpreter_full (&src->interpreter);
-		if (ret == ret_ok)
-			return ret_ok;
-
-		return ret_error;
+	} else {
+		ret = check_interpreter_path (&src->interpreter);
 	}
 
-	return check_interpreter_path (&src->interpreter);
+	return ret;
 }
 
 ret_t
@@ -333,6 +349,12 @@ cherokee_source_interpreter_configure (cherokee_source_interpreter_t *src,
 	 */
 	if (cherokee_buffer_is_empty (&src->interpreter)) {
 		LOG_CRITICAL (CHEROKEE_ERROR_SRC_INTER_EMPTY_INTERPRETER, prio);
+		return ret_error;
+	}
+
+	ret = command_has_env_variables (&src->interpreter);
+	if (ret != ret_ok) {
+		LOG_CRITICAL (CHEROKEE_ERROR_SRC_INTER_ENV_IN_COMMAND, prio, src->interpreter.buf);
 		return ret_error;
 	}
 
@@ -475,6 +497,10 @@ _spawn_local (cherokee_source_interpreter_t *src,
 			setuid (src->change_user);
 		}
 
+		/* Reset signals
+		 */
+		cherokee_reset_signals();
+
 		/* Redirect/Close stderr and stdout
 		 */
 		if (! src->debug) {
@@ -492,9 +518,13 @@ _spawn_local (cherokee_source_interpreter_t *src,
 
 		argv[2] = (char *)tmp.buf;
 		if (src->env_inherited) {
-			re = execv ("/bin/sh", (char **)argv);
+			do {
+				re = execv ("/bin/sh", (char **)argv);
+			} while (errno == EINTR);
 		} else {
-			re = execve ("/bin/sh", (char **)argv, envp);
+			do {
+				re = execve ("/bin/sh", (char **)argv, envp);
+			} while (errno == EINTR);
 		}
 
 		if (re < 0) {

@@ -24,16 +24,80 @@
 
 #include "common-internal.h"
 #include "encoder.h"
+#include "util.h"
 
+#define ENTRIES "encoder"
+
+/* Properties
+ */
+ret_t
+cherokee_encoder_props_init_base (cherokee_encoder_props_t *props,
+				  module_func_props_free_t  free_func)
+{
+	props->perms         = cherokee_encoder_unset;
+	props->instance_func = NULL;
+
+	return cherokee_module_props_init_base (MODULE_PROPS(props), free_func);
+}
 
 ret_t
-cherokee_encoder_init_base (cherokee_encoder_t *enc, cherokee_plugin_info_t *info)
+cherokee_encoder_props_free_base (cherokee_encoder_props_t *props)
+{
+	return cherokee_module_props_free_base (MODULE_PROPS(props));
+}
+
+ret_t
+cherokee_encoder_configure (cherokee_config_node_t   *config,
+			    cherokee_server_t        *srv,
+			    cherokee_module_props_t **_props)
+{
+	cherokee_encoder_props_t *props = ENCODER_PROPS(*_props);
+
+	UNUSED (srv);
+
+	/* Unset
+	 */
+	if (equal_buf_str (&config->val, "0")) {
+		TRACE (ENTRIES, "Encoder %s: unset\n", config->key.buf);
+
+	/* Deny
+	 */
+	} else if (equal_buf_str (&config->val, "forbid") ||
+		   equal_buf_str (&config->val, "deny")) {
+		TRACE (ENTRIES, "Encoder %s: deny\n", config->key.buf);
+		props->perms = cherokee_encoder_forbid;
+
+	/* Allow
+	 */
+	} else if (equal_buf_str (&config->val, "1") ||
+		   equal_buf_str (&config->val, "allow")) {
+		TRACE (ENTRIES, "Encoder %s: allow\n", config->key.buf);
+		props->perms = cherokee_encoder_allow;
+
+	/* Error
+	 */
+	} else {
+		LOG_ERROR (CHEROKEE_ERROR_ENCODER_NOT_SET_VALUE, config->val.buf);
+		return ret_error;
+	}
+
+	return ret_ok;
+}
+
+
+/* Encoder
+ */
+ret_t
+cherokee_encoder_init_base (cherokee_encoder_t       *enc,
+			    cherokee_plugin_info_t   *info,
+			    cherokee_encoder_props_t *props)
 {
 	cherokee_module_init_base (MODULE(enc), NULL, info);
 
-	enc->encode      = NULL;
-	enc->add_headers = NULL;
-	enc->flush       = NULL;
+	MODULE(enc)->props = props;
+	enc->encode        = NULL;
+	enc->add_headers   = NULL;
+	enc->flush         = NULL;
 
 	return ret_ok;
 }

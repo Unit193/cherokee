@@ -171,7 +171,7 @@ cellspacing="0" cellpadding="4">
 <div class="paragraph"><p>You can set up as many hosts as desired and Cherokee will balance the
 load among them.</p></div>
 <div class="paragraph"><p>Once everything is done you can check if Django is really
-working. Simply navigate to the path configured by your rule,
+working. Just navigate to the path configured by your rule,
 <a href="http://localhost/example">http://localhost/example</a> for instance, and you should see some notes
 about your recently created project.</p></div>
 <div class="imageblock">
@@ -183,8 +183,13 @@ about your recently created project.</p></div>
 <div class="sidebar-content">
 <div class="paragraph"><p>Should you wish to deploy your Django application directly instead of
 through <tt>manage.py</tt> this could be easily achieved. Just remember to
-daemonize the script used to launch the interpreter in the relevant
-<tt>information source</tt>.</p></div>
+add the appropriate command used to launch the interpreter in the
+relevant <tt>information source</tt>, and it will be executed. As noted in
+the warning on the documentation about
+<a href="config_info_sources.html#daemonization">Information Sources</a>, Cherokee
+is smart enough to daemonize the backend during the spawning process,
+so you must avoid any manual daemonization on your part to prevent the
+processess from interfering.</p></div>
 <div class="paragraph"><p>This is done adding the appropriate parameter to the <tt>runfastcgi</tt>
 method of <tt>django.core.servers.fastcgi</tt> in your script.</p></div>
 <div class="listingblock">
@@ -192,7 +197,7 @@ method of <tt>django.core.servers.fastcgi</tt> in your script.</p></div>
 <div class="content">
 <pre><tt>from django.core.servers.fastcgi import runfastcgi
 
-runfastcgi(method="threaded", daemonize="true", maxrequests=5,
+runfastcgi(method="threaded", daemonize="false", maxrequests=5,
            protocol="scgi", socket="/tmp/cherokee-django.socket",
            pidfile="/tmp/cherokee-django.pid")</tt></pre>
 </div></div>
@@ -201,7 +206,7 @@ runfastcgi(method="threaded", daemonize="true", maxrequests=5,
 <div class="content">
 <pre><tt>from django.core.servers.fastcgi import runfastcgi
 
-runfastcgi(method="threaded", daemonize="true", maxrequests=5,
+runfastcgi(method="threaded", daemonize="false", maxrequests=5,
            protocol="scgi", host="127.0.0.1", port=3033)</tt></pre>
 </div></div>
 </div></div>

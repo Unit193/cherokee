@@ -159,9 +159,6 @@ def HeaderOp_Apply():
     if tipe == 'add' and not value:
         return {'ret':'error', 'errors': {'new_header_op_value': _("Can not be empty")}}
 
-    #("new_header_op_name",                       validations.is_header_name),
-    #("new_header_op_value",                      validations.is_not_empty),
-
     next_pre = CTK.cfg.get_next_entry_prefix ('vserver!%s!rule!%s!header_op'%(vsrv, rule))
 
     # Add the configuration entries
@@ -303,16 +300,26 @@ class EncodingWidget (CTK.Container):
         pre = 'vserver!%s!rule!%s!encoder' %(vsrv, rule)
         encoders = trans_options(Cherokee.support.filter_available (ENCODERS))
 
-        table = CTK.PropsTable()
-        for e,e_name in encoders:
-            note  = _("Use the %s encoder whenever the client requests it.") %(_(e_name))
-            table.Add ('%s %s'% (_(e_name), _("support")), CTK.ComboCfg('%s!%s'%(pre,e), trans_options(ENCODE_OPTIONS)), note)
-
-        submit = CTK.Submitter (apply)
-        submit += table
-
         self += CTK.RawHTML ("<h2>%s</h2>" % (_('Information Encoders')))
-        self += CTK.Indenter (submit)
+
+        for e,e_name in encoders:
+            key  = '%s!%s'%(pre,e)
+            note = _("Use the %s encoder whenever the client requests it.") %(_(e_name))
+
+            table = CTK.PropsTable()
+            table.Add ('%s %s'% (_(e_name), _("support")), CTK.ComboCfg(key, trans_options(ENCODE_OPTIONS)), note)
+
+            submit = CTK.Submitter (apply)
+            submit += table
+
+            if CTK.cfg.get_val(key) in ['1', 'allow']:
+                module = CTK.instance_plugin (e, key)
+
+            self += CTK.RawHTML ("<h3>%s</h3>" % (e_name))
+            self += CTK.Indenter (submit, 2)
+
+            if CTK.cfg.get_val(key) in ['1', 'allow']:
+                self += CTK.Indenter (module, 2)
 
 
 class RuleWidget (CTK.Refreshable):

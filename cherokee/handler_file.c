@@ -50,7 +50,7 @@
 
 /* Plug-in initialization
  */
-PLUGIN_INFO_HANDLER_EASIEST_INIT (file, http_get | http_head);
+PLUGIN_INFO_HANDLER_EASIEST_INIT (file, http_get | http_head | http_options);
 
 
 /* Methods implementation
@@ -63,7 +63,9 @@ cherokee_handler_file_props_free (cherokee_handler_file_props_t *props)
 
 
 ret_t
-cherokee_handler_file_configure (cherokee_config_node_t *conf, cherokee_server_t *srv, cherokee_module_props_t **_props)
+cherokee_handler_file_configure (cherokee_config_node_t   *conf,
+				 cherokee_server_t        *srv,
+				 cherokee_module_props_t **_props)
 {
 	cherokee_list_t               *i;
 	cherokee_handler_file_props_t *props;
@@ -95,7 +97,9 @@ cherokee_handler_file_configure (cherokee_config_node_t *conf, cherokee_server_t
 
 
 ret_t
-cherokee_handler_file_new  (cherokee_handler_t **hdl, cherokee_connection_t *cnt, cherokee_module_props_t *props)
+cherokee_handler_file_new (cherokee_handler_t     **hdl,
+			   cherokee_connection_t   *cnt,
+			   cherokee_module_props_t *props)
 {
 	CHEROKEE_NEW_STRUCT (n, handler_file);
 
@@ -154,36 +158,42 @@ check_cached (cherokee_handler_file_t *fhdl)
 	cherokee_boolean_t     not_modified_etag  = false;
 	cherokee_connection_t *conn               = HANDLER_CONN(fhdl);
 	cherokee_thread_t     *thread             = HANDLER_THREAD(fhdl);
+	cherokee_buffer_t     *etag_local         = THREAD_TMP_BUF1(thread);
+
+	cherokee_buffer_clean (etag_local);
 
 	/* Based in time
 	 */
 	ret = cherokee_header_get_known (&conn->header, header_if_modified_since, &header, &header_len);
 	if (ret == ret_ok)  {
-		time_t req_time;
 		char   tmp;
-		char  *end = header + header_len;
-
-		tmp = *end;    /* save */
-		*end = '\0';   /* set  */
+		time_t req_time = 0;
+		char  *end      = header + header_len;
 
 		has_modified_since = true;
 
-		req_time = cherokee_dtm_str2time (header);
-		if (unlikely (req_time == DTM_TIME_EVAL)) {
+		/* Set EOL
+		 */
+		tmp = *end;
+		*end = '\0';
+
+		/* Parse the Date string
+		 */
+		ret = cherokee_dtm_str2time (header, &req_time);
+		if (unlikely (ret == ret_error)) {
 			LOG_WARNING (CHEROKEE_ERROR_HANDLER_FILE_TIME_PARSE, header);
 
-			/* restore end of line */
-			*end = tmp;
-			return ret_ok;
+		} else if (likely (ret == ret_ok)) {
+			/* The file is cached in the client
+			 */
+			if (fhdl->info->st_mtime <= req_time) {
+				not_modified_ms = true;
+			}
 		}
-		/* restore end of line */
-		*end = tmp;
 
-		/* The file is cached in the client
+		/* Restore EOL
 		 */
-		if (fhdl->info->st_mtime <= req_time) {
-			not_modified_ms = true;
-		}
+		*end = tmp;
 	}
 
 	/* HTTP/1.1 only headers from now on
@@ -197,28 +207,90 @@ check_cached (cherokee_handler_file_t *fhdl)
 	 */
 	ret = cherokee_header_get_known (&conn->header, header_if_none_match, &header, &header_len);
 	if (ret == ret_ok)  {
-		cherokee_buffer_t *tmp = THREAD_TMP_BUF1(thread);
-
-		/* Temporary buffer has already been pre-allocated,
-		 * so here its length is only reset.
+		/* Build local ETag
 		 */
-		cherokee_buffer_clean (tmp);
-
-		/* Build ETag value
-		 */
-		cherokee_buffer_add_ullong16 (tmp, (cullong_t) fhdl->info->st_mtime);
-		cherokee_buffer_add_str      (tmp, "=");
-		cherokee_buffer_add_ullong16 (tmp, (cullong_t) fhdl->info->st_size);
+		if (cherokee_buffer_is_empty (etag_local)) {
+			cherokee_buffer_add_ullong16 (etag_local, (cullong_t) fhdl->info->st_mtime);
+			cherokee_buffer_add_str      (etag_local, "=");
+			cherokee_buffer_add_ullong16 (etag_local, (cullong_t) fhdl->info->st_size);
+		}
 
 		/* Compare ETag(s)
 		 */
-		if ((header_len == tmp->len) &&
-		    (strncmp (header, tmp->buf, tmp->len) == 0))
+		if ((header_len == etag_local->len) &&
+		    (strncmp (header, etag_local->buf, etag_local->len) == 0))
 		{
 			not_modified_etag = true;
 		}
 
 		has_etag = true;
+	}
+
+	/* If-Range
+	 */
+	ret = cherokee_header_get_known (&conn->header, header_if_range, &header, &header_len);
+	if (ret == ret_ok)  {
+		char   tmp;
+		char  *end = header + header_len;
+
+		/* Set EOL
+		 */
+		tmp = *end;
+		*end = '\0';
+
+		/* "If-Rage: <Etag>"
+		 */
+		if (strchr (header, '=')) {
+			/* Build local ETag if needed
+			 */
+			if (cherokee_buffer_is_empty (etag_local)) {
+				cherokee_buffer_add_ullong16 (etag_local, (cullong_t) fhdl->info->st_mtime);
+				cherokee_buffer_add_str      (etag_local, "=");
+				cherokee_buffer_add_ullong16 (etag_local, (cullong_t) fhdl->info->st_size);
+			}
+
+			/* Compare ETags
+			 */
+			if ((header_len == etag_local->len) &&
+			    (strncmp (header, etag_local->buf, etag_local->len) == 0))
+			{
+				not_modified_etag = true;
+			}
+
+			has_etag = true;
+		}
+
+		/* "If-Range: Sun, 14 Nov 2010 17:17:13 GMT"
+		 */
+		else {
+			time_t req_time = 0;
+
+			ret = cherokee_dtm_str2time (header, &req_time);
+			if (unlikely (ret == ret_error)) {
+				LOG_WARNING (CHEROKEE_ERROR_HANDLER_FILE_TIME_PARSE, header);
+
+			} else if (likely (ret == ret_ok)) {
+				/* If the entity tag given in the If-Range
+				 * header matches the current entity tag for
+				 * the entity, then the server SHOULD provide
+				 * the specified sub-range of the entity using
+				 * a 206 (Partial content) response. If the
+				 * entity tag does not match, then the server
+				 * SHOULD return the entire entity using a 200
+				 * (OK) response.
+				 */
+				if (fhdl->info->st_mtime > req_time) {
+					conn->error_code = http_ok;
+
+					conn->range_start = -1;
+					conn->range_end   = -1;
+				}
+			}
+		}
+
+		/* Restore EOL
+		 */
+		*end = tmp;
 	}
 
 	/* If both If-Modified-Since and ETag have been found then
@@ -233,42 +305,6 @@ check_cached (cherokee_handler_file_t *fhdl)
 		if (not_modified_ms || not_modified_etag) {
 			fhdl->not_modified = true;
 			return ret_ok;
-		}
-	}
-
-	/* If-Range
-	 */
-	ret = cherokee_header_get_known (&conn->header, header_if_range, &header, &header_len);
-	if (ret == ret_ok)  {
-		time_t req_time;
-		char   tmp;
-		char  *end = header + header_len;
-
-		tmp = *end;
-		*end = '\0';
-
-		req_time = cherokee_dtm_str2time (header);
-		if (unlikely (req_time == DTM_TIME_EVAL)) {
-			LOG_WARNING (CHEROKEE_ERROR_HANDLER_FILE_TIME_PARSE, header);
-
-			*end = tmp;
-			return ret_ok;
-		}
-		*end = tmp;
-
-		/* If the entity tag given in the If-Range header
-		 * matches the current entity tag for the entity, then
-		 * the server SHOULD provide the specified sub-range
-		 * of the entity using a 206 (Partial content)
-		 * response. If the entity tag does not match, then
-		 * the server SHOULD return the entire entity using a
-		 * 200 (OK) response.
-		 */
-		if (fhdl->info->st_mtime > req_time) {
-			conn->error_code = http_ok;
-
-			conn->range_start = -1;
-			conn->range_end   = -1;
 		}
 	}
 
@@ -604,6 +640,12 @@ cherokee_handler_file_init (cherokee_handler_file_t *fhdl)
 	ret_t                  ret;
  	cherokee_connection_t *conn = HANDLER_CONN(fhdl);
 
+	/* OPTIONS request
+	 */
+	if (unlikely (HANDLER_CONN(fhdl)->header.method == http_options)) {
+		return ret_ok;
+	}
+
 	/* Build the local file path
 	 */
 	cherokee_buffer_add_buffer (&conn->local_directory, &conn->request);
@@ -627,6 +669,16 @@ cherokee_handler_file_add_headers (cherokee_handler_file_t *fhdl,
 	off_t                  content_length = 0;
 	cherokee_connection_t *conn           = HANDLER_CONN(fhdl);
 
+	/* OPTIONS request
+	 */
+	if (unlikely (HANDLER_CONN(fhdl)->header.method == http_options)) {
+		cherokee_buffer_add_str (buffer, "Content-Length: 0"CRLF);
+		cherokee_handler_add_header_options (HANDLER(fhdl), buffer);
+		return ret_ok;
+	}
+
+	/* Regular request
+	 */
 	memset (&modified_tm, 0, sizeof(struct tm));
 
 	/* ETag:
@@ -731,6 +783,12 @@ cherokee_handler_file_step (cherokee_handler_file_t *fhdl, cherokee_buffer_t *bu
 	off_t                  total;
 	size_t                 size;
 	cherokee_connection_t *conn = HANDLER_CONN(fhdl);
+
+	/* OPTIONS request
+	 */
+	if (unlikely (HANDLER_CONN(fhdl)->header.method == http_options)) {
+		return ret_eof;
+	}
 
 #ifdef WITH_SENDFILE
 	if (fhdl->using_sendfile) {

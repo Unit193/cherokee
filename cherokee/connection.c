@@ -75,6 +75,7 @@
 #include "virtual_server.h"
 #include "socket.h"
 #include "header.h"
+#include "header_op.h"
 #include "header-protected.h"
 #include "iocache.h"
 #include "dtm.h"
@@ -98,6 +99,7 @@ cherokee_connection_new  (cherokee_connection_t **conn)
 	n->handler              = NULL;
 	n->encoder              = NULL;
 	n->encoder_new_func     = NULL;
+	n->encoder_props        = NULL;
 	n->logger_ref           = NULL;
 	n->keepalive            = 0;
 	n->range_start          = -1;
@@ -144,6 +146,7 @@ cherokee_connection_new  (cherokee_connection_t **conn)
 	cherokee_buffer_init (&n->pathinfo);
 	cherokee_buffer_init (&n->redirect);
 	cherokee_buffer_init (&n->host);
+	cherokee_buffer_init (&n->host_port);
 	cherokee_buffer_init (&n->self_trace);
 
 	n->error_internal_code = http_unset;
@@ -207,6 +210,7 @@ cherokee_connection_free (cherokee_connection_t  *conn)
 	cherokee_buffer_mrproper (&conn->userdir);
 	cherokee_buffer_mrproper (&conn->redirect);
 	cherokee_buffer_mrproper (&conn->host);
+	cherokee_buffer_mrproper (&conn->host_port);
 	cherokee_buffer_mrproper (&conn->self_trace);
 	cherokee_buffer_mrproper (&conn->chunked_len);
 
@@ -306,6 +310,7 @@ cherokee_connection_clean (cherokee_connection_t *conn)
 		conn->encoder = NULL;
 	}
 	conn->encoder_new_func = NULL;
+	conn->encoder_props    = NULL;
 
 	if (conn->polling_fd != -1) {
 		cherokee_fd_close (conn->polling_fd);
@@ -327,6 +332,7 @@ cherokee_connection_clean (cherokee_connection_t *conn)
 	cherokee_buffer_clean (&conn->userdir);
 	cherokee_buffer_clean (&conn->redirect);
 	cherokee_buffer_clean (&conn->host);
+	cherokee_buffer_clean (&conn->host_port);
 	cherokee_buffer_clean (&conn->query_string);
 	cherokee_buffer_clean (&conn->self_trace);
 	cherokee_buffer_clean (&conn->chunked_len);
@@ -430,6 +436,7 @@ cherokee_connection_setup_error_handler (cherokee_connection_t *conn)
 	 */
 	if (conn->encoder_new_func) {
 		conn->encoder_new_func = NULL;
+		conn->encoder_props    = NULL;
 	}
 
 	if (conn->encoder != NULL) {
@@ -784,12 +791,6 @@ build_response_header (cherokee_connection_t *conn, cherokee_buffer_t *buffer)
 	 */
 	if (conn->header_ops) {
 		cherokee_header_op_render (conn->header_ops, buffer);
-	}
-
-	/* Unusual methods
-	 */
-	if (conn->header.method == http_options) {
-		cherokee_buffer_add_str (buffer, "Allow: GET, HEAD, POST, OPTIONS"CRLF);
 	}
 }
 
@@ -1256,7 +1257,7 @@ cherokee_connection_instance_encoder (cherokee_connection_t *conn)
 
 	/* Instance and initialize the encoder
 	 */
-	ret = conn->encoder_new_func ((void **)&conn->encoder);
+	ret = conn->encoder_new_func ((void **)&conn->encoder, conn->encoder_props);
 	if (unlikely (ret != ret_ok))
 		goto error;
 
@@ -1450,31 +1451,47 @@ get_host (cherokee_connection_t *conn,
 	  char                  *ptr,
 	  int                    size)
 {
-	ret_t    ret;
-	char    *i;
-	char    *end = ptr + size;
-	cuint_t  skip = 0;
+	ret_t  ret;
+	char  *i;
+	char  *colon = NULL;
+	char  *end   = ptr + size;
 
 	/* Sanity check
 	 */
-	if (size <= 0) return ret_error;
+	if (unlikely (size <= 0)) {
+		return ret_error;
+	}
 
-	/* Skip "colon + port"
+	/* Look up for a colon character
 	 */
 	for (i=end-1; i>=ptr; i--) {
 		if (*i == ':') {
-			skip = end - i;
+			colon = i;
 			break;
 		}
 	}
 
-	/* Copy the string
-	 */
-	if (unlikely (size - skip) <= 0)
+	if (unlikely ((colon != NULL) &&
+		      ((colon == ptr) || (end - colon <= 0))))
+	{
 		return ret_error;
+	}
 
-	ret = cherokee_buffer_add (&conn->host, ptr, size - skip);
-	if (unlikely(ret < ret_ok)) return ret;
+	/* Copy the host and port
+	 */
+	if (colon) {
+		ret = cherokee_buffer_add (&conn->host_port, colon+1, end-(colon+1));
+		if (unlikely (ret != ret_ok))
+			return ret;
+
+		ret = cherokee_buffer_add (&conn->host, ptr, colon - ptr);
+		if (unlikely (ret != ret_ok))
+			return ret;
+	} else {
+		ret = cherokee_buffer_add (&conn->host, ptr, size);
+		if (unlikely (ret != ret_ok))
+			return ret;
+	}
 
 	/* Security check: Hostname shouldn't start with a dot
 	 */
@@ -1484,8 +1501,11 @@ get_host (cherokee_connection_t *conn,
 
 	/* RFC-1034: Dot ending host names
 	 */
-	if (cherokee_buffer_end_char (&conn->host) == '.')
+	while ((cherokee_buffer_end_char (&conn->host) == '.') &&
+	       (! cherokee_buffer_is_empty (&conn->host)))
+	{
 		cherokee_buffer_drop_ending (&conn->host, 1);
+	}
 
 	return ret_ok;
 }
@@ -1496,12 +1516,12 @@ get_encoding (cherokee_connection_t *conn,
 	      char                  *ptr,
 	      cherokee_avl_t        *encoders_accepted)
 {
-	ret_t                         ret;
-	char                          tmp;
-	char                         *i1;
-	char                         *i2;
-	char                         *end;
-	cherokee_encoder_avl_entry_t *encoder_info;
+	ret_t                     ret;
+	char                      tmp;
+	char                     *i1;
+	char                     *i2;
+	char                     *end;
+	cherokee_encoder_props_t *props = NULL;
 
 	/* ptr = Header at the "Accept-Encoding" position
 	 */
@@ -1528,20 +1548,26 @@ get_encoding (cherokee_connection_t *conn,
 		 */
 		tmp = *i2;    /* (2) */
 		*i2 = '\0';
-		ret = cherokee_avl_get_ptr (encoders_accepted, i1, (void **)&encoder_info);
+		ret = cherokee_avl_get_ptr (encoders_accepted, i1, (void **)&props);
 		*i2 = tmp;    /* (2') */
 
 		if (ret == ret_ok) {
-			if (encoder_info->perms == cherokee_encoder_allow) {
+			if (props->perms == cherokee_encoder_allow) {
 				/* Use encoder
 				 */
-				conn->encoder_new_func = encoder_info->instance_func;
+				conn->encoder_new_func = props->instance_func;
+				conn->encoder_props    = props;
 				break;
 
-			} else if (encoder_info->perms == cherokee_encoder_forbid) {
+			} else if (props->perms == cherokee_encoder_forbid) {
 				/* Explicitly forbidden
 				 */
 				conn->encoder_new_func = NULL;
+				conn->encoder_props    = NULL;
+				break;
+			} else if (props->perms == cherokee_encoder_unset) {
+				/* Let's it be
+				 */
 				break;
 			}
 
@@ -1871,10 +1897,11 @@ parse_userdir (cherokee_connection_t *conn)
 ret_t
 cherokee_connection_get_request (cherokee_connection_t *conn)
 {
-	ret_t            ret;
-	char            *host;
-	cuint_t          host_len;
-	cherokee_http_t  error_code = http_bad_request;
+	ret_t               ret;
+	char               *host;
+	cuint_t             host_len;
+	cherokee_http_t     error_code = http_bad_request;
+	cherokee_boolean_t  read_post  = false;
 
 	/* Header parsing
 	 */
@@ -1883,12 +1910,27 @@ cherokee_connection_get_request (cherokee_connection_t *conn)
 		goto error;
 	}
 
-	/* Init the POST structure if needed
+	/* Check is request body is present
 	 */
-	if (http_method_with_input (conn->header.method))
+	if (http_method_with_input (conn->header.method)) {
+		read_post = true;
+	}
+	else if (http_method_with_optional_input (conn->header.method)) {
+		ret = cherokee_header_has_known (&conn->header, header_content_length);
+		if (ret == ret_ok) {
+			read_post = true;
+		} else {
+			ret = cherokee_header_has_known (&conn->header, header_transfer_encoding);
+			if (ret == ret_ok) {
+				read_post = true;
+			}
+		}
+	}
+
+	/* Read POST
+	 */
+	if (read_post)
 	{
-		/* Read the POST header
-		 */
 		ret = cherokee_post_read_header (&conn->post, conn);
 		if (unlikely (ret != ret_ok)) {
 			return ret;
@@ -1905,9 +1947,21 @@ cherokee_connection_get_request (cherokee_connection_t *conn)
 	if (unlikely (ret < ret_ok))
 		goto error;
 
+
+	/* "OPTIONS *" special case
+	 */
+	if (unlikely ((conn->header.method == http_options) &&
+		      (cherokee_buffer_cmp_str (&conn->request, "*") == 0)))
+	{
+		cherokee_buffer_add_buffer (&conn->request_original, &conn->request);
+
+		cherokee_buffer_clean   (&conn->request);
+		cherokee_buffer_add_str (&conn->request, "/");
+	}
+
 	/* Look for starting '/' in the request
 	 */
-	if (conn->request.buf[0] != '/') {
+	if (unlikely (conn->request.buf[0] != '/')) {
 		goto error;
 	}
 
@@ -1984,6 +2038,13 @@ cherokee_connection_get_request (cherokee_connection_t *conn)
 
 error:
 	conn->error_code = error_code;
+
+	/* Since the request could not be parsed, the connection is
+	 * about to be closed. Log the error now before it's too late.
+	 */
+	if (CONN_VSRV(conn)->logger) {
+		cherokee_logger_write_access (CONN_VSRV(conn)->logger, conn);
+	}
 	return ret_error;
 }
 
@@ -2110,6 +2171,9 @@ ret_t
 cherokee_connection_check_http_method (cherokee_connection_t *conn, cherokee_config_entry_t *config_entry)
 {
 	if (config_entry->handler_methods & conn->header.method)
+		return ret_ok;
+
+	if (config_entry->handler_methods == http_options)
 		return ret_ok;
 
 	conn->error_code = http_method_not_allowed;
@@ -2584,9 +2648,9 @@ cherokee_connection_set_redirect (cherokee_connection_t *conn, cherokee_buffer_t
 
 		cherokee_buffer_add_buffer (&conn->redirect, &conn->host);
 
-		if (CONN_BIND(conn)->port != 80) {
-			cherokee_buffer_add_str (&conn->redirect, ":");
-			cherokee_buffer_add_long10 (&conn->redirect, CONN_BIND(conn)->port);
+		if (conn->host_port.len > 0) {
+			cherokee_buffer_add_str    (&conn->redirect, ":");
+			cherokee_buffer_add_buffer (&conn->redirect, &conn->host_port);
 		}
 	}
 

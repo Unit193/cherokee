@@ -288,22 +288,17 @@ def path_find_binary (executable, extra_dirs=[], custom_test=None):
         dirs += filter (lambda x: x, env_path.split(":"))
 
     # Check
-    for dir in dirs:
-        if type(executable) == str:
-            tmp = os.path.join (dir, executable)
-            if os.path.exists (tmp):
+    if type(executable) != list:
+        executable = [executable]
+
+    for exe in executable:
+        for dir in dirs:
+            fp = os.path.join (dir, exe)
+            if os.path.exists (fp):
                 if custom_test:
-                    if not custom_test(tmp):
+                    if not custom_test(fp):
                         continue
-                return tmp
-        elif type(executable) == list:
-            for n in executable:
-                tmp = os.path.join (dir, n)
-                if os.path.exists (tmp):
-                    if custom_test:
-                        if not custom_test(tmp):
-                            continue
-                    return tmp
+                return fp
 
 def path_find_w_default (path_list, default=''):
     """Find a path.
@@ -319,6 +314,22 @@ def path_find_w_default (path_list, default=''):
             if os.path.exists (p):
                 return p
     return default
+
+def path_eval_exist (path_list):
+    """Evaluate a list of potential paths.
+    Returns the paths that actually exist.
+    """
+    exist = []
+    for path in path_list:
+        if '*' in path or '?' in path:
+            to_check = glob.glob (path)
+        else:
+            to_check = [path]
+        for p in to_check:
+            if os.path.exists (p):
+                exist.append (p)
+    return exist
+
 
 
 #

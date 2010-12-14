@@ -31,6 +31,7 @@ import time
 import popen
 import string
 import OWS_Login
+import SystemInfo
 
 from util import *
 from consts import *
@@ -163,27 +164,26 @@ class Maintenance_Box (CTK.Box):
             return
 
         dialog = MaintenanceDialog()
+        dialog.bind ('dialogclose', refresh.JS_to_refresh())
+
         self += CTK.RawHTML ('<h3>%s</h3>' %(_('Maintanance')))
         self += dialog
 
-        if len(unfinished):
-            link = CTK.Link (None, CTK.RawHTML(_('Clean up')))
-            link.bind ('click', dialog.JS_to_show())
+        link = CTK.Link (None, CTK.RawHTML(_('Clean up')))
+        link.bind ('click', dialog.JS_to_show())
 
-            box = CTK.Box()
-            box += CTK.RawHTML ('%d %s' %(len(unfinished), _("partial installations: ")))
-            box += link
-
-            self += box
-
-        if len(orphan):
-            link = CTK.Link (None, CTK.RawHTML(_('Clean up')))
-            link.bind ('click', dialog.JS_to_show())
-
-            box = CTK.Box()
-            box += CTK.RawHTML ('%d %s' %(len(orphan), _("orphan installations: ")))
-            box += link
-            self += box
+        box = CTK.Box({'id':'market_maintenance_box'})
+        if len(unfinished) and len(orphan):
+            box += CTK.RawHTML (_("Detected %(num_orphan)d orphan, and %(num_unfinished)d unfinished installations: ") %(
+                    {'num_orphan': len(orphan), 'num_unfinished': len(unfinished)}))
+        elif len(unfinished):
+            box += CTK.RawHTML (_("Detected %(num_unfinished)d unfinished installations: ") %(
+                    {'num_unfinished': len(unfinished)}))
+        elif len(orphan):
+            box += CTK.RawHTML (_("Detected %(num_orphan)d orphan installations: ") %(
+                    {'num_orphan': len(orphan)}))
+        box += link
+        self += box
 
 
 class MaintenanceDialog (CTK.Dialog):
@@ -205,23 +205,7 @@ class AppList (CTK.Table):
     def __init__ (self, apps, b_next, b_cancel, b_close):
         CTK.Table.__init__ (self, {'id': 'maintenance-removal-list'})
 
-        # Global Selector
-        global_selector = CTK.Checkbox ({'class': 'noauto'})
-        global_selector.bind ('change', """
-            var is_checked = this.checked;
-            $('#%s input:checkbox').each (function() {
-                $(this).attr('checked', is_checked);
-            });
-        """ %(self.id))
-
-        # Add the table title
-        title = [global_selector]
-        title += [CTK.RawHTML(x) for x in (_('Application'), _('Status'), _('Database'), _('Date'))]
-
-        self += title
-        self.set_header()
-
-        # Table body
+        # Dialog button management
         js = "if ($('#%s input:checked').size() > 0) {" %(self.id)
         js +=  b_close.JS_to_hide()
         js +=  b_cancel.JS_to_show()
@@ -232,6 +216,23 @@ class AppList (CTK.Table):
         js +=  b_next.JS_to_hide()
         js += "}"
 
+        # Global Selector
+        global_selector = CTK.Checkbox ({'class': 'noauto'})
+        global_selector.bind ('change', """
+            var is_checked = this.checked;
+            $('#%s input:checkbox').each (function() {
+                $(this).attr('checked', is_checked);
+            });
+        """ %(self.id) + js)
+
+        # Add the table title
+        title = [global_selector]
+        title += [CTK.RawHTML(x) for x in (_('Application'), _('Status'), _('Database'), _('Date'))]
+
+        self += title
+        self.set_header()
+
+        # Table body
         for app in apps:
             check = CTK.Checkbox ({'name': 'remove_%s'%(app), 'class': 'noauto'})
             check.bind ('change', js)
@@ -248,7 +249,8 @@ class ListApps:
         remove_apps = {}
 
         for app in check_orphan_installations():
-            db = app_database_exists (app)
+            db      = app_database_exists (app)
+            service = self._figure_app_service (app)
 
             remove_apps[app] = {}
             remove_apps[app]['type'] = _('Orphan application')
@@ -256,10 +258,13 @@ class ListApps:
             remove_apps[app]['date'] = self._figure_app_date (app)
             if db:
                 remove_apps[app]['db'] = db
+            if service:
+                remove_apps[app]['service'] = service
 
         for app in check_unfinished_installations():
             if not app in remove_apps:
-                db = app_database_exists (app)
+                db      = app_database_exists (app)
+                service = self._figure_app_service (app)
 
                 remove_apps[app] = {}
                 remove_apps[app]['type'] = _('Unfinished installation')
@@ -267,13 +272,16 @@ class ListApps:
                 remove_apps[app]['date'] = self._figure_app_date (app)
                 if db:
                     remove_apps[app]['db'] = db
+                if service:
+                    remove_apps[app]['service'] = service
 
         # Store in CTK.cfg
         del (CTK.cfg ['admin!market!maintenance!remove'])
         for app in remove_apps:
-            CTK.cfg ['admin!market!maintenance!remove!%s!del' %(app)] = 0
-            CTK.cfg ['admin!market!maintenance!remove!%s!db'  %(app)] = remove_apps[app].get('db')
-            CTK.cfg ['admin!market!maintenance!remove!%s!name'%(app)] = remove_apps[app]['name']
+            CTK.cfg ['admin!market!maintenance!remove!%s!del'    %(app)] = 0
+            CTK.cfg ['admin!market!maintenance!remove!%s!name'   %(app)] = remove_apps[app]['name']
+            CTK.cfg ['admin!market!maintenance!remove!%s!db'     %(app)] = remove_apps[app].get('db')
+            CTK.cfg ['admin!market!maintenance!remove!%s!service'%(app)] = remove_apps[app].get('service')
 
         # Dialog buttons
         b_next   = CTK.DruidButton_Goto  (_('Next'), URL_MAINTENANCE_DB, True)
@@ -322,8 +330,26 @@ class ListApps:
             pass
         return app_name
 
+    def _figure_app_service (self, app):
+        try:
+            fp = os.path.join (CHEROKEE_OWS_ROOT, app, 'install.log')
+            cont = open(fp, 'r').read()
+
+            tmp = re.findall (r'Registered system service\: (.+)\n', cont, re.M)
+            if tmp:
+                return tmp[0]
+
+            tmp = re.findall (r'Registered Launchd service\: (.+)\n', cont, re.M)
+            if tmp:
+                return tmp[0]
+        except:
+            pass
+
 
 def ListApps_Apply():
+    system_info = SystemInfo.get_info()
+    OS = system_info.get('system','').lower()
+
     # Check the apps to remove
     apps_to_remove = []
 
@@ -339,6 +365,17 @@ def ListApps_Apply():
     # Store databases to remove
     for n in range (len(apps_to_remove)):
         CTK.cfg ['admin!market!maintenance!remove!%s!del' %(app)] = '1'
+
+    # Remove services
+    for app in apps_to_remove:
+        service = CTK.cfg.get_val ('admin!market!maintenance!remove!%s!service'%(app))
+        if service:
+            if OS == 'darwin':
+                popen.popen_sync ('launchctl unload %(service)s' %(locals()))
+            elif OS == 'linux':
+                popen.popen_sync ('rm -f /etc/rcS.d/S99%(service)s' %(locals()))
+
+            print "Remove service", service
 
     # Perform the app removal
     for app in apps_to_remove:

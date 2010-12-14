@@ -265,8 +265,11 @@ if log:
 vserver!1!logger = %s
 vserver!1!logger!access!type = file
 vserver!1!logger!access!filename = %s
-vserver!1!logger!error!type = stderr
-""" % (LOGGER_TYPE, LOGGER_ACCESS, LOGGER_ERROR)
+""" % (LOGGER_TYPE, LOGGER_ACCESS)
+
+CONF_BASE += """
+vserver!1!error_writer!type = stderr
+"""
 
 if srv_thds:
     CONF_BASE += """
@@ -314,20 +317,31 @@ if port is None:
     pid = os.fork()
     if pid == 0:
         if valgrind != None:
+            valgrind_path = look_for_exec_in_path ("valgrind")
+
+            params = [valgrind_path, "valgrind"]
+            if sys.platform == 'darwin':
+                params += ['--dsymutil=yes']
+
             if valgrind[:3] == 'hel':
-                os.execl (VALGRIND_PATH, "valgrind", "--tool=helgrind", server, "-C", cfg_file)
+                params += ["--tool=helgrind"]
             elif valgrind[:3] == 'cac':
-                os.execl (VALGRIND_PATH, "valgrind", "--tool=cachegrind", server, "-C", cfg_file)
+                params += ["--tool=cachegrind"]
             elif valgrind[:3] == 'cal':
-                os.execl (VALGRIND_PATH, "valgrind", "--tool=callgrind", "--dump-instr=yes", "--trace-jump=yes", "-v", server, "-C", cfg_file)
+                params += ["--tool=callgrind", "--dump-instr=yes", "--trace-jump=yes", "-v"]
             else:
-                os.execl (VALGRIND_PATH, "valgrind", "--leak-check=full", "--num-callers=40", "-v", "--leak-resolution=high", server, "-C", cfg_file)
+                params += ["--leak-check=full", "--num-callers=40", "-v", "--leak-resolution=high"]
+
+            params += [server, "-C", cfg_file]
+            os.execl (*params)
         elif strace:
             if sys.platform.startswith('darwin') or \
                sys.platform.startswith('sunos'):
-                os.execl (DTRUSS_PATH, "dtruss", server, "-C", cfg_file)
+                dtruss_path = look_for_exec_in_path ("dtruss")
+                os.execl (dtruss_path, "dtruss", server, "-C", cfg_file)
             else:
-                os.execl (STRACE_PATH, "strace", server, "-C", cfg_file)
+                strace_path = look_for_exec_in_path ("strace")
+                os.execl (strace_path, "strace", server, "-C", cfg_file)
         else:
             name = server[server.rfind('/') + 1:]
 

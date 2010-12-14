@@ -69,6 +69,7 @@ cookbook_https_accelerator.html \
 cookbook_http_to_https.html \
 modules.html \
 modules_balancers.html \
+modules_balancers_failover.html \
 modules_balancers_ip_hash.html \
 modules_balancers_round_robin.html \
 modules_encoders.html \
@@ -118,13 +119,13 @@ other_bundle_cherokee-admin.html \
 other_bundle_cherokee-config.html \
 other_bundle_cherokee-tweak.html \
 other_bundle_cherokee-worker.html \
-other_bundle_spawn-fcgi.html \
 other_bundle_cget.html \
 dev.html \
 dev_debug.html \
 dev_cherokee.conf.html \
 dev_issues.html \
-dev_qa.html
+dev_qa.html \
+dev_quickstart.html
 
 docmediacssdir = $(docdir)/media/css/
 docmediacss_DATA = \

@@ -52,6 +52,7 @@ admin/plugins/bind.py
 admin/plugins/common.py
 admin/plugins/custom_error.py
 admin/plugins/dbslayer.py
+admin/plugins/deflate.py
 admin/plugins/directory.py
 admin/plugins/dirlist.py
 admin/plugins/empty_gif.py
@@ -64,6 +65,7 @@ admin/plugins/file.py
 admin/plugins/from.py
 admin/plugins/fullpath.py
 admin/plugins/geoip.py
+admin/plugins/gzip.py
 admin/plugins/header.py
 admin/plugins/htdigest.py
 admin/plugins/htpasswd.py
@@ -106,6 +108,7 @@ admin/wizards/mailman.py
 admin/wizards/mediawiki.py
 admin/wizards/moinmoin.py
 admin/wizards/mono.py
+admin/wizards/moodle.py
 admin/wizards/php.py
 admin/wizards/phpbb.py
 admin/wizards/phpmyadmin.py

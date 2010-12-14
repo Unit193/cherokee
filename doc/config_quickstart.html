@@ -110,7 +110,28 @@ virtual servers, PHP support, some redirection rules and a simple
 authentication mechanism.</p></div>
 <div class="paragraph"><p>To follow this walkthrough you need to be running
 <a href="other_bundle_cherokee-admin.html">cherokee-admin</a>. This is an
-administration tool, so you will need system administrator rights.</p></div>
+administration tool, so you will need system administrator rights. You
+can either launch it manually, letting it generate a one-time-password
+that you will use to securely connect to the user interface, or you
+can follow the recommended way and simply use
+<a href="other_bundle_cherokee-admin-launcher.html">cherokee-admin-launcher</a>.</p></div>
+<h4 id="auto-launch">Launching the admin through cherokee-admin-launcher</h4>
+<div class="paragraph"><p>Assuming you are using a desktop environment, you can follow the
+launcher approach.</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt># cherokee-admin-launcher
+Checking TCP port 9090 availability.. OK
+Launching /usr/sbin/cherokee-admin.. OK
+Connecting.. OK</tt></pre>
+</div></div>
+<div class="paragraph"><p>This will automatically open a web browser window pointing at
+<a href="http://localhost:9090">http://localhost:9090</a>, so you will be able to begin using
+<tt>cherokee-admin</tt> right away. If there is no web browser registered in
+your system, you will need to leave out the launcher option, and run
+<tt>cherokee-admin</tt> directly. If this is not your case, you can skip the
+details for the manual launch.</p></div>
+<h4 id="manual-launch">Manually launching cherokee-admin</h4>
 <div class="listingblock">
 <div class="content">
 <pre><tt># cherokee-admin
@@ -133,6 +154,7 @@ it was already in use in your system.</p></div>
 prevent other users of the local host from being able to configure the
 server unless they have access to the password. This is also very
 useful to allow temporary access to a remote administrator.</p></div>
+<h4 id="cherokee-admin">cherokee-admin</h4>
 <div class="paragraph"><p>If your user doesn&#8217;t have enough privileges you will be notified. Also
 if no configuration file exists you will be prompted to create one
 with the default settings.</p></div>
