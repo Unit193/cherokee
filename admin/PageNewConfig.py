@@ -37,6 +37,7 @@ URL_APPLY = '/create_config/apply'
 
 HELPS = [('index', N_("Index"))]
 
+NOTE_LOADING      = N_("Loading new configuration file..")
 WARNING_NOT_FOUND = N_("<b>The configuration is not found</b>.<br />You can create a new configuration file and proceed to customize the web server.")
 
 DEFAULT_PID_LOCATIONS = [
@@ -109,6 +110,7 @@ class ConfigCreator:
         del(CTK.cfg['vserver!1!logger'])
 
         CTK.cfg['server!bind!1!port']            = "1234"
+        CTK.cfg['server!log_flush_lapse']        = "0"
         CTK.cfg['vserver!1!rule!5!handler!type'] = "normal"
         CTK.cfg['vserver!1!error_writer!type']   = "stderr"
 
@@ -124,7 +126,7 @@ def apply():
     profile = CTK.post.pop('create')
 
     if creator (profile):
-        return {'ret': 'ok', 'redirect': '/'}
+        return CTK.cfg_reply_ajax_ok()
 
     return {'ret': 'fail'}
 
@@ -133,23 +135,27 @@ class Form (CTK.Container):
     def __init__ (self, key, name, label, **kwargs):
         CTK.Container.__init__ (self, **kwargs)
 
-        table = CTK.Table({'class':key})
+        box = CTK.Box({'class': 'create-box %s' %(key)})
 
-        table.set_header(1)
-        table += [CTK.RawHTML(name)]
-        table += [CTK.RawHTML(label)]
+        box += CTK.RawHTML('<h3>%s</h3>' %(name))
+        box += CTK.RawHTML('<span>%s</span>' %(label))
 
         submit  = CTK.Submitter(URL_APPLY)
-        submit += table
         submit += CTK.Hidden('create', key)
         submit += CTK.SubmitterButton (_('Create'))
-        self += CTK.Indenter (submit)
+        submit.bind ('submit_success',
+                     "$('#main').html('<h1>%s</h1>');"%(NOTE_LOADING) + CTK.JS.GotoURL('/'))
+
+        box += submit
+        box += CTK.RawHTML('<div class="ui-helper-clearfix"></div>')
+
+        self += box
 
 
 class Render:
     def __call__ (self):
         container  = CTK.Container()
-        container += CTK.RawHTML("<h2>%s</h2>" %(_('Create a new configuration file')))
+        container += CTK.RawHTML("<h2>%s</h2>" %(_('Create a new configuration file:')))
 
         key        = 'regular'
         name       = _('Regular')
@@ -166,7 +172,7 @@ class Render:
         label      = _('No standard port, No log files, No PID file, etc.')
         container += Form (key, name, label)
 
-        page = Page.Base(_('New Configuration File'), body_id='new_config', helps=HELPS)
+        page = Page.Base(_('New Configuration File'), body_id='new-config', helps=HELPS)
         page += CTK.RawHTML("<h1>%s</h1>" %(_('Configuration File Not Found')))
         page += CTK.Notice ('warning', CTK.RawHTML(_(WARNING_NOT_FOUND)))
         page += CTK.Indenter (container)

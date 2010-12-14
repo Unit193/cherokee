@@ -28,10 +28,21 @@ from Refreshable import RefreshableURL
 from Server import request
 from RawHTML import RawHTML
 
+
+# Forces all the submitters inside a Druid. If all the submittion of
+# all of them success, it either updates the Druid to a new stage, or
+# closes it.
+#
+# The global Javascript variable 'CTK_druid_external_submit' is true
+# while the submitters of the Druid are being forced to submit. This
+# flag allows the event handlers of those Submitters to know how the
+# submittion was generated (externally or from within).
+#
 JS_BUTTON_GOTO = """
-var druid      = $(this).parents('.ui-dialog:first').find('.druid:first');
-var refresh    = druid.find('.refreshable-url');
-var submitters = refresh.find('.submitter');
+var druid            = $(this).parents('.ui-dialog:first').find('.druid:first');
+var refresh          = druid.find('.refreshable-url');
+var submitters       = refresh.find('.submitter');
+var submit_successes = 0;
 
 // No Submit
 if ((! %(do_submit)s) || (submitters.length == 0))
@@ -40,21 +51,29 @@ if ((! %(do_submit)s) || (submitters.length == 0))
    return;
 }
 
-// Submit
+// Count successes
 submitters.bind ('submit_success', function (event) {
-   $(this).unbind (event);
+    $(this).unbind (event);
+    submit_successes += 1;
+})
+
+// Submits
+CTK_druid_external_submit = true;
+
+submitters.each (function (i, element) {
+    $(element).data('submitter').submit_form_sync();
+});
+
+CTK_druid_external_submit = false;
+
+// Check if everything went fine
+if (submit_successes == submitters.length) {
    if ('%(url)s'.length > 0) {
       refresh.trigger({'type':'refresh_goto', 'goto':'%(url)s'});
-   } else {
+   } else if (%(do_close)s) {
       druid.trigger('druid_exiting');
    }
-});
-
-submitters.bind ('submit_fail', function (event) {
-   $(this).unbind (event);
-});
-
-submitters.trigger ({'type': 'submit'});
+}
 """
 
 JS_BUTTON_CLOSE = """
@@ -107,24 +126,32 @@ class DruidButton_Goto (DruidButton):
         DruidButton.__init__ (self, caption, _props.copy())
 
         props = {'url':       url,
-                 'do_submit': ('false', 'true')[do_submit]}
+                 'do_close':  'false',
+                 'do_submit': ('false','true')[do_submit]}
 
         # Event
         self.bind ('click', JS_BUTTON_GOTO %(props))
 
 class DruidButton_Close (DruidButton):
     def __init__ (self, caption, _props={}):
-        DruidButton.__init__ (self, caption, _props.copy())
+        props = _props.copy()
+        if 'class' in props:
+            props['class'] += ' close-button'
+        else:
+            props['class'] = 'close-button'
+
+        DruidButton.__init__ (self, caption, props)
 
         # Event
         self.bind ('click', JS_BUTTON_CLOSE)
 
 class DruidButton_Submit (DruidButton):
-    def __init__ (self, caption, _props={}):
+    def __init__ (self, caption, do_close=True, _props={}):
         DruidButton.__init__ (self, caption, _props.copy())
 
         props = {'url':       '',
-                 'do_submit': 'true'}
+                 'do_submit': 'true',
+                 'do_close':  ('false','true')[do_close]}
 
         # Event
         self.bind ('click', JS_BUTTON_GOTO%(props))
@@ -257,6 +284,13 @@ def DruidContent__JS_to_goto (internal_id, url):
 
 def DruidContent__JS_to_close (internal_id):
     return '$("#%s").each(function() { %s });' %(internal_id, JS_BUTTON_CLOSE)
+
+def DruidContent__JS_if_external_submit (self, code):
+    return 'if (CTK_druid_external_submit) {%s}' %(code)
+
+def DruidContent__JS_if_internal_submit (self, code):
+    return 'if (! CTK_druid_external_submit) {%s}' %(code)
+
 
 class DruidContent_TriggerNext (Box):
     def __init__ (self):

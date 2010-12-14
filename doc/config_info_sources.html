@@ -63,10 +63,28 @@ whatever options do not apply.</p></div>
 <img src="media/images/admin_info_sources.png" alt="media/images/admin_info_sources.png" />
 </div>
 </div>
-<div class="admonitionblock">
+<div class="admonitionblock" id="daemonization">
 <table><tr>
 <td class="icon">
 <div class="title">Warning</div>
+</td>
+<td class="content">Do not provide daemonizing options as part of the command to launch a
+given interpreter.
+Cherokee&#8217;s auto-spawning mechanism is very useful, since it can
+re-launch a local interpreter if for whatever reason the process had
+died unexpectedly. The launched interpreter is automatically
+daemonized, and <tt>stdout</tt> and <tt>stderr</tt> are conveniently handled in
+accordance to any logging setting you might have configured. Beware:
+some applications accept a parameter to daemonize themselves, but
+using such parameter will most likely interfere with Cherokee, so you
+are advised against that. There is no need for such parameters,
+stderr/stdout redirections, background-launching, etc.</td>
+</tr></table>
+</div>
+<div class="admonitionblock">
+<table><tr>
+<td class="icon">
+<div class="title">Tip</div>
 </td>
 <td class="content">The information about source usage allows you to see which information
 sources are currently in use in whatever rule configured along your

@@ -98,7 +98,7 @@ typedef struct {
 	cherokee_http_method_t   valid_methods;
 } cherokee_handler_props_t;
 
-#define HANDLER_PROPS(x)                   ((cherokee_handler_props_t *)(x))
+#define HANDLER_PROPS(x) ((cherokee_handler_props_t *)(x))
 
 
 /* Easy initialization
@@ -124,21 +124,25 @@ typedef struct {
 
 /* Handler methods
  */
-ret_t cherokee_handler_init_base   (cherokee_handler_t  *hdl, void *conn, cherokee_handler_props_t *props, cherokee_plugin_info_handler_t *info);
-ret_t cherokee_handler_free_base   (cherokee_handler_t  *hdl);
+ret_t cherokee_handler_init_base   (cherokee_handler_t *hdl, void *conn, cherokee_handler_props_t *props, cherokee_plugin_info_handler_t *info);
+ret_t cherokee_handler_free_base   (cherokee_handler_t *hdl);
 
 /* Handler virtual methods
  */
-ret_t cherokee_handler_init        (cherokee_handler_t  *hdl);
-ret_t cherokee_handler_free        (cherokee_handler_t  *hdl);
-ret_t cherokee_handler_read_post   (cherokee_handler_t  *hdl);
-ret_t cherokee_handler_add_headers (cherokee_handler_t  *hdl, cherokee_buffer_t *buffer);
-ret_t cherokee_handler_step        (cherokee_handler_t  *hdl, cherokee_buffer_t *buffer);
+ret_t cherokee_handler_init        (cherokee_handler_t *hdl);
+ret_t cherokee_handler_free        (cherokee_handler_t *hdl);
+ret_t cherokee_handler_read_post   (cherokee_handler_t *hdl);
+ret_t cherokee_handler_add_headers (cherokee_handler_t *hdl, cherokee_buffer_t *buffer);
+ret_t cherokee_handler_step        (cherokee_handler_t *hdl, cherokee_buffer_t *buffer);
 
 /* Handler properties methods
  */
 ret_t cherokee_handler_props_init_base  (cherokee_handler_props_t *props, module_func_props_free_t free_func);
 ret_t cherokee_handler_props_free_base  (cherokee_handler_props_t *props);
+
+/* Utilities
+ */
+ret_t cherokee_handler_add_header_options (cherokee_handler_t *hdl, cherokee_buffer_t *buffer);
 
 CHEROKEE_END_DECLS
 

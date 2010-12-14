@@ -36,6 +36,7 @@ from Server import request
 FOOTER_OPTIONS   = 3
 SHOW_FOOTER_1PAG = False
 
+paginator_last_refresh = {}
 
 class Paginator_Footer (Box):
     def __init__ (self, results_num, page_num, items_per_page, total_pages, refreshable):
@@ -59,7 +60,7 @@ class Paginator_Footer (Box):
         # Render it
         if page_num != 0:
             url = '%s/%d' %(refreshable.url, page_num-1)
-            link = Link ('#', RawHTML (_("Previous")), {'class': 'paginator-footer-prev'})
+            link = Link (None, RawHTML (_("Previous")), {'class': 'paginator-footer-prev'})
             link.bind ('click', refreshable.JS_to_refresh(url=url))
             self += link
 
@@ -69,7 +70,7 @@ class Paginator_Footer (Box):
                 indexes += RawHTML ("%d"%(p+1))
             else:
                 url = '%s/%d' %(refreshable.url, p)
-                link = Link('#', RawHTML ("%d"%(p+1)), {'class': 'paginator-footer-page'})
+                link = Link (None, RawHTML ("%d"%(p+1)), {'class': 'paginator-footer-page'})
                 link.bind ('click', refreshable.JS_to_refresh(url=url))
                 indexes += link
 
@@ -80,7 +81,7 @@ class Paginator_Footer (Box):
 
         if page_num < total_pages-1:
             url = '%s/%d' %(refreshable.url, page_num+1)
-            link = Link ('#', RawHTML (_("Next")), {'class': 'paginator-footer-next'})
+            link = Link (None, RawHTML (_("Next")), {'class': 'paginator-footer-next'})
             link.bind ('click', refreshable.JS_to_refresh(url=url))
             self += link
 
@@ -93,9 +94,14 @@ class Paginator_Refresh (Widget):
         self.items_per_page   = items_per_page
         self.show_footer_1pag = SHOW_FOOTER_1PAG
 
+        global paginator_last_refresh
+
         tmp = re.findall ('^%s/(\d+)$'%(refreshable.url), request.url)
         if tmp:
             self.page_num = int(tmp[0])
+            paginator_last_refresh [refreshable.id] = self.page_num
+        elif paginator_last_refresh.has_key (refreshable.id):
+            self.page_num = paginator_last_refresh [refreshable.id]
         else:
             self.page_num = page_num
 

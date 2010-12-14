@@ -138,6 +138,7 @@ LN_S = @LN_S@
 LTLIBOBJS = @LTLIBOBJS@
 MAINT = @MAINT@
 MAKEINFO = @MAKEINFO@
+MANIFEST_TOOL = @MANIFEST_TOOL@
 MKDIR_P = @MKDIR_P@
 MSGFMT = @MSGFMT@
 MSGFMT_015 = @MSGFMT_015@
@@ -186,6 +187,7 @@ abs_builddir = @abs_builddir@
 abs_srcdir = @abs_srcdir@
 abs_top_builddir = @abs_top_builddir@
 abs_top_srcdir = @abs_top_srcdir@
+ac_ct_AR = @ac_ct_AR@
 ac_ct_CC = @ac_ct_CC@
 ac_ct_DUMPBIN = @ac_ct_DUMPBIN@
 am__include = @am__include@
@@ -252,6 +254,7 @@ error_redir.py \
 evhost.py \
 exists.py \
 extensions.py \
+failover.py \
 fcgi.py \
 file.py \
 from.py \
@@ -282,7 +285,9 @@ streaming.py \
 target_ip.py \
 url_arg.py \
 uwsgi.py \
-wildcard.py
+wildcard.py \
+gzip.py \
+deflate.py
 
 EXTRA_DIST = \
 $(adminplugins_DATA)

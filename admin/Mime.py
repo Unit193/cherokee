@@ -40,8 +40,8 @@ NOTE_NEW_MAXAGE     = N_('Maximum time that this sort of content can be cached (
 
 
 VALIDATIONS = [
-    ('new_mime',            validations.is_safe_mime_type),
-    ('new_exts',            validations.is_safe_mime_exts),
+    ('new_mime', validations.is_safe_mime_type),
+    ('new_exts', validations.is_safe_mime_exts),
 ]
 
 def commit():
@@ -96,9 +96,9 @@ class AddNew_Button (CTK.Box):
         CTK.Box.__init__ (self, {'class': 'mime-button'})
 
         # Add New
-        dialog = CTK.Dialog ({'title': _('Add New MIME-Type'), 'width': 480})
-        dialog.AddButton (_('Add'), dialog.JS_to_trigger('submit'))
+        dialog = CTK.Dialog ({'title': _('Add New MIME-Type'), 'width': 550})
         dialog.AddButton (_('Cancel'), "close")
+        dialog.AddButton (_('Add'), dialog.JS_to_trigger('submit'))
         dialog += AddMime()
 
         button = CTK.Button(_('Add New'))
@@ -113,35 +113,40 @@ class AddNew_Button (CTK.Box):
 class MIME_Table (CTK.Container):
     def __init__ (self, refreshable, **kwargs):
         CTK.Container.__init__ (self, **kwargs)
+        self += CTK.RawHTML ('<h2>%s</h2>' %_('Mime types'))
 
         # List
-        table = CTK.Table ({'id': "mimetable"})
+        table = CTK.Table ({'class': "mimetable"})
         table.set_header(1)
         table += [CTK.RawHTML(x) for x in (_('MIME type'), _('Extensions'), _('MaxAge (<em>secs</em>)'), '')]
 
         mimes = CTK.cfg.keys('mime')
         mimes.sort()
 
+        pag = CTK.Paginator ('mimetable-content')
         for mime in mimes:
             pre = "mime!%s"%(mime)
-            e1 = CTK.TextCfg ('%s!extensions'%(pre), False, {'size': 35})
-            e2 = CTK.TextCfg ('%s!max-age'%(pre),    True,  {'size': 6, 'maxlength': 6})
-            rm = CTK.ImageStock('del')
-            rm.bind('click', CTK.JS.Ajax (URL_APPLY, data = {pre: ''},
-                                          complete = refreshable.JS_to_refresh()))
-            table += [CTK.RawHTML(mime), e1, e2, rm]
 
-        submit  = CTK.Submitter (URL_APPLY)
-        submit += table
+            rm = CTK.ImageStock('del')
+            rm.bind ('click', CTK.JS.Ajax (URL_APPLY, data = {pre: ''},
+                                           complete = refreshable.JS_to_refresh()))
+
+            box  = CTK.Box ({'class': 'mimetable-entry'})
+            box += CTK.TextCfg ('%s!extensions'%(pre), False, {'size': 35})
+            box += CTK.TextCfg ('%s!max-age'%(pre),    True,  {'size': 6, 'maxlength': 6})
+            box += rm
+
+            submit  = CTK.Submitter (URL_APPLY)
+            submit += box
+
+            pag += submit
 
         # Add New
         button = AddNew_Button()
         button.bind ('submit_success', refreshable.JS_to_refresh ())
 
-        self += CTK.RawHTML ('<h2>%s</h2>' %_('Mime types'))
-        self += submit
+        self += pag
         self += button
-
 
 class MIME_Table_Instancer (CTK.Container):
     def __init__ (self):

@@ -18,6 +18,7 @@ error_redir.py \
 evhost.py \
 exists.py \
 extensions.py \
+failover.py \
 fcgi.py \
 file.py \
 from.py \
@@ -48,7 +49,9 @@ streaming.py \
 target_ip.py \
 url_arg.py \
 uwsgi.py \
-wildcard.py
+wildcard.py \
+gzip.py \
+deflate.py
 
 EXTRA_DIST = \
 $(adminplugins_DATA)

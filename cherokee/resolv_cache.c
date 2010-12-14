@@ -37,6 +37,8 @@
 #include "socket.h"
 #include "bogotime.h"
 
+#define ENTRIES "resolve"
+
 
 typedef struct {
 	struct in_addr    addr;
@@ -44,8 +46,8 @@ typedef struct {
 } cherokee_resolv_cache_entry_t;
 
 struct cherokee_resolv_cache {
-	cherokee_avl_t    table;
-	CHEROKEE_RWLOCK_T(lock);
+	cherokee_avl_t     table;
+	CHEROKEE_RWLOCK_T (lock);
 };
 
 static cherokee_resolv_cache_t *__global_resolv = NULL;
@@ -127,6 +129,9 @@ cherokee_resolv_cache_init (cherokee_resolv_cache_t *resolv)
 	ret = cherokee_avl_init (&resolv->table);
 	if (unlikely (ret != ret_ok)) return ret;
 
+	ret = cherokee_avl_set_case (&resolv->table, true);
+	if (unlikely (ret != ret_ok)) return ret;
+
 	CHEROKEE_RWLOCK_INIT (&resolv->lock, NULL);
 	return ret_ok;
 }
@@ -145,12 +150,10 @@ cherokee_resolv_cache_mrproper (cherokee_resolv_cache_t *resolv)
 ret_t
 cherokee_resolv_cache_get_default (cherokee_resolv_cache_t **resolv)
 {
-	ret_t                    ret;
-	cherokee_resolv_cache_t *n;
+	ret_t ret;
 
 	if (unlikely (__global_resolv == NULL)) {
-		n = (cherokee_resolv_cache_t *) malloc (sizeof(cherokee_resolv_cache_t));
-		if (n == NULL) return ret_nomem;
+		CHEROKEE_NEW_STRUCT (n, resolv_cache);
 
 		ret = cherokee_resolv_cache_init (n);
 		if (ret != ret_ok) return ret;
@@ -223,17 +226,24 @@ cherokee_resolv_cache_get_ipstr (cherokee_resolv_cache_t  *resolv,
 	CHEROKEE_RWLOCK_UNLOCK (&resolv->lock);
 
 	if (ret != ret_ok) {
+		TRACE (ENTRIES, "Resolve '%s': missed.\n", domain->buf);
+
 		/* Bad luck: it wasn't cached
 		 */
 		ret = table_add_new_entry (resolv, domain, &entry);
 		if (ret != ret_ok) {
 			return ret;
 		}
+	} else {
+		TRACE (ENTRIES, "Resolve '%s': hit.\n", domain->buf);
 	}
 
 	/* Return the ip string
 	 */
-	*ip = entry->ip_str.buf;
+	if (ip != NULL) {
+		*ip = entry->ip_str.buf;
+	}
+
 	return ret_ok;
 }
 
@@ -254,12 +264,16 @@ cherokee_resolv_cache_get_host (cherokee_resolv_cache_t *resolv,
 	CHEROKEE_RWLOCK_UNLOCK (&resolv->lock);
 
 	if (ret != ret_ok) {
+		TRACE (ENTRIES, "Resolve '%s': missed.\n", domain->buf);
+
 		/* Bad luck: it wasn't cached
 		 */
 		ret = table_add_new_entry (resolv, domain, &entry);
 		if (ret != ret_ok) {
 			return ret;
 		}
+	} else {
+		TRACE (ENTRIES, "Resolve '%s': hit.\n", domain->buf);
 	}
 
 	/* Copy the address

@@ -28,6 +28,7 @@
 #include "bogotime.h"
 #include "socket.h"
 
+#include <signal.h>
 #include <stdlib.h>
 #include <stdarg.h>
 #include <string.h>
@@ -83,6 +84,10 @@
 
 #ifdef HAVE_SYS_UTSNAME_H
 # include <sys/utsname.h>
+#endif
+
+#ifdef HAVE_SYS_WAIT_H
+# include <sys/wait.h>
 #endif
 
 #ifndef HOST_NAME_MAX
@@ -1466,7 +1471,9 @@ cherokee_print_wrapped (cherokee_buffer_t *buffer)
 ret_t
 cherokee_fix_dirpath (cherokee_buffer_t *buf)
 {
-	while (cherokee_buffer_is_ending(buf, '/')) {
+	while ((buf->len > 1) &&
+	       (cherokee_buffer_is_ending (buf, '/')))
+	{
 		cherokee_buffer_drop_ending (buf, 1);
 	}
 
@@ -2110,4 +2117,31 @@ cherokee_wait_pid (int pid, int *retcode)
 
 	SHOULDNT_HAPPEN;
 	return ret_error;
+}
+
+
+ret_t
+cherokee_reset_signals (void)
+{
+        signal (SIGHUP,  SIG_DFL);
+        signal (SIGINT,  SIG_DFL);
+        signal (SIGPIPE, SIG_DFL);
+        signal (SIGUSR1, SIG_DFL);
+        signal (SIGUSR2, SIG_DFL);
+        signal (SIGSEGV, SIG_DFL);
+        signal (SIGTERM, SIG_DFL);
+        signal (SIGCHLD, SIG_DFL);
+
+#ifdef SIGBUS
+        signal (SIGBUS,  SIG_DFL);
+#endif
+#ifdef SIGTTOU
+        signal (SIGTTOU, SIG_DFL);
+#endif
+#ifdef SIGTTIN
+        signal (SIGTTIN, SIG_DFL);
+#endif
+#ifdef SIGTSTP
+        signal (SIGTSTP, SIG_DFL);
+#endif
 }

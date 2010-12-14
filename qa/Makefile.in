@@ -114,6 +114,7 @@ LN_S = @LN_S@
 LTLIBOBJS = @LTLIBOBJS@
 MAINT = @MAINT@
 MAKEINFO = @MAKEINFO@
+MANIFEST_TOOL = @MANIFEST_TOOL@
 MKDIR_P = @MKDIR_P@
 MSGFMT = @MSGFMT@
 MSGFMT_015 = @MSGFMT_015@
@@ -162,6 +163,7 @@ abs_builddir = @abs_builddir@
 abs_srcdir = @abs_srcdir@
 abs_top_builddir = @abs_top_builddir@
 abs_top_srcdir = @abs_top_srcdir@
+ac_ct_AR = @ac_ct_AR@
 ac_ct_CC = @ac_ct_CC@
 ac_ct_DUMPBIN = @ac_ct_DUMPBIN@
 am__include = @am__include@
@@ -478,7 +480,16 @@ run-tests.py \
 258-header_op-add4.py \
 259-Vrule-OR-1.py \
 260-Vrule-OR-2.py \
-261-ErrorRedir-Default1.py
+261-ErrorRedir-Default1.py \
+262-Redir-order-1.py \
+263-If_Modified_Since-Invalid1.py \
+264-Nocache-redirs.py \
+265-Unset-encoders.py \
+266-Forbid-encoders.py \
+267-PortRedirections-1.py \
+268-Options-PHP1.py \
+269-Options-Dirlist1.py \
+270-Options-asterisk1.py
 
 all: all-am
 

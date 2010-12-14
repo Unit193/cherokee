@@ -76,7 +76,7 @@ typedef struct file_match file_match_t;
 
 /* Plug-in initialization
  */
-PLUGIN_INFO_HANDLER_EASIEST_INIT (dirlist, http_get);
+PLUGIN_INFO_HANDLER_EASIEST_INIT (dirlist, http_get | http_options);
 
 
 /* Private type
@@ -493,7 +493,13 @@ generate_file_entry (cherokee_handler_dirlist_t  *dhdl,
 		}
 
 	        if (S_ISLNK(n->stat.st_mode)) {
-			cherokee_stat (path->buf, &n->rstat);
+			/* Info about the (target) linked file
+			 */
+			ret = cherokee_stat (path->buf, &n->rstat);
+			if (ret != ret_ok) {
+				/* Broken link */
+				memcpy (&n->rstat, &n->stat, sizeof(struct stat));
+			}
 
 			if (HDL_DIRLIST_PROP(dhdl)->redir_symlinks) {
 				/* The local directory realpath is build lazily
@@ -547,7 +553,7 @@ generate_file_entry (cherokee_handler_dirlist_t  *dhdl,
 
 
 ret_t
-cherokee_handler_dirlist_new  (cherokee_handler_t **hdl, void *cnt, cherokee_module_props_t *props)
+cherokee_handler_dirlist_new (cherokee_handler_t **hdl, void *cnt, cherokee_module_props_t *props)
 {
 	ret_t              ret;
 	cherokee_buffer_t *value;
@@ -899,6 +905,14 @@ cherokee_handler_dirlist_init (cherokee_handler_dirlist_t *dhdl)
 	if (ret != ret_ok)
 		return ret;
 
+	/* OPTIONS request: no need to build the file list
+	 */
+	if (HANDLER_CONN(dhdl)->header.method == http_options) {
+		return ret_ok;
+	}
+
+	/* Read the Notice file
+	 */
 	if (! cherokee_list_empty (&HDL_DIRLIST_PROP(dhdl)->notice_files)) {
 		ret = read_notice_file (dhdl);
 		if (ret != ret_ok)
@@ -1028,6 +1042,7 @@ render_file (cherokee_handler_dirlist_t *dhdl, cherokee_buffer_t *buffer, file_e
 	 */
 	alt = (is_dir) ? "[DIR]" : "[   ]";
 	VTMP_SUBSTITUTE_TOKEN ("%icon_alt%", alt);
+	VTMP_SUBSTITUTE_TOKEN ("%icon_dir%", props->icon_web_dir.buf);
 
 	if (icon) {
 		cherokee_buffer_clean (tmp);
@@ -1163,6 +1178,7 @@ render_parent_directory (cherokee_handler_dirlist_t *dhdl, cherokee_buffer_t *bu
 	}
 
 	VTMP_SUBSTITUTE_TOKEN ("%icon_alt%", "[DIR]");
+	VTMP_SUBSTITUTE_TOKEN ("%icon_dir%", props->icon_web_dir.buf);
 
 	VTMP_SUBSTITUTE_TOKEN ("%file_link%", "../");
 	VTMP_SUBSTITUTE_TOKEN ("%file_name%", "Parent Directory");
@@ -1182,28 +1198,26 @@ render_parent_directory (cherokee_handler_dirlist_t *dhdl, cherokee_buffer_t *bu
 
 
 static ret_t
-render_header_footer_vbles (cherokee_handler_dirlist_t *dhdl, cherokee_buffer_t *buffer, cherokee_buffer_t *buf_pattern)
+render_header_footer_vbles (cherokee_handler_dirlist_t *dhdl,
+			    cherokee_buffer_t          *buffer,
+			    cherokee_buffer_t          *buf_pattern)
 {
-	cherokee_buffer_t *vtmp[2];
-	cherokee_thread_t *thread   = HANDLER_THREAD(dhdl);
-	size_t             idx_tmp  = 0;
-	cherokee_bind_t   *bind     = CONN_BIND(HANDLER_CONN(dhdl));
+	cherokee_buffer_t                *vtmp[2];
+	cherokee_thread_t                *thread   = HANDLER_THREAD(dhdl);
+	size_t                            idx_tmp  = 0;
+	cherokee_bind_t                  *bind     = CONN_BIND(HANDLER_CONN(dhdl));
+	cherokee_handler_dirlist_props_t *props    = HDL_DIRLIST_PROP(dhdl);
 
 	/* Initialize temporary substitution buffers
 	 */
 	VTMP_INIT_SUBST (thread, vtmp, buf_pattern);
 
-	/* Public dir
+	/* Replacements
 	 */
-	VTMP_SUBSTITUTE_TOKEN ("%public_dir%", dhdl->public_dir.buf);
-
-	/* Server software
-	 */
+	VTMP_SUBSTITUTE_TOKEN ("%public_dir%",      dhdl->public_dir.buf);
 	VTMP_SUBSTITUTE_TOKEN ("%server_software%", bind->server_string_w_port.buf);
-
-	/* Notice
-	 */
-	VTMP_SUBSTITUTE_TOKEN ("%notice%", dhdl->header.buf);
+	VTMP_SUBSTITUTE_TOKEN ("%notice%",          dhdl->header.buf);
+	VTMP_SUBSTITUTE_TOKEN ("%icon_dir%",        props->icon_web_dir.buf);
 
 	/* Orders
 	 */
@@ -1220,11 +1234,20 @@ render_header_footer_vbles (cherokee_handler_dirlist_t *dhdl, cherokee_buffer_t 
 
 
 ret_t
-cherokee_handler_dirlist_step (cherokee_handler_dirlist_t *dhdl, cherokee_buffer_t *buffer)
+cherokee_handler_dirlist_step (cherokee_handler_dirlist_t *dhdl,
+			       cherokee_buffer_t          *buffer)
 {
 	ret_t                             ret = ret_ok;
 	cherokee_handler_dirlist_props_t *props = HDL_DIRLIST_PROP(dhdl);
 
+	/* OPTIONS request
+	 */
+	if (HANDLER_CONN(dhdl)->header.method == http_options) {
+		return ret_eof;
+	}
+
+	/* GET request
+	 */
 	switch (dhdl->phase) {
 	case dirlist_phase_add_header:
 		/* Add the theme header
@@ -1292,10 +1315,21 @@ cherokee_handler_dirlist_step (cherokee_handler_dirlist_t *dhdl, cherokee_buffer
 
 
 ret_t
-cherokee_handler_dirlist_add_headers (cherokee_handler_dirlist_t *dhdl, cherokee_buffer_t *buffer)
+cherokee_handler_dirlist_add_headers (cherokee_handler_dirlist_t *dhdl,
+				      cherokee_buffer_t          *buffer)
 {
 	UNUSED(dhdl);
 
+	/* OPTIONS request
+	 */
+	if (HANDLER_CONN(dhdl)->header.method == http_options) {
+		cherokee_buffer_add_str (buffer, "Content-Length: 0"CRLF);
+		cherokee_handler_add_header_options (HANDLER(dhdl), buffer);
+		return ret_ok;
+	}
+
+	/* GET request
+	 */
 	cherokee_buffer_add_str (buffer, "Content-Type: text/html; charset=utf-8"CRLF);
 	return ret_ok;
 }

@@ -266,7 +266,16 @@ run-tests.py \
 258-header_op-add4.py \
 259-Vrule-OR-1.py \
 260-Vrule-OR-2.py \
-261-ErrorRedir-Default1.py
+261-ErrorRedir-Default1.py \
+262-Redir-order-1.py \
+263-If_Modified_Since-Invalid1.py \
+264-Nocache-redirs.py \
+265-Unset-encoders.py \
+266-Forbid-encoders.py \
+267-PortRedirections-1.py \
+268-Options-PHP1.py \
+269-Options-Dirlist1.py \
+270-Options-asterisk1.py
 
 test:
 	python -m compileall .

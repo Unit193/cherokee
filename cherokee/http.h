@@ -82,6 +82,10 @@ typedef enum {
 	http_invalid          = 1LL << 32
 } cherokee_http_method_t;
 
+#define cherokee_http_method_LENGTH 33
+#define HTTP_METHOD(x) ((cherokee_http_method_t)(x))
+
+
 typedef enum {
 	http_auth_nothing = 0,
 	http_auth_basic   = 1,
@@ -225,16 +229,21 @@ typedef enum {                               /* Protocol   RFC  Section */
 				   (m == http_merge)     || \
 				   (m == http_search)    || \
 				   (m == http_report)    || \
-				   (m == http_options)   || \
 				   (m == http_checkout)  || \
 				   (m == http_propfind)  || \
 				   (m == http_proppatch) || \
 				   (m == http_mkactivity))
 
+#define http_method_with_optional_input(m) (m == http_options)
+
+
 /* RFC 2616: Section 4.3 */
 #define http_code_with_body(e)    ((! http_type_100(e))            /* 1xx */ && \
 				   ((e) != http_no_content)        /* 204 */ && \
 				   ((e) != http_not_modified))     /* 304 */
+
+#define http_port_is_standard(port,is_tls)  (((! is_tls) && (port == 80)) || \
+					     ((  is_tls) && (port == 443)))
 
 ret_t cherokee_http_method_to_string  (cherokee_http_method_t  method,  const char **str, cuint_t *str_len);
 ret_t cherokee_http_string_to_method  (cherokee_buffer_t *string, cherokee_http_method_t *method);

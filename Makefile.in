@@ -203,6 +203,7 @@ LN_S = @LN_S@
 LTLIBOBJS = @LTLIBOBJS@
 MAINT = @MAINT@
 MAKEINFO = @MAKEINFO@
+MANIFEST_TOOL = @MANIFEST_TOOL@
 MKDIR_P = @MKDIR_P@
 MSGFMT = @MSGFMT@
 MSGFMT_015 = @MSGFMT_015@
@@ -251,6 +252,7 @@ abs_builddir = @abs_builddir@
 abs_srcdir = @abs_srcdir@
 abs_top_builddir = @abs_top_builddir@
 abs_top_srcdir = @abs_top_srcdir@
+ac_ct_AR = @ac_ct_AR@
 ac_ct_CC = @ac_ct_CC@
 ac_ct_DUMPBIN = @ac_ct_DUMPBIN@
 am__include = @am__include@
@@ -310,11 +312,12 @@ m4data_DATA = cherokee.m4
 
 # Man pag
 man_MANS = \
-cherokee.1           \
-cherokee-config.1    \
-cherokee-tweak.1     \
-cherokee-admin.1     \
-cherokee-worker.1
+cherokee.1                \
+cherokee-config.1         \
+cherokee-tweak.1          \
+cherokee-admin.1          \
+cherokee-worker.1         \
+cherokee-admin-launcher.1
 
 
 # pkg-config

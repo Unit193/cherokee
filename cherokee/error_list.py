@@ -34,10 +34,11 @@ e('SOURCE_NONBLOCK',
 # cherokee/rrd_tools.c
 #
 e('RRD_NO_BINARY',
-  title = "Could not find the rrdtool binary.",
-  desc  = "A custom rrdtool binary has not been defined, and the server could not find one in the $PATH.",
-  debug = "PATH=%s",
-  admin = '/general#tabs_general-0')
+  title   = "Could not find the rrdtool binary.",
+  desc    = "A custom rrdtool binary has not been defined, and the server could not find one in the $PATH.",
+  debug   = "PATH=%s",
+  admin   = '/general#tabs_general-0',
+  show_bt = False)
 
 e('RRD_EXECV',
   title = "execv failed cmd='%s': ${errno}",
@@ -62,7 +63,7 @@ e('RRD_MKDIR_WRITE',
   admin = '/general#tabs_general-0')
 
 
-# cherokee/balancer_round_robin.c
+# cherokee/balancer_ip_hash.c
 #
 e('BALANCER_IP_REACTIVE',
   title = "Taking source='%s' back on-line: %d active.",
@@ -75,6 +76,21 @@ e('BALANCER_IP_DISABLE',
 e('BALANCER_IP_EXHAUSTED',
   title = "Sources exhausted: re-enabling one.",
   desc  = "All the information sources are disabled at this moment. Cherokee needs to re-enable at least one.")
+
+
+# cherokee/balancer_failover.c
+#
+e('BALANCER_FAILOVER_REACTIVE',
+  title = "Taking source='%s' back on-line.",
+  desc  = "The server is re-enabling one of the Information Sources.")
+
+e('BALANCER_FAILOVER_DISABLE',
+  title = "Taking source='%s' off-line.",
+  desc  = "The server is disabling one of the Information Sources.")
+
+e('BALANCER_FAILOVER_ENABLE_ALL',
+  title = "Taking all sources back on-line.",
+  desc  = "All the Information Sources have been off-lined. The server is re-enabling all of them in order to start over again.")
 
 
 # cherokee/resolv_cache.c
@@ -341,6 +357,11 @@ e('BALANCER_EXHAUSTED',
 
 # cherokee/encoder_*.c
 #
+e('ENCODER_NOT_SET_VALUE',
+  title = "Encoder init error",
+  desc  = "The server did not found a valid initialization value for the encoder",
+  debug = "%s")
+
 e('ENCODER_DEFLATEINIT2',
   title = "deflateInit2(): %s",
   desc  = SYSTEM_ISSUE)
@@ -590,9 +611,10 @@ e('SERVER_NO_BIND',
   admin = "/general#Ports_to_listen-2")
 
 e('SERVER_IGNORE_TLS',
-  title = "Ignoring TLS port %d",
-  desc  = "No TLS backend is specified, but the configuration specifies a secure port and it is being ignored. Either enable a TLS backend or disable the TLS checkbox for the specified port.",
-  admin = "/general#Network-1")
+  title   = "Ignoring TLS port %d",
+  desc    = "No TLS backend is specified, but the configuration specifies a secure port and it is being ignored. Either enable a TLS backend or disable the TLS checkbox for the specified port.",
+  admin   = "/general#Network-1",
+  show_bt = False)
 
 e('SERVER_TLS_DEFAULT',
   title = "TLS/SSL support required for 'default' Virtual Server.",
@@ -719,6 +741,12 @@ e('SRC_INTER_NO_INTERPRETER',
   desc  = "The server configuration refers to an interpreter that is not installed in this system.",
   admin = "/source/%d")
 
+e('SRC_INTER_ENV_IN_COMMAND',
+  title = "The command to launch the interpreter contains environment variables",
+  desc  = "Please remove the environment variables from the command, and add them as such.",
+  admin = "/source/%d",
+  debug = "Command: %s")
+
 e('SRC_INTER_SPAWN',
   title = "Could not spawn '%s'",
   desc  = SYSTEM_ISSUE)
@@ -727,8 +755,9 @@ e('SRC_INTER_SPAWN',
 # cherokee/config_reader.c
 #
 e('CONF_READ_ACCESS_FILE',
-  title = "Could not access file",
-  desc  = "The configuration file '%s' could not be accessed. Most probably the server user does not have enough permissions to read it.")
+  title   = "Could not access file",
+  desc    = "The configuration file '%s' could not be accessed. Most probably the server user does not have enough permissions to read it.",
+  show_bt = False)
 
 e('CONF_READ_CHILDREN_SAME_NODE',
   title = "'%s' and '%s' as child of the same node",
@@ -750,8 +779,9 @@ e('TEMPLATE_NO_TOKEN',
 # cherokee/spawner.c
 #
 e('SPAWNER_SHM_INIT',
-  title = "Could not initialize SHM '%s': ${errno}",
-  desc  = "Check if your shared memory is mounted in /dev/shm")
+  title   = "Could not initialize SHM '%s': ${errno}",
+  desc    = "Check if your shared memory is mounted in /dev/shm",
+  show_bt = False)
 
 e('SPAWNER_UNLOCK_SEMAPHORE',
   title = "Could not unlock spawning semaphore %d: ${errno}",
@@ -805,9 +835,10 @@ e('HEADER_ADD_HEADER',
 # cherokee/socket.c
 #
 e('SOCKET_NO_IPV6',
-  title = "IPv6 support is disabled. Configuring for IPv4 support only.",
-  desc  = SYSTEM_ISSUE,
-  admin = "/general#Network-4")
+  title   = "IPv6 support is disabled. Configuring for IPv4 support only.",
+  desc    = SYSTEM_ISSUE,
+  admin   = "/general#Network-4",
+  show_bt = False)
 
 e('SOCKET_NEW_SOCKET',
   title = "Could not create socket: ${errno}",

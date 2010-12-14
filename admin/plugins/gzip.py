@@ -5,7 +5,7 @@
 # Authors:
 #      Alvaro Lopez Ortega <alvaro@alobbs.com>
 #
-# Copyright (C) 2001-2010 Alvaro Lopez Ortega
+# Copyright (C) 2010 Alvaro Lopez Ortega
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of version 2 of the GNU General Public
@@ -22,13 +22,24 @@
 # 02110-1301, USA.
 #
 
-class Package_Install_Widget (CTK.Box):
-    def __init__ (self, package_local_path):
-        Box.__init__ (self)
+import CTK
+import consts
 
-        self.status_uncompress = CTK.ImageStock('loading')
-        self.status_setup      = CTK.ImageStock('loading')
+URL_APPLY = '/plugin/gzip/apply'
+HELPS     = [('modules_encoders_gzip', _("GZip encoder"))]
 
-        table  = CTK.Table()
-        table += [CTK.RawHTML ("Uncompress"),
+NOTE_LEVEL = N_("Compression Level from 0 to 9, where 0 is no compression, 1 best speed, and 9 best compression.")
 
+class Plugin_gzip (CTK.Plugin):
+    def __init__ (self, key, **kwargs):
+        CTK.Plugin.__init__ (self, key, **kwargs)
+
+        table = CTK.PropsTable()
+        table.Add (_("Compression Level"), CTK.ComboCfg('%s!compression_level'%(key), consts.COMPRESSION_LEVELS), _(NOTE_LEVEL))
+
+        submit = CTK.Submitter (URL_APPLY)
+        submit += table
+
+        self += submit
+
+CTK.publish ('^%s'%(URL_APPLY), CTK.cfg_apply_post, method="POST")

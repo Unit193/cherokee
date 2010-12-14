@@ -58,8 +58,8 @@ NOTE_DELETE_DIALOG = N_('You are about to delete an Information Source. Are you 
 NOTE_NO_ENTRIES    = N_('The Information Source list is currently empty.')
 NOTE_FORBID_1      = N_('This is the last Information Source in use by a rule. Deleting it would break the configuration.')
 NOTE_FORBID_2      = N_('First edit the offending rule(s)')
-NOTE_ADD_VARIABLE  = N_('Name of the variable')
-NOTE_ADD_VALUE     = N_('Value of the variable')
+NOTE_ADD_VARIABLE  = N_('Name of the environment variable')
+NOTE_ADD_VALUE     = N_('Value of the environment variable')
 NOTE_CLONE_DIALOG  = N_('The selected Information Source is about to be cloned.')
 
 VALIDATIONS = [
@@ -206,13 +206,13 @@ class EnvironmentTable (CTK.Submitter):
             table[(1,1)] = [CTK.RawHTML(x) for x in (_('Variable'), _('Value'), '')]
             table.set_header (row=True, num=1)
             self += CTK.RawHTML ("<h2>%s</h2>" % (_('Environment Variables')))
-            self += CTK.Indenter (table)
+            self += table
 
             n = 2
             for v in variables:
                 # Entries
                 key   = 'source!%s!env!%s'%(src_num, v)
-                value = CTK.TextCfg (key, True,  {'size': 45})
+                value = CTK.TextCfg (key, True,  {'class': 'value'})
                 delete = CTK.ImageStock('del')
                 delete.bind('click', CTK.JS.Ajax (URL_APPLY,
                                                   data     = {key: ''},
@@ -238,16 +238,16 @@ class EnvironmentWidget (CTK.Container):
         submit += CTK.Hidden ('tmp!source_pre','source!%s!env'%(src_num))
         submit += table
 
-        dialog = CTK.Dialog({'title': _('Add new Environment variable'), 'autoOpen': False, 'draggable': False, 'width': 350 })
-        dialog.AddButton (_("Add"),    submit.JS_to_submit())
+        dialog = CTK.Dialog({'title': _('Add new Environment variable'), 'autoOpen': False, 'draggable': False, 'width': 530})
         dialog.AddButton (_("Cancel"), "close")
+        dialog.AddButton (_("Add"),    submit.JS_to_submit())
         dialog += submit
 
         submit.bind ('submit_success', self.refresh.JS_to_refresh())
         submit.bind ('submit_success', dialog.JS_to_close())
 
         # Add new
-        button = CTK.SubmitterButton (_('Add new variable'))
+        button = CTK.SubmitterButton ("%s…" %(_('Add new variable')))
         button.bind ('click', dialog.JS_to_show())
         button_s = CTK.Submitter (URL_APPLY)
         button_s += button
@@ -418,11 +418,11 @@ class Render:
                     actions[r] = ''
 
                 dialog = CTK.Dialog ({'title': _('Do you really want to remove it?'), 'width': 480})
+                dialog.AddButton (_('Cancel'), "close")
                 dialog.AddButton (_('Remove'), CTK.JS.Ajax (URL_APPLY, async=False,
                                                             data    = actions,
                                                             success = dialog.JS_to_close() + \
                                                                       refresh.JS_to_refresh()))
-                dialog.AddButton (_('Cancel'), "close")
                 dialog += CTK.RawHTML (_(NOTE_DELETE_DIALOG))
 
             return dialog
@@ -434,9 +434,9 @@ class Render:
             CTK.Box.__init__ (self, {'class': 'panel-buttons'})
 
             # Add New
-            dialog = CTK.Dialog ({'title': _('Add New Information Source'), 'width': 380})
-            dialog.AddButton (_('Add'), dialog.JS_to_trigger('submit'))
+            dialog = CTK.Dialog ({'title': _('Add New Information Source'), 'width': 530})
             dialog.AddButton (_('Cancel'), "close")
+            dialog.AddButton (_('Add'), dialog.JS_to_trigger('submit'))
             dialog += AddSource()
 
             button = CTK.Button('<img src="/static/images/panel-new.png" />', {'id': 'source-new-button', 'class': 'panel-button', 'title': _('Add New Information Source')})
@@ -449,8 +449,8 @@ class Render:
 
             # Clone
             dialog = CTK.Dialog ({'title': _('Clone Information Source'), 'width': 480})
-            dialog.AddButton (_('Clone'), JS_CLONE + dialog.JS_to_close())
             dialog.AddButton (_('Cancel'), "close")
+            dialog.AddButton (_('Clone'), JS_CLONE + dialog.JS_to_close())
             dialog += CloneSource()
 
             button = CTK.Button('<img src="/static/images/panel-clone.png" />', {'id': 'source-clone-button', 'class': 'panel-button', 'title': _('Clone Selected Information Source')})

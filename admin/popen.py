@@ -27,6 +27,7 @@ import sys
 import errno
 import fcntl
 import select
+import traceback
 
 POLLING_LAPSE   = 0.2
 READ_CHUNK_SIZE = 2**20
@@ -42,7 +43,7 @@ def set_non_blocking (fd):
     fcntl.fcntl (fd, fcntl.F_SETFL, fl | os.O_NONBLOCK)
 
 
-def popen_sync (command, env=None, stdout=True, stderr=True, retcode=True):
+def popen_sync (command, env=None, stdout=True, stderr=True, retcode=True, cd=None, su=None):
     """This function implements a subset of the functionality provided
     by the subprocess.Popen class. The subprocess module in Python 2.4
     and 2.5 have some problems dealing with processes termination on
@@ -70,6 +71,22 @@ def popen_sync (command, env=None, stdout=True, stderr=True, retcode=True):
                 os.close (i)
             except:
                 pass
+
+        # Change directory
+        if cd:
+            try:
+                os.chdir (cd)
+            except Except, e:
+                print >> sys.stderr, "Could not change directory to: %s" %(cd)
+                print >> sys.stderr, traceback.format_exc()
+
+        # Change user
+        if su:
+            try:
+                os.setuid (su)
+            except Except, e:
+                print >> sys.stderr, "Could not set user: %s" %(su)
+                print >> sys.stderr, traceback.format_exc()
 
         # Pass control to the executable
         if not env:
@@ -131,11 +148,14 @@ def popen_sync (command, env=None, stdout=True, stderr=True, retcode=True):
     os.close (stdout_w)
 
     # Return information
-    ret = {'stdout':  buf_stdout,
+    ret = {'command': command,
+           'stdout':  buf_stdout,
            'stderr':  buf_stderr,
            'retcode': returncode}
+
     return ret
 
 if __name__ == "__main__":
-    popen_sync ("ls")
-    popen_sync ("lsg")
+    print popen_sync ("ls")
+    print popen_sync ("lsg")
+    print popen_sync ("""cat <<EOF\nThis\nis\na\ntest\nEOF\n""")
