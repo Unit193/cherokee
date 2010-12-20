@@ -1,3 +1,10 @@
+cherokee (1.0.14-2) experimental; urgency=low
+
+  * Forgot excluding files in cherokee-admin from libcherokee-server0;
+    thanks to Ringo Hartmann for the heads-up
+
+ -- Gunnar Wolf <gwolf@debian.org>  Mon, 20 Dec 2010 13:44:06 -0600
+
 cherokee (1.0.14-1) experimental; urgency=low
 
   * New Upstream Version (Closes: #606865)

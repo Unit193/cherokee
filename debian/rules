@@ -48,10 +48,12 @@ override_dh_install:
 	# in libcherokee-server0 by copying over to them all the
 	# corresponding (*.so) files we have in
 	# $(BUILD_DIR)/usr/lib/cherokee that have not been copied over
-	# to any of the plugin packages (libcherokee-mod-*).
+	# to any of the plugin packages (libcherokee-mod-*) or to
+	# cherokee-admin (which is after all a plugin by a different name).
 	INSTALLED=`mktemp`; \
 		DEST=$(CURDIR)/debian/libcherokee-server0/usr/lib/cherokee; \
-		ls $(CURDIR)/debian/libcherokee-mod*/usr/lib/cherokee/* | \
+		ls $(CURDIR)/debian/libcherokee-mod*/usr/lib/cherokee/* \
+		   $(CURDIR)/debian/cherokee-admin/usr/lib/cherokee/*  | \
 			sed 's/.*\///' > $$INSTALLED; \
 		install $$(ls $(BUILD_DIR)/usr/lib/cherokee/*.so | \
 			   egrep -vf $$INSTALLED ) $$DEST;\
