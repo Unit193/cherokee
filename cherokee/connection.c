@@ -163,6 +163,8 @@ cherokee_connection_new  (cherokee_connection_t **conn)
 
 	memset (n->regex_ovector, 0, OVECTOR_LEN * sizeof(int));
 	n->regex_ovecsize = 0;
+	memset (n->regex_host_ovector, 0, OVECTOR_LEN * sizeof(int));
+	n->regex_host_ovecsize = 0;
 
 	n->chunked_encoding     = false;
 	n->chunked_sent         = 0;
@@ -299,6 +301,8 @@ cherokee_connection_clean (cherokee_connection_t *conn)
 
 	memset (conn->regex_ovector, 0, OVECTOR_LEN * sizeof(int));
 	conn->regex_ovecsize = 0;
+	memset (conn->regex_host_ovector, 0, OVECTOR_LEN * sizeof(int));
+	conn->regex_host_ovecsize = 0;
 
 	if (conn->handler != NULL) {
 		cherokee_handler_free (conn->handler);
@@ -726,9 +730,14 @@ build_response_header (cherokee_connection_t *conn, cherokee_buffer_t *buffer)
 	if (conn->upgrade != http_upgrade_nothing) {
 		cherokee_buffer_add_str (buffer, "Connection: Upgrade"CRLF);
 
-	} else if (conn->handler && (conn->keepalive > 0)) {
-		cherokee_buffer_add_str (buffer, "Connection: Keep-Alive"CRLF);
-		cherokee_buffer_add_buffer (buffer, conn->timeout_header);
+	} else if (conn->handler && (conn->keepalive > 1)) {
+		if (conn->header.version < http_version_11) {
+			cherokee_buffer_add_str     (buffer, "Connection: Keep-Alive"CRLF);
+			cherokee_buffer_add_buffer  (buffer, conn->timeout_header);
+			cherokee_buffer_add_str     (buffer, ", max=");
+			cherokee_buffer_add_ulong10 (buffer, conn->keepalive);
+			cherokee_buffer_add_str     (buffer, CRLF);
+		}
 	} else {
 		cherokee_buffer_add_str (buffer, "Connection: close"CRLF);
 	}

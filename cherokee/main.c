@@ -473,13 +473,20 @@ do_spawn (void)
 			if (fd < 0) {
 				PRINT_ERROR ("(warning) Couldn't open '%s' for writing..\n", log_file);
 			}
+			close (STDOUT_FILENO);
+			close (STDERR_FILENO);
 			dup2 (fd, STDOUT_FILENO);
 			dup2 (fd, STDERR_FILENO);
 		} else if (log_stderr) {
 			/* do nothing */
 		} else {
+			int tmp_fd;
+			tmp_fd = open ("/dev/null", O_WRONLY);
+
 			close (STDOUT_FILENO);
 			close (STDERR_FILENO);
+			dup2 (tmp_fd, STDOUT_FILENO);
+			dup2 (tmp_fd, STDERR_FILENO);
 		}
 
 		/* Change user & group */
@@ -650,14 +657,14 @@ spawn_init (void)
 	int mem_len;
 
 	/* Names
-	*/
-	mem_len = sizeof("/cherokee-spawner-XXXXXXX");
+	 */
+	mem_len = sizeof(TMPDIR "/cherokee-spawner-<PID_number>");
 	spawn_shared_name = malloc (mem_len);
-	snprintf (spawn_shared_name, mem_len, "/cherokee-spawner-%d", getpid());
+	snprintf (spawn_shared_name, mem_len, TMPDIR "/cherokee-spawner-%d", getpid());
 
 	/* Create the shared memory
 	 */
-	fd = shm_open (spawn_shared_name, O_RDWR | O_EXCL | O_CREAT, 0600);
+	fd = open (spawn_shared_name, O_RDWR | O_EXCL | O_CREAT, 0600);
 	if (fd < 0) {
 		return ret_error;
 	}
@@ -707,7 +714,7 @@ spawn_clean (void)
 	long dummy = 0;
 
 	if (spawn_shared_name != NULL) {
-		shm_unlink (spawn_shared_name);
+		unlink (spawn_shared_name);
 	}
 
 	if (spawn_shared_sem != -1) {

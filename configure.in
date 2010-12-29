@@ -25,7 +25,7 @@ AC_PREREQ([2.60])
 dnl Version
 m4_define([cherokee_major_version], [1])
 m4_define([cherokee_minor_version], [0])
-m4_define([cherokee_micro_version], [14])
+m4_define([cherokee_micro_version], [15])
 m4_define([cherokee_version], m4_format('%s.%s.%s', cherokee_major_version, cherokee_minor_version, cherokee_micro_version))
 
 dnl Init autoconf and automake
@@ -972,6 +972,43 @@ AC_TRY_COMPILE([],
    AC_DEFINE(__func__, __FILE__,
          [Define to appropriate substitue if compiler doesnt have __func__])))
 
+
+dnl
+dnl Temporal directory
+dnl
+AC_ARG_ENABLE(tmpdir, AC_HELP_STRING([--enable-tmpdir=DIR],[default directory for temporary files]))
+
+AC_MSG_CHECKING(directory to use for temporary files)
+if test -n "$enable_tmpdir"; then
+        tmpdir="$enable_tmpdir"
+elif test -n "$TMPDIR"; then
+        tmpdir="$TMPDIR"
+elif test -n "$TMP"; then
+        tmpdir="$TMP"
+elif test -n "$TEMP"; then
+        tmpdir="$TEMP"
+elif test -d "c:/"; then
+        tmpdir="c:/"
+else
+        tmpdir="/tmp"
+fi
+
+dnl No temp dir
+if ! test -d $tmpdir ; then
+   AC_MSG_ERROR($tmpdir does not exist)
+fi
+
+dnl Handle MacOS X messy tmp dirs
+case "$tmpdir" in
+  /var/folders*)
+     tmpdir='/tmp'
+	;;
+esac
+
+AC_MSG_RESULT($tmpdir)
+AC_DEFINE_UNQUOTED(TMPDIR, "$tmpdir", [Temporal directory])
+
+
 dnl
 dnl Check for pcre library
 dnl
@@ -1281,8 +1318,34 @@ dnl
 dnl WWW root directory, and user/group
 dnl
 AC_ARG_WITH(wwwroot, AC_HELP_STRING([--with-wwwroot=DIR], [Set the WWW root directory]),
-		  WWW_ROOT="$withval", WWW_ROOT="$localstatedir/www")
+		  WWW_ROOT="$withval", [
+   dnl MacOS X
+   if test -d "/Library/WebServer/Documents"; then
+	   WWW_ROOT="/Library/WebServer/Documents"
+   dnl Some Linux
+   elif test -d "/srv/www/htdocs"; then
+	   WWW_ROOT="/srv/www/htdocs"
+   dnl Default
+   else
+	   WWW_ROOT="$localstatedir/www"
+   fi
+])
 AC_SUBST(WWW_ROOT)
+
+AC_ARG_WITH(cgiroot, AC_HELP_STRING([--with-cgiroot=DIR], [Set the CGI directory]),
+		  CGI_ROOT="$withval", [
+   dnl MacOS X
+   if test -d "/Library/WebServer/CGI-Executables"; then
+	   CGI_ROOT="/Library/WebServer/CGI-Executables"
+   dnl Some Linux
+   elif test -d "/srv/www/cgi-bin"; then
+	   CGI_ROOT="/srv/www/cgi-bin"
+   dnl Default
+   else
+	   CGI_ROOT="$prefix/lib/cgi-bin"
+   fi
+])
+AC_SUBST(CGI_ROOT)
 
 AC_ARG_WITH(wwwuser, AC_HELP_STRING([--with-wwwuser=USER], [Set default execution user]),
 		  WWW_USER="$withval", WWW_USER="")
@@ -1294,53 +1357,51 @@ AC_SUBST(WWW_GROUP)
 
 
 dnl
-dnl Look for misc binaries
+dnl PHP fcgi
 dnl
-AC_PATH_PROG(PHPCGI, php-cgi)
-AC_ARG_VAR(PHPCGI, [path to PHP-cgi])
+AC_ARG_WITH(php, AC_HELP_STRING([--with-php=/path/to/php], [Path to php-fpm or php-cgi]),
+	       PHPCGI="$withval", PHPCGI="")
 
-AC_MSG_CHECKING([$PHPCGI supports FastCGI])
+dnl If no php, try to find it
 if test "x$PHPCGI" = "x"; then
-   AC_MSG_RESULT([no])
-else
-   $PHPCGI -v -d session.save_path=/tmp | grep 'cgi-fcgi' >/dev/null 2>/dev/null
-   if test $? != 0; then
-      PHPCGI=""
-      AC_MSG_RESULT([no])
-   else
-      AC_MSG_RESULT([yes])
-   fi
+  for bin in php-fpm php-cgi php; do
+    for p in /usr/lib/cgi-bin /usr/sbin /usr/bin /usr/local/sbin /usr/local/bin /opt/local/sbin /opt/local/bin /usr/gnu/sbin /usr/gnu/bin; do
+	 if test -x "$p/$bin"; then
+        PHPCGI="$p/$bin"
+        break
+	 fi
+    done
+    if test "x$PHPCGI" != x; then
+	 break
+    fi
+  done
 fi
 
+dnl Try in the $PATH
 if test "x$PHPCGI" = "x"; then
-   for n in php-cgi php; do
-     for p in /usr/lib/cgi-bin /usr/bin /usr/local/bin; do
-       phpcgi_path="$p/php-cgi"
-	  AC_MSG_CHECKING([for $phpcgi_path])
-	  if test -x "$phpcgi_path"; then
-	     $phpcgi_path -v | grep 'cgi-fcgi' >/dev/null 2>/dev/null
-		if test $? = 0; then
-		  PHPCGI=$phpcgi_path
-	       AC_MSG_RESULT([yes])
-		else
-	       AC_MSG_RESULT([not fcgi])
-		fi
-		break
-	  else
-	     AC_MSG_RESULT([no])
-	  fi
-     done
-	if test "x$PHPCGI" != x; then
-	  break;
-	fi
-   done
+   AC_PATH_PROGS(PHPCGI, [php-fpm php-cgi])
 fi
 
+dnl Last, desperate option
 if test "x$PHPCGI" = "x"; then
    PHPCGI="php-cgi"
 fi
 
 AC_SUBST(PHPCGI)
+
+dnl Ensures it support FastCGI
+AC_MSG_CHECKING([$PHPCGI supports FastCGI])
+if test "x$PHPCGI" = "x"; then
+   AC_MSG_RESULT([no])
+else
+   $PHPCGI -v -d session.save_path=/tmp | grep 'fcgi' >/dev/null 2>/dev/null
+   if test $? != 0; then
+      PHPCGI=""
+      AC_MSG_RESULT([no, use --with-php])
+   else
+      AC_MSG_RESULT([yes])
+   fi
+fi
 
 dnl
 dnl Python
@@ -1531,6 +1592,7 @@ packages/windows/cherokee.nsi
 www/Makefile
 dbslayer/Makefile
 admin/Makefile
+admin/icons/Makefile
 admin/market/Makefile
 admin/plugins/Makefile
 admin/wizards/Makefile

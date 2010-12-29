@@ -89,6 +89,7 @@ AWK = @AWK@
 CC = @CC@
 CCDEPMODE = @CCDEPMODE@
 CFLAGS = @CFLAGS@
+CGI_ROOT = @CGI_ROOT@
 CHEROKEE_AGE = @CHEROKEE_AGE@
 CHEROKEE_CURRENT = @CHEROKEE_CURRENT@
 CHEROKEE_REVISION = @CHEROKEE_REVISION@
@@ -249,7 +250,8 @@ jquery.form-defaults.js \
 jquery.ibutton.js \
 jquery.tablednd_0_5.js \
 jquery.uploadProgress.js \
-ajaxupload.3.6.js
+ajaxupload.3.6.js \
+Carousel.js
 
 EXTRA_DIST = \
 $(js_DATA)

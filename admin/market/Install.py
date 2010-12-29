@@ -40,6 +40,7 @@ import SaveButton
 import Cherokee
 import popen
 import CommandProgress
+import InstallUtil
 
 from util import *
 from consts import *
@@ -61,6 +62,10 @@ NOTE_SAVE_RESTART = N_("Since there were previous changes your configuration has
 
 NOTE_OLD_CHEROKEE_P1 = N_("Your Cherokee version can no longer access many of the features of the Cherokee Market. Please, upgrade Cherokee to an up-to-date version.")
 NOTE_OLD_CHEROKEE_P2 = N_("We apologize for the inconveniences.")
+
+NO_ROOT_H1 = N_("Privileges test failed")
+NO_ROOT_P1 = N_("Since the installations may require administrator to execute system administration commands, it is required to run Cherokee-admin under a user with  administrator privileges.")
+NO_ROOT_P2 = N_("Please, run cherokee-admin as root to solve the problem.")
 
 URL_INSTALL_WELCOME        = "%s/install/welcome"        %(URL_MAIN)
 URL_INSTALL_INIT_CHECK     = "%s/install/check"          %(URL_MAIN)
@@ -118,6 +123,20 @@ class Install_Stage:
 
 class Welcome (Install_Stage):
     def __safe_call__ (self):
+        # Ensure the current UID has enough priviledges
+        if not InstallUtil.current_UID_is_admin():
+            box = CTK.Box()
+            box += CTK.RawHTML ('<h2>%s</h2>' %(_(NO_ROOT_H1)))
+            box += CTK.RawHTML ('<p>%s</p>'   %(_(NO_ROOT_P1)))
+            box += CTK.RawHTML ('<p>%s</p>'   %(_(NO_ROOT_P2)))
+
+            buttons = CTK.DruidButtonsPanel()
+            buttons += CTK.DruidButton_Close(_('Cancel'))
+            box += buttons
+
+            return box.Render().toStr()
+
+        # Init the log file
         Install_Log.reset()
         Install_Log.log (".---------------------------------------------.")
         Install_Log.log ("| PLEASE, DO NOT EDIT OR REMOVE THIS LOG FILE |")
@@ -182,8 +201,8 @@ class Init_Check (Install_Stage):
             cont += CTK.RawHTML ("<p>%s</p>"  %(_(NOTE_ALL_READY_TO_BUY_2)))
 
             checkout = CTK.Button (_("Check Out"))
-            checkout.bind ('click', CTK.JS.OpenWindow('%s/order/%s' %(OWS_STATIC, app_id)))
-            checkout.bind ('click', CTK.DruidContent__JS_to_goto (checkout.id, URL_INSTALL_PAY_CHECK))
+            checkout.bind ('click', CTK.DruidContent__JS_to_goto (cont.id, URL_INSTALL_PAY_CHECK) +
+                                    CTK.JS.OpenWindow('%s/order/%s' %(OWS_STATIC, app_id)))
 
             buttons = CTK.DruidButtonsPanel()
             buttons += CTK.DruidButton_Close(_('Cancel'))
@@ -222,11 +241,11 @@ class Pay_Check (Install_Stage):
             Install_Log.log ("Payment ACK!")
 
             # Invalidate 'My Library' cache
-            MyLibrary.Invalidate_Cache()
+            Library.Invalidate_Cache()
 
             # Move on
             CTK.cfg['tmp!market!install!download'] = install_info['url']
-            box += CTK.DruidContent__JS_to_goto (box.id, URL_INSTALL_DOWNLOAD)
+            box += CTK.RawHTML (js=CTK.DruidContent__JS_to_goto (box.id, URL_INSTALL_DOWNLOAD))
 
         return box.Render().toStr()
 
@@ -242,7 +261,7 @@ class Download (Install_Stage):
         pkg_filename = pkg_filename_full.split('_')[0]
         pkg_revision = 0
 
-        pkg_repo_fp  = os.path.join (CHEROKEE_OWS_DIR, "packages")
+        pkg_repo_fp  = os.path.join (CHEROKEE_OWS_DIR, "packages", app_id)
         if os.access (pkg_repo_fp, os.X_OK):
             for f in os.listdir (pkg_repo_fp):
                 tmp = re.findall('^%s_(\d+)'%(pkg_filename), f)
@@ -250,7 +269,7 @@ class Download (Install_Stage):
                     pkg_revision = max (pkg_revision, int(tmp[0]))
 
         if pkg_revision > 0:
-            pkg_fullpath = os.path.join (CHEROKEE_OWS_DIR, "packages", '%s_%d.pkg' %(pkg_filename, pkg_revision))
+            pkg_fullpath = os.path.join (CHEROKEE_OWS_DIR, "packages", app_id, '%s_%d.pkg' %(pkg_filename, pkg_revision))
             CTK.cfg['tmp!market!install!local_package'] = pkg_fullpath
 
             Install_Log.log ("Using local repository package: %s" %(pkg_fullpath))
@@ -384,14 +403,21 @@ class Setup (Install_Stage):
         CTK.cfg['tmp!market!install!root'] = target_path
 
         # Create the log file
-        Install_Log.log ("Unpacking %s" %(package_path))
         Install_Log.set_file (os.path.join (target_path, "install.log"))
 
         # Uncompress
-        tar = tarfile.open (package_path, 'r:gz')
-        for tarinfo in tar:
-            Install_Log.log ("  %s" %(tarinfo.name))
-            tar.extract (tarinfo, target_path)
+        try:
+            Install_Log.log ("Unpacking %s with Python" %(package_path))
+            tar = tarfile.open (package_path, 'r:gz')
+            for tarinfo in tar:
+                Install_Log.log ("  %s" %(tarinfo.name))
+                tar.extract (tarinfo, target_path)
+        except tarfile.CompressionError:
+            command = "gzip -dc '%s' | tar xfv -" %(package_path)
+            Install_Log.log ("Unpacking %(package_path)s with the GZip binary (cd: %(target_path)s): %(command)s" %(locals()))
+            ret = popen.popen_sync (command, cd=target_path)
+            Install_Log.log (ret['stdout'])
+            Install_Log.log (ret['stderr'])
 
         # Set default permission
         Install_Log.log ("Setting default permission 755 for directory %s" %(target_path))

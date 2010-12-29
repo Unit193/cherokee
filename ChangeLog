@@ -1,3 +1,933 @@
+2010-12-29  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6038 git=aa1f3b68c6762277d5b7199dd7ffbd82585b92b6
+
+    Fixes a compatibility problem with Python 2.7. -- <sigh!> The Python
+    library can be quite annoying some times.
+    
+ admin/XMLServerDigest.py |   26 ++++++++++++++++++++++++--
+ 1 files changed, 24 insertions(+), 2 deletions(-)
+
+
+2010-12-29  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6037 git=53e5dee3e6c865914f90cbc8eea3a1220700f58b
+
+    Solves a memory management issue that caused the server to crash while
+    shutting down.
+    
+ cherokee/handler_dirlist.c |   11 +++++++++--
+ 1 files changed, 9 insertions(+), 2 deletions(-)
+
+
+2010-12-29  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6036 git=4167cbf52c33f0a4d0008eb21de7bd230b6e859b
+
+    Xterm is also capable of handling ANSI codes
+    
+ qa/util.py |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+
+2010-12-29  Taher Shihadeh  <taher@unixwars.com>
+            svn=6035 git=3bd5ef16c996416d80e210bdcdf29bea70ddba2f
+
+    Some wizards were creating rules that downloaded index.php when run on existing virtual servers. Should address issue 975
+    
+ admin/wizards/moodle.py     |   10 +++++-----
+ admin/wizards/phpbb.py      |   13 +++++++++----
+ admin/wizards/phpmyadmin.py |    5 +++++
+ admin/wizards/sugar.py      |   10 +++++-----
+ admin/wizards/symfony.py    |   15 ++++++++++-----
+ admin/wizards/zend.py       |   10 +++++-----
+ 6 files changed, 39 insertions(+), 24 deletions(-)
+
+
+2010-12-29  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6034 git=d37a2b720c28702a8143cd579188d91d221d5bf6
+
+    The ./configure script detects /srv/www directories now as well (for
+    the default document root and CGI directories). There are some Linux
+    distributions which use those directories by default.
+    
+ configure.in |   30 +++++++++++++++++-------------
+ 1 files changed, 17 insertions(+), 13 deletions(-)
+
+2010-12-29  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6033 git=e3efa8912e20eb66a3bcdf27fa1881722d22cccd
+
+    Fixes an incorrect exception
+    
+ admin/market/Install.py |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+
+2010-12-29  Taher Shihadeh  <taher@unixwars.com>
+            svn=6032 git=3d926b2a56d0482c0b892ad0345d9cc63027039e
+
+    Fixes a problem where the custom document root was not being set on the correct order. Should prevent index.php from being downloaded.
+    
+ admin/wizards/wordpress.py |   10 +++++-----
+ 1 files changed, 5 insertions(+), 5 deletions(-)
+
+
+2010-12-29  Taher Shihadeh  <taher@unixwars.com>
+            svn=6031 git=95c7946ab64db076d00dfdac9acb302435ec3802
+
+    Changes message reported when restoring a configuration backup
+    
+ admin/OWS_Backup.py |    9 ++++++---
+ 1 files changed, 6 insertions(+), 3 deletions(-)
+
+
+2010-12-29  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6030 git=cdfbf2554984bd4b5d05fd5b69296bd1c153bab9
+
+    Implements X-Sendfile and X-Accel-Redirect in the Reverse HTTP Proxy
+    handler. It's interesting to notice that X-Sendfile works in the same
+    way as X-Accel-Redirect, and thus is not restricted to serve static
+    content but it sort of content. http://bugs.cherokee-project.com/1064
+    
+ cherokee/handler_proxy.c |  100 ++++++++++++++++++++++++++++++++++++++++++++++
+ 1 files changed, 100 insertions(+), 0 deletions(-)
+
+
+2010-12-28  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6029 git=bfe226825f6992c522395aa74a93427cddceff4c
+
+    Fixes an outdated error. /dev/shm is not longer required. Besides,
+    instead an 'error' it should be a just a 'warning' message.
+    
+ cherokee/error_list.py |    6 +++---
+ cherokee/spawner.c     |    2 +-
+ 2 files changed, 4 insertions(+), 4 deletions(-)
+
+
+2010-12-28  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6028 git=328b00b5057383af28b59b234d3aa5c0988e75b1
+
+    Python bug workaround. The xmlrpclib module does not handle some
+    responses in the right away, specially requests with a fairly long
+    body. The module assumes the back-end server will wait until it sends
+    the complete payload before replying an error, which is an option but
+    does not necessarily have to happen. This patch forces the library to
+    read a reply even if the TCP connection was closed by the remote host.
+    At the end of the day, receiving a broken pipe even does not mean that
+    the remote host did not push a response before closing it.
+    
+ admin/XMLServerDigest.py |   63 ++++++++++++++++++++++++++++++++++++++++-----
+ 1 files changed, 56 insertions(+), 7 deletions(-)
+
+
+2010-12-28  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6027 git=6b784c5a81aa2603c046681982bb4c7283d3ac87
+
+    Cover a corner case that could cause trouble while saving a
+    configuration file.
+    
+ admin/SavingChecks.py |    8 ++++----
+ 1 files changed, 4 insertions(+), 4 deletions(-)
+
+
+2010-12-28  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6026 git=d297d6d0bc5b3a5fa6099f01f22db8a149ee605d
+
+    This code was raising an exception under some circumstances.
+    
+ admin/PageVServer.py |    3 +--
+ 1 files changed, 1 insertions(+), 2 deletions(-)
+
+
+2010-12-28  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6025 git=4a2ef9b49543ee523df3fd4ba9fc49a3718214cb
+
+    Adds a new -i / --disable-iocache parameter to cherokee-admin, so I/O
+    cache can be disabled from the command line, and thus, memory usage
+    lowered (of course, it also has an impact on performance). The debug
+    parameter (-x / --debug) also disabled the I/O cache.
+    
+ cherokee/main_admin.c |   39 +++++++++++++++++++++------------------
+ 1 files changed, 21 insertions(+), 18 deletions(-)
+
+2010-12-27  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6024 git=b243decd49d3a5314b3807b269defd6310dd9058
+
+    Cleans up previous commit
+    
+ configure.in |    4 +---
+ 1 files changed, 1 insertions(+), 3 deletions(-)
+
+
+2010-12-27  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6023 git=5dd0100309504cd61d9842f092648e8d4b4c14b5
+
+    Works out php-{fpm,cgi} detection
+    
+ configure.in |   60 +++++++++++++++++++++++++++------------------------------
+ 1 files changed, 28 insertions(+), 32 deletions(-)
+
+2010-12-27  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6022 git=9241b423462c411593dbfa02aa5642b977d6d76c
+
+    Include the current version in the "Latest Release" message, even if
+    it's a development snapshot.
+    
+ admin/OWS_Cherokee_Info.py |    6 +++---
+ 1 files changed, 3 insertions(+), 3 deletions(-)
+
+
+2010-12-27  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6020 git=9cac47b29a560e29ab3a0d94330a8aeb223243ea
+
+    Suggest to click 'Save' only when it is actually enabled.
+    
+ admin/OWS_Backup.py |    7 ++++++-
+ 1 files changed, 6 insertions(+), 1 deletions(-)
+
+
+2010-12-27  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6019 git=492ceae28c2764d84f29f1c2f07a15095b7cdf0b
+
+    Substitution number limit raised from 9 to 20. Even though it could be
+    raised even more, I don't think it'd be useful for any real-five case.
+    Besides the regex.c modifications, this patch also enhances one of the
+    QA tests in order to use 12 parameters (instead of 9) - so the new
+    replacement code is covered by the QA bench.
+    
+ cherokee/regex.c  |   18 +++++++++++++-----
+ cherokee/regex.h  |    2 +-
+ qa/189-Redir12.py |   22 ++++++++++++++++++++++
+ qa/189-Redir9.py  |   22 ----------------------
+ qa/Makefile.am    |    2 +-
+ 5 files changed, 37 insertions(+), 29 deletions(-)
+
+
+2010-12-27  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6018 git=b76913a53b47e4ee577e0da89db1706de6eb6ecd
+
+    Oops! Fixes a typo
+    
+ admin/Page.py |    6 +++---
+ 1 files changed, 3 insertions(+), 3 deletions(-)
+
+
+2010-12-27  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6017 git=c463e61ccad88e38a6b6e6b9f25fc40f6ed00c59
+
+    Adds a pre-save checking in order to ensure that the new configuration
+    file is consistent. In case glitches were found, the saving process
+    would be cancel and the issues reported to the user.
+    
+ admin/Makefile.am     |    3 +-
+ admin/Page.py         |   25 +++++++++++++++++++
+ admin/SavingChecks.py |   64 +++++++++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 91 insertions(+), 1 deletions(-)
+
+
+2010-12-26  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6016 git=bb1f7935f0cd5b67513e524e480bd6c3aee24b5d
+
+    This patch adds support for regex groups in the Virtual Server regex
+    match plug-in. The groups matched on Virtual Server matching can be
+    substituted in the handler_redir later on. In this case, substitutions
+    are set by the ^ character.. being ^1 the first matched parameter.
+    
+ cherokee/connection-protected.h |    5 +++++
+ cherokee/connection.c           |    4 ++++
+ cherokee/handler_redir.c        |   19 +++++++++++++++++--
+ cherokee/vrule_rehost.c         |    9 +++++++--
+ 4 files changed, 33 insertions(+), 4 deletions(-)
+
+
+2010-12-26  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6015 git=95e63774cc6376e83a5c5aaf73712fbc63e7f80c
+
+    Adapts the proxy handler to the new prototype of cherokee_regex_substitute()
+    
+ cherokee/handler_proxy.c |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+
+2010-12-26  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6014 git=9a1514fe62ae3adbbb8f04e88b87ffb23a5eed23
+
+    Modifies the public interface of cherokee_regex_substitute(). There is
+    add a new parameter to specify the special character for the
+    substitutions (what used to be hardcoded to $).
+    
+ cherokee/regex.c |    7 ++++---
+ cherokee/regex.h |    3 ++-
+ 2 files changed, 6 insertions(+), 4 deletions(-)
+
+
+2010-12-26  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6013 git=632ec1e47a73cdc28e706d6169964ab4cfbb50ca
+
+    We broke this QA test a few days ago. Since HTTP/1.1 uses Keep-alive
+    by default, the "Connection: Keep-Alive" header cannot be checked in
+    order to ensure the type of the connection.
+    
+ qa/171-SCGI-Keepalive.py |   14 +++++++-------
+ 1 files changed, 7 insertions(+), 7 deletions(-)
+
+2010-12-26  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6012 git=c95d0832581861928ec76c0f038369540d052cab
+
+    Print TMPDIR as part of the 'cherokee -i' output
+    
+ cherokee/info.c |    1 +
+ 1 files changed, 1 insertions(+), 0 deletions(-)
+
+
+2010-12-26  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6011 git=1d5f345cbe0527aa4c38589ff2808f6a46467feb
+
+    Due to its special way to handle the system-wide temporal directory,
+    some code had to added in order to transform /var/folders/__/* paths
+    to plain /tmp. Since those /var/folders dirs vary from one box to the
+    other, this change was required in order to make Cherokee binary
+    packages portable across different MacOS X systems.
+    
+ configure.in |   20 +++++++++++++++-----
+ 1 files changed, 15 insertions(+), 5 deletions(-)
+
+2010-12-26  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6010 git=0c5db1be0f06c9f724db940edac44b4cd8c8076c
+
+    Adds some code to autodetect the system's temporal directory, and
+    replaces the hard-coded references to /tmp.
+    
+ cherokee/main.c       |    4 ++--
+ cherokee/main_admin.c |    2 +-
+ cherokee/spawner.c    |    2 +-
+ cherokee/util.c       |    5 +++--
+ configure.in          |   27 +++++++++++++++++++++++++++
+ 5 files changed, 34 insertions(+), 6 deletions(-)
+
+2010-12-26  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6009 git=74c232f2493721f38fff82c48998f4add5946f53
+
+    The previous patch was not completely right. This version improves how
+    the status of the unpack is logged when relaying on the GZip binary.
+    
+ admin/market/Install.py |    8 ++++++--
+ 1 files changed, 6 insertions(+), 2 deletions(-)
+
+
+2010-12-25  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6008 git=f2a79641421958126f984641591031e7fe2933ba
+
+    It seems that there are Python packages (on Linux) where GZip is not
+    supported by the tarfile module. This patch tries to workaround the
+    issue by executing the gzip and tar commands in a child process.
+    
+ admin/market/Install.py |   11 +++++++----
+ 1 files changed, 7 insertions(+), 4 deletions(-)
+
+
+2010-12-25  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6007 git=5f80bc81b6f17ece5c9641679ac339a62a7be364
+
+    Replace SysV shared memory by a mmap()ed temporal file. It should
+    solve a few issues on BSD: http://bugs.cherokee-project.com/537
+    
+ cherokee/main.c    |   10 +++++-----
+ cherokee/shm.c     |    4 ++--
+ cherokee/spawner.c |    2 +-
+ 3 files changed, 8 insertions(+), 8 deletions(-)
+
+2010-12-25  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6006 git=c0c6efeeb0d298a3b2244180a7f6ead3a7ee15b0
+
+    Typo
+    
+ doc/other_goodies.txt |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+
+2010-12-23  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6005 git=7515fb886805945b77dd84d6257187ba024c6987
+
+    Removes a bunch of deprecated files
+    
+ .../osx/Cherokee-admin.app/Contents/Info.plist     |   24 --
+ packages/osx/Cherokee-admin.app/Contents/MacOS/run |    3 -
+ packages/osx/Cherokee-admin.app/Contents/PkgInfo   |    1 -
+ .../Contents/Resources/cherokee_icon.icns          |  Bin 190084 -> 0 bytes
+ packages/osx/License.rtf                           |  346 --------------------
+ packages/osx/Makefile.am                           |   11 -
+ packages/osx/background.tiff.gz                    |  Bin 30390 -> 0 bytes
+ packages/osx/build.py                              |  130 --------
+ packages/osx/cherokee_icon.icns                    |  Bin 190084 -> 0 bytes
+ packages/osx/utils.py                              |   75 -----
+ 10 files changed, 0 insertions(+), 590 deletions(-)
+
+2010-12-22  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6003 git=584fe1cc98f56ccc9aa2fbc394d05f8877cf0409
+
+    Adds a new --with-cgiroot parameter to the configure script. It allows
+    to define the path to the CGI root directory. This patch also adds
+    some logic to use MacOS X's paths by default in case a Darwin based OS
+    is detected.
+    
+ Makefile.am              |    6 +++---
+ cherokee.conf.sample.pre |    2 +-
+ configure.in             |   24 +++++++++++++++++++++++-
+ 3 files changed, 27 insertions(+), 5 deletions(-)
+
+
+2010-12-22  Antonio Perez  <aperez@skarcha.com>
+            svn=6002 git=438652926f5ea1895a11328ea34a561d9394ebcb
+
+    Typo
+    
+ qa/029-Post+Without-lenght.py |   14 --------------
+ qa/029-Post+Without-length.py |   14 ++++++++++++++
+ qa/Makefile.am                |    2 +-
+ 3 files changed, 15 insertions(+), 15 deletions(-)
+
+2010-12-22  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6001 git=83c9a61436dc87a727b064308438f43a282c6dba
+
+    Delays the launch of the execution thread as much as possible.
+    
+ admin/market/CommandProgress.py |   14 ++++++++------
+ 1 files changed, 8 insertions(+), 6 deletions(-)
+
+
+2010-12-22  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6000 git=0d038b6d530b265500f724f4778cc64b365b9284
+
+    Adds php-fpm detection and testing.
+    
+ configure.in |   58 +++++++++++++++++++++++++++++++---------------------------
+ 1 files changed, 31 insertions(+), 27 deletions(-)
+
+2010-12-22  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=5999 git=afc4a0c5cc400ee6db67d8c90e61406ed839cdd4
+
+    Improves how keep-alive connections are handled. In case the of
+    HTTP/1.0 responses, it adds an extra "max" property of the Keep-alive
+    header. In case of HTTP/1.1 responses, it simply omits the whole
+    header entry unless the connection has to be closed, in which case it
+    adds a "Connection: close" header entry. It is Related to bug #1088:
+    http://bugs.cherokee-project.com/1088
+    
+ cherokee/connection.c |   11 ++++++++---
+ cherokee/server.c     |    2 +-
+ cherokee/thread.c     |    2 +-
+ 3 files changed, 10 insertions(+), 5 deletions(-)
+
+
+2010-12-22  Taher Shihadeh  <taher@unixwars.com>
+            svn=5998 git=a0a811d8e036de74b411e77719c53267d2fe4176
+
+    Document was missing from index
+    
+ doc/index.txt |    1 +
+ 1 files changed, 1 insertions(+), 0 deletions(-)
+
+
+2010-12-22  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=5997 git=3ea27a04432e58efc4632ec4df9d26bda8c3e132
+
+    Improves how the values are read from the configuration tree. It
+    ensures that there is actually a value to read before accessing the
+    memory where it's supposed to be placed. It should fix bug #1073:
+    http://bugs.cherokee-project.com/1073
+    
+ cherokee/config_node.c    |   16 ++++++++++++++++
+ cherokee/regex.c          |    2 +-
+ cherokee/server.c         |    4 ++--
+ cherokee/virtual_server.c |    7 +++++--
+ 4 files changed, 24 insertions(+), 5 deletions(-)
+
+2010-12-22  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=5996 git=849cd7c69dcd8e2f20b0fe56750c054f5c45bc3b
+
+    Fixes cherokee-tweak's authentication mechanism. Bug #1045:
+    http://bugs.cherokee-project.com/1045
+    
+ cherokee/cherokee-tweak |   32 ++++++++++++++++++++------------
+ 1 files changed, 20 insertions(+), 12 deletions(-)
+
+
+2010-12-22  Taher Shihadeh  <taher@unixwars.com>
+            svn=5995 git=e6f1a35a73fee090eda507b82eeb89d1ed800c4e
+
+    Removes a spurious pixel
+    
+ themes/default/logo.png |  Bin 13646 -> 23409 bytes
+ 1 files changed, 0 insertions(+), 0 deletions(-)
+
+
+2010-12-22  Taher Shihadeh  <taher@unixwars.com>
+            svn=5994 git=651ba3614869e95140e9f3f6b836c7b7e65868dc
+
+    Icon would appear broken if unset
+    
+ admin/Icons.py |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+
+2010-12-22  Taher Shihadeh  <taher@unixwars.com>
+            svn=5993 git=d37f6e134bfc940e6d2bb371e027867703e96a15
+
+    Logo wasn't transparent
+    
+ themes/default/logo.png |  Bin 23619 -> 13646 bytes
+ 1 files changed, 0 insertions(+), 0 deletions(-)
+
+
+2010-12-22  Taher Shihadeh  <taher@unixwars.com>
+            svn=5992 git=6a071a844d597b6905988120e82b99b4040282d5
+
+    Stage jump was not being performed correctly
+    
+ admin/market/Install.py |    4 ++--
+ 1 files changed, 2 insertions(+), 2 deletions(-)
+
+
+2010-12-22  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=5991 git=1679f0889fcdca47a15eca545f1a31a8ee3bdb89
+
+    Fixes an event handling issue
+    
+ admin/market/Install.py |    4 ++--
+ 1 files changed, 2 insertions(+), 2 deletions(-)
+
+
+2010-12-21  Jonathan Hernandez  <ion@suavizado.com>
+            svn=5987 git=4c6a3a3cacce8a45310ac2892806e9fb43b6d4d6
+
+    Space for template variables
+    
+ admin/static/css/cherokee-admin.css |   16 ++++++++++++++++
+ 1 files changed, 16 insertions(+), 0 deletions(-)
+
+
+2010-12-21  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=5986 git=4c30776c7190d505c6ccc47e824cf6dee35a60d1
+
+    The list of macros allowed by the 'Custom' logger was far too large to
+    be displayed as a plain comment string. This patch relocates it inside
+    a table that can be shown and hidden.
+    
+ admin/PageVServer.py |   40 ++++++++++++++++++++++++++++++++++++++--
+ 1 files changed, 38 insertions(+), 2 deletions(-)
+
+
+2010-12-21  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=5984 git=ef359aa63e63f700c93c8de9d79e5a873753f23b
+
+    Adds a support for a new 'http_cookie' macro in the Custom logger.
+    Thanks to Cheta Sarva for submitting the patch to RFE #914:
+    http://bugs.cherokee-project.com/914
+    
+ cherokee/logger_custom.c |   26 ++++++++++++++++++++++++++
+ 1 files changed, 26 insertions(+), 0 deletions(-)
+
+
+2010-12-21  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=5983 git=14d0e7cb1b5dc0c5ab39fbea4d718ce53ec403a5
+
+    Fixes a file descriptor leak in the CGI handler. Three file fds could
+    be leaked in the forked process where the CGI was executed. Since the
+    leak was no incremental over the time, it isn't such a big deal.
+    
+ cherokee/handler_cgi.c |    5 ++++-
+ 1 files changed, 4 insertions(+), 1 deletions(-)
+
+
+2010-12-21  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=5982 git=28d4c4bda66a491576fa76434be05a9bef253481
+
+    Fixes a regression introduced a few hours ago.
+    
+ cherokee/server.c |    8 ++++----
+ 1 files changed, 4 insertions(+), 4 deletions(-)
+
+
+2010-12-21  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=5981 git=304d2a8454cdc4fcbe4725e00ac66170e07375eb
+
+    Replaces a call to getpwuid() by one to cherokee_getpwuid().
+    
+ cherokee/server.c |    8 +++++---
+ 1 files changed, 5 insertions(+), 3 deletions(-)
+
+
+2010-12-21  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=5980 git=01c89fdf38552292a3aa2fbc145f30d714dd1be3
+
+    Clean up: Replaces some custom code by a call to  cherokee_getpwnam_uid().
+    
+ cherokee/source_interpreter.c |   15 +++------------
+ 1 files changed, 3 insertions(+), 12 deletions(-)
+
+
+2010-12-21  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=5979 git=9687a72253326b6d20c7010e0eb709e11641c875
+
+    Adds a new cherokee_getpwnam_uid() function. It calls
+    cherokee_getpwnam() or cherokee_getpwuid() depending on whether the
+    input string is a number (UID).
+    
+ cherokee/util.c |   27 +++++++++++++++++++++++++++
+ cherokee/util.h |    1 +
+ 2 files changed, 28 insertions(+), 0 deletions(-)
+
+
+2010-12-20  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=5978 git=7536b281f1dd07d64c128b4ab357821e1b51a1fb
+
+    Adds support for OpenBSD in the SystemStats widgets. Thanks a million
+    to Fernando Quintero for such a great work! It fixes bug number 1084:
+    http://bugs.cherokee-project.com/1084
+    
+ admin/SystemStats.py |  115 ++++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 files changed, 115 insertions(+), 0 deletions(-)
+
+
+2010-12-20  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=5977 git=32efd7803f482e0e9a3826c5da54b45bbe02b0f1
+
+    If the 'user' property of an information source is a number, try to
+    use it an UID rather than as a regular user name.
+    
+ cherokee/source_interpreter.c |   13 +++++++++++--
+ 1 files changed, 11 insertions(+), 2 deletions(-)
+
+
+2010-12-20  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=5976 git=aed57eefa5c61c777a38276ef3aeb4d262986fcb
+
+    Implements cherokee_getpwuid(). A safe and fairly portable version of
+    the getpwuid() function.
+    
+ cherokee/util.c |  171 ++++++++++++++++++++++++++++++++++++++++---------------
+ cherokee/util.h |    1 +
+ 2 files changed, 126 insertions(+), 46 deletions(-)
+
+
+2010-12-20  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=5975 git=b9ab4147503a900a5ddaeadbfb5b8c5015de3188
+
+    Adds MacPorts command suggestion
+    
+ admin/market/Util.py |    4 ++++
+ 1 files changed, 4 insertions(+), 0 deletions(-)
+
+
+2010-12-20  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=5974 git=e13c7d75339aeb1f2081cbf467ea8b90d6c71fda
+
+    Adds MacPorts detection
+    
+ admin/SystemInfo.py |   10 ++++++++++
+ 1 files changed, 10 insertions(+), 0 deletions(-)
+
+2010-12-20  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=5973 git=33c36c7486ca2428381fff2706cd343242788e8a
+
+    MacOS X package: WIP
+    
+ .../osx/Cherokee-admin.app/Contents/Info.plist     |   24 +++++
+ packages/osx/Cherokee-admin.app/Contents/MacOS/run |    3 +
+ packages/osx/Cherokee-admin.app/Contents/PkgInfo   |    1 +
+ .../Contents/Resources/cherokee_icon.icns          |  Bin 0 -> 190084 bytes
+ packages/osx/Info.plist.in                         |    3 +
+ packages/osx/build.py                              |  107 +++++++++++++-------
+ packages/osx/utils.py                              |    2 +
+ 7 files changed, 103 insertions(+), 37 deletions(-)
+
+
+2010-12-18  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=5972 git=2963ec608695bc694bebfd0ca30c20c0e6fd8402
+
+    Adds 128, 256 and 512 pixel icons, plus an icns icon file for MacOS X.
+    
+ admin/icons/Makefile.am                     |    3 +++
+ admin/icons/cherokee-admin-launcher-128.png |  Bin 0 -> 12012 bytes
+ admin/icons/cherokee-admin-launcher-256.png |  Bin 0 -> 27116 bytes
+ admin/icons/cherokee-admin-launcher-512.png |  Bin 0 -> 60685 bytes
+ packages/osx/Makefile.am                    |    3 ++-
+ packages/osx/cherokee_icon.icns             |  Bin 0 -> 190084 bytes
+ 6 files changed, 5 insertions(+), 1 deletions(-)
+
+
+2010-12-17  Taher Shihadeh  <taher@unixwars.com>
+            svn=5971 git=65ec31a228df84414e0395c6ad178fe240fd4ef7
+
+    Covers corner case for PHP-FPM initialization
+    
+ admin/wizards/php.py |   16 ++++++++++++++++
+ 1 files changed, 16 insertions(+), 0 deletions(-)
+
+
+2010-12-17  Taher Shihadeh  <taher@unixwars.com>
+            svn=5970 git=adff72011560950ff5de30c5f7cbcc4bdea22bea
+
+    Cleanup
+    
+ admin/wizards/php.py |    1 -
+ 1 files changed, 0 insertions(+), 1 deletions(-)
+
+
+2010-12-17  Taher Shihadeh  <taher@unixwars.com>
+            svn=5969 git=c5716dc6e825ddc50f2f1fc7b08b318ffd5dd2d9
+
+    Effective PHP UID detection wasn't thorough enough
+    
+ admin/wizards/php.py |   14 ++++++++++----
+ 1 files changed, 10 insertions(+), 4 deletions(-)
+
+
+2010-12-17  Taher Shihadeh  <taher@unixwars.com>
+            svn=5968 git=2e3f6bc2896c8c97ae3b361c5c0d4c343965df86
+
+    Remote information sources should hide environment variables. Also adds a missing validation.
+    
+ admin/PageSource.py |    8 ++++++--
+ 1 files changed, 6 insertions(+), 2 deletions(-)
+
+
+2010-12-17  Taher Shihadeh  <taher@unixwars.com>
+            svn=5967 git=2d2fa3a9029f0389c7694633a8d920ebfe3c0fb5
+
+    cfg_source_find_interpreter would raise an exception if a configuration entry was not present. This was making the php wizard to fail in some corner cases
+    
+ admin/util.py |    4 ++--
+ 1 files changed, 2 insertions(+), 2 deletions(-)
+
+2010-12-17  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=5966 git=97405ee64d2daf482b614ddaaac7a76c71998047
+
+    Do no configure cherokee-admin-launcher to use a GTK+ based program
+    unless we are certain X Window is running. The system could have the
+    GTK+-based binary in place even if it runs in text mode.
+    
+ cherokee/cherokee-admin-launcher |    3 ++-
+ 1 files changed, 2 insertions(+), 1 deletions(-)
+
+
+2010-12-17  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=5965 git=b6d94f6904796c7ecd0a2fcff3388297e452cad1
+
+    Bugfix (and some clean up): Do not use the -A parameter of sudo if a
+    'ask password' client has not been configured previously.
+    
+ cherokee/cherokee-admin-launcher |   77 ++++++++++++++++++++-----------------
+ 1 files changed, 42 insertions(+), 35 deletions(-)
+
+
+2010-12-17  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=5964 git=4eb8c8d4263fe98f75dd330d6a92bc4493f9add8
+
+    Since the internal bin_in_path() function is called a lot, a cache was
+    a good thing to implement.
+    
+ cherokee/cherokee-admin-launcher |   11 +++++++++++
+ 1 files changed, 11 insertions(+), 0 deletions(-)
+
+
+2010-12-16  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=5963 git=f1647d342d7de073bff342abb11e4397a95d9b63
+
+    cherokee-admin-launcher now tries to run cherokee-admin as root. For
+    doing so, it has to ask for the root password if it isn't run by it.
+    The current implementation has been tested on MacOS X. It also adds
+    partial support for GTK+ based tools on Linux/*BSD/Solaris. We ought
+    to add support for its QT/KDE equivalents as well.
+    
+ cherokee/Makefile.am             |    1 +
+ cherokee/cherokee-admin-launcher |   68 +++++++++++++++++++++++++++++++++----
+ cherokee/cherokee-macos-askpass  |   35 +++++++++++++++++++
+ 3 files changed, 96 insertions(+), 8 deletions(-)
+
+2010-12-16  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=5962 git=9803276d3f6106b894cd9028975ffdbd04de307a
+
+    The CommandProgress widget is customizable now. The keys defined on
+    the object are evaluated and replaced in the different commands right
+    before they are executed. Values can be either strings or callables.
+    
+ admin/market/CommandProgress.py |   63 +++++++++++++++++++++++++++------------
+ 1 files changed, 44 insertions(+), 19 deletions(-)
+
+
+2010-12-16  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=5961 git=220e1eca00a9d03c0df4db08ed0ee49458d7a693
+
+    Ensure cherokee-admin runs as root before proceeding with an
+    installation.
+    
+ admin/market/Install.py |   19 +++++++++++++++++++
+ 1 files changed, 19 insertions(+), 0 deletions(-)
+
+
+2010-12-16  Taher Shihadeh  <taher@unixwars.com>
+            svn=5960 git=ab58f69099eaf51e7d51990771b3110da2865d90
+
+    Input fields were slightly misaligned
+    
+ admin/static/css/cherokee-admin.css |    1 +
+ 1 files changed, 1 insertions(+), 0 deletions(-)
+
+
+2010-12-16  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=5959 git=b489121f7c3f2a2270f3cc47c68ef6d66a74c3ef
+
+    The layout of the directory tree changed.
+    
+ admin/market/Install.py |    4 ++--
+ 1 files changed, 2 insertions(+), 2 deletions(-)
+
+
+2010-12-16  Taher Shihadeh  <taher@unixwars.com>
+            svn=5958 git=fbf68159ed894308f5390f29fc7a1523d567b7f2
+
+    Ports a bugfix for yesterday's code
+    
+ admin/market/InstallUtil.py |    9 ---------
+ admin/wizards/php.py        |    8 +++++---
+ 2 files changed, 5 insertions(+), 12 deletions(-)
+
+
+2010-12-16  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=5957 git=1a580f0dae758fa5b1533100a6197ed3badc56fb
+
+    The 'Unable to raise file descriptor limit to _____' error message is
+    too common for showing a back-trace with it. This patch suppresses it.
+    
+ cherokee/error_list.py |    5 +++--
+ 1 files changed, 3 insertions(+), 2 deletions(-)
+
+
+2010-12-16  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=5956 git=18af679fc6656a1de527c9dbff8224040f539fcd
+
+    PHP Wizard: The php-fpm.conf file was not being parsed alright. Some
+    values were not being parsed because of an issue with the internal
+    regular expressions.
+    
+ admin/wizards/php.py |   12 ++++++------
+ 1 files changed, 6 insertions(+), 6 deletions(-)
+
+
+2010-12-16  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=5955 git=cfa6b343dea129feb6bdca04788ca4ba23639d18
+
+    Improves how errors are reported when the PHP wizard does not find a
+    suitable configuration file for php-fpm. By default, when PHP-FPM is
+    installed, it copies a 'php-fpm.conf.default' file that *the* *user*
+    must copy/rename by hand to 'php-fpm.conf', otherwise php-fpm will
+    refuse to start and Cherokee will fail to locate the .config file.
+    
+ admin/wizards/php.py |   11 ++++++++---
+ 1 files changed, 8 insertions(+), 3 deletions(-)
+
+
+2010-12-15  Jonathan Hernandez  <ion@suavizado.com>
+            svn=5954 git=dbc81108d06949313659c1708e5e20b2e0c16770
+
+    Remove extra pixel
+    
+ admin/static/css/cherokee-admin.css            |    2 +-
+ admin/static/images/featured-list-bg.png       |  Bin 2895 -> 2912 bytes
+ admin/static/images/featured-list-selected.png |  Bin 314 -> 332 bytes
+ 3 files changed, 1 insertions(+), 1 deletions(-)
+
+
+2010-12-15  Jonathan Hernandez  <ion@suavizado.com>
+            svn=5953 git=39828e5283fea9766c9fb5dc7353cca9e9119f6c
+
+    Maintenance dialog
+    
+ admin/static/css/cherokee-admin.css |   15 +++++++++------
+ 1 files changed, 9 insertions(+), 6 deletions(-)
+
+
+2010-12-15  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=5952 git=e317c5586fe00be15b9f252e5ee3b2dcdb7132aa
+
+    Adds icons for cherokee-admin-launcher.
+    
+ admin/Makefile.am                          |    2 +-
+ admin/icons/Makefile.am                    |   12 +
+ admin/icons/cherokee-admin-launcher-16.png |  Bin 0 -> 860 bytes
+ admin/icons/cherokee-admin-launcher-32.png |  Bin 0 -> 2065 bytes
+ admin/icons/cherokee-admin-launcher-48.png |  Bin 0 -> 3557 bytes
+ admin/icons/cherokee-admin-launcher-96.png |  Bin 0 -> 8575 bytes
+ admin/icons/cherokee-admin-launcher.svg    |  846 ++++++++++++++++++++++++++++
+ configure.in                               |    1 +
+ 8 files changed, 860 insertions(+), 1 deletions(-)
+
+2010-12-15  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=5951 git=45065df667a03aa0b169e54ae7b3ca9f8df54053
+
+    The server failed to launch some applications when its virtual server
+    did not either log the messages in a file, or sent them to stderr. The
+    problem was most visible with RoR apps. Hopefully, this hacky patch
+    fixes the problem.
+    
+ cherokee/main.c               |    7 +++++++
+ cherokee/source_interpreter.c |   11 +++++++++--
+ 2 files changed, 16 insertions(+), 2 deletions(-)
+
+
+2010-12-15  Taher Shihadeh  <taher@unixwars.com>
+            svn=5950 git=2f1d75e49d1288a84752738fed4abf5491028d80
+
+    Adds some extra utility functions needed for installations
+    
+ admin/market/InstallUtil.py |   24 ++++++++++++++++++++++++
+ admin/wizards/php.py        |   34 ++++++++++++++++++++++++++++++++++
+ 2 files changed, 58 insertions(+), 0 deletions(-)
+
+
+2010-12-15  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=5947 git=685b1c32f0ad334d79f9d07765b50995b3077b73
+
+    Bugfix: The maintenance clean-up could fail while removing more than
+    one application.
+    
+ admin/market/Maintenance.py |    6 ++++--
+ 1 files changed, 4 insertions(+), 2 deletions(-)
+
+
+2010-12-15  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=5945 git=b92f90f2c8e08fd7e445a7da053d41e96bc0e5d8
+
+    Shortens the application status description
+    
+ admin/market/Maintenance.py |    4 ++--
+ 1 files changed, 2 insertions(+), 2 deletions(-)
+
+
+2010-12-15  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=5944 git=633f0db1ca22a441edf64170986b8fdbff67cd9b
+
+    Clean up: Reindents a few comments
+    
+ cherokee/logger_writer.c |   14 +++++++-------
+ 1 files changed, 7 insertions(+), 7 deletions(-)
+
+
+2010-12-15  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=5943 git=f96b6d50118d13327b580654c8db98d1b88a9857
+
+    Flush the output after a warning/error is written
+    
+ cherokee/macros.h |   30 ++++++++++++++++++------------
+ 1 files changed, 18 insertions(+), 12 deletions(-)
+
+2010-12-15  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=5942 git=d4db87de5986435049e78a59594fb5280b896bc1
+
+    Cherokee 1.0.14 released
+    
+ configure.in |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
 2010-12-13  Alvaro Lopez Ortega  <alvaro@octality.com>
             svn=5940 git=a5f44330a2bf0b5ce91f69b2097fa2f69ac2e67d
 

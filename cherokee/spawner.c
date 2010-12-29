@@ -60,7 +60,7 @@ cherokee_spawner_init (void)
 	CHEROKEE_MUTEX_INIT (&spawning_mutex, CHEROKEE_MUTEX_FAST);
 
 	/* Shared memory */
-	cherokee_buffer_add_va (&name, "/cherokee-spawner-%d", getppid());
+	cherokee_buffer_add_va (&name, TMPDIR "/cherokee-spawner-%d", getppid());
 
 	ret = cherokee_shm_init (&cherokee_spawn_shared);
 	if (ret != ret_ok) {
@@ -84,7 +84,7 @@ cherokee_spawner_init (void)
 	return ret_ok;
 
 error:
-	LOG_ERRNO (errno, cherokee_err_error, CHEROKEE_ERROR_SPAWNER_SHM_INIT, name.buf);
+	LOG_ERRNO (errno, cherokee_err_warning, CHEROKEE_ERROR_SPAWNER_TMP_INIT, name.buf);
 	cherokee_buffer_mrproper (&name);
 	return ret_error;
 #else

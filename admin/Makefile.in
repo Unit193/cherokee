@@ -96,7 +96,7 @@ AM_RECURSIVE_TARGETS = $(RECURSIVE_TARGETS:-recursive=) \
 	distdir
 ETAGS = etags
 CTAGS = ctags
-DIST_SUBDIRS = market plugins wizards CTK static
+DIST_SUBDIRS = market plugins wizards CTK icons static
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 am__relativize = \
   dir0=`pwd`; \
@@ -134,6 +134,7 @@ AWK = @AWK@
 CC = @CC@
 CCDEPMODE = @CCDEPMODE@
 CFLAGS = @CFLAGS@
+CGI_ROOT = @CGI_ROOT@
 CHEROKEE_AGE = @CHEROKEE_AGE@
 CHEROKEE_CURRENT = @CHEROKEE_CURRENT@
 CHEROKEE_REVISION = @CHEROKEE_REVISION@
@@ -281,7 +282,7 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-SUBDIRS = market plugins wizards CTK $(am__append_1)
+SUBDIRS = market plugins wizards CTK icons $(am__append_1)
 SUFFIXES = .py.pre .py
 PY_PRE = \
 configured.py.pre
@@ -336,7 +337,8 @@ adminpy_SCRIPTS = $(admin_scripts)
 @INSTALL_ADMIN_TRUE@consts.py \
 @INSTALL_ADMIN_TRUE@util.py \
 @INSTALL_ADMIN_TRUE@popen.py \
-@INSTALL_ADMIN_TRUE@validations.py
+@INSTALL_ADMIN_TRUE@validations.py \
+@INSTALL_ADMIN_TRUE@SavingChecks.py
 
 @INSTALL_ADMIN_TRUE@html_data = \
 @INSTALL_ADMIN_TRUE@exception.html \

@@ -439,6 +439,7 @@ img.icon_chooser_selected {
 .login-box-form { padding-top: 1px; }
 .login-box-logged-in { padding-top: 6px; }
 #login-dialog .button { margin-top: 14px; }
+#login-dialog input[type="text"], #login-dialog input[type="password"] { width: 256px; }
 
 
 #bottom-box { padding: 8px 0; margin: 8px 16px; }
@@ -607,7 +608,7 @@ img.icon_chooser_selected {
   background: transparent url(/CTK/images/loader.gif) no-repeat center center;
   margin: 0 8px 16px 16px;
   border: 1px solid #cde;
-  height: 240px;
+  height: 239px;
 }
 
 .market-featured-box-content {
@@ -1242,15 +1243,18 @@ img.icon_chooser_selected {
 #halt-admin-box a { color: #b5c8db; font-size: 90%; }
 #halt-admin-box a:hover { color: #c00; }
 
-#market_maintenance_box {
- background: #fff2b3 url(/CTK/images/dialog-warning.png) 4px 4px no-repeat;
- -moz-border-radius: 4px; -webkit-border-radius: 4px;
- border: 1px solid #b90;
- padding: 1em 1em 1em 40px;
- margin: 1em 0;
+#market_maintenance {
+  margin-top: 16px;
 }
-#market_maintenance_box h3 {
- color: #000;
+
+#market_maintenance_box {
+ background: transparent url(/CTK/images/dialog-warning.png) 4px 4px no-repeat;
+ padding: 1em 1em 1em 40px;
+ margin: 0;
+}
+#market_maintenance_box a {
+ float: right;
+ margin-top: 8px;
 }
 #maintenance-removal { overflow: auto; overflow-x: hidden; height: 260px; }
 #maintenance-removal-list { table-layout: fixed; width: 100%; border-collapse: collapse; border: 1px solid #cde; }{}
@@ -1300,3 +1304,19 @@ img.icon_chooser_selected {
 }
 
 .balancer-sources-sortable td, .balancer-sources-sortable th { width: 500px;  height: 24px; }
+
+.vserver_content .comment {
+  width: 100%;
+}
+.vserver_content .collapsible {
+  float: right;
+}
+.vserver_content .collapsible-content {
+  float: left;
+  width: 640px;
+  display: block;
+}
+
+.custom-logger-macros {
+}
+.custom-logger-macros td { padding: 4px 8px 4px 2px; }

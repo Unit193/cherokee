@@ -24,10 +24,12 @@
 #
 
 import re
+import os
 import CTK
 import Wizard
 import validations
 import popen
+import market
 
 from util import *
 
@@ -223,6 +225,26 @@ def figure_php_information():
         settings[key] = val
 
     return settings
+
+
+def figure_php_user (pre_vsrv):
+    """Determine PHP user/group accounting for config file, source UID, and server UID"""
+
+    server_user  = CTK.cfg.get_val ('server!user',  str(os.getuid()))
+    server_group = CTK.cfg.get_val ('server!group', str(os.getgid()))
+    php_info     = get_info (pre_vsrv)
+    interpreter  = CTK.cfg.get_val ('%s!interpreter' %(php_info['source']), '')
+
+    if 'fpm' in interpreter:
+        fpm_conf  = _figure_fpm_settings()
+        php_user  = fpm_conf.get('user',  server_user)
+        php_group = fpm_conf.get('group', server_group)
+    else:
+        php_user  = CTK.cfg.get_val ('%s!user'  %(php_info['source']), server_user)
+        php_group = CTK.cfg.get_val ('%s!group' %(php_info['source']), server_group)
+
+    return  {'php_user':  php_user,
+             'php_group': php_group}
 
 
 #
@@ -452,16 +474,21 @@ def __figure_std_settings():
 
 
 def __figure_fpm_settings():
+    fpm_info = {}
+
     # Find config file
     paths = []
     for p in FPM_ETC_PATHS:
         paths.append (p)
         paths.append ('%s-*' %(p))
 
-    fpm_info = {}
-
     # For each configuration file
-    for conf_file in path_eval_exist (paths):
+    suitable_confs = path_eval_exist (paths)
+    if not suitable_confs:
+        return {}
+
+    # Read the configuration files
+    for conf_file in suitable_confs:
         # Read
         try:
             content = open (conf_file, 'r').read()
@@ -474,7 +501,7 @@ def __figure_fpm_settings():
             if tmp:
                 fpm_info['listen'] = tmp[0]
             else:
-                tmp = re.findall (r'^listen = (.*)', content)
+                tmp = re.findall (r'^listen *= *(.+)$', content, re.M)
                 if tmp:
                     fpm_info['listen']  = tmp[0]
 
@@ -484,7 +511,7 @@ def __figure_fpm_settings():
             if tmp:
                 fpm_info['timeout'] = tmp[0]
             else:
-                tmp = re.findall (r'^request_terminate_timeout[ ]*=[ ]*(\d*)s*', content)
+                tmp = re.findall (r'^request_terminate_timeout *= *(\d*)s*', content, re.M)
                 if tmp:
                     fpm_info['timeout'] = tmp[0]
 
@@ -492,6 +519,26 @@ def __figure_fpm_settings():
         if not fpm_info.get('conf_file'):
             if '.conf' in conf_file:
                 fpm_info['conf_file'] = conf_file
+
+        # User
+        if not fpm_info.get('user'):
+            tmp = re.findall (r'<value name="user">(.*?)</value>', content)
+            if tmp:
+                fpm_info['user'] = tmp[0]
+            else:
+                tmp = re.findall (r'^user *= *(.*)$', content, re.M)
+                if tmp:
+                    fpm_info['user'] = tmp[0]
+
+        # Group
+        if not fpm_info.get('group'):
+            tmp = re.findall (r'<value name="group">(.*?)</value>', content)
+            if tmp:
+                fpm_info['group'] = tmp[0]
+            else:
+                tmp = re.findall (r'^group *= *(.*)$', content, re.M)
+                if tmp:
+                    fpm_info['group'] = tmp[0]
 
     # Set last minute defaults
     if not fpm_info.get('timeout'):
@@ -537,7 +584,7 @@ def __source_add_fpm (php_path):
     if not fpm_info:
         raise Exception (_('Could not determine PHP-fpm settings.'))
 
-    host      = fpm_info['listen']
+    listen    = fpm_info['listen']
     conf_file = fpm_info['conf_file']
 
     # Add Source
@@ -545,8 +592,23 @@ def __source_add_fpm (php_path):
 
     CTK.cfg['%s!nick'        %(next)] = 'PHP Interpreter'
     CTK.cfg['%s!type'        %(next)] = 'interpreter'
-    CTK.cfg['%s!host'        %(next)] = host
+    CTK.cfg['%s!host'        %(next)] = listen
     CTK.cfg['%s!interpreter' %(next)] = '%(php_path)s --fpm-config %(conf_file)s' %(locals())
+
+    # In case FPM has specific UID/GID and differs from Cherokee's,
+    # the interpreter must by spawned by root.
+    #
+    server_user  = CTK.cfg.get_val ('server!user',  str(os.getuid()))
+    server_group = CTK.cfg.get_val ('server!group', str(os.getgid()))
+
+    root_user    = market.InstallUtil.get_installation_UID()
+    root_group   = market.InstallUtil.get_installation_GID()
+    php_user     = fpm_info.get('user',  server_user)
+    php_group    = fpm_info.get('group', server_group)
+
+    if php_user != server_user or php_group != server_group:
+        CTK.cfg['%s!user'  %(next)] = root_user
+        CTK.cfg['%s!group' %(next)] = root_group
 
     return next
 

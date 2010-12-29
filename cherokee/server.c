@@ -843,11 +843,13 @@ cherokee_server_initialize (cherokee_server_t *srv)
 	int              re;
 	ret_t            ret;
 	cherokee_list_t *i, *tmp;
-	struct passwd   *ent      = NULL;
+	struct passwd    ent;
+	char             ent_tmp[1024];
+
 
 	/* Build the server string
 	 */
-	cherokee_buffer_add_va (&srv->timeout_header, "Keep-Alive: timeout=%d"CRLF, srv->timeout);
+	cherokee_buffer_add_va (&srv->timeout_header, "Keep-Alive: timeout=%d", srv->timeout);
 
 	/* Set the FD number limit
 	 */
@@ -966,8 +968,8 @@ cherokee_server_initialize (cherokee_server_t *srv)
 	if ((srv->user != srv->user_orig) ||
 	    (srv->group != srv->group_orig))
 	{
-		ent = getpwuid (srv->user);
-		if (ent == NULL) {
+		ret = cherokee_getpwuid (srv->user, &ent, ent_tmp, sizeof(ent_tmp));
+		if (ret != ret_ok) {
 			LOG_CRITICAL (CHEROKEE_ERROR_SERVER_UID_GET, srv->user);
 			return ret_error;
 		}
@@ -1004,7 +1006,7 @@ cherokee_server_initialize (cherokee_server_t *srv)
 	if ((srv->user != srv->user_orig) ||
 	    (srv->group != srv->group_orig))
 	{
-		ret = change_execution_user (srv, ent);
+		ret = change_execution_user (srv, &ent);
 		if (ret != ret_ok) {
 			return ret;
 		}
@@ -1590,9 +1592,9 @@ configure_server (cherokee_server_t *srv)
 	/* IO-cache
 	 */
 	TRACE (ENTRIES, "Configuring %s\n", "iocache");
-	cherokee_config_node_read_bool (&srv->config, "server!iocache", &srv->iocache_enabled);
+	ret = cherokee_config_node_read_bool (&srv->config, "server!iocache", &srv->iocache_enabled);
 
-	if (srv->iocache_enabled) {
+	if ((ret == ret_ok) && (srv->iocache_enabled)) {
 		ret = cherokee_iocache_new (&srv->iocache);
 		if (ret != ret_ok)
 			return ret;
