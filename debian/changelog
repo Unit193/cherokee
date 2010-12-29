@@ -1,3 +1,9 @@
+cherokee (1.0.15-1) experimental; urgency=low
+
+  * New Upstream Version
+
+ -- Leonel Nunez <leonel@enelserver.com>  Wed, 29 Dec 2010 12:56:09 -0700
+
 cherokee (1.0.14-2) experimental; urgency=low
 
   * Forgot excluding files in cherokee-admin from libcherokee-server0;
