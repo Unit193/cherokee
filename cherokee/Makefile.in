@@ -1167,6 +1167,7 @@ AWK = @AWK@
 CC = @CC@
 CCDEPMODE = @CCDEPMODE@
 CFLAGS = @CFLAGS@
+CGI_ROOT = @CGI_ROOT@
 CHEROKEE_AGE = @CHEROKEE_AGE@
 CHEROKEE_CURRENT = @CHEROKEE_CURRENT@
 CHEROKEE_REVISION = @CHEROKEE_REVISION@
@@ -1325,6 +1326,7 @@ $(PTHREAD_CFLAGS)
 bin_SCRIPTS = \
 cherokee-panic \
 cherokee-tweak \
+cherokee-macos-askpass \
 cherokee-admin-launcher
 
 

@@ -23,6 +23,7 @@
 #
 
 import os
+import re
 import sys
 import SystemInfo
 
@@ -61,3 +62,17 @@ def current_UID_is_admin():
     # Other cases (such Solaris) may vary. By the moment, let's assume
     # 'root' is the only one who is admin.
     return os.getuid() == 0
+
+#
+# Macro replacement
+#
+
+def replacement_cmd (command, replacement_dict):
+    assert type(replacement_dict) == dict
+    assert type(command) == str
+
+    macros = re.findall ('\${(.*?)}', command)
+    for macro in macros:
+        command = command.replace('${%s}'%(macro), replacement_dict.get(macro, '${%s}'%(macro)))
+
+    return command

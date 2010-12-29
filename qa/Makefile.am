@@ -34,7 +34,7 @@ run-tests.py \
 026-Host-Broken-Dot.py \
 027-Missing-File.py \
 028-Missing-File+Param.py \
-029-Post+Without-lenght.py \
+029-Post+Without-length.py \
 030-Post+urlencoded.py \
 031-Post+urlencoded2.py \
 032-DirIndex+Redir.py \
@@ -194,7 +194,7 @@ run-tests.py \
 186-SSI-droot.py \
 187-Method.py \
 188-Method2.py \
-189-Redir9.py \
+189-Redir12.py \
 190-RuleExists4.py \
 191-RuleExists5.py \
 192-RedirDocumentRoot.py \

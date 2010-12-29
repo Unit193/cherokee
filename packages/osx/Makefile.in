@@ -66,6 +66,7 @@ AWK = @AWK@
 CC = @CC@
 CCDEPMODE = @CCDEPMODE@
 CFLAGS = @CFLAGS@
+CGI_ROOT = @CGI_ROOT@
 CHEROKEE_AGE = @CHEROKEE_AGE@
 CHEROKEE_CURRENT = @CHEROKEE_CURRENT@
 CHEROKEE_REVISION = @CHEROKEE_REVISION@
@@ -145,10 +146,7 @@ PATH_SEPARATOR = @PATH_SEPARATOR@
 PHPCGI = @PHPCGI@
 PTHREAD_CFLAGS = @PTHREAD_CFLAGS@
 PTHREAD_LIBS = @PTHREAD_LIBS@
-PYTHON = \
-utils.py              \
-build.py
-
+PYTHON = @PYTHON@
 RANLIB = @RANLIB@
 RT_LIBS = @RT_LIBS@
 SED = @SED@
@@ -216,13 +214,7 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-BINARIES = \
-License.rtf           \
-background.tiff.gz
-
 EXTRA_DIST = \
-$(PYTHON)             \
-$(BINARIES)           \
 Info.plist            \
 Info.plist.in         \
 Description.plist     \

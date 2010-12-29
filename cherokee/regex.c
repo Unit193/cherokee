@@ -139,9 +139,9 @@ configure_rewrite_entry (cherokee_list_t        *list,
 			 cherokee_regex_table_t *regexs)
 {
 	ret_t                   ret;
-	cint_t                  hidden;
 	cherokee_regex_entry_t *n;
 	cherokee_buffer_t      *substring;
+	cint_t                  hidden     = 1;
 	pcre                   *re         = NULL;
 	cherokee_buffer_t      *regex      = NULL;
 
@@ -222,7 +222,8 @@ cherokee_regex_substitute (cherokee_buffer_t *regex_str,
 			   cherokee_buffer_t *source,
 			   cherokee_buffer_t *target,
 			   cint_t             ovector[],
-			   cint_t             stringcount)
+			   cint_t             stringcount,
+			   char               dollar_char)
 {
 	cint_t              re;
 	char               *s;
@@ -232,25 +233,33 @@ cherokee_regex_substitute (cherokee_buffer_t *regex_str,
 
 	for (s = regex_str->buf; *s != '\0'; s++) {
 		if (! dollar) {
-			if (*s == '$')
+			if (*s == dollar_char)
 				dollar = true;
 			else
 				cherokee_buffer_add_char (target, *s);
 			continue;
 		}
 
-		num = *s - '0';
-
-		/* Add the characters if it wasn't a number */
-		if ((num < 0) || (num > 9)) {
-			cherokee_buffer_add_str  (target, "$");
+		/* Convert the $<num>. Limit 99.
+		 */
+		if ((*s >= '0') && (*s <= '9')) {
+			num = *s - '0';
+			if ((s[1] >= '0') && (s[1] <= '9')) {
+				s++;
+				num = (num * 10) + (*s - '0');
+			}
+		} else {
+			/* Add the characters if it wasn't a number
+			 */
+			cherokee_buffer_add_char (target, dollar_char);
 			cherokee_buffer_add_char (target, *s);
 
 			dollar = false;
 			continue;
 		}
 
-		/* Perform the actually substitution */
+		/* Perform the actually substitution
+		 */
 		substring = NULL;
 
 		re = pcre_get_substring (source->buf, ovector, stringcount, num, &substring);

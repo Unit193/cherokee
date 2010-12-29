@@ -42,6 +42,7 @@ admin/PageStatus.py
 admin/PageVServer.py
 admin/PageVServers.py
 admin/Rule.py
+admin/SavingChecks.py
 admin/SystemStatsWidgets.py
 admin/Wizard.py
 admin/XMLServerDigest.py
