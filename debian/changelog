@@ -1,8 +1,12 @@
 cherokee (1.0.15-1) experimental; urgency=low
 
+  [ Leonel Nunez ]
   * New Upstream Version
 
- -- Leonel Nunez <leonel@enelserver.com>  Wed, 29 Dec 2010 12:56:09 -0700
+  [ Gunnar Wolf ]
+  * Ship the missing /admin/static/help_404.html (Closes: #609002)
+
+ -- Gunnar Wolf <gwolf@debian.org>  Wed, 05 Jan 2011 21:48:39 -0600
 
 cherokee (1.0.14-2) experimental; urgency=low
 
