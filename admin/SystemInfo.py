@@ -86,9 +86,9 @@ def build_info():
     # Users and Groups
     if os.access ('/etc/group', os.R_OK):
         group = open('/etc/group', 'r').read()
-        if re.match (r'^root:', group, re.MULTILINE):
+        if re.findall (r'^root:', group, re.MULTILINE):
             info['group_root'] = 'root'
-        elif re.match (r'^wheel:', group, re.MULTILINE):
+        elif re.findall (r'^wheel:', group, re.MULTILINE):
             info['group_root'] = 'wheel'
 
     if not info.get ('group_root'):
@@ -116,9 +116,10 @@ def _figure_linux_info (info):
 
 def _figure_macos_info (info):
     port_bin = util.path_find_binary ("port", ['/opt/local/bin'])
-    info['macports']     = bool(port_bin)
-    info['macports_bin'] = port_bin
-
+    info['macports']      = bool(port_bin)
+    info['macports_bin']  = port_bin
+    if port_bin:
+        info['macports_path'] = '/'.join (port_bin.split('/')[:-1])
 
 if __name__ == '__main__':
     import pprint
