@@ -72,8 +72,11 @@ class Replacement_Commons (Replacement_Dict):
         root_group = InstallUtil.get_installation_GID()
 
         # Server user (www-data, server, nobody, etc)
+        groups = os.getgroups()
+        groups.sort()
+
         server_user  = CTK.cfg.get_val ('server!user',  str(os.getuid()))
-        server_group = CTK.cfg.get_val ('server!group', str(os.getgid()))
+        server_group = CTK.cfg.get_val ('server!group', str(groups[0]))
 
         # Directories
         app_root = CTK.cfg.get_val ('tmp!market!install!root')
@@ -100,7 +103,9 @@ class CommandProgress (CTK.Box, Replacement_Commons):
                 command_entry = command_progress.commands [command_progress.executed]
 
             # Title
-            if command_entry.has_key('command'):
+            if command_entry.has_key('description'):
+                title = CTK.escape_html (command_entry['description'])
+            elif command_entry.has_key('command'):
                 title = CTK.escape_html (command_entry['command'])
             elif command_entry.has_key('function'):
                 title = CTK.escape_html (command_entry['function'].__name__)
@@ -114,7 +119,7 @@ class CommandProgress (CTK.Box, Replacement_Commons):
 
                 if ret['command']:
                     title_error = CTK.escape_html (ret['command'])
-                elif command_entry.has_key('function'):
+                elif command_entry.has_key ('function'):
                     title_error = CTK.escape_html (command_entry['function'].__name__)
                 else:
                     title_error = _("Unknown Error")
@@ -143,7 +148,14 @@ class CommandProgress (CTK.Box, Replacement_Commons):
                 self += CTK.RawHTML (js = CTK.DruidContent__JS_to_goto (command_progress.id, command_progress.finished_url))
 
     def Render (self):
+        # Add replacement keys to the log
+        for k in self.keys:
+            Install_Log.log ("  ${%s} -> '%s'" %(k, self.keys[k]))
+
+        # Start thread
         self.thread.start()
+
+        # Render
         return CTK.Box.Render (self)
 
     def __init__ (self, commands, finished_url):
@@ -205,7 +217,7 @@ class CommandExec_Thread (threading.Thread):
 
         if command_entry.get ('check_ret', True):
             if ret['retcode'] != 0:
-                self._report_error (command, env, ret)
+                self._report_error (command, env, cd, ret)
                 return True
 
     def _run_function (self, command_entry):
@@ -229,11 +241,17 @@ class CommandExec_Thread (threading.Thread):
                 self._report_error (function.__name__, params, ret)
                 return True
 
-    def _report_error (self, command, env, ret_exec):
+    def _report_error (self, command, env, cd, ret_exec):
         print "="*40
         if env:
             for k in env:
-                print "%s=%s \\"%(k, env[k])
+                print "%s='%s' \\"%(k, env[k].replace("'","\\'"))
+        print "-"*40
+        if cd:
+            print cd
+        else:
+            print os.getcwd()
+        print "-"*40
         print command
         print "-"*40
         print ret_exec.get('stdout','')

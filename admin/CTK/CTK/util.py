@@ -107,21 +107,56 @@ def json_dump (obj):
 #
 # Unicode, UTF-8
 #
-def to_utf8(s):
+def to_utf8 (s, input_encoding='utf-8'):
+    """Converts all the string entries of an structure to UTF-8. It
+    supposes default system encoding to be UTF-8, so basically it
+    converts Unicode to UTF-8 only"""
+
     if type(s) == types.StringType:
-        return s
+        if input_encoding == 'utf-8':
+            return s
+        return unicode (s, input_encoding).encode('utf-8')
     elif type(s) == types.UnicodeType:
         return s.encode('utf-8')
     elif type(s) == types.ListType:
         return [to_utf8(x) for x in s]
     elif type(s) == types.TupleType:
         return tuple([to_utf8(x) for x in s])
+    elif type(s) == types.NoneType:
+        return s
     elif type(s) == types.DictType:
         for k in s.keys():
+            if type(k) in (types.StringType, types.UnicodeType):
+                k = to_utf8(k)
             s[k] = to_utf8(s[k])
         return s
 
-    return str(s)
+    return s
+
+
+def to_unicode (s, input_encoding='utf-8'):
+    """Converts all the string entries of an structure to Unicode. It
+    supposes default system encoding to be UTF-8."""
+
+    if type(s) == types.UnicodeType:
+        return s
+    elif type(s) == types.StringType:
+        return unicode (s, input_encoding)
+    elif type(s) == types.ListType:
+        return [to_unicode(x) for x in s]
+    elif type(s) == types.TupleType:
+        return tuple([to_unicode(x) for x in s])
+    elif type(s) == types.NoneType:
+        return s
+    elif type(s) == types.DictType:
+        for k in s.keys():
+            if type(k) in (types.StringType, types.UnicodeType):
+                k = to_unicode(k)
+            s[k] = to_unicode(s[k])
+        return s
+
+    return s
+
 
 #
 # Debug

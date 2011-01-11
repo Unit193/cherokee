@@ -52,6 +52,20 @@ auth       required   pam_unix.so nullok
 auth       required   pam_env.so
 session    required   pam_unix.so</tt></pre>
 </div></div>
+<div class="paragraph"><p>Bare in mind that Cherokee needs to be able to read <tt>/etc/shadow</tt> in
+order to perform PAM authentication. If you are not successful setting
+up this validator, check your logs for clarification about the
+authentication failures you might be experiencing. The solution to
+this particular problem is adding the user under which Cherokee is
+running to the shadow-group and restarting cherokee. This is easily
+achievable. For instance, assuming Cherokee is running as <tt>www-data</tt>
+on a Debian based Linux distribution, this can be done with the
+following command.</p></div>
+<div class="listingblock">
+<div class="title">Adding Cherokee user to shadow group on Debian</div>
+<div class="content">
+<pre><tt>sudo adduser www-data shadow</tt></pre>
+</div></div>
 </div>
 <div id="footer">
 <div id="footer-text">

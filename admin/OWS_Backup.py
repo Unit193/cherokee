@@ -82,7 +82,8 @@ class Apply:
 
             try:
                 xmlrpc = XMLServerDigest.XmlRpcServer (OWS_BACKUP, OWS_Login.login_user, OWS_Login.login_password)
-                ret    = xmlrpc.upload (config, comment)
+                ret    = xmlrpc.upload (CTK.util.to_unicode(config),
+                                        CTK.util.to_unicode(comment))
             except socket.error, (value, message):
                 CTK.cfg['tmp!backup!save!type']  = 'socket'
                 CTK.cfg['tmp!backup!save!error'] = message

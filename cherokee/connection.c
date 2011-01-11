@@ -481,10 +481,11 @@ cherokee_connection_setup_error_handler (cherokee_connection_t *conn)
 			conn->error_code = http_ok;
 			conn->phase = phase_setup_connection;
 
-			TRACE(ENTRIES, "Error handler not set. Re-evaluating. Phase is 'setup_connection', respins=%d  now.\n", conn->respins);
+			TRACE(ENTRIES, "Internal redir. Switching to phase 'setup_connection', respins=%d, request=%s\n", conn->respins, conn->request.buf);
 			goto clean;
 
 		default:
+			TRACE(ENTRIES, "Could not set the error handler. Relying on %s\n", "the default error handler");
 			break;
 		}
 	}
@@ -505,7 +506,7 @@ out:
 		const char *name = NULL;
 
 		cherokee_module_get_name (MODULE(conn->handler), &name);
-		TRACE(ENTRIES, "New handler %s\n", name);
+		TRACE(ENTRIES, "New handler '%s'\n", name ? name : "unknown");
 	}
 #endif
 

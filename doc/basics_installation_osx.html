@@ -15,9 +15,9 @@
 <h2 id="_a_href_index_html_index_a_8594_a_href_basics_html_getting_started_a_8594_a_href_basics_installation_html_installation_a"><a href="index.html">Index</a> &#8594; <a href="basics.html">Getting started</a> &#8594; <a href="basics_installation.html">Installation</a></h2>
 <div class="sectionbody">
 </div>
-<h2 id="_installation_on_osx">Installation on OSX</h2>
+<h2 id="_installation_on_macos_x">Installation on MacOS X</h2>
 <div class="sectionbody">
-<div class="paragraph"><p>Installation on OSX is pretty much the same as in any other Unix
+<div class="paragraph"><p>Installation on MacOS X is pretty much the same as in any other Unix
 platform. If you do not find a prepackaged version that suits your
 needs, you can always download and compile your own.</p></div>
 <h3 id="quickstart">Quickstart</h3><div style="clear:left"></div>
@@ -33,9 +33,8 @@ Configure the package for your system:
 </p>
 <div class="listingblock">
 <div class="content">
-<pre><tt>./configure --prefix=/usr/local                         \
-            --with-wwwroot=/Library/WebServer/Documents \
-            --with-wwwuser=www                          \
+<pre><tt>./configure --prefix=/usr/local  \
+            --with-wwwuser=www   \
             --with-wwwgroup=www</tt></pre>
 </div></div>
 </li>
@@ -61,7 +60,7 @@ Install the programs and any data files:
 <p>
 Start <a href="other_bundle_cherokee-admin.html">cherokee-admin</a>
 </p>
-<div class="paragraph"><p>Alternatively, you can follow the <a href="#autostart">Autostart</a>
+<div class="paragraph"><p>Additionally, you can follow the <a href="#autostart">Autostart</a>
 instructions to load the web server at boot time.</p></div>
 </li>
 </ol></div>
@@ -82,13 +81,6 @@ sudo launchctl load -w /System/Library/LaunchDaemons/org.cherokee.webserver.plis
 a look at it, particularly if you are a developer. Some of the most
 used parameters are listed on the
 link_basics_installation_unix.html[Unix instructions].</p></div>
-<h3 id="dmg">Building a DMG</h3><div style="clear:left"></div>
-<div class="paragraph"><p>If you want to create a DMG package you can use the provided build
-script. It is available under the <tt>packages/osx</tt> directory.</p></div>
-<div class="listingblock">
-<div class="content">
-<pre><tt>packages/osx/build.py</tt></pre>
-</div></div>
 </div>
 <div id="footer">
 <div id="footer-text">
