@@ -1,7 +1,0 @@
-/usr/sbin/cherokee-worker	/usr/sbin
-/usr/sbin/cherokee		/usr/sbin
-/usr/bin/cherokee-panic		/usr/share/cherokee
-/var/www/index.html		/usr/share/cherokee/default-site
-/var/www/cherokee-images/*	/usr/share/cherokee/default-site/cherokee-images
-/usr/share/locale/*		/usr/share/locale
-/etc/*				/etc
