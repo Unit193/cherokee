@@ -1,3 +1,9 @@
+cherokee (1.0.8-5) unstable; urgency=low
+
+  * Ship the missing /admin/static/help_404.html (Closes: #609002)
+
+ -- Gunnar Wolf <gwolf@debian.org>  Tue, 11 Jan 2011 20:10:06 -0600
+
 cherokee (1.0.8-4) unstable; urgency=low
 
   * Added a missing bit to the problem fixed at 1.0.8-3, by request of
