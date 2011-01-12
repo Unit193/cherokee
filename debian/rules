@@ -61,10 +61,6 @@ override_dh_install:
 	# Include our nice "Powered by Debian" logo alongside
 	# Cherokee's own
 	install -m 0644 $(CURDIR)/debian/powered_by_debian.png $(CURDIR)/debian/cherokee/usr/share/cherokee/default-site/cherokee-images/powered_by_debian.png
-	# I am reporting upstream the lack of the installed
-	# /admin/static/help_404.html - Meanwhile, this shall do.
-	[ -f $(BUILD_DIR)/admin/static/help_404.html ] || \
-		install -m 0644 $(CURDIR)/admin/static/help_404.html $(CURDIR)/debian/cherokee-admin/usr/share/cherokee/admin/static/help_404.html
 
 override_dh_auto_configure:
 	dh_auto_configure -- --host=$(DEB_HOST_GNU_TYPE)         \
