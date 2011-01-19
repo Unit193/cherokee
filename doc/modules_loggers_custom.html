@@ -61,7 +61,7 @@ cellspacing="0" cellpadding="4">
 <tr>
 <td align="left" valign="top"><p class="table"><tt>${query_string}</tt></p></td>
 <td align="left" valign="top"><p class="table">?bar=foo</p></td>
-<td align="left" valign="top"><p class="table">"The query string, if exists"</p></td>
+<td align="left" valign="top"><p class="table">The query string, if exists</p></td>
 </tr>
 <tr>
 <td align="left" valign="top"><p class="table"><tt>${request}</tt></p></td>
@@ -71,7 +71,7 @@ cellspacing="0" cellpadding="4">
 <tr>
 <td align="left" valign="top"><p class="table"><tt>${request_first_line}</tt></p></td>
 <td align="left" valign="top"><p class="table">GET / HTTP/1.0</p></td>
-<td align="left" valign="top"><p class="table">First line of request</p></td>
+<td align="left" valign="top"><p class="table">First line of HTTP request</p></td>
 </tr>
 <tr>
 <td align="left" valign="top"><p class="table"><tt>${request_original}</tt></p></td>
@@ -86,7 +86,7 @@ cellspacing="0" cellpadding="4">
 <tr>
 <td align="left" valign="top"><p class="table"><tt>${status}</tt></p></td>
 <td align="left" valign="top"><p class="table">200</p></td>
-<td align="left" valign="top"><p class="table">Status of the request</p></td>
+<td align="left" valign="top"><p class="table">Response status code</p></td>
 </tr>
 <tr>
 <td align="left" valign="top"><p class="table"><tt>${now}</tt></p></td>
@@ -122,6 +122,26 @@ cellspacing="0" cellpadding="4">
 <td align="left" valign="top"><p class="table"><tt>${vserver_name_req}</tt></p></td>
 <td align="left" valign="top"><p class="table">example.com</p></td>
 <td align="left" valign="top"><p class="table">Requested host (Host: header)</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><tt>${http_host}</tt></p></td>
+<td align="left" valign="top"><p class="table">example.com</p></td>
+<td align="left" valign="top"><p class="table">"Host:" header of the request</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><tt>${http_referrer}</tt></p></td>
+<td align="left" valign="top"><p class="table">example.com/page</p></td>
+<td align="left" valign="top"><p class="table">"Referrer:" header of the request</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><tt>${http_user_agent}</tt></p></td>
+<td align="left" valign="top"><p class="table">Mozilla/1.0.0</p></td>
+<td align="left" valign="top"><p class="table">"User-Agent:" header of the request</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><tt>${http_cokkie}</tt></p></td>
+<td align="left" valign="top"><p class="table">key=val</p></td>
+<td align="left" valign="top"><p class="table">"Cookie:" header of the request</p></td>
 </tr>
 </tbody>
 </table>

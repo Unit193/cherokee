@@ -7,7 +7,7 @@
 # Authors:
 #      Alvaro Lopez Ortega <alvaro@alobbs.com>
 #
-# Copyright (C) 2001-2010 Alvaro Lopez Ortega
+# Copyright (C) 2001-2011 Alvaro Lopez Ortega
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of version 2 of the GNU General Public
@@ -28,6 +28,7 @@
 import os
 import sys
 import stat
+import socket
 import signal
 import thread
 
@@ -72,7 +73,8 @@ def init (scgi_port, cfg_file):
 
     # Init CTK
     if scgi_port.isdigit():
-        CTK.init (port=int(scgi_port))
+        localhost_ip = socket.getaddrinfo('localhost', None)[0][4][0]
+        CTK.init (host=localhost_ip, port=int(scgi_port))
 
     else:
         # Remove the unix socket if it already exists

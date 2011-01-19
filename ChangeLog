@@ -1,3 +1,671 @@
+2011-01-19  Antonio Perez  <aperez@skarcha.com>
+            svn=6139 git=1bdcd809cd315bfcd780d3cb14c2c2c35007b953
+
+    Cherokee-admin SGCI server must listen to localhost only.
+    
+ admin/server.py |    4 +++-
+ 1 files changed, 3 insertions(+), 1 deletions(-)
+
+
+2011-01-18  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6137 git=62ee960e9e08789728d10ab4c6651968d1af78bb
+
+    Paths should not have trailing slashes. They can cause trouble.
+    
+ admin/validations.py |    6 ++++++
+ 1 files changed, 6 insertions(+), 0 deletions(-)
+
+
+2011-01-18  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6136 git=a627ae97435e553b3b8a22d99daebb86fc2f02a9
+
+    Use the ChangeLog file to figure out the repository release number
+    whenever the source directory does not contain a repository info.
+    
+ configure.in |    9 +++++----
+ 1 files changed, 5 insertions(+), 4 deletions(-)
+
+
+2011-01-18  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6135 git=edb0070fe8b8b6f602ad523737da7f259a7676ce
+
+    $srcdir may have neither .svn, nor .git directories.
+    
+ changelog-update.sh |    5 ++++-
+ 1 files changed, 4 insertions(+), 1 deletions(-)
+
+
+2011-01-18  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6134 git=b9619342cdc27ff0eeb3ff97ff1a69cb03d7cc9b
+
+    Fixes a regression introduced a few days ago. The ChangeLog was not
+    built correctly when using SVN.
+    
+ svnlog2changelog.py |    4 ++--
+ 1 files changed, 2 insertions(+), 2 deletions(-)
+
+
+2011-01-18  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6125 git=1112f6df4e6ee62c9b8b58f5045c42e524404dcf
+
+    Yesterday's patch for taking care of the trailing parameters did in
+    fact break the parameter parsing. This patch seems to fix the issue.
+    Thanks to Stefan de Konink for the notice!
+    
+ cherokee/main_admin.c  |   10 +++++++---
+ cherokee/main_worker.c |   10 +++++++---
+ 2 files changed, 14 insertions(+), 6 deletions(-)
+
+
+2011-01-17  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6123 git=1e7b061a1150a55f5de877f1194c2c55d81b1cc7
+
+    cherokee-admin-launcher tries to figure out a LD_LIBRARY_PATH whenever
+    the libcherokee libraries can not be found in the library path. Even
+    though it is not necessary in the bast majority of the cases, it may
+    come handy to people who install cherokee under /opt/cherokee or who
+    doesn't have /usr/local in the path.
+    
+ cherokee/cherokee-admin-launcher |   42 ++++++++++++++++++++++++++++++++++---
+ 1 files changed, 38 insertions(+), 4 deletions(-)
+
+
+2011-01-17  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6122 git=8d4290182595f3142775c506952376da9cdee93e
+
+    Updates comment
+    
+ cherokee/main_worker.c |    4 +++-
+ 1 files changed, 3 insertions(+), 1 deletions(-)
+
+
+2011-01-17  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6121 git=0ca4c5e3e707f70e4afc93c3bea4e9e332a51008
+
+    Improves the argument processing to ensure every parameter is parsed.
+    It was a fairly common mistake to execute 'cherokee /path/to/config'
+    instead of 'cherokee -C /path/to/config' and error was produced.
+    
+ cherokee/main_admin.c  |    7 ++++++-
+ cherokee/main_worker.c |    6 ++++++
+ 2 files changed, 12 insertions(+), 1 deletions(-)
+
+
+2011-01-17  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6120 git=724ea060838e01a02a70882ec45c39a6a4a9f6bb
+
+    Fixes a runtime exception.
+    
+ admin/market/CommandProgress.py |    4 ++--
+ 1 files changed, 2 insertions(+), 2 deletions(-)
+
+
+2011-01-16  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6119 git=7bdefccec31a0d07da253e11001f33bc4b5ad6ee
+
+    Adds a paragraph to clarify how custom environment variables can be
+    defined.  Thanks to Dale Liszka for the patch!
+    
+ doc/cookbook_php.txt |    3 +++
+ 1 files changed, 3 insertions(+), 0 deletions(-)
+
+
+2011-01-15  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6118 git=34c2b9e6f6a026caf7c1d430d10caa8717ee31fb
+
+    cherokee-admin-launcher launches a new browser whenever a signal
+    SIGHUP is received.
+    
+ cherokee/cherokee-admin-launcher |    6 ++++++
+ 1 files changed, 6 insertions(+), 0 deletions(-)
+
+
+2011-01-15  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6117 git=19a2508db0756f1ba028b70e497445a9a55869a9
+
+    Updates Custom logger documentation
+    
+ admin/PageVServer.py           |   42 ++++++++++++++++++++--------------------
+ doc/modules_loggers_custom.txt |   10 ++++++--
+ 2 files changed, 28 insertions(+), 24 deletions(-)
+
+
+2011-01-15  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6116 git=1b22d74ed944abfee74a4ba73078e926a6064f4d
+
+    Fixes a couple of minor issues with the log file paths validation.
+    
+ admin/PageAdvanced.py |    2 +-
+ admin/PageVServer.py  |    4 +++-
+ admin/validations.py  |    9 +++++++++
+ 3 files changed, 13 insertions(+), 2 deletions(-)
+
+
+2011-01-15  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6115 git=6f0d2fa2773f097a887724a5cfaaa92b3738bcd1
+
+    Fixes a event management issue that caused the 'New Virtual Server'
+    dialog to keep its previous values whenever a second virtual server
+    was created.
+    
+ admin/PageVServers.py |   10 +++++++---
+ 1 files changed, 7 insertions(+), 3 deletions(-)
+
+
+2011-01-15  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6114 git=fa37f6593e2f7a1466cbc6415debeaee0ad22bb6
+
+    Fixes an usability issue. Whenever a value was updated in the right
+    panel, the SelectionPanel flickered and removed the filter content.
+    
+ admin/SelectionPanel.py           |    2 +-
+ admin/static/js/SelectionPanel.js |    7 +++++++
+ 2 files changed, 8 insertions(+), 1 deletions(-)
+
+
+2011-01-14  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6112 git=0669883dddce42c140151858a832f575f8957b50
+
+    Happy new year!
+    
+ admin/About.py                  |    4 ++--
+ admin/Cherokee.py               |    2 +-
+ admin/Graph.py                  |    2 +-
+ admin/Icons.py                  |    2 +-
+ admin/Mime.py                   |    2 +-
+ admin/Page.py                   |    2 +-
+ admin/PageAdvanced.py           |    2 +-
+ admin/PageEntry.py              |    2 +-
+ admin/PageException.py          |    2 +-
+ admin/PageGeneral.py            |    2 +-
+ admin/PageIndex.py              |    2 +-
+ admin/PageNewConfig.py          |    2 +-
+ admin/PageRule.py               |    2 +-
+ admin/PageSources.py            |    2 +-
+ admin/PageStatus.py             |    2 +-
+ admin/PageVServer.py            |    2 +-
+ admin/PageVServers.py           |    2 +-
+ admin/SaveButton.py             |    2 +-
+ admin/SavingChecks.py           |    2 +-
+ admin/SystemInfo.py             |    2 +-
+ admin/SystemStats.py            |    2 +-
+ admin/SystemStatsWidgets.py     |    2 +-
+ admin/consts.py                 |    2 +-
+ admin/market/CommandProgress.py |    2 +-
+ admin/market/Install.py         |    2 +-
+ admin/market/InstallUtil.py     |    2 +-
+ admin/market/Install_Log.py     |    2 +-
+ admin/market/Library.py         |    2 +-
+ admin/market/Maintenance.py     |    2 +-
+ admin/market/Menu.py            |    2 +-
+ admin/market/PageApp.py         |    2 +-
+ admin/market/PageCategory.py    |    2 +-
+ admin/market/PageIndex.py       |    2 +-
+ admin/market/PageSearch.py      |    2 +-
+ admin/market/Review.py          |    2 +-
+ admin/market/Util.py            |    2 +-
+ admin/market/__init__.py        |    2 +-
+ admin/market/ows_consts.py      |    2 +-
+ admin/popen.py                  |    2 +-
+ admin/server.py                 |    2 +-
+ admin/upgrade_config.py         |    2 +-
+ admin/util.py                   |    2 +-
+ cget/main.c                     |    4 ++--
+ cget/proxy.c                    |    2 +-
+ cget/proxy.h                    |    2 +-
+ cherokee/access.c               |    2 +-
+ cherokee/access.h               |    2 +-
+ cherokee/admin_request.c        |    2 +-
+ cherokee/admin_request.h        |    2 +-
+ cherokee/admin_server.c         |    2 +-
+ cherokee/admin_server.h         |    2 +-
+ cherokee/avl.c                  |    2 +-
+ cherokee/avl.h                  |    2 +-
+ cherokee/avl_r.c                |    2 +-
+ cherokee/avl_r.h                |    2 +-
+ cherokee/balancer.c             |    2 +-
+ cherokee/balancer.h             |    2 +-
+ cherokee/balancer_failover.c    |    2 +-
+ cherokee/balancer_failover.h    |    2 +-
+ cherokee/balancer_ip_hash.c     |    2 +-
+ cherokee/balancer_ip_hash.h     |    2 +-
+ cherokee/balancer_round_robin.c |    2 +-
+ cherokee/balancer_round_robin.h |    2 +-
+ cherokee/bind.c                 |    2 +-
+ cherokee/bind.h                 |    2 +-
+ cherokee/bogotime.c             |    2 +-
+ cherokee/bogotime.h             |    2 +-
+ cherokee/buffer.c               |    2 +-
+ cherokee/buffer.h               |    2 +-
+ cherokee/cache.c                |    2 +-
+ cherokee/cache.h                |    2 +-
+ cherokee/cacheline.c            |    2 +-
+ cherokee/cacheline.h            |    2 +-
+ cherokee/cherokee.h             |    2 +-
+ cherokee/cherokee_show.c        |    2 +-
+ cherokee/collector.c            |    2 +-
+ cherokee/collector.h            |    2 +-
+ cherokee/collector_rrd.c        |    2 +-
+ cherokee/collector_rrd.h        |    2 +-
+ cherokee/common-internal.h      |    2 +-
+ cherokee/common.h               |    2 +-
+ cherokee/config_entry.c         |    2 +-
+ cherokee/config_entry.h         |    2 +-
+ cherokee/config_node.c          |    2 +-
+ cherokee/config_node.h          |    2 +-
+ cherokee/config_reader.c        |    2 +-
+ cherokee/config_reader.h        |    2 +-
+ cherokee/connection-protected.h |    2 +-
+ cherokee/connection.c           |    2 +-
+ cherokee/connection.h           |    2 +-
+ cherokee/connection_info.c      |    2 +-
+ cherokee/connection_info.h      |    2 +-
+ cherokee/cryptor.c              |    2 +-
+ cherokee/cryptor.h              |    2 +-
+ cherokee/cryptor_libssl.c       |    2 +-
+ cherokee/cryptor_libssl.h       |    2 +-
+ cherokee/downloader-protected.h |    2 +-
+ cherokee/downloader.c           |    2 +-
+ cherokee/downloader.h           |    2 +-
+ cherokee/downloader_async.c     |    2 +-
+ cherokee/downloader_async.h     |    2 +-
+ cherokee/dtm.c                  |    2 +-
+ cherokee/dtm.h                  |    2 +-
+ cherokee/dwriter.c              |    2 +-
+ cherokee/dwriter.h              |    2 +-
+ cherokee/encoder.c              |    2 +-
+ cherokee/encoder.h              |    2 +-
+ cherokee/encoder_deflate.c      |    2 +-
+ cherokee/encoder_deflate.h      |    2 +-
+ cherokee/encoder_gzip.c         |    2 +-
+ cherokee/encoder_gzip.h         |    2 +-
+ cherokee/error_log.c            |    2 +-
+ cherokee/error_log.h            |    2 +-
+ cherokee/fdpoll-epoll.c         |    2 +-
+ cherokee/fdpoll-kqueue.c        |    2 +-
+ cherokee/fdpoll-poll.c          |    2 +-
+ cherokee/fdpoll-port.c          |    2 +-
+ cherokee/fdpoll-protected.h     |    2 +-
+ cherokee/fdpoll-select.c        |    2 +-
+ cherokee/fdpoll-win32.c         |    2 +-
+ cherokee/fdpoll.c               |    2 +-
+ cherokee/fdpoll.h               |    2 +-
+ cherokee/gen_evhost.c           |    2 +-
+ cherokee/gen_evhost.h           |    2 +-
+ cherokee/handler.c              |    2 +-
+ cherokee/handler.h              |    2 +-
+ cherokee/handler_admin.c        |    2 +-
+ cherokee/handler_admin.h        |    2 +-
+ cherokee/handler_cgi.c          |    2 +-
+ cherokee/handler_cgi.h          |    2 +-
+ cherokee/handler_cgi_base.c     |    2 +-
+ cherokee/handler_cgi_base.h     |    2 +-
+ cherokee/handler_common.c       |    2 +-
+ cherokee/handler_common.h       |    2 +-
+ cherokee/handler_custom_error.c |    2 +-
+ cherokee/handler_custom_error.h |    2 +-
+ cherokee/handler_dbslayer.c     |    2 +-
+ cherokee/handler_dbslayer.h     |    2 +-
+ cherokee/handler_dirlist.c      |    2 +-
+ cherokee/handler_dirlist.h      |    2 +-
+ cherokee/handler_empty_gif.c    |    2 +-
+ cherokee/handler_empty_gif.h    |    2 +-
+ cherokee/handler_error.c        |    2 +-
+ cherokee/handler_error.h        |    2 +-
+ cherokee/handler_error_nn.c     |    2 +-
+ cherokee/handler_error_nn.h     |    2 +-
+ cherokee/handler_error_redir.c  |    2 +-
+ cherokee/handler_error_redir.h  |    2 +-
+ cherokee/handler_fcgi.c         |    2 +-
+ cherokee/handler_fcgi.h         |    2 +-
+ cherokee/handler_file.c         |    2 +-
+ cherokee/handler_file.h         |    2 +-
+ cherokee/handler_post_report.c  |    2 +-
+ cherokee/handler_post_report.h  |    2 +-
+ cherokee/handler_proxy.c        |    2 +-
+ cherokee/handler_proxy.h        |    2 +-
+ cherokee/handler_redir.c        |    2 +-
+ cherokee/handler_redir.h        |    2 +-
+ cherokee/handler_render_rrd.c   |    2 +-
+ cherokee/handler_render_rrd.h   |    2 +-
+ cherokee/handler_scgi.c         |    2 +-
+ cherokee/handler_scgi.h         |    2 +-
+ cherokee/handler_secdownload.c  |    2 +-
+ cherokee/handler_secdownload.h  |    2 +-
+ cherokee/handler_server_info.c  |    2 +-
+ cherokee/handler_server_info.h  |    2 +-
+ cherokee/handler_ssi.c          |    2 +-
+ cherokee/handler_ssi.h          |    2 +-
+ cherokee/handler_streaming.c    |    2 +-
+ cherokee/handler_streaming.h    |    2 +-
+ cherokee/handler_uwsgi.c        |    2 +-
+ cherokee/handler_uwsgi.h        |    2 +-
+ cherokee/header-protected.h     |    2 +-
+ cherokee/header.c               |    2 +-
+ cherokee/header.h               |    2 +-
+ cherokee/header_op.c            |    2 +-
+ cherokee/header_op.h            |    2 +-
+ cherokee/http.c                 |    2 +-
+ cherokee/http.h                 |    2 +-
+ cherokee/human_strcmp.c         |    2 +-
+ cherokee/human_strcmp.h         |    2 +-
+ cherokee/icons.c                |    2 +-
+ cherokee/icons.h                |    2 +-
+ cherokee/info.c                 |    2 +-
+ cherokee/info.h                 |    2 +-
+ cherokee/init.c                 |    2 +-
+ cherokee/init.h                 |    2 +-
+ cherokee/iocache.c              |    2 +-
+ cherokee/iocache.h              |    2 +-
+ cherokee/limiter.c              |    2 +-
+ cherokee/limiter.h              |    2 +-
+ cherokee/list.c                 |    2 +-
+ cherokee/list.h                 |    2 +-
+ cherokee/logger-protected.h     |    2 +-
+ cherokee/logger.c               |    2 +-
+ cherokee/logger.h               |    2 +-
+ cherokee/logger_combined.c      |    2 +-
+ cherokee/logger_combined.h      |    2 +-
+ cherokee/logger_custom.c        |    2 +-
+ cherokee/logger_custom.h        |    2 +-
+ cherokee/logger_ncsa.c          |    2 +-
+ cherokee/logger_ncsa.h          |    2 +-
+ cherokee/logger_writer.c        |    2 +-
+ cherokee/logger_writer.h        |    2 +-
+ cherokee/macros.h               |    2 +-
+ cherokee/main.c                 |    2 +-
+ cherokee/main_admin.c           |    4 ++--
+ cherokee/main_tweak.c           |    4 ++--
+ cherokee/main_worker.c          |    4 ++--
+ cherokee/match.c                |    2 +-
+ cherokee/match.h                |    2 +-
+ cherokee/md5crypt.c             |    2 +-
+ cherokee/mime-protected.h       |    2 +-
+ cherokee/mime.c                 |    2 +-
+ cherokee/mime.h                 |    2 +-
+ cherokee/mime_entry.c           |    2 +-
+ cherokee/mime_entry.h           |    2 +-
+ cherokee/module.c               |    2 +-
+ cherokee/module.h               |    2 +-
+ cherokee/ncpus.h                |    2 +-
+ cherokee/nonce.c                |    2 +-
+ cherokee/nonce.h                |    2 +-
+ cherokee/nullable.h             |    2 +-
+ cherokee/plugin.h               |    2 +-
+ cherokee/plugin_loader.c        |    2 +-
+ cherokee/plugin_loader.h        |    2 +-
+ cherokee/post.c                 |    2 +-
+ cherokee/post.h                 |    2 +-
+ cherokee/post_track.c           |    2 +-
+ cherokee/post_track.h           |    2 +-
+ cherokee/proxy_hosts.c          |    2 +-
+ cherokee/proxy_hosts.h          |    2 +-
+ cherokee/regex.c                |    2 +-
+ cherokee/regex.h                |    2 +-
+ cherokee/request.c              |    2 +-
+ cherokee/request.h              |    2 +-
+ cherokee/resolv_cache.c         |    2 +-
+ cherokee/resolv_cache.h         |    2 +-
+ cherokee/rrd_tools.c            |    2 +-
+ cherokee/rrd_tools.h            |    2 +-
+ cherokee/rule.c                 |    2 +-
+ cherokee/rule.h                 |    2 +-
+ cherokee/rule_and.c             |    2 +-
+ cherokee/rule_and.h             |    2 +-
+ cherokee/rule_bind.c            |    2 +-
+ cherokee/rule_bind.h            |    2 +-
+ cherokee/rule_default.c         |    2 +-
+ cherokee/rule_default.h         |    2 +-
+ cherokee/rule_directory.c       |    2 +-
+ cherokee/rule_directory.h       |    2 +-
+ cherokee/rule_exists.c          |    2 +-
+ cherokee/rule_exists.h          |    2 +-
+ cherokee/rule_extensions.c      |    2 +-
+ cherokee/rule_extensions.h      |    2 +-
+ cherokee/rule_from.c            |    2 +-
+ cherokee/rule_from.h            |    2 +-
+ cherokee/rule_fullpath.c        |    2 +-
+ cherokee/rule_fullpath.h        |    2 +-
+ cherokee/rule_geoip.c           |    2 +-
+ cherokee/rule_geoip.h           |    2 +-
+ cherokee/rule_header.c          |    2 +-
+ cherokee/rule_header.h          |    2 +-
+ cherokee/rule_list.c            |    2 +-
+ cherokee/rule_list.h            |    2 +-
+ cherokee/rule_method.c          |    2 +-
+ cherokee/rule_method.h          |    2 +-
+ cherokee/rule_not.c             |    2 +-
+ cherokee/rule_not.h             |    2 +-
+ cherokee/rule_or.c              |    2 +-
+ cherokee/rule_or.h              |    2 +-
+ cherokee/rule_request.c         |    2 +-
+ cherokee/rule_request.h         |    2 +-
+ cherokee/rule_tls.c             |    2 +-
+ cherokee/rule_tls.h             |    2 +-
+ cherokee/rule_url_arg.c         |    2 +-
+ cherokee/rule_url_arg.h         |    2 +-
+ cherokee/server-protected.h     |    2 +-
+ cherokee/server.c               |    2 +-
+ cherokee/server.h               |    2 +-
+ cherokee/shm.c                  |    2 +-
+ cherokee/shm.h                  |    2 +-
+ cherokee/socket.c               |    2 +-
+ cherokee/socket.h               |    2 +-
+ cherokee/source.c               |    2 +-
+ cherokee/source.h               |    2 +-
+ cherokee/source_interpreter.c   |    2 +-
+ cherokee/source_interpreter.h   |    2 +-
+ cherokee/spawner.c              |    2 +-
+ cherokee/spawner.h              |    2 +-
+ cherokee/table.c                |    2 +-
+ cherokee/table.h                |    2 +-
+ cherokee/template.c             |    2 +-
+ cherokee/template.h             |    2 +-
+ cherokee/thread.c               |    2 +-
+ cherokee/thread.h               |    2 +-
+ cherokee/threading.c            |    2 +-
+ cherokee/threading.h            |    2 +-
+ cherokee/trace.c                |    2 +-
+ cherokee/trace.h                |    2 +-
+ cherokee/unix4win32.c           |    2 +-
+ cherokee/unix4win32.h           |    2 +-
+ cherokee/url.c                  |    2 +-
+ cherokee/url.h                  |    2 +-
+ cherokee/util.c                 |    2 +-
+ cherokee/util.h                 |    2 +-
+ cherokee/validator.c            |    2 +-
+ cherokee/validator.h            |    2 +-
+ cherokee/validator_authlist.c   |    2 +-
+ cherokee/validator_authlist.h   |    2 +-
+ cherokee/validator_file.c       |    2 +-
+ cherokee/validator_file.h       |    2 +-
+ cherokee/validator_htdigest.c   |    2 +-
+ cherokee/validator_htdigest.h   |    2 +-
+ cherokee/validator_htpasswd.c   |    2 +-
+ cherokee/validator_htpasswd.h   |    2 +-
+ cherokee/validator_ldap.c       |    2 +-
+ cherokee/validator_ldap.h       |    2 +-
+ cherokee/validator_mysql.c      |    2 +-
+ cherokee/validator_mysql.h      |    2 +-
+ cherokee/validator_pam.c        |    2 +-
+ cherokee/validator_pam.h        |    2 +-
+ cherokee/validator_plain.c      |    2 +-
+ cherokee/validator_plain.h      |    2 +-
+ cherokee/version.c              |    2 +-
+ cherokee/version.h              |    2 +-
+ cherokee/virtual_server.c       |    2 +-
+ cherokee/virtual_server.h       |    2 +-
+ cherokee/vrule.c                |    2 +-
+ cherokee/vrule.h                |    2 +-
+ cherokee/vrule_or.c             |    2 +-
+ cherokee/vrule_or.h             |    2 +-
+ cherokee/vrule_rehost.c         |    2 +-
+ cherokee/vrule_rehost.h         |    2 +-
+ cherokee/vrule_target_ip.c      |    2 +-
+ cherokee/vrule_target_ip.h      |    2 +-
+ cherokee/vrule_wildcard.c       |    2 +-
+ cherokee/vrule_wildcard.h       |    2 +-
+ cherokee/win32_cherokeeserv.c   |    2 +-
+ cherokee/win32_cservice.c       |    2 +-
+ cherokee/win32_cservice.h       |    2 +-
+ cherokee/win32_misc.c           |    2 +-
+ cherokee/win32_misc.h           |    2 +-
+ cherokee/xrealip.c              |    2 +-
+ cherokee/xrealip.h              |    2 +-
+ configure.in                    |    2 +-
+ dbslayer/mysql_wrap.php         |    2 +-
+ doc/test_images.py              |    2 +-
+ qa/base.py                      |    2 +-
+ qa/run-tests.py                 |    2 +-
+ 349 files changed, 354 insertions(+), 354 deletions(-)
+
+
+2011-01-14  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6111 git=28c735766a9d72220181d5fc06203220cdc3b845
+
+    The method plug-in was not initializing its main value under some
+    circumstances: http://bugs.cherokee-project.com/1104
+    
+ admin/plugins/method.py |    8 ++++++--
+ 1 files changed, 6 insertions(+), 2 deletions(-)
+
+
+2011-01-14  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6110 git=e4120e5edd29520ebad4f19a4f3979cbca081dff
+
+    Oops! Prev. commit was not working due a typo
+    
+ admin/market/Util.py |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+
+2011-01-14  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6109 git=fe4174ef8e110f6db12f8df4aaf63977209b1193
+
+    Fresh news! SuSE uses 'zypper' nowadays.
+    
+ admin/market/Util.py |    6 +++++-
+ 1 files changed, 5 insertions(+), 1 deletions(-)
+
+
+2011-01-14  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6108 git=75bfce2bc753a6d4e63a0decee1d962c0b1dd4b1
+
+    Try to figure the desktop type when launching a browser under X Window.
+    
+ cherokee/cherokee-admin-launcher |   26 ++++++++++++++++++++------
+ 1 files changed, 20 insertions(+), 6 deletions(-)
+
+
+2011-01-14  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6107 git=b062978ed7da5998d9fb7456794e08a47643b0c8
+
+    Fixes a couple of concurrency issues.
+    
+ cherokee/cherokee-admin-launcher |   66 ++++++++++++++++++++++++++-----------
+ 1 files changed, 46 insertions(+), 20 deletions(-)
+
+
+2011-01-14  Taher Shihadeh  <taher@unixwars.com>
+            svn=6106 git=93dafcbe15e13de42563396cd44a0a87674c5be9
+
+    Elaborates on the Easy-Install section
+    
+ doc/basics_installation_easy-install.txt |   20 +++++++++++++-------
+ 1 files changed, 13 insertions(+), 7 deletions(-)
+
+
+2011-01-14  Taher Shihadeh  <taher@unixwars.com>
+            svn=6105 git=e3da6869894c40f363d365bfdfb3a48a23f6936c
+
+    Documents Easy installation
+    
+ doc/Makefile.am                          |    1 +
+ doc/basics.txt                           |    1 +
+ doc/basics_installation.txt              |    1 +
+ doc/basics_installation_easy-install.txt |   28 ++++++++++++++++++++++++++++
+ doc/index.txt                            |    1 +
+ 5 files changed, 32 insertions(+), 0 deletions(-)
+
+
+2011-01-13  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6103 git=3387a38b0c6c7b0dc1507c9ee980b6de1794f983
+
+    Fixes a minor style/usability issue
+    
+ admin/plugins/evhost.py |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+
+2011-01-13  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6102 git=4a4440d193801d2f1b94914cc62288a5af26ab4e
+
+    A few improvements to the cherokee-admin-launcher.
+    
+ cherokee/cherokee-admin-launcher |   99 ++++++++++++++++++++++++++++----------
+ 1 files changed, 73 insertions(+), 26 deletions(-)
+
+
+2011-01-13  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6101 git=cc3e90b388a58462bf114a68fa34e19efe93ea7d
+
+    Adds kde-open support, and decreases the priority of LSB's xdg-open
+    (it was causing trouble on some distributions).
+    
+ cherokee/cherokee-admin-launcher |    8 +++++---
+ 1 files changed, 5 insertions(+), 3 deletions(-)
+
+
+2011-01-13  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6097 git=fa5cf98cc6b2e811e729d236a74a0a304eaf3e2f
+
+    Cherokee was not returning the right exit code whenever the worker
+    process returned an "ok" value after having executed a one-time task
+    (such as testing the configuration file or printing the server info)
+    
+ cherokee/main.c |   10 ++++++----
+ 1 files changed, 6 insertions(+), 4 deletions(-)
+
+
+2011-01-13  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6096 git=66072eb05b8f1ac65876acf4da9350f03db032f7
+
+    Reorders the polling method entries so the follow the same order as in
+    cherokee_fdpoll_best_new(). It is easier to read in the way.
+    
+ cherokee/info.c |   22 +++++++++++-----------
+ 1 files changed, 11 insertions(+), 11 deletions(-)
+
+
+2011-01-13  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6094 git=a752fd95c2820acc5a33985efc1111bf243f2b81
+
+    Adds two new entries to the 'Server Info' handler external data
+    structure: "accepts" and "timeouts". Thanks Gavin M. Roy for the
+    patch! Implements RFE #1111: http://bugs.cherokee-project.com/1111
+    
+ cherokee/handler_server_info.c |   16 ++++++++++++++++
+ 1 files changed, 16 insertions(+), 0 deletions(-)
+
+
+2011-01-12  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6093 git=a576924e8530908ca6417a6cd41bde7d40450a0b
+
+    .dmg had no icon assigned
+    
+ cherokee.conf.sample.pre |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+
+2011-01-12  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6092 git=0998c9cc0ae34068ff6a18a263eb1688a47d95c9
+
+    Cherokee 1.0.16 released
+    
+ configure.in |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+
 2011-01-11  Alvaro Lopez Ortega  <alvaro@octality.com>
             svn=6091 git=86f6034c35a45bfa3c8e38b673ba262d36ed139c
 

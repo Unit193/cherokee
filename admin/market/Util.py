@@ -5,7 +5,7 @@
 # Authors:
 #      Alvaro Lopez Ortega <alvaro@alobbs.com>
 #
-# Copyright (C) 2001-2010 Alvaro Lopez Ortega
+# Copyright (C) 2001-2011 Alvaro Lopez Ortega
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of version 2 of the GNU General Public
@@ -169,9 +169,13 @@ class InstructionBoxBase (CTK.Box):
             return instructions[distro]
 
         # Linux distro generic
-        for x in ('red hat', 'redhat', 'fedora', 'centos', 'suse'):
+        for x in ('red hat', 'redhat', 'fedora', 'centos'):
             if x in distro:
                 return instructions.get('yum', info)
+
+        for x in ('suse',):
+            if x in distro:
+                return instructions.get('zypper', info)
 
         for x in ('debian', 'ubuntu', 'knoppix', 'mint'):
             if x in distro:

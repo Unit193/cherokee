@@ -63,8 +63,14 @@ def is_web_path (value):
         return value
     raise ValueError, _('Malformed path')
 
+def strip_trailing_slashes (value):
+    while value[-1] == '/':
+        value = value [:-1]
+    return value
+
 def is_path (value):
     is_not_empty(value)
+    value = strip_trailing_slashes (value)
     if value[0] == '/':
         return value
     if value[1:3] == ":\\":
@@ -190,6 +196,15 @@ def parent_is_dir (value, nochroot=False):
 
     dirname, filename = os.path.split(value)
     is_local_dir_exists (dirname, nochroot)
+
+    return value
+
+def can_create_file (value, nochroot=False):
+    value = parent_is_dir (value)
+
+    path = get_real_path (value, nochroot)
+    if os.path.isdir(path):
+        raise ValueError, _('Path is a directory')
 
     return value
 

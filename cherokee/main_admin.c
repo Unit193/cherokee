@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2010 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2011 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -50,7 +50,7 @@
 
 #define APP_COPY_NOTICE \
 	"Written by Alvaro Lopez Ortega <alvaro@alobbs.com>\n\n"	               \
-	"Copyright (C) 2001-2010 Alvaro Lopez Ortega.\n"                               \
+	"Copyright (C) 2001-2011 Alvaro Lopez Ortega.\n"                               \
 	"This is free software; see the source for copying conditions.  There is NO\n" \
 	"warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n"
 
@@ -493,7 +493,16 @@ process_parameters (int argc, char **argv)
 		case '?':
 		default:
 			print_help();
-			exit(0);
+			exit (1);
+		}
+	}
+
+	/* Check for trailing parameters
+	 */
+	for (c = optind; c < argc; c++) {
+		if ((argv[c] != NULL) && (strlen(argv[c]) > 0)) {
+			print_help();
+			exit (1);
 		}
 	}
 }

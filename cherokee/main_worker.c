@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2010 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2011 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -51,7 +51,7 @@
 
 #define APP_COPY_NOTICE \
 	"Written by Alvaro Lopez Ortega <alvaro@alobbs.com>\n\n"                       \
-	"Copyright (C) 2001-2010 Alvaro Lopez Ortega.\n"                               \
+	"Copyright (C) 2001-2011 Alvaro Lopez Ortega.\n"                               \
 	"This is free software; see the source for copying conditions.  There is NO\n" \
 	"warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n"
 
@@ -285,8 +285,10 @@ process_parameters (int argc, char **argv)
 {
 	int c;
 
-	/* If any of these parameters change, main_guardian may need
+	/* NOTE 1: If any of these parameters change, main.c may need
 	 * to be updated.
+	 *
+	 * NOTE 2: The -v / --valgrind parameter is handled by main.c.
 	 */
 	struct option long_options[] = {
 		{"help",              no_argument,       NULL, 'h'},
@@ -335,6 +337,16 @@ process_parameters (int argc, char **argv)
 			return ret_eof;
 		}
 	}
+
+	/* Check for trailing parameters
+	 */
+	for (c = optind; c < argc; c++) {
+		if ((argv[c] != NULL) && (strlen(argv[c]) > 0)) {
+			print_help();
+			return ret_eof;
+		}
+	}
+
 	return ret_ok;
 }
 

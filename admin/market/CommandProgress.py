@@ -5,7 +5,7 @@
 # Authors:
 #      Alvaro Lopez Ortega <alvaro@alobbs.com>
 #
-# Copyright (C) 2001-2010 Alvaro Lopez Ortega
+# Copyright (C) 2001-2011 Alvaro Lopez Ortega
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of version 2 of the GNU General Public
@@ -217,7 +217,7 @@ class CommandExec_Thread (threading.Thread):
 
         if command_entry.get ('check_ret', True):
             if ret['retcode'] != 0:
-                self._report_error (command, env, cd, ret)
+                self._report_error (command, env, ret, cd)
                 return True
 
     def _run_function (self, command_entry):
@@ -241,7 +241,7 @@ class CommandExec_Thread (threading.Thread):
                 self._report_error (function.__name__, params, ret)
                 return True
 
-    def _report_error (self, command, env, cd, ret_exec):
+    def _report_error (self, command, env, ret_exec, cd=None):
         print "="*40
         if env:
             for k in env:
