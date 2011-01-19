@@ -1,3 +1,9 @@
+cherokee (1.0.18-1) experimental; urgency=low
+
+  * New upstream version
+
+ -- Gunnar Wolf <gwolf@debian.org>  Wed, 19 Jan 2011 14:29:49 -0600
+
 cherokee (1.0.17-1) experimental; urgency=low
 
   * New upstream version
