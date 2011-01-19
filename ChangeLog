@@ -1,3 +1,24 @@
+2011-01-19  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6142 git=50c35c02fd148ecca203d70d5ef552425d6319e5
+
+    Fixes a regression last-minute regression in 1.0.17. Cherokee-admin
+    failed depending on whether or not the OS had IPv6 support. Now the
+    decision of what IP 'localhost' should be converted to if left to the
+    Python interpreter instead of calling getaddrinfo() and picking the
+    first available IP.
+    
+ admin/server.py |    3 +--
+ 1 files changed, 1 insertions(+), 2 deletions(-)
+
+
+2011-01-19  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6141 git=cf01bc266156157c01ecdf28fa15053750c32c65
+
+    Cherokee 1.0.17 released
+    
+ configure.in |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
 2011-01-19  Antonio Perez  <aperez@skarcha.com>
             svn=6139 git=1bdcd809cd315bfcd780d3cb14c2c2c35007b953
 
