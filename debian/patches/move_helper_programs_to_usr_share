@@ -1,0 +1,47 @@
+From: Gunnar Wolf <gwolf@debian.org>
+Origin: vendor
+Forwarded: not-needed
+Last-Update: 2009-12-03
+Description: Move executables not meant to be called to /usr/share/cherokee
+ All programs meant to be called by other components of Cherokee (and
+ not by a human) should go into /usr/share/cherokee, not /usr/bin
+
+Index: cherokee-1.0.9/performance.conf.sample.pre
+===================================================================
+--- cherokee-1.0.9.orig/performance.conf.sample.pre	2010-11-12 05:03:59.397879142 -0700
++++ cherokee-1.0.9/performance.conf.sample.pre	2010-11-12 05:07:00.661879144 -0700
+@@ -13,7 +13,7 @@
+ server!keepalive = 1
+ server!keepalive_max_requests = 1000
+ server!server_tokens = full
+-server!panic_action = %prefix%/bin/cherokee-panic
++server!panic_action = %prefix%/share/cherokee/cherokee-panic
+ server!pid_file = %localstatedir%/run/cherokee.pid
+ 
+ # Default virtual server
+Index: cherokee-1.0.9/admin/configured.py.pre
+===================================================================
+--- cherokee-1.0.9.orig/admin/configured.py.pre	2010-11-12 05:05:24.885879142 -0700
++++ cherokee-1.0.9/admin/configured.py.pre	2010-11-12 05:06:27.201879184 -0700
+@@ -17,7 +17,7 @@
+ CHEROKEE_ADMINDIR     = join (PREFIX, "share/cherokee/admin")
+ CHEROKEE_ICONSDIR     = join (PREFIX, "share/cherokee/icons")
+ CHEROKEE_THEMEDIR     = join (PREFIX, "share/cherokee/themes")
+-CHEROKEE_PANIC_PATH   = join (PREFIX, "bin/cherokee-panic")
++CHEROKEE_PANIC_PATH   = join (PREFIX, "share/cherokee/cherokee-panic")
+ CHEROKEE_PLUGINDIR    = join (LIBDIR, "cherokee")
+ CHEROKEE_DATADIR      = join (DATADIR, "cherokee")
+ CHEROKEE_DEPSDIR      = join (DATADIR, "cherokee/deps")
+Index: cherokee-1.0.9/cherokee.conf.sample.pre
+===================================================================
+--- cherokee-1.0.9.orig/cherokee.conf.sample.pre	2010-11-12 05:07:33.937879141 -0700
++++ cherokee-1.0.9/cherokee.conf.sample.pre	2010-11-12 05:07:57.093879075 -0700
+@@ -16,7 +16,7 @@
+ server!keepalive = 1
+ server!keepalive_max_requests = 500
+ server!server_tokens = full
+-server!panic_action = %prefix%/bin/cherokee-panic
++server!panic_action = %prefix%/share/cherokee/cherokee-panic
+ server!pid_file = %localstatedir%/run/cherokee.pid
+ 
+ # Default virtual server

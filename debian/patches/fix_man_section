@@ -1,0 +1,10 @@
+Index: cherokee-1.0.9/cherokee-admin.1
+===================================================================
+--- cherokee-1.0.9.orig/cherokee-admin.1	2010-11-12 05:13:22.437879141 -0700
++++ cherokee-1.0.9/cherokee-admin.1	2010-11-12 05:13:45.169879087 -0700
+@@ -1,4 +1,4 @@
+-.TH cherokee-admin 8 "September 20, 2010"
++.TH cherokee-admin 1 "September 20, 2010"
+ .SH NAME
+ cherokee-admin - Runs Cherokee's administrative interface
+ .SH SYNOPSIS

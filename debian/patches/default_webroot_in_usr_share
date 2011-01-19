@@ -1,0 +1,78 @@
+From: Gunnar Wolf <gwolf@debian.org>
+From: Álvaro López Ortega <alvaro@alobbs.com>
+Origin: upstream
+Forwarded: not-needed
+Last-Update: 2009-12-03
+Description: Modifies the installed webpage, target location
+ We modify the shipped target locations for the user-exposed webpages
+ and images. This modifications were done together with upstream for
+ providing Debian identity to the installed package.
+
+# Moves the Web root directory to more Debian-friendly locations
+#
+Index: cherokee/www/Makefile.am
+===================================================================
+--- cherokee.orig/www/Makefile.am	2009-12-03 11:21:48.000000000 -0600
++++ cherokee/www/Makefile.am	2009-12-03 11:22:20.000000000 -0600
+@@ -2,7 +2,7 @@
+ 
+ cherokeewwwdir = "@WWW_ROOT@"
+ 
+-cherokeewwwimagesdir = "@WWW_ROOT@/images"
++cherokeewwwimagesdir = "@WWW_ROOT@/cherokee-images"
+ cherokeewwwimages_DATA = \
+ favicon.ico \
+ default-bg.png \
+Index: cherokee/www/Makefile.in
+===================================================================
+--- cherokee.orig/www/Makefile.in	2009-12-03 11:21:48.000000000 -0600
++++ cherokee/www/Makefile.in	2009-12-03 11:22:20.000000000 -0600
+@@ -235,7 +235,7 @@
+ top_builddir = @top_builddir@
+ top_srcdir = @top_srcdir@
+ cherokeewwwdir = "@WWW_ROOT@"
+-cherokeewwwimagesdir = "@WWW_ROOT@/images"
++cherokeewwwimagesdir = "@WWW_ROOT@/cherokee-images"
+ cherokeewwwimages_DATA = \
+ favicon.ico \
+ default-bg.png \
+Index: cherokee/www/index.html
+===================================================================
+--- cherokee.orig/www/index.html	2009-12-03 11:21:48.000000000 -0600
++++ cherokee/www/index.html	2009-12-03 11:22:20.000000000 -0600
+@@ -2,15 +2,14 @@
+ <html>
+ <head>
+     <title>Cherokee Test Page</title>
+-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+-    <style type="text/css">
++    <style>
+         body {
+             margin: 0;
+-            background: #fff url(images/default-bg.png) center center repeat-y
++            background: #fff url(cherokee-images/default-bg.png) center center repeat-y
+         }
+         
+         #contents {
+-            background: #fff url(images/cherokee-logo.png) top center no-repeat;
++            background: #fff url(cherokee-images/cherokee-logo.png) top center no-repeat;
+             margin: auto;
+             text-align: center;
+             width: 551px;
+@@ -43,11 +42,14 @@
+         <div class="message">
+             <p>This page is used to test the proper operation of the Cherokee Web Server after it has been installed. If you can read this page, it means that the Cherokee Web Server installed at this site is working properly.</p>
+ 
+-            <p><strong>Note:</strong> If you see this page after uploading site content you probably have not replaced the <code>index.html</code> file.</p>
++            <p><strong>Note:</strong> You can safely remove this file from its default location at <code>/var/www</code> and replace it with your own, or configure the server to have the Web root elsewhere in your path.</p>
++
++	    <p>If you are the site administrator, please note that the Cherokee configuration is handled via a Web interface through the <code>cherokee-admin</code> subsystem, it is no longer meant to be hand-maintained.</p>
+         </div>
+     </div>
+     <div class="powered">
+-    <a href="http://www.cherokee-project.com"><img src="images/powered_by_cherokee.png" alt="Powered by Cherokee" border="0" /></a>
++    <a href="http://www.cherokee-project.com"><img src="cherokee-images/powered_by_cherokee.png" alt="Powered by Cherokee" border="0"></a>
++    <a href="http://www.debian.org"><img src="cherokee-images/powered_by_debian.png" alt="Powered by Debian" border="0"></a>
+     </div>
+ 
+ </body>
