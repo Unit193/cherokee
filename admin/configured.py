@@ -8,7 +8,7 @@ LOCALEDIR       = "/usr/local/share/locale"
 WWWROOT         = "/Library/WebServer/Documents"
 SYSCONFDIR      = "/usr/local/etc"
 LOCALSTATE      = "/usr/local/var"
-VERSION         = "1.0.18"
+VERSION         = "1.0.19"
 OWS_ENABLE      = '0'
 OWS_API_VERSION = '2'
 

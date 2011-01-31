@@ -140,7 +140,7 @@ cherokee_server_new  (cherokee_server_t **srv)
 	n->conns_max        =  0;
 	n->conns_reuse_max  = -1;
 
-	n->listen_queue     = 1024;
+	n->listen_queue     = 65534;
 	n->sendfile.min     = SENDFILE_MIN_SIZE;
 	n->sendfile.max     = SENDFILE_MAX_SIZE;
 
@@ -202,9 +202,12 @@ cherokee_server_new  (cherokee_server_t **srv)
 	n->nonces_cleanup_next   = 0;
 	n->nonces_cleanup_lapse = NONCE_CLEANUP_LAPSE;
 
-	/* PID
+	/* Paths
 	 */
 	cherokee_buffer_init (&n->pidfile);
+
+	cherokee_buffer_init    (&n->themes_dir);
+	cherokee_buffer_add_str (&n->themes_dir, CHEROKEE_THEMEDIR);
 
 	/* Config
 	 */
@@ -328,6 +331,7 @@ cherokee_server_free (cherokee_server_t *srv)
 
 	cherokee_buffer_mrproper (&srv->chroot);
 	cherokee_buffer_mrproper (&srv->pidfile);
+	cherokee_buffer_mrproper (&srv->themes_dir);
 	cherokee_buffer_mrproper (&srv->panic_action);
 
 	/* Module loader: It must be the last action to be performed
@@ -508,9 +512,12 @@ print_banner (cherokee_server_t *srv)
 	}
 #endif
 
-	/* Print it!
+	/* Print it to stdout
 	 */
-	cherokee_print_wrapped (&n);
+	cherokee_buffer_split_lines (&n, TERMINAL_WIDTH, NULL);
+	fprintf (stdout, "%s\n", n.buf);
+	fflush (stdout);
+
 	cherokee_buffer_mrproper (&n);
 
 	return ret_ok;
@@ -619,8 +626,8 @@ initialize_server_threads (cherokee_server_t *srv)
 		return ret;
 	}
 
-	/* If Cherokee is compiled in single thread mode, it has to
-	 * add the server socket to the fdpoll of the sync thread
+	/* If Cherokee runs in single thread mode, it has to add the
+	 * server sockets to the fdpoll. They will remain in there.
 	 */
 	if (srv->thread_num == 1) {
 		cherokee_list_t *j;
@@ -1372,6 +1379,10 @@ configure_server_property (cherokee_config_node_t *conf, void *data)
 	} else if (equal_buf_str (&conf->key, "pid_file")) {
 		cherokee_buffer_clean (&srv->pidfile);
 		cherokee_buffer_add_buffer (&srv->pidfile, &conf->val);
+
+	} else if (equal_buf_str (&conf->key, "themes_dir")) {
+		cherokee_buffer_clean (&srv->themes_dir);
+		cherokee_buffer_add_buffer (&srv->themes_dir, &conf->val);
 
 	} else if (equal_buf_str (&conf->key, "bind")) {
 		ret = configure_bind (srv, conf);

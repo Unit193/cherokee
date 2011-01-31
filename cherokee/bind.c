@@ -152,9 +152,6 @@ static ret_t
 set_socket_opts (int socket)
 {
 	ret_t                    ret;
-	int                      re;
-	int                      on;
-        struct linger            ling = {0, 0};
 #ifdef SO_ACCEPTFILTER
         struct accept_filter_arg afa;
 #endif
@@ -168,9 +165,16 @@ set_socket_opts (int socket)
 	/* To re-bind without wait to TIME_WAIT. It prevents 2MSL
 	 * delay on accept.
 	 */
-	on = 1;
-	re = setsockopt (socket, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on));
-	if (re != 0) return ret_error;
+	ret = cherokee_fd_set_reuseaddr (socket);
+	if (ret != ret_ok)
+		return ret;
+
+	/* Set no-delay mode:
+	 * If no clients are waiting, accept() will return -1 immediately
+	 */
+	ret = cherokee_fd_set_nodelay (socket, true);
+	if (ret != ret_ok)
+		return ret;
 
 	/* TCP_MAXSEG:
 	 * The maximum size of a TCP segment is based on the network MTU for des-
@@ -191,17 +195,6 @@ set_socket_opts (int socket)
 
 	/* Do no check the returned value */
 #endif
-
-	/* SO_LINGER:
-	 * Don't want to block on calls to close.
-	 *
-	 * kernels that map pages for IO end up failing if the pipe is full
-         * at exit and we take away the final buffer.  this is really a kernel
-         * bug but it's harmless on systems that are not broken, so...
-	 *
-	 * http://www.apache.org/docs/misc/fin_wait_2.html
-         */
-	setsockopt (socket, SOL_SOCKET, SO_LINGER, &ling, sizeof(ling));
 
 	/* TCP_DEFER_ACCEPT:
 	 * Allows a listener to be awakened only when data arrives on the socket.
@@ -240,8 +233,8 @@ init_socket (cherokee_bind_t *listener, int family)
 	/* Create the socket, and set its properties
 	 */
 	ret = cherokee_socket_set_client (&listener->socket, family);
-	if (ret != ret_ok)
-		return ret;
+	if ((ret != ret_ok) || (SOCKET_FD(&listener->socket) < 0))
+		return ret_error;
 
 	ret = set_socket_opts (SOCKET_FD(&listener->socket));
 	if (ret != ret_ok)
@@ -282,32 +275,29 @@ cherokee_bind_init_port (cherokee_bind_t         *listener,
 		if (ret != ret_ok) {
 			LOG_CRITICAL (CHEROKEE_ERROR_BIND_COULDNT_BIND_PORT,
 				      listener->port, getuid(), getgid());
-			return ret_error;
+			goto error;
 		}
 	}
-
-	/* Set no-delay mode:
-	 * If no clients are waiting, accept() will return -1 immediately
-	 */
-	ret = cherokee_fd_set_nodelay (listener->socket.socket, true);
-	if (ret != ret_ok)
-		return ret;
 
 	/* Listen
 	 */
 	ret = cherokee_socket_listen (&listener->socket, listen_queue);
 	if (ret != ret_ok) {
-		cherokee_socket_close (&listener->socket);
-		return ret_error;
+		goto error;
 	}
 
 	/* Build the strings
 	 */
 	ret = build_strings (listener, token);
-	if (ret != ret_ok)
-		return ret;
+	if (ret != ret_ok) {
+		goto error;
+	}
 
 	return ret_ok;
+
+error:
+	cherokee_socket_close (&listener->socket);
+	return ret_error;
 }
 
 

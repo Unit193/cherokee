@@ -144,7 +144,7 @@ class InstructionBoxBase (CTK.Box):
         data   = SystemInfo.get_info()
         system = data.get('system','').lower()
         distro = data.get('linux_distro_id','').lower()
-        info   = instructions.get('generic')
+        info   = instructions.get('default')
 
         # Optional parameters
         bin_path = kwargs.get('bin_path')
@@ -169,9 +169,13 @@ class InstructionBoxBase (CTK.Box):
             return instructions[distro]
 
         # Linux distro generic
-        for x in ('red hat', 'redhat', 'fedora', 'centos'):
+        for x in ('red hat', 'redhat', 'centos'):
             if x in distro:
                 return instructions.get('yum', info)
+
+        for x in ('fedora'):
+            if x in distro:
+                return instructions.get('yumfedora', instructions.get('yum', info))
 
         for x in ('suse',):
             if x in distro:

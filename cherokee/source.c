@@ -134,8 +134,10 @@ cherokee_source_connect (cherokee_source_t *src, cherokee_socket_t *sock)
 		}
 	}
 
-	/* Set close-on-exec */
-	cherokee_fd_set_closexec (sock->socket);
+	/* Set close-on-exec and reuse-address */
+	cherokee_fd_set_closexec  (sock->socket);
+	cherokee_fd_set_reuseaddr (sock->socket);
+
 	return cherokee_socket_connect (sock);
 }
 
