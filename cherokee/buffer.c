@@ -2241,3 +2241,64 @@ cherokee_buffer_insert_buffer (cherokee_buffer_t *buf,
 {
 	return cherokee_buffer_insert (buf, src->buf, src->len, pos);
 }
+
+
+ret_t
+cherokee_buffer_split_lines (cherokee_buffer_t *buf,
+			     int                columns,
+			     const char        *indent)
+{
+	char *p;
+	char *prev_space     = NULL;
+	char *latest_newline = NULL;
+	int   since_prev     = 0;
+	int   indent_len     = 0;
+
+	if (indent) {
+		indent_len = strlen(indent);
+	}
+
+	for (p = buf->buf; p < buf->buf + buf->len; p++) {
+		since_prev += 1;
+
+		if (*p != ' ') {
+			continue;
+		}
+
+		/* White found */
+		if ((prev_space == NULL) || (since_prev <= columns)) {
+			prev_space = p;
+		}
+
+		if (since_prev >= columns) {
+			if (prev_space) {
+				/* Split */
+				*prev_space = '\n';
+
+				/* Reset */
+				since_prev = (p - prev_space);
+				latest_newline = prev_space;
+				prev_space = NULL;
+			} else {
+				/* len(word) > columns */
+				*p = '\n';
+				since_prev = 0;
+				latest_newline = p;
+			}
+
+			/* Line just split */
+			if (indent) {
+				int offset = p - buf->buf;
+
+				cherokee_buffer_insert (buf, (char *)indent, indent_len,
+							(latest_newline - buf->buf)+1);
+
+				since_prev += indent_len;
+				p = buf->buf + offset + indent_len;
+				latest_newline = NULL;
+			}
+		}
+	}
+
+	return ret_ok;
+}

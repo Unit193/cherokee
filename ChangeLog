@@ -1,3 +1,657 @@
+2011-01-31  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6214 git=acdee28a533aeb43d9411ae0dd58aee5d07baaa3
+
+    Fixes typo
+    
+ qa/Makefile.am |    4 ++--
+ 1 files changed, 2 insertions(+), 2 deletions(-)
+
+
+2011-01-31  Taher Shihadeh  <taher@unixwars.com>
+            svn=6213 git=7189e1096536fc34c0dc8db2fe0616d6de331aa1
+
+    Fix redirect wizard + cleanup
+    
+ admin/wizards/redirect.py |   15 +++++----------
+ 1 files changed, 5 insertions(+), 10 deletions(-)
+
+2011-01-31  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6212 git=1487cbb8125a89041ea8ea92aeb90c982d550f53
+
+    Integrates CTK_COOKIE
+    
+ admin/server.py       |    4 ++--
+ cherokee/main_admin.c |    4 ++++
+ 2 files changed, 6 insertions(+), 2 deletions(-)
+
+
+2011-01-31  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6210 git=77e23bfe927bcfe3b9e7e6acd44bb5d9893bab36
+
+    Extends the logic to cover the all rule match types. It should help to
+    avoid quite a few misconfiguration issues.
+    
+ admin/SavingChecks.py |   67 +++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 files changed, 67 insertions(+), 0 deletions(-)
+
+
+2011-01-31  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6209 git=56560d48253351e3f46184dca588998ce90f9477
+
+    Internal CTK.cfg keys should be stored under the 'tmp' prefix.
+    
+ admin/market/Maintenance.py |   51 ++++++++++++++++++++++--------------------
+ 1 files changed, 27 insertions(+), 24 deletions(-)
+
+
+2011-01-31  Taher Shihadeh  <taher@unixwars.com>
+            svn=6208 git=35b25059e5a49d7d33dd05bdeb271fee23167d19
+
+    The label was misleading. Apps are sorted by popularity, not by rank.
+    
+ admin/market/PageIndex.py |    6 +++---
+ 1 files changed, 3 insertions(+), 3 deletions(-)
+
+
+2011-01-29  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6206 git=ad9e620a8759f8e06d5e9c3f1c18a7d3efad14f9
+
+    Re-implements the GUI partially. Unlike the previous version, this new
+    interface can handle large clean up processes.
+    
+ admin/market/Maintenance.py |  136 +++++++++++++++++++++++++++++--------------
+ 1 files changed, 93 insertions(+), 43 deletions(-)
+
+
+2011-01-28  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6205 git=d0158518db5bef6b5a3316ab5cf7eae89e83d3bb
+
+    Fixes the German translation. Thanks to Teipel Sebastian for the patch!
+    
+ po/admin/de.po |   18 +++++++++---------
+ 1 files changed, 9 insertions(+), 9 deletions(-)
+
+
+2011-01-28  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6204 git=a5554bb04fd2fc2a2ead5d45bc835b91de7db2d1
+
+    The CPU/Core/Processor speed detection was not working on some
+    versions on MacOS X.
+    
+ admin/SystemStats.py |    6 +++---
+ 1 files changed, 3 insertions(+), 3 deletions(-)
+
+
+2011-01-28  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6203 git=e373188ec9e84d134cb7c73d4ad584b29beaea5a
+
+    Improves how the URL to the deployed application is generated.
+    
+ admin/market/Install.py |   25 +++++++++++++++++++++++--
+ 1 files changed, 23 insertions(+), 2 deletions(-)
+
+
+2011-01-28  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6202 git=a5985d5fb3d239a822cb733fb20628b6f783cfbd
+
+    Bugfix: Not all sources are 'interpreter sources'. They can also be
+    'host sources', and thus omit the 'interpreter' property.
+    
+ admin/market/Maintenance.py |    5 +++--
+ 1 files changed, 3 insertions(+), 2 deletions(-)
+
+
+2011-01-28  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6201 git=a6071a596252a6d3b1a9dd60bb6f59f19e9248f3
+
+    The QA bench should use the predefined PHP interpreter and only look
+    for another one in case it isn't a suitable option.
+    
+ qa/Makefile.am |   18 ++++++++++++++++-
+ qa/conf.py     |   56 -------------------------------------------------------
+ qa/conf.py.pre |   57 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 74 insertions(+), 57 deletions(-)
+
+
+2011-01-28  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6200 git=d74bc5fc1b7973af0a3aa3eadb2d20a858a1ea03
+
+    Clean up
+    
+ cherokee/bind.c |   19 +++++++++----------
+ 1 files changed, 9 insertions(+), 10 deletions(-)
+
+2011-01-27  Taher Shihadeh  <taher@unixwars.com>
+            svn=6199 git=9bd450cd50550d27b6e80460347a31bf0635f48f
+
+    Previous fix was broken
+    
+ admin/SystemInfo.py |    4 ++--
+ 1 files changed, 2 insertions(+), 2 deletions(-)
+
+
+2011-01-27  Taher Shihadeh  <taher@unixwars.com>
+            svn=6198 git=fba4ba9cac673b242ff5c7d73f2ea21b56d3ad05
+
+    Fix regex for Enterprise Linux
+    
+ admin/SystemInfo.py |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+
+2011-01-27  Taher Shihadeh  <taher@unixwars.com>
+            svn=6197 git=4b8d2e6621eb53918c44b9bc99ed421d784d7609
+
+    Extends cleanup support
+    
+ admin/market/Maintenance.py |   15 ++++++++++-----
+ 1 files changed, 10 insertions(+), 5 deletions(-)
+
+
+2011-01-27  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6196 git=cbe66974fd2a857989a74748798651d10354ef62
+
+    Fixes the style of the 'Save' dialog
+    
+ admin/Page.py                       |   11 ++++++-----
+ admin/static/css/cherokee-admin.css |   12 +++++++++---
+ 2 files changed, 15 insertions(+), 8 deletions(-)
+
+
+2011-01-27  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6195 git=765214513c21449809906c801b297651faaf3f8e
+
+    Minor style fixes
+    
+ admin/market/Install.py |   16 ++++++++--------
+ 1 files changed, 8 insertions(+), 8 deletions(-)
+
+
+2011-01-27  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6194 git=5a1f525fff8007a2a65f2074295d021a3f007b5a
+
+    Adds a link to the deployed app - if it's ready to be accessed.
+    
+ admin/market/Install.py |   33 ++++++++++++++++++++++++++-------
+ 1 files changed, 26 insertions(+), 7 deletions(-)
+
+
+2011-01-27  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6193 git=f2acfa44fe1e7c7b553a7c6db62068bd2568feef
+
+    The environment variables of the information sources can contain
+    embedded variables that are replaced when the server starts up.
+    
+ cherokee/source_interpreter.c |  144 ++++++++++++++++++++++++++++++-----------
+ cherokee/source_interpreter.h |    4 -
+ 2 files changed, 106 insertions(+), 42 deletions(-)
+
+
+2011-01-27  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6192 git=f8847f740758cb65337b0866bfd2fa4d3ddb2af4
+
+    Fixes an incorrect button.
+    
+ admin/market/PageApp.py |    5 ++++-
+ 1 files changed, 4 insertions(+), 1 deletions(-)
+
+
+2011-01-27  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6191 git=6dc2d098d062e38c5cfcb1ebbff9e93d73f74f1e
+
+    Fixes a minor style issue
+    
+ admin/market/CommandProgress.py |    4 ++--
+ admin/market/Install.py         |    2 +-
+ 2 files changed, 3 insertions(+), 3 deletions(-)
+
+
+2011-01-27  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6190 git=e40cba7bddd25e9c284284332f7ca8b2c6438034
+
+    Fixes php-fpm detection.
+    
+ qa/util.py |    9 +++++----
+ 1 files changed, 5 insertions(+), 4 deletions(-)
+
+
+2011-01-26  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6189 git=8f32e92e73ac61933f62a2b4b607655cee882d7d
+
+    Bugfix: cherokee-admin was creating zombie processes under some
+    unusual circumstances.
+    
+ admin/Cherokee.py |    9 ++++++++-
+ 1 files changed, 8 insertions(+), 1 deletions(-)
+
+
+2011-01-26  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6188 git=5f1d00853b288f359b057715c368687f0b5d2bce
+
+    Adds two additional tests for Virtual Servers without nicks or
+    document root. It helps to detect broken installations.
+    
+ admin/SavingChecks.py |   10 ++++++++++
+ 1 files changed, 10 insertions(+), 0 deletions(-)
+
+
+2011-01-26  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6187 git=378356f9e52879f11f84823162c925975fd34931
+
+    Removes an outdated error entry.
+    
+ cherokee/error_list.py |    4 ----
+ 1 files changed, 0 insertions(+), 4 deletions(-)
+
+
+2011-01-26  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6186 git=93a9e282e8bba9d3b801bc9d045e27eed2b925c1
+
+    Implements a new 'server!themes_dir' configuration key, so the dirlist
+    theme directory can be configured. It allows, for instance, to run the
+    QA bench without installing Cherokee.
+    
+ cherokee/handler_dirlist.c  |    9 +++++----
+ cherokee/server-protected.h |    3 ++-
+ cherokee/server.c           |   10 +++++++++-
+ qa/conf.py                  |    1 +
+ qa/run-tests.py             |   10 ++++++----
+ 5 files changed, 23 insertions(+), 10 deletions(-)
+
+
+2011-01-26  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6185 git=ede13c1ae40bab17f844cf4b25be9b22298594bb
+
+    Fixes an invalid memory access
+    
+ cherokee/handler_error_nn.c |    9 ++++-----
+ 1 files changed, 4 insertions(+), 5 deletions(-)
+
+
+2011-01-26  Taher Shihadeh  <taher@unixwars.com>
+            svn=6184 git=65d04e18e5762fa2a69caad50e6e475c1a190829
+
+    Don't use tarfile module on Python < 2.5. It is not reliable
+    
+ admin/market/Install.py |    4 ++++
+ 1 files changed, 4 insertions(+), 0 deletions(-)
+
+2011-01-26  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6183 git=1137c038aa65f8f3edf169cdaf05371572e1d624
+
+    Works out the pipefail fix
+    
+ autogen.sh |    4 +++-
+ 1 files changed, 3 insertions(+), 1 deletions(-)
+
+
+2011-01-26  Taher Shihadeh  <taher@unixwars.com>
+            svn=6182 git=3214a83c2d12df491b13a0fff75bd94668778b3b
+
+    Minor editions
+    
+ doc/other_os_tuning.txt |   22 +++++++++++-----------
+ 1 files changed, 11 insertions(+), 11 deletions(-)
+
+2011-01-26  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6181 git=6bbdb3b89b97c4e02594fd4ff85352a5c22557fa
+
+    Not every shell supports 'set -o pipefail'
+    
+ autogen.sh |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+
+2011-01-26  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6180 git=d607cbf5f32c642a7166b43104a994444cb62f31
+
+    Do not build the tracing buffer if tracing is not active.
+    
+ cherokee/handler_secdownload.c |   26 ++++++++++++++------------
+ 1 files changed, 14 insertions(+), 12 deletions(-)
+
+
+2011-01-26  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6179 git=30ff4d9a97b9fc611913c9653b8c53c009198629
+
+    New doc entry on OS tuning
+    
+ doc/Makefile.am         |    1 +
+ doc/index.txt           |    1 +
+ doc/other.txt           |    1 +
+ doc/other_os_tuning.txt |  225 +++++++++++++++++++++++++++++++++++++++++++++++
+ 4 files changed, 228 insertions(+), 0 deletions(-)
+
+2011-01-25  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6178 git=75b7710594f2238af3113a0dd4b989ef46a2617e
+
+    Clean up
+    
+ cherokee/thread.c |   41 +++++++++++++++++++----------------------
+ 1 files changed, 19 insertions(+), 22 deletions(-)
+
+
+2011-01-25  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6177 git=2c5bc500974002cac82d6c8abf8a995a9da0fdce
+
+    Raises default listen()'s backlog value to 64k. The OS will limit it
+    automatically.
+    
+ cherokee/server.c |    6 +++---
+ 1 files changed, 3 insertions(+), 3 deletions(-)
+
+
+2011-01-25  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6176 git=6b8151665e6f61563b956356e1cf908ce2b1c922
+
+    Optimizes a time consuming TRACE call.
+    
+ cherokee/thread.c |   18 ++++++++++--------
+ 1 files changed, 10 insertions(+), 8 deletions(-)
+
+
+2011-01-25  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6175 git=3542bf16046add053e6b7b61281b6a76bd06da49
+
+    Set reuseaddr to the sockets connecting to the back-end servers.
+    
+ cherokee/source.c |   12 ++++--------
+ 1 files changed, 4 insertions(+), 8 deletions(-)
+
+
+2011-01-25  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6174 git=e66f54a2ea8e851af3b775b7be31bbc027937ea4
+
+    cherokee_fd_set_reuseaddr() after accepting a connection.
+    
+ cherokee/socket.c |   24 +++---------------------
+ 1 files changed, 3 insertions(+), 21 deletions(-)
+
+
+2011-01-25  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6173 git=11c49ba7a2ad92471b097837b901b06f0937c33f
+
+    Fixes ETag header syntax. Fixes http://bugs.cherokee-project.com/1120
+    - Thanks to Wojciech Arabczyk for the patch.
+    
+ cherokee/handler_file.c |   15 +++++++++------
+ 1 files changed, 9 insertions(+), 6 deletions(-)
+
+
+2011-01-25  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6172 git=017bfcd6a408bd77c3995c9775a9acf6794511ad
+
+    Errors and close events are also activity.
+    
+ cherokee/fdpoll-kqueue.c |   23 +++++++++++++++++------
+ 1 files changed, 17 insertions(+), 6 deletions(-)
+
+
+2011-01-25  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6171 git=e04a1c7cfa51a1e261eb6321550099704e3124dc
+
+    Fixes the TRACE entries of the lingering close function.
+    
+ cherokee/connection.c |    8 ++++----
+ 1 files changed, 4 insertions(+), 4 deletions(-)
+
+
+2011-01-25  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6170 git=251054cbd128ff22373142cc07dca1c9976f46ef
+
+    Clean up.
+    
+ cherokee/bind.c |   14 --------------
+ 1 files changed, 0 insertions(+), 14 deletions(-)
+
+
+2011-01-25  Taher Shihadeh  <taher@unixwars.com>
+            svn=6169 git=6424678f2d570b18b435b25ed746be2b83f9b333
+
+    Improves platform detection
+    
+ admin/SystemInfo.py  |   13 ++++++++++++-
+ admin/market/Util.py |    6 +++++-
+ 2 files changed, 17 insertions(+), 2 deletions(-)
+
+
+2011-01-25  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6168 git=8890115abbc0e01981ba947f015fe68dd13287bd
+
+    Sets the 'close of exec' flag to the kqueue/epoll/port descriptors.
+    
+ cherokee/fdpoll-kqueue.c |   10 ++++++++++
+ cherokee/fdpoll-port.c   |   11 ++++++++++-
+ 2 files changed, 20 insertions(+), 1 deletions(-)
+
+
+2011-01-24  Taher Shihadeh  <taher@unixwars.com>
+            svn=6167 git=ad1fd0af7cde3235c97c558f243c56abcb0d03ff
+
+    The generic option is called default
+    
+ admin/market/Util.py |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+
+2011-01-24  Taher Shihadeh  <taher@unixwars.com>
+            svn=6166 git=680eef7a302a75a491b7adfddefb4593fec0be38
+
+    Maintenance script now removes unused information sources created by the Market
+    
+ admin/market/Maintenance.py |   36 +++++++++++++++++++++++++++++++++++-
+ 1 files changed, 35 insertions(+), 1 deletions(-)
+
+
+2011-01-24  Taher Shihadeh  <taher@unixwars.com>
+            svn=6165 git=69bf565b022cb26296fd5f50a7b032984135ee32
+
+    Redhat/Centos detection
+    
+ admin/SystemInfo.py |    3 ++-
+ 1 files changed, 2 insertions(+), 1 deletions(-)
+
+2011-01-24  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6164 git=de8f195666442088f5e52d9dcf5973e5caa4f025
+
+    Use SO_REUSEADDR on the sockets to the back-end servers.
+    
+ cherokee/source.c |    6 ++++++
+ 1 files changed, 6 insertions(+), 0 deletions(-)
+
+
+2011-01-24  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6163 git=da4c4aae922292f39b70004ac6ba4f551062fe81
+
+    Minor clean up
+    
+ cherokee/bind.c |   25 +++++++++++++++----------
+ 1 files changed, 15 insertions(+), 10 deletions(-)
+
+
+2011-01-24  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6162 git=542aec073ada2d43a6ca0819d126e87d2975535a
+
+    Implements cherokee_fd_set_reuseaddr().
+    
+ cherokee/util.c |   16 ++++++++++++++++
+ cherokee/util.h |    1 +
+ 2 files changed, 17 insertions(+), 0 deletions(-)
+
+
+2011-01-23  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6160 git=3c030047a9802491c1a7bc708f4616069f5d22b4
+
+    Rewrites comment
+    
+ cherokee/thread.c |    5 +++--
+ 1 files changed, 3 insertions(+), 2 deletions(-)
+
+
+2011-01-23  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6159 git=1c2928a70f9fd52221f4ee1434d1783a615db789
+
+    Minor clean up
+    
+ cherokee/main.c |   16 ++++++++--------
+ 1 files changed, 8 insertions(+), 8 deletions(-)
+
+
+2011-01-22  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6158 git=bbf469c2a44a593b053a42358868fabb47e32bc1
+
+    It seems that the argument formatting syntax was not properly
+    described in the help messages.
+    
+ cherokee/main_admin.c  |   22 +++++++++++-----------
+ cherokee/main_worker.c |   18 +++++++++---------
+ 2 files changed, 20 insertions(+), 20 deletions(-)
+
+
+2011-01-21  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6157 git=9f258057474864427284f3d1a1fa557c4659ba65
+
+    Ensure all the thread addresses are printed with the same length. It
+    improves readability of the CHEROKEE_TRACE output.
+    
+ cherokee/trace.c |   12 +++++++++++-
+ 1 files changed, 11 insertions(+), 1 deletions(-)
+
+
+2011-01-21  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6156 git=da5e983d7893343f1b9827885e557e2f53a31b20
+
+    Fixes the CHEROKEE_THREAD_SELF macro on platforms where the
+    pthread_self() function is implemented.
+    
+ cherokee/common-internal.h |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+
+2011-01-21  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6155 git=227d2ac1fc0cd7b429fc18a90413d3a0e51c5f10
+
+    There were a few syscalls where EINTR was not being handled properly.
+    
+ cherokee/config_reader.c    |    4 +-
+ cherokee/handler_dirlist.c  |    4 +-
+ cherokee/handler_error_nn.c |   16 +++-
+ cherokee/socket.c           |  183 ++++++++++++++++++++++---------------------
+ cherokee/util.c             |  132 ++++++++++++++++++++++++++-----
+ cherokee/util.h             |    4 +
+ 6 files changed, 226 insertions(+), 117 deletions(-)
+
+
+2011-01-21  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6154 git=a7b4781498f9c1a1213e8ab6dd19d4048d11e775
+
+    Removes the file from the repository, since it is no longer part of
+    the server.
+    
+ cherokee/main_tweak.c |  500 -------------------------------------------------
+ 1 files changed, 0 insertions(+), 500 deletions(-)
+
+
+2011-01-21  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6153 git=5705b93edda2171c27402d7c06bbbece343e1f32
+
+    Fixes a couple of minor issues with the TRACE entries of
+    cherokee_socket_connect() function.
+    
+ cherokee/socket.c |    4 ++--
+ 1 files changed, 2 insertions(+), 2 deletions(-)
+
+
+2011-01-20  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6152 git=64d33d89d3e642802d2f3ea48968fb95d06a064c
+
+    Errors reports include a slightly more verbose explanation of what
+    happens. They are also split in different lines now.
+    
+ cherokee/error_log.c |   27 ++++++++++++++++++++++++---
+ 1 files changed, 24 insertions(+), 3 deletions(-)
+
+
+2011-01-20  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6151 git=ec9bca7398ddb2f527d3fc141de7763eb2fca9be
+
+    cherokee_buffer_split() accepts a new extra parameter 'indent' now.
+    
+ cherokee/buffer.c |   30 +++++++++++++++++++++++++-----
+ cherokee/buffer.h |    2 +-
+ cherokee/server.c |    2 +-
+ 3 files changed, 27 insertions(+), 7 deletions(-)
+
+
+2011-01-20  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6150 git=9d09a8d174772eb09803c3781d289fb579e37800
+
+    Drops the cherokee_print_wrapped() in favor of the new
+    cherokee_buffer_split_lines() function.
+    
+ cherokee/server.c |    7 +++++--
+ cherokee/util.c   |   16 ----------------
+ cherokee/util.h   |    1 -
+ 3 files changed, 5 insertions(+), 19 deletions(-)
+
+
+2011-01-20  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6149 git=7085fa7f2b818ac348aebd8bd979082daca8b1c9
+
+    Implements a new cherokee_buffer_split_lines() function.
+    
+ cherokee/buffer.c |   41 +++++++++++++++++++++++++++++++++++++++++
+ cherokee/buffer.h |    1 +
+ 2 files changed, 42 insertions(+), 0 deletions(-)
+
+
+2011-01-20  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6148 git=01cabad99151f62846167102315066378fdfdbb1
+
+    Fixes a regression (typo) introduced a few hours ago.
+    
+ m4/mysql.m4 |    9 ++++-----
+ 1 files changed, 4 insertions(+), 5 deletions(-)
+
+
+2011-01-20  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6147 git=f3b17924c766ad8f30edb53efeb4601b60e05d6b
+
+    Improves a couple of aspects of autogen.sh:
+    - Fail whenever a error is produced, do not carry on.
+    - Execute child scripts only after it's checked its dependencies.
+    
+ autogen.sh |   26 ++++++++++++++++----------
+ 1 files changed, 16 insertions(+), 10 deletions(-)
+
+2011-01-20  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6146 git=30d2d7eaa80ff9707a30439adea5455e75499044
+
+    Adds a new extra test to the MySQL detection. The "mysql.h" header
+    file is also a pre-requisite now.
+    
+ m4/mysql.m4 |   45 +++++++++++++++++++++++++++++++++++----------
+ 1 files changed, 35 insertions(+), 10 deletions(-)
+
+2011-01-20  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6145 git=5ab3341023b96f854b086afe1b4d357c01ea4b3f
+
+    The memory meter deports the memory usage in MB on environments with
+    less than one GB of memory.
+    
+ admin/SystemStatsWidgets.py |   21 ++++++++++++++++++---
+ 1 files changed, 18 insertions(+), 3 deletions(-)
+
+
+2011-01-20  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6144 git=cbc4b82883b5a21876d3db9caeb8b78ac0bdde7e
+
+    Strings where written in plural. This patch checks the number of CPUs
+    and Cores and use a singular form string in there is just one of them.
+    
+ admin/SystemStatsWidgets.py |   10 ++++++++--
+ 1 files changed, 8 insertions(+), 2 deletions(-)
+
 2011-01-19  Alvaro Lopez Ortega  <alvaro@octality.com>
             svn=6142 git=50c35c02fd148ecca203d70d5ef552425d6319e5
 

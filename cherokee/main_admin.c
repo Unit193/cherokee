@@ -256,6 +256,10 @@ config_server (cherokee_server_t *srv)
 				  RULE_PRE "1!handler!balancer = round_robin\n"
 				  RULE_PRE "1!handler!balancer!source!1 = 1\n");
 
+	cherokee_buffer_add_str  (&buf, RULE_PRE "1!handler!env!CTK_COOKIE = ");
+	generate_admin_password  (&buf);
+	cherokee_buffer_add_char (&buf, '\n');
+
 	if (! debug) {
 		cherokee_buffer_add_str (&buf, RULE_PRE "1!encoder!gzip = 1\n");
 	}
@@ -419,17 +423,17 @@ print_help (void)
 {
 	printf (APP_NAME "\n"
 		"Usage: cherokee-admin [options]\n\n"
-		"  -h,  --help                   Print this help\n"
-		"  -V,  --version                Print version and exit\n"
-		"  -x,  --debug                  Enables debug\n"
-		"  -u,  --unsecure               Turn off the authentication\n"
-		"  -b,  --bind[=IP]              Bind net iface; no arg means all\n"
-		"  -d,  --appdir=DIR             Application directory\n"
-		"  -p,  --port=NUM               TCP port\n"
-		"  -t,  --internal-unix          Use a Unix domain socket internally\n"
-		"  -i,  --disable-iocache        Disable I/O cache: reduces mem usage\n"
-                "  -T,  --threads=NUM            Threads number\n"
-		"  -C,  --target=PATH            Configuration file to modify\n\n"
+		"  -h,        --help                 Print this help\n"
+		"  -V,        --version              Print version and exit\n"
+		"  -x,        --debug                Enables debug\n"
+		"  -u,        --unsecure             Turn off the authentication\n"
+		"  -b[<IP>],  --bind[=<IP>]          Bind net iface; no arg means all\n"
+		"  -d<DIR>,   --appdir=<DIR>         Application directory\n"
+		"  -p<NUM>,   --port=<NUM>           TCP port\n"
+		"  -t,        --internal-unix        Use a Unix domain socket internally\n"
+		"  -i,        --disable-iocache      Disable I/O cache: reduces mem usage\n"
+                "  -T<NUM>,   --threads=<NUM>        Threads number\n"
+		"  -C<PATH>,  --target=<PATH>        Configuration file to modify\n\n"
 		"Report bugs to " PACKAGE_BUGREPORT "\n");
 }
 

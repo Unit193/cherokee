@@ -144,10 +144,14 @@ long      *cherokee_get_timezone_ref (void);
 
 /* Thread safe functions
  */
+DIR * cherokee_opendir       (const char *dirname);
 int   cherokee_readdir       (DIR *dirstream, struct dirent *entry, struct dirent **result);
+int   cherokee_closedir      (DIR *dirstream);
+
 int   cherokee_stat          (const char *restrict path, struct stat *buf);
 int   cherokee_lstat         (const char *restrict path, struct stat *buf);
 int   cherokee_fstat         (int filedes, struct stat *buf);
+int   cherokee_unlink        (const char *path);
 ret_t cherokee_gethostbyname (const char *hostname, void *addr);
 ret_t cherokee_gethostname   (cherokee_buffer_t *buf);
 ret_t cherokee_syslog        (int priority, cherokee_buffer_t *buf);
@@ -178,6 +182,7 @@ ret_t cherokee_io_stat       (cherokee_iocache_t        *iocache,
 ret_t cherokee_fd_set_nonblocking (int fd, cherokee_boolean_t enable);
 ret_t cherokee_fd_set_nodelay     (int fd, cherokee_boolean_t enable);
 ret_t cherokee_fd_set_closexec    (int fd);
+ret_t cherokee_fd_set_reuseaddr   (int fd);
 ret_t cherokee_fd_close           (int fd);
 
 /* Misc
@@ -185,7 +190,6 @@ ret_t cherokee_fd_close           (int fd);
 ret_t cherokee_sys_fdlimit_get (cuint_t *limit);
 ret_t cherokee_sys_fdlimit_set (cuint_t  limit);
 ret_t cherokee_get_shell       (const char **shell, const char **binary);
-void  cherokee_print_wrapped   (cherokee_buffer_t *buffer);
 ret_t cherokee_tmp_dir_copy    (cherokee_buffer_t *buffer);
 
 /* IO vectors
