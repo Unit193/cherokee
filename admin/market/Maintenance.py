@@ -163,13 +163,14 @@ def does_it_need_maintenance():
 
 def app_database_exists (app):
     fp = os.path.join (CHEROKEE_OWS_ROOT, app, "install.log")
-    cont = open(fp, 'r').read()
+    if os.access (fp, os.R_OK):
+        cont = open(fp, 'r').read()
 
-    # MySQL
-    if 'DB: Created MySQL database' in cont:
-        return "MySQL"
-    if 'DB: Created PostgreSQL database' in cont:
-        return "PostgreSQL"
+        # MySQL
+        if 'DB: Created MySQL database' in cont:
+            return "MySQL"
+        if 'DB: Created PostgreSQL database' in cont:
+            return "PostgreSQL"
 
 
 def app_database_remove (app, user, passw, db_type):
@@ -356,20 +357,19 @@ class ListApps:
 
     def _figure_app_name (self, app):
         app_name = _('Unknown')
-        try:
-            fp = os.path.join (CHEROKEE_OWS_ROOT, app, 'install.log')
-            if os.access (fp, os.R_OK):
-                cont = open(fp, 'r').read()
-                tmp = re.findall (r'Checking\: (.+)\, ID', cont, re.M)
-                if tmp:
-                    app_name = tmp[0]
-        except:
-            pass
+
+        fp = os.path.join (CHEROKEE_OWS_ROOT, app, 'install.log')
+        if os.access (fp, os.R_OK):
+            cont = open(fp, 'r').read()
+            tmp = re.findall (r'Checking\: (.+)\, ID', cont, re.M)
+            if tmp:
+                app_name = tmp[0]
+
         return app_name
 
     def _figure_app_service (self, app):
-        try:
-            fp = os.path.join (CHEROKEE_OWS_ROOT, app, 'install.log')
+        fp = os.path.join (CHEROKEE_OWS_ROOT, app, 'install.log')
+        if os.access (fp, os.R_OK):
             cont = open(fp, 'r').read()
 
             tmp = re.findall (r'Registered system service\: (.+)\n', cont, re.M)
@@ -379,8 +379,6 @@ class ListApps:
             tmp = re.findall (r'Registered Launchd service\: (.+)\n', cont, re.M)
             if tmp:
                 return tmp[0]
-        except:
-            pass
 
 
 def ListApps_Apply():
@@ -517,6 +515,11 @@ class RemoveApps:
         cont  = CTK.Container()
         cont += CTK.RawHTML ("<h2>%s</h2>" %(_("Removing Applications")))
         cont += CommandProgress.CommandProgress (commands, URL_MAINTENANCE_FINISHED)
+
+        buttons = CTK.DruidButtonsPanel()
+        buttons += CTK.DruidButton_Close(_('Cancel'))
+        cont += buttons
+
         return cont.Render().toStr()
 
 
