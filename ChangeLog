@@ -1,3 +1,168 @@
+2011-02-02  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6234 git=8803edeef2ea6c58b6c3144ea794fccd4d80fe9c
+
+    Safer check for 'isntall.log'
+    
+ admin/market/Maintenance.py |   36 +++++++++++++++++-------------------
+ 1 files changed, 17 insertions(+), 19 deletions(-)
+
+2011-02-02  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6233 git=d0b94f31ece80b5848672e679b12cf786176a49d
+
+    Solaris deserves a slot as well, doesn't it?
+    
+ admin/SystemInfo.py |    6 ++++++
+ 1 files changed, 6 insertions(+), 0 deletions(-)
+
+
+2011-02-02  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6232 git=3bc8dd1c3747b3c41d7b61b97a97d05a54652167
+
+    rrdtool is optional. Do not print an error if not found.
+    
+ cherokee/rrd_tools.c |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+
+2011-02-02  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6231 git=644e70ded37540ef8a70a11a8c65133468085bf7
+
+    Completes the Solaris back-end
+    
+ admin/SystemStats.py |    5 +++++
+ 1 files changed, 5 insertions(+), 0 deletions(-)
+
+
+2011-02-01  Taher Shihadeh  <taher@unixwars.com>
+            svn=6230 git=c65ac326f6aad9e6a0bb3c622cb8c0b5861a8089
+
+    Add DruidButtonsPanel so that the previous one is not inherited. Display only cancellation button
+    
+ admin/market/Maintenance.py |    5 +++++
+ 1 files changed, 5 insertions(+), 0 deletions(-)
+
+
+2011-02-01  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6229 git=7ff9a444bb91f214c116dda6a877c84470ad737e
+
+    Adds a missing import. Fixes regression.
+    
+ admin/market/Util.py |    1 +
+ 1 files changed, 1 insertions(+), 0 deletions(-)
+
+
+2011-02-01  Taher Shihadeh  <taher@unixwars.com>
+            svn=6228 git=b2d2ab02aea8568a5fe62f842dfe84a6a4208a00
+
+    Completes freebsd_ports support
+    
+ admin/SystemInfo.py  |    9 +++++++++
+ admin/market/Util.py |    3 ++-
+ 2 files changed, 11 insertions(+), 1 deletions(-)
+
+
+2011-02-01  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6227 git=91c122c80f3764781b93439d9bcdce20714d3e11
+
+    Fixes FreeBSD support and adds Solaris' IPS
+    
+ admin/market/Util.py |   20 +++++++++++++-------
+ 1 files changed, 13 insertions(+), 7 deletions(-)
+
+
+2011-02-01  Taher Shihadeh  <taher@unixwars.com>
+            svn=6226 git=c66a25a369b0c709d5198f6122c1858114490ab8
+
+    InstructionBox got smarter
+    
+ admin/market/Util.py |  118 ++++++++++++++++++++++++++++----------------------
+ 1 files changed, 66 insertions(+), 52 deletions(-)
+
+
+2011-02-01  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6225 git=9c97cca8526f09067f6548ec61cc80aac0eca31c
+
+    Adds a new path so the php-cgi binary that Solaris's SUNWphp52
+    installs is detected as well.
+    
+ admin/wizards/php.py |    1 +
+ 1 files changed, 1 insertions(+), 0 deletions(-)
+
+
+2011-02-01  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6224 git=d8f7a7d88bd216e5679ad155c840fd855f95ba64
+
+    Implements a fairly simple System Stats backend for Solaris.
+    
+ admin/SystemStats.py |   87 ++++++++++++++++++++++++++++++++++++++++++++++---
+ 1 files changed, 81 insertions(+), 6 deletions(-)
+
+
+2011-02-01  Taher Shihadeh  <taher@unixwars.com>
+            svn=6223 git=09e510aaf40a4ce811f76e3ed898e3f66b3ee7ec
+
+    Distro was not being identified correctly
+    
+ admin/market/Util.py |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+
+2011-02-01  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6222 git=ad0d727781f5672593be864a77a106da7502c6e5
+
+    Do not be so strict when a system is not supported by SystemStants.
+    It's acceptable if, instead of reporting a fatal error, the statistics
+    are simply not displayed. This patch allows current cherokee-admin to
+    run on Solaris.
+    
+ admin/SystemStats.py |    3 ++-
+ 1 files changed, 2 insertions(+), 1 deletions(-)
+
+
+2011-02-01  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6220 git=845ed9d7a19886d3faeb8f9d9685ce9669aa2868
+
+    Another couple of fixes for Solaris
+    
+ cherokee/util.c |    4 ++--
+ 1 files changed, 2 insertions(+), 2 deletions(-)
+
+
+2011-02-01  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6219 git=c6a6e80513f1d3912008402b4533ebcfdda300b8
+
+    Fixes a compilation issue on Solaris
+    
+ cherokee/fdpoll-port.c |    1 +
+ 1 files changed, 1 insertions(+), 0 deletions(-)
+
+
+2011-02-01  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6218 git=c91622f5d8601a49ac813597157eb803a569fb79
+
+    Fixes an issue on our MacOS X's askpass script. Thanks to Pablo de la
+    Concepción Sanz for the patch!
+    
+ cherokee/cherokee-macos-askpass |    1 +
+ 1 files changed, 1 insertions(+), 0 deletions(-)
+
+
+2011-01-31  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6217 git=3573f10e93dbdf133e86788fd8b1dcd698b1bf7a
+
+    Usability improvement
+    
+ admin/OWS_Login.py |    6 ++++++
+ 1 files changed, 6 insertions(+), 0 deletions(-)
+
+2011-01-31  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6216 git=3e35d4e4455b6623aab11904d581349c11932227
+
+    Cherokee 1.0.19 released
+    
+ configure.in |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
 2011-01-31  Alvaro Lopez Ortega  <alvaro@octality.com>
             svn=6214 git=acdee28a533aeb43d9411ae0dd58aee5d07baaa3
 
