@@ -1,3 +1,9 @@
+cherokee (1.0.20-2) UNRELEASED; urgency=low
+
+  * No longer skips the test suite while building
+
+ -- Gunnar Wolf <gwolf@debian.org>  Tue, 08 Feb 2011 10:38:38 -0600
+
 cherokee (1.0.20-1) unstable; urgency=low
 
   * New Upstream Version
