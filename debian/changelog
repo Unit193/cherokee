@@ -7,8 +7,10 @@ cherokee (1.2.1-1) unstable; urgency=low
     correct
   * Corrected a typo: cherokee-admin replaces and conflicts with
     libcherokee-config0, not libcherokee-mod-config0 (Closes: #612558)
+  * Updated initscript to current usage; fixed spurious periods being
+    shown at its invocation (Closes: #607900)
 
- -- Gunnar Wolf <gwolf@debian.org>  Thu, 24 Feb 2011 13:16:31 -0600
+ -- Gunnar Wolf <gwolf@debian.org>  Thu, 24 Feb 2011 13:41:31 -0600
 
 cherokee (1.0.20-2) UNRELEASED; urgency=low
 
