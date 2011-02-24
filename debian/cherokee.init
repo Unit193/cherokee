@@ -25,27 +25,16 @@ set -e
 
 test -x $DAEMON || exit 0
 
-report_success() {
-    if [ $? = 0 ]; then
-	echo $NAME
-    else
-	echo "$NAME - Failed."
-	false
-    fi
-}
-
 case "$1" in
   start)	
-	echo -n "Starting web server ($NAME): "
+	echo "Starting $NAME web server "
 	start-stop-daemon --start --oknodo --pidfile $PIDFILE --exec $DAEMON -b
-	report_success
 	;;
 
   stop)
-	echo -n "Stopping web server ($NAME): "
+	echo "Stopping $NAME web server "
 	start-stop-daemon --stop --oknodo --pidfile $PIDFILE --exec $DAEMON
 	rm -f $PIDFILE
-	report_success
 	;;
 
   restart)
@@ -55,7 +44,7 @@ case "$1" in
 	;;
 
   reload|force-reload)
-	echo -n "Reloading web server: "
+	echo "Reloading web server "
 	if [ -f $PIDFILE ]
 	    then
 	    PID=$(cat $PIDFILE)
@@ -70,7 +59,6 @@ case "$1" in
 	    echo "No PID file present for $NAME - Cannot reload"
 	    exit 1
 	fi
-	report_success
 	;;
 
   status)
@@ -79,7 +67,7 @@ case "$1" in
 	# http://www.freestandards.org/spec/refspecs/LSB_1.3.0/gLSB/gLSB/iniscrptact.html
 	# http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=208010
 	# ...So we just inform to the invoker and return success.
-	printf "%s web server status:\t" "$NAME"
+	echo "$NAME web server status"
 	if [ -e $PIDFILE ] ; then
 	    PROCNAME=$(ps -p $(cat $PIDFILE) -o comm=)
 	    if [ "x$PROCNAME" = "x" ]; then
