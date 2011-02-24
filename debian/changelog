@@ -3,8 +3,10 @@ cherokee (1.2.1-1) unstable; urgency=low
   * New Upstream Version
   * Commented line in debian/rules which caused looping and unspeakable
     buildd grief (Closes: #612482)
+  * No longer modifies manpage section of cherokee-admin.1 - It is now
+    correct
 
- -- Gunnar Wolf <gwolf@debian.org>  Thu, 24 Feb 2011 11:35:31 -0600
+ -- Gunnar Wolf <gwolf@debian.org>  Thu, 24 Feb 2011 11:42:49 -0600
 
 cherokee (1.0.20-2) UNRELEASED; urgency=low
 
