@@ -43,7 +43,6 @@ override_dh_pysupport:
 
 override_dh_install:
 	dh_install
-	dh binary-arch --until dh_install
 	# We avoid manually stating each of the files to be included
 	# in libcherokee-server0 by copying over to them all the
 	# corresponding (*.so) files we have in
