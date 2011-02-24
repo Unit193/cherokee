@@ -64,7 +64,7 @@ def is_web_path (value):
     raise ValueError, _('Malformed path')
 
 def strip_trailing_slashes (value):
-    while value[-1] == '/':
+    while len(value) > 1 and  value[-1] == '/':
         value = value [:-1]
     return value
 
@@ -432,4 +432,14 @@ def is_email (value):
     if re.match (r"^\S+@\S+\.\S+$", value) == None:
         raise ValueError, _("Please insert a valid email")
 
+    return value
+
+def has_no_quotes (value):
+    if "'" in value:
+        raise ValueError, _("Cannot contain the quote (') character")
+    return value
+
+def has_no_double_quotes (value):
+    if '"' in value:
+        raise ValueError, _('Cannot contain the double quote (") character')
     return value

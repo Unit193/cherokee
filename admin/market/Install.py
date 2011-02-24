@@ -62,9 +62,6 @@ NOTE_THANKS_P1    = N_("Cherokee is now ready to run the application. Please, re
 NOTE_THANKS_P2    = N_("Thank you for buying at Cherokee's Market!")
 NOTE_SAVE_RESTART = N_("Since there were previous changes your configuration has not been applied automatically. Please do it yourself by clicking the SAVE button on the top-right corner.")
 
-NOTE_OLD_CHEROKEE_P1 = N_("Your Cherokee version can no longer access many of the features of the Cherokee Market. Please, upgrade Cherokee to an up-to-date version.")
-NOTE_OLD_CHEROKEE_P2 = N_("We apologize for the inconveniences.")
-
 NO_ROOT_H1 = N_("Privileges test failed")
 NO_ROOT_P1 = N_("Since the installations may require administrator to execute system administration commands, it is required to run Cherokee-admin under a user with  administrator privileges.")
 NO_ROOT_P2 = N_("Please, run cherokee-admin as root to solve the problem.")
@@ -178,10 +175,13 @@ class Init_Check (Install_Stage):
         xmlrpc = XmlRpcServer (OWS_APPS_INSTALL, user=OWS_Login.login_user, password=OWS_Login.login_password)
         install_info = xmlrpc.get_install_info (app_id, info)
 
-        if install_info.get('required_cherokee_version'):
-            cont += CTK.RawHTML ("<h2>%s</h2>"%(_('Cherokee Upgrade Required')))
-            cont += CTK.RawHTML ("<p>%s</p>"%(_(NOTE_OLD_CHEROKEE_P1)))
-            cont += CTK.RawHTML ("<p>%s</p>"%(_(NOTE_OLD_CHEROKEE_P2)))
+        if install_info.get('error'):
+            title  = install_info['error']['error_title']
+            errors = install_info['error']['error_strings']
+
+            cont += CTK.RawHTML ("<h2>%s</h2>"%(_(title)))
+            for error in errors:
+                cont += CTK.RawHTML ("<p>%s</p>"%(_(error)))
 
             buttons = CTK.DruidButtonsPanel()
             buttons += CTK.DruidButton_Close(_('Close'))
@@ -327,6 +327,7 @@ def Exception_Handler_Apply():
     info['user']     = OWS_Login.login_user
     info['comments'] = CTK.post['comments']
     info['platform'] = SystemInfo.get_info()
+    info['cfg']      = CTK.cfg.serialize()
     info['tmp!market!install'] = CTK.cfg['tmp!market!install'].serialize()
 
     # Send it
@@ -524,7 +525,7 @@ class Install_Done_Content (Install_Stage):
 
         # Save / Visit
         if int(cfg_changes):
-            box += CTK.RawHTML ("<p>%s</p>" %(_(NOTE_SAVE_RESTART)))
+            box += CTK.Notice ('information', CTK.RawHTML (_(NOTE_SAVE_RESTART)))
 
         elif Cherokee.server.is_alive():
             install_type = CTK.cfg.get_val ('tmp!market!install!target')
@@ -536,7 +537,7 @@ class Install_Done_Content (Install_Stage):
             if vserver_n and not nick:
                 nick = CTK.cfg.get_val ("vserver!%s!nick"%(vserver_n))
 
-            if nick.lower() == "default":
+            if not nick or nick.lower() == "default":
                 sys_stats = SystemStats.get_system_stats()
                 nick = sys_stats.hostname
 

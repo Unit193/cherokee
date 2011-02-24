@@ -595,8 +595,8 @@ process_polling_connections (cherokee_thread_t *thd)
 		case -1:
 			/* Error, move back the connection
 			 */
-			TRACE (ENTRIES",polling", "conn %p(fd=%d): status is Error\n",
-			       conn, SOCKET_FD(&conn->socket));
+			TRACE (ENTRIES",polling", "conn %p(fd=%d): status is Error (fd=%d)\n",
+			       conn, SOCKET_FD(&conn->socket), conn->polling_fd);
 
 			purge_closed_polling_connection (thd, conn);
 			continue;
@@ -1040,6 +1040,10 @@ process_active_connections (cherokee_thread_t *thd)
 				break;
 			case ret_eagain:
 				cherokee_connection_clean_for_respin (conn);
+				continue;
+			case ret_eof:
+				/* Connection drop */
+				close_active_connection (thd, conn, true);
 				continue;
 			default:
 				cherokee_connection_setup_error_handler (conn);

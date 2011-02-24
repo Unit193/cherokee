@@ -1,3 +1,1135 @@
+2011-02-24  Taher Shihadeh  <taher@unixwars.com>
+            svn=6360 git=20c9f46a86d3c1d6ec41e498ae2fdfa048f49ce5
+
+    Removes an unnecessary parameter from the interpreter line for Trac documentation
+    
+ doc/cookbook_trac.txt |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+2011-02-23  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6359 git=80389b27a0dfeac109af3fd1c0f754d5ee47a265
+
+    Better permissions management
+    
+ admin/market/Install_Log.py |    7 +++++--
+ 1 files changed, 5 insertions(+), 2 deletions(-)
+
+
+2011-02-23  Jonathan Hernandez  <ion@suavizado.com>
+            svn=6358 git=d4fe8b8812494c7097d90e4445de253342724bac
+
+    Fix dialog label/field width
+    
+ admin/static/css/cherokee-admin.css |    7 +++----
+ 1 files changed, 3 insertions(+), 4 deletions(-)
+
+
+2011-02-23  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6357 git=26ff88e547f95fa46a5b63c69918ececdffe708f
+
+    Fixes a bug in a validation function
+    
+ admin/validations.py |    4 +---
+ 1 files changed, 1 insertions(+), 3 deletions(-)
+
+
+2011-02-23  Taher Shihadeh  <taher@unixwars.com>
+            svn=6356 git=5bc1dbd568a214540e499899fce73a6177f610da
+
+    Updates recipes for 1.2 series. Elaborates on installation methods
+    
+ doc/Makefile.am          |   12 +++-
+ doc/cookbook_joomla.txt  |  177 +++++++++++++++++-----------------------------
+ doc/cookbook_liferay.txt |   23 +++---
+ doc/cookbook_moodle.txt  |   83 ++++++---------------
+ doc/cookbook_trac.txt    |   22 +++---
+ 5 files changed, 121 insertions(+), 196 deletions(-)
+
+
+2011-02-23  Taher Shihadeh  <taher@unixwars.com>
+            svn=6355 git=114d0c8d3af0af56682e01bc07889fe96f076eb6
+
+    Elaborates on manual installation methods for WordPress
+    
+ doc/cookbook_wordpress.txt                |  284 ++++++++++++++++++++++-------
+ doc/media/images/cookbook_wp_example1.png |  Bin 0 -> 8763 bytes
+ doc/media/images/cookbook_wp_example2.png |  Bin 0 -> 8280 bytes
+ doc/media/images/cookbook_wp_example3.png |  Bin 0 -> 13846 bytes
+ 4 files changed, 221 insertions(+), 63 deletions(-)
+
+
+2011-02-23  Taher Shihadeh  <taher@unixwars.com>
+            svn=6354 git=bf50ede06be05b3636bee356868ed4a6a07dcc0c
+
+    Elaborates on manual installation methods for Drupal
+    
+ doc/cookbook_drupal.txt                            |  428 ++++++++++++++++++--
+ doc/media/images/cookbook_drupal.png               |  Bin 27607 -> 27255 bytes
+ doc/media/images/cookbook_drupal_dir_rules.png     |  Bin 0 -> 17341 bytes
+ doc/media/images/cookbook_drupal_dir_rules_1.png   |  Bin 0 -> 15985 bytes
+ doc/media/images/cookbook_drupal_dir_rules_2.png   |  Bin 0 -> 15164 bytes
+ doc/media/images/cookbook_drupal_dir_rules_3.png   |  Bin 0 -> 7893 bytes
+ doc/media/images/cookbook_drupal_dir_rules_4.png   |  Bin 0 -> 13283 bytes
+ doc/media/images/cookbook_drupal_dir_rules_6.png   |  Bin 0 -> 21261 bytes
+ doc/media/images/cookbook_drupal_dir_rules_7.png   |  Bin 0 -> 15723 bytes
+ doc/media/images/cookbook_drupal_vserver_rules.png |  Bin 0 -> 14585 bytes
+ 10 files changed, 384 insertions(+), 44 deletions(-)
+
+
+2011-02-23  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6352 git=9fbb90985bb62f86667b1c13bd7d14a73ecd9ea8
+
+    For some reason, it seems that there are Cherokee configuration file
+    where virtual servers definition do not include the mandatory 'nick'
+    property. This patch covers the corner case.
+    
+ admin/market/Install.py |    3 ++-
+ 1 files changed, 2 insertions(+), 1 deletions(-)
+
+2011-02-22  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6351 git=606206a2861dd8c45d14494eaa9130d8cc0a6a32
+
+    Cherokee 1.2.0 released
+    
+ admin/configured.py.pre |    2 +-
+ configure.in            |    4 +-
+ po/admin/ca.po          | 3523 +++++++++++++++++----------------------------
+ po/admin/de.po          | 3474 ++++++++++++++++----------------------------
+ po/admin/en.po          | 3456 ++++++++++++++++---------------------------
+ po/admin/es.po          |   45 +
+ po/admin/fr.po          | 3445 ++++++++++++++++---------------------------
+ po/admin/gl.po          | 3698 ++++++++++++++++++-----------------------------
+ po/admin/it.po          | 3571 +++++++++++++++++----------------------------
+ po/admin/nl.po          | 3739 ++++++++++++++++++-----------------------------
+ po/admin/pl.po          | 3483 ++++++++++++++++----------------------------
+ po/admin/pt_BR.po       | 3444 ++++++++++++++++---------------------------
+ po/admin/sv_SE.po       | 3512 ++++++++++++++++----------------------------
+ po/admin/zh_CN.po       | 3459 ++++++++++++++++----------------------------
+ 14 files changed, 14380 insertions(+), 24475 deletions(-)
+
+2011-02-21  Taher Shihadeh  <taher@unixwars.com>
+            svn=6349 git=91f8f5506ace8857f1fed4e93efd613e37d1911d
+
+    Installation error reporting is more general now
+    
+ admin/market/Install.py |   14 +++++++-------
+ 1 files changed, 7 insertions(+), 7 deletions(-)
+
+2011-02-21  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6348 git=3f14daffe83faece7e8fee20f81b1f2082830b0a
+
+    Removes a few deprecated wizards that will not make it to the next
+    major version of the server.
+    
+ admin/wizards/List.py       |   44 ------
+ admin/wizards/Makefile.am   |   11 --
+ admin/wizards/drupal.py     |  356 -------------------------------------------
+ admin/wizards/joomla.py     |  352 ------------------------------------------
+ admin/wizards/liferay.py    |  241 -----------------------------
+ admin/wizards/mediawiki.py  |  319 --------------------------------------
+ admin/wizards/moinmoin.py   |  316 --------------------------------------
+ admin/wizards/moodle.py     |  273 ---------------------------------
+ admin/wizards/phpbb.py      |  282 ----------------------------------
+ admin/wizards/phpmyadmin.py |  286 ----------------------------------
+ admin/wizards/sugar.py      |  307 -------------------------------------
+ admin/wizards/trac.py       |  220 --------------------------
+ admin/wizards/wordpress.py  |  310 -------------------------------------
+ 13 files changed, 0 insertions(+), 3317 deletions(-)
+
+
+2011-02-20  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6347 git=dcc3b2f3dd4304cf951a72ee7479ea8a62869e77
+
+    Check that the 'localhost' host name can actually be resolved before
+    the SCGI server is initialized. Even though it is extremely unusual,
+    there have been some reports about cherokee-admin failing to start
+    because of this issue.
+    
+ admin/server.py |    7 +++++++
+ 1 files changed, 7 insertions(+), 0 deletions(-)
+
+
+2011-02-19  Jonathan Hernandez  <ion@suavizado.com>
+            svn=6343 git=5464d9741a3018c2c523a136ac48f407454d3b8d
+
+    Fix icons tab style
+    
+ admin/static/css/cherokee-admin.css |   12 ++++++++++++
+ 1 files changed, 12 insertions(+), 0 deletions(-)
+
+
+2011-02-18  Jonathan Hernandez  <ion@suavizado.com>
+            svn=6342 git=0c0efcff49a6c30c2f160ef9fd58835ee24d4f70
+
+    Remove scrollbars in help
+    
+ admin/static/css/cherokee-admin.css |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+
+2011-02-18  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6341 git=cebe23326a3ab0e9677e810cc35b9c3e9d20806a
+
+    There were times when the PageRule was reloading too many refreshable
+    widget too often. Bug #1124: http://bugs.cherokee-project.com/1124
+    
+ admin/PageEntry.py |   10 +++++++++-
+ admin/PageRule.py  |    4 ++--
+ 2 files changed, 11 insertions(+), 3 deletions(-)
+
+
+2011-02-18  Jonathan Hernandez  <ion@suavizado.com>
+            svn=6340 git=37fe1347e411b677757b94daa65358b1d803bb2e
+
+    Fix country list and bind table in rules tab.
+    
+ admin/plugins/bind.py               |    2 +-
+ admin/static/css/cherokee-admin.css |   28 ++++++++++++++++++++++++++++
+ 2 files changed, 29 insertions(+), 1 deletions(-)
+
+
+2011-02-18  Jonathan Hernandez  <ion@suavizado.com>
+            svn=6339 git=ef7ec8f6c62ee4848c5d0c16ebf9a5e9d6e37def
+
+    Fix flags style
+    
+ admin/Flags.py                      |    4 +-
+ admin/plugins/geoip.py              |    6 +++-
+ admin/static/css/cherokee-admin.css |   48 +++++++++++++++++++++++++++--------
+ 3 files changed, 43 insertions(+), 15 deletions(-)
+
+
+2011-02-18  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6338 git=a70998f49bf9377e08268b153d3ff20f6f0983e7
+
+    One of the plug-ins was not being distributed.
+    
+ admin/plugins/Makefile.am |    3 ++-
+ 1 files changed, 2 insertions(+), 1 deletions(-)
+
+
+2011-02-18  Jonathan Hernandez  <ion@suavizado.com>
+            svn=6337 git=757f7cff3b5615721f807ca22cb1e14774764814
+
+    Modify .title width in propstable that are in a dialog
+    
+ admin/static/css/cherokee-admin.css |    8 ++++++++
+ 1 files changed, 8 insertions(+), 0 deletions(-)
+
+
+2011-02-18  Jonathan Hernandez  <ion@suavizado.com>
+            svn=6336 git=801c23048929dd15e6f971c751fe5b4590c6ba72
+
+    Style enhacements for dialogs with panels
+    
+ admin/static/css/cherokee-admin.css |   12 ++++++++----
+ 1 files changed, 8 insertions(+), 4 deletions(-)
+
+
+2011-02-18  Jonathan Hernandez  <ion@suavizado.com>
+            svn=6335 git=aaab3c9567173bdbc509a5a59e0a1f11dedb361a
+
+    Style for Mime Types
+    
+ admin/Mime.py                       |   24 ++++++++++----
+ admin/static/css/cherokee-admin.css |   59 +++++++++++++++++++++++++++++++++++
+ 2 files changed, 76 insertions(+), 7 deletions(-)
+
+
+2011-02-18  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6334 git=f304871aaf497ae333f06a260a8e45ffab496794
+
+    EAGAIN on write were treated as EAGAIN on read by the FastCGI handler.
+    Thanks a million to Robert Olson <olson@mcs.anl.gov> for finding,
+    debugging and fixing this bug! http://bugs.cherokee-project.com/1133
+    
+ cherokee/handler_fcgi.c |    3 ++-
+ 1 files changed, 2 insertions(+), 1 deletions(-)
+
+
+2011-02-18  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6333 git=20a419f1b8e0fd29d5293a59fef4a95119954127
+
+    Removes an incorrect check. Substitution string is actually optional.
+    Fixes bug #1136: http://bugs.cherokee-project.com/1136
+    
+ admin/plugins/proxy.py |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+
+2011-02-18  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6332 git=b6aea2d8febf195cb9815d46197ad7d87ee4cb2b
+
+    Some processes were being left in zombie state by Cherokee-admin.
+    
+ admin/SystemStats.py |   25 +++++++++++--------------
+ 1 files changed, 11 insertions(+), 14 deletions(-)
+
+
+2011-02-17  Taher Shihadeh  <taher@unixwars.com>
+            svn=6331 git=c77919687329b00d82dff94d5a49083d57c8136f
+
+    Fixes some documentation typos. Thanks to Tom Browder <tom.browder@gmail.com>
+    
+ README                    |   10 +++++-----
+ cherokee-admin-launcher.1 |    2 +-
+ cherokee-config.1         |    2 +-
+ cherokee-tweak.1          |    2 +-
+ po/admin/es.po            |    4 ++--
+ 5 files changed, 10 insertions(+), 10 deletions(-)
+
+
+2011-02-17  Taher Shihadeh  <taher@unixwars.com>
+            svn=6330 git=92246682e58a6a2db7b3bebf4ebea48966b8ab02
+
+    Adds missing rule type to docs
+    
+ doc/config_virtual_servers_rule_types.txt |   25 ++++++++++++++-----------
+ 1 files changed, 14 insertions(+), 11 deletions(-)
+
+
+2011-02-17  Taher Shihadeh  <taher@unixwars.com>
+            svn=6329 git=18f78464a184fbf047f2e9701b06f3188bf2c550
+
+    Removes some unneeded calls to gettext
+    
+ admin/OWS_Login.py |    6 +++---
+ 1 files changed, 3 insertions(+), 3 deletions(-)
+
+2011-02-17  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6328 git=6be60645bb443f14e0f916d35cbfcf31213178de
+
+    Somehow patches did not merge well
+    
+ cherokee/cherokee-admin-launcher |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+
+2011-02-17  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6327 git=e11c343e42e99ad2341f3443a94190c7134139e8
+
+    Fixes a syntax and indentation issues
+    
+ cherokee/cherokee-admin-launcher |  124 +++++++++++++++++++-------------------
+ 1 files changed, 62 insertions(+), 62 deletions(-)
+
+
+2011-02-17  Taher Shihadeh  <taher@unixwars.com>
+            svn=6326 git=e0a61dfd71fbc25c97e725b4a9b6c01766d867d8
+
+    Fixes C&P related bug
+    
+ cherokee/cherokee-admin-launcher |    6 +++---
+ 1 files changed, 3 insertions(+), 3 deletions(-)
+
+
+2011-02-17  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6325 git=b0f57b1ff1bdf30e3317479ed391a96672fa9973
+
+    Improves how GNOME/KDE applications are detected. It tries to stick to
+    your desktop and prioritise its apps over 'the other desktop' apps.
+    
+ cherokee/cherokee-admin-launcher |   79 ++++++++++++++++++++++++++------------
+ 1 files changed, 54 insertions(+), 25 deletions(-)
+
+
+2011-02-17  Taher Shihadeh  <taher@unixwars.com>
+            svn=6324 git=28a79498839b5a320957bd41c14965f81675eec1
+
+    Changes incorrect screenshot
+    
+ doc/media/images/admin_notrunning.png |  Bin 16927 -> 10992 bytes
+ 1 files changed, 0 insertions(+), 0 deletions(-)
+
+
+2011-02-17  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6323 git=9cd92472061c5cc876554249fb822cc2d6c8fce9
+
+    The regular expression was so generic that it matches too many blocks
+    in some cases. For instance, it failed on Opteron based systems:
+    http://lists.octality.com/pipermail/cherokee/2011-February/014435.html
+    http://lists.octality.com/pipermail/cherokee/2011-February/014437.html
+    
+ admin/SystemStats.py |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+
+2011-02-17  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6322 git=038a01c5a9222f9c0282bd27e1951414a51a26d7
+
+    It seems that the previous way of counting kde/gnome programs was not
+    that accurate. This patch tries to solve the problem by counting
+    matching lines instead of matching words.
+    
+ cherokee/cherokee-admin-launcher |    6 +++---
+ 1 files changed, 3 insertions(+), 3 deletions(-)
+
+
+2011-02-17  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6321 git=4da1f12ba041b36eca1f82b7923795dbc83b0ca3
+
+    Adds /opt/cherokee-dev to the list of known paths. The 'Easy Install'
+    --devel options deploys a development version of Cherokee under that
+    path.
+    
+ cherokee/cherokee-admin-launcher |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+
+2011-02-17  Taher Shihadeh  <taher@unixwars.com>
+            svn=6320 git=0cc3d88b56d2217eacf0b614a07d4f817ee8c4af
+
+    Changes document name and links
+    
+ doc/Makefile.am                     |    2 +-
+ doc/basics_running_cherokee.txt     |    2 +-
+ doc/config.txt                      |    2 +-
+ doc/config_quickstart.txt           |  350 -----------------------------------
+ doc/config_walkthrough.txt          |  350 +++++++++++++++++++++++++++++++++++
+ doc/cookbook_authentication.txt     |    2 +-
+ doc/cookbook_redirs.txt             |    2 +-
+ doc/index.txt                       |    2 +-
+ doc/other_bundle_cherokee-admin.txt |    2 +-
+ 9 files changed, 357 insertions(+), 357 deletions(-)
+
+
+2011-02-17  Taher Shihadeh  <taher@unixwars.com>
+            svn=6319 git=1b0c02b2d46541085226fcd999b31fccb1b484ef
+
+    Documentation should now be up to date
+    
+ doc/basics_installation_easy-install.txt |   10 ++--
+ doc/config.txt                           |    2 +-
+ doc/config_quickstart.txt                |  110 +++++++++++++++---------------
+ doc/index.txt                            |    2 +-
+ doc/media/images/admin_noconfig.png      |  Bin 11638 -> 16236 bytes
+ doc/media/images/admin_notrunning.png    |  Bin 5814 -> 16927 bytes
+ 6 files changed, 63 insertions(+), 61 deletions(-)
+
+
+2011-02-17  Taher Shihadeh  <taher@unixwars.com>
+            svn=6318 git=684e80c1216ed4e1ac9052f8a9a777a76d2de23d
+
+    Adds note to easy installation instructions
+    
+ doc/basics_installation_easy-install.txt |   27 +++++++++++++++++++++++++--
+ 1 files changed, 25 insertions(+), 2 deletions(-)
+
+
+2011-02-16  Taher Shihadeh  <taher@unixwars.com>
+            svn=6317 git=472fd6f9f8c1936b93b356a068b39e9c61c78c2d
+
+    Documentation improvements and additions
+    
+ doc/Makefile.am                              |    2 ++
+ doc/config_virtual_servers.txt               |   13 ++++++++++++-
+ doc/cookbook.txt                             |    1 +
+ doc/cookbook_traffic_restriction.txt         |   23 +++++++++++++++++++++++
+ doc/index.txt                                |    3 +++
+ doc/modules.txt                              |    1 +
+ doc/modules_handlers.txt                     |    1 +
+ doc/modules_handlers_drop.txt                |   25 +++++++++++++++++++++++++
+ doc/modules_loggers_custom.txt               |   24 +++++++++++++++++++++++-
+ doc/other_bundle_cherokee-admin-launcher.txt |   22 +++++++++++++++++++++-
+ doc/other_community.txt                      |    7 +++++++
+ 11 files changed, 119 insertions(+), 3 deletions(-)
+
+
+2011-02-16  Taher Shihadeh  <taher@unixwars.com>
+            svn=6316 git=72cf3891c89334a1ea37cf218e92d9bac0e00aaa
+
+    Updates manpages
+    
+ cherokee-admin-launcher.1 |    2 +-
+ cherokee-admin.1          |   16 ++++++++++------
+ cherokee-config.1         |    8 ++++++--
+ cherokee-tweak.1          |    6 +++---
+ cherokee.1                |   12 ++++++------
+ 5 files changed, 26 insertions(+), 18 deletions(-)
+
+
+2011-02-16  Taher Shihadeh  <taher@unixwars.com>
+            svn=6315 git=f22a982a4ee77e8a02ce827a833c741ad7a6483c
+
+    Updates bunch of bundle-documentation pages
+    
+ doc/modules_balancers.txt            |    2 +-
+ doc/other_bundle_cherokee-admin.txt  |   15 ++++++++++-----
+ doc/other_bundle_cherokee-config.txt |    4 ++--
+ doc/other_bundle_cherokee-worker.txt |    2 +-
+ doc/other_bundle_cherokee.txt        |   19 ++++++++++---------
+ 5 files changed, 24 insertions(+), 18 deletions(-)
+
+2011-02-16  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6314 git=91051615f4bd1dbb67eec7dca83d1a90ad93a2d0
+
+    Fixes Makefile.am. Compilation was broken.
+    
+ doc/Makefile.am |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+2011-02-16  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6313 git=7e964eff9d9680e6159bf6b2c225c1372d5b9fb8
+
+    Enhances a TRACE entry
+    
+ cherokee/thread.c |    4 ++--
+ 1 files changed, 2 insertions(+), 2 deletions(-)
+
+
+2011-02-16  Taher Shihadeh  <taher@unixwars.com>
+            svn=6312 git=05b5d92ace9acf5268079bc32c0f5149c7023a5c
+
+    Add a comment for future development
+    
+ doc/test_links.py |    5 +++--
+ 1 files changed, 3 insertions(+), 2 deletions(-)
+
+
+2011-02-16  Taher Shihadeh  <taher@unixwars.com>
+            svn=6311 git=66ad4d78de4fdc7948a24c77b2166d47c56fb032
+
+    Adds script to check links, and fixes a number of detected issues
+    
+ doc/Makefile.am           |    7 ++++-
+ doc/config_wizards.txt    |    2 -
+ doc/modules_balancers.txt |    4 +-
+ doc/test_links.py         |   67 +++++++++++++++++++++++++++++++++++++++++++++
+ 4 files changed, 75 insertions(+), 5 deletions(-)
+
+
+2011-02-16  Taher Shihadeh  <taher@unixwars.com>
+            svn=6310 git=88c6ff003097f7c0f884d1a6e35381570b4f73a1
+
+    Typo fix
+    
+ doc/test_images.py |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+
+2011-02-16  Taher Shihadeh  <taher@unixwars.com>
+            svn=6309 git=b4afe584d02c5b45b4a7906127298058d78ce4b4
+
+    Documents substitution limit
+    
+ doc/modules_handlers_redir.txt |   13 +++++++++++--
+ 1 files changed, 11 insertions(+), 2 deletions(-)
+
+
+2011-02-16  Taher Shihadeh  <taher@unixwars.com>
+            svn=6308 git=ff1bc0e372fd36af5ed0f51cffb01fdc811697bc
+
+    Documents redirection enhancements
+    
+ doc/Makefile.am                   |    1 +
+ doc/cookbook.txt                  |    1 +
+ doc/cookbook_global_redirects.txt |   56 +++++++++++++++++++++++++++++++++++++
+ doc/index.txt                     |    1 +
+ doc/modules_handlers_redir.txt    |   23 +++++++++++++++
+ 5 files changed, 82 insertions(+), 0 deletions(-)
+
+
+2011-02-16  Taher Shihadeh  <taher@unixwars.com>
+            svn=6307 git=aef8785466ba4bf5a95089bd5c496f6c0ec4620c
+
+    Updates the Reverse Proxy documentation
+    
+ doc/modules_handlers_proxy.txt |   20 +++++++++++++++++---
+ 1 files changed, 17 insertions(+), 3 deletions(-)
+
+
+2011-02-16  Jonathan Hernandez  <ion@suavizado.com>
+            svn=6306 git=5dbc11e40b630795d0ff1d9c1dcbbddfcb16869f
+
+    Place Report Issue link
+    
+ admin/static/css/cherokee-admin.css |    6 ++++++
+ 1 files changed, 6 insertions(+), 0 deletions(-)
+
+
+2011-02-16  Jonathan Hernandez  <ion@suavizado.com>
+            svn=6305 git=a8c42b9bcf67933fcb983b8fe4edc2e2ba0b8ffb
+
+    Increment market desc panel height
+    
+ admin/static/css/cherokee-admin.css |    6 +++---
+ 1 files changed, 3 insertions(+), 3 deletions(-)
+
+
+2011-02-16  Jonathan Hernandez  <ion@suavizado.com>
+            svn=6304 git=fe44e4df22ed381e65412105eb9411e3e5a8c4d6
+
+    Use white-space: pre-wrap for pre style
+    
+ admin/static/css/cherokee-admin.css |    1 +
+ 1 files changed, 1 insertions(+), 0 deletions(-)
+
+
+2011-02-16  Jonathan Hernandez  <ion@suavizado.com>
+            svn=6303 git=8d7b0a44aab1f544f43a52082410d2b96a897feb
+
+    Fix Maintenance dialog style
+    
+ admin/static/css/cherokee-admin.css |    7 +++++++
+ 1 files changed, 7 insertions(+), 0 deletions(-)
+
+
+2011-02-15  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6302 git=ca7288cd1de7721c01e077d8a4a3b1e2d8497af2
+
+    Adds a new QA to test the new Full header regex match feature.
+    
+ qa/271-full-header-check1.py |   29 +++++++++++++++++++++++++++++
+ qa/Makefile.am               |    3 ++-
+ 2 files changed, 31 insertions(+), 1 deletions(-)
+
+
+2011-02-15  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6301 git=b89255cf62e80ef4f79e163bc55ef7a7a8292fdd
+
+    Extends the rule 'header' functionality so a regex can be matched
+    against the complete request header (rather than against a single
+    header entry).
+    
+ admin/plugins/header.py |   68 ++++++++++++++++++++++++++------------
+ cherokee/rule_header.c  |   82 ++++++++++++++++++++++++++++++++++++-----------
+ cherokee/rule_header.h  |    1 +
+ 3 files changed, 110 insertions(+), 41 deletions(-)
+
+
+2011-02-15  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6300 git=1d8210cf9dea5673210f08ea73205a6a801fad1d
+
+    Adds a new handler: 'drop'. It drops the TCP connection without
+    replying anything whatsoever.
+    
+ admin/consts.py         |    3 +-
+ admin/plugins/drop.py   |   35 ++++++++++++++++++++++++++++
+ cherokee/Makefile.am    |   20 ++++++++++++++++
+ cherokee/connection.c   |    1 +
+ cherokee/handler_drop.c |   58 +++++++++++++++++++++++++++++++++++++++++++++++
+ cherokee/handler_drop.h |   41 +++++++++++++++++++++++++++++++++
+ cherokee/thread.c       |    4 +++
+ configure.in            |    3 +-
+ 8 files changed, 163 insertions(+), 2 deletions(-)
+
+
+2011-02-15  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6299 git=28b4844cfd08450fb19bdd7bdd45d9570412ae8b
+
+    Minor clean up
+    
+ cherokee/main_admin.c |    3 ++-
+ 1 files changed, 2 insertions(+), 1 deletions(-)
+
+2011-02-15  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6298 git=39823dbfa556d9ffcfaf70b51ee24a96198f32b7
+
+    It is a good practice to reset all the inherited signal handlers right
+    before forking.
+    
+ cherokee/main.c |   19 ++++++++++++++++++-
+ 1 files changed, 18 insertions(+), 1 deletions(-)
+
+
+2011-02-15  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6297 git=c205a3eba27fa76c18c82991a96a6d1753660930
+
+    Reimplements cherokee_reset_signals()
+    
+ cherokee/util.c |   36 +++++++++++++++---------------------
+ 1 files changed, 15 insertions(+), 21 deletions(-)
+
+
+2011-02-15  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6296 git=6d5d86b13f2066071248745eaf45f6330db9542b
+
+    Fixes a couple of functional issues on the Maintenance process
+    implementation.
+    
+ admin/market/CommandProgress.py |    1 +
+ admin/market/Maintenance.py     |   29 ++++++++++++++++++++---------
+ 2 files changed, 21 insertions(+), 9 deletions(-)
+
+
+2011-02-15  Taher Shihadeh  <taher@unixwars.com>
+            svn=6295 git=37a994cce76b12b089583d4c7243210fb7bf9ce6
+
+    Protected sources should be determined taking into account if the rules are actually using them, not only if they appear associated to a given rule
+    
+ admin/PageSource.py |   14 ++++++++------
+ 1 files changed, 8 insertions(+), 6 deletions(-)
+
+
+2011-02-14  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6291 git=a5d4abcf51d568669b1ce15e7d1a0a161935217a
+
+    FastCGI, SCGI, uWSGI and CGI handlers inherit the $PATH variable now.
+    
+ cherokee/handler_cgi_base.c |   16 +++++++++++++++-
+ 1 files changed, 15 insertions(+), 1 deletions(-)
+
+
+2011-02-13  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6290 git=8549bbd4f138f5bae6c6088186cd6f7ea9762495
+
+    Fixes the Spanish translation
+    
+ po/admin/es.po |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+
+2011-02-13  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6289 git=34d0d2255ac3fdeae8fbe1b8284658ec9cce04a8
+
+    Fixes a typo
+    
+ admin/PageVServer.py |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+
+2011-02-12  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6288 git=17574e77a62714d35797837a93fa1914e1a7afec
+
+    Fixes typo: s/nsecs/msecs/g
+    
+ cherokee/logger_custom.c |    4 ++--
+ 1 files changed, 2 insertions(+), 2 deletions(-)
+
+
+2011-02-12  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6287 git=ea969f1eb42386b91cf48a2bb6c85e496634c3fa
+
+    Milliseconds calculations overflowed on 32bit architectures. Thanks to
+    wimschuermann for the findings and patch! It fixes bug #1132:
+    http://bugs.cherokee-project.com/1132
+    
+ cherokee/bogotime.c |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+
+2011-02-12  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6286 git=7f007b411b2ec5d2832bbe963ee0de5e4cb6df46
+
+    Improves one of the initial sanity checks. It covers a corner case
+    where Cherokee is partially installed.
+    
+ admin/PageError.py |   18 +++++++++---------
+ admin/server.py    |   18 +++++++-----------
+ 2 files changed, 16 insertions(+), 20 deletions(-)
+
+
+2011-02-11  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6285 git=43eef672eea24301d1482be7fea7215adec0e557
+
+    Fixes the spawning mechanism on ARM.
+    
+ cherokee/main.c    |   11 ++++++++---
+ cherokee/spawner.c |   29 +++++++++++++++++++++++------
+ 2 files changed, 31 insertions(+), 9 deletions(-)
+
+
+2011-02-11  Taher Shihadeh  <taher@unixwars.com>
+            svn=6284 git=ee654a65007de9e0fb7ab82917dfcf5c8828acc6
+
+    Sync rest of .po files with main POT
+    
+ po/admin/ca.po    | 3345 +++++++++++++++++++++++++++++++++++-----------------
+ po/admin/de.po    | 3297 ++++++++++++++++++++++++++++++++++----------------
+ po/admin/en.po    | 3166 +++++++++++++++++++++++++++++++++---------------
+ po/admin/fr.po    | 3163 +++++++++++++++++++++++++++++++++---------------
+ po/admin/gl.po    | 3436 ++++++++++++++++++++++++++++++++++++----------------
+ po/admin/it.po    | 3350 +++++++++++++++++++++++++++++++++++----------------
+ po/admin/nl.po    | 3460 ++++++++++++++++++++++++++++++++++++-----------------
+ po/admin/pl.po    | 3175 +++++++++++++++++++++++++++++++++---------------
+ po/admin/pt_BR.po | 3159 +++++++++++++++++++++++++++++++++---------------
+ po/admin/sv_SE.po | 3344 +++++++++++++++++++++++++++++++++++-----------------
+ po/admin/zh_CN.po | 3166 +++++++++++++++++++++++++++++++++---------------
+ 11 files changed, 24740 insertions(+), 11321 deletions(-)
+
+
+2011-02-11  Taher Shihadeh  <taher@unixwars.com>
+            svn=6283 git=8f80430a2e79ff7d4c6652baf4f1f5599e934946
+
+    Spanish translation: 100%
+    
+ po/admin/es.po |  895 +++++++++++++++++++++++++++----------------------------
+ 1 files changed, 439 insertions(+), 456 deletions(-)
+
+
+2011-02-11  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6282 git=cffabd0ca0a4550f08d7405b690fa5cabb132700
+
+    Re-implements a few bits of the spawning mechanism.
+    
+ cherokee/main.c    |  127 +++++++++++++++++++++++++++++++++++-----------------
+ cherokee/shm.c     |    4 ++
+ cherokee/spawner.c |   47 ++++++++++++++-----
+ 3 files changed, 125 insertions(+), 53 deletions(-)
+
+
+2011-02-11  Taher Shihadeh  <taher@unixwars.com>
+            svn=6281 git=2a8aef4bb3a1f41c063d1648ba1376cf9995aca7
+
+    Typo fixes
+    
+ admin/OWS_Backup.py |    4 ++--
+ 1 files changed, 2 insertions(+), 2 deletions(-)
+
+
+2011-02-11  Taher Shihadeh  <taher@unixwars.com>
+            svn=6280 git=88e1a79636dd3c21237b2ca668c734dacc5c725a
+
+    Some more gettext modifications
+    
+ admin/PageIndex.py      |    6 +++---
+ admin/PageVServers.py   |    4 ++--
+ admin/market/Review.py  |    4 ++--
+ admin/plugins/exists.py |    2 +-
+ admin/plugins/header.py |    2 +-
+ 5 files changed, 9 insertions(+), 9 deletions(-)
+
+
+2011-02-11  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6279 git=97c834ba0897b49fa4a4288c93f199b96acb9abc
+
+    Fixes a gettext issue
+    
+ admin/market/Maintenance.py |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+
+2011-02-11  Taher Shihadeh  <taher@unixwars.com>
+            svn=6278 git=a7a11fe4c9c2d7980ebfd16b06f9ee16984e88c9
+
+    Address Mono wizard problem (issue 1130). Typo detecting document_root
+    
+ admin/wizards/mono.py |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+
+2011-02-10  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6277 git=3148028febf7f7cead57284a424c98023ab006e6
+
+    Improves the Linux SystemStats collector. It did not completely work
+    on ARM-based Linux systems.
+    
+ admin/SystemStats.py |   18 ++++++++++++++++--
+ 1 files changed, 16 insertions(+), 2 deletions(-)
+
+
+2011-02-10  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6275 git=acc4e5219e5f66b99b89a9076de4651d19a1adfb
+
+    Minor style fix
+    
+ admin/market/PageApp.py |    9 +++++----
+ admin/market/Report.py  |    2 ++
+ 2 files changed, 7 insertions(+), 4 deletions(-)
+
+
+2011-02-10  Taher Shihadeh  <taher@unixwars.com>
+            svn=6274 git=3708821f35623adb5ab01d395a918de56a338cb9
+
+    Adds extra field and relocates button
+    
+ admin/market/PageApp.py |    4 ++--
+ admin/market/Report.py  |    3 +++
+ 2 files changed, 5 insertions(+), 2 deletions(-)
+
+
+2011-02-10  Taher Shihadeh  <taher@unixwars.com>
+            svn=6273 git=e6bf80f0650f58d574893a4e068e8d98aaa048db
+
+    Adds application reporting capabilities. Needs some styling
+    
+ admin/market/Makefile.am   |    1 +
+ admin/market/PageApp.py    |   17 +++++
+ admin/market/Report.py     |  142 ++++++++++++++++++++++++++++++++++++++++++++
+ admin/market/__init__.py   |    1 +
+ admin/market/ows_consts.py |    1 +
+ 5 files changed, 162 insertions(+), 0 deletions(-)
+
+
+2011-02-10  Taher Shihadeh  <taher@unixwars.com>
+            svn=6271 git=7cac064c1dfc317f25321c0216ec0d5fb441d0be
+
+    The error message was incomplete
+    
+ admin/market/Review.py |    3 ++-
+ 1 files changed, 2 insertions(+), 1 deletions(-)
+
+
+2011-02-10  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6270 git=a97a566a615923dc9b6b51b0d64bb6b2d7f74f06
+
+    Covers a corner case. New configuration files are created in a safer
+    way on development environments.
+    
+ admin/PageNewConfig.py |   14 +++++++++++---
+ 1 files changed, 11 insertions(+), 3 deletions(-)
+
+
+2011-02-10  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6269 git=b2f10d05b218a78ff9bbd4b784eb1f9bf76e020b
+
+    'file' is a reservered word in Python
+    
+ admin/PageNewConfig.py |   10 +++++-----
+ 1 files changed, 5 insertions(+), 5 deletions(-)
+
+
+2011-02-10  Taher Shihadeh  <taher@unixwars.com>
+            svn=6268 git=1e096ff7eb5d6aaeb5e46387a44c0295ded7687a
+
+    Fix copy&paste issue
+    
+ admin/market/Maintenance.py |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+
+2011-02-10  Taher Shihadeh  <taher@unixwars.com>
+            svn=6267 git=e40dd4eac3fd21bdd77213dde4f68bf9d4b96f11
+
+    Fixes visualization issue when no screenshots are available
+    
+ admin/market/PageApp.py |    8 +++++---
+ 1 files changed, 5 insertions(+), 3 deletions(-)
+
+
+2011-02-09  Taher Shihadeh  <taher@unixwars.com>
+            svn=6266 git=09b364772cafca19a09e9b01f277b80e6073b91a
+
+    Fix regression introduced in instruction chooser
+    
+ admin/market/Util.py |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+
+2011-02-09  Taher Shihadeh  <taher@unixwars.com>
+            svn=6265 git=679e51748f49df63caf673b9f0776ab56051f287
+
+    InstructionBox bugfix. It wasn't quite working on some corner-case usages
+    
+ admin/market/Util.py |    7 +++++--
+ 1 files changed, 5 insertions(+), 2 deletions(-)
+
+
+2011-02-09  Taher Shihadeh  <taher@unixwars.com>
+            svn=6264 git=fd86b519bb6487e2cf2716103a3487d16be5013c
+
+    Style fix
+    
+ admin/market/Util.py |   11 +++++++----
+ 1 files changed, 7 insertions(+), 4 deletions(-)
+
+
+2011-02-09  Taher Shihadeh  <taher@unixwars.com>
+            svn=6263 git=b20b95cf60befe635484c54cd46a888bfbf54906
+
+    Enhanced market installation detection
+    
+ admin/PageVServers.py |   22 +++++++++++++++++++++-
+ 1 files changed, 21 insertions(+), 1 deletions(-)
+
+
+2011-02-08  Taher Shihadeh  <taher@unixwars.com>
+            svn=6262 git=3a98a5fec34aa3a8e07acbc456926490590ee035
+
+    Adds missing entry to main index
+    
+ doc/index.txt |    1 +
+ 1 files changed, 1 insertions(+), 0 deletions(-)
+
+
+2011-02-07  Taher Shihadeh  <taher@unixwars.com>
+            svn=6261 git=d861e309218906b6ebcc419e59784dac25b26695
+
+    Cleanup
+    
+ admin/market/Maintenance.py |    8 +++-----
+ 1 files changed, 3 insertions(+), 5 deletions(-)
+
+
+2011-02-07  Taher Shihadeh  <taher@unixwars.com>
+            svn=6260 git=e9bfe792fca3510a7f3beeb69cc82441616c68e0
+
+    FreeBSD service removal
+    
+ admin/market/Maintenance.py |   10 ++++++++++
+ 1 files changed, 10 insertions(+), 0 deletions(-)
+
+2011-02-07  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6259 git=c39f1027d6cbac5a107fc9a99c1b80be04751720
+
+    Cherokee 1.0.20 was released a few days ago. My bad!
+    
+ configure.in |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+2011-02-07  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6258 git=ccb6f4452f2fe40c3c8c1cb0dc1ecc8167ea9dda
+
+    Makes "Please click on SAVE" message more visible.
+    
+ admin/market/Install.py |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+
+2011-02-07  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6257 git=01553f539505fb60afc6f0bdacb74095a474ae85
+
+    Covers a corner case where an 'unfinished' app did already create a
+    virtual server entry in the configuration. Since the directory will be
+    removed on clean up, it would not make sense to leave the broken
+    virtual server lingering.
+    
+ admin/market/Maintenance.py |   49 ++++++++++++++++++++++++++++---------------
+ 1 files changed, 32 insertions(+), 17 deletions(-)
+
+
+2011-02-07  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6256 git=34533e67ce5877d57174a01566d14ffecad9b175
+
+    Fixes a couple of issues of the Django wizard. Now, it looks for a
+    Python interpreter instead of supposing "python" works. Besides, a
+    couple of strings and suggestions were fixed up.
+    
+ admin/wizards/django.py |   27 ++++++++++++---------------
+ 1 files changed, 12 insertions(+), 15 deletions(-)
+
+
+2011-02-06  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6255 git=762d18a000c1ed29240f3438f1be13c95c25621a
+
+    Finishes previous patch
+    
+ admin/market/Maintenance.py |   15 ++++++++++++---
+ 1 files changed, 12 insertions(+), 3 deletions(-)
+
+
+2011-02-06  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6254 git=deab56c5c1c910b535be002b31a89aa1c87fe364
+
+    Unfinished apps are not even orphans
+    
+ admin/market/Maintenance.py |    7 +++++++
+ 1 files changed, 7 insertions(+), 0 deletions(-)
+
+
+2011-02-06  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6253 git=25b0c0ca0bf48a39f8aa91fcce9a63372205d614
+
+    Fixes a comment (C&P issue)
+    
+ admin/market/Maintenance.py |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+
+2011-02-06  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6252 git=50d251206e44bf6a55251cf1b0328511437277a3
+
+    Makes the interface function a little more flexible.
+    
+ admin/util.py |    5 ++++-
+ 1 files changed, 4 insertions(+), 1 deletions(-)
+
+
+2011-02-06  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6251 git=f2de4d67e3ea4c0143d9b466023ca030a43e707d
+
+    It seems that some Linux distributions have renamed "python" to
+    "python2" in order to make Python 3.x the default interpreter.
+    
+ configure.in   |    2 +-
+ qa/conf.py.pre |    1 +
+ 2 files changed, 2 insertions(+), 1 deletions(-)
+
+
+2011-02-06  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6250 git=2ea8d158e6d641112ce2a317621a20fda002359f
+
+    The DOCUMENT_ROOT value was not right when using the 'Enhanced Virtual
+    Hosting' feature. Fixes bug #993: http://bugs.cherokee-project.com/993
+    
+ cherokee/handler_cgi_base.c |   14 ++++++++++----
+ 1 files changed, 10 insertions(+), 4 deletions(-)
+
+
+2011-02-04  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6247 git=7ec98b58363802440e0e878734411ebc1b106944
+
+    Better Configuration File validation.
+    
+ admin/SavingChecks.py |    8 +++-----
+ admin/consts.py       |    4 ++++
+ 2 files changed, 7 insertions(+), 5 deletions(-)
+
+
+2011-02-04  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6246 git=e67500f1c6bcc3e8acfe051001335543d4a1a2d0
+
+    Covers a corner case that made cherokee-admin display an empty
+    property panel while dealing with unfinished configuration files.
+    
+ admin/Balancer.py |   14 +++++++++++++-
+ 1 files changed, 13 insertions(+), 1 deletions(-)
+
+
+2011-02-04  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6245 git=e4ca223cd189a81e2eb4e462c9d67252c66a3ce9
+
+    Improves responsiveness of the Start/Stop Server button.
+    
+ admin/Cherokee.py |   47 ++++++++++++++++++++++++++++++++++++++---------
+ 1 files changed, 38 insertions(+), 9 deletions(-)
+
+
+2011-02-04  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6244 git=ca2d26c49ad831da32de7043327e0bf44a0637fe
+
+    Fixes typo
+    
+ cherokee/info.c |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+
+2011-02-04  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6243 git=004ea01fa8a9bdbb4b9e77ae31e1d8624873cca1
+
+    Fixes the FreeBSD Stats back-end so it can work on FreeBSD 8. I hope
+    these fixes do not introduce any regression on FreeBSD 7.
+    
+ admin/SystemStats.py |   88 ++++++++++++++++++++++----------------------------
+ 1 files changed, 39 insertions(+), 49 deletions(-)
+
+
+2011-02-04  Taher Shihadeh  <taher@unixwars.com>
+            svn=6242 git=25a379b2124bb722e51509e0e961a3ac166a4cb1
+
+    An exception would be raised if last_popen_ret was not updated for some reason (no space left on device, for instance)
+    
+ admin/market/CommandProgress.py |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+
+2011-02-04  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6241 git=60823c1917af4e64f7924a7c8fc913d38569c57f
+
+    Adds to new validation functions.
+    
+ admin/validations.py |   12 ++++++++++++
+ 1 files changed, 12 insertions(+), 0 deletions(-)
+
+
+2011-02-03  Taher Shihadeh  <taher@unixwars.com>
+            svn=6239 git=c98cb24afdbfb3eea9ca18826ac63201bd451d10
+
+    Regression fix
+    
+ admin/market/Util.py |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
 2011-02-02  Alvaro Lopez Ortega  <alvaro@octality.com>
             svn=6234 git=8803edeef2ea6c58b6c3144ea794fccd4d80fe9c
 

@@ -99,22 +99,15 @@ These entries are able to use the connection parameters (both pathinfo
 </li>
 <li>
 <p>
-<strong>GeoIP</strong>: If GeoIP support is present, this type of rules can be
-      added. The GeoIP library has to be present at build time for
-      this to happen. If enabled, specific behavior can be offered
-      depending on the country of origin of the requests to the web
-      server. Note that the country is determined by matching the IPs
-      to the actual list of countries handled by the library, so the
-      usage of proxies on the user side will render this resolution
-      mechanism inaccurate. An initial country must be added to the
-      rule, and more selections can be added in further steps.
+<strong>Incoming IP/Port</strong>: If the server is running on several ports,
+      this rule type will let you specify to which port&#8217;s pettitions
+      will it apply.
 </p>
 </li>
 <li>
 <p>
-<strong>Incoming IP/Port</strong>: If the server is running on several ports,
-      this rule type will let you specify to which port&#8217;s pettitions
-      will it apply.
+<strong>SSL / TLS</strong>: This rule type is applied to incomming HTTPS
+      connections.
 </p>
 </li>
 <li>
@@ -136,6 +129,19 @@ These entries are able to use the connection parameters (both pathinfo
 <strong>URL Argument</strong>: will allow you to match a Regular Expressions to
       the URL arguments, be it a specific one or any of the possible
       arguments.
+</p>
+</li>
+<li>
+<p>
+<strong>GeoIP</strong>: If GeoIP support is present, this type of rules can be
+      added. The GeoIP library has to be present at build time for
+      this to happen. If enabled, specific behavior can be offered
+      depending on the country of origin of the requests to the web
+      server. Note that the country is determined by matching the IPs
+      to the actual list of countries handled by the library, so the
+      usage of proxies on the user side will render this resolution
+      mechanism inaccurate. An initial country must be added to the
+      rule, and more selections can be added in further steps.
 </p>
 </li>
 </ul></div>

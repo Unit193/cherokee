@@ -139,6 +139,23 @@ class App:
             buy += buy_button
             buy += login_txt
 
+        # Report button
+        report = CTK.Container()
+        if OWS_Login.is_logged():
+            CTK.cfg['tmp!market!report!app_id'] = str(self.text_app_id)
+
+            druid  = CTK.Druid (CTK.RefreshableURL())
+            report_dialog = CTK.Dialog ({'title':(_("Report Application")), 'width': 480})
+            report_dialog += druid
+            druid.bind ('druid_exiting', report_dialog.JS_to_close())
+
+            report_link = CTK.Link (None, CTK.RawHTML(_("Report issue")))
+            report_link.bind ('click', report_dialog.JS_to_show() + \
+                                       druid.JS_to_goto('"%s"'%(URL_REPORT)))
+
+            report += report_dialog
+            report += report_link
+
         app  = CTK.Box ({'class': 'market-app-desc'})
         app += CTK.Box ({'class': 'market-app-desc-icon'},        CTK.Image({'src': OWS_STATIC + info['icon_big']}))
         app += CTK.Box ({'class': 'market-app-desc-buy'},         buy)
@@ -147,6 +164,7 @@ class App:
         app += CTK.Box ({'class': 'market-app-desc-url'},         by)
         app += CTK.Box ({'class': 'market-app-desc-category'},    CTK.RawHTML("%s: %s" %(_("Category"), info['category_name'])))
         app += CTK.Box ({'class': 'market-app-desc-short-desc'},  CTK.RawHTML(info['summary']))
+        app += CTK.Box ({'class': 'market-app-desc-report'},      report)
         cont += app
 
         ext_description = CTK.Box ({'class': 'market-app-desc-description'})
@@ -159,14 +177,16 @@ class App:
         tabs = CTK.Tab()
 
         # Shots
+        shots = CTK.CarouselThumbnails()
         shot_entries = info.get('shots', [])
-        if shot_entries:
-            shots = CTK.CarouselThumbnails()
-            tabs.Add (_('Screenshots'), shots)
 
+        if shot_entries:
             for s in shot_entries:
                 shots += CTK.Image ({'src': "%s/%s" %(OWS_STATIC, s)})
+        else:
+            shots += CTK.Box ({'id': 'shot-box-empty'}, CTK.RawHTML ('<h2>%s</h2>' %(_("No screenshots"))))
 
+        tabs.Add (_('Screenshots'), shots)
         tabs.Add (_('Description'), desc_panel)
         app += tabs
 

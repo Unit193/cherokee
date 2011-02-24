@@ -144,7 +144,10 @@ class InstructionBox (CTK.Box):
 
         self += CTK.RawHTML ('<p>%s</p>' %(_(note)))
 
-        if type(instructions) == dict:
+        if instructions == None:
+            return
+
+        elif type(instructions) == dict:
             info = self.choose_instructions (instructions, kwargs)
 
         elif type(instructions) == list: # This was the InstructionBoxAlternative behavior
@@ -159,7 +162,7 @@ class InstructionBox (CTK.Box):
         if not info:
             return
         elif len(info) == 1:
-            self.__add_one (info)
+            self.__add_one (info[0])
         else:
             self.__add_many (info)
 
@@ -172,17 +175,20 @@ class InstructionBox (CTK.Box):
 
 
     def __add_many (self, info_list):
-        lst     = CTK.List()
-        for info in info_list:
-            lst.Add (CTK.RawHTML('<pre>%s</pre>' %(_(info))))
-
         notice  = CTK.Notice ()
         notice += CTK.RawHTML ('<p>%s:</p>' %(_('Several alternatives can provide the software requirements for the installation. Try at least one of the following instructions to install your preferred option')))
-        notice += lst
+
+        for info in info_list:
+            lst = CTK.List()
+            lst.Add (CTK.RawHTML('<pre>%s</pre>' %(_(info))))
+            notice += lst
+            if info != info_list[-1]:
+                notice += CTK.RawHTML('<em>%s</em>' %(_('or')))
+
         self += notice
 
 
-    def choose_instructions (self, instructions, kwargs):
+    def choose_instructions (self, instructions, kwargs={}):
         data    = SystemInfo.get_info()
         system  = data.get('system','').lower()
         distro  = data.get('linux_distro_id','').lower()

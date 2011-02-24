@@ -2887,8 +2887,9 @@ msgid ""
 msgstr ""
 
 #: cherokee-trunk/admin/market/Install.py:308
+#, fuzzy
 msgid "Setting up"
-msgstr ""
+msgstr "Privacy settings"
 
 #: cherokee-trunk/admin/market/Install.py:309
 msgid "Unpacking application…"
@@ -2928,7 +2929,7 @@ msgstr "Report sent"
 #: cherokee-trunk/admin/market/Install.py:370
 #, fuzzy
 msgid "Setting up application…"
-msgstr "General Configuration"
+msgstr "Application Server"
 
 #: cherokee-trunk/admin/market/Install.py:479
 msgid "has been installed successfully"
@@ -4664,8 +4665,9 @@ msgid ""
 msgstr ""
 
 #: cherokee-trunk/admin/wizards/uwsgi.py:39
+#, fuzzy
 msgid "Welcome to the uWsgi Wizard"
-msgstr ""
+msgstr "Welcome to Cherokee Admin"
 
 #: cherokee-trunk/admin/wizards/uwsgi.py:40
 msgid ""
@@ -4871,8 +4873,9 @@ msgid "Could not determine PHP-fpm settings."
 msgstr ""
 
 #: cherokee-trunk/admin/wizards/php.py:133
+#, fuzzy
 msgid "Could not determine correct interpreter settings."
-msgstr ""
+msgstr "Create a new configuration file"
 
 #: cherokee-trunk/admin/wizards/trac.py:38
 #, fuzzy
@@ -4945,8 +4948,9 @@ msgid "Would you like to apply the changes to the running server now?"
 msgstr "Commit to disk and apply changes to the running server"
 
 #: cherokee-trunk/admin/Page.py:35
+#, fuzzy
 msgid "The configuration file has been saved successfuly."
-msgstr ""
+msgstr "Configuration saved."
 
 #: cherokee-trunk/admin/Page.py:87
 msgid "Do not restart"
@@ -5341,10 +5345,11 @@ msgid "The Configuration File was restored successfuly"
 msgstr "Configuration saved."
 
 #: cherokee-trunk/admin/OWS_Backup.py:66
+#, fuzzy
 msgid ""
 "The configuration has been rolled back to a previous version. Please, click "
 "the Save button if you want to commit the changes."
-msgstr ""
+msgstr "Configuration saved."
 
 #: cherokee-trunk/admin/OWS_Backup.py:131
 msgid "Back up…"
@@ -7148,8 +7153,9 @@ msgid "Unknown target"
 msgstr "Unknown"
 
 #: packages/common/target.py:187
+#, fuzzy
 msgid "Package Deployment"
-msgstr ""
+msgstr "Realm"
 
 #: packages/common/system.py:76
 msgid "Could not create user."
@@ -7241,8 +7247,9 @@ msgid "Could not parse the PHP-fpm settings file"
 msgstr "Create a new configuration file"
 
 #: packages/common/php.py:286
+#, fuzzy
 msgid "Could not read the \"fpm_listen_address\" property"
-msgstr ""
+msgstr "Could not access file descriptors: "
 
 #: packages/liferay/installer.py:139
 msgid ""
@@ -7632,24 +7639,279 @@ msgid ""
 msgstr ""
 
 #, fuzzy
-#~ msgid "partial installations: "
+#~ msgid "Source Usage"
+#~ msgstr "Source usage"
+
+#, fuzzy
+#~ msgid "Source"
+#~ msgstr "Source usage"
+
+#, fuzzy
+#~ msgid "Failover"
+#~ msgstr "Filter"
+
+#, fuzzy
+#~ msgid ""
+#~ "Use the VServer error handler, whenever an error response is received "
+#~ "from a back-end server. (Default: No)"
+#~ msgstr ""
+#~ "Preserve the original \"Host:\" header sent by the client. (Default No)"
+
+#, fuzzy
+#~ msgid "Use VServer error handler"
+#~ msgstr "Preserve Host header"
+
+#, fuzzy
+#~ msgid "Use it"
+#~ msgstr "Use TLS"
+
+#, fuzzy
+#~ msgid "or"
+#~ msgstr "Port"
+
+#, fuzzy
+#~ msgid "Unknown Error"
+#~ msgstr "Unknown"
+
+#, fuzzy
+#~ msgid "Unfinished"
 #~ msgstr "Remote Administration"
+
+#, fuzzy
+#~ msgid "Databases"
+#~ msgstr "Database"
+
+#, fuzzy
+#~ msgid "Report Application"
+#~ msgstr "Application Server"
+
+#, fuzzy
+#~ msgid "Report issue"
+#~ msgstr "Report sent"
+
+#, fuzzy
+#~ msgid "Setting it up…"
+#~ msgstr "General Configuration"
+
+#, fuzzy
+#~ msgid "Report sent successfully"
+#~ msgstr "Report sent"
+
+#, fuzzy
+#~ msgid "Request refund"
+#~ msgstr "Request"
+
+#, fuzzy
+#~ msgid "Report"
+#~ msgstr "Report"
+
+#, fuzzy
+#~ msgid "Could not determine PHP-CGI configuration file."
+#~ msgstr "Create a new configuration file"
+
+#, fuzzy
+#~ msgid "Save Configuration"
+#~ msgstr "Advanced configuration"
+
+#, fuzzy
+#~ msgid "Sanity checks"
+#~ msgstr "Do not restart"
+
+#, fuzzy
+#~ msgid "Note that the configuration file was not saved."
+#~ msgstr "Create a new configuration file"
+
+#, fuzzy
+#~ msgid "Solve"
+#~ msgstr "Save"
+
+#, fuzzy
+#~ msgid "Configuration successfully saved"
+#~ msgstr "Configuration File Not Found"
+
+#, fuzzy
+#~ msgid "Authentication rule without Realm"
+#~ msgstr "Authentication"
+
+#, fuzzy
+#~ msgid "Virtual Server without nickname"
+#~ msgstr "Virtual Server nickname"
+
+#, fuzzy
+#~ msgid "Virtual Server without document root"
+#~ msgstr "Virtual Server root directory."
+
+#, fuzzy
+#~ msgid "Directory match without a directory"
+#~ msgstr "Path is not a directory"
+
+#, fuzzy
+#~ msgid "Empty 'Incoming IP/Port' match"
+#~ msgstr "Incoming Port"
+
+#, fuzzy
+#~ msgid "Broken Source"
+#~ msgstr "Web Directory"
+
+#, fuzzy
+#~ msgid "Your current Configuration file matches the restored version."
+#~ msgstr "Information Sources"
+
+#, fuzzy
+#~ msgid "Path is a directory"
+#~ msgstr "Path is not a directory"
+
+#, fuzzy
+#~ msgid "Loading new configuration file.."
+#~ msgstr "Create a new configuration file"
+
+#, fuzzy
+#~ msgid "Remote IP address"
+#~ msgstr "LDAP server IP address."
+
+#, fuzzy
+#~ msgid "Local IP address"
+#~ msgstr "LDAP server IP address."
+
+#, fuzzy
+#~ msgid "Request Protocol"
+#~ msgstr "Request"
+
+#, fuzzy
+#~ msgid "Remote user (authentication)"
+#~ msgstr "Base domain for the web server authentications."
+
+#, fuzzy
+#~ msgid "Virtual Server nick name"
+#~ msgstr "Virtual Server nickname"
+
+#, fuzzy
+#~ msgid "Show macros"
+#~ msgstr "Show Group"
+
+#, fuzzy
+#~ msgid "Hide"
+#~ msgstr "Header"
+
+#, fuzzy
+#~ msgid "Checking Requirements"
+#~ msgstr "Connections"
+
+#, fuzzy
+#~ msgid "Access details"
+#~ msgstr "Access Restrictions"
+
+#, fuzzy
+#~ msgid "Installing Trac"
+#~ msgstr "Remote Administration"
+
+#, fuzzy
+#~ msgid "Error report"
+#~ msgstr "Error Handler"
+
+#, fuzzy
+#~ msgid "Expected value"
+#~ msgstr "Execute as User"
+
+#, fuzzy
+#~ msgid "Current value"
+#~ msgstr "Custom value"
+
+#, fuzzy
+#~ msgid "Wiki details"
+#~ msgstr "Redirections"
+
+#, fuzzy
+#~ msgid "Username for the administrator account."
+#~ msgstr "Remote Administration"
+
+#, fuzzy
+#~ msgid "Password for the administrator account."
+#~ msgstr "Remote Administration"
+
+#, fuzzy
+#~ msgid "Site details"
+#~ msgstr "Show User"
+
+#, fuzzy
+#~ msgid "Admin user"
+#~ msgstr "User"
+
+#, fuzzy
+#~ msgid "Admin password"
+#~ msgstr "Bind Password"
+
+#, fuzzy
+#~ msgid "Admin email"
+#~ msgstr "User"
+
+#, fuzzy
+#~ msgid "Sitename"
+#~ msgstr "Filename"
+
+#, fuzzy
+#~ msgid "Performing Drupal installation"
+#~ msgstr "Remote Administration"
+
+#, fuzzy
+#~ msgid "Installing Nagios"
+#~ msgstr "Remote Administration"
+
+#, fuzzy
+#~ msgid "Database Requirements"
+#~ msgstr "Path does not exist"
+
+#, fuzzy
+#~ msgid "Installing WsgiDAV"
+#~ msgstr "Remote Administration"
+
+#, fuzzy
+#~ msgid "Local directory"
+#~ msgstr "Web Directory"
+
+#, fuzzy
+#~ msgid "WsgiDAV configuration"
+#~ msgstr "General Configuration"
+
+#, fuzzy
+#~ msgid "Communicating DB details."
+#~ msgstr "Authentication Details"
+
+#, fuzzy
+#~ msgid "Performing automatic installation"
+#~ msgstr "Remote Administration"
+
+#, fuzzy
+#~ msgid "Username for the administrator account. Only lower case allowed."
+#~ msgstr "Remote Administration"
+
+#, fuzzy
+#~ msgid "Full sitename"
+#~ msgstr "Filename"
+
+#, fuzzy
+#~ msgid "Short sitename"
+#~ msgstr "Host names"
+
+#, fuzzy
+#~ msgid "Domain name"
+#~ msgstr "Domain pattern"
+
+#, fuzzy
+#~ msgid "Moodle License"
+#~ msgstr "Wildcards"
+
+#, fuzzy
+#~ msgid "Accept license"
+#~ msgstr "Base Domain"
 
 #, fuzzy
 #~ msgid "Application available"
 #~ msgstr "Application Server"
 
 #, fuzzy
-#~ msgid "New port"
-#~ msgstr "Report"
-
-#, fuzzy
 #~ msgid "Password configuration"
 #~ msgstr "Icon configuration"
-
-#, fuzzy
-#~ msgid "Could not write configuration file"
-#~ msgstr "Create a new configuration file"
 
 #, fuzzy
 #~ msgid "Could not validate Nagios configuration"

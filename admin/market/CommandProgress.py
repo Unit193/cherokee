@@ -117,7 +117,7 @@ class CommandProgress (CTK.Box, Replacement_Commons):
                 ret     = command_progress.last_popen_ret
                 percent = command_progress.executed * 100.0 / (commands_len + 1)
 
-                if ret['command']:
+                if ret.get('command'):
                     title_error = CTK.escape_html (ret['command'])
                 elif command_entry.has_key ('function'):
                     title_error = CTK.escape_html (command_entry['function'].__name__)
@@ -178,6 +178,7 @@ class CommandProgress (CTK.Box, Replacement_Commons):
 class CommandExec_Thread (threading.Thread):
     def __init__ (self, command_progress):
         threading.Thread.__init__ (self)
+        self.daemon           = True
         self.command_progress = command_progress
 
     def run (self):

@@ -2429,6 +2429,7 @@ msgid "Free"
 msgstr "Gratis"
 
 #: cherokee-trunk/admin/market/Util.py:150
+#, fuzzy
 msgid "These instructions will help you install the required software"
 msgstr "Deze instructies helpen je de benodigde software te installeren"
 
@@ -2512,12 +2513,13 @@ msgid "Market Home"
 msgstr "Markt Begin"
 
 #: cherokee-trunk/admin/market/Maintenance.py:40
+#, fuzzy
 msgid ""
 "Specify the name of a privileged DB user. It will be used to automatically "
 "create the required database."
 msgstr ""
-"Specificeer de naam van een bevoorrechte DB gebruiker. Het zal gebruikt "
-"worden om de benodigde database aan te maken."
+"Geef de naam van de bevoordeelde DB gebruiker. Het zal worden gebruikt om "
+"automatisch de benodigde gebruiker en database te maken."
 
 #: cherokee-trunk/admin/market/Maintenance.py:41
 #: packages/common/database.py:17
@@ -2525,6 +2527,7 @@ msgid "Specify the password for this user account."
 msgstr "Specificeer het wachtwoord voor dit account."
 
 #: cherokee-trunk/admin/market/Maintenance.py:42
+#, fuzzy
 msgid "Database removal"
 msgstr "Databank verwijderen"
 
@@ -2577,12 +2580,14 @@ msgid "Date"
 msgstr "Datum"
 
 #: cherokee-trunk/admin/market/Maintenance.py:252
+#, fuzzy
 msgid "Orphan application"
 msgstr "Wees applicatie"
 
 #: cherokee-trunk/admin/market/Maintenance.py:263
+#, fuzzy
 msgid "Unfinished installation"
-msgstr "Niet afgemaakte installatie"
+msgstr "Markt installatie"
 
 #: cherokee-trunk/admin/market/Maintenance.py:291
 msgid "Applications requiring maintenance"
@@ -2708,6 +2713,7 @@ msgstr ""
 "\" om door te gaan bij de betaal sectie."
 
 #: cherokee-trunk/admin/market/Install.py:55
+#, fuzzy
 msgid ""
 "The application will be downloaded and installed afterwards. It will also "
 "remain in your library for any future installation."
@@ -2795,6 +2801,7 @@ msgstr ""
 "op als het probleem blijft."
 
 #: cherokee-trunk/admin/market/Install.py:308
+#, fuzzy
 msgid "Setting up"
 msgstr "Instellen"
 
@@ -3504,12 +3511,13 @@ msgstr ""
 "het makkelijker om betere webapplicaties sneller te bouwen met minder code."
 
 #: cherokee-trunk/admin/wizards/django.py:42
+#, fuzzy
 msgid ""
 "Local directory where the Django source code is located. Example: /usr/share/"
 "django."
 msgstr ""
-"Lokale map waar de Django broncode is neergezet. Voorbeeld: /usr/share/"
-"django."
+"Pad naar de map waar de Drupal broncode is neergezet. Voorbeeld: /usr/share/"
+"drupal."
 
 #: cherokee-trunk/admin/wizards/django.py:45
 msgid "Web directory where you want Django to be accessible. (Example: /blog)"
@@ -3918,6 +3926,7 @@ msgstr ""
 "PHP."
 
 #: cherokee-trunk/admin/wizards/List.py:109
+#, fuzzy
 msgid "Fast, self-healing, developer-friendly WSGI server."
 msgstr "Snelle, zelf herstellende, ontwikkelaar vriendelijke WSGI server."
 
@@ -4658,10 +4667,12 @@ msgstr ""
 "toevoegen om de belasting te verdelen."
 
 #: cherokee-trunk/admin/wizards/uwsgi.py:39
+#, fuzzy
 msgid "Welcome to the uWsgi Wizard"
 msgstr "Welkom bij de uWsgi Assistent"
 
 #: cherokee-trunk/admin/wizards/uwsgi.py:40
+#, fuzzy
 msgid ""
 "<a target=\"_blank\" href=\"http://projects.unbit.it/uwsgi/\">uWSGI</a> is a "
 "fast (pure C), self-healing, developer-friendly WSGI server, aimed for "
@@ -4672,6 +4683,7 @@ msgstr ""
 "gericht op professionele python webapplicatie ontwikkeling en inzet."
 
 #: cherokee-trunk/admin/wizards/uwsgi.py:41
+#, fuzzy
 msgid ""
 "Over time it has evolved in a complete stack for networked/clustered python "
 "applications, implementing message/object passing and process management. It "
@@ -4684,6 +4696,7 @@ msgstr ""
 "interproces communicatie."
 
 #: cherokee-trunk/admin/wizards/uwsgi.py:44
+#, fuzzy
 msgid ""
 "Path to the uWSGI configuration file (XML or Python-only). Its mountpoint "
 "will be used."
@@ -4946,6 +4959,7 @@ msgid "Would you like to apply the changes to the running server now?"
 msgstr "Wil je de wijzigingen direct toepassen op de draaiend server?"
 
 #: cherokee-trunk/admin/Page.py:35
+#, fuzzy
 msgid "The configuration file has been saved successfuly."
 msgstr "Het configuratiebestand is succesvol opgeslagen."
 
@@ -5342,10 +5356,12 @@ msgstr ""
 "bestand."
 
 #: cherokee-trunk/admin/OWS_Backup.py:65
+#, fuzzy
 msgid "The Configuration File was restored successfuly"
 msgstr "Het configuratiebestand is succesvol hersteld"
 
 #: cherokee-trunk/admin/OWS_Backup.py:66
+#, fuzzy
 msgid ""
 "The configuration has been rolled back to a previous version. Please, click "
 "the Save button if you want to commit the changes."
@@ -6364,6 +6380,7 @@ msgid "Select"
 msgstr "Selecteer"
 
 #: cherokee-trunk/admin/OWS_Cherokee_Info.py:36
+#, fuzzy
 msgid ""
 "Thank you for testing a development snapshot. It helps us to create the "
 "highest quality product."
@@ -6380,6 +6397,7 @@ msgid "Latest version could not be determined at the moment."
 msgstr "Laatste versie kan momenteel niet worden bepaald."
 
 #: cherokee-trunk/admin/OWS_Cherokee_Info.py:69
+#, fuzzy
 msgid "Cherokee is up to date."
 msgstr "Cherokee is recent."
 
@@ -7035,6 +7053,7 @@ msgstr ""
 "gebruiker moet toegang hebben om het te gebruiken."
 
 #: packages/common/database.py:23
+#, fuzzy
 msgid "Please, provide details of an existing database and user/password pair."
 msgstr ""
 "Geef de informatie over de beschikbare database en gebruikersnaam/wachtwoord "
@@ -7207,6 +7226,7 @@ msgstr ""
 "gaan."
 
 #: packages/common/php.py:51
+#, fuzzy
 msgid ""
 "You can check if your interpreter supports FastCGI by looking for the \"fcgi"
 "\" string in the output of the following command: \"php-cgi -v | grep fcgi\""
@@ -7600,6 +7620,7 @@ msgid "Nuxeo can only be deployed under its default location /nuxeo."
 msgstr "Nuxeo kan alleen worden uitgerold onder de standaard locatie /nuxeo."
 
 #: packages/nuxeo-dam/installer.py:102 packages/nuxeo-dm/installer.py:102
+#, fuzzy
 msgid ""
 "The appropriate redirection rule will be created regardles of the web path "
 "or deployment method chosen."
@@ -7657,14 +7678,427 @@ msgstr ""
 "Bedenk dat het starten van Nuxeo-DM enige minuten kan duren op moderne "
 "servers, dus heb even geduld bij het eerste bezoek."
 
-#~ msgid "partial installations: "
+#, fuzzy
+#~ msgid "Source Usage"
+#~ msgstr "Bron gebruik"
+
+#, fuzzy
+#~ msgid "Source"
+#~ msgstr "Bronnen"
+
+#, fuzzy
+#~ msgid "Failover"
+#~ msgstr "Filter"
+
+#, fuzzy
+#~ msgid ""
+#~ "Use the VServer error handler, whenever an error response is received "
+#~ "from a back-end server. (Default: No)"
+#~ msgstr ""
+#~ "Behoud de originele \"Server: \" kopregel die is verzonden door de back-"
+#~ "end server. (Standaard: Nee)"
+
+#, fuzzy
+#~ msgid "Use VServer error handler"
+#~ msgstr "Behoud Serverkopregel"
+
+#, fuzzy
+#~ msgid "Use it"
+#~ msgstr "Gebruik TLS"
+
+#, fuzzy
+#~ msgid "or"
+#~ msgstr "Poort"
+
+#, fuzzy
+#~ msgid "Unknown Error"
+#~ msgstr "Onbekende Processor"
+
+#, fuzzy
+#~ msgid ""
+#~ "Specify the name of a privileged DB user. It will be used to remove the "
+#~ "databases."
+#~ msgstr ""
+#~ "Specificeer de naam van een bevoorrechte DB gebruiker. Het zal gebruikt "
+#~ "worden om de benodigde database aan te maken."
+
+#, fuzzy
+#~ msgid "Unfinished"
+#~ msgstr "Ongedefinieerd.."
+
+#, fuzzy
+#~ msgid "Removing %(name)s (%(date)s)"
+#~ msgstr "op %(date)s om %(time)s"
+
+#, fuzzy
+#~ msgid "Removing Applications"
+#~ msgstr "Top Applicaties"
+
+#, fuzzy
+#~ msgid "Deployment methods"
+#~ msgstr "Implementatiemethode"
+
+#, fuzzy
+#~ msgid "Operating Systems"
+#~ msgstr "Afrekenen"
+
+#, fuzzy
+#~ msgid "Databases"
+#~ msgstr "Databank"
+
+#, fuzzy
+#~ msgid "Report Application"
+#~ msgstr "Top Applicaties"
+
+#, fuzzy
+#~ msgid "Report issue"
+#~ msgstr "Rapporteer Probleem"
+
+#, fuzzy
+#~ msgid "Connecting to Cherokee Market"
+#~ msgstr "Log in op de Cherokee Markt"
+
+#, fuzzy
+#~ msgid "The applicaction is being unpacked…"
+#~ msgstr "De applicatie is gedownload. Hou je vast!"
+
+#, fuzzy
+#~ msgid "Setting it up…"
+#~ msgstr "Instellen"
+
+#, fuzzy
+#~ msgid "We are sorry, but the report could not be sent."
+#~ msgstr "Onze excuses, de recentie kon niet worden verstuurd."
+
+#, fuzzy
+#~ msgid ""
+#~ "Thank you for submitting the application report. Our support team will "
+#~ "review it as soon as possible."
+#~ msgstr ""
+#~ "Bedankt voor het rapporteren van het probleem. De Cherokee Webserver "
+#~ "ontwikkelaars zullen het probleem zo snel mogelijk proberen te repareren."
+
+#, fuzzy
+#~ msgid "Could not send the report"
+#~ msgstr "Kan de recentie niet opsturen"
+
+#, fuzzy
+#~ msgid "Report sent successfully"
+#~ msgstr "is succesvol geïnstalleerd"
+
+#, fuzzy
+#~ msgid "Request refund"
+#~ msgstr "Verzoek"
+
+#, fuzzy
+#~ msgid "Report"
+#~ msgstr "Nieuwe poort"
+
+#, fuzzy
+#~ msgid "Local directory where your Django project source code is located."
+#~ msgstr ""
+#~ "Lokale map waar de Django broncode is neergezet. Voorbeeld: /usr/share/"
+#~ "django."
+
+#, fuzzy
+#~ msgid "Could not determine PHP-CGI settings."
+#~ msgstr "Kan de PHP-fpm instellingen niet bepalen."
+
+#, fuzzy
+#~ msgid "Could not determine PHP-CGI configuration file."
+#~ msgstr "Kan configuratie bestand niet schrijven"
+
+#, fuzzy
+#~ msgid "%s Logical Processor"
+#~ msgstr "%s Logische Processors"
+
+#, fuzzy
+#~ msgid "%s Core"
+#~ msgstr "%s Cores"
+
+#, fuzzy
+#~ msgid "Save Configuration"
+#~ msgstr "Geavanceerde Configuratie"
+
+#, fuzzy
+#~ msgid "Sanity checks"
+#~ msgstr "Controleer niet"
+
+#, fuzzy
+#~ msgid "Note that the configuration file was not saved."
+#~ msgstr "Het configuratiebestand is succesvol opgeslagen."
+
+#, fuzzy
+#~ msgid "Solve"
+#~ msgstr "Bewaar"
+
+#, fuzzy
+#~ msgid "Configuration successfully saved"
+#~ msgstr "Configuratie Bestand Succesvol geupload"
+
+#, fuzzy
+#~ msgid "Authentication rule without Realm"
+#~ msgstr "Authenticatie lijst"
+
+#, fuzzy
+#~ msgid "Virtual Server without nickname"
+#~ msgstr "Virtuele Server naam"
+
+#, fuzzy
+#~ msgid "Virtual Server without document root"
+#~ msgstr "Virtuele Server hoofdmap."
+
+#, fuzzy
+#~ msgid "Directory match without a directory"
+#~ msgstr "Pad is geen map"
+
+#, fuzzy
+#~ msgid "Empty 'Incoming IP/Port' match"
+#~ msgstr "Binnenkomende IP/Poort"
+
+#, fuzzy
+#~ msgid "Broken Source"
+#~ msgstr "Project Bron"
+
+#, fuzzy
+#~ msgid "The configuration has been rolled back to a previous version."
+#~ msgstr ""
+#~ "De configuratie is terug gegaan naar een vorige versie. Druk op de Bewaar "
+#~ "knop om de wijzigingen toe te passen."
+
+#, fuzzy
+#~ msgid "Your current Configuration file matches the restored version."
+#~ msgstr "De geselecteerde configurati wordt gebackupt."
+
+#, fuzzy
+#~ msgid "Path is a directory"
+#~ msgstr "Pad is geen map"
+
+#, fuzzy
+#~ msgid "Loading new configuration file.."
+#~ msgstr "Maak een nieuw configuratie bestand"
+
+#, fuzzy
+#~ msgid "Remote IP address"
+#~ msgstr "LDAP server IP adres."
+
+#, fuzzy
+#~ msgid "Local IP address"
+#~ msgstr "E-mail adres"
+
+#, fuzzy
+#~ msgid "Request Protocol"
+#~ msgstr "Verzoek"
+
+#, fuzzy
+#~ msgid "Remote user (authentication)"
+#~ msgstr "Basis domein voor de webserver authenticaties."
+
+#, fuzzy
+#~ msgid "Virtual Server nick name"
+#~ msgstr "Virtuele Server naam"
+
+#, fuzzy
+#~ msgid "Show macros"
+#~ msgstr "Toon Groep"
+
+#, fuzzy
+#~ msgid "Hide"
+#~ msgstr "Hoofdregel"
+
+#, fuzzy
+#~ msgid "Checking Requirements"
+#~ msgstr "Controleren op de installatievereisten"
+
+#, fuzzy
+#~ msgid "Access details"
+#~ msgstr "Bezoeken"
+
+#, fuzzy
+#~ msgid ""
+#~ "Note that launching Magnolia can take up a couple of  minutes on modern "
+#~ "servers, so please be patient the first time you access it."
+#~ msgstr ""
+#~ "Bedenk dat het starten van Liferay enige minuten kan duren, zelfs op "
+#~ "moderne servers, dus wees geduldig de eerste keer dat je de pagina "
+#~ "bekijkt."
+
+#, fuzzy
+#~ msgid "Installing Trac"
+#~ msgstr "Trac instaleren."
+
+#, fuzzy
+#~ msgid "Error report"
+#~ msgstr "Fout afhandelaar"
+
+#, fuzzy
+#~ msgid "Expected value"
+#~ msgstr "Uitvoeren als Eigenaar"
+
+#, fuzzy
+#~ msgid "Current value"
+#~ msgstr "Eigen waarde"
+
+#, fuzzy
+#~ msgid "Wiki details"
+#~ msgstr "Herleidingen details"
+
+#, fuzzy
+#~ msgid "Username for the administrator account."
+#~ msgstr "Gebruikersnaam van het beheeraccount"
+
+#, fuzzy
+#~ msgid "Password for the administrator account."
+#~ msgstr "Wachtwoord van het beheeraccount"
+
+#, fuzzy
+#~ msgid "Site details"
+#~ msgstr "Toon fout defails"
+
+#, fuzzy
+#~ msgid "Admin user"
+#~ msgstr "Beheerder"
+
+#, fuzzy
+#~ msgid "Admin password"
+#~ msgstr "Beheer Wachtwoord"
+
+#, fuzzy
+#~ msgid "Admin email"
+#~ msgstr "Beheerder"
+
+#, fuzzy
+#~ msgid "Sitename"
+#~ msgstr "Wiki Sitenaam"
+
+#, fuzzy
+#~ msgid "Performing Drupal installation"
 #~ msgstr "halve installaties:"
+
+#, fuzzy
+#~ msgid ""
+#~ "Please, provide an administrative user/password pair to connect to a "
+#~ "database."
+#~ msgstr ""
+#~ "Geef een beheerder gebruiker/wachtwoord paar om naar de database te "
+#~ "verbinden."
+
+#, fuzzy
+#~ msgid "MySQL 5 could not be found on your system."
+#~ msgstr ""
+#~ "Een werkende PHP interpreter kan niet op het systeem worden gevonden."
+
+#, fuzzy
+#~ msgid "PostgreSQL 8 could not be found on your system."
+#~ msgstr ""
+#~ "Een werkende PHP interpreter kan niet op het systeem worden gevonden."
+
+#, fuzzy
+#~ msgid "Sqlite3 could not be found on your system."
+#~ msgstr ""
+#~ "Een werkende PHP interpreter kan niet op het systeem worden gevonden."
+
+#, fuzzy
+#~ msgid "Deployment Type"
+#~ msgstr "Implementatiemethode"
+
+#, fuzzy
+#~ msgid ""
+#~ "Your system doesn't seem to provide the required dependecies. Please make "
+#~ "sure there is a C++ development environment present."
+#~ msgstr ""
+#~ "In je systeem ontbreken waarschijnlijk de benodigde afhankelijkheden. "
+#~ "Wees er zeker van dat je een C ontwikkelomgeving hebt."
+
+#, fuzzy
+#~ msgid "Detecting a suitable PHP interpreter"
+#~ msgstr "Kan geen bruikbare PHP interpreter vinden."
+
+#, fuzzy
+#~ msgid ""
+#~ "It is probably a good idea to pre-launch it on boot time instead of "
+#~ "having the web-server do so on demand."
+#~ msgstr ""
+#~ "Het is waarschijnlijk een goed idee om het vooraf te starten, in plaats "
+#~ "van dat de webserver het doet na eerste aanvraag."
+
+#, fuzzy
+#~ msgid "Installing Nagios"
+#~ msgstr "Installeren"
+
+#, fuzzy
+#~ msgid "Database Requirements"
+#~ msgstr "Database niet aanwezig"
+
+#, fuzzy
+#~ msgid "Installing WsgiDAV"
+#~ msgstr "Installeren"
+
+#, fuzzy
+#~ msgid "Local directory"
+#~ msgstr "Trac Lokale Map"
+
+#, fuzzy
+#~ msgid "WsgiDAV configuration"
+#~ msgstr "Gebruiker configuratie"
+
+#, fuzzy
+#~ msgid ""
+#~ "Your system doesn't seem to provide the required dependecy 'xml2-config'"
+#~ msgstr ""
+#~ "In je systeem ontbreken waarschijnlijk de benodigde afhankelijkheden. "
+#~ "Java 6 of later is nodig."
+
+#, fuzzy
+#~ msgid ""
+#~ "Note that launching Nuxeo-DAM can take up a couple of  minutes on modern "
+#~ "servers, so please be patient the first time you access it."
+#~ msgstr ""
+#~ "Bedenk dat het starten van Nuxeo-DM enige minuten kan duren op moderne "
+#~ "servers, dus heb even geduld bij het eerste bezoek."
+
+#, fuzzy
+#~ msgid "Communicating DB details."
+#~ msgstr "Authenticatie Details"
+
+#, fuzzy
+#~ msgid "Performing automatic installation"
+#~ msgstr "Niet afgemaakte installatie"
+
+#, fuzzy
+#~ msgid "Username for the administrator account. Only lower case allowed."
+#~ msgstr "Gebruikersnaam van het beheeraccount"
+
+#, fuzzy
+#~ msgid "Full sitename"
+#~ msgstr "Bestandsnaam"
+
+#, fuzzy
+#~ msgid "Short sitename"
+#~ msgstr "Computernaam"
+
+#, fuzzy
+#~ msgid "Domain name"
+#~ msgstr "Domein Naam"
+
+#, fuzzy
+#~ msgid "Moodle License"
+#~ msgstr "Licentie"
+
+#, fuzzy
+#~ msgid "Accept license"
+#~ msgstr "Geaccepteerde Domeinen"
+
+#, fuzzy
+#~ msgid "At least 8 characters required."
+#~ msgstr "Een webmap moet worden opgegeven."
+
+#, fuzzy
+#~ msgid "At least 1 digit required."
+#~ msgstr "Een webmap moet worden opgegeven."
 
 #~ msgid "Application available"
 #~ msgstr "Applicatie beschikbaar"
-
-#~ msgid "New port"
-#~ msgstr "Nieuwe poort"
 
 #~ msgid ""
 #~ "Please, provide an administrative user/password pair to connect to your "
@@ -7678,9 +8112,6 @@ msgstr ""
 
 #~ msgid "Password configuration"
 #~ msgstr "Wachtwoord configuratie"
-
-#~ msgid "Could not write configuration file"
-#~ msgstr "Kan configuratie bestand niet schrijven"
 
 #~ msgid "Could not validate Nagios configuration"
 #~ msgstr "Kan Nagios configuratie niet valideren"
@@ -7960,9 +8391,6 @@ msgstr ""
 #~ msgid "Details:"
 #~ msgstr "Defails:"
 
-#~ msgid "Source usage"
-#~ msgstr "Bron gebruik"
-
 #~ msgid "Virtual server"
 #~ msgstr "Virtuele server"
 
@@ -8025,9 +8453,6 @@ msgstr ""
 #~ msgid "Statistics"
 #~ msgstr "Statistieken"
 
-#~ msgid "Accesses"
-#~ msgstr "Bezoeken"
-
 #~ msgid "Matching method"
 #~ msgstr "Kies methode"
 
@@ -8061,9 +8486,6 @@ msgstr ""
 
 #~ msgid "OR"
 #~ msgstr "OF"
-
-#~ msgid "Undefined.."
-#~ msgstr "Ongedefinieerd.."
 
 #~ msgid "Complex"
 #~ msgstr "Complexe"
@@ -8142,9 +8564,6 @@ msgstr ""
 
 #~ msgid "A name for the virtual server is required."
 #~ msgstr "Naam voor de virtuele server is verplicht."
-
-#~ msgid "A web directory is required."
-#~ msgstr "Een webmap moet worden opgegeven."
 
 #~ msgid "New virtual server based on a Django project."
 #~ msgstr "Nieuwe virtuele server gebaseerd op een Django project."

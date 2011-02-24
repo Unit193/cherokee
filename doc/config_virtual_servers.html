@@ -194,7 +194,7 @@ domains</a>.</p></div>
 <div class="paragraph"><p>This section allows to define the list of domains that the virtual
 server implements.</p></div>
 <div class="paragraph"><p>It can accept either FQDN (Fully Qualified Domain Names), wild card
-entries, regular expressions, IPs, or a combination of methods that
+entries, regular expressions, IPs/Subnets, or a combination of methods that
 will be evaluated as a logical OR. This can be useful for some rare
 cases where you might need to match by IP OR wildcards simultaneously,
 such as the <a href="cookbook_ssl.html#workaround">HTTPS-without-SNI workaround</a>
@@ -256,6 +256,22 @@ Asked Questions includes <a href="other_faq.html#faq19">"Why are my
 nicknames not matched, while *.example.com does work?"</a>. A careful
 reinterpretation of what has just been explained in this section
 should clarify any doubts.</td>
+</tr></table>
+</div>
+<div class="admonitionblock">
+<table><tr>
+<td class="icon">
+<div class="title">Warning</div>
+</td>
+<td class="content">Do not use the IP/Subnet host match as a security measure to
+prevent access to specific IP addresses. The purpose of the IP/Subnet
+match type was to implement the SSL certificate selection workaround
+that other web servers have been using for years. If it were to be
+attacked, it could be easily overcome by simply setting the Host
+header to the name of the virtual server. To restrict the traffic of
+one of your virtual servers based on the incoming IP, please read the
+appropriate cookbook entry,
+<a href="cookbook_traffic_restriction.html">restricting traffic by IP</a>.</td>
 </tr></table>
 </div>
 <h3 id="behavior">Behavior</h3><div style="clear:left"></div>

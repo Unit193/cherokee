@@ -21,8 +21,7 @@
 dispatches in-bound network traffic to a set of servers, and presents
 a single interface to the requesters. This is particularly useful to
 load balance a cluster of webservers at a much higher network stack
-level than that allowed by the
-<a href="modules_handlers_mirror.html">generic balancer</a>.</p></div>
+level than the one allowed by a generic balancer.</p></div>
 <div class="paragraph"><p>All connections coming from the Internet addressed to one of the Web
 servers are routed through the proxy, which can either deal with the
 request or pass it (with or without modifications) to the other web
@@ -34,6 +33,14 @@ it doesn&#8217;t matter if all the clients requesting contents from our
 publicly available Reverse Proxy do not support this feature: the
 Keep-Alive connections can still be kept within the local pool,
 greatly improving performance.</p></div>
+<div class="paragraph"><p>Cherokee&#8217;s HTTP Reverse proxy is a powerful and modern implementation
+that also provides X-Sendfile and X-Accel-Redirect. These headers are
+automatically handled by the server and there is no need to manually
+specify anything for this functionality to work. Both X-Sendfile and
+X-Accel-Redirect work in the same way, so there are no artificial
+restrictions in place. The X-Sendfile/X-Accel-Redirect features work
+with any kind of object, not only static files, so dynamically
+generated contents are not a problem at all.</p></div>
 <div class="paragraph"><p>The task of the reverse proxy can be summarized in the following
 steps.</p></div>
 <div class="ulist"><ul>
@@ -110,6 +117,13 @@ Preserve Server Header: Preserve the "Server:" header sent by the
   completely analogous.
 </p>
 </li>
+<li>
+<p>
+Use VServer error handler: Whenever an error response is received
+from a back-end server, use the error handler defined for the virtual
+server to handle it.
+</p>
+</li>
 </ul></div>
 <h3 id="request_reply">Request / Reply</h3><div style="clear:left"></div>
 <div class="paragraph"><p>These setting apply respectively to the HTTP request or response.</p></div>
@@ -141,7 +155,7 @@ Balancer: the type of load balancing strategy to be used to dispatch connections
 <li>
 <p>
 Information sources: where you will assign the previously defined
-  sources, which are all the servers from our set to be used in the
+  sources, which are all the servers from the set to be used in the
   cluster of web servers.
 </p>
 </li>

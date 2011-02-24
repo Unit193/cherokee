@@ -15,13 +15,14 @@
 <h2 id="_a_href_index_html_index_a_8594_a_href_config_html_configuration_a"><a href="index.html">Index</a> &#8594; <a href="config.html">Configuration</a></h2>
 <div class="sectionbody">
 </div>
-<h2 id="_configuration_quickstart">Configuration Quickstart</h2>
+<h2 id="_configuration_walkthrough">Configuration Walkthrough</h2>
 <div class="sectionbody">
-<div class="paragraph"><p>This section briefly describes the whole administration web interface
-provided by <a href="other_bundle_cherokee-admin.html">cherokee-admin</a>. This is
-the recommended way of configuring Cherokee. If you are looking for
+<div class="paragraph"><p>This section briefly describes a typical usage of the administration
+web interface provided by
+<a href="other_bundle_cherokee-admin.html">cherokee-admin</a>. This is the
+recommended way of configuring Cherokee. If you are looking for
 development information relevant to your automation and scripting
-needs, you should refer to the appropriate section, especially the
+needs, you should refer to the appropriate section, specifically the
 <a href="dev_cherokee.conf.html">cherokee.conf</a> file specification.</p></div>
 <div class="paragraph"><p>We will first show a quick overview of the available options, followed
 by a simple walkthrough. You can learn more about the options in their
@@ -63,7 +64,7 @@ screencast</a>.</p></div>
 </li>
 <li>
 <p>
-<a href="config_virtual_servers.html">Virtual servers</a>:
+<a href="config_virtual_servers.html">vServers</a>:
   If you want your web server to work with more than one domain you
   will have to create <a href="config_virtual_servers.html">Virtual
   servers</a> other than the <tt>default</tt> one. Each one will have a
@@ -73,7 +74,7 @@ screencast</a>.</p></div>
 </li>
 <li>
 <p>
-<a href="config_info_sources.html">Information Sources</a>:
+<a href="config_info_sources.html">Sources</a>:
   Define the resources that will be providing information. For
   instance, PHP.
 </p>
@@ -93,10 +94,11 @@ screencast</a>.</p></div>
 web server out of the box. Cherokee&#8217;s default configuration can be
 used to serve any typical static website. For dynamic contents you
 should check the wizards, available using the buttons located at the
-top section of the left panel. This panel can either display
-information relevant to every virtual host in your system, or rule
-management information specific to a given virtual host. In the first
-scenario, the wizards will be able to create new virtual servers
+top section of the left panel in the <tt>vServers</tt> section. This panel
+can either display information relevant to every virtual host in your
+system, or rule management information specific to a given virtual
+host if you are browsing a specific virtual host at the moment. In the
+first scenario, the wizards will be able to create new virtual servers
 customized for a specific need, while the second case would apply to
 the -preexisting- selected virtual host.</p></div>
 <div class="paragraph"><p>If you have a specific need, you should check out the recipes present
@@ -116,8 +118,8 @@ that you will use to securely connect to the user interface, or you
 can follow the recommended way and simply use
 <a href="other_bundle_cherokee-admin-launcher.html">cherokee-admin-launcher</a>.</p></div>
 <h4 id="auto-launch">Launching the admin through cherokee-admin-launcher</h4>
-<div class="paragraph"><p>Assuming you are using a desktop environment, you can follow the
-launcher approach.</p></div>
+<div class="paragraph"><p>Assuming you are using a desktop environment on the same host where
+Cherokee is installed, you can follow the launcher approach.</p></div>
 <div class="listingblock">
 <div class="content">
 <pre><tt># cherokee-admin-launcher
@@ -128,9 +130,9 @@ Connecting.. OK</tt></pre>
 <div class="paragraph"><p>This will automatically open a web browser window pointing at
 <a href="http://localhost:9090">http://localhost:9090</a>, so you will be able to begin using
 <tt>cherokee-admin</tt> right away. If there is no web browser registered in
-your system, you will need to leave out the launcher option, and run
-<tt>cherokee-admin</tt> directly. If this is not your case, you can skip the
-details for the manual launch.</p></div>
+your system, you will have to forget about using the launcher option,
+and run <tt>cherokee-admin</tt> directly. If this is not your case, you can
+skip the details for the manual launch.</p></div>
 <h4 id="manual-launch">Manually launching cherokee-admin</h4>
 <div class="listingblock">
 <div class="content">
@@ -177,29 +179,29 @@ some more settings: <a href="config_general.html">General</a> and
 launch the server. The configuration changes must be submitted to the
 server, be it automatically if possible or by using the appropriate
 form submitting buttons. But no change is reflected in the
-configuration file until you <tt>Save</tt> the changes. You can be sure of
-not damaging anything while playing around with <tt>cherokee-admin</tt>. At
-least not until you <tt>Save</tt> the changes by using the <tt>SAVE</tt> button on
-the main toolbar. Note that, if the Cherokee server is running, the
-applied modifications will only affect the instance being executed if
-either <tt>Graceful restart</tt> or <tt>Hard restart</tt> are selected.  <tt>No
-restart</tt> simply modifies the configuration file, but doesn&#8217;t affect
-the currently running instance. A <tt>graceful restart</tt> will preserve the
-old set-up for any prior connections, while a <tt>hard restart</tt> will kill
-every connection and instantly apply the changes.</p></div>
+configuration file until you actually <tt>Save</tt> the changes. You can be
+sure of not damaging anything while playing around with
+<tt>cherokee-admin</tt>. At least not until you <tt>Save</tt> the changes by using
+the <tt>SAVE</tt> button on the main toolbar. Note that, if the Cherokee
+server is running, the applied modifications will only affect the
+instance being executed if either <tt>Graceful restart</tt> or <tt>Hard restart</tt>
+are selected.  <tt>No restart</tt> simply modifies the configuration file,
+but doesn&#8217;t affect the currently running instance. A <tt>graceful
+restart</tt> will preserve the old set-up for any prior connections, while
+a <tt>hard restart</tt> will kill every connection and instantly apply the
+changes.</p></div>
 <div class="paragraph"><p>This is what the <tt>General</tt> tab looks like:</p></div>
 <div class="imageblock">
 <div class="content">
 <img src="media/images/admin_general.png" alt="media/images/admin_general.png" />
 </div>
 </div>
-<div class="paragraph"><p>We will only be modifying the <strong>Server Permissions</strong>. It usually is a
-poor choice to run services with super user privileges. Set both
-<strong>User</strong> and <strong>Group</strong> to <tt>www-data</tt>. Your system might already have
-another user account specifically for the purpose of running a
-webserver. Use that instead if so, or create the <tt>www-data</tt> user if
-you don&#8217;t already have one.</p></div>
-<div class="paragraph"><p>Next is the <a href="config_virtual_servers.html">Virtual Servers</a> tab:</p></div>
+<div class="paragraph"><p>We will only be modifying the <strong>Permissions</strong> tab. It usually is a poor
+choice to run services with super user privileges. Set both <strong>User</strong> and
+<strong>Group</strong> to <tt>www-data</tt>. Your system might already have another user account
+specifically for the purpose of running a webserver. Use that instead
+if so, or create the <tt>www-data</tt> user if you don&#8217;t already have one.</p></div>
+<div class="paragraph"><p>Next is the <a href="config_virtual_servers.html">vServers</a> tab:</p></div>
 <div class="imageblock">
 <div class="content">
 <img src="media/images/admin_vserver.png" alt="media/images/admin_vserver.png" />
@@ -209,13 +211,13 @@ you don&#8217;t already have one.</p></div>
 <tt>default</tt>. You can begin by cloning it as <tt>example</tt>. This can be
 achieved with the <tt>Clone Selected Virtual Server</tt> button, which is
 placed in the upper side of the left panel, adjacent to the <tt>Virtual
-Servers</tt> title and the <tt>Add New Virtual Server</tt> button.</p></div>
+Servers</tt> label and the <tt>Add New Virtual Server</tt> button.</p></div>
 <div class="paragraph"><p>While you are at it you should also append the following line to your
 <tt>/etc/hosts</tt> file (in Windows you will find this as
 <tt>%WINDIR%\system32\drivers\etc\hosts</tt>).</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>127.0.0.1       example.net example.org</tt></pre>
+<pre><tt>127.0.0.1       example.com example.net example.org</tt></pre>
 </div></div>
 <div class="paragraph"><p>This is to allow your system to resolve requests for <tt>example.net</tt> or
 <tt>example.org</tt> locally. Of course, once you are out in the Wild (you
@@ -275,21 +277,21 @@ Management</tt> button to see the <tt>Behavior</tt> panel that will enable you t
 modify the rules of your virtual host.
 </p>
 <div class="paragraph"><p>For now this virtual server is an exact copy of the untouched
-<tt>default</tt> virtual server. Create some new directories
+<tt>default</tt> virtual server. Create some new directories by hand:
 <em>/var/www/example</em> and <em>/var/www/example/auth</em>, and configure the
-first one as default document root path. This is easy using the <tt>Add</tt>
-button of the panel, which is marked with a <tt>+ (plus)</tt> symbol at the
-top of the panel.</p></div>
-<div class="paragraph"><p>Next, setup <tt>example.net</tt> and <tt>example.com</tt> in the <tt>Host match</tt>
-tab. To do so just choose <tt>Wildcards</tt> as method and add both names as
-wildcard strings.  We&#8217;ll erase everything in the <strong>Targets</strong> list within
-the <tt>Behavior</tt> tab, except the <tt>default</tt> rule. With this we&#8217;ll only be
-able to serve static content.</p></div>
+first one as default document root path. Just access the <tt>Basics</tt> tab,
+and set the <tt>Document Root</tt> field to <em>/var/www/example</em>.</p></div>
+<div class="paragraph"><p>Next, setup <tt>example.net</tt> and <tt>example.com</tt> in the <tt>Host match</tt> tab,
+so that requests to both domains can be managed byt your <tt>example</tt>
+virtual server. To do so just choose <tt>Wildcards</tt> as method, and add
+both names as wildcard strings.  We&#8217;ll erase everything in the
+<strong>Targets</strong> list within the <tt>Behavior</tt> tab, except the <tt>default</tt>
+rule. With this we&#8217;ll only be able to serve static content.</p></div>
 <div class="paragraph"><p>Accessing the URL <a href="http://example.org">http://example.org</a> should now show a list of
 available files and directories under <em>/var/www/example/</em>.</p></div>
-<div class="paragraph"><p>Now lets password protect the <tt>auth</tt> directory. Add a new <tt>Directory</tt>
-class rule pointing to <tt>/auth</tt>. Then, through the <tt>Security</tt> tab, add
-a <tt>Validation Mechanism</tt> under <tt>Authentication</tt>.</p></div>
+<div class="paragraph"><p>Now lets password protect the <tt>auth</tt> directory. Add a new
+<tt>Directory</tt>-type rule pointing to <tt>/auth</tt>. Then, through the
+<tt>Security</tt> tab, add a <tt>Validation Mechanism</tt> under <tt>Authentication</tt>.</p></div>
 <div class="paragraph"><p>The field <tt>Realm</tt> is mandatory. Lets set it as <tt>Secured Area</tt>.
 If you choose <tt>PAM</tt> and impose no more restrictions, only users with
 a local account in your system will be able to access the secured zone
@@ -328,11 +330,11 @@ appropriate section of the documentation,
 details.</p></div>
 <div class="paragraph"><p>Note that the <tt>Type</tt> of the <strong>Redirection</strong> is <tt>External</tt>. This means
 the server will instruct the requesting web client to fetch the
-redirected URL, which means the client will always know what the
-final URL is. This also means the redirection can be done to servers
-other than your own. If it were internal, the redirection would be
-invisible (not showing the target  URL), but it would be limited to
-the same <tt>virtual server</tt>.</p></div>
+redirected URL, which in turn means the client will always know what
+the final URL is. This also means the redirection can be done to
+servers other than your own. If it were internal, the redirection
+would be invisible (not showing the target URL), but it would be
+limited to the same <tt>virtual server</tt>.</p></div>
 <div class="paragraph"><p>A much more general redirection could be one using these values:</p></div>
 <div class="dlist"><dl>
 <dt class="hdlist1">

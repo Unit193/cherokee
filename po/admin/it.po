@@ -2814,8 +2814,9 @@ msgid ""
 msgstr ""
 
 #: cherokee-trunk/admin/market/Install.py:308
+#, fuzzy
 msgid "Setting up"
-msgstr ""
+msgstr "Configurazioni Privacy"
 
 #: cherokee-trunk/admin/market/Install.py:309
 msgid "Unpacking application…"
@@ -2854,7 +2855,7 @@ msgstr "Segnala"
 #: cherokee-trunk/admin/market/Install.py:370
 #, fuzzy
 msgid "Setting up application…"
-msgstr "Applicazioni per Vari Utilizzi"
+msgstr "Applicazioni Web"
 
 #: cherokee-trunk/admin/market/Install.py:479
 #, fuzzy
@@ -3532,12 +3533,13 @@ msgstr ""
 "costruire meglio le applicazioni Web più velocemente e con meno codice."
 
 #: cherokee-trunk/admin/wizards/django.py:42
+#, fuzzy
 msgid ""
 "Local directory where the Django source code is located. Example: /usr/share/"
 "django."
 msgstr ""
-"Directory locale in cui si trova il codice sorgente di Django. Esempio: /usr/"
-"share/django."
+"Directory locale in cui si trova il codice sorgente di Drupal. Esempio: /usr/"
+"share/drupal."
 
 #: cherokee-trunk/admin/wizards/django.py:45
 msgid "Web directory where you want Django to be accessible. (Example: /blog)"
@@ -3957,6 +3959,7 @@ msgid "Full-stack framework, a library of cohesive classes written in PHP."
 msgstr "Framework completo, una libreria di classi coesa scritto in PHP."
 
 #: cherokee-trunk/admin/wizards/List.py:109
+#, fuzzy
 msgid "Fast, self-healing, developer-friendly WSGI server."
 msgstr "Server WSGI veloce, auto-guarente e amichevole per gli sviluppatori."
 
@@ -4715,10 +4718,12 @@ msgstr ""
 "avere il carico bilanciato."
 
 #: cherokee-trunk/admin/wizards/uwsgi.py:39
+#, fuzzy
 msgid "Welcome to the uWsgi Wizard"
 msgstr "Benvenuti nella procedura guidata uWsgi"
 
 #: cherokee-trunk/admin/wizards/uwsgi.py:40
+#, fuzzy
 msgid ""
 "<a target=\"_blank\" href=\"http://projects.unbit.it/uwsgi/\">uWSGI</a> is a "
 "fast (pure C), self-healing, developer-friendly WSGI server, aimed for "
@@ -4730,6 +4735,7 @@ msgstr ""
 "in python."
 
 #: cherokee-trunk/admin/wizards/uwsgi.py:41
+#, fuzzy
 msgid ""
 "Over time it has evolved in a complete stack for networked/clustered python "
 "applications, implementing message/object passing and process management. It "
@@ -4742,6 +4748,7 @@ msgstr ""
 "comunicazioni di rete e le comunicazioni interprocesso."
 
 #: cherokee-trunk/admin/wizards/uwsgi.py:44
+#, fuzzy
 msgid ""
 "Path to the uWSGI configuration file (XML or Python-only). Its mountpoint "
 "will be used."
@@ -5013,6 +5020,7 @@ msgid "Would you like to apply the changes to the running server now?"
 msgstr "Vuoi applicare le modifiche al server ora in esecuzione?"
 
 #: cherokee-trunk/admin/Page.py:35
+#, fuzzy
 msgid "The configuration file has been saved successfuly."
 msgstr "Il file di configurazione è stato salvato con successo."
 
@@ -5416,10 +5424,12 @@ msgstr ""
 "configurazione archiviato in remoto."
 
 #: cherokee-trunk/admin/OWS_Backup.py:65
+#, fuzzy
 msgid "The Configuration File was restored successfuly"
 msgstr "Il file di configurazione è stato ripristinato con successo."
 
 #: cherokee-trunk/admin/OWS_Backup.py:66
+#, fuzzy
 msgid ""
 "The configuration has been rolled back to a previous version. Please, click "
 "the Save button if you want to commit the changes."
@@ -6449,6 +6459,7 @@ msgid "Select"
 msgstr "Seleziona"
 
 #: cherokee-trunk/admin/OWS_Cherokee_Info.py:36
+#, fuzzy
 msgid ""
 "Thank you for testing a development snapshot. It helps us to create the "
 "highest quality product."
@@ -6465,6 +6476,7 @@ msgid "Latest version could not be determined at the moment."
 msgstr "L'ultima versione non può essere determinata al momento."
 
 #: cherokee-trunk/admin/OWS_Cherokee_Info.py:69
+#, fuzzy
 msgid "Cherokee is up to date."
 msgstr "Cherokee è aggiornato."
 
@@ -7212,8 +7224,9 @@ msgid "Unknown target"
 msgstr "Sconosciuto"
 
 #: packages/common/target.py:187
+#, fuzzy
 msgid "Package Deployment"
-msgstr ""
+msgstr "Metodo di distribuzione"
 
 #: packages/common/system.py:76
 #, fuzzy
@@ -7309,8 +7322,9 @@ msgid "Could not parse the PHP-fpm settings file"
 msgstr "Impossibile determinare le impostazioni PHP-fpm."
 
 #: packages/common/php.py:286
+#, fuzzy
 msgid "Could not read the \"fpm_listen_address\" property"
-msgstr ""
+msgstr "Impossibile segnalare il problema"
 
 #: packages/liferay/installer.py:139
 msgid ""
@@ -7487,8 +7501,9 @@ msgid "Redmine has been installed. These are the default access details:"
 msgstr ""
 
 #: packages/redmine/installer.py:95
+#, fuzzy
 msgid "Checking for Ruby"
-msgstr ""
+msgstr "Esci"
 
 #: packages/redmine/tools.py:13
 msgid "Bulgarian"
@@ -7706,23 +7721,341 @@ msgid ""
 msgstr ""
 
 #, fuzzy
-#~ msgid "partial installations: "
+#~ msgid "Source Usage"
+#~ msgstr "Sorgenti"
+
+#, fuzzy
+#~ msgid "Source"
+#~ msgstr "Sorgenti"
+
+#, fuzzy
+#~ msgid "Failover"
+#~ msgstr "Filtro"
+
+#, fuzzy
+#~ msgid ""
+#~ "Use the VServer error handler, whenever an error response is received "
+#~ "from a back-end server. (Default: No)"
+#~ msgstr ""
+#~ "Mantieni l'intestazione \"Server:\" inviata dal server di back-end. "
+#~ "(Predefinito: No)"
+
+#, fuzzy
+#~ msgid "Use VServer error handler"
+#~ msgstr "Mantieni Server Header"
+
+#, fuzzy
+#~ msgid "Use it"
+#~ msgstr "Usa TLS"
+
+#, fuzzy
+#~ msgid "or"
+#~ msgstr "Porta"
+
+#, fuzzy
+#~ msgid "Unknown Error"
+#~ msgstr "Processore Sconosciuto"
+
+#, fuzzy
+#~ msgid "Unfinished"
 #~ msgstr "Installazione di mercato"
+
+#, fuzzy
+#~ msgid "Deployment methods"
+#~ msgstr "Metodo di distribuzione"
+
+#, fuzzy
+#~ msgid "Operating Systems"
+#~ msgstr "Esci"
+
+#, fuzzy
+#~ msgid "Databases"
+#~ msgstr "Database"
+
+#, fuzzy
+#~ msgid "Report Application"
+#~ msgstr "Applicazioni Web"
+
+#, fuzzy
+#~ msgid "Report issue"
+#~ msgstr "Segnala"
+
+#, fuzzy
+#~ msgid "Connecting to Cherokee Market"
+#~ msgstr "Registrati in Octality Market"
+
+#, fuzzy
+#~ msgid "Setting it up…"
+#~ msgstr "Applicazioni per Vari Utilizzi"
+
+#, fuzzy
+#~ msgid ""
+#~ "Thank you for submitting the application report. Our support team will "
+#~ "review it as soon as possible."
+#~ msgstr ""
+#~ "Grazie per aver segnalato il problema. Gli sviluppatori di Cherokee Web "
+#~ "Servercercare di risolverlo il più presto possibile."
+
+#, fuzzy
+#~ msgid "Report sent successfully"
+#~ msgstr "Il file di configurazione è stato salvato con successo."
+
+#, fuzzy
+#~ msgid "Request refund"
+#~ msgstr "Richiesta"
+
+#, fuzzy
+#~ msgid "Report"
+#~ msgstr "Nuovo porta"
+
+#, fuzzy
+#~ msgid "Local directory where your Django project source code is located."
+#~ msgstr ""
+#~ "Directory locale in cui si trova il codice sorgente di Django. Esempio: /"
+#~ "usr/share/django."
+
+#, fuzzy
+#~ msgid "Could not determine PHP-CGI settings."
+#~ msgstr "Impossibile determinare le impostazioni PHP-fpm."
+
+#, fuzzy
+#~ msgid "Could not determine PHP-CGI configuration file."
+#~ msgstr "Non stato possibile reperire la lista dei file di configurazione"
+
+#, fuzzy
+#~ msgid "%s Logical Processor"
+#~ msgstr "%s Processori Logici"
+
+#, fuzzy
+#~ msgid "%s Core"
+#~ msgstr "%s Core"
+
+#, fuzzy
+#~ msgid "Save Configuration"
+#~ msgstr "Configurazione Avanzata"
+
+#, fuzzy
+#~ msgid "Sanity checks"
+#~ msgstr "Non controllare"
+
+#, fuzzy
+#~ msgid "Note that the configuration file was not saved."
+#~ msgstr "Il file di configurazione è stato salvato con successo."
+
+#, fuzzy
+#~ msgid "Solve"
+#~ msgstr "Salva"
+
+#, fuzzy
+#~ msgid "Configuration successfully saved"
+#~ msgstr "File di Configurazione caricato con Successo"
+
+#, fuzzy
+#~ msgid "Authentication rule without Realm"
+#~ msgstr "Lista autenticazione"
+
+#, fuzzy
+#~ msgid "Virtual Server without nickname"
+#~ msgstr "Nickname del server virtuale"
+
+#, fuzzy
+#~ msgid "Virtual Server without document root"
+#~ msgstr "Directory principale del server virtuale."
+
+#, fuzzy
+#~ msgid "Directory match without a directory"
+#~ msgstr "Il percorso non è una directory"
+
+#, fuzzy
+#~ msgid "Empty 'Incoming IP/Port' match"
+#~ msgstr "IP/Porta entrante"
+
+#, fuzzy
+#~ msgid "Broken Source"
+#~ msgstr "Sorgente del Progetto"
+
+#, fuzzy
+#~ msgid "The configuration has been rolled back to a previous version."
+#~ msgstr ""
+#~ "La configurazione è stata rimpiazzata da una versione precedente. Per "
+#~ "favore, fate clic sul pulsante Salva se si desidera rendere definitive le "
+#~ "modifiche."
+
+#, fuzzy
+#~ msgid "Your current Configuration file matches the restored version."
+#~ msgstr "La tua corrente configurazione sta per essere backuppata."
+
+#, fuzzy
+#~ msgid "Path is a directory"
+#~ msgstr "Il percorso non è una directory"
+
+#, fuzzy
+#~ msgid "Loading new configuration file.."
+#~ msgstr "Creare un nuovo file di configurazione"
+
+#, fuzzy
+#~ msgid "Remote IP address"
+#~ msgstr "Indirizzo IP del server LDAP."
+
+#, fuzzy
+#~ msgid "Local IP address"
+#~ msgstr "Il tuo indirizzo e-mail"
+
+#, fuzzy
+#~ msgid "Request Protocol"
+#~ msgstr "Richiesta"
+
+#, fuzzy
+#~ msgid "Remote user (authentication)"
+#~ msgstr "Dominio Base per le autenticazioni del server web."
+
+#, fuzzy
+#~ msgid "Virtual Server nick name"
+#~ msgstr "Nickname del server virtuale"
+
+#, fuzzy
+#~ msgid "Show macros"
+#~ msgstr "Mostra Gruppo"
+
+#, fuzzy
+#~ msgid "Hide"
+#~ msgstr "Intestazione"
+
+#, fuzzy
+#~ msgid "Checking Requirements"
+#~ msgstr "Esci"
+
+#, fuzzy
+#~ msgid "Access details"
+#~ msgstr "Restrizioni di accesso"
+
+#, fuzzy
+#~ msgid "Installing Trac"
+#~ msgstr "Problema di Installazione"
+
+#, fuzzy
+#~ msgid "Error report"
+#~ msgstr "Gestore Errore"
+
+#, fuzzy
+#~ msgid "Expected value"
+#~ msgstr "Esegui come Utente"
+
+#, fuzzy
+#~ msgid "Current value"
+#~ msgstr "Valore personalizzato"
+
+#, fuzzy
+#~ msgid "Wiki details"
+#~ msgstr "Dettagli Reindirizzamento"
+
+#, fuzzy
+#~ msgid "Username for the administrator account."
+#~ msgstr "Amministrazione Remota"
+
+#, fuzzy
+#~ msgid "Password for the administrator account."
+#~ msgstr "Amministrazione Remota"
+
+#, fuzzy
+#~ msgid "Site details"
+#~ msgstr "Mostra errore"
+
+#, fuzzy
+#~ msgid "Admin user"
+#~ msgstr "Utente"
+
+#, fuzzy
+#~ msgid "Admin password"
+#~ msgstr "Password di Bind"
+
+#, fuzzy
+#~ msgid "Admin email"
+#~ msgstr "Utente"
+
+#, fuzzy
+#~ msgid "Sitename"
+#~ msgstr "NomeFile"
+
+#, fuzzy
+#~ msgid "Performing Drupal installation"
+#~ msgstr "Installazione di mercato"
+
+#, fuzzy
+#~ msgid "MySQL 5 could not be found on your system."
+#~ msgstr "Un valido interprete PHP non è stato trovato nel tuo sistema."
+
+#, fuzzy
+#~ msgid "PostgreSQL 8 could not be found on your system."
+#~ msgstr "Un valido interprete PHP non è stato trovato nel tuo sistema."
+
+#, fuzzy
+#~ msgid "Sqlite3 could not be found on your system."
+#~ msgstr "Un valido interprete PHP non è stato trovato nel tuo sistema."
+
+#, fuzzy
+#~ msgid "Detecting a suitable PHP interpreter"
+#~ msgstr "Impossibile trovare un interprete PHP adatto."
+
+#, fuzzy
+#~ msgid "Installing Nagios"
+#~ msgstr "Problema di Installazione"
+
+#, fuzzy
+#~ msgid "Database Requirements"
+#~ msgstr "Percorso non esistente"
+
+#, fuzzy
+#~ msgid "Installing WsgiDAV"
+#~ msgstr "Problema di Installazione"
+
+#, fuzzy
+#~ msgid "Local directory"
+#~ msgstr "Directory Locale Trac"
+
+#, fuzzy
+#~ msgid "WsgiDAV configuration"
+#~ msgstr "Confiugurazione Generale"
+
+#, fuzzy
+#~ msgid "Communicating DB details."
+#~ msgstr "Dettagli Autenticazione"
+
+#, fuzzy
+#~ msgid "Performing automatic installation"
+#~ msgstr "Installazione di mercato"
+
+#, fuzzy
+#~ msgid "Username for the administrator account. Only lower case allowed."
+#~ msgstr "Amministrazione Remota"
+
+#, fuzzy
+#~ msgid "Full sitename"
+#~ msgstr "NomeFile"
+
+#, fuzzy
+#~ msgid "Short sitename"
+#~ msgstr "Nome Host"
+
+#, fuzzy
+#~ msgid "Domain name"
+#~ msgstr "Nome di Dominio"
+
+#, fuzzy
+#~ msgid "Moodle License"
+#~ msgstr "Licenza"
+
+#, fuzzy
+#~ msgid "Accept license"
+#~ msgstr "Domini accettati"
 
 #, fuzzy
 #~ msgid "Application available"
 #~ msgstr "Application Server"
 
-#~ msgid "New port"
-#~ msgstr "Nuovo porta"
-
 #, fuzzy
 #~ msgid "Password configuration"
 #~ msgstr "Configurazione manuale"
-
-#, fuzzy
-#~ msgid "Could not write configuration file"
-#~ msgstr "Non stato possibile reperire la lista dei file di configurazione"
 
 #, fuzzy
 #~ msgid "Could not validate Nagios configuration"

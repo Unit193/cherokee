@@ -2802,8 +2802,9 @@ msgid ""
 msgstr ""
 
 #: cherokee-trunk/admin/market/Install.py:308
+#, fuzzy
 msgid "Setting up"
-msgstr ""
+msgstr "Ustawienia prywatności"
 
 #: cherokee-trunk/admin/market/Install.py:309
 msgid "Unpacking application…"
@@ -2842,7 +2843,7 @@ msgstr "Zgłoś to"
 #: cherokee-trunk/admin/market/Install.py:370
 #, fuzzy
 msgid "Setting up application…"
-msgstr "Aplikacje przeznaczenia ogólnego"
+msgstr "Aplikacje webowe"
 
 #: cherokee-trunk/admin/market/Install.py:479
 #, fuzzy
@@ -4493,8 +4494,9 @@ msgstr ""
 "serwerów aby równoważyć obciążenie."
 
 #: cherokee-trunk/admin/wizards/uwsgi.py:39
+#, fuzzy
 msgid "Welcome to the uWsgi Wizard"
-msgstr ""
+msgstr "Witaj w konfiguratorze ikon"
 
 #: cherokee-trunk/admin/wizards/uwsgi.py:40
 msgid ""
@@ -4532,8 +4534,9 @@ msgid ""
 msgstr ""
 
 #: cherokee-trunk/admin/wizards/uwsgi.py:55
+#, fuzzy
 msgid "Does not look like a Uwsgi source directory."
-msgstr ""
+msgstr "To nie wygląda na na plik konfiguracyjny uWSGI."
 
 #: cherokee-trunk/admin/wizards/uwsgi.py:263
 msgid "uWSGI binary"
@@ -4686,8 +4689,9 @@ msgid "Could not determine PHP-fpm settings."
 msgstr ""
 
 #: cherokee-trunk/admin/wizards/php.py:133
+#, fuzzy
 msgid "Could not determine correct interpreter settings."
-msgstr ""
+msgstr "Nie można przywrócić wybranego pliku konfiguracyjnego"
 
 #: cherokee-trunk/admin/wizards/trac.py:38
 msgid "Welcome to the Trac wizard"
@@ -5131,14 +5135,16 @@ msgid ""
 msgstr ""
 
 #: cherokee-trunk/admin/OWS_Backup.py:65
+#, fuzzy
 msgid "The Configuration File was restored successfuly"
 msgstr "Plik konfiguracyjny został pomyślnie przywrócony"
 
 #: cherokee-trunk/admin/OWS_Backup.py:66
+#, fuzzy
 msgid ""
 "The configuration has been rolled back to a previous version. Please, click "
 "the Save button if you want to commit the changes."
-msgstr ""
+msgstr "Konfiguracja została zapisana"
 
 #: cherokee-trunk/admin/OWS_Backup.py:131
 msgid "Back up…"
@@ -6154,6 +6160,7 @@ msgid "Latest version could not be determined at the moment."
 msgstr "Nie można sprawdzić ostatniego wydania."
 
 #: cherokee-trunk/admin/OWS_Cherokee_Info.py:69
+#, fuzzy
 msgid "Cherokee is up to date."
 msgstr "Cherokee jest aktualne."
 
@@ -6885,8 +6892,9 @@ msgid "Unknown target"
 msgstr "Nieznane"
 
 #: packages/common/target.py:187
+#, fuzzy
 msgid "Package Deployment"
-msgstr ""
+msgstr "Typ odpowiedzi"
 
 #: packages/common/system.py:76
 #, fuzzy
@@ -6980,8 +6988,9 @@ msgid "Could not parse the PHP-fpm settings file"
 msgstr "Nie można przywrócić wybranego pliku konfiguracyjnego"
 
 #: packages/common/php.py:286
+#, fuzzy
 msgid "Could not read the \"fpm_listen_address\" property"
-msgstr ""
+msgstr "Nie można raportować tego problemu"
 
 #: packages/liferay/installer.py:139
 msgid ""
@@ -7372,23 +7381,288 @@ msgid ""
 msgstr ""
 
 #, fuzzy
-#~ msgid "partial installations: "
+#~ msgid "Source Usage"
+#~ msgstr "Źródła"
+
+#, fuzzy
+#~ msgid "Source"
+#~ msgstr "Źródła"
+
+#, fuzzy
+#~ msgid "Failover"
+#~ msgstr "Filtr"
+
+#, fuzzy
+#~ msgid ""
+#~ "Use the VServer error handler, whenever an error response is received "
+#~ "from a back-end server. (Default: No)"
+#~ msgstr ""
+#~ "Zachowaj oryginalny nagłówek \"Server:\" wysyłany do klienta. (Domyślnie: "
+#~ "Nie)"
+
+#, fuzzy
+#~ msgid "Use VServer error handler"
+#~ msgstr "Zachowuj nagłówek Server"
+
+#, fuzzy
+#~ msgid "Use it"
+#~ msgstr "Używaj TLS"
+
+#, fuzzy
+#~ msgid "or"
+#~ msgstr "Port"
+
+#, fuzzy
+#~ msgid "Unknown Error"
+#~ msgstr "Nieznane"
+
+#, fuzzy
+#~ msgid "Unfinished"
 #~ msgstr "Zdalna administracja"
+
+#, fuzzy
+#~ msgid "Databases"
+#~ msgstr "Baza danych"
+
+#, fuzzy
+#~ msgid "Report Application"
+#~ msgstr "Aplikacje webowe"
+
+#, fuzzy
+#~ msgid "Report issue"
+#~ msgstr "Zgłoś to"
+
+#, fuzzy
+#~ msgid "Setting it up…"
+#~ msgstr "Aplikacje przeznaczenia ogólnego"
+
+#, fuzzy
+#~ msgid ""
+#~ "Thank you for submitting the application report. Our support team will "
+#~ "review it as soon as possible."
+#~ msgstr ""
+#~ "Dziękujemy za raportowanie problemu. Deweloperzy Cherokee postarają się "
+#~ "usunąć problem tak szybko jak to tylko możliwe."
+
+#, fuzzy
+#~ msgid "Report sent successfully"
+#~ msgstr "Konfiguracja została zapisana"
+
+#, fuzzy
+#~ msgid "Request refund"
+#~ msgstr "Zapytanie"
+
+#, fuzzy
+#~ msgid "Report"
+#~ msgstr "Nowy port"
+
+#, fuzzy
+#~ msgid "Could not determine PHP-CGI configuration file."
+#~ msgstr "Nie można pobrać listy plików konfiguracyjnych"
+
+#, fuzzy
+#~ msgid "Save Configuration"
+#~ msgstr "Konfiguracja zaawansowana"
+
+#, fuzzy
+#~ msgid "Sanity checks"
+#~ msgstr "Nie sprawdzaj"
+
+#, fuzzy
+#~ msgid "Note that the configuration file was not saved."
+#~ msgstr "Konfiguracja została zapisana"
+
+#, fuzzy
+#~ msgid "Solve"
+#~ msgstr "Zapisz"
+
+#, fuzzy
+#~ msgid "Configuration successfully saved"
+#~ msgstr "Plik konfiguracyjny pomyślnie wgrany"
+
+#, fuzzy
+#~ msgid "Authentication rule without Realm"
+#~ msgstr "Lista autoryzacyjna"
+
+#, fuzzy
+#~ msgid "Virtual Server without nickname"
+#~ msgstr "Nazwa serwera wirtualnego"
+
+#, fuzzy
+#~ msgid "Virtual Server without document root"
+#~ msgstr "Katalog główny "
+
+#, fuzzy
+#~ msgid "Directory match without a directory"
+#~ msgstr "Scieżka nie jest katalogiem"
+
+#, fuzzy
+#~ msgid "Empty 'Incoming IP/Port' match"
+#~ msgstr "Przychodzące IP/Port"
+
+#, fuzzy
+#~ msgid "Broken Source"
+#~ msgstr "Źródła danych"
+
+#, fuzzy
+#~ msgid "Your current Configuration file matches the restored version."
+#~ msgstr "Twoja obecna konfiguracja zostanie zbackupowana"
+
+#, fuzzy
+#~ msgid "Path is a directory"
+#~ msgstr "Scieżka nie jest katalogiem"
+
+#, fuzzy
+#~ msgid "Loading new configuration file.."
+#~ msgstr "Stwórz nowy plik konfiguracyjny"
+
+#, fuzzy
+#~ msgid "Remote IP address"
+#~ msgstr "Adres IP serwera LDAP"
+
+#, fuzzy
+#~ msgid "Local IP address"
+#~ msgstr "Twój email"
+
+#, fuzzy
+#~ msgid "Request Protocol"
+#~ msgstr "Zapytanie"
+
+#, fuzzy
+#~ msgid "Remote user (authentication)"
+#~ msgstr "Bazowa domena dla autoryzacji serwera."
+
+#, fuzzy
+#~ msgid "Virtual Server nick name"
+#~ msgstr "Nazwa serwera wirtualnego"
+
+#, fuzzy
+#~ msgid "Show macros"
+#~ msgstr "Pokazuj Group"
+
+#, fuzzy
+#~ msgid "Hide"
+#~ msgstr "Nagłówek"
+
+#, fuzzy
+#~ msgid "Checking Requirements"
+#~ msgstr "Połączenia / Zapytania"
+
+#, fuzzy
+#~ msgid "Access details"
+#~ msgstr "Ograniczenia dostępu"
+
+#, fuzzy
+#~ msgid "Installing Trac"
+#~ msgstr "Zdalna administracja"
+
+#, fuzzy
+#~ msgid "Error report"
+#~ msgstr "Handler błędów"
+
+#, fuzzy
+#~ msgid "Expected value"
+#~ msgstr "Uruchom jako użytkownik"
+
+#, fuzzy
+#~ msgid "Current value"
+#~ msgstr "Własna wartość"
+
+#, fuzzy
+#~ msgid "Wiki details"
+#~ msgstr "Szczegóły przekierowania"
+
+#, fuzzy
+#~ msgid "Username for the administrator account."
+#~ msgstr "Zdalna administracja"
+
+#, fuzzy
+#~ msgid "Password for the administrator account."
+#~ msgstr "Zdalna administracja"
+
+#, fuzzy
+#~ msgid "Site details"
+#~ msgstr "Zapisuj błędy do"
+
+#, fuzzy
+#~ msgid "Admin user"
+#~ msgstr "User"
+
+#, fuzzy
+#~ msgid "Admin password"
+#~ msgstr "Hasło"
+
+#, fuzzy
+#~ msgid "Admin email"
+#~ msgstr "User"
+
+#, fuzzy
+#~ msgid "Sitename"
+#~ msgstr "Nazwa pliku"
+
+#, fuzzy
+#~ msgid "Performing Drupal installation"
+#~ msgstr "Zdalna administracja"
+
+#, fuzzy
+#~ msgid "Installing Nagios"
+#~ msgstr "Zdalna administracja"
+
+#, fuzzy
+#~ msgid "Database Requirements"
+#~ msgstr "Scieżka nie istnieje"
+
+#, fuzzy
+#~ msgid "Installing WsgiDAV"
+#~ msgstr "Zdalna administracja"
+
+#, fuzzy
+#~ msgid "Local directory"
+#~ msgstr "Katalog Trac"
+
+#, fuzzy
+#~ msgid "WsgiDAV configuration"
+#~ msgstr "Konfiguracja ogólna"
+
+#, fuzzy
+#~ msgid "Communicating DB details."
+#~ msgstr "Szczegóły autoryzacji"
+
+#, fuzzy
+#~ msgid "Performing automatic installation"
+#~ msgstr "Zdalna administracja"
+
+#, fuzzy
+#~ msgid "Username for the administrator account. Only lower case allowed."
+#~ msgstr "Zdalna administracja"
+
+#, fuzzy
+#~ msgid "Full sitename"
+#~ msgstr "Nazwa pliku"
+
+#, fuzzy
+#~ msgid "Short sitename"
+#~ msgstr "Nazwy hostów"
+
+#, fuzzy
+#~ msgid "Domain name"
+#~ msgstr "Wzorzec domeny"
+
+#, fuzzy
+#~ msgid "Moodle License"
+#~ msgstr "Moodle"
+
+#, fuzzy
+#~ msgid "Accept license"
+#~ msgstr "Akceptowane domeny"
 
 #, fuzzy
 #~ msgid "Application available"
 #~ msgstr "Serwer aplikacji"
 
-#~ msgid "New port"
-#~ msgstr "Nowy port"
-
 #, fuzzy
 #~ msgid "Password configuration"
 #~ msgstr "Ręczna konfiguracja"
-
-#, fuzzy
-#~ msgid "Could not write configuration file"
-#~ msgstr "Nie można pobrać listy plików konfiguracyjnych"
 
 #, fuzzy
 #~ msgid "Could not validate Nagios configuration"

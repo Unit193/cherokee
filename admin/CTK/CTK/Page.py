@@ -85,14 +85,14 @@ def uniq (seq):
     return noDupes
 
 class Page (Container):
-    def __init__ (self, template=None, headers=None, helps=[], **kwargs):
+    def __init__ (self, template=None, headers=None, helps=None, **kwargs):
         Container.__init__ (self, **kwargs)
         self.js_header_end = True
 
         if headers:
-            self._headers = HEADERS + headers
+            self._headers = HEADERS[:] + headers[:]
         else:
-            self._headers = HEADERS
+            self._headers = HEADERS[:]
 
         if template:
             self._template = template
@@ -100,7 +100,7 @@ class Page (Container):
             self._template = Template (content = PAGE_TEMPLATE_DEFAULT)
 
         self._helps = []
-        for entry in helps:
+        for entry in helps or []:
             self._helps.append (HelpEntry (entry[1], entry[0]))
 
     def AddHeaders (self, headers):
