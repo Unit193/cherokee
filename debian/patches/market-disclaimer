@@ -1,0 +1,29 @@
+From: Gunnar Wolf <gwolf@debian.org>
+Origin: vendor
+Forwarded: not-needed
+Last-update: 2011-02-24
+Description: Adds a disclaimer about the Cherokee Market
+ Starting with version 1.2.1, Cherokee's functionality includes an
+ application market. This means, users can click-and-go installing
+ applications. This patch makes it explicit those applications are
+ _not_ the ones provided by Debian.
+
+Index: cherokee-1.2.1/admin/market/Util.py
+===================================================================
+--- cherokee-1.2.1.orig/admin/market/Util.py	2011-02-24 12:51:45.000000000 -0600
++++ cherokee-1.2.1/admin/market/Util.py	2011-02-24 12:52:00.000000000 -0600
+@@ -67,8 +67,14 @@
+         from PageCategory import Categories_Widget
+         self.sidebar += Categories_Widget()
+ 
++        # Debian-related disclaimer
++        disclaimer = CTK.Box({'class': 'market-main-area' })
++        disclaimer += CTK.RawHTML ("<p>%s</p>"%_('Please note the applications installed through the <em>Cherokee Market</em> are provided by <a href="http://www.octality.com/">Octality</a>, and not by Debian. For support regarding these applications, contact the <a href="http://bugs.cherokee-project.com/">Cherokee bug tracker</a>.'))
++        disclaimer += CTK.RawHTML ("<p>%s</p>"%_('Many of the applications are also available through the <tt>apt-get</tt> infrastructure as well. Cherokee Market provides the main advantage of easier installation/integration with Cherokee itself.'))
++
+         # Container
+         container = CTK.Box({'id': 'market-container'})
++        container += disclaimer
+         container += self.mainarea
+         container += self.sidebar
+ 
