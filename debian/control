@@ -140,8 +140,8 @@ Package: cherokee-admin
 Section: httpd
 Architecture: any
 Provides: libcherokee-mod-admin
-Replaces: libcherokee-mod-config0, libcherokee-mod-admin
-Conflicts: libcherokee-mod-config0, libcherokee-mod-admin
+Replaces: libcherokee-config0, libcherokee-mod-admin
+Conflicts: libcherokee-config0, libcherokee-mod-admin
 Depends: ${misc:Depends}, ${shlibs:Depends}, libcherokee-server0 (= ${binary:Version}), ${python:Depends}
 Description: Cherokee web server - Administrative plugin
  Cherokee is a very fast, flexible and easy to configure Web Server.
