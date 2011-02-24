@@ -65,7 +65,8 @@ HANDLERS = [
     ('dbslayer',     N_('MySQL Bridge')),
     ('custom_error', N_('HTTP Error')),
     ('admin',        N_('Remote Administration')),
-    ('empty_gif',    N_('1x1 Transparent GIF'))
+    ('empty_gif',    N_('1x1 Transparent GIF')),
+    ('drop',         N_('Drop Connection')),
 ]
 
 ERROR_HANDLERS = [
@@ -267,4 +268,8 @@ COMPRESSION_LEVELS = [
     ('7', N_('7')),
     ('8', N_('8')),
     ('9', N_('9 - Max compression'))
+]
+
+HANDLERS_WITH_BALANCER = [
+    'fcgi', 'scgi', 'uwsgi', 'proxy', 'dbslayer'
 ]

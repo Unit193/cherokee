@@ -2424,6 +2424,7 @@ msgid "Free"
 msgstr "Gratis"
 
 #: cherokee-trunk/admin/market/Util.py:150
+#, fuzzy
 msgid "These instructions will help you install the required software"
 msgstr "Estas instruccións axudaranche a instalar o software solicitado"
 
@@ -2509,6 +2510,7 @@ msgid "Market Home"
 msgstr "Inicio do Mercado"
 
 #: cherokee-trunk/admin/market/Maintenance.py:40
+#, fuzzy
 msgid ""
 "Specify the name of a privileged DB user. It will be used to automatically "
 "create the required database."
@@ -2711,6 +2713,7 @@ msgstr ""
 "\" para ir ó apartado de pagar."
 
 #: cherokee-trunk/admin/market/Install.py:55
+#, fuzzy
 msgid ""
 "The application will be downloaded and installed afterwards. It will also "
 "remain in your library for any future installation."
@@ -2800,6 +2803,7 @@ msgstr ""
 "problema persiste."
 
 #: cherokee-trunk/admin/market/Install.py:308
+#, fuzzy
 msgid "Setting up"
 msgstr "Configurando"
 
@@ -3511,12 +3515,12 @@ msgstr ""
 "código."
 
 #: cherokee-trunk/admin/wizards/django.py:42
+#, fuzzy
 msgid ""
 "Local directory where the Django source code is located. Example: /usr/share/"
 "django."
 msgstr ""
-"Directorio local onde está o código fonte de Django. Exemplo: /usr/share/"
-"djando."
+"Directorio local donde está o código fonte de Drupal. Ex. /usr/share/drupal."
 
 #: cherokee-trunk/admin/wizards/django.py:45
 msgid "Web directory where you want Django to be accessible. (Example: /blog)"
@@ -3921,6 +3925,7 @@ msgid "Full-stack framework, a library of cohesive classes written in PHP."
 msgstr ""
 
 #: cherokee-trunk/admin/wizards/List.py:109
+#, fuzzy
 msgid "Fast, self-healing, developer-friendly WSGI server."
 msgstr "Servidor WSGI rápido e amigable."
 
@@ -4664,10 +4669,12 @@ msgstr ""
 "despois para balancear a carga."
 
 #: cherokee-trunk/admin/wizards/uwsgi.py:39
+#, fuzzy
 msgid "Welcome to the uWsgi Wizard"
 msgstr "Ben vido ó asistente de uWsgi"
 
 #: cherokee-trunk/admin/wizards/uwsgi.py:40
+#, fuzzy
 msgid ""
 "<a target=\"_blank\" href=\"http://projects.unbit.it/uwsgi/\">uWSGI</a> is a "
 "fast (pure C), self-healing, developer-friendly WSGI server, aimed for "
@@ -4679,6 +4686,7 @@ msgstr ""
 "implementacións."
 
 #: cherokee-trunk/admin/wizards/uwsgi.py:41
+#, fuzzy
 msgid ""
 "Over time it has evolved in a complete stack for networked/clustered python "
 "applications, implementing message/object passing and process management. It "
@@ -4690,6 +4698,7 @@ msgstr ""
 "Usa o protocolo uwsgi (en minúscula) para as comunicacións da rede."
 
 #: cherokee-trunk/admin/wizards/uwsgi.py:44
+#, fuzzy
 msgid ""
 "Path to the uWSGI configuration file (XML or Python-only). Its mountpoint "
 "will be used."
@@ -4960,6 +4969,7 @@ msgid "Would you like to apply the changes to the running server now?"
 msgstr "Queres aplicar agora os cambios ó servidor en funcionamento?"
 
 #: cherokee-trunk/admin/Page.py:35
+#, fuzzy
 msgid "The configuration file has been saved successfuly."
 msgstr "Gardouse correctamente o ficheiro de configuración."
 
@@ -5351,10 +5361,12 @@ msgstr ""
 "gardado remotamente."
 
 #: cherokee-trunk/admin/OWS_Backup.py:65
+#, fuzzy
 msgid "The Configuration File was restored successfuly"
 msgstr "O Ficheiro de Confiuración restableceuse exitosamente"
 
 #: cherokee-trunk/admin/OWS_Backup.py:66
+#, fuzzy
 msgid ""
 "The configuration has been rolled back to a previous version. Please, click "
 "the Save button if you want to commit the changes."
@@ -6370,6 +6382,7 @@ msgid "Select"
 msgstr "Seleccionar"
 
 #: cherokee-trunk/admin/OWS_Cherokee_Info.py:36
+#, fuzzy
 msgid ""
 "Thank you for testing a development snapshot. It helps us to create the "
 "highest quality product."
@@ -6386,6 +6399,7 @@ msgid "Latest version could not be determined at the moment."
 msgstr "Non se pode determinar neste momento a última versión."
 
 #: cherokee-trunk/admin/OWS_Cherokee_Info.py:69
+#, fuzzy
 msgid "Cherokee is up to date."
 msgstr "Cherokee está ó día."
 
@@ -7213,6 +7227,7 @@ msgstr ""
 "habilitado para continuar."
 
 #: packages/common/php.py:51
+#, fuzzy
 msgid ""
 "You can check if your interpreter supports FastCGI by looking for the \"fcgi"
 "\" string in the output of the following command: \"php-cgi -v | grep fcgi\""
@@ -7668,23 +7683,413 @@ msgstr ""
 "Lanzar Liferay pode demorar un par de minutos en servidores novos, asi que "
 "sexa paciente a primeira vez que o faga."
 
-#~ msgid "partial installations: "
+#, fuzzy
+#~ msgid "Source Usage"
+#~ msgstr "Orixes"
+
+#, fuzzy
+#~ msgid "Source"
+#~ msgstr "Orixes"
+
+#, fuzzy
+#~ msgid "Failover"
+#~ msgstr "Filtro"
+
+#, fuzzy
+#~ msgid ""
+#~ "Use the VServer error handler, whenever an error response is received "
+#~ "from a back-end server. (Default: No)"
+#~ msgstr ""
+#~ "Manter o cabezallo \"Server:\" enviado polo servidor back-end. (Por "
+#~ "omisión: Non)"
+
+#, fuzzy
+#~ msgid "Use VServer error handler"
+#~ msgstr "Conservar cabezallo do servidor"
+
+#, fuzzy
+#~ msgid "Use it"
+#~ msgstr "Usar TLS"
+
+#, fuzzy
+#~ msgid "or"
+#~ msgstr "Porto"
+
+#, fuzzy
+#~ msgid "Unknown Error"
+#~ msgstr "Procesador descoñecido"
+
+#, fuzzy
+#~ msgid ""
+#~ "Specify the name of a privileged DB user. It will be used to remove the "
+#~ "databases."
+#~ msgstr ""
+#~ "Indicar o nome do usuario con privilexios da BD. Usarase para crear "
+#~ "automáticamente a base de datos."
+
+#, fuzzy
+#~ msgid "Unfinished"
+#~ msgstr "Instalación do Mercado"
+
+#, fuzzy
+#~ msgid "Removing %(name)s (%(date)s)"
+#~ msgstr "na %s en %s"
+
+#, fuzzy
+#~ msgid "Removing Applications"
+#~ msgstr "O Top das aplicacións"
+
+#, fuzzy
+#~ msgid "Deployment methods"
+#~ msgstr "Método de desenvolvemento"
+
+#, fuzzy
+#~ msgid "Operating Systems"
+#~ msgstr "Confirmando"
+
+#, fuzzy
+#~ msgid "Databases"
+#~ msgstr "Base Datos"
+
+#, fuzzy
+#~ msgid "Report Application"
+#~ msgstr "O Top das aplicacións"
+
+#, fuzzy
+#~ msgid "Report issue"
+#~ msgstr "Informar do asunto"
+
+#, fuzzy
+#~ msgid "Connecting to Cherokee Market"
+#~ msgstr "Mercado Cherokee"
+
+#, fuzzy
+#~ msgid "The applicaction is being unpacked…"
+#~ msgstr "O aplicativo estase a instalar..."
+
+#, fuzzy
+#~ msgid "Setting it up…"
+#~ msgstr "Configurando"
+
+#, fuzzy
+#~ msgid "We are sorry, but the report could not be sent."
+#~ msgstr "Sentímolo, pero a revisión non se puido enviar."
+
+#, fuzzy
+#~ msgid ""
+#~ "Thank you for submitting the application report. Our support team will "
+#~ "review it as soon as possible."
+#~ msgstr ""
+#~ "Gracias por informar do problema. Os desenvolvedores do Servidor Web "
+#~ "Cherokee tentará arranxalo tan pronto coma sexa posible."
+
+#, fuzzy
+#~ msgid "Could not send the report"
+#~ msgstr "Non se puido enviara a revisión"
+
+#, fuzzy
+#~ msgid "Report sent successfully"
+#~ msgstr "foi instalado correctamente"
+
+#, fuzzy
+#~ msgid "Request refund"
+#~ msgstr "Solicitar"
+
+#, fuzzy
+#~ msgid "Report"
+#~ msgstr "Novo porto"
+
+#, fuzzy
+#~ msgid "Local directory where your Django project source code is located."
+#~ msgstr ""
+#~ "Directorio local onde está o código fonte de Django. Exemplo: /usr/share/"
+#~ "djando."
+
+#, fuzzy
+#~ msgid "Could not determine PHP-CGI settings."
+#~ msgstr "Non se puideron determinar as configuracións PHP-fpm"
+
+#, fuzzy
+#~ msgid "Could not determine PHP-CGI configuration file."
+#~ msgstr "Non se puido escribir o ficheiro de configuración."
+
+#, fuzzy
+#~ msgid "%s Logical Processor"
+#~ msgstr "%s Procesadores lóxicos."
+
+#, fuzzy
+#~ msgid "%s Core"
+#~ msgstr "%s Núcleos"
+
+#, fuzzy
+#~ msgid "Save Configuration"
+#~ msgstr "Configuración Avanzada"
+
+#, fuzzy
+#~ msgid "Sanity checks"
+#~ msgstr "Non verificar"
+
+#, fuzzy
+#~ msgid "Note that the configuration file was not saved."
+#~ msgstr "Gardouse correctamente o ficheiro de configuración."
+
+#, fuzzy
+#~ msgid "Solve"
+#~ msgstr "Gardar"
+
+#, fuzzy
+#~ msgid "Configuration successfully saved"
+#~ msgstr "Ficheiro de configuración subido correctamente"
+
+#, fuzzy
+#~ msgid "Authentication rule without Realm"
+#~ msgstr "Lista de autentificación"
+
+#, fuzzy
+#~ msgid "Virtual Server without nickname"
+#~ msgstr "Alcume do servidor virtual"
+
+#, fuzzy
+#~ msgid "Virtual Server without document root"
+#~ msgstr "Directorio raíz do Servidor Vitual."
+
+#, fuzzy
+#~ msgid "Directory match without a directory"
+#~ msgstr "A ruta non é un directorio"
+
+#, fuzzy
+#~ msgid "Empty 'Incoming IP/Port' match"
+#~ msgstr "Entrada IP/Porto"
+
+#, fuzzy
+#~ msgid "Broken Source"
+#~ msgstr "Fonte do proxecto"
+
+#, fuzzy
+#~ msgid "The configuration has been rolled back to a previous version."
+#~ msgstr ""
+#~ "A configuración voltou á versión anterior. Por favor, clica en Gardar se "
+#~ "queres aplicar os trocos."
+
+#, fuzzy
+#~ msgid "Your current Configuration file matches the restored version."
+#~ msgstr "Vaise gardar a copia de respaldo da configuración."
+
+#, fuzzy
+#~ msgid "Path is a directory"
+#~ msgstr "A ruta non é un directorio"
+
+#, fuzzy
+#~ msgid "Loading new configuration file.."
+#~ msgstr "Crear un novo ficheiro de configuración"
+
+#, fuzzy
+#~ msgid "Remote IP address"
+#~ msgstr "Enderezo IP do servidor LDAP"
+
+#, fuzzy
+#~ msgid "Local IP address"
+#~ msgstr "Dirección de correo electrónico"
+
+#, fuzzy
+#~ msgid "Request Protocol"
+#~ msgstr "Solicitar"
+
+#, fuzzy
+#~ msgid "Remote user (authentication)"
+#~ msgstr "Dominio base para as autenticacións no servidor web."
+
+#, fuzzy
+#~ msgid "Virtual Server nick name"
+#~ msgstr "Alcume do servidor virtual"
+
+#, fuzzy
+#~ msgid "Show macros"
+#~ msgstr "Amosar Grupo"
+
+#, fuzzy
+#~ msgid "Hide"
+#~ msgstr "Cabezallo"
+
+#, fuzzy
+#~ msgid "Checking Requirements"
+#~ msgstr "Verificando os requirementos para instalación"
+
+#, fuzzy
+#~ msgid "Access details"
+#~ msgstr "Restriccións de acceso"
+
+#, fuzzy
+#~ msgid ""
+#~ "Note that launching Magnolia can take up a couple of  minutes on modern "
+#~ "servers, so please be patient the first time you access it."
+#~ msgstr ""
+#~ "Lanzar Liferay pode demorar un par de minutos en servidores novos, asi "
+#~ "que sexa paciente a primeira vez que o faga."
+
+#, fuzzy
+#~ msgid "Installing Trac"
+#~ msgstr "Instalando Trac."
+
+#, fuzzy
+#~ msgid "Error report"
+#~ msgstr "Xestor de erros"
+
+#, fuzzy
+#~ msgid "Expected value"
+#~ msgstr "Executar coma Usuario"
+
+#, fuzzy
+#~ msgid "Current value"
+#~ msgstr "Valor personalizado"
+
+#, fuzzy
+#~ msgid "Wiki details"
+#~ msgstr "Detalles da redirección."
+
+#, fuzzy
+#~ msgid "Username for the administrator account."
+#~ msgstr "Nome de usuario da conta de administrador"
+
+#, fuzzy
+#~ msgid "Password for the administrator account."
+#~ msgstr "Contrasinal da conta de administrador"
+
+#, fuzzy
+#~ msgid "Site details"
+#~ msgstr "Amosa erro"
+
+#, fuzzy
+#~ msgid "Admin user"
+#~ msgstr "Usuario Administrador"
+
+#, fuzzy
+#~ msgid "Admin password"
+#~ msgstr "Contrasinal do administrador"
+
+#, fuzzy
+#~ msgid "Admin email"
+#~ msgstr "Usuario Administrador"
+
+#, fuzzy
+#~ msgid "Sitename"
+#~ msgstr "Nome do sitio Wiki"
+
+#, fuzzy
+#~ msgid "Performing Drupal installation"
 #~ msgstr "instalacións parciais: "
+
+#, fuzzy
+#~ msgid "MySQL 5 could not be found on your system."
+#~ msgstr "Non se atopou un Intérprete PHP válido no teu sistema."
+
+#, fuzzy
+#~ msgid "PostgreSQL 8 could not be found on your system."
+#~ msgstr "Non se atopou un Intérprete PHP válido no teu sistema."
+
+#, fuzzy
+#~ msgid "Sqlite3 could not be found on your system."
+#~ msgstr "Non se atopou un Intérprete PHP válido no teu sistema."
+
+#, fuzzy
+#~ msgid "Deployment Type"
+#~ msgstr "Método de desenvolvemento"
+
+#, fuzzy
+#~ msgid ""
+#~ "Your system doesn't seem to provide the required dependecies. Please make "
+#~ "sure there is a C++ development environment present."
+#~ msgstr ""
+#~ "O seu sistema non semella cumplir as dependencias necesarias. Por favor "
+#~ "asegúrese de que ten un Entorno de Desenvolvemento en C"
+
+#, fuzzy
+#~ msgid "Detecting a suitable PHP interpreter"
+#~ msgstr "Non se puido atopar un Intérprete PHP axeitado."
+
+#, fuzzy
+#~ msgid ""
+#~ "It is probably a good idea to pre-launch it on boot time instead of "
+#~ "having the web-server do so on demand."
+#~ msgstr ""
+#~ "Problemente sexa boa idea inicialo antes no canto de deixar que o faga a "
+#~ "petición do servidor."
+
+#, fuzzy
+#~ msgid "Installing Nagios"
+#~ msgstr "Instalar"
+
+#, fuzzy
+#~ msgid "Database Requirements"
+#~ msgstr "Non existe a ruta"
+
+#, fuzzy
+#~ msgid "Installing WsgiDAV"
+#~ msgstr "Instalar"
+
+#, fuzzy
+#~ msgid "Local directory"
+#~ msgstr "Directorio local de Trac"
+
+#, fuzzy
+#~ msgid "WsgiDAV configuration"
+#~ msgstr "Configuración de usuario"
+
+#, fuzzy
+#~ msgid ""
+#~ "Your system doesn't seem to provide the required dependecy 'xml2-config'"
+#~ msgstr ""
+#~ "O teu sistema non semella cumplir as dependencias requeridas. Necesítase "
+#~ "Java 6 ou superior."
+
+#, fuzzy
+#~ msgid ""
+#~ "Note that launching Nuxeo-DAM can take up a couple of  minutes on modern "
+#~ "servers, so please be patient the first time you access it."
+#~ msgstr ""
+#~ "Lanzar Liferay pode demorar un par de minutos en servidores novos, asi "
+#~ "que sexa paciente a primeira vez que o faga."
+
+#, fuzzy
+#~ msgid "Communicating DB details."
+#~ msgstr "Detalles da autenticación"
+
+#, fuzzy
+#~ msgid "Performing automatic installation"
+#~ msgstr "Instalación do Mercado"
+
+#, fuzzy
+#~ msgid "Username for the administrator account. Only lower case allowed."
+#~ msgstr "Nome de usuario da conta de administrador"
+
+#, fuzzy
+#~ msgid "Full sitename"
+#~ msgstr "nome de ficheiro"
+
+#, fuzzy
+#~ msgid "Short sitename"
+#~ msgstr "Nome de Servidor"
+
+#, fuzzy
+#~ msgid "Domain name"
+#~ msgstr "Nome de Dominio"
+
+#, fuzzy
+#~ msgid "Moodle License"
+#~ msgstr "Licencia"
+
+#, fuzzy
+#~ msgid "Accept license"
+#~ msgstr "Dominios permitidos"
 
 #~ msgid "Application available"
 #~ msgstr "Aplicativo disponible"
-
-#~ msgid "New port"
-#~ msgstr "Novo porto"
 
 #~ msgid "Password of the <strong>nagiosadmin</strong> user."
 #~ msgstr "Contrasinal do usuario <strong>nagiosadmin</strong>"
 
 #~ msgid "Password configuration"
 #~ msgstr "Configuración do contrasinal"
-
-#~ msgid "Could not write configuration file"
-#~ msgstr "Non se puido escribir o ficheiro de configuración."
 
 #~ msgid "Could not validate Nagios configuration"
 #~ msgstr "Non se puido validar a configuración de Nagios"
@@ -7705,9 +8110,6 @@ msgstr ""
 #, fuzzy
 #~ msgid "â˜ Read lessâ€¦"
 #~ msgstr "â˜ Ler menosâ€¦"
-
-#~ msgid "The application is being deployed..."
-#~ msgstr "O aplicativo estase a instalar..."
 
 #~ msgid "OK"
 #~ msgstr "OK"

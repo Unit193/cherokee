@@ -2893,8 +2893,9 @@ msgid ""
 msgstr ""
 
 #: cherokee-trunk/admin/market/Install.py:308
+#, fuzzy
 msgid "Setting up"
-msgstr ""
+msgstr "Sekretessinställningar"
 
 #: cherokee-trunk/admin/market/Install.py:309
 msgid "Unpacking application…"
@@ -2934,7 +2935,7 @@ msgstr "Rapport skickad"
 #: cherokee-trunk/admin/market/Install.py:370
 #, fuzzy
 msgid "Setting up application…"
-msgstr "Allmän konfiguration"
+msgstr "Applikations-server"
 
 #: cherokee-trunk/admin/market/Install.py:479
 #, fuzzy
@@ -3609,11 +3610,12 @@ msgstr ""
 "lättare att mindre kod skriva bättre web-applikationer."
 
 #: cherokee-trunk/admin/wizards/django.py:42
+#, fuzzy
 msgid ""
 "Local directory where the Django source code is located. Example: /usr/share/"
 "django."
 msgstr ""
-"Lokal katalog där källkoden till Django finns. Exempelvis: /usr/share/django"
+"Lokal katalog där källkoden till Drupal finns. Exempelvis: /usr/share/drupal."
 
 #: cherokee-trunk/admin/wizards/django.py:45
 msgid "Web directory where you want Django to be accessible. (Example: /blog)"
@@ -4041,6 +4043,7 @@ msgstr ""
 "Fullstacks-ramverk, ett bibliotek av sammanhängande klasser skrivna i PHP."
 
 #: cherokee-trunk/admin/wizards/List.py:109
+#, fuzzy
 msgid "Fast, self-healing, developer-friendly WSGI server."
 msgstr "Snabb, självläkande och utvecklarvänlig WSGI-server."
 
@@ -4777,6 +4780,7 @@ msgstr ""
 "ett senare tillfälle för att lastbalansera."
 
 #: cherokee-trunk/admin/wizards/uwsgi.py:39
+#, fuzzy
 msgid "Welcome to the uWsgi Wizard"
 msgstr "Välkommen till uWsgi-guiden"
 
@@ -5076,6 +5080,7 @@ msgid "Would you like to apply the changes to the running server now?"
 msgstr "Vill du aktivera ändringarna till den körande servern?"
 
 #: cherokee-trunk/admin/Page.py:35
+#, fuzzy
 msgid "The configuration file has been saved successfuly."
 msgstr "Konfigurationsfilen har sparats"
 
@@ -5471,10 +5476,11 @@ msgid "The Configuration File was restored successfuly"
 msgstr "Konfigurationsfilen har sparats"
 
 #: cherokee-trunk/admin/OWS_Backup.py:66
+#, fuzzy
 msgid ""
 "The configuration has been rolled back to a previous version. Please, click "
 "the Save button if you want to commit the changes."
-msgstr ""
+msgstr "Konfigurationsfilen har sparats"
 
 #: cherokee-trunk/admin/OWS_Backup.py:131
 msgid "Back up…"
@@ -6530,6 +6536,7 @@ msgid "Latest version could not be determined at the moment."
 msgstr "Senaste versionen kan inte hittas för tillfället."
 
 #: cherokee-trunk/admin/OWS_Cherokee_Info.py:69
+#, fuzzy
 msgid "Cherokee is up to date."
 msgstr "Cherokee kör senaste versionen."
 
@@ -7283,8 +7290,9 @@ msgid "Unknown target"
 msgstr "Okänd"
 
 #: packages/common/target.py:187
+#, fuzzy
 msgid "Package Deployment"
-msgstr ""
+msgstr "Utvecklingsspråk och plattformar"
 
 #: packages/common/system.py:76
 #, fuzzy
@@ -7380,8 +7388,9 @@ msgid "Could not parse the PHP-fpm settings file"
 msgstr "Kunde inte fastställa inställningar för PHP-fpm."
 
 #: packages/common/php.py:286
+#, fuzzy
 msgid "Could not read the \"fpm_listen_address\" property"
-msgstr ""
+msgstr "Kunde inte rapportera problemet"
 
 #: packages/liferay/installer.py:139
 msgid ""
@@ -7775,23 +7784,305 @@ msgid ""
 msgstr ""
 
 #, fuzzy
-#~ msgid "partial installations: "
+#~ msgid "Source Usage"
+#~ msgstr "Användandet av källa"
+
+#, fuzzy
+#~ msgid "Source"
+#~ msgstr "Användandet av källa"
+
+#, fuzzy
+#~ msgid "Failover"
+#~ msgstr "Filter"
+
+#, fuzzy
+#~ msgid ""
+#~ "Use the VServer error handler, whenever an error response is received "
+#~ "from a back-end server. (Default: No)"
+#~ msgstr ""
+#~ "Bevara \"Host:\"-headern som skickas av klienten. (Grundinställd till Nej)"
+
+#, fuzzy
+#~ msgid "Use VServer error handler"
+#~ msgstr "Bevara Host-headern"
+
+#, fuzzy
+#~ msgid "Use it"
+#~ msgstr "Använd TLS"
+
+#, fuzzy
+#~ msgid "or"
+#~ msgstr "Port"
+
+#, fuzzy
+#~ msgid "Unknown Error"
+#~ msgstr "Okänd metod"
+
+#, fuzzy
+#~ msgid "Unfinished"
+#~ msgstr "Odefinerad.."
+
+#, fuzzy
+#~ msgid "Deployment methods"
+#~ msgstr "Utvecklingsspråk och plattformar"
+
+#, fuzzy
+#~ msgid "Databases"
+#~ msgstr "Databas"
+
+#, fuzzy
+#~ msgid "Report Application"
+#~ msgstr "Applikations-server"
+
+#, fuzzy
+#~ msgid "Report issue"
+#~ msgstr "Rapport skickad"
+
+#, fuzzy
+#~ msgid "Setting it up…"
+#~ msgstr "Allmän konfiguration"
+
+#, fuzzy
+#~ msgid ""
+#~ "Thank you for submitting the application report. Our support team will "
+#~ "review it as soon as possible."
+#~ msgstr ""
+#~ "Tack för att du rapporterar detta problem. Utvecklarna av Cherokee Web "
+#~ "Server kommer att försöka fixa detta så fort som möjligt."
+
+#, fuzzy
+#~ msgid "Report sent successfully"
+#~ msgstr "Konfigurationsfilen har sparats"
+
+#, fuzzy
+#~ msgid "Request refund"
+#~ msgstr "Begäran"
+
+#, fuzzy
+#~ msgid "Report"
+#~ msgstr "Ny port"
+
+#, fuzzy
+#~ msgid "Local directory where your Django project source code is located."
+#~ msgstr ""
+#~ "Lokal katalog där källkoden till Django finns. Exempelvis: /usr/share/"
+#~ "django"
+
+#, fuzzy
+#~ msgid "Could not determine PHP-CGI settings."
+#~ msgstr "Kunde inte fastställa inställningar för PHP-fpm."
+
+#, fuzzy
+#~ msgid "Could not determine PHP-CGI configuration file."
+#~ msgstr "Skapa en ny konfigurations-fil"
+
+#, fuzzy
+#~ msgid "Save Configuration"
+#~ msgstr "Avancerad konfiguration."
+
+#, fuzzy
+#~ msgid "Sanity checks"
+#~ msgstr "Kolla inte ursprung"
+
+#, fuzzy
+#~ msgid "Note that the configuration file was not saved."
+#~ msgstr "Konfigurationsfilen har sparats"
+
+#, fuzzy
+#~ msgid "Solve"
+#~ msgstr "Spara"
+
+#, fuzzy
+#~ msgid "Configuration successfully saved"
+#~ msgstr "Konfigurationsfilen hittades inte."
+
+#, fuzzy
+#~ msgid "Authentication rule without Realm"
+#~ msgstr "Autentisering"
+
+#, fuzzy
+#~ msgid "Virtual Server without nickname"
+#~ msgstr "Smeknamn för virtuell server"
+
+#, fuzzy
+#~ msgid "Virtual Server without document root"
+#~ msgstr "Rot-katalog för den virtuella servern."
+
+#, fuzzy
+#~ msgid "Directory match without a directory"
+#~ msgstr "Sökvägen är inte en katalog"
+
+#, fuzzy
+#~ msgid "Empty 'Incoming IP/Port' match"
+#~ msgstr "Inkommande port"
+
+#, fuzzy
+#~ msgid "Broken Source"
+#~ msgstr "Webkatalog"
+
+#, fuzzy
+#~ msgid "Your current Configuration file matches the restored version."
+#~ msgstr "Klona vald informationskälla"
+
+#, fuzzy
+#~ msgid "Path is a directory"
+#~ msgstr "Sökvägen är inte en katalog"
+
+#, fuzzy
+#~ msgid "Loading new configuration file.."
+#~ msgstr "Skapa en ny konfigurations-fil"
+
+#, fuzzy
+#~ msgid "Remote IP address"
+#~ msgstr "LDAP-serverns IP-adress."
+
+#, fuzzy
+#~ msgid "Local IP address"
+#~ msgstr "Din email-adress."
+
+#, fuzzy
+#~ msgid "Request Protocol"
+#~ msgstr "Begäran"
+
+#, fuzzy
+#~ msgid "Remote user (authentication)"
+#~ msgstr "Huvuddomän för webserverns autentiseringar."
+
+#, fuzzy
+#~ msgid "Virtual Server nick name"
+#~ msgstr "Smeknamn för virtuell server"
+
+#, fuzzy
+#~ msgid "Show macros"
+#~ msgstr "Visa grupp"
+
+#, fuzzy
+#~ msgid "Hide"
+#~ msgstr "Header"
+
+#, fuzzy
+#~ msgid "Checking Requirements"
+#~ msgstr "Anslutningar"
+
+#, fuzzy
+#~ msgid "Access details"
+#~ msgstr "Åtkomster"
+
+#, fuzzy
+#~ msgid "Installing Trac"
 #~ msgstr "Fjärradministration"
+
+#, fuzzy
+#~ msgid "Error report"
+#~ msgstr "Felhanterare"
+
+#, fuzzy
+#~ msgid "Expected value"
+#~ msgstr "Kör som användare"
+
+#, fuzzy
+#~ msgid "Current value"
+#~ msgstr "Eget värde"
+
+#, fuzzy
+#~ msgid "Wiki details"
+#~ msgstr "Omdirigeringar"
+
+#, fuzzy
+#~ msgid "Username for the administrator account."
+#~ msgstr "Fjärradministration"
+
+#, fuzzy
+#~ msgid "Password for the administrator account."
+#~ msgstr "Fjärradministration"
+
+#, fuzzy
+#~ msgid "Site details"
+#~ msgstr "Visa användare"
+
+#, fuzzy
+#~ msgid "Admin user"
+#~ msgstr "Användare"
+
+#, fuzzy
+#~ msgid "Admin password"
+#~ msgstr "DB-lösenord"
+
+#, fuzzy
+#~ msgid "Admin email"
+#~ msgstr "Användare"
+
+#, fuzzy
+#~ msgid "Sitename"
+#~ msgstr "Filnamn"
+
+#, fuzzy
+#~ msgid "Performing Drupal installation"
+#~ msgstr "Fjärradministration"
+
+#, fuzzy
+#~ msgid "Detecting a suitable PHP interpreter"
+#~ msgstr "Kunde inte hitta en lämplig PHP-tolk"
+
+#, fuzzy
+#~ msgid "Installing Nagios"
+#~ msgstr "Fjärradministration"
+
+#, fuzzy
+#~ msgid "Database Requirements"
+#~ msgstr "Sökvägen finns inte"
+
+#, fuzzy
+#~ msgid "Installing WsgiDAV"
+#~ msgstr "Fjärradministration"
+
+#, fuzzy
+#~ msgid "Local directory"
+#~ msgstr "Webkatalog"
+
+#, fuzzy
+#~ msgid "WsgiDAV configuration"
+#~ msgstr "Ikonkonfiguration"
+
+#, fuzzy
+#~ msgid "Communicating DB details."
+#~ msgstr "Autentiseringsdetaljer"
+
+#, fuzzy
+#~ msgid "Performing automatic installation"
+#~ msgstr "Fjärradministration"
+
+#, fuzzy
+#~ msgid "Username for the administrator account. Only lower case allowed."
+#~ msgstr "Fjärradministration"
+
+#, fuzzy
+#~ msgid "Full sitename"
+#~ msgstr "Filnamn"
+
+#, fuzzy
+#~ msgid "Short sitename"
+#~ msgstr "Värdnamn"
+
+#, fuzzy
+#~ msgid "Domain name"
+#~ msgstr "Domän-mönster"
+
+#, fuzzy
+#~ msgid "Moodle License"
+#~ msgstr "Guider"
+
+#, fuzzy
+#~ msgid "Accept license"
+#~ msgstr "Mål"
 
 #, fuzzy
 #~ msgid "Application available"
 #~ msgstr "Applikations-server"
 
-#~ msgid "New port"
-#~ msgstr "Ny port"
-
 #, fuzzy
 #~ msgid "Password configuration"
 #~ msgstr "Ikonkonfiguration"
-
-#, fuzzy
-#~ msgid "Could not write configuration file"
-#~ msgstr "Skapa en ny konfigurations-fil"
 
 #, fuzzy
 #~ msgid "Could not validate Nagios configuration"
@@ -7916,10 +8207,6 @@ msgstr ""
 #, fuzzy
 #~ msgid "BD Password"
 #~ msgstr "DB-lösenord"
-
-#, fuzzy
-#~ msgid "or"
-#~ msgstr "Port"
 
 #, fuzzy
 #~ msgid "%s Support"
@@ -8057,9 +8344,6 @@ msgstr ""
 #~ msgid "Details:"
 #~ msgstr "Detaljer:"
 
-#~ msgid "Source usage"
-#~ msgstr "Användandet av källa"
-
 #~ msgid "Virtual server"
 #~ msgstr "Virtuell server"
 
@@ -8123,9 +8407,6 @@ msgstr ""
 #~ msgid "Statistics"
 #~ msgstr "Trafikstatistik"
 
-#~ msgid "Accesses"
-#~ msgstr "Åtkomster"
-
 #~ msgid "Matching method"
 #~ msgstr "Matchnings-metod"
 
@@ -8155,9 +8436,6 @@ msgstr ""
 #, fuzzy
 #~ msgid "Offline"
 #~ msgstr "Av"
-
-#~ msgid "Undefined.."
-#~ msgstr "Odefinerad.."
 
 #~ msgid "ERROR: Unknown uri"
 #~ msgstr "FEL: Okänd URI"

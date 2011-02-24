@@ -53,9 +53,10 @@ refer to the <a href="http://trac.edgewall.org/wiki/TracInstall">Trac
 installation instructions</a> on the official site.</p></div>
 <h3 id="_cherokee">Cherokee</h3><div style="clear:left"></div>
 <div class="paragraph"><p>The configuration on Cherokee&#8217;s side is quite simple. In fact, the
-configuration of Cherokee is so simple that you only have to click on
-the Trac Wizard with Cherokee-Admin. You will be asked for the minimal
-information required, and everything else will be handled for you.</p></div>
+configuration of Cherokee is so simple that you can find the
+application in the Market and have it deployed within seconds. You
+will be asked for the minimal information required, and everything
+else will be handled for you.</p></div>
 <div class="paragraph"><p>By now, your Trac installation should be up and running. Try it out!</p></div>
 <div class="imageblock">
 <div class="content">
@@ -63,14 +64,13 @@ information required, and everything else will be handled for you.</p></div>
 </div>
 <div class="image-title">Complete Trac installation</div>
 </div>
-<div class="paragraph"><p>If you used the Wizard, you can skip the rest of the document. It only
-details what manual steps must be taken. You might find it interesting
-to know exactly what the wizard does for you, though.</p></div>
+<div class="paragraph"><p>If you used the Market, you can skip the rest of the document. It only
+details what manual steps must be taken.</p></div>
 <div class="paragraph"><p>You will only need to know that you can spawn Trac as an SCGI process.</p></div>
 <div class="listingblock">
 <div class="title">Command to launch Trac</div>
 <div class="content">
-<pre><tt>/usr/bin/tracd --single-env --protocol=scgi /
+<pre><tt>/usr/bin/tracd --single-env --daemonize --protocol=scgi /
 --hostname=localhost --port=4433 /path/to/project</tt></pre>
 </div></div>
 <div class="paragraph"><p>You can either start it manually, or better yet, automatically by

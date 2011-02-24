@@ -72,11 +72,12 @@ class ConfigCreator:
 
 
     def _create_config (self, template_file):
-        file = CTK.cfg.file
-        if os.path.exists (file):
+        # Configuration file
+        filename = CTK.cfg.file
+        if os.path.exists (filename):
             return True
 
-        dirname = os.path.dirname(file)
+        dirname = os.path.dirname(filename)
         if dirname and not os.path.exists (dirname):
             try:
                 os.mkdir (dirname)
@@ -84,20 +85,27 @@ class ConfigCreator:
                 print "ERROR: Could not create directory '%s'" %(dirname)
                 return False
 
+        # Configuration content
         content = "config!version = %s\n" %(config_version_get_current())
 
-        conf_sample = os.path.join(CHEROKEE_ADMINDIR, template_file)
-        if os.path.exists (conf_sample):
-            content += open(conf_sample, 'r').read()
+        # Add basic content
+        conf_sample_sys = os.path.join (CHEROKEE_ADMINDIR, template_file)
+        conf_sample_dev = os.path.join (os.path.realpath (__file__ + '/../../%s'%(template_file)))
+
+        if os.path.exists (conf_sample_sys):
+            content += open(conf_sample_sys, 'r').read()
+        elif os.path.exists (conf_sample_dev):
+            content += open(conf_sample_dev, 'r').read()
         else:
             content += CHEROKEE_MIN_DEFAULT_CONFIG
 
+        # Write it
         try:
-            f = open(file, 'w+')
+            f = open(filename, 'w+')
             f.write (content)
             f.close()
         except:
-            print "ERROR: Could not open '%s' for writing" %(file)
+            print "ERROR: Could not open '%s' for writing" %(filename)
             return False
 
         CTK.cfg.load()

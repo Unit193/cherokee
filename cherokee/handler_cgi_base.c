@@ -254,6 +254,8 @@ cherokee_handler_cgi_base_build_basic_env (
 	cuint_t                            p_len            = 0;
 	cherokee_bind_t                   *bind             = CONN_BIND(HANDLER_CONN(cgi));
 	cherokee_handler_cgi_base_props_t *cgi_props        = HANDLER_CGI_BASE_PROPS(cgi);
+	static char                       *env_PATH         = NULL;
+	static int                         env_PATH_len     = 0;
 
 	char remote_ip[CHE_INET_ADDRSTRLEN+1];
 	CHEROKEE_TEMP(temp, 32);
@@ -266,13 +268,31 @@ cherokee_handler_cgi_base_build_basic_env (
 
 	set_env (cgi, "SERVER_SIGNATURE",  "<address>Cherokee Web Server</address>", 38);
 	set_env (cgi, "GATEWAY_INTERFACE", "CGI/1.1", 7);
-	set_env (cgi, "PATH",              "/bin:/usr/bin:/sbin:/usr/sbin", 29);
 
-	/* Document Root of the current Virtual Server
+	/* $PATH
 	 */
-	set_env (cgi, "DOCUMENT_ROOT",
-		 CONN_VSRV(conn)->root.buf,
-		 CONN_VSRV(conn)->root.len);
+	if (unlikely (env_PATH == NULL)) {
+		env_PATH = getenv("PATH");
+		if (env_PATH == NULL) {
+			env_PATH = "/bin:/usr/bin:/sbin:/usr/sbin";
+		}
+
+		env_PATH_len = strlen (env_PATH);
+	}
+
+	set_env (cgi, "PATH", env_PATH, env_PATH_len);
+
+	/* Document Root:
+	 */
+	if (CONN_VSRV(conn)->evhost) {
+		set_env (cgi, "DOCUMENT_ROOT",
+			 conn->local_directory.buf,
+			 conn->local_directory.len);
+	} else {
+		set_env (cgi, "DOCUMENT_ROOT",
+			 CONN_VSRV(conn)->root.buf,
+			 CONN_VSRV(conn)->root.len);
+	}
 
 	/* REMOTE_(ADDR/PORT): X-Real-IP
 	 */

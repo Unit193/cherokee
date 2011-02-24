@@ -20,7 +20,7 @@ basics_installation_svn.html \
 basics_upgrade.html \
 basics_running_cherokee.html \
 config.html \
-config_quickstart.html \
+config_walkthrough.html \
 config_index.html \
 config_general.html \
 config_virtual_servers.html \
@@ -68,6 +68,8 @@ cookbook_coldfusion.html \
 cookbook_concrete5.html \
 cookbook_https_accelerator.html \
 cookbook_http_to_https.html \
+cookbook_global_redirects.html \
+cookbook_traffic_restriction.html \
 modules.html \
 modules_balancers.html \
 modules_balancers_failover.html \
@@ -95,6 +97,7 @@ modules_handlers_proxy.html \
 modules_handlers_secdownload.html \
 modules_handlers_uwsgi.html \
 modules_handlers_empty_gif.html \
+modules_handlers_drop.html \
 modules_loggers.html \
 modules_loggers_combined.html \
 modules_loggers_ncsa.html \
@@ -121,13 +124,16 @@ other_bundle_cherokee-admin.html \
 other_bundle_cherokee-config.html \
 other_bundle_cherokee-tweak.html \
 other_bundle_cherokee-worker.html \
+other_bundle_cherokee-admin-launcher.html \
 other_bundle_cget.html \
 dev.html \
 dev_debug.html \
 dev_cherokee.conf.html \
 dev_issues.html \
 dev_qa.html \
-dev_quickstart.html
+dev_quickstart.html \
+dev_api.html \
+dev_examples.html
 
 docmediacssdir = $(docdir)/media/css/
 docmediacss_DATA = \
@@ -260,6 +266,17 @@ media/images/cookbook_zend1.png \
 media/images/cookbook_joomla.png \
 media/images/cookbook_https_accelerator_handler.png \
 media/images/cookbook_https_accelerator_sources.png \
+media/images/cookbook_drupal_dir_rules_1.png \
+media/images/cookbook_drupal_dir_rules_2.png \
+media/images/cookbook_drupal_dir_rules_3.png \
+media/images/cookbook_drupal_dir_rules_4.png \
+media/images/cookbook_drupal_dir_rules_6.png \
+media/images/cookbook_drupal_dir_rules_7.png \
+media/images/cookbook_drupal_dir_rules.png \
+media/images/cookbook_drupal_vserver_rules.png \
+media/images/cookbook_wp_example1.png \
+media/images/cookbook_wp_example2.png \
+media/images/cookbook_wp_example3.png \
 media/images/proxy_phase1.png \
 media/images/proxy_phase2.png \
 media/images/screencast.png \
@@ -269,15 +286,16 @@ media/images/other_graphs_conns.png \
 media/images/other_graphs_logging.png \
 media/images/other_graphs_traffic.png
 
-
 EXTRA_DIST = \
 $(doc_DATA) \
 $(docmediacss_DATA) \
 $(docmediaimages_DATA) \
-test_images.py
+test_images.py \
+test_links.py
 
 serve:
 	../cherokee/cherokee -r .
 
 test:
 	./test_images.py
+	./test_links.py

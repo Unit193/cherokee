@@ -75,3 +75,9 @@ from Collapsible import Collapsible, CollapsibleEasy
 # Comodity
 from cgi import escape as escape_html
 from urllib import unquote as unescape_html
+
+# Python 2.5 or greater
+try:
+    import MailHTML
+except ImportError:
+    pass

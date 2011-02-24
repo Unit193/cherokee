@@ -2807,8 +2807,9 @@ msgid ""
 msgstr ""
 
 #: cherokee-trunk/admin/market/Install.py:308
+#, fuzzy
 msgid "Setting up"
-msgstr ""
+msgstr "Configuració de privacitat"
 
 #: cherokee-trunk/admin/market/Install.py:309
 msgid "Unpacking application…"
@@ -2848,7 +2849,7 @@ msgstr "Reportar això"
 #: cherokee-trunk/admin/market/Install.py:370
 #, fuzzy
 msgid "Setting up application…"
-msgstr "Aplicacions de propòsit general"
+msgstr "Aplicacions Web"
 
 #: cherokee-trunk/admin/market/Install.py:479
 #, fuzzy
@@ -3486,12 +3487,13 @@ msgid ""
 msgstr ""
 
 #: cherokee-trunk/admin/wizards/django.py:42
+#, fuzzy
 msgid ""
 "Local directory where the Django source code is located. Example: /usr/share/"
 "django."
 msgstr ""
-"Ruta al directori en la què es troba el codi font de Django. (Exemple: /usr/"
-"share/django)"
+"Ruta al directori en la què es troba el codi font de Drupal. (Exemple: /usr/"
+"share/drupal)"
 
 #: cherokee-trunk/admin/wizards/django.py:45
 msgid "Web directory where you want Django to be accessible. (Example: /blog)"
@@ -4533,6 +4535,7 @@ msgid ""
 msgstr ""
 
 #: cherokee-trunk/admin/wizards/uwsgi.py:39
+#, fuzzy
 msgid "Welcome to the uWsgi Wizard"
 msgstr "Benvingut al assistent de uWsgi"
 
@@ -4796,6 +4799,7 @@ msgid "Would you like to apply the changes to the running server now?"
 msgstr "Vols aplicar el canvis ara al servidor en funcionament?"
 
 #: cherokee-trunk/admin/Page.py:35
+#, fuzzy
 msgid "The configuration file has been saved successfuly."
 msgstr "L'Arxiu de configuració s'ha guardat correctament."
 
@@ -5187,10 +5191,11 @@ msgid "The Configuration File was restored successfuly"
 msgstr "L'Arxiu de configuració s'ha guardat correctament."
 
 #: cherokee-trunk/admin/OWS_Backup.py:66
+#, fuzzy
 msgid ""
 "The configuration has been rolled back to a previous version. Please, click "
 "the Save button if you want to commit the changes."
-msgstr ""
+msgstr "L'Arxiu de configuració s'ha guardat correctament."
 
 #: cherokee-trunk/admin/OWS_Backup.py:131
 msgid "Back up…"
@@ -6195,6 +6200,7 @@ msgid "Latest version could not be determined at the moment."
 msgstr ""
 
 #: cherokee-trunk/admin/OWS_Cherokee_Info.py:69
+#, fuzzy
 msgid "Cherokee is up to date."
 msgstr "Cherokee està actualitzat."
 
@@ -6927,8 +6933,9 @@ msgid "Unknown target"
 msgstr "Assistent desconegut"
 
 #: packages/common/target.py:187
+#, fuzzy
 msgid "Package Deployment"
-msgstr ""
+msgstr "Mètode de desplegament"
 
 #: packages/common/system.py:76
 #, fuzzy
@@ -7024,8 +7031,9 @@ msgid "Could not parse the PHP-fpm settings file"
 msgstr "No es pot determinar la configuració PHP-fpm."
 
 #: packages/common/php.py:286
+#, fuzzy
 msgid "Could not read the \"fpm_listen_address\" property"
-msgstr ""
+msgstr "No s'ha pogut informar"
 
 #: packages/liferay/installer.py:139
 msgid ""
@@ -7417,23 +7425,314 @@ msgid ""
 msgstr ""
 
 #, fuzzy
-#~ msgid "partial installations: "
+#~ msgid "Source Usage"
+#~ msgstr "Recursos"
+
+#, fuzzy
+#~ msgid "Source"
+#~ msgstr "Recursos"
+
+#, fuzzy
+#~ msgid "Failover"
+#~ msgstr "Filtre"
+
+#, fuzzy
+#~ msgid ""
+#~ "Use the VServer error handler, whenever an error response is received "
+#~ "from a back-end server. (Default: No)"
+#~ msgstr ""
+#~ "Mantenir la capçalera \"Server:\" original enviada per el servidor back-"
+#~ "end. (Per defecte No)"
+
+#, fuzzy
+#~ msgid "Use VServer error handler"
+#~ msgstr "Preservar la capçalera del Server"
+
+#, fuzzy
+#~ msgid "Use it"
+#~ msgstr "Utilitzar TLS"
+
+#, fuzzy
+#~ msgid "or"
+#~ msgstr "Port"
+
+#, fuzzy
+#~ msgid "Unknown Error"
+#~ msgstr "Mètode desconegut"
+
+#, fuzzy
+#~ msgid "Unfinished"
+#~ msgstr "Indefinit."
+
+#, fuzzy
+#~ msgid "Deployment methods"
+#~ msgstr "Mètode de desplegament"
+
+#, fuzzy
+#~ msgid "Databases"
+#~ msgstr "Base de Dades"
+
+#, fuzzy
+#~ msgid "Report Application"
+#~ msgstr "Aplicacions Web"
+
+#, fuzzy
+#~ msgid "Report issue"
+#~ msgstr "Reportar això"
+
+#, fuzzy
+#~ msgid "Setting it up…"
+#~ msgstr "Aplicacions de propòsit general"
+
+#, fuzzy
+#~ msgid "Report sent successfully"
+#~ msgstr "L'Arxiu de configuració s'ha guardat correctament."
+
+#, fuzzy
+#~ msgid "Request refund"
+#~ msgstr "Sol·licitud"
+
+#, fuzzy
+#~ msgid "Report"
+#~ msgstr "Nou port"
+
+#, fuzzy
+#~ msgid "Local directory where your Django project source code is located."
+#~ msgstr ""
+#~ "Ruta al directori en la què es troba el codi font de Django. (Exemple: /"
+#~ "usr/share/django)"
+
+#, fuzzy
+#~ msgid "Could not determine PHP-CGI settings."
+#~ msgstr "No es pot determinar la configuració PHP-fpm."
+
+#, fuzzy
+#~ msgid "Could not determine PHP-CGI configuration file."
+#~ msgstr "Crea un nou arxiu de configuració"
+
+#, fuzzy
+#~ msgid "Save Configuration"
+#~ msgstr "Configuració avançada"
+
+#, fuzzy
+#~ msgid "Sanity checks"
+#~ msgstr "No comprovar"
+
+#, fuzzy
+#~ msgid "Note that the configuration file was not saved."
+#~ msgstr "L'Arxiu de configuració s'ha guardat correctament."
+
+#, fuzzy
+#~ msgid "Solve"
+#~ msgstr "Guardar"
+
+#, fuzzy
+#~ msgid "Configuration successfully saved"
+#~ msgstr "Arxiu de configuració no trobat"
+
+#, fuzzy
+#~ msgid "Authentication rule without Realm"
+#~ msgstr "Llista d'autentificació"
+
+#, fuzzy
+#~ msgid "Virtual Server without nickname"
+#~ msgstr "Nickname del servidor virtual"
+
+#, fuzzy
+#~ msgid "Virtual Server without document root"
+#~ msgstr "Directori arrel del servidor virtual"
+
+#, fuzzy
+#~ msgid "Directory match without a directory"
+#~ msgstr "La ruta no és un directori"
+
+#, fuzzy
+#~ msgid "Empty 'Incoming IP/Port' match"
+#~ msgstr "IP/Port entrant"
+
+#, fuzzy
+#~ msgid "Broken Source"
+#~ msgstr "Directori del Projecte"
+
+#, fuzzy
+#~ msgid "Your current Configuration file matches the restored version."
+#~ msgstr "La font d'informació seleccionada està a punt de ser clonada."
+
+#, fuzzy
+#~ msgid "Path is a directory"
+#~ msgstr "La ruta no és un directori"
+
+#, fuzzy
+#~ msgid "Loading new configuration file.."
+#~ msgstr "Crea un nou arxiu de configuració"
+
+#, fuzzy
+#~ msgid "Remote IP address"
+#~ msgstr "Adreça IP del servidor LDAP"
+
+#, fuzzy
+#~ msgid "Local IP address"
+#~ msgstr "La teva adreça e-mail"
+
+#, fuzzy
+#~ msgid "Request Protocol"
+#~ msgstr "Sol·licitud"
+
+#, fuzzy
+#~ msgid "Remote user (authentication)"
+#~ msgstr "Domini base per les autentificacions del servidor web."
+
+#, fuzzy
+#~ msgid "Virtual Server nick name"
+#~ msgstr "Nickname del servidor virtual"
+
+#, fuzzy
+#~ msgid "Show macros"
+#~ msgstr "Mostrar Grup"
+
+#, fuzzy
+#~ msgid "Hide"
+#~ msgstr "Capçalera"
+
+#, fuzzy
+#~ msgid "Checking Requirements"
+#~ msgstr "Connexions / Peticions"
+
+#, fuzzy
+#~ msgid "Access details"
+#~ msgstr "Accessos"
+
+#, fuzzy
+#~ msgid "Installing Trac"
 #~ msgstr "Administració Remota"
+
+#, fuzzy
+#~ msgid "Error report"
+#~ msgstr "Errors"
+
+#, fuzzy
+#~ msgid "Expected value"
+#~ msgstr "Executar com a usuari"
+
+#, fuzzy
+#~ msgid "Current value"
+#~ msgstr "Valor Personalitzat"
+
+#, fuzzy
+#~ msgid "Wiki details"
+#~ msgstr "Detalls de les Re-direccions"
+
+#, fuzzy
+#~ msgid "Username for the administrator account."
+#~ msgstr "Administració Remota"
+
+#, fuzzy
+#~ msgid "Password for the administrator account."
+#~ msgstr "Administració Remota"
+
+#, fuzzy
+#~ msgid "Site details"
+#~ msgstr "Mostrar error"
+
+#, fuzzy
+#~ msgid "Admin user"
+#~ msgstr "Usuari"
+
+#, fuzzy
+#~ msgid "Admin password"
+#~ msgstr "Contrasenya"
+
+#, fuzzy
+#~ msgid "Admin email"
+#~ msgstr "Usuari"
+
+#, fuzzy
+#~ msgid "Sitename"
+#~ msgstr "Nom de Arxiu"
+
+#, fuzzy
+#~ msgid "Performing Drupal installation"
+#~ msgstr "Administració Remota"
+
+#, fuzzy
+#~ msgid "MySQL 5 could not be found on your system."
+#~ msgstr "No es troba un interpret valid PHP en el seu sistema"
+
+#, fuzzy
+#~ msgid "PostgreSQL 8 could not be found on your system."
+#~ msgstr "No es troba un interpret valid PHP en el seu sistema"
+
+#, fuzzy
+#~ msgid "Sqlite3 could not be found on your system."
+#~ msgstr "No es troba un interpret valid PHP en el seu sistema"
+
+#, fuzzy
+#~ msgid "Detecting a suitable PHP interpreter"
+#~ msgstr "No es pot trobar un interpret PHP adequat"
+
+#, fuzzy
+#~ msgid "Installing Nagios"
+#~ msgstr "Administració Remota"
+
+#, fuzzy
+#~ msgid "Database Requirements"
+#~ msgstr "La ruta no existeix"
+
+#, fuzzy
+#~ msgid "Installing WsgiDAV"
+#~ msgstr "Administració Remota"
+
+#, fuzzy
+#~ msgid "Local directory"
+#~ msgstr "Directori local del Projecte Trac"
+
+#, fuzzy
+#~ msgid "WsgiDAV configuration"
+#~ msgstr "Configuració d'icona"
+
+#, fuzzy
+#~ msgid "Communicating DB details."
+#~ msgstr "Detalls d'autentificació"
+
+#, fuzzy
+#~ msgid "Performing automatic installation"
+#~ msgstr "Administració Remota"
+
+#, fuzzy
+#~ msgid "Username for the administrator account. Only lower case allowed."
+#~ msgstr "Administració Remota"
+
+#, fuzzy
+#~ msgid "Full sitename"
+#~ msgstr "Nom de Arxiu"
+
+#, fuzzy
+#~ msgid "Short sitename"
+#~ msgstr "Noms de servidor"
+
+#, fuzzy
+#~ msgid "Domain name"
+#~ msgstr "Nom del domino"
+
+#, fuzzy
+#~ msgid "Moodle License"
+#~ msgstr "Moodle"
+
+#, fuzzy
+#~ msgid "Accept license"
+#~ msgstr "Dominis acceptats"
+
+#, fuzzy
+#~ msgid "At least 1 digit required."
+#~ msgstr "Suport PHP necessari"
 
 #, fuzzy
 #~ msgid "Application available"
 #~ msgstr "Servidor d'aplicació"
 
-#~ msgid "New port"
-#~ msgstr "Nou port"
-
 #, fuzzy
 #~ msgid "Password configuration"
 #~ msgstr "Configuració d'icona"
-
-#, fuzzy
-#~ msgid "Could not write configuration file"
-#~ msgstr "Crea un nou arxiu de configuració"
 
 #, fuzzy
 #~ msgid "Could not validate Nagios configuration"
@@ -7676,9 +7975,6 @@ msgstr ""
 #~ msgid "Statistics"
 #~ msgstr "Estadístiques"
 
-#~ msgid "Accesses"
-#~ msgstr "Accessos"
-
 #~ msgid "Matching method"
 #~ msgstr "Mètode de correspondència"
 
@@ -7712,9 +8008,6 @@ msgstr ""
 #~ msgid "OR"
 #~ msgstr "O"
 
-#~ msgid "Undefined.."
-#~ msgstr "Indefinit."
-
 #~ msgid "Complex"
 #~ msgstr "Complexe"
 
@@ -7744,9 +8037,6 @@ msgstr ""
 
 #~ msgid "Configures Drupal inside a public web directory."
 #~ msgstr "Estableix Drupal dins d'un directori web públic."
-
-#~ msgid "PHP support is required."
-#~ msgstr "Suport PHP necessari"
 
 #~ msgid "A domain name is required"
 #~ msgstr "El nom de domini és necessari"

@@ -31,6 +31,10 @@
 #include <signal.h>
 #include <sys/sem.h>
 
+#define SEM_LAUNCH_START 0
+#define SEM_LAUNCH_READY 1
+#define SEM_LAUNCH_TOTAL 2
+
 #define ENTRIES "spawn,spawner"
 
 cherokee_shm_t             cherokee_spawn_shared;
@@ -145,26 +149,40 @@ nothing:
 #endif
 
 static ret_t
-sem_unlock (int sem)
+do_sem_op (int sem_ref, int sem_num, int sem_op)
 {
 	int           re;
 	struct sembuf so;
 
 	do {
-		so.sem_num = 0;
-		so.sem_op  = 1;
+		so.sem_num = sem_num;
+		so.sem_op  = sem_op;
 		so.sem_flg = SEM_UNDO;
 
 		errno = 0;
-		re = semop (sem, &so, 1);
+		re = semop (sem_ref, &so, 1);
 		if (re >= 0) {
 			return ret_ok;
 		}
 	} while ((re < 0) && (errno == EINTR));
 
-	LOG_ERRNO (errno, cherokee_err_error, CHEROKEE_ERROR_SPAWNER_UNLOCK_SEMAPHORE, sem);
+	LOG_ERRNO (errno, cherokee_err_error, CHEROKEE_ERROR_SPAWNER_UNLOCK_SEMAPHORE, sem_ref);
 	return ret_error;
+
 }
+
+static ret_t
+sem_unlock (int sem_ref, int sem_num)
+{
+	return do_sem_op (sem_ref, sem_num, 1);
+}
+
+static ret_t
+sem_adquire (int sem_ref, int sem_num)
+{
+	return do_sem_op (sem_ref, sem_num, -1);
+}
+
 
 ret_t
 cherokee_spawner_spawn (cherokee_buffer_t         *binary,
@@ -181,8 +199,15 @@ cherokee_spawner_spawn (cherokee_buffer_t         *binary,
 	int               *pid_shm;
 	int                pid_prev;
 	int                k;
+	int                phase;
 	int                envs     = 0;
 	cherokee_buffer_t  tmp      = CHEROKEE_BUF_INIT;
+
+#define ALIGN4(buf)						\
+	while (buf.len & 0x3) {					\
+		cherokee_buffer_add_char (&buf, '\0');		\
+	}
+
 
 	/* Check it's initialized
 	 */
@@ -201,23 +226,33 @@ cherokee_spawner_spawn (cherokee_buffer_t         *binary,
 	}
 
 	/* Build the string
+	 * The first character of each block is a mark.
 	 */
 	cherokee_buffer_ensure_size (&tmp, SPAWN_SHARED_LEN);
 
 	/* 1.- Executable */
-	cherokee_buffer_add        (&tmp, (char *)&binary->len, sizeof(int));
+	phase = 0xF0;
+	cherokee_buffer_add        (&tmp, (char *)&phase, sizeof(int));
+	cherokee_buffer_add        (&tmp, (char *)&binary->len,   sizeof(int));
 	cherokee_buffer_add_buffer (&tmp, binary);
 	cherokee_buffer_add_char   (&tmp, '\0');
+	ALIGN4 (tmp);
 
 	/* 2.- UID & GID */
+	phase = 0xF1;
+	cherokee_buffer_add        (&tmp, (char *)&phase, sizeof(int));
 	cherokee_buffer_add        (&tmp, (char *)&user->len, sizeof(int));
 	cherokee_buffer_add_buffer (&tmp, user);
 	cherokee_buffer_add_char   (&tmp, '\0');
+	ALIGN4(tmp);
 
 	cherokee_buffer_add (&tmp, (char *)&uid, sizeof(uid_t));
 	cherokee_buffer_add (&tmp, (char *)&gid, sizeof(gid_t));
 
 	/* 3.- Environment */
+	phase = 0xF2;
+	cherokee_buffer_add (&tmp, (char *)&phase, sizeof(int));
+
 	for (n=envp; *n; n++) {
 		envs ++;
 	}
@@ -230,12 +265,20 @@ cherokee_spawner_spawn (cherokee_buffer_t         *binary,
 		cherokee_buffer_add      (&tmp, (char *)&len, sizeof(int));
 		cherokee_buffer_add      (&tmp, *n, len);
 		cherokee_buffer_add_char (&tmp, '\0');
+		ALIGN4(tmp);
 	}
 
 	/* 4.- Error log */
+	phase = 0xF3;
+	cherokee_buffer_add (&tmp, (char *)&phase, sizeof(int));
+
 	write_logger (&tmp, error_writer);
+	ALIGN4 (tmp);
 
 	/* 5.- PID (will be rewritten by the other side) */
+	phase = 0xF4;
+	cherokee_buffer_add (&tmp, (char *)&phase, sizeof(int));
+
 	pid_shm = (int *) (((char *)cherokee_spawn_shared.mem) + tmp.len);
 	k        = *pid_ret;
 	pid_prev = *pid_ret;
@@ -252,21 +295,18 @@ cherokee_spawner_spawn (cherokee_buffer_t         *binary,
 
 	/* Wake up the spawning thread
 	 */
-	sem_unlock (cherokee_spawn_sem);
+	sem_unlock (cherokee_spawn_sem, SEM_LAUNCH_START);
 
 	/* Wait for the PID
 	 */
-	k = 0;
-	while (((*pid_shm == pid_prev) || (*pid_shm <= 0)) && (k < 3)) {
-		k++;
-		sleep(1);
-	}
+	sem_adquire (cherokee_spawn_sem, SEM_LAUNCH_READY);
 
 	if (*pid_shm == -1) {
 		TRACE(ENTRIES, "Could not get the PID of: '%s'\n", binary->buf);
 		goto error;
+	}
 
-	} else if (*pid_shm == pid_prev) {
+	if (*pid_shm == pid_prev) {
 		TRACE(ENTRIES, "Could not the new PID, previously it was %d\n", pid_prev);
 		goto error;
 	}

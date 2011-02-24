@@ -47,7 +47,7 @@ URL_NEW_MANUAL = r'/vserver/new/manual'
 
 HELPS = [('config_virtual_servers', N_("Virtual Servers"))]
 
-NOTE_DELETE_DIALOG = N_('<p>You are about to delete the <b>%s</b> Virtual Server.</p><p>Are you sure you want to proceed?</p>')
+NOTE_DELETE_DIALOG = N_('<p>You are about to delete the <b>%(nick_esc)s</b> Virtual Server.</p><p>Are you sure you want to proceed?</p>')
 NOTE_CLONE_DIALOG  = N_('You are about to clone a Virtual Server. Would you like to proceed?')
 NOTE_NEW_NICK      = N_('Name of the Virtual Server you are about to create. A domain name is alright.')
 NOTE_NEW_DROOT     = N_('Document Root directory of the new Virtual Server.')
@@ -189,7 +189,9 @@ class Render:
             for k in vservers:
                 # Document root widget
                 droot_str = CTK.cfg.get_val ('vserver!%s!document_root'%(k), '')
-                if droot_str.startswith (CHEROKEE_OWS_ROOT):
+
+                # Market install base scenario
+                if self.__is_market_installation (k, droot_str):
                     droot_widget = CTK.Box ({'class': 'droot'}, CTK.RawHTML(_('Market installation')))
                 else:
                     droot_widget = CTK.Box ({'class': 'droot'}, CTK.RawHTML(CTK.escape_html (droot_str)))
@@ -208,7 +210,7 @@ class Render:
                                                                 data    = {'vserver!%s'%(k):''},
                                                                 success = dialog.JS_to_close() + \
                                                                     refresh.JS_to_refresh()))
-                    dialog += CTK.RawHTML (_(NOTE_DELETE_DIALOG) %(nick_esc))
+                    dialog += CTK.RawHTML (_(NOTE_DELETE_DIALOG) %(locals()))
                     self += dialog
                     remove = CTK.ImageStock('del')
                     remove.bind ('click', dialog.JS_to_show() + "return false;")
@@ -232,6 +234,24 @@ class Render:
 
                     # List entry
                     panel.Add (k, '/vserver/content/%s'%(k), content, True, disclass)
+
+
+        def __is_market_installation (self, k, droot_str):
+            # Market install base scenario
+            if droot_str.startswith (CHEROKEE_OWS_ROOT):
+                return True
+
+            # Market install with no droot
+            elif droot_str == '/dev/null':
+                rules = CTK.cfg['vserver!%s!rule'%(k)].keys()
+                for rule_num in rules:
+                    src_num = CTK.cfg.get_val ('vserver!%s!rule!%s!handler!balancer!source!1' %(k,rule_num), '')
+                    src_int = CTK.cfg.get_val ('source!%s!interpreter'%(src_num), '')
+                    if CHEROKEE_OWS_ROOT in src_int:
+                        return True
+
+            return False
+
 
     class PanelButtons (CTK.Box):
         def __init__ (self):

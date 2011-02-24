@@ -2754,8 +2754,9 @@ msgid ""
 msgstr ""
 
 #: cherokee-trunk/admin/market/Install.py:308
+#, fuzzy
 msgid "Setting up"
-msgstr ""
+msgstr "常规配置"
 
 #: cherokee-trunk/admin/market/Install.py:309
 msgid "Unpacking application…"
@@ -2792,8 +2793,9 @@ msgid "Report Issue"
 msgstr "远程主机"
 
 #: cherokee-trunk/admin/market/Install.py:370
+#, fuzzy
 msgid "Setting up application…"
-msgstr ""
+msgstr "应用程序服务器"
 
 #: cherokee-trunk/admin/market/Install.py:479
 #, fuzzy
@@ -4420,8 +4422,9 @@ msgid ""
 msgstr ""
 
 #: cherokee-trunk/admin/wizards/uwsgi.py:39
+#, fuzzy
 msgid "Welcome to the uWsgi Wizard"
-msgstr ""
+msgstr "欢迎进入Cherokee管理中心"
 
 #: cherokee-trunk/admin/wizards/uwsgi.py:40
 msgid ""
@@ -4610,8 +4613,9 @@ msgid "Could not determine PHP-fpm settings."
 msgstr ""
 
 #: cherokee-trunk/admin/wizards/php.py:133
+#, fuzzy
 msgid "Could not determine correct interpreter settings."
-msgstr ""
+msgstr "新建配置文件"
 
 #: cherokee-trunk/admin/wizards/trac.py:38
 msgid "Welcome to the Trac wizard"
@@ -4678,6 +4682,7 @@ msgid "Would you like to apply the changes to the running server now?"
 msgstr "您是否将更改应用到正在运行的服务器，并将更改保存到磁盘？"
 
 #: cherokee-trunk/admin/Page.py:35
+#, fuzzy
 msgid "The configuration file has been saved successfuly."
 msgstr "配置文件保存成功."
 
@@ -5064,10 +5069,11 @@ msgid "The Configuration File was restored successfuly"
 msgstr "配置文件保存成功."
 
 #: cherokee-trunk/admin/OWS_Backup.py:66
+#, fuzzy
 msgid ""
 "The configuration has been rolled back to a previous version. Please, click "
 "the Save button if you want to commit the changes."
-msgstr ""
+msgstr "配置文件保存成功."
 
 #: cherokee-trunk/admin/OWS_Backup.py:131
 msgid "Back up…"
@@ -6048,6 +6054,7 @@ msgid "Latest version could not be determined at the moment."
 msgstr "未找到最新版本"
 
 #: cherokee-trunk/admin/OWS_Cherokee_Info.py:69
+#, fuzzy
 msgid "Cherokee is up to date."
 msgstr "Cherokee是最新的。"
 
@@ -6765,8 +6772,9 @@ msgid "Unknown target"
 msgstr "未知"
 
 #: packages/common/target.py:187
+#, fuzzy
 msgid "Package Deployment"
-msgstr ""
+msgstr "服务器开发"
 
 #: packages/common/system.py:76
 #, fuzzy
@@ -6859,8 +6867,9 @@ msgid "Could not parse the PHP-fpm settings file"
 msgstr "新建配置文件"
 
 #: packages/common/php.py:286
+#, fuzzy
 msgid "Could not read the \"fpm_listen_address\" property"
-msgstr ""
+msgstr "无法报告这个问题"
 
 #: packages/liferay/installer.py:139
 msgid ""
@@ -7179,8 +7188,9 @@ msgid ""
 msgstr ""
 
 #: packages/wsgidav/installer.py:23
+#, fuzzy
 msgid "Path to the directory to share."
-msgstr ""
+msgstr "目录"
 
 #: packages/wsgidav/installer.py:127
 #, fuzzy
@@ -7249,23 +7259,268 @@ msgid ""
 msgstr ""
 
 #, fuzzy
-#~ msgid "partial installations: "
+#~ msgid "Source Usage"
+#~ msgstr "资源"
+
+#, fuzzy
+#~ msgid "Source"
+#~ msgstr "资源"
+
+#, fuzzy
+#~ msgid "Failover"
+#~ msgstr "过滤"
+
+#, fuzzy
+#~ msgid ""
+#~ "Use the VServer error handler, whenever an error response is received "
+#~ "from a back-end server. (Default: No)"
+#~ msgstr "保留原来客户端发生的的\"Server:\" 头. (默认: 否)"
+
+#, fuzzy
+#~ msgid "Use VServer error handler"
+#~ msgstr "保存服务器头信息"
+
+#, fuzzy
+#~ msgid "Use it"
+#~ msgstr "使用TLS"
+
+#, fuzzy
+#~ msgid "or"
+#~ msgstr "端口"
+
+#, fuzzy
+#~ msgid "Unknown Error"
+#~ msgstr "未知"
+
+#, fuzzy
+#~ msgid "Unfinished"
 #~ msgstr "远程管理"
+
+#, fuzzy
+#~ msgid "Databases"
+#~ msgstr "数据库"
+
+#, fuzzy
+#~ msgid "Report Application"
+#~ msgstr "应用程序服务器"
+
+#, fuzzy
+#~ msgid "Report issue"
+#~ msgstr "远程主机"
+
+#, fuzzy
+#~ msgid ""
+#~ "Thank you for submitting the application report. Our support team will "
+#~ "review it as soon as possible."
+#~ msgstr "谢谢您报告此问题，Cherokee服务器开发者将尽快的解决和修复这个 问题."
+
+#, fuzzy
+#~ msgid "Report sent successfully"
+#~ msgstr "配置文件保存成功."
+
+#, fuzzy
+#~ msgid "Request refund"
+#~ msgstr "请求"
+
+#, fuzzy
+#~ msgid "Report"
+#~ msgstr "新端口"
+
+#, fuzzy
+#~ msgid "Could not determine PHP-CGI configuration file."
+#~ msgstr "新建配置文件"
+
+#, fuzzy
+#~ msgid "Save Configuration"
+#~ msgstr "高级设置"
+
+#, fuzzy
+#~ msgid "Sanity checks"
+#~ msgstr "不检查"
+
+#, fuzzy
+#~ msgid "Note that the configuration file was not saved."
+#~ msgstr "配置文件保存成功."
+
+#, fuzzy
+#~ msgid "Solve"
+#~ msgstr "服务器"
+
+#, fuzzy
+#~ msgid "Configuration successfully saved"
+#~ msgstr "配置文件不允许被修改."
+
+#, fuzzy
+#~ msgid "Authentication rule without Realm"
+#~ msgstr "认证名单"
+
+#, fuzzy
+#~ msgid "Virtual Server without nickname"
+#~ msgstr "虚拟主机昵称"
+
+#, fuzzy
+#~ msgid "Virtual Server without document root"
+#~ msgstr "虚拟主机的根目录"
+
+#, fuzzy
+#~ msgid "Empty 'Incoming IP/Port' match"
+#~ msgstr "入站 IP/端口"
+
+#, fuzzy
+#~ msgid "Broken Source"
+#~ msgstr "数据源"
+
+#, fuzzy
+#~ msgid "Your current Configuration file matches the restored version."
+#~ msgstr "克隆选定数据源"
+
+#, fuzzy
+#~ msgid "Loading new configuration file.."
+#~ msgstr "新建配置文件"
+
+#, fuzzy
+#~ msgid "Remote IP address"
+#~ msgstr "LDAP目录服务器IP地址"
+
+#, fuzzy
+#~ msgid "Local IP address"
+#~ msgstr "您的电子邮件地址"
+
+#, fuzzy
+#~ msgid "Request Protocol"
+#~ msgstr "请求"
+
+#, fuzzy
+#~ msgid "Remote user (authentication)"
+#~ msgstr "认证"
+
+#, fuzzy
+#~ msgid "Virtual Server nick name"
+#~ msgstr "虚拟主机昵称"
+
+#, fuzzy
+#~ msgid "Show macros"
+#~ msgstr "显示用户组"
+
+#, fuzzy
+#~ msgid "Hide"
+#~ msgstr "头"
+
+#, fuzzy
+#~ msgid "Checking Requirements"
+#~ msgstr "连接/请求"
+
+#, fuzzy
+#~ msgid "Access details"
+#~ msgstr "访问限制"
+
+#, fuzzy
+#~ msgid "Installing Trac"
+#~ msgstr "远程管理"
+
+#, fuzzy
+#~ msgid "Error report"
+#~ msgstr "错误处理程序"
+
+#, fuzzy
+#~ msgid "Expected value"
+#~ msgstr "执行用户"
+
+#, fuzzy
+#~ msgid "Current value"
+#~ msgstr "自定义值"
+
+#, fuzzy
+#~ msgid "Wiki details"
+#~ msgstr "将错误日志写入到"
+
+#, fuzzy
+#~ msgid "Username for the administrator account."
+#~ msgstr "远程管理"
+
+#, fuzzy
+#~ msgid "Password for the administrator account."
+#~ msgstr "远程管理"
+
+#, fuzzy
+#~ msgid "Site details"
+#~ msgstr "将错误日志写入到"
+
+#, fuzzy
+#~ msgid "Admin user"
+#~ msgstr "用户"
+
+#, fuzzy
+#~ msgid "Admin password"
+#~ msgstr "密码"
+
+#, fuzzy
+#~ msgid "Admin email"
+#~ msgstr "用户"
+
+#, fuzzy
+#~ msgid "Sitename"
+#~ msgstr "文件名"
+
+#, fuzzy
+#~ msgid "Performing Drupal installation"
+#~ msgstr "远程管理"
+
+#, fuzzy
+#~ msgid "Installing Nagios"
+#~ msgstr "远程管理"
+
+#, fuzzy
+#~ msgid "Database Requirements"
+#~ msgstr "连接到数据库."
+
+#, fuzzy
+#~ msgid "Installing WsgiDAV"
+#~ msgstr "远程管理"
+
+#, fuzzy
+#~ msgid "Local directory"
+#~ msgstr "本地解释器"
+
+#, fuzzy
+#~ msgid "WsgiDAV configuration"
+#~ msgstr "常规配置"
+
+#, fuzzy
+#~ msgid "Communicating DB details."
+#~ msgstr "认证详情"
+
+#, fuzzy
+#~ msgid "Performing automatic installation"
+#~ msgstr "远程管理"
+
+#, fuzzy
+#~ msgid "Username for the administrator account. Only lower case allowed."
+#~ msgstr "远程管理"
+
+#, fuzzy
+#~ msgid "Full sitename"
+#~ msgstr "文件名"
+
+#, fuzzy
+#~ msgid "Short sitename"
+#~ msgstr "主机名称"
+
+#, fuzzy
+#~ msgid "Domain name"
+#~ msgstr "用户"
+
+#, fuzzy
+#~ msgid "Accept license"
+#~ msgstr "接受"
 
 #, fuzzy
 #~ msgid "Application available"
 #~ msgstr "应用程序服务器"
 
-#~ msgid "New port"
-#~ msgstr "新端口"
-
 #, fuzzy
 #~ msgid "Password configuration"
 #~ msgstr "手动配置"
-
-#, fuzzy
-#~ msgid "Could not write configuration file"
-#~ msgstr "新建配置文件"
 
 #, fuzzy
 #~ msgid "Could not validate Nagios configuration"
