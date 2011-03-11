@@ -23,7 +23,13 @@ case "$action" in
 	if [ -e "$CONFFILE" ] && [ "$md5sum" != "$old_md5sum" ]; then
 	    # Finally, starting 0.99.31, there is just a generic migrator
 	    # able to do it all. We will deprecate older migrators soon.
-	    /usr/share/cherokee/admin/upgrade_config.py $CONFFILE
+	    if [ -x /usr/share/cherokee/admin/upgrade_config.py ]; then
+		/usr/share/cherokee/admin/upgrade_config.py $CONFFILE
+	    else
+		echo "To auto-upgrade the Cherokee configuration, you need"
+		echo "to install the cherokee-admin package."
+		echo "Continuing with the existing installation."
+	    fi
 	fi
 	;;
     abort-upgrade)
