@@ -1,3 +1,373 @@
+2011-03-21  Taher Shihadeh  <taher@unixwars.com>
+            svn=6397 git=97244a5bff5ce3131b3b1e1211db16e161331ef0
+
+    Some screenshots needed minor updates
+    
+ doc/media/images/cookbook_moodle_document_root.png |  Bin 12159 -> 12200 bytes
+ doc/media/images/cookbook_nagios1.png              |  Bin 8081 -> 8123 bytes
+ doc/media/images/cookbook_nagios2.png              |  Bin 8133 -> 8179 bytes
+ doc/media/images/cookbook_nagios3.png              |  Bin 20249 -> 20310 bytes
+ doc/media/images/cookbook_phpmyadmin_denied.png    |  Bin 8702 -> 8745 bytes
+ doc/media/images/cookbook_trac_info.png            |  Bin 18709 -> 18451 bytes
+ doc/media/images/cookbook_trac_rules.png           |  Bin 5693 -> 5725 bytes
+ doc/media/images/cookbook_trac_scgi.png            |  Bin 28229 -> 28285 bytes
+ doc/media/images/cookbook_trac_static.png          |  Bin 9485 -> 9506 bytes
+ doc/media/images/cookbook_wp_example1.png          |  Bin 8763 -> 8760 bytes
+ doc/media/images/cookbook_wp_example2.png          |  Bin 8280 -> 8318 bytes
+ doc/media/images/cookbook_wp_example3.png          |  Bin 13846 -> 13885 bytes
+ 12 files changed, 0 insertions(+), 0 deletions(-)
+
+
+2011-03-21  Taher Shihadeh  <taher@unixwars.com>
+            svn=6396 git=c0924051824fb73386bd6c1c6667a126f1cca792
+
+    Cleanup screenshots and tables
+    
+ doc/cookbook_mailman.txt                    |    3 +--
+ doc/cookbook_managing_logs.txt              |    1 +
+ doc/cookbook_phpbb.txt                      |    1 +
+ doc/cookbook_redirs.txt                     |   12 ++++++++++++
+ doc/cookbook_zend.txt                       |    3 ++-
+ doc/media/images/cookbook_phpbb_rules.png   |  Bin 9593 -> 9435 bytes
+ doc/media/images/cookbook_redir_handler.png |  Bin 9034 -> 8773 bytes
+ doc/media/images/cookbook_redir_https.png   |  Bin 9784 -> 9412 bytes
+ 8 files changed, 17 insertions(+), 3 deletions(-)
+
+
+2011-03-21  Taher Shihadeh  <taher@unixwars.com>
+            svn=6395 git=d779df68bdfa2966b3e9cca7dd583d51a132e1aa
+
+    Cleanup screenshots and add tables for readability
+    
+ doc/media/images/admin_handler_dbslayer.png    |  Bin 18245 -> 16947 bytes
+ doc/media/images/admin_handler_proxy.png       |  Bin 21251 -> 19875 bytes
+ doc/media/images/admin_handler_secdownload.png |  Bin 15812 -> 14807 bytes
+ doc/media/images/admin_validators_pam.png      |  Bin 15383 -> 14399 bytes
+ doc/media/images/admin_validators_plain.png    |  Bin 37607 -> 35764 bytes
+ doc/modules_handlers_cgi.txt                   |   14 ++++++++++++
+ doc/modules_handlers_common.txt                |   18 +++++++++++++++-
+ doc/modules_handlers_custom_error.txt          |   21 ++++++++++++++++++
+ doc/modules_handlers_dbslayer.txt              |    1 +
+ doc/modules_handlers_dirlist.txt               |   27 +++++++++++++++++++++--
+ doc/modules_handlers_fcgi.txt                  |    1 +
+ doc/modules_handlers_file.txt                  |    8 +++++++
+ doc/modules_handlers_proxy.txt                 |    6 +++-
+ doc/modules_handlers_secdownload.txt           |    9 ++++++++
+ doc/modules_validators.txt                     |    3 +-
+ doc/modules_validators_plain.txt               |    1 +
+ 16 files changed, 101 insertions(+), 8 deletions(-)
+
+
+2011-03-21  Taher Shihadeh  <taher@unixwars.com>
+            svn=6394 git=0d5a616a3bfd429ed0225c6d6127befbb6bf74da
+
+    Documentation cleansing. Adds some tables with appropriate values to summarize some sections
+    
+ doc/cookbook_authentication.txt |   26 +++++++++++++++---
+ doc/cookbook_dbslayer.txt       |   53 +++++++++++++++++++++++++++++---------
+ doc/dev_debug.txt               |    5 +--
+ 3 files changed, 63 insertions(+), 21 deletions(-)
+
+
+2011-03-18  Taher Shihadeh  <taher@unixwars.com>
+            svn=6393 git=8e432ad37fb14546f6a532cfedfa0ea97ef2d306
+
+    Work in progress addressing issue 980 regarding text-friendliness
+    
+ doc/config_advanced.txt               |    6 ++++++
+ doc/config_general.txt                |    9 +++++++--
+ doc/config_index.txt                  |    5 ++++-
+ doc/config_info_sources.txt           |    1 +
+ doc/config_virtual_servers.txt        |   19 ++++++++++++-------
+ doc/config_virtual_servers_evhost.txt |    1 +
+ doc/config_walkthrough.txt            |   27 ++++++++++++++++++---------
+ 7 files changed, 49 insertions(+), 19 deletions(-)
+
+
+2011-03-18  Taher Shihadeh  <taher@unixwars.com>
+            svn=6392 git=cf9fa9253bd88cf504af99912ab17fb782a3189f
+
+    Reverts previous commit. It was consistent
+    
+ doc/basics_why_cherokee.txt |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+
+2011-03-18  Taher Shihadeh  <taher@unixwars.com>
+            svn=6391 git=91ac361dc4cdfc342c1d60af07500296e78f950b
+
+    Updates missleading navigation title
+    
+ doc/basics_why_cherokee.txt |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+
+2011-03-18  Taher Shihadeh  <taher@unixwars.com>
+            svn=6390 git=22a72bc59a48023e654a3a97ee24b0c1fc840dd7
+
+    Fixes issue with Market installation logging
+    
+ admin/market/Install_Log.py |    4 ++--
+ 1 files changed, 2 insertions(+), 2 deletions(-)
+
+
+2011-03-17  Taher Shihadeh  <taher@unixwars.com>
+            svn=6389 git=d82c76c87415774b5a9cd8665f1bc49f78406430
+
+    Highlights some things that keep being asked over and over
+    
+ doc/config_virtual_servers.txt |   64 ++++++++++++++++++++++++++++++---------
+ 1 files changed, 49 insertions(+), 15 deletions(-)
+
+
+2011-03-17  Taher Shihadeh  <taher@unixwars.com>
+            svn=6388 git=c7f167698f4f1411ce1e3c28356624612a2a4d44
+
+    Reworks some parts of the documentation. Addresses http://bugs.cherokee-project.com/1148 among others
+    
+ doc/Makefile.am                   |    2 +-
+ doc/config_virtual_servers.txt    |   37 +++++++++--------
+ doc/cookbook.txt                  |    4 +-
+ doc/cookbook_domain_matching.txt  |   83 +++++++++++++++++++++++++++++++++++++
+ doc/cookbook_global_redirects.txt |   56 -------------------------
+ doc/cookbook_redirs.txt           |   61 ++++++++++++++++++++++++++-
+ doc/index.txt                     |    4 +-
+ doc/modules_handlers_redir.txt    |    4 +-
+ 8 files changed, 169 insertions(+), 82 deletions(-)
+
+
+2011-03-17  Taher Shihadeh  <taher@unixwars.com>
+            svn=6387 git=4b92e549ebe7a39a5d50e319b485303d774cc841
+
+    Typo fix
+    
+ doc/cookbook_ssl.txt |    4 ++--
+ 1 files changed, 2 insertions(+), 2 deletions(-)
+
+
+2011-03-17  Taher Shihadeh  <taher@unixwars.com>
+            svn=6386 git=436a552771bf7f71f1668580ab04e13fb20f4fd0
+
+    Adds section with details about chained certificates
+    
+ doc/cookbook_ssl.txt |   85 ++++++++++++++++++++++++++++++++++++++++----------
+ 1 files changed, 68 insertions(+), 17 deletions(-)
+
+
+2011-03-16  Taher Shihadeh  <taher@unixwars.com>
+            svn=6385 git=dfbcb4274341d95b7b1fe1ba5b5801462a151b8f
+
+    Address inacurate documentation issue: http://bugs.cherokee-project.com/947
+    
+ doc/cookbook_ssl.txt |   88 ++++++++++++++++++++++++++++++++++++++-----------
+ doc/other_faq.txt    |    8 +++-
+ 2 files changed, 74 insertions(+), 22 deletions(-)
+
+2011-03-15  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6383 git=7ad6884c7205df24a153b59af2616d1c43b73ec4
+
+    Adds a new option to allow to enable/disable the match of Virtual
+    servers against its nick name. It is useful for SSL/TLS set-ups and
+    virtual server were access restriction rules are enforced. Implements
+    RFE #1075: http://bugs.cherokee-project.com/1075
+    
+ admin/PageVServer.py      |   40 ++++++++++++++++++++++++++++++++++++++--
+ cherokee/server.c         |    3 +++
+ cherokee/virtual_server.c |    4 ++++
+ cherokee/virtual_server.h |    1 +
+ qa/272-Nick-match.py      |   44 ++++++++++++++++++++++++++++++++++++++++++++
+ qa/Makefile.am            |    3 ++-
+ 6 files changed, 92 insertions(+), 3 deletions(-)
+
+2011-03-13  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6382 git=11d7e323a66f660e079b1418a08e8dfc4325ac2f
+
+    Adss a missing link. Thanks to dylanvee (irc.freenode.net) for the report.
+    
+ doc/modules_balancers.txt |    1 +
+ 1 files changed, 1 insertions(+), 0 deletions(-)
+
+
+2011-03-11  Taher Shihadeh  <taher@unixwars.com>
+            svn=6381 git=6a999ddcc935e284440c9b0383bec00c6edca009
+
+    Documents workaround for buggy web browsers. Fixes issue 1114
+    
+ doc/cookbook_ssl.txt |   14 ++++++++++++++
+ 1 files changed, 14 insertions(+), 0 deletions(-)
+
+
+2011-03-11  Antonio Perez  <aperez@skarcha.com>
+            svn=6380 git=ff99751c2e424f542dd17b0ab0b12834a25eaae0
+
+    Death processes were not being properly detected while launching new information sources.
+    
+ cherokee/source_interpreter.c |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+
+2011-03-09  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6379 git=245fa2cff127f342472b6f9065dd40d91e9a964f
+
+    Be slightly smarter while adding new ports.
+    
+ admin/PageGeneral.py |    9 ++++++++-
+ 1 files changed, 8 insertions(+), 1 deletions(-)
+
+
+2011-03-08  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6378 git=3194ff1483684dcb5a4bf66f2d56411da674e180
+
+    This patch adds support for an additional, but invalid, data format:
+    "wdy, DD mth YYYY HH:MM:SS +0000". Thanks to Antonio Perez for the
+    report and initial patch!
+    
+ cherokee/dtm.c          |   47 ++++++++++++++++++++++++++---------------------
+ cherokee/dtm.h          |    2 +-
+ cherokee/handler_file.c |    4 ++--
+ 3 files changed, 29 insertions(+), 24 deletions(-)
+
+
+2011-03-08  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6377 git=76e9c380cacb23593842766657b47c27e1b58292
+
+    Minor clean-up
+    
+ admin/validations.py |    5 +++--
+ 1 files changed, 3 insertions(+), 2 deletions(-)
+
+
+2011-03-07  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6376 git=d7086b20a355c19f098d5666c12909bf768ba6d9
+
+    An extra, unnecessary byte was reserved (one-time thing).
+    Bug #1154: http://bugs.cherokee-project.com/1154
+    
+ cherokee/main.c |    6 +++---
+ 1 files changed, 3 insertions(+), 3 deletions(-)
+
+
+2011-03-07  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6375 git=63c9271405ea225bd4ac6f1c50db2a75986f50dc
+
+    Fixes an issue with the uWSGI wizard. During the parsing of the XML
+    configuration file some Unicode strings could be populated. This patch
+    fixes bug #1149: http://bugs.cherokee-project.com/1149
+    
+ admin/wizards/uwsgi.py |   15 +++++++--------
+ 1 files changed, 7 insertions(+), 8 deletions(-)
+
+
+2011-03-07  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6374 git=d4c842a885e47b85a42eac3f73e4a279cab8acab
+
+    Slightly more descriptive 'assert' checkpoint.
+    
+ admin/Rule.py |    4 ++--
+ 1 files changed, 2 insertions(+), 2 deletions(-)
+
+
+2011-03-07  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6373 git=255773547aa401c27979ad565fc51cdbe057469f
+
+    Adds a missing dialog title.
+    
+ admin/PageSource.py |   10 +++++++---
+ 1 files changed, 7 insertions(+), 3 deletions(-)
+
+
+2011-03-03  Taher Shihadeh  <taher@unixwars.com>
+            svn=6371 git=d3a42b2e76437c0ad4dc2f226fcbe9f0d09c1bd0
+
+    Updates secdownload handler documentation
+    
+ doc/index.txt                        |    2 +-
+ doc/modules_handlers_secdownload.txt |   54 ++++++++++++++++++++++------------
+ 2 files changed, 36 insertions(+), 20 deletions(-)
+
+
+2011-03-02  Taher Shihadeh  <taher@unixwars.com>
+            svn=6370 git=bf0f8dc4ec09628cf296557574f40b7d80340047
+
+    Debian 5 wasn't properly detected
+    
+ admin/SystemInfo.py |   27 +++++++++++++++++----------
+ 1 files changed, 17 insertions(+), 10 deletions(-)
+
+2011-02-28  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6369 git=3cf11f1e284aa36bb56aec57ca7732d0a24ac7fc
+
+    Relocates some code in the Reverse HTTP Proxy, so headers like
+    "X-Forwarded-For" or "X-Real-IP" can be removed from the back-end
+    server response. Thanks to Sylvain Munaut for the report and patch!
+    
+ cherokee/handler_proxy.c |   41 +++++++++++++++++++++++------------------
+ 1 files changed, 23 insertions(+), 18 deletions(-)
+
+2011-02-28  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6368 git=e12adaed96fe8b29d916f60abedd1c5fc79b3160
+
+    Believe it or not, php.ini might be located under /usr/local/lib/.
+    Thanks to Tony Sumner for reporting this!
+    
+ admin/wizards/php.py |    3 ++-
+ 1 files changed, 2 insertions(+), 1 deletions(-)
+
+
+2011-02-28  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6367 git=660ebb061e693569a8b741a48ba3a4faff7ca283
+
+    The QA bench did not work whenever $TERM was not defined. #1150
+    Thanks to Gunnar Wolf for the report and patch! (Debian #615563)
+    
+ qa/util.py |    3 ++-
+ 1 files changed, 2 insertions(+), 1 deletions(-)
+
+
+2011-02-27  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6366 git=4958d7f64fe3ae0993c870ddc00c72f719e8ca7c
+
+    This patch clarifies a couple of field descriptions. Thanks to
+    Jens Knutson for the suggestion.
+    
+ admin/PageAdvanced.py |    4 ++--
+ 1 files changed, 2 insertions(+), 2 deletions(-)
+
+
+2011-02-25  Taher Shihadeh  <taher@unixwars.com>
+            svn=6365 git=e746c60835f15fbe7c169d2cb8b24bfd1b397e89
+
+    Documents some new functionality (remote services, etc)
+    
+ doc/Makefile.am                          |    4 +
+ doc/config.txt                           |    1 +
+ doc/config_index.txt                     |   46 +++++++++++-
+ doc/config_market.txt                    |  120 ++++++++++++++++++++++++++++++
+ doc/index.txt                            |    1 +
+ doc/media/images/admin_index.png         |  Bin 44591 -> 47858 bytes
+ doc/media/images/admin_index_backup.png  |  Bin 0 -> 7939 bytes
+ doc/media/images/admin_index_restore.png |  Bin 0 -> 11069 bytes
+ doc/media/images/market_index.png        |  Bin 0 -> 39042 bytes
+ 9 files changed, 171 insertions(+), 1 deletions(-)
+
+
+2011-02-24  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6364 git=5235f9b2c7e6c1401272c7daa952230a9263f340
+
+    Covers a corner case where getgroups() did not return any groups.
+    
+ admin/market/CommandProgress.py |    6 +++++-
+ 1 files changed, 5 insertions(+), 1 deletions(-)
+
+
+2011-02-24  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6362 git=4abdc58d6a73f10ed94dd936b807461e6e27e152
+
+    Cherokee 1.2.1 released
+    
+ configure.in |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
 2011-02-24  Taher Shihadeh  <taher@unixwars.com>
             svn=6360 git=20c9f46a86d3c1d6ec41e498ae2fdfa048f49ce5
 

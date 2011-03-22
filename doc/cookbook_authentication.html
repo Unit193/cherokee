@@ -170,8 +170,9 @@ database to fetch any content.</p></div>
 <div class="paragraph"><p>First, lets define a unique rule in our virtual server managed by the
 <tt>List and Send</tt> handler. Through the <tt>Security</tt> tab we can configure
 it to use MySQL as authentication mechanism. Filling up just the
-essential fields will be enough. Realm, database name, user, password
-and an SQL query that must return one row with one column as password.</p></div>
+essential fields will be enough. Those are realm, database name, user,
+password, and an SQL query that must return one row with one column as
+password.</p></div>
 <div class="imageblock">
 <div class="content">
 <img src="media/images/cookbook_mysql_validator.png" alt="media/images/cookbook_mysql_validator.png" />
@@ -207,7 +208,9 @@ Query OK, 1 row affected (0.00 sec)
 
 mysql&gt; quit</tt></pre>
 </div></div>
-<div class="paragraph"><p>When we are done, our simple virtual server should look like this:</p></div>
+<div class="paragraph"><p>When we are done, our simple virtual server should only have a
+<tt>Default</tt> rule, managed by the <tt>List &amp; Send</tt> hander, and with <tt>MySQL</tt>
+authentication set.</p></div>
 <div class="imageblock">
 <div class="content">
 <img src="media/images/cookbook_mysql_rule.png" alt="media/images/cookbook_mysql_rule.png" />
@@ -253,8 +256,8 @@ so the rule evaluation would stop.</p></div>
 <div class="paragraph"><p>In case the PHP files were not being requested from the secured
 directory, just the second rule would apply.</p></div>
 <h3 id="fixed_list">Fixed list</h3><div style="clear:left"></div>
-<div class="paragraph"><p>For this validator you will only need to add user-password pairs. As
-always, the <tt>realm</tt> field is mandatory.</p></div>
+<div class="paragraph"><p>For this validator you will only need to add user-password pairs, and
+the mandatory <tt>realm</tt> field.</p></div>
 <div class="imageblock">
 <div class="content">
 <img src="media/images/admin_validators_authlist.png" alt="media/images/admin_validators_authlist.png" />
@@ -264,6 +267,55 @@ always, the <tt>realm</tt> field is mandatory.</p></div>
 <div class="paragraph"><p>Here is a basic example of the LDAP validator in action. It assumes
 you have a working LDAP service running at your localhost, and it uses
 no TLS of CA files.</p></div>
+<div class="tableblock">
+<table rules="all"
+width="100%"
+frame="border"
+cellspacing="0" cellpadding="4">
+<col width="50%" />
+<col width="50%" />
+<thead>
+<tr>
+<th align="left" valign="top">Field                  </th>
+<th align="left" valign="top"> Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left" valign="top"><p class="table">Validation Mechanism</p></td>
+<td align="left" valign="top"><p class="table"><tt>LDAP Server</tt></p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">Methods</p></td>
+<td align="left" valign="top"><p class="table"><tt>Basic</tt></p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">Realm</p></td>
+<td align="left" valign="top"><p class="table">secret</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">Server</p></td>
+<td align="left" valign="top"><p class="table">localhost</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">Port</p></td>
+<td align="left" valign="top"><p class="table">389</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">Bind Domain</p></td>
+<td align="left" valign="top"><p class="table">my_domain</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">Bind Password</p></td>
+<td align="left" valign="top"><p class="table">my_password</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">Base Domain</p></td>
+<td align="left" valign="top"><p class="table">example.com</p></td>
+</tr>
+</tbody>
+</table>
+</div>
 <div class="imageblock">
 <div class="content">
 <img src="media/images/admin_validators_ldap.png" alt="media/images/admin_validators_ldap.png" />

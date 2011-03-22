@@ -165,15 +165,16 @@ with the default settings.</p></div>
 <img src="media/images/admin_noconfig.png" alt="media/images/admin_noconfig.png" />
 </div>
 </div>
-<div class="paragraph"><p>That is a good starting point. Right now your web server will not be
-running yet. We will only be using two of the available tabs to adjust
-some more settings: <a href="config_general.html">General</a> and
+<div class="paragraph"><p>The regular template is a good starting point. Right now your web
+server will not be running yet. We will only be using two of the
+available tabs to adjust some more settings:
+<a href="config_general.html">General</a> and
 <a href="config_virtual_servers.html">Virtual Servers</a>.</p></div>
-<div class="paragraph"><p>This is an example of what you&#8217;ll be seeing:</p></div>
 <div class="imageblock">
 <div class="content">
 <img src="media/images/admin_notrunning.png" alt="media/images/admin_notrunning.png" />
 </div>
+<div class="image-title">Sample view</div>
 </div>
 <div class="paragraph"><p>Of course, once we&#8217;re done we will have to apply our changes and
 launch the server. The configuration changes must be submitted to the
@@ -190,22 +191,23 @@ but doesn&#8217;t affect the currently running instance. A <tt>graceful
 restart</tt> will preserve the old set-up for any prior connections, while
 a <tt>hard restart</tt> will kill every connection and instantly apply the
 changes.</p></div>
-<div class="paragraph"><p>This is what the <tt>General</tt> tab looks like:</p></div>
 <div class="imageblock">
 <div class="content">
 <img src="media/images/admin_general.png" alt="media/images/admin_general.png" />
 </div>
+<div class="image-title">Sample of tab for general settings</div>
 </div>
 <div class="paragraph"><p>We will only be modifying the <strong>Permissions</strong> tab. It usually is a poor
 choice to run services with super user privileges. Set both <strong>User</strong> and
 <strong>Group</strong> to <tt>www-data</tt>. Your system might already have another user account
 specifically for the purpose of running a webserver. Use that instead
 if so, or create the <tt>www-data</tt> user if you don&#8217;t already have one.</p></div>
-<div class="paragraph"><p>Next is the <a href="config_virtual_servers.html">vServers</a> tab:</p></div>
+<div class="paragraph"><p>Next is the <a href="config_virtual_servers.html">vServers</a> tab.</p></div>
 <div class="imageblock">
 <div class="content">
 <img src="media/images/admin_vserver.png" alt="media/images/admin_vserver.png" />
 </div>
+<div class="image-title">Virtual server tab</div>
 </div>
 <div class="paragraph"><p>When you start, you will only have one virtual server called
 <tt>default</tt>. You can begin by cloning it as <tt>example</tt>. This can be
@@ -314,11 +316,36 @@ handler for the <tt>/auth</tt> rule and nothing would be served.</p></div>
 examples on the different options.</p></div>
 <div class="paragraph"><p>Lastly, lets configure a redirection rule by choosing a "Regular
 Expression" as the new rule type. Type the following regex: <tt>^/rss.*$</tt>
-Then, within the <tt>Handler</tt> selection tab specify a target: <tt>/feed</tt></p></div>
+Then, configure the <tt>Handler</tt> tab with the following settings.</p></div>
+<div class="olist arabic"><ol class="arabic">
+<li>
+<p>
+<strong>Handler</strong>: <tt>Redirection</tt>
+</p>
+</li>
+<li>
+<p>
+<strong>Type</strong>: <tt>External</tt>
+</p>
+</li>
+<li>
+<p>
+<strong>Regular Expression</strong>: you can leave it empty or specify a series of
+  new matches. The shot has the base regex for ilustration purposes:
+  <tt>^/rss.*$</tt>
+</p>
+</li>
+<li>
+<p>
+<strong>Substitution</strong>: this will be the target: <tt>/feed</tt>
+</p>
+</li>
+</ol></div>
 <div class="imageblock">
 <div class="content">
 <img src="media/images/admin_rule_regex.png" alt="media/images/admin_rule_regex.png" />
 </div>
+<div class="image-title">Redirection handler</div>
 </div>
 <div class="paragraph"><p>And voilà! A request of the form <a href="http://example.net/rss2">http://example.net/rss2</a> would be
 redirected to <a href="http://example.net/feed">http://example.net/feed</a></p></div>

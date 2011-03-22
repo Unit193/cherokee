@@ -101,10 +101,55 @@ both settings and see how your application behaves.</p></div>
 <div class="paragraph"><p>This is a pretty common example. It defines a directory called <tt>cgi</tt>
 that points to a path out of the Sever root directory where the
 CGI programs are located.</p></div>
+<div class="tableblock">
+<table rules="all"
+width="100%"
+frame="border"
+cellspacing="0" cellpadding="4">
+<caption class="title">Handler CGI configuration</caption>
+<col width="50%" />
+<col width="50%" />
+<tbody>
+<tr>
+<td align="left" valign="top"><p class="table">Handler</p></td>
+<td align="left" valign="top"><p class="table">CGI</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">Document Root</p></td>
+<td align="left" valign="top"><p class="table">/usr/lib/cgi-bin</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">Script Alias</p></td>
+<td align="left" valign="top"><p class="table">None</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">Change UID</p></td>
+<td align="left" valign="top"><p class="table">Disabled</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">Error handler</p></td>
+<td align="left" valign="top"><p class="table">Disabled</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">Check file</p></td>
+<td align="left" valign="top"><p class="table">Enabled</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">Pass Request Headers</p></td>
+<td align="left" valign="top"><p class="table">Enabled</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">Allow X-Sendfile</p></td>
+<td align="left" valign="top"><p class="table">Disabled</p></td>
+</tr>
+</tbody>
+</table>
+</div>
 <div class="imageblock">
 <div class="content">
 <img src="media/images/admin_handler_cgi.png" alt="media/images/admin_handler_cgi.png" />
 </div>
+<div class="image-title">Handler CGI intreface</div>
 </div>
 <div class="paragraph"><div class="title">Script Alias</div><p>Another example could be the case where you wanted your default
 requests to be managed by a specific script.</p></div>

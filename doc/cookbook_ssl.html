@@ -54,7 +54,7 @@ match your domains, you can always add more than one matching criteria
 on that section. An IP/Subnet match plus a simultaneous wildcard match
 is a combination likely to cover every corner-case scenario you are
 presented with.</p></div>
-<div class="paragraph"><div class="title">How to enable the SSL support?</div><p>SSL support is not enabled by default. You will have to perform three
+<div class="paragraph" id="ssl-support"><div class="title">How to enable the SSL support?</div><p>SSL support is not enabled by default. You will have to perform three
 straightforward actions is order to enable it:</p></div>
 <div class="olist arabic"><ol class="arabic">
 <li>
@@ -74,20 +74,64 @@ Once the engine is configured, a new
 </li>
 <li>
 <p>
-The last step would be to assign SSL certificates to the virtual
-    servers, starting with the default virtual server.  Cherokee uses
+The next step would be to assign SSL certificates to the virtual
+    servers, starting with the default virtual server. Cherokee uses
     SNI to distinguish between virtual servers. The certificate
     specified in the default server will be used in the first
     negotiation. If not present, the startup sequence will fail. The
     configuration is found inside each
     <a href="config_virtual_servers.html#security">virtual server</a>
-    configuration, under the Security tab. This part is <em>very
-    important</em>: you have to concatenate your certificates into a
-    single file in order to use them in Cherokee.
+    configuration, under the Security tab. Only two fields are
+    required for this to work: &#8216;Certificate` (the certificate itself,
+    which contains the public key and other data and is fed out to
+    clients to initiate a secure session), and <tt>Certificate key</tt> (the
+    private key that should be protected at all costs from anyone
+    gaining access to it). Your mileage may vary, but assuming you are
+    using a self generated certificate created with the script
+    provided with Cherokee (more on this later on this same document),
+    you would have two files, <em>cakey.pem</em> and cakey.key&#8217;. Just
+    provide the full path to <em>cakey.pem</em> for <tt>Certificate</tt>, and
+    <em>cakey.key</em> for <tt>Certificate key</tt>.
 </p>
 </li>
+<li>
+<p>
+This last step applies only if your certificate is not recognised
+    by the root CA and you don&#8217;t want your visitors to manually have
+    to accept a security exception so that your certificate can be
+    validated. To correctly address this situation you need a
+    CA-signed certificate. Furthermore, computers will trust the root
+    CA, but don&#8217;t normally know about the intermediate CA that
+    actually signed your certificates, so you will need an
+    intermediate file which links such CA to a higher-level CA that
+    works with all browsers and operating systems.  You&#8217;ll need a
+    chained certificate file in order to instruct your visitors on how
+    to follow the chain of trust. You can reed more about
+    <a href="#chained-certificates">chained certificates</a> later on this
+    document. You will only have to concatenate the certificate files
+    and put the combined text into a file used for the the
+    <tt>Certificate</tt> field. This part is <em>very important</em>: you have to
+    concatenate your certificates into a single file in order to use
+    them in Cherokee. The order in which you concatenate the files is
+    important. Just issue the following command and you should be
+    ready to go:
+</p>
+<div class="listingblock">
+<div class="content">
+<pre><tt>cat public.pem inter_ca_public.pem &gt; chained.pem</tt></pre>
+</div></div>
+</li>
 </ol></div>
-<div class="paragraph"><div class="title">How to manually test HTTP/HTTPS?</div><p>HTTP can easily be tested like this:</p></div>
+<div class="paragraph" id="ie-workarownd"><div class="title">I get certificate errors when having more than one. Workarounds?</div><p>This is a scenario known to happen only with some web browsers running
+specific Operating Systems. Specifically, there was a report where the
+server was using 2 domains, 2 IPs, and 2 SSL Certificates on one
+server. Everything worked as expected with Firefox, Opera, and
+Chromium, but IE/Chrome on Windows kept showing a certificate error
+on the domain that was not configured as default.</p></div>
+<div class="paragraph"><p>The workaround consists on creating a dummy default host with the
+second IP and certificate. The affected web browsers will then fall
+back to the IP and send the correct certificate.</p></div>
+<div class="paragraph" id="manual-test"><div class="title">How to manually test HTTP/HTTPS?</div><p>HTTP can easily be tested like this:</p></div>
 <div class="listingblock">
 <div class="content">
 <pre><tt>$ telnet localhost 80
@@ -126,7 +170,7 @@ RSA private key file: a digital file that can be used to decrypt
 <p>
 CSR, or Certificate Signing Request: a digital file containing your
   public key and your name. It is sent to a Certifying Authority (CA)
-  that will convert sign it to convert it into a real Certificate.
+  that will sign it to convert it into a real Certificate.
 </p>
 </li>
 <li>
@@ -347,6 +391,48 @@ perform the same calculation on the CSR as follows:</p></div>
 <div class="listingblock">
 <div class="content">
 <pre><tt>$ openssl req -noout -modulus -in server.csr | openssl md5</tt></pre>
+</div></div>
+<h3 id="free-certificates">Free signed SSL/TLS certificates</h3><div style="clear:left"></div>
+<div class="paragraph"><p>Most services will require a fee to provide you with signed
+certificates, but some services will do this for free on their
+entry-product line.</p></div>
+<div class="paragraph"><p>You need to make sure that whoever signs your certificate is trusted
+as root CA on your operating system of choice. One such service that
+works by default on Windows, Linux, and Mac is
+<a href="http://www.startssl.com">StartSSL</a> is one such service, although there
+are probably others out there.</p></div>
+<h3 id="chained-certificates">Chained SSL certificates</h3><div style="clear:left"></div>
+<div class="paragraph"><div class="title">What</div><p>If your public certificate is signed by a Certificate Authority&#8217;s
+intermediate certificate rather than a root certificate, you will need
+a chained CA. This is basically a list or path of certificates to
+instruct your visitors on how to follow the chain of trust. The list
+contains certificates that form the certificate chain (from the
+client/server certificate to the root CA certificate).</p></div>
+<div class="paragraph"><div class="title">Why</div><p>When using SSL, even a signed certificate can be worthless by
+itself. This is because the system will trust the root CA, but won&#8217;t
+normally know about the intermediate CA that actually signed your
+certificates.</p></div>
+<div class="paragraph"><div class="title">Where</div><p>Where to go next while following this chain of trust is specified in
+the chained certificate.  The mechanism by which the certificate chain
+works is actually not that complex. When an unrecognized certificate
+is received, the certificate chain is used to obtain the root CA
+certificate. This chain is a list of certificates used to authenticate
+an entity. The path begins with the certificate of that entity, and
+each certificate in the chain is signed by the entity identified by
+the next certificate in the chain. The chain terminates with a root CA
+certificate, that is always signed by the CA itself. The signature of
+every certificate in the chain must be verified, all the way from the
+certificate owner until the root CA certificate is reached.</p></div>
+<div class="paragraph"><div class="title">How</div><p>To create a certificate chain file, you simply need to your public
+certificate and your Certificate Authority&#8217;s intermediate certificate
+together. Assuming your public certificate is <tt>public.pem</tt> (the
+certificate that was signed by the Certificate Authority), and your
+CA&#8217;s public certificate (the intermediate Certificate supplied by your
+Certificate Authority) is <tt>inter_ca_public.pem</tt>, simply appending both
+will suffice to create a valid chained certificate.</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>cat public.pem inter_ca_public.pem &gt; chained.pem</tt></pre>
 </div></div>
 </div>
 <div id="footer">
