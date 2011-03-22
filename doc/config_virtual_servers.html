@@ -21,8 +21,9 @@
 a custom number of parameters and rules that have to be applied to one
 or more domains.</p></div>
 <div class="paragraph"><p>In a Cherokee server there must be at least one virtual server named
-<tt>default</tt>, and there is no maximum number. It is important to know that
-this server cannot be deleted.</p></div>
+<tt>default</tt>, and there is no maximum number. You can define and delete
+as many as you want, with the sole exception of <tt>default</tt> which must
+be present always.</p></div>
 <div class="paragraph"><p>When the server receives a request it will try to match the domain
 name specified in the virtual server that should handle it. In case no
 virtual server matches the request, <tt>default</tt> will be used.</p></div>
@@ -30,6 +31,7 @@ virtual server matches the request, <tt>default</tt> will be used.</p></div>
 <div class="content">
 <img src="media/images/admin_vserver.png" alt="media/images/admin_vserver.png" />
 </div>
+<div class="image-title">Host Match</div>
 </div>
 <div class="paragraph"><p>This section of the admin is divided in a left panel and main contents
 section on the right.</p></div>
@@ -249,13 +251,13 @@ is used to handle the request.</p></div>
 <td class="icon">
 <div class="title">Important</div>
 </td>
-<td class="content">It is easy to overlook the way in which virtual servers are
-evaluated, which leads to the common problem of not knowing exactly
-why some virtual servers work and some don&#8217;t. The list of Frequently
-Asked Questions includes <a href="other_faq.html#faq19">"Why are my
-nicknames not matched, while *.example.com does work?"</a>. A careful
-reinterpretation of what has just been explained in this section
-should clarify any doubts.</td>
+<td class="content">It is easy to overlook the way in which virtual servers are evaluated,
+which leads to the common problem of not knowing exactly why some
+virtual servers work and some don&#8217;t. The list of Frequently Asked
+Questions includes <a href="other_faq.html#faq19">"Why are my nicknames not
+matched, while *.example.com does work?"</a>. A careful reinterpretation
+of what has just been explained in this section should clarify any
+doubts.</td>
 </tr></table>
 </div>
 <div class="admonitionblock">
@@ -263,10 +265,10 @@ should clarify any doubts.</td>
 <td class="icon">
 <div class="title">Warning</div>
 </td>
-<td class="content">Do not use the IP/Subnet host match as a security measure to
-prevent access to specific IP addresses. The purpose of the IP/Subnet
-match type was to implement the SSL certificate selection workaround
-that other web servers have been using for years. If it were to be
+<td class="content">Do not use the IP/Subnet host match as a security measure to prevent
+access to specific IP addresses. The purpose of the IP/Subnet match
+type was to implement the SSL certificate selection workaround that
+other web servers have been using for years. If it were to be
 attacked, it could be easily overcome by simply setting the Host
 header to the name of the virtual server. To restrict the traffic of
 one of your virtual servers based on the incoming IP, please read the
@@ -342,7 +344,8 @@ is presented, containing several fields of information:</p></div>
 <p>
 <strong>Final</strong>: If this flag is present it means that no other rules will
     be applied after this one, even if the request also matches other
-    rules with lower priority.
+    rules with lower priority. The server will issue a response with
+    whatever behavior it has figured out by then.
 </p>
 </li>
 <li>
@@ -355,14 +358,22 @@ is presented, containing several fields of information:</p></div>
 <div class="paragraph"><p>These rules can be defined based on the directory that the request
 targets, the extension of the file that it is requesting, or a regular
 expression that may match the request among other options.</p></div>
-<div class="paragraph"><p>It is very important to know that these rules are prioritized. The
-higher its priority is, the sooner they are checked. You could think
-of a network routing table, it is quite similar. You can set the
+<div class="admonitionblock">
+<table><tr>
+<td class="icon">
+<div class="title">Important</div>
+</td>
+<td class="content">It is very important to know that these rules are prioritized. The
+higher its priority is, the sooner they are checked. And this priority
+is represented by the position of the rule in the rule-list. You could
+think of a network routing table, it is quite similar. You can set the
 relative priorities among the rules from within the <tt>Behavior</tt> panel,
 which is accessed through the <tt>Rule Management</tt> button. This button
 will switch the left panel from <tt>Virtual Server</tt> mode to <tt>Rule mode</tt>,
 and the list of virtual servers on the left panel will be replaced by
-a panel with the list of rules.</p></div>
+a panel with the list of rules.</td>
+</tr></table>
+</div>
 <div class="paragraph"><p>In <tt>Rule mode</tt> you wiil be able to define a set of rules to define how
 the server should handle the different requests, and simply dragging
 and dropping the rules in the desired position will do. If you click
@@ -373,6 +384,7 @@ to drag and drop it into the desired position).</p></div>
 <div class="content">
 <img src="media/images/admin_behavior.png" alt="media/images/admin_behavior.png" />
 </div>
+<div class="image-title">Rule list</div>
 </div>
 <div class="paragraph"><p>Each of these behavior rules must specify the handler that the server
 should use to reply to the requests that match the rule.</p></div>
@@ -435,11 +447,13 @@ errors to a custom path or website.</p></div>
 <div class="content">
 <img src="media/images/admin_vserver_errors.png" alt="media/images/admin_vserver_errors.png" />
 </div>
+<div class="image-title">Error Handler</div>
 </div>
-<div class="paragraph"><p>In this case, the handled errors will be redirected to the specified
-resource, while non-defined errors will trigger an HTTP 500 error. In
-case this is not the desired behavior, you can set a <tt>Default Error</tt>
-to catch and redirect the non-defined ones.</p></div>
+<div class="paragraph"><p>In this case, the handled errors (400, 401, and 500) will be
+redirected to the specified resources, while non-defined errors will
+trigger an HTTP 500 error. In case this is not the desired behavior,
+you can set a <tt>Default Error</tt> to catch and redirect the non-defined
+ones.</p></div>
 <div class="paragraph"><p>The <em>Closest match</em> error handler should never fail to deliver
 something. If a requested resource is not available, the closest match
 will be sent. The only exception to this is when nothing at all is at
@@ -465,6 +479,7 @@ Format: Combined (Apache compatible), NCSA or custom.
 <div class="content">
 <img src="media/images/admin_vserver_loggers.png" alt="media/images/admin_vserver_loggers.png" />
 </div>
+<div class="image-title">Logging</div>
 </div>
 <div class="paragraph"><p>By default Cherokee ships three loggers implementing three different
 logging formats:</p></div>
@@ -507,6 +522,7 @@ virtual server in a given host by using SNI as defined in
 <div class="content">
 <img src="media/images/admin_vserver_security.png" alt="media/images/admin_vserver_security.png" />
 </div>
+<div class="image-title">Security</div>
 </div>
 <div class="paragraph"><p>If you want HTTPS to work, you must remember this:</p></div>
 <div class="olist arabic"><ol class="arabic">
@@ -516,21 +532,27 @@ Providing the PEM-encoded files is mandatory for both <tt>Certificate</tt>
   and <tt>Certificate key</tt> fields. Providing the <tt>CA List</tt> and the
   <tt>Client Certs</tt> is optional. The trusted CA certificates file should
   be a single file with all the certificates concatenated. The <tt>Client
-  Certs</tt>, also PEM-encoded, is used to check the client certificates.
+  Certs</tt>, also PEM-encoded, is used to check the client
+  certificates. You can read more about
+  <a href="cookbook_ssl.html#ssl-support">enabling SSL support</a> on the
+  SSL/TLS section of the documentation.
 </p>
 </li>
 <li>
 <p>
 If you have several virtual servers, the <tt>Security</tt> section must be
-  configured for every one of them. At the moment you cannot have some
-  with HTTPS and some without. This makes sense, since by enabling the
-  feature in any one of them you are opening the HTTPS port in your
-  host, and receiving HTTPS requests for a virtual server that does
-  not provide the service would not be handled in a coherent
-  manner. None of the alternatives is very elegant in design: falling
-  back to HTTP, issuing an error that is likely to restart the HTTPS
-  handshake, etc. This behavior, however, might change in the future
-  depending on the popularity of any proposed mechanisms.
+  configured for the <tt>default</tt> virtual server besides any other
+  virtual server you want to support HTTPS. This makes sense, since by
+  enabling the feature in any one of them you are opening the HTTPS
+  port in your host, and receiving HTTPS requests for a virtual server
+  that does not provide the service can not be handled correctly.
+  This situation can be dealt with in several ways, none of which are
+  really elegant in design: falling back to HTTP, issuing an error
+  that is likely to restart the HTTPS handshake, etc. The approach
+  taken by Cherokee is at least coherent, folding back to the
+  <tt>default</tt> virtual server. Of course, to do so it needs correct
+  <tt>Security</tt> settings to provide an HTTPS stream, as has just been
+  mentioned.
 </p>
 </li>
 </ol></div>

@@ -119,7 +119,7 @@ measures that you should take into account when migrating to a
 production environment. Isolation is generally a good idea.</p></div>
 <div class="paragraph"><p>First, we edit the <tt>default</tt> virtual server. Since we will only be
 using it for database balancing, we can safely point it to an empty
-<tt>Document Root</tt>, in this case <tt>/var/www/fake</tt>.</p></div>
+<tt>Document Root</tt>, in this case <tt>/dev/null</tt>.</p></div>
 <div class="imageblock">
 <div class="content">
 <img src="media/images/cookbook_dbslayer1.png" alt="media/images/cookbook_dbslayer1.png" />
@@ -139,6 +139,54 @@ that is what we will use.</p></div>
 <img src="media/images/cookbook_dbslayer2.png" alt="media/images/cookbook_dbslayer2.png" />
 </div>
 </div>
+<div class="tableblock">
+<table rules="all"
+width="100%"
+frame="border"
+cellspacing="0" cellpadding="4">
+<caption class="title">Source #1</caption>
+<col width="50%" />
+<col width="50%" />
+<tbody>
+<tr>
+<td align="left" valign="top"><p class="table">Type</p></td>
+<td align="left" valign="top"><p class="table">Remote source</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">Nick</p></td>
+<td align="left" valign="top"><p class="table">mysql_0</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">Connection</p></td>
+<td align="left" valign="top"><p class="table">10.0.0.100:3306</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="tableblock">
+<table rules="all"
+width="100%"
+frame="border"
+cellspacing="0" cellpadding="4">
+<caption class="title">Source #2</caption>
+<col width="50%" />
+<col width="50%" />
+<tbody>
+<tr>
+<td align="left" valign="top"><p class="table">Type</p></td>
+<td align="left" valign="top"><p class="table">Remote source</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">Nick</p></td>
+<td align="left" valign="top"><p class="table">mysql_1</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">Connection</p></td>
+<td align="left" valign="top"><p class="table">10.0.0.101:3306</p></td>
+</tr>
+</tbody>
+</table>
+</div>
 <div class="paragraph"><p>Next is removing every possible rule and configuring the default one
 to use the MySQL bridge handler. This is not required, but obeys the
 recommendations stated above.</p></div>
@@ -148,21 +196,61 @@ recommendations stated above.</p></div>
 </div>
 </div>
 <div class="paragraph"><p>To do so, simply click on the rule in the <tt>Behavior</tt> tab and proceed
-to the <tt>Handler</tt> section, where you can adjust the following settings.</p></div>
+to the <tt>Handler</tt> section, where you can adjust all the settings.</p></div>
+<div class="paragraph"><p>After adding the information sources to be balanced, and setting up
+the information required to access an existing database, only the
+matter of selecting a language will remain. In this example we will be
+using Python because that is what the testing script will be written
+in. If your favorite language of choice is not available you can
+simply select JSON, which is widely supported in most programming
+languages. Using Python in this case will simply allow us to directly
+evaluate the results offered by the database, creating a native object
+that can be managed more comfortably.</p></div>
+<div class="tableblock">
+<table rules="all"
+width="100%"
+frame="border"
+cellspacing="0" cellpadding="4">
+<caption class="title">Sample configuration values</caption>
+<col width="50%" />
+<col width="50%" />
+<tbody>
+<tr>
+<td align="left" valign="top"><p class="table">Handler</p></td>
+<td align="left" valign="top"><p class="table"><tt>MySQL Bridge</tt></p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">Language</p></td>
+<td align="left" valign="top"><p class="table"><tt>Python</tt></p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">DB User</p></td>
+<td align="left" valign="top"><p class="table">my_user</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">DB Password</p></td>
+<td align="left" valign="top"><p class="table">my_password</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">Database</p></td>
+<td align="left" valign="top"><p class="table">my_database</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">Balancer</p></td>
+<td align="left" valign="top"><p class="table"><tt>Round Robin</tt></p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">Information Sources</p></td>
+<td align="left" valign="top"><p class="table">mysql_0, mysql_1</p></td>
+</tr>
+</tbody>
+</table>
+</div>
 <div class="imageblock">
 <div class="content">
 <img src="media/images/cookbook_dbslayer4.png" alt="media/images/cookbook_dbslayer4.png" />
 </div>
 </div>
-<div class="paragraph"><p>After adding the information sources to be balanced, and setting up the
-information required to access an existing database, only the matter
-of selecting a language will remain.</p></div>
-<div class="paragraph"><p>In this example we will be using Python because that is what the
-testing script will be written in. If your favorite language of choice
-is not available you can simply select JSON, which is widely supported
-in most programming languages. Using Python in this case will simply
-allow us to directly evaluate the results offered by the database,
-creating a native object that can be managed more comfortably.</p></div>
 <div class="paragraph"><p>And these were all the steps required. You are ready to go!</p></div>
 <h3 id="example_python">Example Python script:</h3><div style="clear:left"></div>
 <div class="paragraph"><p>The following script is provided to show how you can use the database

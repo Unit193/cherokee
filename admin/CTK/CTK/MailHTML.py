@@ -158,7 +158,7 @@ class MailHTML:
 
     def RenderMessage_Images (self):
         msg_root = MIMEMultipart('related')
-        msg_root.set_charset('utf-8')
+        #msg_root.set_charset('utf-8')
         msg_root['Subject']      = self.subject
         msg_root['From']         = self.me
         msg_root['To']           = self.to
@@ -168,7 +168,7 @@ class MailHTML:
             msg_root[h] = self.headers[h]
 
         msg = MIMEMultipart('alternative')
-        msg.set_charset('utf-8')
+#       msg.set_charset('utf-8')
         msg['Subject']      = self.subject
         msg['From']         = self.me
         msg['To']           = self.to
@@ -178,8 +178,8 @@ class MailHTML:
 
         msg_root.attach (msg)
 
-        part1 = MIMEText (self.RenderTXT(),  'plain', _charset='utf-8')
-        part2 = MIMEText (self.RenderHTML(), 'html',  _charset='utf-8')
+        part1 = MIMEText (self.RenderTXT(),  'plain')#, _charset='utf-8')
+        part2 = MIMEText (self.RenderHTML(), 'html')#,  _charset='utf-8')
 
         msg.attach (part1)
         msg.attach (part2)
