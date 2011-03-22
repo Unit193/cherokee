@@ -1,5 +1,6 @@
-cherokee (1.2.1-2) UNRELEASED; urgency=low
+cherokee (1.2.2-1) unstable; urgency=low
 
+  * New Upstream Version
   * Don't fail on upgrade when cherokee-admin is not installed (Closes:
     #617640)
 
