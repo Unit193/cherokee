@@ -2,8 +2,9 @@
   rotate 7
   weekly
   compress
-  copytruncate
   missingok
   notifempty
-  copytruncate
+  postrotate
+	/usr/bin/killall -SIGUSR2 cherokee
+  endscript
 }
