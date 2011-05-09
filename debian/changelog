@@ -6,8 +6,11 @@ cherokee (1.2.2-2) unstable; urgency=low
   * Stop shipping .la files in libcherokee-server0-dev (Closes: #621263)
   * Replaced the "copytruncate" logrotate strategy by a SIGUSR2 as a
     postrotate action (Closes: #586093)
+  * Standards-version 3.9.1.0→3.9.2.0 (no changes needed)
+  * Minor spelling correction in long description (thanks, lintian!)
+  * Added libpcre3-dev and libbz2-dev to the build dependencies
 
- -- Gunnar Wolf <gwolf@debian.org>  Mon, 09 May 2011 11:12:48 -0500
+ -- Gunnar Wolf <gwolf@debian.org>  Mon, 09 May 2011 12:05:25 -0500
 
 cherokee (1.2.2-1) unstable; urgency=low
 

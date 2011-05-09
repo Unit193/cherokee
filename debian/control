@@ -3,8 +3,8 @@ Section: httpd
 Priority: optional
 Maintainer: Gunnar Wolf <gwolf@debian.org>
 Uploaders: Alvaro Lopez Ortega <alvaro@gnu.org>, Leonel Nunez <leonel@enelserver.com>
-Build-Depends: bison, flex, debhelper (>= 7.0.50), autotools-dev, libpam0g-dev, python-support, libssl-dev, libldap-dev, libmysqlclient-dev,  libavformat-dev, libavcodec-dev, libavutil-dev, libgeoip-dev
-Standards-Version: 3.9.1.0
+Build-Depends: bison, flex, debhelper (>= 7.0.50), autotools-dev, libpam0g-dev, python-support, libssl-dev, libldap-dev, libmysqlclient-dev,  libavformat-dev, libavcodec-dev, libavutil-dev, libgeoip-dev, libpcre3-dev, libbz2-dev
+Standards-Version: 3.9.2.0
 Homepage: http://cherokee-project.org/
 Vcs-Git: git://git.debian.org/git/collab-maint/cherokee.git
 Vcs-Browser: http://git.debian.org/git/collab-maint/cherokee.git
@@ -23,7 +23,7 @@ Description: Very fast, flexible and easy to configure web server
  Data Base Balancing, SSI, Reverse HTTP Proxy and much more.
  .
  Cherokee also provides an easy to use configuration interface that
- allows to configure the server from top to bottom without having to
+ allows one to configure the server from top to bottom without having to
  edit a text configuration file.
  .
  This package contains the server and essential handlers.
@@ -40,7 +40,7 @@ Description: Cherokee web server - Base libraries
  Data Base Balancing, SSI, Reverse HTTP Proxy and much more.
  .
  Cherokee also provides an easy to use configuration interface that
- allows to configure the server from top to bottom without having to
+ allows one to configure the server from top to bottom without having to
  edit a text configuration file.
  .
  This is the runtime library
@@ -57,7 +57,7 @@ Description: Cherokee web server - base libraries' development files
  Data Base Balancing, SSI, Reverse HTTP Proxy and much more.
  .
  Cherokee also provides an easy to use configuration interface that
- allows to configure the server from top to bottom without having to
+ allows one to configure the server from top to bottom without having to
  edit a text configuration file.
  .
  This package contains the development files - headers, .so and .a files.
@@ -74,7 +74,7 @@ Description: Cherokee web server - Client libraries
  Data Base Balancing, SSI, Reverse HTTP Proxy and much more.
  .
  Cherokee also provides an easy to use configuration interface that
- allows to configure the server from top to bottom without having to
+ allows one to configure the server from top to bottom without having to
  edit a text configuration file.
  .
  This is the client runtime library
@@ -91,7 +91,7 @@ Description: Cherokee web server - Client libraries' development files
  Data Base Balancing, SSI, Reverse HTTP Proxy and much more.
  .
  Cherokee also provides an easy to use configuration interface that
- allows to configure the server from top to bottom without having to
+ allows one to configure the server from top to bottom without having to
  edit a text configuration file.
  .
  This package contains the client development files - headers, .so 
@@ -112,7 +112,7 @@ Description: Cherokee web server - Server libraries
  Data Base Balancing, SSI, Reverse HTTP Proxy and much more.
  .
  Cherokee also provides an easy to use configuration interface that
- allows to configure the server from top to bottom without having to
+ allows one to configure the server from top to bottom without having to
  edit a text configuration file.
  .
  This is the server runtime library
@@ -130,7 +130,7 @@ Description: Cherokee web server - Server librardevelopment files
  Data Base Balancing, SSI, Reverse HTTP Proxy and much more.
  .
  Cherokee also provides an easy to use configuration interface that
- allows to configure the server from top to bottom without having to
+ allows one to configure the server from top to bottom without having to
  edit a text configuration file.
  .
  This package contains the server development files - headers, .so 
@@ -151,7 +151,7 @@ Description: Cherokee web server - Administrative plugin
  Data Base Balancing, SSI, Reverse HTTP Proxy and much more.
  .
  Cherokee also provides an easy to use configuration interface that
- allows to configure the server from top to bottom without having to
+ allows one to configure the server from top to bottom without having to
  edit a text configuration file.
  .
  This plugin provides the needed infrastructure to perform
@@ -172,7 +172,7 @@ Description: Cherokee web server - MySQL user validator plugin
  Data Base Balancing, SSI, Reverse HTTP Proxy and much more.
  .
  Cherokee also provides an easy to use configuration interface that
- allows to configure the server from top to bottom without having to
+ allows one to configure the server from top to bottom without having to
  edit a text configuration file.
  .
  This plugin provides the MySQL user validator.
@@ -190,7 +190,7 @@ Description: Cherokee web server - LDAP user validator plugin
  Data Base Balancing, SSI, Reverse HTTP Proxy and much more.
  .
  Cherokee also provides an easy to use configuration interface that
- allows to configure the server from top to bottom without having to
+ allows one to configure the server from top to bottom without having to
  edit a text configuration file.
  .
  This plugin provides the LDAP user validator.
@@ -208,7 +208,7 @@ Description: Cherokee web server - SSL crypto functions plugin
  Data Base Balancing, SSI, Reverse HTTP Proxy and much more.
  .
  Cherokee also provides an easy to use configuration interface that
- allows to configure the server from top to bottom without having to
+ allows one to configure the server from top to bottom without having to
  edit a text configuration file.
  .
  This plugin provides the SSL crypto functions.
@@ -226,7 +226,7 @@ Description: Cherokee web server - Media streaming functions plugin
  Data Base Balancing, SSI, Reverse HTTP Proxy and much more.
  .
  Cherokee also provides an easy to use configuration interface that
- allows to configure the server from top to bottom without having to
+ allows one to configure the server from top to bottom without having to
  edit a text configuration file.
  .
  This plugin includes the audio and video streaming functionality,
@@ -247,7 +247,7 @@ Description: Cherokee web server - GeoIP-based IP resolution functionality
  Data Base Balancing, SSI, Reverse HTTP Proxy and much more.
  .
  Cherokee also provides an easy to use configuration interface that
- allows to configure the server from top to bottom without having to
+ allows one to configure the server from top to bottom without having to
  edit a text configuration file.
  .
  This plugin includes the GeoIP-based IP resolution functionality. You
@@ -267,7 +267,7 @@ Description: Cherokee web server - RRDtool based information collector
  Data Base Balancing, SSI, Reverse HTTP Proxy and much more.
  .
  Cherokee also provides an easy to use configuration interface that
- allows to configure the server from top to bottom without having to
+ allows one to configure the server from top to bottom without having to
  edit a text configuration file.
  .
  This plugin includes the RRDtool based information collector
@@ -294,7 +294,7 @@ Description: Very fast, flexible and easy to configure web server
  Data Base Balancing, SSI, Reverse HTTP Proxy and much more.
  .
  Cherokee also provides an easy to use configuration interface that
- allows to configure the server from top to bottom without having to
+ allows one to configure the server from top to bottom without having to
  edit a text configuration file.
  .
  This package includes the full server documentation - Operation and
