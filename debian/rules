@@ -60,6 +60,10 @@ override_dh_install:
 	# Include our nice "Powered by Debian" logo alongside
 	# Cherokee's own
 	install -m 0644 $(CURDIR)/debian/powered_by_debian.png $(CURDIR)/debian/cherokee/usr/share/cherokee/default-site/cherokee-images/powered_by_debian.png
+	# Source files for JQuery/JQuery-ui are not needed (minimized
+	# versions are shipped)
+	rm -f $(CURDIR)/debian/cherokee-admin/usr/share/cherokee/admin/CTK/static/js/jquery-1.3.2.js \
+		$(CURDIR)/debian/cherokee-admin/usr/share/cherokee/admin/CTK/static/js/jquery-ui-1.7.2.js
 
 override_dh_auto_configure:
 	dh_auto_configure -- --host=$(DEB_HOST_GNU_TYPE)         \
