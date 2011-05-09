@@ -3,8 +3,9 @@ cherokee (1.2.2-2) unstable; urgency=low
   * Include the upstream versions for two Javascript files which are
     shipped only minimized (compressed/obfuscated) in the upstream
     sources (Closes: #625775)
+  * Stop shipping .la files in libcherokee-server0-dev (Closes: #621263)
 
- -- Gunnar Wolf <gwolf@debian.org>  Mon, 09 May 2011 10:46:57 -0500
+ -- Gunnar Wolf <gwolf@debian.org>  Mon, 09 May 2011 11:00:49 -0500
 
 cherokee (1.2.2-1) unstable; urgency=low
 
