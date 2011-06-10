@@ -144,12 +144,12 @@ BEHAVIOR_TAGS = [
     (N_('Custom Document Root'), N_('Root')),
     (N_('Only HTTPS'),           N_('Secure')),
     (N_('Encoders'),             N_('Enc')),
+    (N_('Cacheable'),            N_('Cache')),
     (N_('Expiration'),           N_('Exp')),
     (N_('Connection Timeout'),   N_('Timeout')),
     (N_('Traffic Shaping'),      N_('Shaping')),
     (N_('Logging Enabled'),      N_('Log')),
     (N_('Rule is Final'),        N_('Final')),
-    (N_('Rule is Active'),       N_('Enabled'))
 ]
 
 
@@ -368,7 +368,7 @@ class BehaviorWidget (CTK.Container):
         rule_name = rule.GetName()
         link = RuleLink (vsrv_num, r, CTK.RawHTML ('<span title="%s">%s</span>' %(rule_name, rule_name)))
 
-        handler, auth, root, secure, enc, exp, timeout, shaping, log, final, active = [None for x in range(11)]
+        handler, auth, root, secure, enc, exp, flcache, timeout, shaping, log, final, active = [None for x in range(12)]
 
         tmp = CTK.cfg.get_val ('vserver!%s!rule!%s!handler'%(vsrv_num, r), '')
         if tmp:
@@ -424,14 +424,15 @@ class BehaviorWidget (CTK.Container):
             tmp   = _('Prevents further rule evaluation')
             final = CTK.ImageStock('tick', {'alt': tmp, 'title': tmp})
 
-        tmp = not bool (int (CTK.cfg.get_val('vserver!%s!rule!%s!disabled'%(vsrv_num,r), "0")))
-        if tmp:
-            tmp    = _('Rule is active')
-            active = CTK.ImageStock('tick', {'alt': tmp, 'title': tmp})
-        else:
-            active = CTK.Box({'class': 'inactive-rule'})
+        tmp = CTK.cfg.get_val('vserver!%s!rule!%s!flcache'%(vsrv_num,r))
+        if tmp in ('allow', '1'):
+            tmp     = _('Content can be cached')
+            flcache = CTK.ImageStock('tick', {'alt': tmp, 'title': tmp})
+        elif tmp in ('forbid', '0'):
+            tmp     = _('Forbids content caching')
+            flcache = CTK.ImageStock ('forbid', {'alt': tmp, 'title': tmp})
 
-        return [link, handler, auth, root, secure, enc, exp, timeout, shaping, log, final, active]
+        return [link, handler, auth, root, secure, enc, flcache, exp, timeout, shaping, log, final]
 
 
 class BasicsWidget (CTK.Container):

@@ -340,7 +340,7 @@ add_env (cherokee_source_interpreter_t *src,
 	entry_len = env->len + val->len + 2;
 
 	entry = (char *) malloc (entry_len);
-	if (entry == NULL) {
+	if (unlikely (entry == NULL)) {
 		ret = ret_nomem;
 		goto error;
 	}
@@ -355,8 +355,14 @@ add_env (cherokee_source_interpreter_t *src,
 	} else {
 		src->custom_env = realloc (src->custom_env, (src->custom_env_len + 2) * sizeof (char *));
 	}
-	src->custom_env_len += 1;
 
+	if (unlikely (src->custom_env == NULL)) {
+		ret = ret_nomem;
+		free (entry);
+		goto error;
+	}
+
+	src->custom_env_len += 1;
 	src->custom_env[src->custom_env_len - 1] = entry;
 	src->custom_env[src->custom_env_len]     = NULL;
 
@@ -375,6 +381,7 @@ cherokee_source_interpreter_configure (cherokee_source_interpreter_t *src,
 				       int                            prio)
 {
 	ret_t                   ret;
+	int                     val;
 	cherokee_list_t        *i, *j;
 	cherokee_config_node_t *child;
 
@@ -393,10 +400,13 @@ cherokee_source_interpreter_configure (cherokee_source_interpreter_t *src,
 			cherokee_buffer_add_buffer (&src->interpreter, &child->val);
 
 		} else if (equal_buf_str (&child->key, "debug")) {
-			src->debug = !! atoi (child->val.buf);
+			ret = cherokee_atob (child->val.buf, &src->debug);
+			if (ret != ret_ok) return ret_error;
 
 		} else if (equal_buf_str (&child->key, "timeout")) {
-			src->timeout = atoi (child->val.buf);
+			ret = cherokee_atoi (child->val.buf, &val);
+			if (ret != ret_ok) return ret_error;
+			src->timeout = val;
 
 		} else if (equal_buf_str (&child->key, "user")) {
 			struct passwd pwd;
@@ -445,7 +455,8 @@ cherokee_source_interpreter_configure (cherokee_source_interpreter_t *src,
 	 */
 	ret = cherokee_config_node_get (conf, "env_inherited", &child);
 	if (ret == ret_ok) {
-		src->env_inherited = !! atoi (child->val.buf);
+		ret = cherokee_atob (child->val.buf, &src->env_inherited);
+		if (ret != ret_ok) return ret_error;
 	} else {
 		src->env_inherited = (src->custom_env_len == 0);
 	}
@@ -583,7 +594,7 @@ _spawn_local (cherokee_source_interpreter_t *src,
 				dup2 (error_writer->fd, STDERR_FILENO);
 			}
 			else {
-				tmp_fd = open ("/dev/null", O_WRONLY);
+				tmp_fd = cherokee_open ("/dev/null", O_WRONLY, 0700);
 				if (tmp_fd != -1) {
 					dup2 (tmp_fd, STDOUT_FILENO);
 					dup2 (tmp_fd, STDERR_FILENO);
@@ -755,7 +766,8 @@ cherokee_source_interpreter_connect_polling (cherokee_source_interpreter_t *src,
 		/* Spawn */
 		ret = cherokee_virtual_server_get_error_log (CONN_VSRV(conn), &error_writer);
 		if (ret != ret_ok) {
-			return ret_error;
+			ret = ret_error;
+			goto out;
 		}
 
 		ret = cherokee_source_interpreter_spawn (src, error_writer);

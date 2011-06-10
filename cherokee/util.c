@@ -858,7 +858,7 @@ ret_t
 cherokee_fd_set_nodelay (int fd, cherokee_boolean_t enable)
 {
 	int re;
-	int flags;
+	int flags = 0;
 
 	/* Disable the Nagle algorithm. This means that segments are
          * always sent as soon as possible, even if there is only a
@@ -1803,6 +1803,7 @@ cherokee_mkdir_p (cherokee_buffer_t *path, int mode)
 {
 	int          re;
         char        *p;
+	int          err;
 	struct stat  foo;
 
 	/* There is no directory
@@ -1828,14 +1829,18 @@ cherokee_mkdir_p (cherokee_buffer_t *path, int mode)
 
 		*p = '\0';
 
-		re = stat(path->buf, &foo);
+		re = cherokee_stat (path->buf, &foo);
 		if (re != 0) {
 			re = cherokee_mkdir (path->buf, mode);
 			if ((re != 0) && (errno != EEXIST)) {
-				LOG_ERRNO (errno, cherokee_err_error, CHEROKEE_ERROR_UTIL_MKDIR, path->buf);
+				err = errno;
+				*p = '/';
+
+				LOG_ERRNO (err, cherokee_err_error, CHEROKEE_ERROR_UTIL_MKDIR, path->buf, getuid());
 				return ret_error;
 			}
 		}
+
 		*p = '/';
 
 		p++;
@@ -1845,7 +1850,9 @@ cherokee_mkdir_p (cherokee_buffer_t *path, int mode)
 
 	re = cherokee_mkdir (path->buf, mode);
 	if ((re != 0) && (errno != EEXIST)) {
-		LOG_ERRNO (errno, cherokee_err_error, CHEROKEE_ERROR_UTIL_MKDIR, path->buf);
+		err = errno;
+
+		LOG_ERRNO (err, cherokee_err_error, CHEROKEE_ERROR_UTIL_MKDIR, path->buf, getuid());
 		return ret_error;
 	}
 
@@ -1876,7 +1883,7 @@ cherokee_mkdir_p_perm (cherokee_buffer_t *dir_path,
 
 	/* Check permissions
 	 */
-	re = access (dir_path->buf, ensure_perm);
+	re = cherokee_access (dir_path->buf, ensure_perm);
 	if (re != 0) {
 		return ret_deny;
 	}
@@ -2024,6 +2031,42 @@ cherokee_header_get_next_line (char *string)
 	} while (*end2 == CHR_SP || *end2 == CHR_HT);
 
 	return end1;
+}
+
+ret_t
+cherokee_header_del_entry (cherokee_buffer_t *header,
+			   const char        *header_name,
+			   int                header_name_len)
+{
+	char                        *end;
+	char                        *begin;
+	const char                  *header_end;
+
+	begin      = header->buf;
+	header_end = header->buf + header->len;
+
+	while ((begin < header_end)) {
+		end = cherokee_header_get_next_line (begin);
+		if (end == NULL) {
+			break;
+		}
+
+		/* Is it the header? */
+		if (strncasecmp (begin, header_name, header_name_len) == 0) {
+			while ((*end == CHR_CR) || (*end == CHR_LF))
+				end++;
+
+			cherokee_buffer_remove_chunk (header, begin - header->buf, end - begin);
+			return ret_ok;
+		}
+
+		/* Next line */
+		while ((*end == CHR_CR) || (*end == CHR_LF))
+			end++;
+		begin = end;
+	}
+
+	return ret_not_found;
 }
 
 
@@ -2295,7 +2338,11 @@ cherokee_find_exec_in_path (const char        *bin_name,
 	}
 
 	path = strdup(p);
-	p    = path;
+	if (unlikely (path == NULL)) {
+		return ret_nomem;
+	}
+
+	p = path;
 	do {
 		q = strchr (p, ':');
 		if (q) {
@@ -2307,7 +2354,7 @@ cherokee_find_exec_in_path (const char        *bin_name,
 		cherokee_buffer_add_str (fullpath, "/");
 		cherokee_buffer_add     (fullpath, bin_name, strlen(bin_name));
 
-		re = access (fullpath->buf, X_OK);
+		re = cherokee_access (fullpath->buf, X_OK);
 		if (re == 0) {
 			free (path);
 			return ret_ok;
@@ -2335,6 +2382,23 @@ cherokee_atoi (const char *str, int *ret_value)
 	*ret_value = tmp;
 	return ret_ok;
 }
+
+
+ret_t
+cherokee_atob (const char *str, cherokee_boolean_t *ret_value)
+{
+	ret_t ret;
+	int   tmp;
+
+	ret = cherokee_atoi (str, &tmp);
+	if (ret != ret_ok) {
+		return ret;
+	}
+
+	*ret_value = !!tmp;
+	return ret_ok;
+}
+
 
 ret_t
 cherokee_copy_local_address (void              *sock,
@@ -2403,6 +2467,18 @@ cherokee_fstat (int filedes, struct stat *buf)
 	return re;
 }
 
+int
+cherokee_access (const char *pathname, int mode)
+{
+	int re;
+
+	do {
+		re = access (pathname, mode);
+	} while ((re == -1) && (errno == EINTR));
+
+	return re;
+}
+
 ret_t
 cherokee_wait_pid (int pid, int *retcode)
 {
@@ -2464,6 +2540,45 @@ cherokee_unlink (const char *path)
 
 	do {
 		re = unlink (path);
+	} while ((re < 0) && (errno == EINTR));
+
+	return re;
+}
+
+
+int
+cherokee_open (const char *path, int oflag, int mode)
+{
+	int re;
+
+	do {
+		re = open (path, oflag, mode);
+	} while ((re < 0) && (errno == EINTR));
+
+	return re;
+}
+
+
+ret_t
+cherokee_mkdir (const char *path, int mode)
+{
+	int re;
+
+	do {
+		re = mkdir (path, mode);
+	} while ((re < 0) && (errno == EINTR));
+
+	return re;
+}
+
+
+int
+cherokee_pipe (int fildes[2])
+{
+	int re;
+
+	do {
+		re = pipe (fildes);
 	} while ((re < 0) && (errno == EINTR));
 
 	return re;

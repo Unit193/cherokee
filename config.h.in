@@ -604,6 +604,9 @@
 /* The size of `int', as computed by sizeof. */
 #undef SIZEOF_INT
 
+/* The size of `long', as computed by sizeof. */
+#undef SIZEOF_LONG
+
 /* The size of `off_t', as computed by sizeof. */
 #undef SIZEOF_OFF_T
 
@@ -612,6 +615,9 @@
 
 /* The size of `size_t', as computed by sizeof. */
 #undef SIZEOF_SIZE_T
+
+/* The size of `time_t', as computed by sizeof. */
+#undef SIZEOF_TIME_T
 
 /* The size of `unsigned int', as computed by sizeof. */
 #undef SIZEOF_UNSIGNED_INT

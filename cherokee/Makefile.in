@@ -103,21 +103,22 @@ am__libcherokee_base_la_SOURCES_DIST = zlib/deflate.c zlib/deftree.c \
 	fdpoll-port.c fdpoll-select.c fdpoll-win32.c unix4win32.h \
 	unix4win32.c win32_misc.h win32_misc.c win32_cservice.h \
 	win32_cservice.c shm.h shm.c cherokee.h init.h init.c \
-	threading.h threading.c avl.h avl.c avl_r.h avl_r.c http.h \
-	http.c list.h list.c ncpus.h ncpus.c cacheline.h cacheline.c \
-	crc32.h crc32.c macros.h common.h common-internal.h nullable.h \
-	util.h util.c error_log.h error_log.c errors.h errors_defs.h \
-	human_strcmp.h human_strcmp.c trace.h trace.c version.h \
-	version.c buffer.h buffer.c template.h template.c module.h \
-	module.c cryptor.h cryptor.c socket.h socket.c fdpoll.h \
-	fdpoll-protected.h fdpoll.c mime.h mime-protected.h mime.c \
-	mime_entry.c iocache.h iocache.c md5.h md5.c md5crypt.h \
-	md5crypt.c sha1.h sha1.c match.h match.c dtm.h dtm.c header.h \
-	header-protected.h header.c access.h access.c regex.h regex.c \
-	resolv_cache.h resolv_cache.c post.h post.c config_node.h \
-	config_node.c config_reader.h config_reader.c bogotime.h \
-	bogotime.c cache.h cache.c logger.h logger.c logger_writer.h \
-	logger_writer.c xrealip.h xrealip.c
+	threading.h threading.c avl_generic.h avl_generic.c avl.h \
+	avl.c avl_r.h avl_r.c http.h http.c list.h list.c ncpus.h \
+	ncpus.c cacheline.h cacheline.c crc32.h crc32.c macros.h \
+	common.h common-internal.h nullable.h util.h util.c \
+	error_log.h error_log.c errors.h errors_defs.h human_strcmp.h \
+	human_strcmp.c trace.h trace.c version.h version.c buffer.h \
+	buffer.c template.h template.c module.h module.c cryptor.h \
+	cryptor.c socket.h socket.c fdpoll.h fdpoll-protected.h \
+	fdpoll.c mime.h mime-protected.h mime.c mime_entry.c iocache.h \
+	iocache.c md5.h md5.c md5crypt.h md5crypt.c sha1.h sha1.c \
+	match.h match.c dtm.h dtm.c header.h header-protected.h \
+	header.c access.h access.c regex.h regex.c resolv_cache.h \
+	resolv_cache.c post.h post.c config_node.h config_node.c \
+	config_reader.h config_reader.c bogotime.h bogotime.c cache.h \
+	cache.c logger.h logger.c logger_writer.h logger_writer.c \
+	xrealip.h xrealip.c
 am__objects_1 = deflate.lo deftree.lo
 am__objects_2 = pcre_try_flipped.lo pcre_chartables.lo \
 	pcre_fullinfo.lo pcre_newline.lo pcre_globals.lo \
@@ -138,13 +139,13 @@ am_libcherokee_base_la_OBJECTS = $(am__objects_1) $(am__objects_3) \
 	$(am__objects_5) $(am__objects_6) $(am__objects_7) \
 	$(am__objects_8) $(am__objects_9) $(am__objects_10) \
 	$(am__objects_11) $(am__objects_12) $(am__objects_13) init.lo \
-	threading.lo avl.lo avl_r.lo http.lo list.lo ncpus.lo \
-	cacheline.lo crc32.lo util.lo error_log.lo human_strcmp.lo \
-	trace.lo version.lo buffer.lo template.lo module.lo cryptor.lo \
-	socket.lo fdpoll.lo mime.lo mime_entry.lo iocache.lo md5.lo \
-	md5crypt.lo sha1.lo match.lo dtm.lo header.lo access.lo \
-	regex.lo resolv_cache.lo post.lo config_node.lo \
-	config_reader.lo bogotime.lo cache.lo logger.lo \
+	threading.lo avl_generic.lo avl.lo avl_r.lo http.lo list.lo \
+	ncpus.lo cacheline.lo crc32.lo util.lo error_log.lo \
+	human_strcmp.lo trace.lo version.lo buffer.lo template.lo \
+	module.lo cryptor.lo socket.lo fdpoll.lo mime.lo mime_entry.lo \
+	iocache.lo md5.lo md5crypt.lo sha1.lo match.lo dtm.lo \
+	header.lo access.lo regex.lo resolv_cache.lo post.lo \
+	config_node.lo config_reader.lo bogotime.lo cache.lo logger.lo \
 	logger_writer.lo xrealip.lo
 libcherokee_base_la_OBJECTS = $(am_libcherokee_base_la_OBJECTS)
 libcherokee_base_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
@@ -222,7 +223,8 @@ am__libcherokee_server_la_SOURCES_DIST = rule_directory.c \
 	source.c source_interpreter.h source_interpreter.c info.h \
 	info.c connection_info.h connection_info.c dwriter.h dwriter.c \
 	limiter.h limiter.c spawner.h spawner.c collector.h \
-	collector.c header_op.h header_op.c
+	collector.c header_op.h header_op.c flcache.h flcache.c \
+	avl_flcache.h avl_flcache.c
 am__objects_14 = libcherokee_server_la-rule_directory.lo
 @STATIC_RULE_DIRECTORY_TRUE@am__objects_15 = $(am__objects_14)
 am__objects_16 = libcherokee_server_la-rule_extensions.lo
@@ -424,7 +426,9 @@ am_libcherokee_server_la_OBJECTS = $(am__objects_15) $(am__objects_17) \
 	libcherokee_server_la-limiter.lo \
 	libcherokee_server_la-spawner.lo \
 	libcherokee_server_la-collector.lo \
-	libcherokee_server_la-header_op.lo
+	libcherokee_server_la-header_op.lo \
+	libcherokee_server_la-flcache.lo \
+	libcherokee_server_la-avl_flcache.lo
 libcherokee_server_la_OBJECTS = $(am_libcherokee_server_la_OBJECTS)
 libcherokee_server_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) \
@@ -2296,6 +2300,8 @@ init.h \
 init.c \
 threading.h \
 threading.c \
+avl_generic.h \
+avl_generic.c \
 avl.h \
 avl.c \
 avl_r.h \
@@ -2551,7 +2557,11 @@ spawner.c \
 collector.h \
 collector.c \
 header_op.h \
-header_op.c
+header_op.c \
+flcache.h \
+flcache.c \
+avl_flcache.h \
+avl_flcache.c
 
 
 #
@@ -3059,6 +3069,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/access.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/admin_server.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/avl.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/avl_generic.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/avl_r.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/balancer_failover.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/balancer_ip_hash.Plo@am__quote@
@@ -3118,6 +3129,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/iocache.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/levenshtein_distance.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libcherokee_server_la-admin_server.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libcherokee_server_la-avl_flcache.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libcherokee_server_la-balancer.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libcherokee_server_la-balancer_failover.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libcherokee_server_la-balancer_ip_hash.Plo@am__quote@
@@ -3133,6 +3145,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libcherokee_server_la-encoder.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libcherokee_server_la-encoder_deflate.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libcherokee_server_la-encoder_gzip.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libcherokee_server_la-flcache.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libcherokee_server_la-gen_evhost.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libcherokee_server_la-handler.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libcherokee_server_la-handler_admin.Plo@am__quote@
@@ -4050,6 +4063,20 @@ libcherokee_server_la-header_op.lo: header_op.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='header_op.c' object='libcherokee_server_la-header_op.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcherokee_server_la_CFLAGS) $(CFLAGS) -c -o libcherokee_server_la-header_op.lo `test -f 'header_op.c' || echo '$(srcdir)/'`header_op.c
+
+libcherokee_server_la-flcache.lo: flcache.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcherokee_server_la_CFLAGS) $(CFLAGS) -MT libcherokee_server_la-flcache.lo -MD -MP -MF $(DEPDIR)/libcherokee_server_la-flcache.Tpo -c -o libcherokee_server_la-flcache.lo `test -f 'flcache.c' || echo '$(srcdir)/'`flcache.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libcherokee_server_la-flcache.Tpo $(DEPDIR)/libcherokee_server_la-flcache.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='flcache.c' object='libcherokee_server_la-flcache.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcherokee_server_la_CFLAGS) $(CFLAGS) -c -o libcherokee_server_la-flcache.lo `test -f 'flcache.c' || echo '$(srcdir)/'`flcache.c
+
+libcherokee_server_la-avl_flcache.lo: avl_flcache.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcherokee_server_la_CFLAGS) $(CFLAGS) -MT libcherokee_server_la-avl_flcache.lo -MD -MP -MF $(DEPDIR)/libcherokee_server_la-avl_flcache.Tpo -c -o libcherokee_server_la-avl_flcache.lo `test -f 'avl_flcache.c' || echo '$(srcdir)/'`avl_flcache.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libcherokee_server_la-avl_flcache.Tpo $(DEPDIR)/libcherokee_server_la-avl_flcache.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='avl_flcache.c' object='libcherokee_server_la-avl_flcache.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcherokee_server_la_CFLAGS) $(CFLAGS) -c -o libcherokee_server_la-avl_flcache.lo `test -f 'avl_flcache.c' || echo '$(srcdir)/'`avl_flcache.c
 
 libplugin_dbslayer_la-handler_dbslayer.lo: handler_dbslayer.c
 @am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libplugin_dbslayer_la_CFLAGS) $(CFLAGS) -MT libplugin_dbslayer_la-handler_dbslayer.lo -MD -MP -MF $(DEPDIR)/libplugin_dbslayer_la-handler_dbslayer.Tpo -c -o libplugin_dbslayer_la-handler_dbslayer.lo `test -f 'handler_dbslayer.c' || echo '$(srcdir)/'`handler_dbslayer.c

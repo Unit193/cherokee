@@ -102,52 +102,59 @@ cherokee_server_new  (cherokee_server_t **srv)
 
 	/* Sockets
 	 */
-	n->ipv6             = true;
-	n->fdpoll_method    = cherokee_poll_UNSET;
+	n->ipv6              = true;
+	n->fdpoll_method     = cherokee_poll_UNSET;
 
 	/* Exit related
 	 */
-	n->wanna_exit       = false;
-	n->wanna_reinit     = false;
+	n->wanna_exit        = false;
+	n->wanna_reinit      = false;
 
 	/* Server config
 	 */
-	n->tls_enabled      = false;
-	n->cryptor          = NULL;
-	n->post_track       = NULL;
+	n->tls_enabled       = false;
+	n->cryptor           = NULL;
+	n->post_track        = NULL;
 
-	n->timeout          = 5;
-	n->fdwatch_msecs    = 1000;
+	n->timeout           = 5;
+	n->fdwatch_msecs     = 1000;
 
-	n->start_time       = time(NULL);
+	n->start_time        = time (NULL);
 
-	n->keepalive        = true;
-	n->keepalive_max    = MAX_KEEPALIVE;
-	n->chunked_encoding = true;
+	n->keepalive         = true;
+	n->keepalive_max     = MAX_KEEPALIVE;
+	n->chunked_encoding  = true;
 
-	n->thread_num       = -1;
-	n->thread_policy    = -1;
+	n->thread_num        = -1;
+	n->thread_policy     = -1;
+	n->conns_max         =  0;
+	n->conns_reuse_max   = -1;
 
-	n->chrooted         = false;
-	n->user_orig        = getuid();
-	n->user             = n->user_orig;
-	n->group_orig       = getgid();
-	n->group            = n->group_orig;
+	n->chrooted          = false;
+	n->user_orig         = getuid();
+	n->user              = n->user_orig;
+	n->group_orig        = getgid();
+	n->group             = n->group_orig;
+	n->server_token      = cherokee_version_full;
 
 	n->fdlimit_custom    = MAX (FD_NUM_CUSTOM_LIMIT, cherokee_fdlimit);
 	n->fdlimit_available = -1;
 
-	n->conns_max        =  0;
-	n->conns_reuse_max  = -1;
+	n->listen_queue      = 65534;
+	n->sendfile.min      = SENDFILE_MIN_SIZE;
+	n->sendfile.max      = SENDFILE_MAX_SIZE;
 
-	n->listen_queue     = 65534;
-	n->sendfile.min     = SENDFILE_MIN_SIZE;
-	n->sendfile.max     = SENDFILE_MAX_SIZE;
+	n->error_writer      = NULL;
+	n->regexs            = NULL;
+	n->nonces            = NULL;
 
-	n->mime             = NULL;
-	n->icons            = NULL;
-	n->regexs           = NULL;
-	n->collector        = NULL;
+	n->mime              = NULL;
+	n->icons             = NULL;
+	n->regexs            = NULL;
+	n->collector         = NULL;
+
+	n->iocache           = NULL;
+	n->iocache_enabled   = true;
 
 	cherokee_buffer_init (&n->chroot);
 	cherokee_buffer_init (&n->timeout_header);
@@ -155,39 +162,19 @@ cherokee_server_new  (cherokee_server_t **srv)
 	cherokee_buffer_init (&n->panic_action);
 	cherokee_buffer_add_str (&n->panic_action, CHEROKEE_PANIC_PATH);
 
-	/* IO Cache cache
+	/* Virtual servers list
 	 */
-	n->iocache         = NULL;
-	n->iocache_enabled = true;
-
-	/* Regexs
-	 */
-	cherokee_regex_table_new (&n->regexs);
-	return_if_fail (n->regexs != NULL, ret_nomem);
-
-	/* Active nonces
-	 */
-	ret = cherokee_nonce_table_new (&n->nonces);
-	if (unlikely(ret < ret_ok)) return ret;
+	INIT_LIST_HEAD (&n->vservers);
+	INIT_LIST_HEAD (&n->listeners);
+	CHEROKEE_MUTEX_INIT (&n->listeners_mutex, CHEROKEE_MUTEX_FAST);
 
 	/* Module loader
 	 */
 	cherokee_plugin_loader_init (&n->loader);
 
-	/* Virtual servers list
-	 */
-	INIT_LIST_HEAD (&n->vservers);
-
-	INIT_LIST_HEAD (&n->listeners);
-	CHEROKEE_MUTEX_INIT (&n->listeners_mutex, CHEROKEE_MUTEX_FAST);
-
 	/* Encoders
 	 */
 	cherokee_avl_init (&n->encoders);
-
-	/* Server string
-	 */
-	n->server_token = cherokee_version_full;
 
 	/* Logs
 	 */
@@ -199,8 +186,11 @@ cherokee_server_new  (cherokee_server_t **srv)
 
 	/* Programmed tasks
 	 */
-	n->nonces_cleanup_next   = 0;
+	n->nonces_cleanup_next  = 0;
 	n->nonces_cleanup_lapse = NONCE_CLEANUP_LAPSE;
+
+	n->flcache_next         = 0;
+	n->flcache_lapse        = FLCACHE_LAPSE;
 
 	/* Paths
 	 */
@@ -217,16 +207,30 @@ cherokee_server_new  (cherokee_server_t **srv)
 	 */
 	cherokee_avl_init (&n->sources);
 
+	/* Regexs
+	 */
+	cherokee_regex_table_new (&n->regexs);
+	if (unlikely (n->regexs == NULL)) {
+		goto error;
+	}
+
+	/* Active nonces
+	 */
+	ret = cherokee_nonce_table_new (&n->nonces);
+	if (unlikely(ret < ret_ok)) {
+		goto error;
+	}
+
 	/* Init the default error writer
 	 */
 	ret = cherokee_logger_writer_new_stderr (&n->error_writer);
 	if (ret != ret_ok) {
-		return ret_error;
+		goto error;
 	}
 
 	ret = cherokee_logger_writer_open (n->error_writer);
 	if (ret != ret_ok) {
-		return ret_error;
+		goto error;
 	}
 
 	cherokee_error_set_default (n->error_writer);
@@ -235,6 +239,10 @@ cherokee_server_new  (cherokee_server_t **srv)
 	 */
 	*srv = n;
 	return ret_ok;
+
+error:
+	cherokee_handler_free (HANDLER(n));
+	return ret_error;
 }
 
 
@@ -262,7 +270,7 @@ cherokee_server_free (cherokee_server_t *srv)
 
 	/* Kill the child processes
 	 */
-	cherokee_avl_mrproper (&srv->sources, (cherokee_func_free_t)cherokee_source_free);
+	cherokee_avl_mrproper (AVL_GENERIC(&srv->sources), (cherokee_func_free_t)cherokee_source_free);
 
 	/* Spawn mechanism
 	 */
@@ -289,7 +297,7 @@ cherokee_server_free (cherokee_server_t *srv)
 
 	/* Attached objects
 	 */
-	cherokee_avl_mrproper (&srv->encoders, NULL);
+	cherokee_avl_mrproper (AVL_GENERIC(&srv->encoders), NULL);
 
 	cherokee_mime_free (srv->mime);
 	cherokee_icons_free (srv->icons);
@@ -319,7 +327,7 @@ cherokee_server_free (cherokee_server_t *srv)
 		cherokee_logger_writer_free (LOGGER_WRITER(i));
 	}
 
-	cherokee_avl_mrproper (&srv->logger_writers_index, NULL);
+	cherokee_avl_mrproper (AVL_GENERIC(&srv->logger_writers_index), NULL);
 
 	/* Virtual servers
 	 */
@@ -1058,13 +1066,28 @@ flush_logs (cherokee_server_t *srv)
 	cherokee_list_t   *i;
 	cherokee_logger_t *logger;
 
-	/* Rest of the virtual servers
-	 */
 	list_for_each (i, &srv->vservers) {
 		logger = VSERVER_LOGGER(i);
 		if (logger) {
 			cherokee_logger_flush (VSERVER_LOGGER(i));
 		}
+	}
+}
+
+
+static void
+flcaches_cleanup (cherokee_server_t *srv)
+{
+	cherokee_list_t           *i;
+	cherokee_virtual_server_t *vsrv;
+
+	list_for_each (i, &srv->vservers) {
+		vsrv = VSERVER(i);
+
+		if (vsrv->flcache == NULL)
+			continue;
+
+		cherokee_flcache_cleanup (vsrv->flcache);
 	}
 }
 
@@ -1146,6 +1169,11 @@ cherokee_server_step (cherokee_server_t *srv)
 		srv->nonces_cleanup_next = cherokee_bogonow_now + srv->nonces_cleanup_lapse;
 	}
 
+	if (srv->flcache_next < cherokee_bogonow_now) {
+		flcaches_cleanup (srv);
+		srv->flcache_next = cherokee_bogonow_now + srv->flcache_lapse;
+	}
+
 #ifdef _WIN32
 	if (unlikely (cherokee_win32_shutdown_signaled (cherokee_bogonow_now)))
 		srv->wanna_exit = true;
@@ -1202,7 +1230,10 @@ add_source (cherokee_config_node_t *conf, void *data)
 		if (ret != ret_ok) return ret;
 
 		ret = cherokee_source_interpreter_configure (src2, conf, prio);
-		if (ret != ret_ok) return ret;
+		if (ret != ret_ok) {
+			cherokee_source_free (SOURCE(src2));
+			return ret;
+		}
 
 		src = SOURCE(src2);
 
@@ -1211,7 +1242,10 @@ add_source (cherokee_config_node_t *conf, void *data)
 		if (ret != ret_ok) return ret;
 
 		ret = cherokee_source_configure (src, conf);
-		if (ret != ret_ok) return ret;
+		if (ret != ret_ok) {
+			cherokee_source_free (src);
+			return ret;
+		}
 
 	} else {
 		LOG_CRITICAL (CHEROKEE_ERROR_SERVER_SOURCE_TYPE_UNKNOWN, prio, buf->buf);
@@ -1307,8 +1341,10 @@ configure_bind (cherokee_server_t      *srv,
 			return ret;
 
 		ret = cherokee_bind_configure (listener, CONFIG_NODE(i));
-		if (ret != ret_ok)
+		if (ret != ret_ok) {
+			cherokee_bind_free (listener);
 			return ret;
+		}
 
 		cherokee_list_add_tail (&listener->listed, &srv->listeners);
 	}
@@ -1321,6 +1357,7 @@ static ret_t
 configure_server_property (cherokee_config_node_t *conf, void *data)
 {
 	ret_t              ret;
+	int                val;
 	char              *key = conf->key.buf;
 	cherokee_server_t *srv = SRV(data);
 	long               num;
@@ -1330,43 +1367,62 @@ configure_server_property (cherokee_config_node_t *conf, void *data)
 		srv->fdlimit_custom = MAX(num, cherokee_fdlimit);
 
 	} else if (equal_buf_str (&conf->key, "listen_queue")) {
-		srv->listen_queue = atoi (conf->val.buf);
+		ret = cherokee_atoi (conf->val.buf, &srv->listen_queue);
+		if (ret != ret_ok) return ret_error;
 
 	} else if (equal_buf_str (&conf->key, "thread_number")) {
-		srv->thread_num = atoi (conf->val.buf);
+		ret = cherokee_atoi (conf->val.buf, &srv->thread_num);
+		if (ret != ret_ok) return ret_error;
 
 	} else if (equal_buf_str (&conf->key, "sendfile_min")) {
-		srv->sendfile.min = atoi (conf->val.buf);
+		ret = cherokee_atoi (conf->val.buf, &val);
+		if (ret != ret_ok) return ret_error;
+		srv->sendfile.min = val;
 
 	} else if (equal_buf_str (&conf->key, "sendfile_max")) {
-		srv->sendfile.max = atoi (conf->val.buf);
+		ret = cherokee_atoi (conf->val.buf, &val);
+		if (ret != ret_ok) return ret_error;
+		srv->sendfile.max = val;
 
 	} else if (equal_buf_str (&conf->key, "max_connection_reuse")) {
-		srv->conns_reuse_max = atoi (conf->val.buf);
+		ret = cherokee_atoi (conf->val.buf, &srv->conns_reuse_max);
+		if (ret != ret_ok) return ret_error;
 
 	} else if (equal_buf_str (&conf->key, "ipv6")) {
-		srv->ipv6 = !!atoi (conf->val.buf);
+		ret = cherokee_atob (conf->val.buf, &srv->ipv6);
+		if (ret != ret_ok) return ret_error;
 
 	} else if (equal_buf_str (&conf->key, "timeout")) {
-		srv->timeout = atoi (conf->val.buf);
+		ret = cherokee_atoi (conf->val.buf, &srv->timeout);
+		if (ret != ret_ok) return ret_error;
 
 	} else if (equal_buf_str (&conf->key, "log_flush_lapse")) {
-		srv->log_flush_lapse = atoi (conf->val.buf);
+		ret = cherokee_atoi (conf->val.buf, &srv->log_flush_lapse);
+		if (ret != ret_ok) return ret_error;
+
+	} else if (equal_buf_str (&conf->key, "flcache_lapse")) {
+		srv->flcache_lapse = atoi (conf->val.buf);
 
 	} else if (equal_buf_str (&conf->key, "nonces_cleanup_lapse")) {
-		srv->nonces_cleanup_lapse = atoi (conf->val.buf);
+		ret = cherokee_atoi (conf->val.buf, &srv->nonces_cleanup_lapse);
+		if (ret != ret_ok) return ret_error;
 
 	} else if (equal_buf_str (&conf->key, "keepalive")) {
-		srv->keepalive = !!atoi (conf->val.buf);
+		ret = cherokee_atob (conf->val.buf, &srv->keepalive);
+		if (ret != ret_ok) return ret_error;
 
 	} else if (equal_buf_str (&conf->key, "keepalive_max_requests")) {
-		srv->keepalive_max = atoi (conf->val.buf);
+		ret = cherokee_atoi (conf->val.buf, &val);
+		if (ret != ret_ok) return ret_error;
+		srv->keepalive_max = val;
 
 	} else if (equal_buf_str (&conf->key, "chunked_encoding")) {
-		srv->chunked_encoding = !!atoi (conf->val.buf);
+		ret = cherokee_atob (conf->val.buf, &srv->chunked_encoding);
+		if (ret != ret_ok) return ret_error;
 
 	} else if (equal_buf_str (&conf->key, "readable_errors")) {
-		cherokee_readable_errors = !!atoi (conf->val.buf);
+		ret = cherokee_atob (conf->val.buf, (cherokee_boolean_t *)&cherokee_readable_errors);
+		if (ret != ret_ok) return ret_error;
 
 	} else if (equal_buf_str (&conf->key, "panic_action")) {
 		cherokee_buffer_clean (&srv->panic_action);

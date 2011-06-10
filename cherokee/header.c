@@ -207,11 +207,12 @@ add_unknown_header (cherokee_header_t *hdr, off_t header_off, off_t info_off, in
 static ret_t
 parse_response_first_line (cherokee_header_t *hdr, cherokee_buffer_t *buf, char **next_pos, cherokee_http_t *error_code)
 {
-	char *line  = buf->buf;
-	char *begin = buf->buf;
-	char  tmp[4];
-	char *end;
+	ret_t   ret;
+	char    tmp[4];
+	char   *end;
 	size_t  len;
+	char   *line    = buf->buf;
+	char   *begin   = buf->buf;
 
 	/* NOTE: here we deal only with HTTP/1.0 or higher.
 	 */
@@ -271,16 +272,21 @@ parse_response_first_line (cherokee_header_t *hdr, cherokee_buffer_t *buf, char 
 	 */
 	memcpy (tmp, begin+9, 3);
 	tmp[3] = '\0';
-	hdr->response = (cherokee_http_t) atoi (tmp);
+
+	ret = cherokee_atoi (tmp, (int *)&hdr->response);
+	if (unlikely (ret != ret_ok)) {
+		return ret_error;
+	}
 
 	return ret_ok;
 }
 
 
 static ret_t
-parse_method (cherokee_header_t *hdr, char *line, char **pointer)
+parse_method (cherokee_header_t *hdr, char *line, char *end, char **pointer)
 {
-	char chr = *line;
+	char *p;
+	char  chr = *line;
 
 #define detect_method(l,str,mthd)		\
 	if (cmp_str (line, (str" "))) {		\
@@ -300,6 +306,8 @@ parse_method (cherokee_header_t *hdr, char *line, char **pointer)
 		detect_method (line, "POST", post)
 		else
 		detect_method (line, "PUT", put)
+		else
+		detect_method (line, "PURGE", purge)
 		else
 		detect_method (line, "POLL", poll)
 		else
@@ -375,6 +383,18 @@ parse_method (cherokee_header_t *hdr, char *line, char **pointer)
 		break;
 	}
 
+	/* The method was not matched. Skip the first word.
+	 */
+	p = line;
+	while (p < end) {
+		if (*p == ' ') {
+			hdr->method = http_unknown;
+			*pointer += p - line;
+			return ret_ok;
+		}
+		p++;
+	}
+
 	return ret_error;
 }
 
@@ -432,7 +452,7 @@ parse_request_first_line (cherokee_header_t *hdr, cherokee_buffer_t *buf, char *
 
 	/* Get the method
 	 */
-	ret = parse_method (hdr, line, &begin);
+	ret = parse_method (hdr, line, end, &begin);
 	if (unlikely (ret != ret_ok)) {
 		*error_code = http_not_implemented;
 		goto error;
@@ -1087,8 +1107,14 @@ cherokee_header_parse (cherokee_header_t *hdr, cherokee_buffer_t *buffer, cherok
 			} else
 				goto unknown;
 			break;
+		case 'S':
+			if (header_equals ("Set-Cookie", header_set_cookie, begin, header_len)) {
+				ret = add_known_header (hdr, header_set_cookie, val_offs, val_len);
+			} else
+				goto unknown;
+			break;
 		case 'T':
-			if (header_equals ("Transfer-Encoding", header_range, begin, header_len)) {
+			if (header_equals ("Transfer-Encoding", header_transfer_encoding, begin, header_len)) {
 				ret = add_known_header (hdr, header_transfer_encoding, val_offs, val_len);
 			} else
 				goto unknown;

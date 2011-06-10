@@ -63,7 +63,8 @@ cherokee_handler_proxy_hosts_get (cherokee_handler_proxy_hosts_t  *hosts,
 				  cherokee_handler_proxy_poll_t  **poll,
 				  cuint_t                          reuse_max)
 {
-	ret_t ret;
+	ret_t                          ret;
+	cherokee_handler_proxy_poll_t *n;
 
 	CHEROKEE_MUTEX_LOCK (&hosts->hosts_mutex);
 
@@ -79,11 +80,10 @@ cherokee_handler_proxy_hosts_get (cherokee_handler_proxy_hosts_t  *hosts,
 	case ret_ok:
 		break;
 	case ret_not_found: {
-		cherokee_handler_proxy_poll_t *n;
-
 		ret = cherokee_handler_proxy_poll_new (&n, reuse_max);
-		if (ret != ret_ok)
-			return ret;
+		if (ret != ret_ok) {
+			goto error;
+		}
 
 		cherokee_avl_add (&hosts->hosts, &hosts->tmp, n);
 		*poll = n;
@@ -98,7 +98,7 @@ cherokee_handler_proxy_hosts_get (cherokee_handler_proxy_hosts_t  *hosts,
 	return ret_ok;
 
 error:
-	CHEROKEE_MUTEX_LOCK (&hosts->hosts_mutex);
+	CHEROKEE_MUTEX_UNLOCK (&hosts->hosts_mutex);
 	return ret_error;
 }
 
@@ -441,7 +441,10 @@ cherokee_proxy_util_init_socket (cherokee_socket_t *socket,
 	TRACE (ENTRIES, "Initializing proxy socket: %s\n",
 	       cherokee_string_is_ipv6 (&src->host) ? "IPv6": "IPv4");
 
-	/* Family */
+	/* Ensure that no fd leak happens */
+	cherokee_socket_close (socket);
+
+	/* Create socket & set Family */
 	if (cherokee_string_is_ipv6 (&src->host)) {
 		ret = cherokee_socket_set_client (socket, AF_INET6);
 	} else {

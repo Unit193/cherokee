@@ -293,7 +293,21 @@ run-tests.py \
 269-Options-Dirlist1.py \
 270-Options-asterisk1.py \
 271-full-header-check1.py \
-272-Nick-match.py
+272-Nick-match.py \
+273-Unknown-method-redir.py \
+274-header_op-remove-etag.py \
+275-Flcache-basic1.py \
+276-Flcache-cookie1.py \
+277-Flcache-cookie2.py \
+278-Flcache-headers1.py \
+279-Flcache-headers2.py \
+280-Flcache-gzip1.py \
+281-Flcache-expired1.py \
+282-Flcache-expired2.py \
+283-Flcache-expired3.py \
+284-SSI-include-recursive.py \
+285-Flcache-overwrite.py \
+286-CGI-Permissions.py
 
 test:
 	python -m compileall .

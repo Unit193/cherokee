@@ -86,8 +86,8 @@
 # define no_return
 #endif
 
-#define DEFAULT_RECV_SIZE             2048
-#define DEFAULT_READ_SIZE             8192
+#define DEFAULT_RECV_SIZE             ( 2 * 1024)
+#define DEFAULT_READ_SIZE             (16 * 1024)
 #define MAX_HEADER_LEN                8192
 #define MAX_HEADER_CRLF               8
 #define MAX_KEEPALIVE                 500
@@ -107,6 +107,7 @@
 #define NONCE_CLEANUP_LAPSE           60
 #define NONCE_EXPIRATION              60
 #define POST_READ_SIZE                32700
+#define FLCACHE_LAPSE                 60
 
 #define FD_NUM_SPARE                  10        /* range:  8 ... 20    */
 #define FD_NUM_MIN_SYSTEM             20        /* range: 16 ... 64    */
@@ -154,7 +155,7 @@
 	(strncasecmp(m, str, sizeof(str)-1) == 0)
 
 #define equal_buf_str(b,str) \
-	(cherokee_buffer_case_cmp_str(b,str) == 0)
+	(cherokee_buffer_case_cmp_str((b),(str)) == 0)
 
 #define return_if_fail(expr,ret) \
 	do {								\
@@ -266,7 +267,10 @@
 		CHEROKEE_NEW_STRUCT (n, klass);                       \
 		                                                      \
 		ret = cherokee_ ## klass ## _init (n);                \
-		if (unlikely (ret != ret_ok)) return ret;             \
+		if (unlikely (ret != ret_ok)) {			      \
+			free (n);				      \
+			return ret;				      \
+		}						      \
 		                                                      \
 		*obj = n;                                             \
 		return ret_ok;                                        \
@@ -275,7 +279,7 @@
 #define CHEROKEE_ADD_FUNC_FREE(klass)  \
 	ret_t                                                         \
 	cherokee_ ## klass ## _free (cherokee_ ## klass ## _t *obj) { \
-		if (obj == NULL)				      \
+		if ((obj) == NULL)				      \
 			return ret_ok;				      \
 								      \
 		cherokee_ ## klass ## _mrproper (obj);                \

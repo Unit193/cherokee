@@ -119,6 +119,7 @@ other_signals.html \
 other_community.html \
 other_errors.html \
 other_graphs.html \
+other_front_line_cache.html \
 other_bundle.html \
 other_bundle_cherokee.html \
 other_bundle_cherokee-admin.html \
@@ -130,11 +131,10 @@ other_bundle_cget.html \
 dev.html \
 dev_debug.html \
 dev_cherokee.conf.html \
-dev_issues.html \
 dev_qa.html \
 dev_quickstart.html \
-dev_api.html \
-dev_examples.html
+dev_ctk.html \
+distro_dev_intro.html
 
 docmediacssdir = $(docdir)/media/css/
 docmediacss_DATA = \

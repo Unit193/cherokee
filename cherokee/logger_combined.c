@@ -24,12 +24,13 @@
 
 #include "logger_combined.h"
 #include "logger_ncsa.h"
+#include "plugin.h"
 #include "plugin_loader.h"
 
 
 /* Plug-in definition
  */
-PLUGIN_INFO_LOGGER_EASIEST_INIT(combined);
+PLUGIN_INFO_LOGGER_EASY_INIT(combined);
 
 
 ret_t
@@ -53,7 +54,10 @@ cherokee_logger_combined_new (cherokee_logger_t         **logger,
 	/* Init the base class: NCSA
 	 */
 	ret = cherokee_logger_ncsa_init_base (n, vsrv, config);
-	if (unlikely(ret < ret_ok)) return ret;
+	if (unlikely(ret < ret_ok)) {
+		cherokee_logger_free (LOGGER(n));
+		return ret;
+	}
 
 	/* Active the "Combined" bit
 	 */
@@ -71,7 +75,7 @@ cherokee_logger_combined_new (cherokee_logger_t         **logger,
 static cherokee_boolean_t _combined_is_init = false;
 
 void
-PLUGIN_INIT_NAME(name) (cherokee_plugin_loader_t *loader)
+PLUGIN_INIT_NAME(combined) (cherokee_plugin_loader_t *loader)
 {
 	if (_combined_is_init) return;
 	_combined_is_init = true;

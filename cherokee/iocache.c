@@ -190,17 +190,28 @@ cherokee_iocache_configure (cherokee_iocache_t     *iocache,
 	/* Configure it own properties
 	 */
 	cherokee_config_node_foreach (i, conf) {
+		int                     val;
 		cherokee_config_node_t *subconf = CONFIG_NODE(i);
 
 		if (equal_buf_str (&subconf->key, "max_file_size")) {
-			iocache->max_file_size = atoi(subconf->val.buf);
+			ret = cherokee_atoi (subconf->val.buf, &val);
+			if (ret != ret_ok) return ret_error;
+			iocache->max_file_size = val;
+
 		} else if (equal_buf_str (&subconf->key, "min_file_size")) {
-			iocache->min_file_size = atoi(subconf->val.buf);
+			ret = cherokee_atoi (subconf->val.buf, &val);
+			if (ret != ret_ok) return ret_error;
+			iocache->min_file_size = val;
 
 		} else if (equal_buf_str (&subconf->key, "lasting_stat")) {
-			iocache->lasting_stat = atoi(subconf->val.buf);
+			ret = cherokee_atoi (subconf->val.buf, &val);
+			if (ret != ret_ok) return ret_error;
+			iocache->lasting_stat = val;
+
 		} else if (equal_buf_str (&subconf->key, "lasting_mmap")) {
-			iocache->lasting_mmap = atoi(subconf->val.buf);
+			ret = cherokee_atoi (subconf->val.buf, &val);
+			if (ret != ret_ok) return ret_error;
+			iocache->lasting_mmap = val;
 		}
 	}
 
@@ -339,10 +350,26 @@ ioentry_update_mmap (cherokee_iocache_entry_t *entry,
 	/* Maybe it is already opened
 	 */
 	if (fd_local < 0) {
-		fd_local = open (filename->buf, (O_RDONLY | O_BINARY));
+		fd_local = cherokee_open (filename->buf, (O_RDONLY | O_BINARY), 0);
 		if (unlikely (fd_local < 0)) {
-			TRACE(ENTRIES, "Couldn't open(): %s\n", filename->buf);
-			ret = ret_error;
+			TRACE(ENTRIES, "Couldn't open(%s) = %s\n", filename->buf, strerror(errno));
+
+			switch (errno) {
+			case EACCES:
+				ret = ret_deny;
+				break;
+			case ENOENT:
+			case ENOTDIR:
+				ret = ret_not_found;
+				break;
+			default:
+				ret = ret_error;
+				break;
+			}
+
+			PRIV(entry)->stat_expiration = cherokee_bogonow_now + iocache->lasting_stat;
+			PUBL(entry)->state_ret       = ret;
+
 			goto error;
 		}
 

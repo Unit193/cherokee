@@ -167,6 +167,7 @@ parse (cherokee_handler_ssi_t *hdl,
        cherokee_buffer_t      *in,
        cherokee_buffer_t      *out)
 {
+	ret_t              ret;
 	char              *p, *q;
 	char              *begin;
 	int                re;
@@ -284,6 +285,7 @@ parse (cherokee_handler_ssi_t *hdl,
 				TRACE(ENTRIES, "Path: virtual '%s'\n", fpath.buf);
 				break;
 			default:
+				ignore = true;
 				SHOULDNT_HAPPEN;
 			}
 
@@ -310,10 +312,26 @@ parse (cherokee_handler_ssi_t *hdl,
 			 */
 			if (! ignore) {
 				switch (op) {
-				case op_include:
+				case op_include: {
+					cherokee_buffer_t file_content = CHEROKEE_BUF_INIT;
+
+					ret = cherokee_buffer_read_file (&file_content, fpath.buf);
+					if (unlikely (ret != ret_ok)) {
+						cherokee_buffer_mrproper (&file_content);
+						return ret_error;
+					}
+
 					TRACE(ENTRIES, "Including file '%s'\n", fpath.buf);
-					cherokee_buffer_read_file (out, fpath.buf);
+
+					ret = parse (hdl, &file_content, out);
+					if (unlikely (ret != ret_ok)) {
+						cherokee_buffer_mrproper (&file_content);
+						return ret_error;
+					}
+
+					cherokee_buffer_mrproper (&file_content);
 					break;
+				}
 
 				case op_size:
 					TRACE(ENTRIES, "Including file size '%s'\n", fpath.buf);
@@ -327,11 +345,15 @@ parse (cherokee_handler_ssi_t *hdl,
 					TRACE(ENTRIES, "Including file modification date '%s'\n", fpath.buf);
 					re = cherokee_stat (fpath.buf, &info);
 					if (re >= 0) {
-						char tmp[50];
+						struct tm *ltime;
+						struct tm  ltime_buf;
+						char       tmp[50];
 
-						strftime (tmp, sizeof(tmp),
-							  "%d-%b-%Y %H:%M",
-							  localtime(&info.st_mtime));
+						ltime = cherokee_localtime (&info.st_mtime, &ltime_buf);
+						if (ltime != NULL) {
+							strftime (tmp, sizeof(tmp), "%d-%b-%Y %H:%M", ltime);
+						}
+
 						cherokee_buffer_add (out, tmp, strlen(tmp));
 					}
 					break;

@@ -332,21 +332,36 @@ cherokee_handler_dirlist_configure (cherokee_config_node_t   *conf,
 		/* Convert the properties
 		 */
 		if (equal_buf_str (&subconf->key, "size")) {
-			props->show_size  = !! atoi (subconf->val.buf);
+			ret = cherokee_atob (subconf->val.buf, &props->show_size);
+			if (ret != ret_ok) return ret;
+
 		} else if (equal_buf_str (&subconf->key, "date")) {
-			props->show_date  = !! atoi (subconf->val.buf);
+			ret = cherokee_atob (subconf->val.buf, &props->show_date);
+			if (ret != ret_ok) return ret;
+
 		} else if (equal_buf_str (&subconf->key, "user")) {
-			props->show_user  = !! atoi (subconf->val.buf);
+			ret = cherokee_atob (subconf->val.buf, &props->show_user);
+			if (ret != ret_ok) return ret;
+
 		} else if (equal_buf_str (&subconf->key, "group")) {
-			props->show_group = !! atoi (subconf->val.buf);
+			ret = cherokee_atob (subconf->val.buf, &props->show_group);
+			if (ret != ret_ok) return ret;
+
 		} else if (equal_buf_str (&subconf->key, "symlinks")) {
-			props->show_symlinks = !! atoi (subconf->val.buf);
+			ret = cherokee_atob (subconf->val.buf, &props->show_symlinks);
+			if (ret != ret_ok) return ret;
+
 		} else if (equal_buf_str (&subconf->key, "redir_symlinks")) {
-			props->redir_symlinks = !! atoi (subconf->val.buf);
+			ret = cherokee_atob (subconf->val.buf, &props->redir_symlinks);
+			if (ret != ret_ok) return ret;
+
 		} else if (equal_buf_str (&subconf->key, "hidden")) {
-			props->show_hidden = !! atoi (subconf->val.buf);
+			ret = cherokee_atob (subconf->val.buf, &props->show_hidden);
+			if (ret != ret_ok) return ret;
+
 		} else if (equal_buf_str (&subconf->key, "backup")) {
-			props->show_backup = !! atoi (subconf->val.buf);
+			ret = cherokee_atob (subconf->val.buf, &props->show_backup);
+			if (ret != ret_ok) return ret;
 
 		} else if (equal_buf_str (&subconf->key, "theme")) {
 			theme = subconf->val.buf;
@@ -630,6 +645,7 @@ cherokee_handler_dirlist_new (cherokee_handler_t **hdl, void *cnt, cherokee_modu
 	    cherokee_buffer_is_empty (&HDL_DIRLIST_PROP(n)->footer))
 	{
 		LOG_CRITICAL_S (CHEROKEE_ERROR_HANDLER_DIRLIST_BAD_THEME);
+		cherokee_handler_free (n);
 		return ret_error;
 	}
 
@@ -1092,10 +1108,17 @@ render_file (cherokee_handler_dirlist_t *dhdl, cherokee_buffer_t *buffer, file_e
 	/* Date
 	 */
 	if (props->show_date) {
+		struct tm *ltime;
+		struct tm  ltime_buf;
+
 		cherokee_buffer_clean (tmp);
 		cherokee_buffer_ensure_size (tmp, 33);
 
-		strftime (tmp->buf, 32, "%d-%b-%Y %H:%M", localtime(&file->stat.st_mtime));
+		ltime = cherokee_localtime (&file->stat.st_mtime, &ltime_buf);
+		if (ltime != NULL) {
+			strftime (tmp->buf, 32, "%d-%b-%Y %H:%M", ltime);
+		}
+
 		VTMP_SUBSTITUTE_TOKEN ("%date%", tmp->buf);
 	}
 

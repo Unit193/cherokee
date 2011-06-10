@@ -37,12 +37,14 @@ actual changes.</p></div>
 <li>
 <p>
 Create a new virtual host, a copycat, that can handle the same
-  domain(s) as the ones managed by the host to be put offline.
+  domain(s) as the ones managed by the host to be put offline. In this
+  example it is cloed as <em>copy</em>.
 </p>
 <div class="imageblock">
 <div class="content">
 <img src="media/images/cookbook_maintenance_copy.png" alt="media/images/cookbook_maintenance_copy.png" />
 </div>
+<div class="image-title">Cloned virtual server</div>
 </div>
 </li>
 <li>
@@ -53,6 +55,29 @@ Don&#8217;t forget to set up the domains handled by the virtual host.
 <div class="content">
 <img src="media/images/cookbook_maintenance_domain.png" alt="media/images/cookbook_maintenance_domain.png" />
 </div>
+<div class="image-title">Domains</div>
+</div>
+<div class="tableblock">
+<table rules="all"
+width="100%"
+frame="border"
+cellspacing="0" cellpadding="4">
+<caption class="title">Accepted Domains</caption>
+<col width="100%" />
+<thead>
+<tr>
+<th align="left" valign="top">Domain pattern</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left" valign="top"><p class="table">example.*</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">intranet_example</p></td>
+</tr>
+</tbody>
+</table>
 </div>
 </li>
 <li>
@@ -60,22 +85,38 @@ Don&#8217;t forget to set up the domains handled by the virtual host.
 Also remember setting up whatever response you will be requiring (a
   custom error, some static content, and so on). We will be setting up
   the <a href="modules_handlers_custom_error.html">HTTP error</a> handler to
-  give a &#8216;503: Service unavailable&#8217; message.
+  give a <tt>503: Service unavailable' message. This is done through the
+  `Handler</tt> tab.
 </p>
 <div class="imageblock">
 <div class="content">
 <img src="media/images/cookbook_maintenance_error.png" alt="media/images/cookbook_maintenance_error.png" />
 </div>
+<div class="image-title">Handler</div>
 </div>
 </li>
 <li>
 <p>
-After setting up this way our sole rule, it should look like this:
+After this operation, we you should have a sole rule in the copied
+  virtual server managed by the HTTP Error handler.
 </p>
 <div class="imageblock">
 <div class="content">
 <img src="media/images/cookbook_maintenance_rule.png" alt="media/images/cookbook_maintenance_rule.png" />
 </div>
+<div class="image-title">Rules</div>
+</div>
+</li>
+<li>
+<p>
+The <tt>Error Handler</tt> tab should specify <tt>Custom redirections</tt> in the
+  <tt>Error Handling hook</tt> section.
+</p>
+<div class="imageblock">
+<div class="content">
+<img src="media/images/cookbook_maintenance_result.png" alt="media/images/cookbook_maintenance_result.png" />
+</div>
+<div class="image-title">Error Handler</div>
 </div>
 </li>
 <li>
@@ -85,11 +126,6 @@ Make sure the copycat is positioned above the original virtual host,
   virtual hosts are positioned on top of the rest. Just make sure you
   don&#8217;t inadvertently change the relative priorities.
 </p>
-<div class="imageblock">
-<div class="content">
-<img src="media/images/cookbook_maintenance_result.png" alt="media/images/cookbook_maintenance_result.png" />
-</div>
-</div>
 </li>
 <li>
 <p>
@@ -132,19 +168,41 @@ Our virtual host will have only two rules. The first one will match
 <div class="content">
 <img src="media/images/cookbook_maintenance_advanced_rules.png" alt="media/images/cookbook_maintenance_advanced_rules.png" />
 </div>
+<div class="image-title">Rule list</div>
 </div>
 </li>
 <li>
 <p>
-The <tt>Default</tt> rule should be set to redirect more or less like this:
+The <tt>Default</tt> rule should be managed by the <tt>Redirection</tt> handler.
+.Redirections
 </p>
-<div class="imageblock">
-<div class="content">
-<img src="media/images/cookbook_maintenance_advanced_redir.png" alt="media/images/cookbook_maintenance_advanced_redir.png" />
-</div>
-</div>
 </li>
 </ul></div>
+<div class="tableblock">
+<table rules="all"
+width="100%"
+frame="border"
+cellspacing="0" cellpadding="4">
+<col width="30%" />
+<col width="70%" />
+<thead>
+<tr>
+<th align="left" valign="top">Type       </th>
+<th align="left" valign="top">Regular Expression</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left" valign="top"><p class="table">Internal</p></td>
+<td align="left" valign="top"><p class="table">.*</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="paragraph"><p>+
+<span class="image">
+<img src=":media/images/cookbook_maintenance_advanced_redir.png" alt=":media/images/cookbook_maintenance_advanced_redir.png" />
+</span></p></div>
 <div class="paragraph"><p>This set up will result in every request being redirected to the
 maintenance directory.</p></div>
 <h3 id="advanced2">Advanced Example: Staff review</h3><div style="clear:left"></div>
@@ -158,14 +216,16 @@ server. The steps are also fairly simple.</p></div>
 <div class="ulist"><ul>
 <li>
 <p>
-In this example we will be adding a new
-imaginary domain to the list of domains managed by the virtual
-host. This domain should be accessible from our intranet only.
+In this example we will be adding a new imaginary domain to the list
+of domains managed by the virtual host. This domain should be
+accessible from our intranet only. For the purpose of this document,
+it will be we will use <em>intranet_example</em>.
 </p>
 <div class="imageblock">
 <div class="content">
 <img src="media/images/cookbook_maintenance_advanced_domains.png" alt="media/images/cookbook_maintenance_advanced_domains.png" />
 </div>
+<div class="image-title">Host Matches</div>
 </div>
 <div class="admonitionblock">
 <table><tr>

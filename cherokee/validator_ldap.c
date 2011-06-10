@@ -62,6 +62,7 @@ props_free (cherokee_validator_ldap_props_t *props)
 ret_t
 cherokee_validator_ldap_configure (cherokee_config_node_t *conf, cherokee_server_t *srv, cherokee_module_props_t **_props)
 {
+	ret_t                            ret;
 	cherokee_list_t                 *i;
 	cherokee_validator_ldap_props_t *props;
 
@@ -94,7 +95,8 @@ cherokee_validator_ldap_configure (cherokee_config_node_t *conf, cherokee_server
 			cherokee_buffer_add_buffer (&props->server, &subconf->val);
 
 		} else if (equal_buf_str (&subconf->key, "port")) {
-			props->port = atoi (subconf->val.buf);
+			ret = cherokee_atoi (subconf->val.buf, &props->port);
+			if (ret != ret_ok) return ret_error;
 
 		} else if (equal_buf_str (&subconf->key, "bind_dn")) {
 			cherokee_buffer_add_buffer (&props->binddn, &subconf->val);
@@ -109,7 +111,8 @@ cherokee_validator_ldap_configure (cherokee_config_node_t *conf, cherokee_server
 			cherokee_buffer_add_buffer (&props->filter, &subconf->val);
 
 		} else if (equal_buf_str (&subconf->key, "tls")) {
-			props->tls = atoi (subconf->val.buf);
+			ret = cherokee_atoi (subconf->val.buf, &props->tls);
+			if (ret != ret_ok) return ret_error;
 
 		} else if (equal_buf_str (&subconf->key, "ca_file")) {
 			cherokee_buffer_add_buffer (&props->ca_file, &subconf->val);
@@ -119,8 +122,7 @@ cherokee_validator_ldap_configure (cherokee_config_node_t *conf, cherokee_server
 			/* Not handled here
 			 */
 		} else {
-			LOG_CRITICAL (CHEROKEE_ERROR_VALIDATOR_LDAP_KEY, subconf->key.buf);
-			return ret_error;
+			LOG_WARNING (CHEROKEE_ERROR_VALIDATOR_LDAP_KEY, subconf->key.buf);
 		}
 	}
 
@@ -241,7 +243,7 @@ cherokee_validator_ldap_new (cherokee_validator_ldap_t **ldap, cherokee_module_p
 	 */
 	ret = init_ldap_connection (n, PROP_LDAP(props));
 	if (ret != ret_ok) {
-		cherokee_validator_ldap_free (n);
+		cherokee_validator_free (n);
 		return ret;
 	}
 

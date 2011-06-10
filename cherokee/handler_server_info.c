@@ -184,7 +184,7 @@
 "  var div = document.getElementById('information');"                                               CRLF\
 "  eval('data = ' + txt);"                                                                          CRLF\
 "  for (var section in info) {"                                                                     CRLF\
-"    if (data[section] === undefined) continue;"                                                    CRLF\
+"    if ((data[section] === undefined) || (data[section] == null)) continue;"                       CRLF\
 "    if (!document.getElementById(section)) {"                                                      CRLF\
 "      h2 = document.createElement('h2');"                                                          CRLF\
 "      h2.setAttribute('id', section);"                                                             CRLF\
@@ -197,7 +197,7 @@
 "      div.appendChild(dl);"                                                                        CRLF\
 "    } "                                                                                            CRLF\
 "    for (var item in info[section]['items']) {"                                                    CRLF\
-"      if (data[section][item] === undefined) continue;"                                            CRLF\
+"      if ((data[section] == null) || (data[section][item] === undefined)) continue;"               CRLF\
 "      if (!document.getElementById('dt_' + section + '_' + item)) { "                              CRLF\
 "        dt = document.createElement('dt'); "                                                       CRLF\
 "        dt.setAttribute('id', 'dt_' + section + '_' + item);"                                      CRLF\
@@ -223,7 +223,7 @@
 "<a href=\"http://www.alobbs.com/\">Alvaro Lopez Ortega</a> &lt;alvaro@alobbs.com&gt;"
 
 #define LICENSE                                                                                         \
-"<p>Copyright (C) 2001 - 2010 " AUTHOR "</p>"                                                       CRLF\
+"<p>Copyright (C) 2001 - 2011 " AUTHOR "</p>"                                                       CRLF\
 "<p>This program is free software; you can redistribute it and/or"                                  CRLF\
 "modify it under the terms of version 2 of the GNU General Public"                                  CRLF\
 "License as published by the Free Software Foundation.</p>"                                         CRLF\
@@ -239,6 +239,8 @@
 "<h2>Cherokee License</h2>"                                                                         CRLF\
 "<div id=\"license\">" LICENSE "</div>"                                                             CRLF\
 "</div></div></body></html>"
+
+#define LOGO_CACHING_TIME (60 *60 * 24)  /* 1 day */
 
 
 /* Plug-in initialization
@@ -572,7 +574,7 @@ add_modules (cherokee_dwriter_t *writer,
 	void    *params[]   = {&loggers, &handlers, &encoders, &validators, &generic,
 			       &balancers, &rules, &cryptors, &vrules, &collectors};
 
-	cherokee_avl_while (&srv->loader.table,
+	cherokee_avl_while (AVL_GENERIC (&srv->loader.table),
 			    (cherokee_avl_while_func_t) modules_while,
 			    params, NULL, NULL);
 
@@ -882,21 +884,25 @@ cherokee_handler_server_info_new  (cherokee_handler_t      **hdl,
 	 */
 	ret = cherokee_buffer_init (&n->buffer);
 	if (unlikely(ret != ret_ok))
-		return ret;
+		goto error;
 
 	ret = cherokee_buffer_ensure_size (&n->buffer, 4*1024);
 	if (unlikely(ret != ret_ok))
-		return ret;
+		goto error;
 
 	ret = cherokee_dwriter_init (&n->writer, &CONN_THREAD(cnt)->tmp_buf1);
 	if (unlikely(ret != ret_ok))
-		return ret;
+		goto error;
 
 	n->writer.pretty = true;
 	cherokee_dwriter_set_buffer (&n->writer, &n->buffer);
 
 	*hdl = HANDLER(n);
 	return ret_ok;
+
+error:
+	cherokee_handler_free (HANDLER(n));
+	return ret_error;
 }
 
 
@@ -967,7 +973,11 @@ cherokee_handler_server_info_add_headers (cherokee_handler_server_info_t *hdl,
 	switch (hdl->action) {
 	case send_logo:
 		cherokee_buffer_add_str (buffer, "Content-Type: image/png"CRLF);
+
+		conn->expiration      = cherokee_expiration_time;
+		conn->expiration_time = LOGO_CACHING_TIME;
 		break;
+
 	case send_info:
 		conn->expiration = cherokee_expiration_epoch;
 
@@ -988,8 +998,11 @@ cherokee_handler_server_info_add_headers (cherokee_handler_server_info_t *hdl,
 			SHOULDNT_HAPPEN;
 		}
 		break;
+
 	case send_html:
 	default:
+		conn->expiration = cherokee_expiration_epoch;
+
 		cherokee_buffer_add_str (buffer, "Content-Type: text/html"CRLF);
 		break;
 	}

@@ -39,6 +39,7 @@
 #include "vrule.h"
 #include "gen_evhost.h"
 #include "collector.h"
+#include "flcache.h"
 
 typedef struct {
 	cherokee_list_t              list_node;
@@ -51,7 +52,7 @@ typedef struct {
 
 	cherokee_rule_list_t         rules;           /* Rule list: vserver behavior */
 	cherokee_boolean_t           keepalive;       /* Keep-alive support          */
-	ssize_t                      post_max_len;    /* Max post length             */
+	cint_t                       post_max_len;    /* Max post length             */
 
 	cherokee_config_entry_t     *default_handler; /* Default handler             */
 	cherokee_config_entry_t     *error_handler;   /* Default error handler       */
@@ -65,6 +66,7 @@ typedef struct {
 
 	cherokee_buffer_t            root;            /* Document root. Eg: /var/www */
 	cherokee_list_t              index_list;      /* Eg: index.html, index.php   */
+	cherokee_flcache_t          *flcache;         /* Front Line cache            */
 	void                        *evhost;
 
 	cuint_t                      verify_depth;

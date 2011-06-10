@@ -64,6 +64,7 @@ cherokee_logger_writer_new (cherokee_logger_writer_t **writer)
 
 	n->priv = malloc (sizeof(priv_t));
 	if (n->priv == NULL) {
+		cherokee_buffer_mrproper (&n->buffer);
 		free(n);
 		return ret_nomem;
 	}
@@ -200,7 +201,12 @@ cherokee_logger_writer_configure (cherokee_logger_writer_t *writer, cherokee_con
 	 */
 	ret = cherokee_config_node_read (config, "bufsize", &tmp);
 	if (ret == ret_ok) {
-		int buf_len = atoi (tmp->buf);
+		int buf_len;
+
+		ret = cherokee_atoi (tmp->buf, &buf_len);
+		if (ret != ret_ok) {
+			return ret_error;
+		}
 
 		if (buf_len < LOGGER_MIN_BUFSIZE)
 			buf_len = LOGGER_MIN_BUFSIZE;
@@ -231,7 +237,7 @@ launch_logger_process (cherokee_logger_writer_t *writer)
 	int   to_log_fds[2];
 	pid_t pid;
 
-	if (pipe (to_log_fds)) {
+	if (cherokee_pipe (to_log_fds)) {
 		LOG_ERRNO (errno, cherokee_err_error, CHEROKEE_ERROR_LOGGER_WRITER_PIPE, errno);
 		return ret_error;
 	}
@@ -293,7 +299,7 @@ cherokee_logger_writer_open (cherokee_logger_writer_t *writer)
 		goto out;
 
 	case cherokee_logger_writer_file:
-		writer->fd = open (writer->filename.buf, O_APPEND | O_WRONLY | O_CREAT | O_LARGEFILE | O_NOFOLLOW, 0640);
+		writer->fd = cherokee_open (writer->filename.buf, O_APPEND | O_WRONLY | O_CREAT | O_LARGEFILE | O_NOFOLLOW, 0640);
 		if (writer->fd == -1) {
 			LOG_ERROR (CHEROKEE_ERROR_LOGGER_WRITER_APPEND, writer->filename.buf);
 			ret = ret_error;

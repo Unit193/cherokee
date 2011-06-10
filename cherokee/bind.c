@@ -117,7 +117,9 @@ cherokee_bind_configure (cherokee_bind_t        *listener,
 	cherokee_boolean_t tls;
 	cherokee_buffer_t *buf;
 
-	listener->id = atoi(conf->key.buf);
+	ret = cherokee_atoi (conf->key.buf, &listener->id);
+	if (unlikely (ret != ret_ok))
+		return ret_error;
 
 	ret = cherokee_config_node_read (conf, "interface", &buf);
 	if (ret == ret_ok) {
@@ -233,20 +235,31 @@ init_socket (cherokee_bind_t *listener, int family)
 	/* Create the socket, and set its properties
 	 */
 	ret = cherokee_socket_set_client (&listener->socket, family);
-	if ((ret != ret_ok) || (SOCKET_FD(&listener->socket) < 0))
+	if ((ret != ret_ok) || (SOCKET_FD(&listener->socket) < 0)) {
 		return ret_error;
+	}
 
+	/* Set the socket properties
+	 */
 	ret = set_socket_opts (SOCKET_FD(&listener->socket));
-	if (ret != ret_ok)
-		return ret;
+	if (ret != ret_ok) {
+		goto error;
+	}
 
 	/* Bind the socket
 	 */
 	ret = cherokee_socket_bind (&listener->socket, listener->port, &listener->ip);
-	if (ret != ret_ok)
-		return ret;
+	if (ret != ret_ok) {
+		goto error;
+	}
 
 	return ret_ok;
+
+error:
+	/* The socket was already opened by _set_client
+	 */
+	cherokee_socket_close (&listener->socket);
+	return ret;
 }
 
 

@@ -126,15 +126,9 @@ print_tuple_str (const char *title, const char *info)
 	whites = COLUM_NUM - strlen(title);
 
 	fprintf (stderr, "%s ", title);
-
-	if (whites > 0) {
-		tmp = (char *) malloc (whites +1);
-		memset (tmp, ' ', whites);
-		tmp[whites] = '\0';
-		fprintf (stderr, "%s", tmp);
-		free (tmp);
+	while (whites-- > 0) {
+		fprintf (stderr, " ");
 	}
-
 	fprintf (stderr, COLUM_SEP " %s\n", info);
 }
 
@@ -382,14 +376,19 @@ main (int argc, char **argv)
 			return EXIT_OK;
 
 		case 'O':
-			if (! strncmp (optarg, "-", 1)) {
+			if (global_fd != UNSET_FD) {
+				close (global_fd);
+			}
+
+			if ((strlen(optarg) == 1) && (optarg[0] == '-')) {
 				global_fd = fileno(stdout);
 			} else {
 				global_fd = open (optarg, O_WRONLY | O_CREAT, 0644);
-				if (global_fd < 0) {
-					PRINT_MSG ("ERROR: Can not open %s\n", optarg);
-					return EXIT_ERROR;
-				}
+			}
+
+			if (global_fd < 0) {
+				PRINT_MSG ("ERROR: Can not open %s\n", optarg);
+				return EXIT_ERROR;
 			}
 			break;
 

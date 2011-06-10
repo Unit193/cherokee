@@ -65,7 +65,7 @@ cherokee_shm_create (cherokee_shm_t *shm, char *name, size_t len)
 	int re;
 	int fd;
 
-	fd = open (name, O_RDWR | O_EXCL | O_CREAT, 0600);
+	fd = cherokee_open (name, O_RDWR | O_EXCL | O_CREAT, 0600);
 	if (fd < 0) {
 		return ret_error;
 	}
@@ -100,20 +100,21 @@ cherokee_shm_map (cherokee_shm_t    *shm,
 	int         fd;
 	struct stat info;
 
-	fd = open (name->buf, O_RDWR, 0600);
+	fd = cherokee_open (name->buf, O_RDWR, 0600);
 	if (fd < 0) {
 		return ret_error;
 	}
 
 	re = cherokee_fstat (fd, &info);
 	if (re != 0) {
+		cherokee_fd_close (fd);
 		return ret_error;
 	}
 
 	shm->mem = mmap (0, info.st_size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
 	if (shm->mem == MAP_FAILED) {
-		cherokee_fd_close (fd);
 		shm->mem = NULL;
+		cherokee_fd_close (fd);
 		return ret_error;
 	}
 
