@@ -1,8 +1,10 @@
 cherokee (1.2.98-1) unstable; urgency=low
 
   * New upstream release
+  * Dropped "include-uncompressed-jquery" patch as it is now included
+    upstream
 
- -- Gunnar Wolf <gwolf@debian.org>  Fri, 10 Jun 2011 09:34:21 -0500
+ -- Gunnar Wolf <gwolf@debian.org>  Fri, 10 Jun 2011 09:46:10 -0500
 
 cherokee (1.2.2-2) unstable; urgency=low
 

@@ -8,10 +8,10 @@ Description: Adds a disclaimer about the Cherokee Market
  applications. This patch makes it explicit those applications are
  _not_ the ones provided by Debian.
 
-Index: cherokee-1.2.1/admin/market/Util.py
+Index: cherokee/admin/market/Util.py
 ===================================================================
---- cherokee-1.2.1.orig/admin/market/Util.py	2011-02-24 12:51:45.000000000 -0600
-+++ cherokee-1.2.1/admin/market/Util.py	2011-02-24 12:52:00.000000000 -0600
+--- cherokee/admin/market/Util.py	2011-06-10 09:40:17.000000000 -0500
++++ cherokee/admin/market/Util.py	2011-06-10 09:41:49.000000000 -0500
 @@ -67,8 +67,14 @@
          from PageCategory import Categories_Widget
          self.sidebar += Categories_Widget()

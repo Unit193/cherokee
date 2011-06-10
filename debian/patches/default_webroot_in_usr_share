@@ -12,8 +12,8 @@ Description: Modifies the installed webpage, target location
 #
 Index: cherokee/www/Makefile.am
 ===================================================================
---- cherokee.orig/www/Makefile.am	2009-12-03 11:21:48.000000000 -0600
-+++ cherokee/www/Makefile.am	2009-12-03 11:22:20.000000000 -0600
+--- cherokee/www/Makefile.am	2011-06-10 09:40:18.000000000 -0500
++++ cherokee/www/Makefile.am	2011-06-10 09:41:45.000000000 -0500
 @@ -2,7 +2,7 @@
  
  cherokeewwwdir = "@WWW_ROOT@"
@@ -25,9 +25,9 @@ Index: cherokee/www/Makefile.am
  default-bg.png \
 Index: cherokee/www/Makefile.in
 ===================================================================
---- cherokee.orig/www/Makefile.in	2009-12-03 11:21:48.000000000 -0600
-+++ cherokee/www/Makefile.in	2009-12-03 11:22:20.000000000 -0600
-@@ -235,7 +235,7 @@
+--- cherokee/www/Makefile.in	2011-06-10 09:40:18.000000000 -0500
++++ cherokee/www/Makefile.in	2011-06-10 09:41:45.000000000 -0500
+@@ -238,7 +238,7 @@
  top_builddir = @top_builddir@
  top_srcdir = @top_srcdir@
  cherokeewwwdir = "@WWW_ROOT@"
@@ -38,8 +38,8 @@ Index: cherokee/www/Makefile.in
  default-bg.png \
 Index: cherokee/www/index.html
 ===================================================================
---- cherokee.orig/www/index.html	2009-12-03 11:21:48.000000000 -0600
-+++ cherokee/www/index.html	2009-12-03 11:22:20.000000000 -0600
+--- cherokee/www/index.html	2011-06-10 09:40:18.000000000 -0500
++++ cherokee/www/index.html	2011-06-10 09:41:45.000000000 -0500
 @@ -2,15 +2,14 @@
  <html>
  <head>

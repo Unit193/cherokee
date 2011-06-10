@@ -1,7 +1,7 @@
-Index: cherokee-1.0.9/cherokee.conf.sample.pre
+Index: cherokee/cherokee.conf.sample.pre
 ===================================================================
---- cherokee-1.0.9.orig/cherokee.conf.sample.pre	2010-11-12 05:11:11.313879140 -0700
-+++ cherokee-1.0.9/cherokee.conf.sample.pre	2010-11-12 05:11:36.689879194 -0700
+--- cherokee/cherokee.conf.sample.pre	2011-06-10 09:41:47.000000000 -0500
++++ cherokee/cherokee.conf.sample.pre	2011-06-10 09:41:48.000000000 -0500
 @@ -18,6 +18,8 @@
  server!server_tokens = full
  server!panic_action = %prefix%/share/cherokee/cherokee-panic

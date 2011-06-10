@@ -4,10 +4,10 @@ Forwarded: not-needed
 Last-Update: 2009-12-03
 Description: Moves the default logging location to its own directory
 
-Index: cherokee-0.99.39/cherokee.conf.sample.pre
+Index: cherokee/cherokee.conf.sample.pre
 ===================================================================
---- cherokee-0.99.39.orig/cherokee.conf.sample.pre	2010-01-11 11:56:30.000000000 -0600
-+++ cherokee-0.99.39/cherokee.conf.sample.pre	2010-01-11 11:57:11.000000000 -0600
+--- cherokee/cherokee.conf.sample.pre	2011-06-10 09:40:18.000000000 -0500
++++ cherokee/cherokee.conf.sample.pre	2011-06-10 09:41:46.000000000 -0500
 @@ -27,11 +27,11 @@
  
  vserver!1!logger = combined
