@@ -191,6 +191,15 @@ instead of the whole thing.</p></div>
 examples on the config_virtual_servers_evhost.html#slicing[Slicing]
 section of the <a href="config_virtual_servers_evhost.html">Advanced
 Virtual Hosting</a> documentation.</p></div>
+<h3 id="caching">Front-line Cache</h3><div style="clear:left"></div>
+<div class="paragraph"><p>Cherokee has built-in support for efficient caching mechanisms. These
+allow it to cache anything that passes by (whether static or dynamic
+content), without having to depend on an additional caching layer such
+as Squid or Varnish. Typically such layers inherently introduce
+latency due to the round-trips associated to checking whether or not
+the contents have already been cached. Since Cherokee can process all
+of this on its own, this overhead can be totally avoided. Check out
+the <a href="other_front_line_cache.html">Front-line Cache</a> documentation.</p></div>
 </div>
 <div id="footer">
 <div id="footer-text">

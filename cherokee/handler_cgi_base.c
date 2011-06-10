@@ -87,7 +87,12 @@ typedef struct {
 static env_item_t *
 env_item_new (cherokee_buffer_t *key, cherokee_buffer_t *val)
 {
-	env_item_t *n = malloc (sizeof (env_item_t));
+	env_item_t *n;
+
+	n = malloc (sizeof (env_item_t));
+	if (unlikely (n == NULL)) {
+		return NULL;
+	}
 
 	INIT_LIST_HEAD (&n->entry);
 	cherokee_buffer_init (&n->env);
@@ -184,19 +189,24 @@ cherokee_handler_cgi_base_configure (cherokee_config_node_t *conf, cherokee_serv
 				cherokee_list_add_tail (LIST(env), &props->system_env);
 			}
 		} else if (equal_buf_str (&subconf->key, "error_handler")) {
-			props->is_error_handler = !! atoi(subconf->val.buf);
+			ret = cherokee_atob (subconf->val.buf, &props->is_error_handler);
+			if (ret != ret_ok) return ret;
 
 		} else if (equal_buf_str (&subconf->key, "change_user")) {
-			props->change_user = !! atoi(subconf->val.buf);
+			ret = cherokee_atob (subconf->val.buf, &props->change_user);
+			if (ret != ret_ok) return ret;
 
 		} else if (equal_buf_str (&subconf->key, "check_file")) {
-			props->check_file = !! atoi(subconf->val.buf);
+			ret = cherokee_atob (subconf->val.buf, &props->check_file);
+			if (ret != ret_ok) return ret;
 
 		} else if (equal_buf_str (&subconf->key, "xsendfile")) {
-			props->allow_xsendfile = !! atoi(subconf->val.buf);
+			ret = cherokee_atob (subconf->val.buf, &props->allow_xsendfile);
+			if (ret != ret_ok) return ret;
 
 		} else if (equal_buf_str (&subconf->key, "pass_req_headers")) {
-			props->pass_req_headers = !! atoi(subconf->val.buf);
+			ret = cherokee_atob (subconf->val.buf, &props->pass_req_headers);
+			if (ret != ret_ok) return ret;
 		}
 	}
 
@@ -976,6 +986,7 @@ bye:
 static ret_t
 parse_header (cherokee_handler_cgi_base_t *cgi, cherokee_buffer_t *buffer)
 {
+	ret_t                  ret;
 	char                  *end;
 	char                  *end1;
 	char                  *end2;
@@ -1017,8 +1028,8 @@ parse_header (cherokee_handler_cgi_base_t *cgi, cherokee_buffer_t *buffer)
 			memcpy (status, begin+8, 3);
 			status[3] = '\0';
 
-			code = atoi (status);
-			if (code < 100) {
+			ret = cherokee_atoi (status, &code);
+			if ((ret != ret_ok) || (code < 100)) {
 				conn->error_code = http_internal_error;
 				return ret_error;
 			}
@@ -1037,8 +1048,8 @@ parse_header (cherokee_handler_cgi_base_t *cgi, cherokee_buffer_t *buffer)
 			memcpy (status, begin+9, 3);
 			status[3] = '\0';
 
-			code = atoi (status);
-			if (code < 100) {
+			ret = cherokee_atoi (status, &code);
+			if ((ret != ret_ok) || (code < 100)) {
 				conn->error_code = http_internal_error;
 				return ret_error;
 			}

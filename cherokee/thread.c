@@ -41,6 +41,7 @@
 #include "util.h"
 #include "bogotime.h"
 #include "limiter.h"
+#include "flcache.h"
 
 
 #define DEBUG_BUFFER(b)  fprintf(stderr, "%s:%d len=%d crc=%d\n", __FILE__, __LINE__, b->len, cherokee_buffer_crc32(b))
@@ -173,6 +174,7 @@ cherokee_thread_new  (cherokee_thread_t      **thd,
 	/* Thread Local Storage
 	 */
 	CHEROKEE_THREAD_PROP_SET (thread_error_writer_ptr, NULL);
+	CHEROKEE_THREAD_PROP_SET (thread_connection_ptr,   NULL);
 
 	/* Event poll object
 	 */
@@ -246,9 +248,12 @@ cherokee_thread_new  (cherokee_thread_t      **thd,
 		if (unlikely (re != 0)) {
 			LOG_ERRNO (re, cherokee_err_error, CHEROKEE_ERROR_THREAD_CREATE, re);
 
+			pthread_attr_destroy (&attr);
 			cherokee_thread_free (n);
 			return ret_error;
 		}
+
+		pthread_attr_destroy (&attr);
 #else
 		SHOULDNT_HAPPEN;
 #endif
@@ -534,13 +539,19 @@ process_polling_connections (cherokee_thread_t *thd)
 	list_for_each_safe (i, tmp, LIST(&thd->polling_list)) {
 		conn = CONN(i);
 
-		/* Thread's error logger
+		/* Thread's properties
 		 */
-		if (CONN_VSRV(conn) &&
-		    CONN_VSRV(conn)->error_writer)
-		{
-			CHEROKEE_THREAD_PROP_SET (thread_error_writer_ptr,
-						  CONN_VSRV(conn)->error_writer);
+		if (CONN_VSRV(conn)) {
+			/* Current connection
+			 */
+			CHEROKEE_THREAD_PROP_SET (thread_connection_ptr, conn);
+
+			/* Error writer
+			 */
+			if (CONN_VSRV(conn)->error_writer) {
+				CHEROKEE_THREAD_PROP_SET (thread_error_writer_ptr,
+							  CONN_VSRV(conn)->error_writer);
+			}
 		}
 
 		/* Has it been too much without any work?
@@ -556,12 +567,24 @@ process_polling_connections (cherokee_thread_t *thd)
 				cherokee_collector_log_timeout (THREAD_SRV(thd)->collector);
 			}
 
-			/* Close it
+			/* Most likely a 'Gateway Timeout'
 			 */
 			if (conn->phase <= phase_add_headers) {
+				/* Push a hardcoded error
+				 */
 				send_hardcoded_error (&conn->socket,
 						      http_gateway_timeout_string,
 						      THREAD_TMP_BUF1(thd));
+
+				/* Assign the error code. Even though it wasn't used
+				 * before the handler::free function could check it.
+				 */
+				conn->error_code = http_gateway_timeout;
+
+				/* Purge the connection
+				 */
+				purge_closed_polling_connection (thd, conn);
+				continue;
 			}
 
 			/* Timed-out: Reactive the connection. The
@@ -655,13 +678,19 @@ process_active_connections (cherokee_thread_t *thd)
 		       thd, conn, conn->phase, cherokee_connection_get_phase_str (conn),
 		       conn->socket.socket, (conn->socket.status == socket_reading)? "read" : (conn->socket.status == socket_writing)? "writing" : "closed");
 
-		/* Thread's error logger
+		/* Thread's properties
 		 */
-		if (CONN_VSRV(conn) &&
-		    CONN_VSRV(conn)->error_writer)
-		{
-			CHEROKEE_THREAD_PROP_SET (thread_error_writer_ptr,
-						  CONN_VSRV(conn)->error_writer);
+		if (CONN_VSRV(conn)) {
+			/* Current connection
+			 */
+			CHEROKEE_THREAD_PROP_SET (thread_connection_ptr, conn);
+
+			/* Error writer
+			 */
+			if (CONN_VSRV(conn)->error_writer) {
+				CHEROKEE_THREAD_PROP_SET (thread_error_writer_ptr,
+							  CONN_VSRV(conn)->error_writer);
+			}
 		}
 
 		/* Has the connection been too much time w/o any work
@@ -925,22 +954,41 @@ process_active_connections (cherokee_thread_t *thd)
 			cherokee_rule_list_t    *rules;
 			cherokee_boolean_t       is_userdir;
 
-			TRACE (ENTRIES, "Setup connection begins: request=\"%s\"\n", conn->request.buf);
-			TRACE_CONN(conn);
-
 			/* Turn the connection in write mode
 			 */
 			conn_set_mode (thd, conn, socket_writing);
 
 			/* Is it already an error response?
 			 */
-			if (http_type_300(conn->error_code) ||
-			    http_type_400(conn->error_code) ||
-			    http_type_500(conn->error_code))
+			if (http_type_300 (conn->error_code) ||
+			    http_type_400 (conn->error_code) ||
+			    http_type_500 (conn->error_code))
 			{
 				cherokee_connection_setup_error_handler (conn);
 				continue;
 			}
+
+			/* Front-line cache
+			 */
+			if ((CONN_VSRV(conn)->flcache) &&
+			    (conn->header.method == http_get))
+			{
+				TRACE (ENTRIES, "Front-line cache available: '%s'\n", CONN_VSRV(conn)->name.buf);
+
+				ret = cherokee_flcache_req_get_cached (CONN_VSRV(conn)->flcache, conn);
+				if (ret == ret_ok) {
+					/* Set Keepalive, Rate, and skip to add_headers
+					 */
+					cherokee_connection_set_keepalive (conn);
+					cherokee_connection_set_rate (conn, &entry);
+
+					conn->phase = phase_add_headers;
+					goto add_headers;
+				}
+			}
+
+			TRACE (ENTRIES, "Setup connection begins: request=\"%s\"\n", conn->request.buf);
+			TRACE_CONN(conn);
 
 			cherokee_config_entry_init (&entry);
 
@@ -1032,6 +1080,11 @@ process_active_connections (cherokee_thread_t *thd)
 				conn->header_ops = entry.header_ops;
 			}
 
+			if (NULLB_TO_BOOL(entry.flcache)) {
+				conn->flcache_policy            = entry.flcache_policy;
+				conn->flcache_cookies_disregard = entry.flcache_cookies_disregard;
+			}
+
 			/* Create the handler
 			 */
 			ret = cherokee_connection_create_handler (conn, &entry);
@@ -1068,6 +1121,25 @@ process_active_connections (cherokee_thread_t *thd)
 			if (unlikely (ret != ret_ok)) {
 				cherokee_connection_setup_error_handler (conn);
 				continue;
+			}
+
+			/* Front-line cache
+			 */
+			if ((entry.flcache == true) &&
+			    (CONN_VSRV(conn)->flcache != NULL) &&
+			    (cherokee_flcache_req_is_storable (CONN_VSRV(conn)->flcache, conn) == ret_ok))
+			{
+				cherokee_flcache_req_set_store (CONN_VSRV(conn)->flcache, conn);
+
+				/* Update expiration
+				 */
+				if (conn->flcache.mode == flcache_mode_in) {
+					if (entry.expiration == cherokee_expiration_epoch) {
+						conn->flcache.avl_node_ref->valid_until = 0;
+					} else if (entry.expiration == cherokee_expiration_time) {
+						conn->flcache.avl_node_ref->valid_until = cherokee_bogonow_now + entry.expiration_time;
+					}
+				}
 			}
 
 			conn->phase = phase_init;
@@ -1213,6 +1285,16 @@ process_active_connections (cherokee_thread_t *thd)
 			if (conn->mmaped != NULL)
 				goto phase_send_headers_EXIT;
 
+			/* Front-line cache: store
+			 */
+			if (conn->flcache.mode == flcache_mode_in) {
+				ret = cherokee_flcache_conn_commit_header (&conn->flcache, conn);
+				if (ret != ret_ok) {
+					/* Disabled Front-Line Cache */
+					conn->flcache.mode = flcache_mode_error;
+				}
+			}
+
 			conn->phase = phase_send_headers;
 
 		case phase_send_headers:
@@ -1247,6 +1329,7 @@ process_active_connections (cherokee_thread_t *thd)
 			conn->phase = phase_stepping;
 
 		case phase_stepping:
+
 			/* Special case:
 			 * If the content is mmap()ed, it has to send the header +
 			 * the file content and stop processing the connection.
@@ -1272,6 +1355,7 @@ process_active_connections (cherokee_thread_t *thd)
 			}
 
 			/* Handler step: read or make new data to send
+			 * Front-line cache handled internally.
 			 */
 			ret = cherokee_connection_step (conn);
 			switch (ret) {
@@ -1436,7 +1520,7 @@ cherokee_thread_free (cherokee_thread_t *thd)
 	/* FastCGI
 	 */
 	if (thd->fastcgi_servers != NULL) {
-		cherokee_avl_free (thd->fastcgi_servers, thd->fastcgi_free_func);
+		cherokee_avl_free (AVL_GENERIC(thd->fastcgi_servers), thd->fastcgi_free_func);
 		thd->fastcgi_servers = NULL;
 	}
 

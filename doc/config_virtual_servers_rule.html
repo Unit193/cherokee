@@ -34,13 +34,13 @@ This menu offers the following tabs:</p></div>
 </li>
 <li>
 <p>
-<a href="#encoding">Encoding</a>: to manage the compression of the contents to be sent.
+<a href="#transforms">Transforms</a>: Transofmration of output stream on the
+   fly (encoding, and HTTP header alteration).
 </p>
 </li>
 <li>
 <p>
-<a href="#time">Time</a>: to manage the configuration of <strong>HTTP Cache headers</strong>
-   used to identify cacheable content.
+<a href="#caching">Caching</a>: Specifies content expiration and caching policies.
 </p>
 </li>
 <li>
@@ -51,8 +51,9 @@ This menu offers the following tabs:</p></div>
 </li>
 <li>
 <p>
-<a href="#traffic">Traffic Shaping</a>: Sets an outbound traffic limit for this rule,
-   specified in bytes per second.
+<a href="#restrictions">Restrictions</a>: Specify connection timeouts, and
+   also traffic shaping by setting an outbound traffic limit for this
+   rule, specified in bytes per second.
 </p>
 </li>
 </ol></div>
@@ -194,9 +195,12 @@ but it does not allow to download any content.</p></div>
 </li>
 </ul></div>
 </div></div>
-<h3 id="encoding">Encoding</h3><div style="clear:left"></div>
-<div class="paragraph"><p>The content sent by Cherokee can be encoded or not.
-This tab is used to configure, on a per-rule basis,  what
+<h3 id="transforms">Transforms</h3><div style="clear:left"></div>
+<div class="paragraph"><p>The content sent by Cherokee can be processed before being sent.</p></div>
+<div class="paragraph"><p>Basically, you can apply encoders (or not), and alter HTTP headers by
+adding or removing the ones you choose.</p></div>
+<h4 id="_information_encoders">Information Encoders</h4>
+<div class="paragraph"><p>This tab is used to configure, on a per-rule basis,  what
 <a href="modules_encoders.html">encoders</a>, if any, are to be applied.</p></div>
 <div class="paragraph"><p>You can set up the encoding method to use, and it shall be applied to
 whatever content is handled by the parent rule.</p></div>
@@ -205,9 +209,15 @@ whatever content is handled by the parent rule.</p></div>
 following file types: <tt>html</tt>, <tt>htm</tt>, <tt>txt</tt>, <tt>css</tt> and <tt>js</tt> is a good
 idea. You are encouraged to use this. Hardware is cheap. Bandwidth is
 not.</p></div>
-<h3 id="time">Time</h3><div style="clear:left"></div>
-<div class="paragraph"><p>This tab specifies the connection timeout and content expiration
-settings.</p></div>
+<h4 id="_header_operations">Header Operations</h4>
+<div class="paragraph"><p>You can specify any given HTTP header and either assign a value or
+delete the header completely.</p></div>
+<h3 id="caching">Caching</h3><div style="clear:left"></div>
+<div class="paragraph"><p>Cherokee allows to define per rule behaviors for content expiration
+and caching.</p></div>
+<h4 id="_content_expiration">Content Expiration</h4>
+<div class="paragraph"><p>This allows to manage the configuration of <strong>HTTP Cache headers</strong> used
+to identify cacheable content.</p></div>
 <div class="paragraph"><p>HTTP/1.1 defines caching methods in HTTP. Cherokee-Admin can
 automatically adjust the <tt>Cache-Control</tt> and <tt>Expire</tt> headers depending
 on the values you have configured. The available options are:</p></div>
@@ -263,6 +273,21 @@ Proxies Revalidate: Proxy servers must contact the server to revalidate the obje
 </p>
 </li>
 </ol></div>
+<h4 id="_cache">Cache</h4>
+<div class="paragraph"><p>Cherokee has very sophisticated caching mechanisms, allowing to cache
+anything (static files, dynamic content, or whatever) that passes
+by. You can read more into the specifics of this feature in the
+<a href="other_front_line_cache.html">Front-line Cache</a> documentation.</p></div>
+<div class="paragraph"><p>Three settings are available on a per-rule basis for the <tt>Content
+Caching</tt> section: <em>Leave unset</em>, <em>Allow</em> and <em>Forbid</em>.</p></div>
+<div class="paragraph"><p>The <em>Leave unset</em> option means that, whenever a rule is applied, it
+will not change the status of the caching setting that has been
+inherited from previously matched rules.</p></div>
+<div class="paragraph"><p>By default, contents that include cookies are not cached, but the
+setting to allowing cache on a rule gives you the possibility to
+disregard cookies using regular expressions (so that even that content
+can be cached), while a <em>Forbid</em> setting will guarantee that the
+matched rule will not be cached no matter what.</p></div>
 <h3 id="security">Security</h3><div style="clear:left"></div>
 <div class="paragraph"><p>This section will give access to access restriction settings and
 authentication settings.</p></div>
@@ -406,7 +431,13 @@ Digest
 those mechanisms because of technical  limitations. In case the module supports
 both of them, the interface allows to choose whether one or both are
 to be used.</p></div>
-<h3 id="traffic">Traffic Shaping</h3><div style="clear:left"></div>
+<h3 id="restrictions">Restriction</h3><div style="clear:left"></div>
+<div class="paragraph"><p>Both connection timeouts and bandwidth limits can be enforced through
+this tab.</p></div>
+<h4 id="_connections_timeout">Connections Timeout</h4>
+<div class="paragraph"><p>This allows to apply a custom timeout to any connection matching the
+given rule.</p></div>
+<h4 id="_traffic_shaping">Traffic Shaping</h4>
 <div class="paragraph"><p>In order to limit the amount of traffic used for a specific rule you can set
 up a traffic shaper. By default no traffic shaping will occur, all possible
 network resources are used to facilitate the clients.</p></div>

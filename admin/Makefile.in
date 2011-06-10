@@ -297,6 +297,7 @@ adminpy_SCRIPTS = $(admin_scripts)
 @INSTALL_ADMIN_TRUE@About.py \
 @INSTALL_ADMIN_TRUE@Auth.py \
 @INSTALL_ADMIN_TRUE@Balancer.py \
+@INSTALL_ADMIN_TRUE@Certs.py \
 @INSTALL_ADMIN_TRUE@CgiBase.py \
 @INSTALL_ADMIN_TRUE@Cherokee.py \
 @INSTALL_ADMIN_TRUE@Flags.py \

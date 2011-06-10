@@ -100,6 +100,7 @@ admin/wizards/alfresco.py
 admin/wizards/coldfusion.py
 admin/wizards/concrete5.py
 admin/wizards/django.py
+admin/wizards/flcache.py
 admin/wizards/glassfish.py
 admin/wizards/hotlinking.py
 admin/wizards/icons.py
@@ -109,6 +110,7 @@ admin/wizards/php.py
 admin/wizards/rails.py
 admin/wizards/redirect.py
 admin/wizards/rtorrent.py
+admin/wizards/ssl_test.py
 admin/wizards/static.py
 admin/wizards/streaming.py
 admin/wizards/symfony.py

@@ -106,6 +106,7 @@ cherokee_handler_proxy_configure (cherokee_config_node_t   *conf,
 				  cherokee_module_props_t **_props)
 {
 	ret_t                           ret;
+	int                             val;
 	cherokee_list_t                *i, *j;
 	cherokee_handler_proxy_props_t *props;
 
@@ -155,22 +156,29 @@ cherokee_handler_proxy_configure (cherokee_config_node_t   *conf,
 			if (ret != ret_ok)
 				return ret;
 		} else if (equal_buf_str (&subconf->key, "reuse_max")) {
-			props->reuse_max = atoi (subconf->val.buf);
+			ret = cherokee_atoi (subconf->val.buf, &val);
+			if (ret != ret_ok) return ret;
+			props->reuse_max = val;
 
 		} else if (equal_buf_str (&subconf->key, "vserver_errors")) {
-			props->vserver_errors = !! atoi (subconf->val.buf);
+			ret = cherokee_atob (subconf->val.buf, &props->vserver_errors);
+			if (ret != ret_ok) return ret;
 
 		} else if (equal_buf_str (&subconf->key, "in_allow_keepalive")) {
-			props->in_allow_keepalive = !! atoi (subconf->val.buf);
+			ret = cherokee_atob (subconf->val.buf, &props->in_allow_keepalive);
+			if (ret != ret_ok) return ret;
 
 		} else if (equal_buf_str (&subconf->key, "in_preserve_host")) {
-			props->in_preserve_host = !! atoi (subconf->val.buf);
+			ret = cherokee_atob (subconf->val.buf, &props->in_preserve_host);
+			if (ret != ret_ok) return ret;
 
 		} else if (equal_buf_str (&subconf->key, "out_preserve_server")) {
-			props->out_preserve_server = !! atoi (subconf->val.buf);
+			ret = cherokee_atob (subconf->val.buf, &props->out_preserve_server);
+			if (ret != ret_ok) return ret;
 
 		} else if (equal_buf_str (&subconf->key, "out_flexible_EOH")) {
-			props->out_flexible_EOH = !! atoi (subconf->val.buf);
+			ret = cherokee_atob (subconf->val.buf, &props->out_flexible_EOH);
+			if (ret != ret_ok) return ret;
 
 		} else if (equal_buf_str (&subconf->key, "in_header_hide")) {
 			cherokee_config_node_foreach (j, subconf) {
@@ -1231,12 +1239,13 @@ parse_server_header (cherokee_handler_proxy_t *hdl,
 	char                           *end;
 	char                           *colon;
 	char                           *header_end;
-	char   *xsendfile   = NULL;
-	cint_t  xsendfile_len;
 	cherokee_list_t                *i;
 	cherokee_http_version_t         version;
-	cherokee_connection_t          *conn         = HANDLER_CONN(hdl);
-	cherokee_handler_proxy_props_t *props        = HDL_PROXY_PROPS(hdl);
+	cint_t                          xsendfile_len;
+	char                           *xsendfile      = NULL;
+	cherokee_boolean_t              added_server   = false;
+	cherokee_connection_t          *conn           = HANDLER_CONN(hdl);
+	cherokee_handler_proxy_props_t *props          = HDL_PROXY_PROPS(hdl);
 
 	p = buf_in->buf;
 	header_end = buf_in->buf + buf_in->len;
@@ -1273,10 +1282,19 @@ parse_server_header (cherokee_handler_proxy_t *hdl,
 
 	re = (int)p[3];
 	p[3] = '\0';
-	conn->error_code = atoi(p);
+
+	ret = cherokee_atoi (p, (int *)&conn->error_code);
+	if (unlikely (ret != ret_ok)) {
+		return ret_error;
+	}
+
 	p[3] = (char)re;
 
 	p = strchr (p, CHR_CR);
+	if (unlikely (p == NULL)) {
+		return ret_error;
+	}
+
 	while ((*p == CHR_CR) || (*p == CHR_LF))
 		p++;
 
@@ -1347,6 +1365,8 @@ parse_server_header (cherokee_handler_proxy_t *hdl,
 			cherokee_buffer_add_str (buf_out, "Server: ");
 			cherokee_buffer_add_buffer (buf_out, &CONN_BIND(conn)->server_string);
 			cherokee_buffer_add_str (buf_out, CRLF);
+
+			added_server = true;
 			goto next;
 
 		} else  if (strncasecmp (begin, "Location:", 9) == 0) {
@@ -1453,11 +1473,19 @@ parse_server_header (cherokee_handler_proxy_t *hdl,
 		add_header (buf_out, &HEADER_ADD(i)->key, &HEADER_ADD(i)->val);
 	}
 
+	/* 'Server' header
+	 */
+	if (! added_server) {
+		cherokee_buffer_add_str (buf_out, "Server: ");
+		cherokee_buffer_add_buffer (buf_out, &CONN_BIND(conn)->server_string);
+		cherokee_buffer_add_str (buf_out, CRLF);
+	}
+
 	/* Overwrite the 'Expires:' header is there was a custom
 	 * expiration value defined in the rule.
 	 */
 	if (conn->expiration != cherokee_expiration_none) {
-		cherokee_connection_add_expiration_header (conn, buf_out);
+		cherokee_connection_add_expiration_header (conn, buf_out, true);
 	}
 
 	/* Deal with Content-Encoding: If the response is no encoded,
@@ -1824,8 +1852,10 @@ cherokee_handler_proxy_new (cherokee_handler_t     **hdl,
 	cherokee_buffer_init (&n->buffer);
 
 	ret = cherokee_buffer_ensure_size (&n->buffer, DEFAULT_BUF_SIZE);
-	if (unlikely(ret != ret_ok))
+	if (unlikely(ret != ret_ok)) {
+		cherokee_handler_free (HANDLER(n));
 		return ret;
+	}
 
 	*hdl = HANDLER(n);
 	return ret_ok;
@@ -1834,6 +1864,22 @@ cherokee_handler_proxy_new (cherokee_handler_t     **hdl,
 ret_t
 cherokee_handler_proxy_free (cherokee_handler_proxy_t *hdl)
 {
+	cherokee_connection_t          *conn  = HANDLER_CONN(hdl);
+	cherokee_handler_proxy_props_t *props = HDL_PROXY_PROPS(hdl);
+
+	/* If the handler reached this point before running its
+	 * 'add_headers' phase, it's most likely because the info
+	 * source is unresponsive, and process_polling_connections()
+	 * [thread.c] is closing the connection.
+	 */
+	if ((conn->phase <= phase_add_headers) &&
+	    (conn->error_code == http_gateway_timeout))
+	{
+		cherokee_balancer_report_fail (props->balancer, conn, hdl->src_ref);
+	}
+
+	/* Clean up
+	 */
 	cherokee_buffer_mrproper (&hdl->tmp);
 	cherokee_buffer_mrproper (&hdl->buffer);
 	cherokee_buffer_mrproper (&hdl->request);

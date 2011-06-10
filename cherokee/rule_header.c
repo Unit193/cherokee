@@ -102,8 +102,7 @@ match_complete (cherokee_rule_header_t  *rule,
 		cherokee_connection_t   *conn,
 		cherokee_config_entry_t *ret_conf)
 {
-	int   re;
-	ret_t ret;
+	int re;
 
 	UNUSED(ret_conf);
 
@@ -238,7 +237,7 @@ configure (cherokee_rule_header_t    *rule,
 	 */
 	ret = cherokee_config_node_copy (conf, "match", &rule->match);
 	if (ret != ret_ok) {
-		if (equal_buf_str (type, "regex")) {
+		if ((type) && equal_buf_str (type, "regex")) {
 			LOG_ERROR (CHEROKEE_ERROR_RULE_NO_PROPERTY,
 				   RULE(rule)->priority, "match");
 			return ret_error;

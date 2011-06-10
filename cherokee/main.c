@@ -104,7 +104,10 @@ figure_worker_path (const char *arg0)
 	/* Invoked with the fullpath */
 	if (arg0[0] == '/') {
 		len = strlen(arg0) + sizeof("-worker");
+
 		cherokee_worker = malloc (len);
+		if (cherokee_worker == NULL)
+			goto out;
 
 		snprintf (cherokee_worker, len, "%s-worker", arg0);
 		return;
@@ -116,8 +119,11 @@ figure_worker_path (const char *arg0)
 
 	if ((arg0[0] == '.') || (*d == '/')) {
 		d = getcwd (tmp, sizeof(tmp));
-		len = strlen(arg0) + strlen(d) + sizeof("-worker");
+		len = strlen(arg0) + strlen(d) + sizeof("-worker") +1;
+
 		cherokee_worker = malloc (len);
+		if (cherokee_worker == NULL)
+			goto out;
 
 		snprintf (cherokee_worker, len, "%s/%s-worker", d, arg0);
 		return;
@@ -137,14 +143,24 @@ figure_worker_path (const char *arg0)
 			len = re + sizeof("-worker");
 
 			cherokee_worker = malloc (len);
+			if (cherokee_worker == NULL)
+				goto out;
+
 			snprintf (cherokee_worker, len, "%s-worker", link);
 			return;
 		}
 	}
 
+out:
 	/* The very last option, use the default path
 	 */
 	cherokee_worker = malloc (sizeof(CHEROKEE_WORKER));
+	if (cherokee_worker == NULL) {
+		PRINT_MSG_S ("ERROR: Could not find cherokee-worker\n");
+		PRINT_MSG_S ("\n");
+		exit(1);
+	}
+
 	snprintf (cherokee_worker, sizeof(CHEROKEE_WORKER), CHEROKEE_WORKER);
 }
 
@@ -203,7 +219,9 @@ check_worker_version (const char *this_exec)
 
 	PRINT_MSG ("(critical) Couldn't find the version string: '%s -i'\n", cherokee_worker);
 error:
-	pclose(f);
+	if (f != NULL) {
+		pclose(f);
+	}
 	return ret_error;
 }
 
@@ -282,10 +300,15 @@ figure_pid_file_path (const char *config)
 	char *line;
 	char  tmp[512];
 
+	/* Open the config file
+	 */
 	f = fopen (config, "r");
-	if (f == NULL)
-		return NULL;
+	if (f == NULL) {
+		return strdup(DEFAULT_PID_FILE);
+	}
 
+	/* Look up for the right key
+	 */
 	while (! feof(f)) {
 		line = fgets (tmp, sizeof(tmp), f);
 		if ((line != NULL) &&
@@ -305,6 +328,9 @@ figure_pid_file_path (const char *config)
 	}
 
 	fclose(f);
+
+	/* Not found, use default
+	 */
 	return strdup(DEFAULT_PID_FILE);
 }
 
@@ -405,10 +431,10 @@ do_spawn (void)
 	uid_t        uid;
 	gid_t        gid;
 	int          env_inherit;
-	int          envs;
 	pid_t        child;
-	char        *interpreter;
+	int          envs         = 0;
 	int          log_stderr   = 0;
+	char        *interpreter  = NULL;
 	char        *log_file     = NULL;
 	char        *uid_str      = NULL;
 	char       **envp         = NULL;
@@ -437,8 +463,8 @@ do_spawn (void)
 	}
 
 	interpreter = malloc (sizeof("exec ") + size);
-	memcpy (interpreter, "exec ", 5);
-	memcpy (interpreter + 5, p, size + 1);
+	strncpy (interpreter, "exec ", 5);
+	strncpy (interpreter + 5, p, size + 1);
 	p += size + 1;
 	ALIGN4 (p);
 
@@ -468,6 +494,9 @@ do_spawn (void)
 	p += sizeof(int);
 
 	envp = malloc (sizeof(char *) * (envs + 1));
+	if (envp == NULL) {
+		return;
+	}
 	envp[envs] = NULL;
 
 	for (n=0; n<envs; n++) {
@@ -477,6 +506,8 @@ do_spawn (void)
 		p += sizeof(int);
 
 		e = malloc (size + 1);
+		if (e == NULL) return;
+
 		memcpy (e, p, size);
 		e[size] = '\0';
 
@@ -615,13 +646,15 @@ cleanup:
 
 	/* Clean up
 	 */
+	free (uid_str);
 	free (interpreter);
 
-	for (n=0; n<envs; n++) {
-		free (envp[n]);
+	if (envp != NULL) {
+		for (n=0; n<envs; n++) {
+			free (envp[n]);
+		}
+		free (envp);
 	}
-
-	free (envp);
 }
 
 static NORETURN void *
@@ -730,6 +763,10 @@ spawn_init (void)
 	 */
 	mem_len = sizeof(TMPDIR "/cherokee-spawner-<PID_number>");
 	spawn_shared_name = malloc (mem_len);
+	if (spawn_shared_name == NULL) {
+		return ret_nomem;
+	}
+
 	snprintf (spawn_shared_name, mem_len, TMPDIR "/cherokee-spawner-%d", getpid());
 
 	/* Create the shared memory
@@ -959,7 +996,12 @@ process_launch (const char *path, char *argv[])
 		 */
 		for (len_argv=0; argv[len_argv];          len_argv++);
 		for (len_valg=0; valgrind_args[len_valg]; len_valg++);
+
 		new_args = malloc ((len_argv + len_valg + 2) * sizeof(char *));
+		if (new_args == NULL) {
+			PRINT_MSG_S ("(critical) Could not allocate memory for valgrind args.\n");
+			exit(1);
+		}
 
 		/* Copy
 		 */

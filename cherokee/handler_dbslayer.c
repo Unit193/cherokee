@@ -112,13 +112,15 @@ cherokee_client_headers (cherokee_handler_dbslayer_t *hdl)
 
 	ret = cherokee_header_get_unknown (&conn->header, "X-Beautify", 10, &hdr, &len);
 	if ((ret == ret_ok) && hdr) {
-		hdl->writer.pretty = !! atoi(hdr);
+		ret = cherokee_atob (hdr, &hdl->writer.pretty);
+		if (ret != ret_ok) return ret;
 	}
 
 	hdr = NULL;
 	ret = cherokee_header_get_unknown (&conn->header, "X-Rollback", 10, &hdr, &len);
 	if ((ret == ret_ok) && hdr) {
-		hdl->rollback = !! atoi(hdr);
+		ret = cherokee_atob (hdr, &hdl->rollback);
+		if (ret != ret_ok) return ret;
 	}
 }
 
@@ -470,14 +472,16 @@ cherokee_handler_dbslayer_new (cherokee_handler_t     **hdl,
 	n->src_ref  = NULL;
 	n->rollback = false;
 
-	/* MySQL */
-	n->conn = mysql_init (NULL);
-	if (unlikely (n->conn == NULL))
-		return ret_nomem;
-
 	/* Data writer */
 	cherokee_dwriter_init (&n->writer, &CONN_THREAD(cnt)->tmp_buf1);
 	n->writer.lang = PROP_DBSLAYER(props)->lang;
+
+	/* MySQL */
+	n->conn = mysql_init (NULL);
+	if (unlikely (n->conn == NULL)) {
+		cherokee_handler_free (HANDLER(n));
+		return ret_nomem;
+	}
 
 	*hdl = HANDLER(n);
 	return ret_ok;

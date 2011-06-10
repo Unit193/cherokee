@@ -97,6 +97,7 @@ button.</p></div>
 <div class="content">
 <img src="media/images/admin_vservers_wizard.png" alt="media/images/admin_vservers_wizard.png" />
 </div>
+<div class="image-title">Wizards</div>
 </div>
 <div class="paragraph"><p>Now, you will have to select the <tt>Platforms</tt> category, and run the
 <tt>RoR</tt> wizard. You will be asked for some basic parameters about the
@@ -109,6 +110,7 @@ is needed after this step.</p></div>
 <div class="content">
 <img src="media/images/cookbook_ror_wizard.png" alt="media/images/cookbook_ror_wizard.png" />
 </div>
+<div class="image-title">The wizard in action</div>
 </div>
 <div class="paragraph"><p>It is usually best to proxy one or several of the servers used by
 Rails, be it Thin, Mongrel, Unicorn or whatever it can handle.  You
@@ -142,6 +144,7 @@ is not required.</p></div>
 <div class="content">
 <img src="media/images/cookbook_ror_common.png" alt="media/images/cookbook_ror_common.png" />
 </div>
+<div class="image-title">FastCGI handler</div>
 </div>
 <div class="paragraph"><div class="title">FastCGI specific</div><p>Under <tt>FastCGI specific</tt> make sure to add the hosts providing the
 service. Do this by adding one or more
@@ -183,12 +186,39 @@ cellspacing="0" cellpadding="4">
 </div>
 <div class="paragraph"><p>If any of those ports was not reachable, the <tt>interpreter</tt> command
 would be launched and the fallen one would be reinstantiated.</p></div>
-<div class="paragraph"><p>Here is a snapshot to show the creation of <strong>ror0</strong>. The rest are
-similar using the port variation detailed above.</p></div>
+<div class="paragraph"><p>According to that table, the creation of the <strong>ror0</strong> information source
+would use the following settings. The rest are similar using the port
+variation detailed above.</p></div>
+<div class="tableblock">
+<table rules="all"
+width="100%"
+frame="border"
+cellspacing="0" cellpadding="4">
+<caption class="title">ror0 information source</caption>
+<col width="15%" />
+<col width="20%" />
+<col width="65%" />
+<thead>
+<tr>
+<th align="left" valign="top">Nick </th>
+<th align="left" valign="top">Connection     </th>
+<th align="left" valign="top">Interpreter</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left" valign="top"><p class="table">ror0</p></td>
+<td align="left" valign="top"><p class="table">localhost:8000</p></td>
+<td align="left" valign="top"><p class="table"><tt>/home/foo/example/script/process/spawner fcgi</tt></p></td>
+</tr>
+</tbody>
+</table>
+</div>
 <div class="imageblock">
 <div class="content">
 <img src="media/images/cookbook_ror_fcgi.png" alt="media/images/cookbook_ror_fcgi.png" />
 </div>
+<div class="image-title">ror0 information source</div>
 </div>
 <div class="paragraph"><p>Once everything is done you can check if Rails  is really
 working. Simply navigate to the path configured by your rule,

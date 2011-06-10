@@ -33,6 +33,7 @@
 #include "rule_default.h"
 #include "gen_evhost.h"
 #include "header_op.h"
+#include "flcache.h"
 
 #include <errno.h>
 
@@ -62,6 +63,7 @@ cherokee_virtual_server_new (cherokee_virtual_server_t **vserver, void *server)
 	n->matching        = NULL;
 	n->collector       = NULL;
 	n->match_nick      = true;
+	n->flcache         = NULL;
 
 	/* Virtual entries
 	 */
@@ -109,6 +111,11 @@ cherokee_virtual_server_free (cherokee_virtual_server_t *vserver)
 	cherokee_buffer_mrproper (&vserver->certs_ca);
 	cherokee_buffer_mrproper (&vserver->req_client_certs);
 	cherokee_buffer_mrproper (&vserver->ciphers);
+
+	if (vserver->flcache != NULL) {
+		cherokee_flcache_free (vserver->flcache);
+		vserver->flcache = NULL;
+	}
 
 	if (vserver->error_handler != NULL) {
 		cherokee_config_entry_free (vserver->error_handler);
@@ -271,9 +278,55 @@ add_header_op (cherokee_config_entry_t *entry,
 
 
 static ret_t
+add_flcache_cookies_do_cache (cherokee_config_entry_t *entry,
+			      cherokee_config_node_t  *conf,
+			      cherokee_server_t       *srv)
+{
+	ret_t              ret;
+	void              *pcre  = NULL;
+	cherokee_buffer_t *regex = NULL;
+
+	/* Get the property
+	 */
+	ret = cherokee_config_node_read (conf, "regex", &regex);
+	if ((ret != ret_ok) || (regex == NULL)) {
+		return ret_not_found;
+	}
+
+	/* Compile regular expression
+	 */
+	ret = cherokee_regex_table_add (srv->regexs, regex->buf);
+	if (ret != ret_ok) {
+		return ret_error;
+	}
+
+	ret = cherokee_regex_table_get (srv->regexs, regex->buf, &pcre);
+	if ((ret != ret_ok) || (pcre == NULL)) {
+		return ret_error;
+	}
+
+	/* Add it to the list
+	 */
+	if (entry->flcache_cookies_disregard == NULL) {
+		entry->flcache_cookies_disregard = (cherokee_list_t *) malloc (sizeof (cherokee_list_t));
+		if (unlikely (entry->flcache_cookies_disregard == NULL)) {
+			return ret_error;
+		}
+		INIT_LIST_HEAD (entry->flcache_cookies_disregard);
+	}
+
+	TRACE (ENTRIES",flcache", "Flcache adding disregard cookie '%s'\n", regex->buf);
+	cherokee_list_add_tail_content (entry->flcache_cookies_disregard, pcre);
+
+	return ret_ok;
+}
+
+
+static ret_t
 init_entry_property (cherokee_config_node_t *conf, void *data)
 {
 	ret_t                      ret;
+	int                        val;
 	cherokee_list_t           *i, *j;
 	cherokee_buffer_t         *tmp       = NULL;
 	cherokee_config_node_t    *subconf   = NULL;
@@ -345,7 +398,7 @@ init_entry_property (cherokee_config_node_t *conf, void *data)
 			if (info->configure) {
 				encoder_func_configure_t configure = info->configure;
 
-				ret = configure (CONFIG_NODE(i), srv, &encoder_props);
+				ret = configure (CONFIG_NODE(i), srv, (cherokee_module_props_t **)&encoder_props);
 				if (ret != ret_ok) {
 					return ret;
 				}
@@ -401,7 +454,62 @@ init_entry_property (cherokee_config_node_t *conf, void *data)
 		TRACE(ENTRIES, "Validator: %s\n", tmp->buf);
 
 	} else if (equal_buf_str (&conf->key, "only_secure")) {
-		entry->only_secure = !! atoi(conf->val.buf);
+		ret = cherokee_atob (conf->val.buf, &entry->only_secure);
+		if (ret != ret_ok) return ret_error;
+
+	} else if (equal_buf_str (&conf->key, "flcache")) {
+		/* Enable / Disable
+		 */
+		if ((equal_buf_str (&conf->val, "allow")) ||
+		    (equal_buf_str (&conf->val, "1")))
+		{
+			entry->flcache = true;
+		}
+		else if ((equal_buf_str (&conf->val, "forbid")) ||
+			 (equal_buf_str (&conf->val, "0")))
+		{
+			entry->flcache = false;
+		}
+
+		/* Policy
+		 */
+		subconf = NULL;
+		ret = cherokee_config_node_get (conf, "policy", &subconf);
+		if ((ret == ret_ok) && (subconf != NULL)) {
+			if (equal_buf_str (&subconf->val, "explicitly_allowed")) {
+				entry->flcache_policy = flcache_policy_explicitly_allowed;
+			} else if (equal_buf_str (&subconf->val, "all_but_forbidden")) {
+				entry->flcache_policy = flcache_policy_all_but_forbidden;
+			} else {
+				LOG_CRITICAL (CHEROKEE_ERROR_VSERVER_FLCACHE_UNKNOWN_POLICY,
+					      subconf->val.buf, vserver->priority, rule_prio);
+				return ret_error;
+			}
+		}
+
+		/* Cookies
+		 */
+		subconf = NULL;
+		ret = cherokee_config_node_get (conf, "cookies", &subconf);
+		if ((ret == ret_ok) && (subconf != NULL)) {
+
+			/*  Cookies to disregard
+			 */
+			subconf2 = NULL;
+			ret = cherokee_config_node_get (subconf, "do_cache", &subconf2);
+			if ((ret == ret_ok) && (subconf2 != NULL)) {
+				cherokee_list_t        *i;
+				cherokee_config_node_t *child;
+
+				cherokee_config_node_foreach (i, subconf2) {
+					child = CONFIG_NODE(i);
+
+					ret = add_flcache_cookies_do_cache (entry, CONFIG_NODE(i), srv);
+					if (ret != ret_ok)
+						return ret;
+				}
+			}
+		}
 
 	} else if (equal_buf_str (&conf->key, "expiration")) {
 		/* Expiration
@@ -442,22 +550,28 @@ init_entry_property (cherokee_config_node_t *conf, void *data)
 				}
 
 				cherokee_config_node_foreach (j, subconf) {
+					cherokee_boolean_t active = false;
+
 					subconf2 = CONFIG_NODE(j);
 
 					if (equal_buf_str (&subconf2->key, "no-store")) {
-						if (atoi (subconf2->val.buf)) {
+						ret = cherokee_atob (subconf2->val.buf, &active);
+						if ((ret == ret_ok) && (active)) {
 							BIT_SET (entry->expiration_prop, cherokee_expiration_prop_no_store);
 						}
 					} else if (equal_buf_str (&subconf2->key, "no-transform")) {
-						if (atoi (subconf2->val.buf)) {
+						ret = cherokee_atob (subconf2->val.buf, &active);
+						if ((ret == ret_ok) && (active)) {
 							BIT_SET (entry->expiration_prop, cherokee_expiration_prop_no_transform);
 						}
 					} else if (equal_buf_str (&subconf2->key, "must-revalidate")) {
-						if (atoi (subconf2->val.buf)) {
+						ret = cherokee_atob (subconf2->val.buf, &active);
+						if ((ret == ret_ok) && (active)) {
 							BIT_SET (entry->expiration_prop, cherokee_expiration_prop_must_revalidate);
 						}
 					} else if (equal_buf_str (&subconf2->key, "proxy-revalidate")) {
-						if (atoi (subconf2->val.buf)) {
+						ret = cherokee_atob (subconf2->val.buf, &active);
+						if ((ret == ret_ok) && (active)) {
 							BIT_SET (entry->expiration_prop, cherokee_expiration_prop_proxy_revalidate);
 						}
 					}
@@ -466,7 +580,9 @@ init_entry_property (cherokee_config_node_t *conf, void *data)
 		}
 
 	} else if (equal_buf_str (&conf->key, "rate")) {
-		entry->limit_bps = atoi(conf->val.buf);
+		ret = cherokee_atoi (conf->val.buf, &val);
+		if (ret != ret_ok) return ret_error;
+		entry->limit_bps = val;
 
 	} else if (equal_buf_str (&conf->key, "no_log")) {
 		if (equal_buf_str (&conf->val, "1")) {
@@ -474,7 +590,8 @@ init_entry_property (cherokee_config_node_t *conf, void *data)
 		}
 
 	} else if (equal_buf_str (&conf->key, "timeout")) {
-		entry->timeout_lapse = atoi(conf->val.buf);
+		ret = cherokee_atoi (conf->val.buf, &entry->timeout_lapse);
+		if (ret != ret_ok) return ret_error;
 
 		if (entry->timeout_header != NULL) {
 			cherokee_buffer_free (entry->timeout_header);
@@ -521,24 +638,25 @@ static ret_t
 add_error_handler (cherokee_config_node_t *config, cherokee_virtual_server_t *vserver)
 {
 	ret_t                    ret;
-	cherokee_config_entry_t *entry;
-	cherokee_plugin_info_t  *info   = NULL;
-	cherokee_buffer_t       *name   = &config->val;
+	cherokee_config_entry_t *entry = NULL;
+	cherokee_plugin_info_t  *info  = NULL;
+	cherokee_buffer_t       *name  = &config->val;
 
 	ret = cherokee_config_entry_new (&entry);
 	if (unlikely (ret != ret_ok))
-		return ret;
+		goto error;
 
 	ret = cherokee_plugin_loader_get (&SRV(vserver->server_ref)->loader, name->buf, &info);
 	if (ret != ret_ok)
-		return ret;
+		goto error;
 
 	if (info->configure) {
 		handler_func_configure_t configure = info->configure;
 
 		ret = configure (config, vserver->server_ref, &entry->handler_properties);
-		if (ret != ret_ok)
-			return ret;
+		if (ret != ret_ok) {
+			goto error;
+		}
 	}
 
 	TRACE(ENTRIES, "Error handler: %s\n", name->buf);
@@ -547,6 +665,12 @@ add_error_handler (cherokee_config_node_t *config, cherokee_virtual_server_t *vs
 	vserver->error_handler = entry;
 
 	return ret_ok;
+
+error:
+	if (entry) {
+		cherokee_config_entry_free (entry);
+	}
+	return ret_error;
 }
 
 
@@ -653,13 +777,16 @@ add_rule (cherokee_config_node_t    *config,
 	  cherokee_rule_list_t      *rule_list)
 {
 	ret_t                   ret;
-	cuint_t                 prio;
+	int                     tmp;
+	cint_t                  prio;
 	cherokee_rule_t        *rule    = NULL;
 	cherokee_config_node_t *subconf = NULL;
 
 	/* Validate priority
 	 */
-	prio = atoi (config->key.buf);
+	ret = cherokee_atoi (config->key.buf, &prio);
+	if (ret != ret_ok) return ret_error;
+
 	if (prio <= CHEROKEE_RULE_PRIO_NONE) {
 		LOG_CRITICAL (CHEROKEE_ERROR_VSERVER_BAD_PRIORITY,
 			      config->key.buf, vserver->priority);
@@ -670,7 +797,8 @@ add_rule (cherokee_config_node_t    *config,
 	 */
 	ret = cherokee_config_node_get (config, "disabled", &subconf);
 	if (ret == ret_ok) {
-		if (atoi(subconf->val.buf)) {
+		ret = cherokee_atoi (subconf->val.buf, &tmp);
+		if ((ret == ret_ok) && (tmp)) {
 			TRACE(ENTRIES, "Skipping rule '%s'\n", config->key.buf);
 			return ret_ok;
 		}
@@ -931,7 +1059,8 @@ configure_virtual_server_property (cherokee_config_node_t *conf, void *data)
 		cherokee_buffer_add_buffer (&vserver->name, &conf->val);
 
 	} else if (equal_buf_str (&conf->key, "keepalive")) {
-		vserver->keepalive = !!atoi (conf->val.buf);
+		ret = cherokee_atob (conf->val.buf, &vserver->keepalive);
+		if (ret != ret_ok) return ret_error;
 
 	} else if (equal_buf_str (&conf->key, "user_dir")) {
 		ret = configure_user_dir (conf, vserver);
@@ -966,13 +1095,16 @@ configure_virtual_server_property (cherokee_config_node_t *conf, void *data)
 		cherokee_config_node_read_list (conf, NULL, add_directory_index, vserver);
 
 	} else if (equal_buf_str (&conf->key, "post_max_len")) {
-		vserver->post_max_len = atoi (conf->val.buf);
+		ret = cherokee_atoi (conf->val.buf, &vserver->post_max_len);
+		if (ret != ret_ok) return ret_error;
 
 	} else if (equal_buf_str (&conf->key, "nick")) {
-		vserver->match_nick = !!atoi (conf->val.buf);
+		ret = cherokee_atob (conf->val.buf, &vserver->match_nick);
+		if (ret != ret_ok) return ret_error;
 
 	} else if (equal_buf_str (&conf->key, "ssl_verify_depth")) {
-		vserver->verify_depth = !!atoi (conf->val.buf);
+		ret = cherokee_atob (conf->val.buf, &vserver->verify_depth);
+		if (ret != ret_ok) return ret_error;
 
 	} else if (equal_buf_str (&conf->key, "ssl_certificate_file")) {
 		cherokee_buffer_add_buffer (&vserver->server_cert, &conf->val);
@@ -989,7 +1121,8 @@ configure_virtual_server_property (cherokee_config_node_t *conf, void *data)
 	} else if (equal_buf_str (&conf->key, "ssl_ciphers")) {
 		cherokee_buffer_add_buffer (&vserver->ciphers, &conf->val);
 
-	} else if (equal_buf_str (&conf->key, "collector")) {
+	} else if (equal_buf_str (&conf->key, "flcache") ||
+		   equal_buf_str (&conf->key, "collector")) {
 		/* Handled later on */
 
 	} else if (equal_buf_str (&conf->key, "disabled")) {
@@ -1039,7 +1172,10 @@ cherokee_virtual_server_configure (cherokee_virtual_server_t *vserver,
 				   cherokee_config_node_t    *config)
 {
 	ret_t                   ret;
-	cherokee_config_node_t *subconf = NULL;
+	int                     tmp;
+	cherokee_list_t        *i;
+	cherokee_config_node_t *subconf      = NULL;
+	cherokee_boolean_t      uses_flcache = false;
 
 	/* Set the priority
 	 */
@@ -1049,7 +1185,8 @@ cherokee_virtual_server_configure (cherokee_virtual_server_t *vserver,
 	*/
 	ret = cherokee_config_node_get (config, "disabled", &subconf);
 	if (ret == ret_ok) {
-		if (atoi(subconf->val.buf)) {
+		ret = cherokee_atoi (subconf->val.buf, &tmp);
+		if ((ret == ret_ok) && (tmp)) {
 			TRACE(ENTRIES, "Skipping VServer '%s'\n", config->key.buf);
 			return ret_deny;
 		}
@@ -1058,8 +1195,9 @@ cherokee_virtual_server_configure (cherokee_virtual_server_t *vserver,
 	/* Parse properties
 	 */
 	ret = cherokee_config_node_while (config, configure_virtual_server_property, vserver);
-	if (ret != ret_ok)
+	if (ret != ret_ok) {
 		return ret;
+	}
 
 	/* Information collectors
 	 */
@@ -1067,6 +1205,32 @@ cherokee_virtual_server_configure (cherokee_virtual_server_t *vserver,
 		ret = configure_collector (vserver, config);
 		if (ret != ret_ok) {
 			return ret_error;
+		}
+	}
+
+	/* Front-line cache:
+	 * Needs 'nick' to be set previously
+	 */
+	list_for_each (i, &vserver->rules.rules) {
+		cherokee_rule_t *rule = RULE (list_entry(i, cherokee_rule_t, list_node));
+		if (NULLB_TO_BOOL (rule->config.flcache)) {
+			uses_flcache = true;
+			break;
+		}
+	}
+
+	if (uses_flcache) {
+		ret = cherokee_flcache_new (&vserver->flcache);
+		if (ret != ret_ok) {
+			return ret;
+		}
+
+		subconf = NULL;
+		cherokee_config_node_get (config, "flcache", &subconf);
+
+		ret = cherokee_flcache_configure (vserver->flcache, subconf, vserver);
+		if (ret != ret_ok) {
+			return ret;
 		}
 	}
 

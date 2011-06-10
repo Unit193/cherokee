@@ -147,6 +147,33 @@ as the <tt>Web Directory</tt> for the rule, in the <tt>Rule</tt> tab.</p></div>
 <div class="content">
 <img src="media/images/cookbook_nagios1.png" alt="media/images/cookbook_nagios1.png" />
 </div>
+<div class="image-title">First rule</div>
+</div>
+<div class="tableblock">
+<table rules="all"
+width="100%"
+frame="border"
+cellspacing="0" cellpadding="4">
+<caption class="title">First rule</caption>
+<col width="50%" />
+<col width="50%" />
+<thead>
+<tr>
+<th align="left" valign="top">Field           </th>
+<th align="left" valign="top"> Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left" valign="top"><p class="table">Handler</p></td>
+<td align="left" valign="top"><p class="table">CGI</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">Document root</p></td>
+<td align="left" valign="top"><p class="table">/usr/local/nagios/sbin</p></td>
+</tr>
+</tbody>
+</table>
 </div>
 <div class="paragraph"><p>The second one will do something similar, only mapping <tt>/nagios</tt> to
 <tt>/usr/local/nagios/share</tt>.</p></div>
@@ -154,6 +181,33 @@ as the <tt>Web Directory</tt> for the rule, in the <tt>Rule</tt> tab.</p></div>
 <div class="content">
 <img src="media/images/cookbook_nagios2.png" alt="media/images/cookbook_nagios2.png" />
 </div>
+<div class="image-title">Second rule</div>
+</div>
+<div class="tableblock">
+<table rules="all"
+width="100%"
+frame="border"
+cellspacing="0" cellpadding="4">
+<caption class="title">Second rule</caption>
+<col width="50%" />
+<col width="50%" />
+<thead>
+<tr>
+<th align="left" valign="top">Field           </th>
+<th align="left" valign="top"> Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left" valign="top"><p class="table">Handler</p></td>
+<td align="left" valign="top"><p class="table">List &amp; Send</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">Document root</p></td>
+<td align="left" valign="top"><p class="table">/usr/local/nagios/share</p></td>
+</tr>
+</tbody>
+</table>
 </div>
 <div class="paragraph"><p>Finally, you can set up the authentication mechanism on both rules by
 configuring the &#8216;Security` tab. Choose the <tt>Htpasswd file</tt> validation
@@ -166,12 +220,14 @@ provided by Cherokee.</p></div>
 <div class="content">
 <img src="media/images/cookbook_nagios3.png" alt="media/images/cookbook_nagios3.png" />
 </div>
+<div class="image-title">Security configuration</div>
 </div>
 <div class="paragraph"><p>And that was all for today.</p></div>
 <div class="imageblock">
 <div class="content">
 <img src="media/images/cookbook_nagios4.png" alt="media/images/cookbook_nagios4.png" />
 </div>
+<div class="image-title">Nagios in action</div>
 </div>
 </div>
 <div id="footer">

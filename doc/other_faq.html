@@ -176,6 +176,25 @@ need to resort to special ciphers such
 (<tt>ALL:!ADH:-LOW:-SSLv2:-EXP:-eNULL:@STRENGTH</tt>), or anythingh else for
 that matter. If you need it, simply enable the check-box to allow
 SSLv2.</p></div>
+<h3 id="faq21">I&#8217;m used to Apache&#8217;s .htaccess. Will Cherokee ever support it?</h3><div style="clear:left"></div>
+<div class="paragraph"><p>Short answer: No. Cherokee is designed to be efficient. Using
+.htaccess is not: it&#8217;s not a scalable architecture at all, it&#8217;s
+horrible for performance, you can&#8217;t use it with Cherokee, and even if
+you could, you shouldn&#8217;t. If you need .htaccess, you&#8217;re probably doing
+it wrong. For .htaccess to work, Apache has to check <strong>every</strong> directory
+in the requested path for the existence of a .htaccess file, and if
+present, read and parse <strong>every</strong> one of them. This happens for <strong>every</strong>
+request. Sure, changes in .htaccess are effective instantly, but
+that&#8217;s because Apache has to read and process the files every time. As
+the requests dig deeper into the directory tree, the associated
+overhead of stats an reads grows. And it is not negligible at all: an
+increase in anything from 5 to 50 is usual for very typical
+configurations.</p></div>
+<div class="paragraph"><p>Yes, the use of .htaccess is very extended. Yes, it has been around
+for a while. No, that doesn&#8217;t mean it is a good architecture. There
+are better ways of doing things. Converting the behavior of a
+.htaccess file to an efficient set of rules for Cherokee is not
+complicated.</p></div>
 </div>
 <div id="footer">
 <div id="footer-text">

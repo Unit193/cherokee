@@ -59,17 +59,21 @@ that, you will first have to add as many
 <div class="content">
 <img src="media/images/cookbook_https_accelerator_sources.png" alt="media/images/cookbook_https_accelerator_sources.png" />
 </div>
+<div class="image-title">Multiple backends</div>
 </div>
 <div class="paragraph"><p>Then you will have to configure the HTTP Reverse proxy. Visit your
 front-end&#8217;s virtual server through the
 <a href="config_virtual_servers.html">vServers</a> section, select the
 <tt>Behavior</tt> tab, and click on <tt>Rule Management</tt>. You will be able to
 choose the <a href="modules_handlers_proxy.html">HTTP Reverse Proxy</a>
-handler, and set it to balance the load among all your back-ends.</p></div>
+handler, and set it to balance the load among all your back-ends. In
+the example, we will allow <tt>Keepalive</tt> connections, and assign all the
+information sources for the defined backends.</p></div>
 <div class="imageblock">
 <div class="content">
 <img src="media/images/cookbook_https_accelerator_handler.png" alt="media/images/cookbook_https_accelerator_handler.png" />
 </div>
+<div class="image-title">HTTP Reverse Proxy balancing</div>
 </div>
 </div>
 <div id="footer">

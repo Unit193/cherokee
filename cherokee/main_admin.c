@@ -58,6 +58,7 @@
 #define PASSWORD_LEN         16
 #define DEFAULT_PORT         9090
 #define TIMEOUT              "25"
+#define THREAD_MAX_AUTO      4
 #define DEFAULT_DOCUMENTROOT CHEROKEE_DATADIR "/admin"
 #define DEFAULT_CONFIG_FILE  CHEROKEE_CONFDIR "/cherokee.conf"
 #define DEFAULT_UNIX_SOCKET  TMPDIR "/cherokee-admin-scgi.socket"
@@ -65,9 +66,9 @@
 #define RULE_PRE             "vserver!1!rule!"
 
 static int                port          = DEFAULT_PORT;
-static const char        *document_root = DEFAULT_DOCUMENTROOT;
-static const char        *config_file   = DEFAULT_CONFIG_FILE;
-static const char        *bind_to       = DEFAULT_BIND;
+static char              *document_root = NULL;
+static char              *config_file   = NULL;
+static char              *bind_to       = NULL;
 static int                debug         = 0;
 static int                unsecure      = 0;
 static int                iocache       = 1;
@@ -96,17 +97,23 @@ find_empty_port (int starting, int *port)
 			break;
 
 		p += 1;
-		if (p > 0XFFFF)
-			return ret_error;
+		if (p > 0XFFFF) {
+			goto error;
+		}
 	}
 
 	cherokee_socket_close (&s);
-
 	cherokee_socket_mrproper (&s);
 	cherokee_buffer_mrproper (&bind_);
 
 	*port = p;
 	return ret_ok;
+
+error:
+	cherokee_socket_close (&s);
+	cherokee_socket_mrproper (&s);
+	cherokee_buffer_mrproper (&bind_);
+	return ret_error;
 }
 
 static ret_t
@@ -147,7 +154,7 @@ remove_old_socket (const char *path)
 
 	/* Remove it
 	 */
-	re = unlink (path);
+	re = cherokee_unlink (path);
 	if (re != 0) {
 		PRINT_MSG ("ERROR: Couldn't remove unix socket '%s'.\n", path);
 		return ret_error;
@@ -181,6 +188,7 @@ config_server (cherokee_server_t *srv)
 {
 	ret_t                  ret;
 	cherokee_config_node_t conf;
+	cuint_t                nthreads;
 	cherokee_buffer_t      buf       = CHEROKEE_BUF_INIT;
 	cherokee_buffer_t      rrd_dir   = CHEROKEE_BUF_INIT;
 	cherokee_buffer_t      rrd_bin   = CHEROKEE_BUF_INIT;
@@ -215,7 +223,14 @@ config_server (cherokee_server_t *srv)
 	}
 
 	if (thread_num != -1) {
+		/* Manually set
+		 */
 		cherokee_buffer_add_va (&buf, "server!thread_number = %d\n", thread_num);
+	} else {
+		/* Automatically set
+		 */
+		nthreads = MIN (cherokee_cpu_number, THREAD_MAX_AUTO);
+		cherokee_buffer_add_va (&buf, "server!thread_number = %d\n", nthreads);
 	}
 
 	cherokee_buffer_add_str (&buf, "vserver!1!nick = default\n");
@@ -441,7 +456,9 @@ print_help (void)
 static void
 process_parameters (int argc, char **argv)
 {
-	int c;
+	ret_t              ret;
+	int                c;
+	cherokee_boolean_t error = false;
 
 	struct option long_options[] = {
 		{"help",            no_argument,       NULL, 'h'},
@@ -461,21 +478,34 @@ process_parameters (int argc, char **argv)
 	while ((c = getopt_long(argc, argv, "hVxutib::d:p:C:T:", long_options, NULL)) != -1) {
 		switch(c) {
 		case 'b':
-			if (optarg)
+			free (bind_to);
+			if (optarg) {
 				bind_to = strdup(optarg);
-			else
+			} else if (argv[optind] && argv[optind][0] != '-') {
+				bind_to = strdup(argv[optind]);
+				optind++;
+			} else {
 				bind_to = NULL;
+			}
 			break;
 		case 'p':
-			port = atoi(optarg);
+			ret = cherokee_atoi (optarg, &port);
+			if (ret != ret_ok) {
+				error = true;
+			}
 			break;
 		case 'T':
-			thread_num = atoi(optarg);
+			ret = cherokee_atoi (optarg, &thread_num);
+			if (ret != ret_ok) {
+				error = true;
+			}
 			break;
 		case 'd':
+			free (document_root);
 			document_root = strdup(optarg);
 			break;
 		case 'C':
+			free (config_file);
 			config_file = strdup(optarg);
 			break;
 		case 'x':
@@ -497,6 +527,10 @@ process_parameters (int argc, char **argv)
 		case 'h':
 		case '?':
 		default:
+			error = true;
+		}
+
+		if (error) {
 			print_help();
 			exit (1);
 		}
@@ -518,14 +552,14 @@ check_for_python (void)
 	int         re;
 	pid_t       pid;
 	int         exitcode = -1;
-	char *const args[]   = {"env", "python", "-c", "raise SystemExit", NULL};
+	char const *args[]   = {"env", "python", "-c", "raise SystemExit", NULL};
 
 	pid = fork();
 	if (pid == -1) {
 		return ret_error;
 
 	} else if (pid == 0) {
-		execv ("/usr/bin/env", args);
+		execv ("/usr/bin/env", (char * const *) args);
 
 	} else {
 		do {
@@ -573,6 +607,17 @@ main (int argc, char **argv)
 	ret_t            ret;
 	struct sigaction act;
 
+	/* Globals */
+	document_root = strdup (DEFAULT_DOCUMENTROOT);
+	config_file   = strdup (DEFAULT_CONFIG_FILE);
+	bind_to       = strdup (DEFAULT_BIND);
+
+	if ((!bind_to) || (!config_file) || (!document_root)) {
+		PRINT_MSG ("ERROR: Couldn't allocate memory.\n");
+		exit (EXIT_ERROR);
+	}
+
+	/* Python */
 	ret = check_for_python();
 	if (ret != ret_ok) {
 		PRINT_MSG ("ERROR: Couldn't find python.\n");

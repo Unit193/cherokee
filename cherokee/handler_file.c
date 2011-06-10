@@ -67,6 +67,7 @@ cherokee_handler_file_configure (cherokee_config_node_t   *conf,
 				 cherokee_server_t        *srv,
 				 cherokee_module_props_t **_props)
 {
+	ret_t                          ret;
 	cherokee_list_t               *i;
 	cherokee_handler_file_props_t *props;
 
@@ -88,7 +89,8 @@ cherokee_handler_file_configure (cherokee_config_node_t   *conf,
 		cherokee_config_node_t *subconf = CONFIG_NODE(i);
 
 		if (equal_buf_str (&subconf->key, "iocache")) {
-			props->use_cache = atoi (subconf->val.buf);
+			ret = cherokee_atob (subconf->val.buf, &props->use_cache);
+			if (ret != ret_ok) return ret;
 		}
 	}
 
@@ -328,7 +330,7 @@ open_local_directory (cherokee_handler_file_t *fhdl, cherokee_buffer_t *local_fi
 
 	/* Open it
 	 */
-	fhdl->fd = open (local_file->buf, O_RDONLY | O_BINARY);
+	fhdl->fd = cherokee_open (local_file->buf, O_RDONLY | O_BINARY, 0);
 	if (fhdl->fd > 0) {
 		cherokee_fd_set_closexec (fhdl->fd);
 		return ret_ok;
@@ -482,6 +484,7 @@ cherokee_handler_file_custom_init (cherokee_handler_file_t *fhdl,
 		  (conn->encoder_new_func == NULL) &&
 		  (HDL_FILE_PROP(fhdl)->use_cache) &&
 		  (conn->socket.is_tls == non_TLS) &&
+		  (conn->flcache.mode == flcache_mode_undef) &&
 		  (http_method_with_body (conn->header.method)) &&
 		  (fhdl->info->st_size <= srv->iocache->max_file_size) &&
 		  (fhdl->info->st_size >= srv->iocache->min_file_size));
@@ -621,6 +624,7 @@ cherokee_handler_file_custom_init (cherokee_handler_file_t *fhdl,
 				(conn->encoder == NULL) &&
 				(conn->encoder_new_func == NULL) &&
 				(conn->socket.is_tls == non_TLS) &&
+				(conn->flcache.mode == flcache_mode_undef) &&
 				(fhdl->info->st_size >= srv->sendfile.min) &&
 				(fhdl->info->st_size <  srv->sendfile.max));
 
@@ -847,23 +851,18 @@ exit_sendfile:
 #endif
 	/* Check the amount to read
 	 */
-	size = buffer->size - 1;
-	if (size > (conn->range_end - fhdl->offset + 1)) {
-		size = conn->range_end - fhdl->offset + 1;
-	} else {
-		/* Align read size on a 4 byte limit
-		 */
-		size &= ~3;
-	}
+	size = MIN (DEFAULT_READ_SIZE, (conn->range_end - fhdl->offset + 1));
 
-	/* Check overflow */
-	if (unlikely (size > buffer->size)) {
-		return ret_error;
-	}
+	/* Ensure there's enough memory
+	 */
+	cherokee_buffer_ensure_size (buffer, size);
 
 	/* Read
 	 */
-	total = read (fhdl->fd, buffer->buf, size);
+	do {
+		total = read (fhdl->fd, buffer->buf, size);
+	} while ((total == -1) && (errno == EINTR));
+
 	switch (total) {
 	case 0:
 		return ret_eof;
