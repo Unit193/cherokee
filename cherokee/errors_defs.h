@@ -293,4 +293,5 @@
 #define CHEROKEE_ERROR_SSL_PKCS11                      266
 #define CHEROKEE_ERROR_SSL_DEFAULTS                    267
 #define CHEROKEE_ERROR_FLCACHE_MKDIR                   268
-#define CHEROKEE_ERROR_FLCACHE_CREATE_FILE             269
+#define CHEROKEE_ERROR_FLCACHE_MKDIRS                  269
+#define CHEROKEE_ERROR_FLCACHE_CREATE_FILE             270

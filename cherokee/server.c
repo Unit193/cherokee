@@ -241,7 +241,7 @@ cherokee_server_new  (cherokee_server_t **srv)
 	return ret_ok;
 
 error:
-	cherokee_handler_free (HANDLER(n));
+	cherokee_server_free (n);
 	return ret_error;
 }
 
@@ -341,6 +341,12 @@ cherokee_server_free (cherokee_server_t *srv)
 	cherokee_buffer_mrproper (&srv->pidfile);
 	cherokee_buffer_mrproper (&srv->themes_dir);
 	cherokee_buffer_mrproper (&srv->panic_action);
+
+	/* Error writter
+	 */
+	if (srv->error_writer != NULL) {
+		cherokee_logger_writer_free (srv->error_writer);
+	}
 
 	/* Module loader: It must be the last action to be performed
 	 * because it will close all the opened modules.

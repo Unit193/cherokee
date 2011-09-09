@@ -58,7 +58,10 @@ cellspacing="0" cellpadding="4">
 <td align="left" valign="top"><p class="table"><em>filter</em></p></td>
 <td align="left" valign="top"><p class="table">A filter that defines the conditions that must be
               fulfilled in order for the search to match a given
-              entry.</p></td>
+              entry. Use <tt>${user}</tt> in a filter as a substitution to
+              match the identifier inputted by a user accessing the
+              resource. The filter must resolve to a single user object.
+              For LDAP filter syntax, refer to RFC 2254.</p></td>
 </tr>
 <tr>
 <td align="left" valign="top"><p class="table"><em>tls</em></p></td>
@@ -80,6 +83,9 @@ cellspacing="0" cellpadding="4">
 <div class="paragraph"><p>Base DN, also known as search base, identifies the part of the
 directory tree you want to manage.</p></div>
 <div class="paragraph"><p>Bind DN is the user name.</p></div>
+<div class="paragraph"><p>To select any user from LDAP as part of the <tt>filter</tt>, specify
+<tt>(uid=${user})</tt>, where <tt>uid</tt> is the attribute that serves as your LDAP
+user identifier.</p></div>
 </div>
 <div id="footer">
 <div id="footer-text">

@@ -31,6 +31,7 @@
 #include "util.h"
 #include "avl_flcache.h"
 #include "dtm.h"
+#include "init.h"
 
 #define ENTRIES "flcache"
 
@@ -53,64 +54,6 @@ cherokee_flcache_new (cherokee_flcache_t **flcache)
 	cherokee_buffer_init (&n->local_directory);
 
 	*flcache = n;
-	return ret_ok;
-}
-
-static ret_t
-rm_rf (cherokee_buffer_t *path,
-       uid_t              uid)
-{
-	int               re;
-	DIR              *d;
-	struct dirent    *entry;
-	char              entry_buf[512];
-	struct stat       info;
-	cherokee_buffer_t tmp = CHEROKEE_BUF_INIT;
-
-	/* Remove the directory contents
-	 */
-	d = cherokee_opendir (path->buf);
-	if (d == NULL) {
-		return ret_ok;
-	}
-
-	while (true) {
-		re = cherokee_readdir (d, (struct dirent *)entry_buf, &entry);
-		if ((re != 0) || (entry == NULL))
-			break;
-
-                if (!strncmp (entry->d_name, ".",  1)) continue;
-                if (!strncmp (entry->d_name, "..", 2)) continue;
-
-		cherokee_buffer_clean      (&tmp);
-		cherokee_buffer_add_buffer (&tmp, path);
-		cherokee_buffer_add_char   (&tmp, '/');
-		cherokee_buffer_add        (&tmp, entry->d_name, strlen(entry->d_name));
-
-		re = cherokee_stat (tmp.buf, &info);
-		if (re == 0) {
-			if (info.st_uid == uid) {
-				if (S_ISDIR (info.st_mode)) {
-					rm_rf (&tmp, uid);
-					TRACE (ENTRIES, "Removing cache dir: %s\n", tmp.buf, re);
-				} else if (S_ISREG (info.st_mode)) {
-					re = unlink (tmp.buf);
-					TRACE (ENTRIES, "Removing cache file: %s, re=%d\n", tmp.buf, re);
-				}
-			}
-		}
-	}
-
-	cherokee_closedir (d);
-
-	/* It should be empty by now
-	 */
-	re = rmdir (path->buf);
-	TRACE (ENTRIES, "Removing main vserver cache dir: %s, re=%d\n", path->buf, re);
-
-	/* Clean up
-	 */
-	cherokee_buffer_mrproper (&tmp);
 	return ret_ok;
 }
 
@@ -153,7 +96,7 @@ cherokee_flcache_free (cherokee_flcache_t *flcache)
 	/* Remove its virtual server contents
 	 */
 	if (! cherokee_buffer_is_empty (&flcache->local_directory)) {
-		rm_rf (&flcache->local_directory, uid);
+		cherokee_rm_rf (&flcache->local_directory, uid);
 
 		/* Remove global dir
 		 */
@@ -168,6 +111,26 @@ cherokee_flcache_free (cherokee_flcache_t *flcache)
 	return ret_ok;
 }
 
+static ret_t
+mkdir_flcache_directory (cherokee_flcache_t        *flcache,
+			 cherokee_virtual_server_t *vserver,
+			 const char                *basedir)
+{
+	/* Build the fullpath
+	 */
+	cherokee_buffer_clean      (&flcache->local_directory);
+	cherokee_buffer_add        (&flcache->local_directory, basedir, strlen(basedir));
+	cherokee_buffer_add_str    (&flcache->local_directory, "/");
+	cherokee_buffer_add_long10 (&flcache->local_directory, getpid());
+	cherokee_buffer_add_str    (&flcache->local_directory, "/");
+	cherokee_buffer_add_buffer (&flcache->local_directory, &vserver->name);
+
+	/* Create directory
+	 */
+	return cherokee_mkdir_p_perm (&flcache->local_directory, 0755, W_OK);
+}
+
+
 ret_t
 cherokee_flcache_configure (cherokee_flcache_t     *flcache,
 			    cherokee_config_node_t *conf,
@@ -179,18 +142,23 @@ cherokee_flcache_configure (cherokee_flcache_t     *flcache,
 	/* Beware: conf might be NULL */
 	UNUSED (conf);
 
-	cherokee_buffer_add_str    (&flcache->local_directory, CHEROKEE_FLCACHE);
-	cherokee_buffer_add_str    (&flcache->local_directory, "/");
-	cherokee_buffer_add_long10 (&flcache->local_directory, getpid());
-	cherokee_buffer_add_str    (&flcache->local_directory, "/");
-	cherokee_buffer_add_buffer (&flcache->local_directory, &vserver->name);
-
-	/* Create directory
-	 */
-	ret = cherokee_mkdir_p_perm (&flcache->local_directory, 0755, W_OK);
+	ret = mkdir_flcache_directory (flcache, vserver, CHEROKEE_FLCACHE);
 	if (ret != ret_ok) {
-		LOG_CRITICAL (CHEROKEE_ERROR_FLCACHE_MKDIR, flcache->local_directory.buf, "write");
-		return ret;
+		cherokee_buffer_t tmp = CHEROKEE_BUF_INIT;
+
+		cherokee_buffer_add_buffer (&tmp, &cherokee_tmp_dir);
+		cherokee_buffer_add_str    (&tmp, "/flcache");
+
+		ret = mkdir_flcache_directory (flcache, vserver, tmp.buf);
+		if (ret != ret_ok) {
+			LOG_CRITICAL (CHEROKEE_ERROR_FLCACHE_MKDIRS,
+				      CHEROKEE_FLCACHE, cherokee_tmp_dir.buf, "write");
+		}
+
+		cherokee_buffer_mrproper (&tmp);
+		if (ret != ret_ok) {
+			return ret;
+		}
 	}
 
 	/* Set the directory permissions
@@ -525,13 +493,13 @@ inspect_header (cherokee_flcache_conn_t *flcache_conn,
 		/* Set-cookie
 		 */
 		else if (strncasecmp (begin, "Set-cookie:", 11) == 0) {
-			if (conn->flcache_cookies_disregard) {
+			if (conn->config_entry.flcache_cookies_disregard) {
 				int                 re;
 				void               *pcre;
 				cherokee_list_t    *i;
 				cherokee_boolean_t  matched = false;
 
-				list_for_each (i, conn->flcache_cookies_disregard) {
+				list_for_each (i, conn->config_entry.flcache_cookies_disregard) {
 					pcre = LIST_ITEM_INFO(i);
 
 					re = pcre_exec (pcre, NULL, begin, end-begin, 0, 0, NULL, 0);
@@ -600,7 +568,7 @@ inspect_header (cherokee_flcache_conn_t *flcache_conn,
 	/* Check the caching policy
 	 */
 	if ((! do_cache) &&
-	    (conn->flcache_policy == flcache_policy_explicitly_allowed))
+	    (conn->config_entry.flcache_policy == flcache_policy_explicitly_allowed))
 	{
 		TRACE(ENTRIES, "Doesn't explicitly allow caching.%s", "\n");
 		return ret_deny;
@@ -626,7 +594,7 @@ inspect_header (cherokee_flcache_conn_t *flcache_conn,
 
 static ret_t
 create_flconn_file (cherokee_flcache_t    *flcache,
-		  cherokee_connection_t *conn)
+		    cherokee_connection_t *conn)
 {
 	ret_t                        ret;
 	cherokee_buffer_t            tmp   = CHEROKEE_BUF_INIT;
@@ -907,6 +875,9 @@ cherokee_flcache_conn_clean (cherokee_flcache_conn_t *flcache_conn)
 	flcache_conn->mode          = flcache_mode_undef;
 
 	if (flcache_conn->fd != -1) {
+		TRACE (ENTRIES, "Front Line Cache: Closing fd=%d (%d refs)\n",
+		       flcache_conn->fd, entry->ref_count);
+
 		cherokee_fd_close (flcache_conn->fd);
 		flcache_conn->fd = -1;
 	}

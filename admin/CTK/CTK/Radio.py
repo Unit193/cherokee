@@ -58,6 +58,37 @@ class Radio (Widget):
         return render
 
 
+class RadioGroupCfg (Box):
+    def __init__ (self, key, options, _props={}):
+        Box.__init__ (self)
+
+        self.props    = _props.copy()
+        self._options = options
+
+        if not 'id' in self.props:
+            self.id = 'RadioGroup_%s' %(self.uniq_id)
+
+        cfg_value = cfg.get_val (key)
+
+        for o in options:
+            val, desc = o
+
+            new_props = {}
+            new_props['name']  = key
+            new_props['value'] = val
+
+            # Initial value
+            if cfg_value != None and \
+               cfg_value == val:
+                new_props['checked'] = 1
+
+            elif 'checked' in self.props:
+                if self.props['checked'] == val:
+                    new_props['checked'] = 1
+
+            self += RadioText (desc, new_props)
+
+
 class RadioText (Box):
     def __init__ (self, txt, props={}):
         Box.__init__ (self)
@@ -67,5 +98,4 @@ class RadioText (Box):
 
         self.text = Box ({'class': 'radio-text'}, RawHTML(txt))
         self += self.text
-
-        self.text.bind('click', "$('#%s').attr('checked', true);" %(self.radio.id))
+        self.text.bind ('click', "$('#%s').attr('checked', true).trigger('change');" %(self.radio.id))

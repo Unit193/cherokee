@@ -31,7 +31,7 @@ from Box import Box
 from Submitter import Submitter, SubmitterButton
 from Page import Page, PageEmpty
 from Config import Config
-from Plugin import Plugin, instance_plugin, load_module, load_module_pyc
+from Plugin import Plugin, instance_plugin, load_module, load_module_pyc, unload_module
 
 # Widgets
 from Table import Table, TableFixed
@@ -60,11 +60,11 @@ from DatePicker import DatePicker
 from Button import Button
 from TextArea import TextArea
 from ToggleButton import ToggleButton, ToggleButtonOnOff
-from Druid import Druid, DruidButtonsPanel, DruidButton, DruidButton_Goto, DruidButton_Close, DruidButton_Submit, DruidButtonsPanel_Next, DruidButtonsPanel_PrevNext, DruidButtonsPanel_PrevCreate, DruidButtonsPanel_Create, DruidButtonsPanel_Cancel, DruidButtonsPanel_Next_Auto, DruidButtonsPanel_PrevNext_Auto, DruidButtonsPanel_PrevCreate_Auto, DruidContent_TriggerNext, DruidContent__JS_to_goto, DruidContent__JS_to_close, DruidContent__JS_if_external_submit, DruidContent__JS_if_internal_submit
+from Druid import Druid, DruidButtonsPanel, DruidButton, DruidButton_Goto, DruidButton_Close, DruidButton_Submit, DruidButtonsPanel_Next, DruidButtonsPanel_PrevNext, DruidButtonsPanel_PrevCreate, DruidButtonsPanel_Create, DruidButtonsPanel_Cancel, DruidButtonsPanel_Close, DruidButtonsPanel_Next_Auto, DruidButtonsPanel_PrevNext_Auto, DruidButtonsPanel_PrevCreate_Auto, DruidContent_TriggerNext, DruidContent__JS_to_goto, DruidContent__JS_to_goto_next, DruidContent__JS_to_close, DruidContent__JS_if_external_submit, DruidContent__JS_if_internal_submit
 from List import List, ListEntry
 from ProgressBar import ProgressBar
-from Downloader import Downloader, DownloadEntry_Factory
-from Radio import Radio, RadioText
+from Downloader import Downloader, DownloadEntry_Factory, DownloadEntry_Exists
+from Radio import Radio, RadioText, RadioGroupCfg
 from XMLRPCProxy import XMLRPCProxy
 from AjaxUpload import AjaxUpload, AjaxUpload_Generic
 from Paginator import Paginator

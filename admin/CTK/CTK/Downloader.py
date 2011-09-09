@@ -54,7 +54,9 @@ function update_progress_%(id)s() {
   /* Next step
    */
   if ((info.status == 'init') ||
-      (info.status == 'downloading')) {
+      (info.status == 'downloading'))
+  {
+        $('#%(progressbar_id)s').trigger ( $.extend({'type':'update'}, info));
         window.setTimeout (update_progress_%(id)s, 1000);
 
   } else if (info.status == 'stopped') {
@@ -89,12 +91,14 @@ class DownloadEntry (threading.Thread):
     def __init__ (self, url):
         threading.Thread.__init__ (self)
 
-        self.url        = url
-        self.size       = 0
-        self.percent    = 0
-        self.downloaded = 0
-        self.status     = 'init'
-        self.wanna_exit = False
+        self.url         = url
+        self.size        = 0
+        self.percent     = 0
+        self.downloaded  = 0
+        self.status      = 'init'
+        self.wanna_exit  = False
+        self.target_temp = None
+        self.target_path = None
 
     def stop (self):
         self.status     = 'stopped'
@@ -111,7 +115,12 @@ class DownloadEntry (threading.Thread):
             print e
             self.status = 'error'
 
-        self.size = int(self.response.headers.getheaders("Content-Length")[0])
+        length = self.response.headers.getheaders("Content-Length")
+        if length:
+            self.size = int(length[0])
+        else:
+            self.size = -1
+
         self.downloaded = 0
 
         self.status      = 'downloading'
@@ -142,7 +151,11 @@ class DownloadEntry (threading.Thread):
 
             # Stats
             self.downloaded += len(chunk)
-            self.percent = int(self.downloaded * 100 / self.size)
+
+            if self.size != -1:
+                self.percent = int(self.downloaded * 100 / self.size)
+            else:
+                self.percent = 50
 
 
 def DownloadEntry_Factory (url, *args, **kwargs):
@@ -153,6 +166,9 @@ def DownloadEntry_Factory (url, *args, **kwargs):
         downloads[url] = tmp
     return downloads[url]
 
+def DownloadEntry_Exists (url):
+    global downloads
+    return downloads.has_key (url)
 
 class DownloadReport:
     lock = threading.RLock()

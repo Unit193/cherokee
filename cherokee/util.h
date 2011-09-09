@@ -166,9 +166,16 @@ ret_t cherokee_getgrgid      (gid_t gid, struct group *pwbuf, char *buf, size_t 
 ret_t cherokee_getgrnam_gid  (const char *name, struct group *pwbuf, char *buf, size_t buflen);
 
 ret_t cherokee_mkstemp       (cherokee_buffer_t *buffer, int *fd);
+ret_t cherokee_mkdtemp       (char *template);
+
 ret_t cherokee_mkdir         (const char *path, int mode);
 ret_t cherokee_mkdir_p       (cherokee_buffer_t *path, int mode);
 ret_t cherokee_mkdir_p_perm  (cherokee_buffer_t *dir_path, int create_mode, int ensure_perm);
+ret_t cherokee_rm_rf         (cherokee_buffer_t *path, uid_t uid);
+
+void cherokee_random_seed    (void);
+long cherokee_random         (void);
+
 ret_t cherokee_ntop          (int family, struct sockaddr *addr, char *dst, size_t cnt);
 ret_t cherokee_wait_pid      (int pid, int *retcode);
 ret_t cherokee_reset_signals (void);
