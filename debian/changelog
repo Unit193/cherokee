@@ -1,8 +1,10 @@
 cherokee (1.2.99-1) unstable; urgency=low
 
   * New upstream release
+  * Disabled some front-line cache tests which caused the package to
+    FTBFS
 
- -- Gunnar Wolf <gwolf@debian.org>  Sat, 10 Sep 2011 09:39:32 -0500
+ -- Gunnar Wolf <gwolf@debian.org>  Sat, 10 Sep 2011 10:35:56 -0500
 
 cherokee (1.2.98-1) unstable; urgency=low
 
