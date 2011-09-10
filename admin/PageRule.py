@@ -46,7 +46,7 @@ URL_APPLY        = '/vserver/%s/rule/apply'
 URL_NEW_MANUAL   = '/vserver/%s/rule/new/manual'
 URL_NEW_MANUAL_R = r'/vserver/(\d+)/rule/new/manual'
 URL_BASE_R       = r'^/vserver/(\d+)/rule$'
-URL_APPLY_R      = r'^/vserver/(\d+)/rule/apply$'
+URL_APPLY_R      = r'^/vserver/(\d+)/rule/apply'
 URL_PARTICULAR_R = r'^/vserver/(\d+)/rule/\d+$'
 
 NOTE_DELETE_DIALOG = N_('<p>You are about to delete the <b>%s</b> behavior rule.</p><p>Are you sure you want to proceed?</p>')
@@ -137,13 +137,26 @@ class RuleNew (CTK.Container):
                    CTK.Box({'class': 'description'}, CTK.RawHTML(_('Manual configuration')))]
         panel.Add ('manual', URL_NEW_MANUAL%(vsrv_num), content, draggable=False)
 
+
         # Wizard Categories
-        for cat in Wizard.Categories (Wizard.TYPE_RULE):
-            url_pre = '%s/%s' %(Wizard.URL_CAT_LIST_RULE, cat['name'])
-            title, descr = cat['title'], cat['descr']
-            content = [CTK.Box({'class': 'title'},       CTK.RawHTML(_(title))),
-                       CTK.Box({'class': 'description'}, CTK.RawHTML(_(descr)))]
-            panel.Add (cat['name'], url_pre, content, draggable=False)
+        wizards2_path = os.path.realpath (__file__ + "/../wizards2")
+        if os.path.exists (wizards2_path):
+            # Wizards 2.0
+            import wizards2
+
+            categories = wizards2.Categories.get()
+            for cat in categories:
+                url_pre = '%s/%s' %(wizards2.Categories.URL_CAT_LIST_RULE, categories.index(cat))
+                content = [CTK.Box({'class': 'title'}, CTK.RawHTML(_(cat)))]
+                panel.Add (cat.replace(' ','_'), url_pre, content, draggable=False)
+        else:
+            # Wizards 1.0
+            for cat in Wizard.Categories (Wizard.TYPE_RULE):
+                url_pre = '%s/%s' %(Wizard.URL_CAT_LIST_RULE, cat['name'])
+                title, descr = cat['title'], cat['descr']
+                content = [CTK.Box({'class': 'title'},       CTK.RawHTML(_(title))),
+                           CTK.Box({'class': 'description'}, CTK.RawHTML(_(descr)))]
+                panel.Add (cat['name'], url_pre, content, draggable=False)
 
 
 class Render:

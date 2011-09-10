@@ -117,15 +117,13 @@ error:
 }
 
 static ret_t
-generate_admin_password (cherokee_buffer_t *buf)
+generate_password (cherokee_buffer_t *buf)
 {
 	cuint_t i;
 	cuint_t n;
 
-	srand(getpid()*time(NULL));
-
 	for (i=0; i<PASSWORD_LEN; i++) {
-		n = rand()%(sizeof(ALPHA_NUM)-1);
+		n = cherokee_random()%(sizeof(ALPHA_NUM)-1);
 		cherokee_buffer_add_char (buf, ALPHA_NUM[n]);
 	}
 
@@ -197,7 +195,7 @@ config_server (cherokee_server_t *srv)
 	/* Generate the password
 	 */
 	if (unsecure == 0) {
-		ret = generate_admin_password (&password);
+		ret = generate_password (&password);
 		if (ret != ret_ok)
 			return ret;
 	}
@@ -273,7 +271,11 @@ config_server (cherokee_server_t *srv)
 				  RULE_PRE "1!handler!balancer!source!1 = 1\n");
 
 	cherokee_buffer_add_str  (&buf, RULE_PRE "1!handler!env!CTK_COOKIE = ");
-	generate_admin_password  (&buf);
+	generate_password  (&buf);
+	cherokee_buffer_add_char (&buf, '\n');
+
+	cherokee_buffer_add_str  (&buf, RULE_PRE "1!handler!env!CTK_SUBMITTER_SECRET = ");
+	generate_password  (&buf);
 	cherokee_buffer_add_char (&buf, '\n');
 
 	if (! debug) {
@@ -404,9 +406,9 @@ config_server (cherokee_server_t *srv)
 				 RULE_PRE "20!expiration!caching = no-cache\n"
 				 RULE_PRE "20!expiration!caching!no-store = 1\n");
 
-	cherokee_buffer_add_str (&buf, RULE_PRE "20!document_root = ");
-	cherokee_tmp_dir_copy   (&buf);
-	cherokee_buffer_add_va  (&buf, "/cherokee/rrd-cache\n");
+	cherokee_buffer_add_str    (&buf, RULE_PRE "20!document_root = ");
+	cherokee_buffer_add_buffer (&buf, &cherokee_tmp_dir);
+	cherokee_buffer_add_va     (&buf, "/rrd-cache\n");
 
 	/* MIME types
 	 */
@@ -637,6 +639,11 @@ main (int argc, char **argv)
 
 	/* Initialize the embedded server */
 	cherokee_init();
+
+	/* Seed random numbers
+	 */
+	cherokee_random_seed();
+
 	cherokee_spawner_set_active (false);
 	process_parameters (argc, argv);
 

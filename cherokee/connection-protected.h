@@ -67,6 +67,7 @@
 #include "regex.h"
 #include "bind.h"
 #include "bogotime.h"
+#include "config_entry.h"
 
 typedef enum {
 	phase_nothing,
@@ -84,13 +85,14 @@ typedef enum {
 } cherokee_connection_phase_t;
 
 
-#define conn_op_nothing        0
-#define conn_op_root_index    (1 << 1)
-#define conn_op_tcp_cork      (1 << 2)
-#define conn_op_document_root (1 << 3)
-#define conn_op_was_polling   (1 << 4)
-#define conn_op_cant_encoder  (1 << 5)
-#define conn_op_got_eof       (1 << 6)
+#define conn_op_nothing            0
+#define conn_op_root_index        (1 << 1)
+#define conn_op_tcp_cork          (1 << 2)
+#define conn_op_document_root     (1 << 3)
+#define conn_op_was_polling       (1 << 4)
+#define conn_op_cant_encoder      (1 << 5)
+#define conn_op_got_eof           (1 << 6)
+#define conn_op_chunked_formatted (1 << 7)
 
 typedef cuint_t cherokee_connection_options_t;
 
@@ -104,6 +106,7 @@ struct cherokee_connection {
 	void                         *vserver;
 	void                         *thread;
 	cherokee_bind_t              *bind;
+	cherokee_config_entry_ref_t   config_entry;
 
 	/* ID
 	 */
@@ -137,7 +140,6 @@ struct cherokee_connection {
 	/* Headers
 	 */
 	cherokee_header_t             header;
-	cherokee_list_t              *header_ops;
 
 	/* Encoders
 	 */
@@ -166,8 +168,6 @@ struct cherokee_connection {
 	/* Authentication
 	 */
 	cherokee_validator_t         *validator;           /* Validator object */
-	cherokee_buffer_t            *realm_ref;           /* "My private data" */
-
 	cherokee_http_auth_t          auth_type;           /* Auth type of the resource */
 	cherokee_http_auth_t          req_auth_type;       /* Auth type of the request  */
 
@@ -187,7 +187,6 @@ struct cherokee_connection {
 	 */
 	uint32_t                      keepalive;
 	time_t                        timeout;
-
 	time_t                        timeout_lapse;
 	cherokee_buffer_t            *timeout_header;
 
@@ -207,8 +206,6 @@ struct cherokee_connection {
 	/* Front-line cache
 	 */
 	cherokee_flcache_conn_t       flcache;
-	cherokee_flcache_policy_t     flcache_policy;
-	cherokee_list_t              *flcache_cookies_disregard;
 
 	/* Regular expressions
 	 */

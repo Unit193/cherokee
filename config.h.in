@@ -303,6 +303,9 @@
 /* Define to 1 if you have the <pwd.h> header file. */
 #undef HAVE_PWD_H
 
+/* Define to 1 if you have the `random' function. */
+#undef HAVE_RANDOM
+
 /* Define to 1 if you have the `readdir' function. */
 #undef HAVE_READDIR
 
@@ -372,6 +375,12 @@
 
 /* HAVE_SOCKADDR_UN */
 #undef HAVE_SOCKADDR_UN
+
+/* Define to 1 if you have the `srandom' function. */
+#undef HAVE_SRANDOM
+
+/* Define to 1 if you have the `srandomdev' function. */
+#undef HAVE_SRANDOMDEV
 
 /* Define to 1 if you have the <stdarg.h> header file. */
 #undef HAVE_STDARG_H

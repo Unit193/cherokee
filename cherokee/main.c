@@ -80,6 +80,7 @@ union semun {
 
 pid_t               pid;
 char               *worker_uid;
+int                 worker_retcode;
 cherokee_boolean_t  graceful_restart;
 char               *cherokee_worker;
 char               *pid_file_path         = NULL;
@@ -459,10 +460,13 @@ do_spawn (void)
 	size = *((int *)p);
 	p += sizeof(int);
 	if (size <= 0) {
-		return;
+		goto cleanup;
 	}
 
 	interpreter = malloc (sizeof("exec ") + size);
+	if (interpreter == NULL) {
+		goto cleanup;
+	}
 	strncpy (interpreter, "exec ", 5);
 	strncpy (interpreter + 5, p, size + 1);
 	p += size + 1;
@@ -495,7 +499,7 @@ do_spawn (void)
 
 	envp = malloc (sizeof(char *) * (envs + 1));
 	if (envp == NULL) {
-		return;
+		goto cleanup;
 	}
 	envp[envs] = NULL;
 
@@ -506,7 +510,9 @@ do_spawn (void)
 		p += sizeof(int);
 
 		e = malloc (size + 1);
-		if (e == NULL) return;
+		if (e == NULL) {
+			goto cleanup;
+		}
 
 		memcpy (e, p, size);
 		e[size] = '\0';
@@ -872,6 +878,7 @@ process_wait (pid_t pid)
 		/* Child terminated normally */
 		PRINT_MSG ("PID %d: exited re=%d\n", pid, re);
 		if (re != 0) {
+			worker_retcode = re;
 			return ret_error;
 		}
 	}
@@ -880,6 +887,7 @@ process_wait (pid_t pid)
 		PRINT_MSG ("PID %d: received a signal=%d\n", pid, WTERMSIG(exitcode));
 	}
 
+	worker_retcode = 0;
 	return ret_ok;
 }
 
@@ -1090,6 +1098,7 @@ main (int argc, char *argv[])
 	use_valgrind     = figure_use_valgrind (argc, argv);
 	pid_file_path    = figure_pid_file_path (config_file_path);
 	worker_uid       = figure_worker_uid (config_file_path);
+	worker_retcode   = -1;
 
 	/* Turn into a daemon
 	 */
@@ -1131,5 +1140,5 @@ main (int argc, char *argv[])
 		clean_up();
 	}
 
-	return EXIT_OK;
+	return (worker_retcode == 0) ? EXIT_OK : EXIT_ERROR;
 }

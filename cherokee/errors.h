@@ -295,6 +295,7 @@ static const cherokee_error_t __cherokee_errors[] =
   {  266, "Could not init pkcs11 engine", "The issue seems to be related to your system.", NULL, NULL, true },
   {  267, "Could not set all defaults", "The issue seems to be related to your system.", NULL, NULL, true },
   {  268, "Could not create the '%s' directory, or it doesn't have %s permissions", "The issue seems to be related to your system.", NULL, NULL, true },
-  {  269, "Could not create the '%s' cache object file: ${errno}", "The issue seems to be related to your system.", NULL, NULL, true },
+  {  269, "Could not create the FLCache temporal directy neither under %s nor under %s, or it doesn't have %s permissions", "The issue seems to be related to your system.", NULL, NULL, true },
+  {  270, "Could not create the '%s' cache object file: ${errno}", "The issue seems to be related to your system.", NULL, NULL, true },
   {  -1, NULL, NULL, NULL, NULL, true }
 };

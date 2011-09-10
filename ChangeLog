@@ -1,3 +1,634 @@
+2011-09-07  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6841 git=6c4eedcc6b5a2c33afbeba1f2ec5372a2baa6716
+
+    Complex rule matches (and, or and not) accesses now the right internal
+    configuration objects. Besides fixing the server core issue, this
+    patch also adds a new QA test entry to project us against potential
+    regressions. It fixes bug #1207: http://bugs.cherokee-project.com/1207
+    
+ cherokee/rule.c            |   20 +++++++++++++++++---
+ cherokee/rule.h            |   10 ++++++++--
+ cherokee/rule_and.c        |    8 ++++++++
+ cherokee/rule_directory.c  |    8 ++++++--
+ cherokee/rule_not.c        |    7 +++++++
+ cherokee/rule_or.c         |    7 +++++++
+ qa/287-rule-inheritance.py |   36 ++++++++++++++++++++++++++++++++++++
+ qa/Makefile.am             |    3 ++-
+ 8 files changed, 91 insertions(+), 8 deletions(-)
+
+
+2011-09-06  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6839 git=ef86887c12ea89c7541fe3221bfe990c56874419
+
+    Fixes a compilation issue
+    
+ cherokee/validator_ldap.c |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+2011-09-06  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6838 git=186f0558108d07144fec9f93d3291b392333e4e4
+
+    Second part of yesterday's "Chunked encoded responses over SSL/TLS"
+    patch. Under some circumstances the terminating mark was not being
+    sent, and thus HTTP clients reported a malformed response.
+    
+ cherokee/connection.c |   10 +++++-----
+ 1 files changed, 5 insertions(+), 5 deletions(-)
+
+
+2011-09-06  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6837 git=38edb6dc2a38a164c0f91e74cdad6b65a53d94af
+
+    Adds a clarification to the LDAP validator documentation page. Thanks
+    for David <sk.random2@gmail.com> for the patch!
+    
+ doc/modules_validators_ldap.txt |    9 ++++++++-
+ 1 files changed, 8 insertions(+), 1 deletions(-)
+
+
+2011-09-05  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6836 git=89fa41008ac95b59da320da15b9f4557d647c032
+
+    Extends a few TRACE entries to make clear that no information was sent
+    to the client when a libSSL error is caught and reported.
+    
+ cherokee/cryptor_libssl.c |   12 ++++++------
+ 1 files changed, 6 insertions(+), 6 deletions(-)
+
+
+2011-09-05  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6835 git=c582add322322659568e0f30c4dd6ec49a4f2228
+
+    The long awaited "EAGAIN handle of chunked responses over SSL/TLS"
+    fix. Due a libssl restriction, the cryptor will NOT report ret_ok
+    until the content of the source buffer is fully sent (the buffer can
+    not be modified while it is being sent). This patch makes Cherokee to
+    generate the plain chunk in-memory in order to let the original crytor
+    object to mechanism handle the I/O events.
+    
+    This bug-fix solves bug #1243: http://bugs.cherokee-project.com/1243
+    and most likely a few other SSL/TLS related bug reports.
+    
+ cherokee/connection-protected.h |   15 ++++++++-------
+ cherokee/connection.c           |   26 ++++++++++++++++++++++++--
+ 2 files changed, 32 insertions(+), 9 deletions(-)
+
+2011-09-05  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6834 git=ed75dcf6a67918d6e6cf630e620d0d04cf83ffdb
+
+    LDAP's filter is optional. http://bugs.cherokee-project.com/1252
+    
+ cherokee/validator_ldap.c |   23 ++++++++++++++---------
+ 1 files changed, 14 insertions(+), 9 deletions(-)
+
+2011-09-05  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6833 git=86f06601775a28fa484097814ec5098e8c14d15c
+
+    'users' was detected as an unknown configuration key entry by both the
+    LDAP and MySQL validators. Fixes http://bugs.cherokee-project.com/1251
+    Thanks to David James Breitkreutz for reporting the problem!
+    
+ cherokee/validator_ldap.c  |    5 +++--
+ cherokee/validator_mysql.c |    8 ++++----
+ 2 files changed, 7 insertions(+), 6 deletions(-)
+
+
+2011-09-03  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6832 git=013d512c3bd4b867d5f659d828ae167712ef04df
+
+    Adds a missing documentation page. It caused the /doc interface of
+    Cherokee-admin to fail when /help/basics.html was accessed. Thanks to
+    MATSUU Takuto <matsuu@gmail.com> for the patch!
+    
+ doc/Makefile.am |    1 +
+ doc/distro.txt  |    3 +++
+ doc/index.txt   |    2 +-
+ 3 files changed, 5 insertions(+), 1 deletions(-)
+
+
+2011-08-30  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6830 git=293d674129f7cde4ed8799432999ffcc3a341fef
+
+    Re-implements (extends, actually) SCRIPT_FILENAME.
+    
+ cherokee/handler_fcgi.c |   45 +++++++++++++++++++++++++++------------------
+ 1 files changed, 27 insertions(+), 18 deletions(-)
+
+
+2011-08-30  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6829 git=cf19b8d177619a8aab27100c7564ce2df0a81e30
+
+    Clean up. Removes a few lines of old code.
+    
+ cherokee/handler_cgi_base.c |   10 ++--------
+ 1 files changed, 2 insertions(+), 8 deletions(-)
+
+
+2011-08-30  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6828 git=e4d1f3fd934685d83355f200ab57e273fc4df67e
+
+    Translate a CGI from PHP to Python because php-fpm cannot be used as a
+    regular command line tool to execute PHP (as php-cgi could be).
+    
+ qa/115-Respin.py |   13 +++++--------
+ 1 files changed, 5 insertions(+), 8 deletions(-)
+
+
+2011-08-30  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6827 git=4db695b907fd490752420d019dfd617bbd3d7c6e
+
+    Fixes the support for php-fpm in the QA - as soon as some PHP devel
+    gets PHP bug #55533 fixed up: https://bugs.php.net/bug.php?id=55533
+    meanwhile Cherokee's QA cannot be run with a vanilla version of fpm.
+    
+ qa/run-tests.py |    6 +++++-
+ 1 files changed, 5 insertions(+), 1 deletions(-)
+
+
+2011-08-24  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6824 git=3e7850ac9b962390f210c2e5091e6f93e5442a91
+
+    The internal Virtual Server wizards support has been extended to
+    support the upcoming "Wizards 2".
+    
+ admin/PageRule.py |   25 +++++++++++++++++++------
+ 1 files changed, 19 insertions(+), 6 deletions(-)
+
+
+2011-08-21  Stefan de Konink <stefan@konink.de>
+            svn=6822 git=3de5e0ab3f8b93bf081b0e2bab49fa72cf8f1cc4
+
+    Implements an extra check after cherokee_avl_get_ptr where the return value is used.
+    
+ cherokee/admin_server.c        |    5 +++--
+ cherokee/connection.c          |    2 +-
+ cherokee/handler_dirlist.c     |    2 +-
+ cherokee/handler_post_report.c |    6 +++---
+ cherokee/handler_streaming.c   |    2 +-
+ cherokee/plugin_loader.c       |    5 ++++-
+ cherokee/post_track.c          |    2 +-
+ 7 files changed, 14 insertions(+), 10 deletions(-)
+
+
+2011-08-21  Stefan de Konink <stefan@konink.de>
+            svn=6821 git=ae58d3fdfd3ebbfc9ad61332463fb35abe822c94
+
+    Minor change definitieve => definitief.
+    
+ po/admin/nl.po |    4 ++--
+ 1 files changed, 2 insertions(+), 2 deletions(-)
+
+
+2011-08-21  Stefan de Konink <stefan@konink.de>
+            svn=6820 git=c9354999628a4460756283bb99d29ffab77ee9ec
+
+    mehmetali did some more testing and found out that test.flv?start (without =) now crashes. Fixed this by explicitly
+    checking the return value from cherokee_avl_get_ptr.
+    
+ cherokee/handler_streaming.c |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+
+2011-08-21  Stefan de Konink <stefan@konink.de>
+            svn=6819 git=9e7895ea2b523798b4f6abbed50d95a8e8b02f03
+
+    We didn't check if the argument was actually contained a value, a
+    situation that will fail later on, because the strtol cannot handle
+    NULL.
+    It fixes bug #1241:
+    http://code.google.com/p/cherokee/issues/detail?id=1241
+    
+    Mehmetali, thanks a million for reporting!
+    
+ cherokee/handler_streaming.c |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+
+2011-08-19  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6817 git=c479c78b77ffa6990131151a14b0999b8ce853df
+
+    Bug fix: The list of wizards isn't sortable.
+    
+ admin/PageVServers.py |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+
+2011-08-19  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6816 git=a97bb38575bf2919939663a8dd57e7b77c0ea05e
+
+    Fixes an out-by-one bug. Thanks a million to Martin Szulecki for
+    reporting the problem.
+    
+ cherokee/handler_file.c |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+
+2011-08-15  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6809 git=096dd8e1945adec195d94632f0fb5ec241127c2f
+
+    Updates the "Wizards 2.0" loader to the new interface.
+    
+ admin/PageVServers.py |    4 ++--
+ 1 files changed, 2 insertions(+), 2 deletions(-)
+
+
+2011-08-12  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6803 git=2f8a12588c828d7c8fb6f16a7979f6acd381ed5e
+
+    Improves the SSL cookbook. It was not clear enough how to enable SSL.
+    Thanks a million to Dale (dale.liszka@gmail.com) for the patch.
+    
+ doc/Makefile.am                                 |    1 +
+ doc/cookbook_ssl.txt                            |   28 +++++++++++++++++++++++
+ doc/media/images/admin_vserver_security_ssl.png |  Bin 0 -> 34729 bytes
+ 3 files changed, 29 insertions(+), 0 deletions(-)
+
+
+2011-08-12  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6802 git=41969fe0efa37eb3b8168dab19fab75aa33e8170
+
+    Fixes a typo: s/pytonpath/pythonpath/. Thanks to Jeff Bauer for
+    reporting it!
+    
+ doc/cookbook_uwsgi.txt |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+
+2011-07-30  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6777 git=5fe04dd7341d78771d3ff91a7bde953d5693c1f4
+
+    Complete the list of references with a link to Google+.
+    
+ admin/About.py |    3 ++-
+ 1 files changed, 2 insertions(+), 1 deletions(-)
+
+2011-07-08  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6771 git=4a8bbb21686496e4b095325b27d2a44460571864
+
+    The php-fpm binaries did not work with the current code.
+    
+ qa/conf.py.pre |    7 +++----
+ 1 files changed, 3 insertions(+), 4 deletions(-)
+
+
+2011-07-08  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6770 git=4d4a183fce1370af057c10db5b92a6f32a434fdc
+
+    s/ggdb/ggdb3/
+    
+ README |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+
+2011-07-06  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6769 git=45d63a71fbb01c941023ed1871e8b856b204d1b6
+
+    Fixes a regression introduced a couple of commits ago.
+    
+ cherokee/flcache.c |    4 ++--
+ 1 files changed, 2 insertions(+), 2 deletions(-)
+
+2011-07-04  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6768 git=c4844c5d3cc1580b902cc768a97121c343edb5cc
+
+    Print the QA test number in the test error report message.
+    
+ qa/base.py |   11 ++++++++++-
+ 1 files changed, 10 insertions(+), 1 deletions(-)
+
+
+2011-07-04  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6767 git=58204f5dd255a3e305bcfb6fcd78ae5a07812483
+
+    The QA bench stopped working on environments where Cherokee
+    was not properly installed. For instance on a system where
+    Cherokee was not "make install"ed. The problem laid on the
+    way Cherokee tries to create Front-Line Cache's base dir.
+    This patch improves the process so if the directory cannot
+    be create, the server tries to create it a second under the
+    system's temporal directory.
+    
+ cherokee/error_list.py |    4 +++
+ cherokee/flcache.c     |   50 ++++++++++++++++++++++++++++++++++++-----------
+ 2 files changed, 42 insertions(+), 12 deletions(-)
+
+
+2011-06-30  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6766 git=0a997f3b82daadf26e6e14e19558982b0b1f4cdf
+
+    Fixes the CPU/Core detection on MacOS 10.5 (PowerPC). Thanks to Fill Q
+    for submitting the fix!
+    
+ admin/SystemStats.py |   19 ++++++++++++++++---
+ 1 files changed, 16 insertions(+), 3 deletions(-)
+
+
+2011-06-23  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6765 git=3afbab927f520734afb0390877a37f1d798287d6
+
+    Minor clean up
+    
+ admin/server.py |    1 -
+ 1 files changed, 0 insertions(+), 1 deletions(-)
+
+
+2011-06-23  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6764 git=a8d0f14c53ea935d6a0e6557ba99d01148ff8f27
+
+    Implements cherokee_buffer_encode_sha512_base64()
+    
+ cherokee/buffer.c |   22 ++++++++++++++++++++++
+ cherokee/buffer.h |    1 +
+ 2 files changed, 23 insertions(+), 0 deletions(-)
+
+
+2011-06-23  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6763 git=3e73d4aa5b684ec6662cda6dd39ec363dc76a79c
+
+    There were times when 'cherokee' was not returning the right retcode.
+    It fixes bug #1223: http://bugs.cherokee-project.com/1223
+    
+ cherokee/main.c |    6 +++++-
+ 1 files changed, 5 insertions(+), 1 deletions(-)
+
+
+2011-06-10  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6757 git=843fc8b5763aa824eac1040d42929f243472cf13
+
+    Adds the SHA512 option to cherokee-admin's MySQL plug-in.
+    
+ admin/plugins/mysql.py |    7 ++++---
+ 1 files changed, 4 insertions(+), 3 deletions(-)
+
+
+2011-06-10  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6756 git=1399fb677cb881f9e2a7f519717cf80f9bcdfab3
+
+    Adds SHA512 support:
+    - It adds the algorithms to the base library.
+    - It implements the cherokee_buffer_t interfaces.
+    - Adds support for SHA512 hashes in the MySQL validator plug-in.
+    
+ cherokee/Makefile.am       |    2 +
+ cherokee/buffer.c          |   49 ++++++++
+ cherokee/buffer.h          |  160 +++++++++++++-------------
+ cherokee/sha1.h            |    1 -
+ cherokee/sha512.c          |  269 ++++++++++++++++++++++++++++++++++++++++++++
+ cherokee/sha512.h          |   22 ++++
+ cherokee/validator_mysql.c |    7 +-
+ cherokee/validator_mysql.h |    3 +-
+ 8 files changed, 431 insertions(+), 82 deletions(-)
+
+
+2011-06-09  Jonathan Hernandez  <ion@suavizado.com>
+            svn=6752 git=6466530db18bbd2a5cb342ec6a1412f73a3a8886
+
+    Fix typo
+    
+ doc/config_virtual_servers.txt |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+2011-06-08  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6750 git=95beaa656a928541d397dda9576b7f4daacbc3ce
+
+    Fixes a regression introduced by the CSRF patch.
+    
+ cherokee/main_admin.c |    4 ++++
+ 1 files changed, 4 insertions(+), 0 deletions(-)
+
+
+2011-06-08  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6749 git=39c38857277b5a9c0700bfbfaad1f9baaf8a224c
+
+    Fixes a typo (that caused a compilation issue). Thanks to Jonathan
+    Hernandez for the notice!
+    
+ cherokee/util.c |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+2011-06-06  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6745 git=5e6c896a7e7cf359638faeb184a848e803b4afce
+
+    Seeding random() once is enough.
+    
+ admin/CgiBase.py              |    2 +-
+ admin/OWS_Backup.py           |    4 +-
+ admin/OWS_Login.py            |    2 +-
+ admin/PageEntry.py            |    6 ++--
+ admin/PageIndex.py            |   16 +++++-----
+ admin/PageRule.py             |    2 +-
+ admin/PageSource.py           |    2 +-
+ admin/PageSources.py          |    6 ++--
+ admin/PageVServer.py          |    6 ++--
+ admin/PageVServers.py         |   26 +++++++++++++-----
+ admin/Rule.py                 |    2 +-
+ admin/RuleSimple.py           |    2 +-
+ admin/Wizard.py               |    6 ++--
+ admin/plugins/bind.py         |    2 +-
+ admin/plugins/common.py       |    2 +-
+ admin/plugins/custom_error.py |    2 +-
+ admin/plugins/dbslayer.py     |    2 +-
+ admin/plugins/dirlist.py      |    2 +-
+ admin/plugins/error_redir.py  |    2 +-
+ admin/plugins/exists.py       |    2 +-
+ admin/plugins/extensions.py   |    2 +-
+ admin/plugins/from.py         |    2 +-
+ admin/plugins/fullpath.py     |    2 +-
+ admin/plugins/geoip.py        |    2 +-
+ admin/plugins/header.py       |    2 +-
+ admin/plugins/method.py       |    2 +-
+ admin/plugins/post_report.py  |    2 +-
+ admin/plugins/proxy.py        |    2 +-
+ admin/plugins/rehost.py       |    2 +-
+ admin/plugins/secdownload.py  |    2 +-
+ admin/plugins/server_info.py  |    2 +-
+ admin/plugins/streaming.py    |    2 +-
+ admin/plugins/target_ip.py    |    4 +-
+ admin/plugins/tls.py          |   61 +----------------------------------------
+ admin/plugins/url_arg.py      |    2 +-
+ admin/plugins/wildcard.py     |    2 +-
+ admin/server.py               |   10 +++++-
+ admin/wizards/alfresco.py     |    2 +-
+ admin/wizards/coldfusion.py   |    2 +-
+ admin/wizards/concrete5.py    |    2 +-
+ admin/wizards/django.py       |    2 +-
+ admin/wizards/flcache.py      |    2 +-
+ admin/wizards/glassfish.py    |    2 +-
+ admin/wizards/hotlinking.py   |    4 +-
+ admin/wizards/icons.py        |    2 +-
+ admin/wizards/mailman.py      |    2 +-
+ admin/wizards/mono.py         |    2 +-
+ admin/wizards/php.py          |    2 +-
+ admin/wizards/rails.py        |    2 +-
+ admin/wizards/redirect.py     |    2 +-
+ admin/wizards/rtorrent.py     |    2 +-
+ admin/wizards/ssl_test.py     |    2 +-
+ admin/wizards/static.py       |    2 +-
+ admin/wizards/streaming.py    |    2 +-
+ admin/wizards/symfony.py      |    2 +-
+ admin/wizards/uwsgi.py        |    2 +-
+ admin/wizards/zend.py         |    2 +-
+ cherokee/main_admin.c         |   17 +++++------
+ 58 files changed, 108 insertions(+), 150 deletions(-)
+
+
+2011-06-06  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6744 git=47cab40c2a752970097ddc025703b26a259492c6
+
+    Adds a new TRACE entry to Front-Line cache.
+    
+ cherokee/flcache.c |    3 +++
+ 1 files changed, 3 insertions(+), 0 deletions(-)
+
+
+2011-06-06  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6743 git=4d9e951ab162d3fcf8939a8b40879c2574935ca6
+
+    Random numbers has a better initialization function now.
+    
+ cherokee/main_admin.c |    9 +++++--
+ cherokee/util.c       |   61 +++++++++++++++++++++++++++++++++++++++++++++++++
+ cherokee/util.h       |    3 ++
+ configure.in          |    2 +-
+ 4 files changed, 71 insertions(+), 4 deletions(-)
+
+2011-06-04  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6742 git=c4e15c0c273a679912771c0af24514bab6e412a2
+
+    Tries to solve a concurrency issue in the Front-Line Cache QA tests.
+    
+ qa/275-Flcache-basic1.py    |    1 +
+ qa/276-Flcache-cookie1.py   |    1 +
+ qa/277-Flcache-cookie2.py   |    1 +
+ qa/278-Flcache-headers1.py  |    1 +
+ qa/279-Flcache-headers2.py  |    1 +
+ qa/280-Flcache-gzip1.py     |    1 +
+ qa/281-Flcache-expired1.py  |    1 +
+ qa/282-Flcache-expired2.py  |    1 +
+ qa/283-Flcache-expired3.py  |    1 +
+ qa/285-Flcache-overwrite.py |    1 +
+ qa/base.py                  |    6 +++++-
+ 11 files changed, 15 insertions(+), 1 deletions(-)
+
+
+2011-06-04  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6741 git=fa56dde572280390bccaf63ea903ce4c92272c45
+
+    Adds support for 'UNIX socket in a abstract namespace'. Thanks to
+    Roberto De Ioris for the patch!
+    
+ cherokee/socket.c |   35 +++++++++++++++++++++++++----------
+ cherokee/socket.h |    6 ++++++
+ cherokee/source.c |    2 +-
+ 3 files changed, 32 insertions(+), 11 deletions(-)
+
+
+2011-06-01  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6740 git=af67d52bccf361dc278fdc3ba33b7b701798a645
+
+    Improves the seed for generating the random characters for the admin
+    password. Fixes bug #1212: http://bugs.cherokee-project.com/1212
+    
+ cherokee/main_admin.c |    3 ++-
+ 1 files changed, 2 insertions(+), 1 deletions(-)
+
+
+2011-06-01  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6739 git=d3418609e9c70926d25d630f94e06894ded8f709
+
+    Improves how the 'cherokee' temporal directory was being created.
+    It fixes bug #1213: http://bugs.cherokee-project.com/1213
+    
+ cherokee/init.c       |   23 +++++++++++++++++++++--
+ cherokee/main_admin.c |    6 +++---
+ cherokee/rrd_tools.c  |    5 +++--
+ 3 files changed, 27 insertions(+), 7 deletions(-)
+
+
+2011-06-01  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6738 git=1487a40af6022169b3aec703b4c32a9dea01957a
+
+    Implements cherokee_mkdtemp()
+    
+ cherokee/util.c |   14 ++++++++++++++
+ cherokee/util.h |    2 ++
+ 2 files changed, 16 insertions(+), 0 deletions(-)
+
+
+2011-06-01  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6737 git=ef122f54533e66fd7bc60cf58badaaa99ef4c280
+
+    Exports FLCache's rm_rf() as cherokee_rm_rf().
+    
+ cherokee/flcache.c |   60 +-------------------------------------------------
+ cherokee/util.c    |   62 ++++++++++++++++++++++++++++++++++++++++++++++++++++
+ cherokee/util.h    |    2 +
+ 3 files changed, 65 insertions(+), 59 deletions(-)
+
+
+2011-05-31  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6735 git=0ac08289f6dd7fd44158bd04532f14c22bd31dcf
+
+    Relocates some internal information structures (structural clean up).
+    
+ cherokee/config_entry.c         |   27 ++++++++++-
+ cherokee/config_entry.h         |   15 +++++-
+ cherokee/connection-protected.h |    8 +---
+ cherokee/connection.c           |   95 +++++++++++++++++++++------------------
+ cherokee/flcache.c              |    6 +-
+ cherokee/rule_list.c            |   17 +++----
+ cherokee/thread.c               |   64 +++++++++-----------------
+ cherokee/validator_htdigest.c   |    2 +-
+ 8 files changed, 124 insertions(+), 110 deletions(-)
+
+
+2011-05-27  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6728 git=9aab7569023ac5eb32df42fbf8685f389e43cfd6
+
+    "Resource acquired to 'n->error_writer->fd' at line 231 may be lost
+    here." (Klocwork.com Issue #138)
+    
+ cherokee/server.c |    6 ++++++
+ 1 files changed, 6 insertions(+), 0 deletions(-)
+
+
+2011-05-27  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6727 git=61396b489dc43366eec969ff447462fad37c39fd
+
+    The exception handling code was calling the wrong destructor.
+    
+ cherokee/server.c |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+
+2011-05-27  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6726 git=81625a6e38fe47bb29e499a3d1051bb28345e085
+
+    "'tmp' array elements might be used uninitialized in this function."
+    (Klocwork.com Issue #137)
+    
+ cherokee/handler_ssi.c |    3 +--
+ 1 files changed, 1 insertions(+), 2 deletions(-)
+
+2011-05-26  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6725 git=8ae22c462411e7904535bf9436ba33ee882e5390
+
+    Fixes a memory management issue that could potentially end up freezing
+    the server. Thanks to Stefan de Konink for the patch! (Klocwork.com
+    Issue #72)
+    
+ cherokee/main.c |   11 ++++++++---
+ 1 files changed, 8 insertions(+), 3 deletions(-)
+
+
+2011-05-26  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6724 git=bf75ffa94829b1abc04a3f0c593fb78def7105bc
+
+    Cherokee 1.2.98 released (1.3.0-beta1)
+    
+ configure.in |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
 2011-05-24  Alvaro Lopez Ortega  <alvaro@octality.com>
             svn=6722 git=aa8c3b999127dfb354316f24cf180b558f29997b
 
@@ -930,6 +1561,7 @@
  cherokee/flcache.c |   15 +++++++++++++++
  1 files changed, 15 insertions(+), 0 deletions(-)
 
+
 2011-05-17  Alvaro Lopez Ortega  <alvaro@octality.com>
             svn=6631 git=7781ea415d682c4847ecea3674c2d70dd53bd6d1
 
@@ -1178,12 +1810,14 @@
  developers.py |    3 ++-
  1 files changed, 2 insertions(+), 1 deletions(-)
 
+
 2011-05-10  Paul Batis <pubcrawler.com@gmail.com>
             svn=6602 git=36bb1a0728638ba3617ad50159f024b19c4433fe
 
 
  doc/other_front_line_cache.txt |   82 ++++++++++++++++++++--------------------
  1 files changed, 41 insertions(+), 41 deletions(-)
+
 
 2011-05-08  Alvaro Lopez Ortega  <alvaro@octality.com>
             svn=6599 git=d26b2d05441a971910bd35f1d88d3746267b8cb7
@@ -1569,6 +2203,7 @@
     
  cherokee/iocache.c |   20 ++++++++++++++++++--
  1 files changed, 18 insertions(+), 2 deletions(-)
+
 
 2011-05-03  Alvaro Lopez Ortega  <alvaro@octality.com>
             svn=6575 git=b1abd9da023c7589541b1b50a713415abd7677fa
@@ -2158,3666 +2793,6 @@
  doc/other_faq.txt |   24 ++++++++++++++++++++++++
  1 files changed, 24 insertions(+), 0 deletions(-)
 
-
-2011-03-23  Taher Shihadeh  <taher@unixwars.com>
-            svn=6415 git=641cf6a3bbc9ed12555f12cf09a463da01a56cf6
-
-    Removes out-dated files
-    
- doc/Makefile.am      |    3 ---
- doc/dev.txt          |    1 -
- doc/dev_api.txt      |    6 ------
- doc/dev_examples.txt |    6 ------
- doc/dev_issues.txt   |   36 ------------------------------------
- doc/index.txt        |    5 -----
- 6 files changed, 0 insertions(+), 57 deletions(-)
-
-
-2011-03-23  Taher Shihadeh  <taher@unixwars.com>
-            svn=6412 git=00b225794f25676241095d01b6c8db2ea6eed5e2
-
-    Tested for Django 1.3
-    
- doc/cookbook_django.txt |    6 ++++++
- 1 files changed, 6 insertions(+), 0 deletions(-)
-
-
-2011-03-23  Taher Shihadeh  <taher@unixwars.com>
-            svn=6409 git=04cdeebd51b1655b565d241903aae8bedccc8a78
-
-    Addresses corner-case problem during installations involving a function call while being root
-    
- admin/market/InstallUtil.py |   17 ++++++++++++-----
- 1 files changed, 12 insertions(+), 5 deletions(-)
-
-
-2011-03-22  Taher Shihadeh  <taher@unixwars.com>
-            svn=6405 git=7025918378d71ccbbe28e2d48872e9dc48b77e0c
-
-    CTK introductory documentation
-    
- doc/Makefile.am |    3 +-
- doc/dev.txt     |    1 +
- doc/dev_ctk.txt |  629 +++++++++++++++++++++++++++++++++++++++++++------------
- doc/index.txt   |    1 +
- 4 files changed, 504 insertions(+), 130 deletions(-)
-
-
-2011-03-21  Taher Shihadeh  <taher@unixwars.com>
-            svn=6401 git=d3c5f7966a10bbb3521ed0612fa3029565f6a67e
-
-    Initial commit. Draft for CTK documentation
-    
- doc/dev_ctk.txt |  185 +++++++++++++++++++++++++++++++++++++++++++++++++++++++
- 1 files changed, 185 insertions(+), 0 deletions(-)
-
-2011-04-29  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6559 git=2705ae9ecc545a4ed6718d0c3157374038aa8519
-
-    Implements Front Line Cache caching policy in cherokee-admin.
-    
- admin/PageEntry.py        |   16 ++++++++++++++++
- cherokee/config_entry.c   |    2 +-
- cherokee/connection.c     |    4 ++--
- cherokee/error_list.py    |    5 +++++
- cherokee/flcache.c        |    4 ++--
- cherokee/flcache.h        |    2 +-
- cherokee/virtual_server.c |   16 ++++++++++++++++
- 7 files changed, 43 insertions(+), 6 deletions(-)
-
-
-2011-04-28  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6558 git=ca094f00a1322c5ebf9f206a8974cd492f0ddc95
-
-    A few Front-line cache fixes, plus the implementation of a Cache
-    Policy property. -- Still WIP.
-    
- cherokee/config_entry.c         |    5 +-
- cherokee/config_entry.h         |    2 +
- cherokee/connection-protected.h |    1 +
- cherokee/connection.c           |  144 ++++++++++++++++++++-------------------
- cherokee/flcache.c              |   23 +++++-
- cherokee/flcache.h              |    5 ++
- cherokee/thread.c               |    4 +-
- 7 files changed, 107 insertions(+), 77 deletions(-)
-
-2011-04-26  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6557 git=461e6839dd197f82ac9a6451bc41257e59e4165b
-
-    Front-Line cache was not handling internal re-directions properly.
-    
- cherokee/avl_flcache.c |   21 ++++++++++++++++++---
- cherokee/flcache.c     |   25 +++++++++++++++++--------
- 2 files changed, 35 insertions(+), 11 deletions(-)
-
-
-2011-04-26  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6556 git=773299ecf79040328643a12b5087a04cc701cb99
-
-    Bugfix backport from trunk (r6494)
-    
- cherokee/main.c |    2 +-
- 1 files changed, 1 insertions(+), 1 deletions(-)
-
-
-2011-04-26  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6555 git=126e96048ae3a694716ac8257b038a82dceaaf55
-
-    Show a flag when Front-line Cache is enabled
-    
- admin/PageRule.py |    3 +++
- 1 files changed, 3 insertions(+), 0 deletions(-)
-
-
-2011-04-17  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6533 git=c00429454c11d0f197f676794f9b580625e5b6e7
-
-    Adds three more QA tests for the Front-Line cache mechanism.
-    
- qa/279-Flcache-expired1.py |   51 ++++++++++++++++++++++++++++++++++++++++
- qa/280-Flcache-expired2.py |   51 ++++++++++++++++++++++++++++++++++++++++
- qa/281-Flcache-expired3.py |   55 ++++++++++++++++++++++++++++++++++++++++++++
- qa/Makefile.am             |    5 +++-
- 4 files changed, 161 insertions(+), 1 deletions(-)
-
-
-2011-04-17  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6532 git=44edc28fda886b56d480654ab51f7c55cbbb2b7a
-
-    Adds a new QA test for Front-Line cache. It ensures that encoded and
-    non-encoded objects are handled properly.
-    
- qa/278-Flcache-gzip1.py |   59 +++++++++++++++++++++++++++++++++++++++++++++++
- qa/Makefile.am          |    3 +-
- 2 files changed, 61 insertions(+), 1 deletions(-)
-
-
-2011-04-16  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6531 git=8485dcacf8d1a4479406f2a5ed47ad91c993a59c
-
-    Do not cache non-200 responses (by the moment).
-    
- cherokee/flcache.c |   12 ++++++++++++
- cherokee/thread.c  |    2 +-
- 2 files changed, 13 insertions(+), 1 deletions(-)
-
-
-2011-04-16  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6530 git=1c2b7faf484e3d8af4055beb75755a504466535d
-
-    Fixes a couple of TRACE entries.
-    
- cherokee/avl_flcache.c |    2 +-
- cherokee/flcache.c     |    4 +++-
- 2 files changed, 4 insertions(+), 2 deletions(-)
-
-
-2011-04-16  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6529 git=2d525f107cd90816967519024a8371fe9f6b0465
-
-    Fixes an error about the encoding of Front-line cache entries.
-    
- cherokee/avl_flcache.c |   10 ++++++++--
- cherokee/flcache.c     |    3 ++-
- 2 files changed, 10 insertions(+), 3 deletions(-)
-
-
-2011-04-16  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6528 git=da704701e575e808c3dfb4d591b4385dacf012e7
-
-    Adds a few new TRACE entries to Front-Line cache
-    
- cherokee/flcache.c |   24 +++++++++++++++++++-----
- 1 files changed, 19 insertions(+), 5 deletions(-)
-
-
-2011-04-14  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6505 git=8a9972e03789a7ea490caf46615caf6c56781857
-
-    Handler file integration with Front-line cache
-    
- cherokee/flcache.c      |    1 -
- cherokee/handler.h      |    8 --------
- cherokee/handler_file.c |    1 +
- 3 files changed, 1 insertions(+), 9 deletions(-)
-
-
-2011-04-14  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6504 git=d74fa494669415b1b6707ab3bfa48f0b33a7db4a
-
-    Adds (default) caching properties to the Server Info handler.
-    
- cherokee/handler_server_info.c |   11 ++++++++++-
- 1 files changed, 10 insertions(+), 1 deletions(-)
-
-
-2011-04-14  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6503 git=9f5be602f60c54e3d4918879ea1c7fde11c7d573
-
-    Fixes an incorrect reference
-    
- cherokee/avl_flcache.c |    2 +-
- 1 files changed, 1 insertions(+), 1 deletions(-)
-
-
-2011-03-31  Taher Shihadeh  <taher@unixwars.com>
-            svn=6458 git=c5f28ff53a60a7818a49fc0552aacec28dfd313b
-
-    Screenshots were not matching their section
-    
- doc/media/images/admin_handler_fastcgi2.png |  Bin 32476 -> 32431 bytes
- doc/media/images/cookbook_mono_handler.png  |  Bin 57757 -> 29700 bytes
- 2 files changed, 0 insertions(+), 0 deletions(-)
-
-
-2011-03-31  Taher Shihadeh  <taher@unixwars.com>
-            svn=6455 git=331c980654f709247b49acb16c104cdde4eea319
-
-    Fixes snapshots according to description
-    
- doc/media/images/admin_handler_fastcgi2.png |  Bin 60678 -> 32476 bytes
- doc/media/images/cookbook_ror_common.png    |  Bin 29148 -> 29194 bytes
- 2 files changed, 0 insertions(+), 0 deletions(-)
-
-
-2011-03-30  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6449 git=98d1df287ee06fdc4c8c7fbccb5ddb8a3846408d
-
-    Moves most of the FL-cache code to libcherokee-server
-    
- cherokee/Makefile.am |   12 ++++++------
- 1 files changed, 6 insertions(+), 6 deletions(-)
-
-
-2011-03-29  Taher Shihadeh  <taher@unixwars.com>
-            svn=6448 git=610d475a846b01ae6092de2238f038ad7aefbf9e
-
-    Documents Front-line cache
-    
- doc/Makefile.am                     |    1 +
- doc/config_virtual_servers_rule.txt |   16 +++-----
- doc/index.txt                       |    1 +
- doc/other.txt                       |    1 +
- doc/other_front_line_cache.txt      |   66 +++++++++++++++++++++++++++++++++++
- doc/other_goodies.txt               |   12 ++++++
- 6 files changed, 87 insertions(+), 10 deletions(-)
-
-
-2011-03-29  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6447 git=df8502bc74435ff528482b510da01dd3d4c504ff
-
-    Front-line QA: WIP
-    
- cherokee/flcache.c         |    4 +-
- qa/277-Flcache-headers2.py |   53 ++++++++++++++++++++++++++++++++++++++++++++
- qa/Makefile.am             |    3 +-
- 3 files changed, 57 insertions(+), 3 deletions(-)
-
-
-2011-03-29  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6445 git=e32958fe1fcc2bbac13e02798a3bb190851451e3
-
-    According to RFC2616, the "Via:" header _must_ be implemented.
-    
- cherokee/flcache.c         |   24 ++++++++++++++++++++
- qa/276-Flcache-headers1.py |   52 ++++++++++++++++++++++++++++++++++++++++++++
- qa/Makefile.am             |    3 +-
- 3 files changed, 78 insertions(+), 1 deletions(-)
-
-
-2011-03-29  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6444 git=2db13c1f14fbffb5a1fed89d51110301625f7574
-
-    Implements 'Age' (RFC2616, section 14.6)
-    
- cherokee/avl_flcache.c |    2 ++
- cherokee/avl_flcache.h |    2 ++
- cherokee/flcache.c     |    6 ++++++
- 3 files changed, 10 insertions(+), 0 deletions(-)
-
-
-2011-03-29  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6443 git=936584f5f26a60a7eed0707e55ad58fedf1411ff
-
-    Better support for X-Cache
-    
- cherokee/connection-protected.h |    1 +
- cherokee/connection.c           |   45 ++++++++++++++++++++++++++++++++-------
- cherokee/flcache.c              |   11 ++-------
- 3 files changed, 41 insertions(+), 16 deletions(-)
-
-
-2011-03-29  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6441 git=c96d3fa5a06050b5d735159a4522877d39d2f0e9
-
-    Delay to create files as soon as possible. Under some circunstances we
-    will be able to skip it (if the response should not be cached).
-    
- cherokee/flcache.c |   86 ++++++++++++++++++++++++++++++++--------------------
- 1 files changed, 53 insertions(+), 33 deletions(-)
-
-
-2011-03-29  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6440 git=f8bf2e61a7ebe703c7e1927bbe4a73a5c14baab0
-
-    Further work on the FLcache
-    
- cherokee/connection.c     |    4 ++-
- cherokee/flcache.c        |   42 +++++++++++++++++++++++++---------
- qa/274-Flcache-cookie1.py |   14 +++++-----
- qa/275-Flcache-cookie2.py |   55 +++++++++++++++++++++++++++++++++++++++++++++
- qa/Makefile.am            |    3 +-
- 5 files changed, 98 insertions(+), 20 deletions(-)
-
-
-2011-03-29  Taher Shihadeh  <taher@unixwars.com>
-            svn=6439 git=4c2f7b6a3f7507113d1b08309cc434821c8685e9
-
-    Clarifies the section about caching
-    
- doc/config_virtual_servers_rule.txt |   13 ++++++++-----
- 1 files changed, 8 insertions(+), 5 deletions(-)
-
-
-2011-03-29  Taher Shihadeh  <taher@unixwars.com>
-            svn=6438 git=bba1e457323ccd0bd931cf969825f750988a0251
-
-    Updates remaining screenshots + recompression
-    
- doc/media/images/admin_advanced0.png               |  Bin 3897 -> 3873 bytes
- doc/media/images/admin_advanced1.png               |  Bin 16873 -> 16527 bytes
- doc/media/images/admin_advanced2.png               |  Bin 18604 -> 18074 bytes
- doc/media/images/admin_advanced3.png               |  Bin 14588 -> 14178 bytes
- doc/media/images/admin_advanced4.png               |  Bin 9480 -> 9049 bytes
- doc/media/images/admin_advanced5.png               |  Bin 13128 -> 12941 bytes
- doc/media/images/admin_behavior.png                |  Bin 9769 -> 9114 bytes
- doc/media/images/admin_general.png                 |  Bin 19455 -> 18648 bytes
- doc/media/images/admin_general_icons.png           |  Bin 14243 -> 13597 bytes
- doc/media/images/admin_general_mime.png            |  Bin 9678 -> 9508 bytes
- doc/media/images/admin_general_networking.png      |  Bin 19466 -> 18925 bytes
- doc/media/images/admin_general_permissions.png     |  Bin 10284 -> 9802 bytes
- doc/media/images/admin_general_ports.png           |  Bin 7792 -> 7437 bytes
- doc/media/images/admin_handler_admin.png           |  Bin 10657 -> 9988 bytes
- doc/media/images/admin_handler_cgi.png             |  Bin 20450 -> 19731 bytes
- doc/media/images/admin_handler_custom_error.png    |  Bin 17857 -> 17203 bytes
- doc/media/images/admin_handler_dbslayer.png        |  Bin 17151 -> 16556 bytes
- doc/media/images/admin_handler_dirlist.png         |  Bin 15421 -> 14769 bytes
- doc/media/images/admin_handler_dirlist_ex.png      |  Bin 17871 -> 17072 bytes
- doc/media/images/admin_handler_fastcgi1.png        |  Bin 21204 -> 20165 bytes
- doc/media/images/admin_handler_fastcgi2.png        |  Bin 63281 -> 60678 bytes
- doc/media/images/admin_handler_file.png            |  Bin 10650 -> 10122 bytes
- doc/media/images/admin_handler_onlylisting.png     |  Bin 17675 -> 16832 bytes
- doc/media/images/admin_handler_onlylisting_ex.png  |  Bin 17920 -> 17012 bytes
- doc/media/images/admin_handler_proxy.png           |  Bin 20158 -> 19725 bytes
- doc/media/images/admin_handler_secdownload.png     |  Bin 14987 -> 14549 bytes
- doc/media/images/admin_index.png                   |  Bin 47858 -> 45050 bytes
- doc/media/images/admin_index_backup.png            |  Bin 7939 -> 7445 bytes
- doc/media/images/admin_index_restore.png           |  Bin 11069 -> 10625 bytes
- doc/media/images/admin_info_sources.png            |  Bin 37365 -> 35620 bytes
- doc/media/images/admin_launch.png                  |  Bin 6237 -> 5825 bytes
- doc/media/images/admin_noconfig.png                |  Bin 16236 -> 15298 bytes
- doc/media/images/admin_notrunning.png              |  Bin 10992 -> 10642 bytes
- doc/media/images/admin_rule_regex.png              |  Bin 14933 -> 14087 bytes
- doc/media/images/admin_validators_authlist.png     |  Bin 20708 -> 19868 bytes
- doc/media/images/admin_validators_ldap.png         |  Bin 30041 -> 29683 bytes
- doc/media/images/admin_validators_pam.png          |  Bin 14623 -> 14095 bytes
- doc/media/images/admin_validators_plain.png        |  Bin 35764 -> 34889 bytes
- doc/media/images/admin_vserver.png                 |  Bin 18616 -> 17037 bytes
- doc/media/images/admin_vserver_errors.png          |  Bin 9033 -> 8691 bytes
- doc/media/images/admin_vserver_evhost.png          |  Bin 35038 -> 33327 bytes
- doc/media/images/admin_vserver_loggers.png         |  Bin 19937 -> 19132 bytes
- doc/media/images/admin_vserver_security.png        |  Bin 15516 -> 14877 bytes
- doc/media/images/admin_vserver_wizard.png          |  Bin 37975 -> 34601 bytes
- doc/media/images/admin_vservers_wizard.png         |  Bin 38565 -> 36569 bytes
- doc/media/images/cookbook_alfresco_alfresco.png    |  Bin 34437 -> 33948 bytes
- doc/media/images/cookbook_alfresco_assistant.png   |  Bin 20121 -> 19989 bytes
- doc/media/images/cookbook_alfresco_install.png     |  Bin 19817 -> 19686 bytes
- doc/media/images/cookbook_alfresco_path.png        |  Bin 7356 -> 7268 bytes
- doc/media/images/cookbook_alfresco_share.png       |  Bin 37782 -> 36573 bytes
- doc/media/images/cookbook_alfresco_soffice.png     |  Bin 7474 -> 7364 bytes
- doc/media/images/cookbook_dbslayer1.png            |  Bin 8884 -> 8586 bytes
- doc/media/images/cookbook_dbslayer2.png            |  Bin 18742 -> 17999 bytes
- doc/media/images/cookbook_dbslayer3.png            |  Bin 7909 -> 7763 bytes
- doc/media/images/cookbook_dbslayer4.png            |  Bin 35042 -> 31426 bytes
- doc/media/images/cookbook_django.png               |  Bin 23568 -> 22521 bytes
- doc/media/images/cookbook_django_common.png        |  Bin 22134 -> 21347 bytes
- doc/media/images/cookbook_django_infosources.png   |  Bin 30736 -> 29838 bytes
- doc/media/images/cookbook_drupal.png               |  Bin 27255 -> 26951 bytes
- doc/media/images/cookbook_drupal_dir_rules.png     |  Bin 17341 -> 16477 bytes
- doc/media/images/cookbook_drupal_dir_rules_1.png   |  Bin 15985 -> 15414 bytes
- doc/media/images/cookbook_drupal_dir_rules_2.png   |  Bin 15164 -> 14622 bytes
- doc/media/images/cookbook_drupal_dir_rules_3.png   |  Bin 7893 -> 7525 bytes
- doc/media/images/cookbook_drupal_dir_rules_4.png   |  Bin 13283 -> 12811 bytes
- doc/media/images/cookbook_drupal_dir_rules_6.png   |  Bin 21261 -> 20466 bytes
- doc/media/images/cookbook_drupal_dir_rules_7.png   |  Bin 15723 -> 14913 bytes
- doc/media/images/cookbook_drupal_vserver_rules.png |  Bin 14585 -> 13900 bytes
- doc/media/images/cookbook_glassfish.png            |  Bin 4851 -> 4849 bytes
- .../images/cookbook_https_accelerator_handler.png  |  Bin 37073 -> 36029 bytes
- .../images/cookbook_https_accelerator_sources.png  |  Bin 13816 -> 13269 bytes
- doc/media/images/cookbook_joomla.png               |  Bin 12561 -> 12383 bytes
- doc/media/images/cookbook_liferay.png              |  Bin 16861 -> 16251 bytes
- doc/media/images/cookbook_mailman.png              |  Bin 13235 -> 13135 bytes
- .../cookbook_maintenance_advanced_domains.png      |  Bin 8557 -> 8416 bytes
- .../images/cookbook_maintenance_advanced_redir.png |  Bin 14100 -> 14067 bytes
- .../images/cookbook_maintenance_advanced_rules.png |  Bin 9641 -> 9523 bytes
- doc/media/images/cookbook_maintenance_copy.png     |  Bin 15654 -> 15192 bytes
- doc/media/images/cookbook_maintenance_domain.png   |  Bin 9055 -> 8902 bytes
- doc/media/images/cookbook_maintenance_error.png    |  Bin 7784 -> 7798 bytes
- doc/media/images/cookbook_maintenance_result.png   |  Bin 7203 -> 7022 bytes
- doc/media/images/cookbook_maintenance_rule.png     |  Bin 8213 -> 8072 bytes
- .../images/cookbook_managing_logs_handler.png      |  Bin 6172 -> 5958 bytes
- doc/media/images/cookbook_managing_logs_rules.png  |  Bin 14223 -> 13653 bytes
- .../images/cookbook_managing_logs_security.png     |  Bin 41923 -> 38608 bytes
- doc/media/images/cookbook_mono_demo.png            |  Bin 11183 -> 11066 bytes
- doc/media/images/cookbook_mono_handler.png         |  Bin 62644 -> 57757 bytes
- doc/media/images/cookbook_moodle.png               |  Bin 18427 -> 18157 bytes
- doc/media/images/cookbook_moodle_db.png            |  Bin 31835 -> 31317 bytes
- doc/media/images/cookbook_moodle_document_root.png |  Bin 12200 -> 11859 bytes
- doc/media/images/cookbook_moodle_modules.png       |  Bin 48838 -> 46699 bytes
- doc/media/images/cookbook_moodle_paths.png         |  Bin 35388 -> 34445 bytes
- doc/media/images/cookbook_mysql_rule.png           |  Bin 5027 -> 4959 bytes
- doc/media/images/cookbook_mysql_validator.png      |  Bin 14012 -> 33273 bytes
- doc/media/images/cookbook_nagios1.png              |  Bin 8123 -> 7847 bytes
- doc/media/images/cookbook_nagios2.png              |  Bin 8179 -> 7993 bytes
- doc/media/images/cookbook_nagios3.png              |  Bin 20310 -> 19773 bytes
- doc/media/images/cookbook_nagios4.png              |  Bin 35664 -> 35013 bytes
- doc/media/images/cookbook_phpbb_1_intro.png        |  Bin 39031 -> 38264 bytes
- doc/media/images/cookbook_phpbb_2_req.png          |  Bin 35390 -> 34270 bytes
- doc/media/images/cookbook_phpbb_3_db.png           |  Bin 30601 -> 29720 bytes
- doc/media/images/cookbook_phpbb_4_admin.png        |  Bin 28930 -> 27883 bytes
- doc/media/images/cookbook_phpbb_5_config.png       |  Bin 23794 -> 23118 bytes
- doc/media/images/cookbook_phpbb_6_advanced.png     |  Bin 36283 -> 34927 bytes
- doc/media/images/cookbook_phpbb_7_create.png       |  Bin 24918 -> 24441 bytes
- doc/media/images/cookbook_phpbb_8_final.png        |  Bin 45143 -> 44269 bytes
- doc/media/images/cookbook_phpbb_adm.png            |  Bin 39075 -> 36486 bytes
- doc/media/images/cookbook_phpbb_adm_warning.png    |  Bin 37334 -> 35198 bytes
- doc/media/images/cookbook_phpbb_rules.png          |  Bin 9435 -> 9252 bytes
- doc/media/images/cookbook_phpbb_running.png        |  Bin 29947 -> 29239 bytes
- doc/media/images/cookbook_phpmyadmin.png           |  Bin 11383 -> 11238 bytes
- doc/media/images/cookbook_phpmyadmin_denied.png    |  Bin 8745 -> 8377 bytes
- doc/media/images/cookbook_redir_behavior.png       |  Bin 4519 -> 4490 bytes
- doc/media/images/cookbook_redir_domains.png        |  Bin 8552 -> 8347 bytes
- doc/media/images/cookbook_redir_handler.png        |  Bin 8773 -> 8659 bytes
- doc/media/images/cookbook_redir_https.png          |  Bin 9412 -> 9290 bytes
- doc/media/images/cookbook_ror.png                  |  Bin 15239 -> 15106 bytes
- doc/media/images/cookbook_ror_common.png           |  Bin 29750 -> 29148 bytes
- doc/media/images/cookbook_ror_fcgi.png             |  Bin 18589 -> 18036 bytes
- doc/media/images/cookbook_ror_wizard.png           |  Bin 11315 -> 10908 bytes
- doc/media/images/cookbook_sugarcrm_install0.png    |  Bin 61674 -> 59689 bytes
- doc/media/images/cookbook_sugarcrm_install1.png    |  Bin 21762 -> 21331 bytes
- doc/media/images/cookbook_sugarcrm_running0.png    |  Bin 22260 -> 21567 bytes
- doc/media/images/cookbook_sugarcrm_running1.png    |  Bin 25443 -> 24794 bytes
- doc/media/images/cookbook_symfony.png              |  Bin 24493 -> 23910 bytes
- doc/media/images/cookbook_trac.png                 |  Bin 35325 -> 35109 bytes
- doc/media/images/cookbook_trac_info.png            |  Bin 18451 -> 18098 bytes
- doc/media/images/cookbook_trac_rules.png           |  Bin 5725 -> 5572 bytes
- doc/media/images/cookbook_trac_scgi.png            |  Bin 28285 -> 27744 bytes
- doc/media/images/cookbook_trac_static.png          |  Bin 9506 -> 9194 bytes
- doc/media/images/cookbook_wp1.png                  |  Bin 26477 -> 26238 bytes
- doc/media/images/cookbook_wp2.png                  |  Bin 13235 -> 13147 bytes
- doc/media/images/cookbook_wp3.png                  |  Bin 10279 -> 10155 bytes
- doc/media/images/cookbook_wp4.png                  |  Bin 44859 -> 44012 bytes
- doc/media/images/cookbook_wp5.png                  |  Bin 25656 -> 24539 bytes
- doc/media/images/cookbook_wp_example1.png          |  Bin 8760 -> 8306 bytes
- doc/media/images/cookbook_wp_example2.png          |  Bin 8318 -> 7921 bytes
- doc/media/images/cookbook_wp_example3.png          |  Bin 13885 -> 12996 bytes
- doc/media/images/cookbook_zend1.png                |  Bin 3735 -> 3724 bytes
- doc/media/images/market_index.png                  |  Bin 39042 -> 37975 bytes
- doc/media/images/other_graphs_conns.png            |  Bin 18595 -> 18132 bytes
- doc/media/images/other_graphs_logging.png          |  Bin 15136 -> 14941 bytes
- doc/media/images/other_graphs_timeouts.png         |  Bin 19226 -> 18445 bytes
- doc/media/images/other_graphs_traffic.png          |  Bin 13862 -> 13566 bytes
- doc/media/images/proxy_phase1.png                  |  Bin 12012 -> 11406 bytes
- doc/media/images/proxy_phase2.png                  |  Bin 12222 -> 11661 bytes
- doc/media/images/screencast.png                    |  Bin 24013 -> 20613 bytes
- doc/media/images/tracelor.png                      |  Bin 9543 -> 9517 bytes
- 147 files changed, 0 insertions(+), 0 deletions(-)
-
-
-2011-03-29  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6437 git=b8082589287628aed8083f552b1dcb66aba35e9d
-
-    More cookies related stuff
-    
- cherokee/flcache.c        |    4 +-
- qa/274-Flcache-cookie1.py |   52 +++++++++++++++++++++++++++++++++++++++++++++
- qa/Makefile.am            |    3 +-
- 3 files changed, 56 insertions(+), 3 deletions(-)
-
-
-2011-03-28  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6436 git=0a0ea93a04f4587a84ac6b73620012b3713e80d6
-
-    The Content-Length header was sent twice under some circunstances.
-    
- cherokee/flcache.c |   14 ++++++++++++++
- 1 files changed, 14 insertions(+), 0 deletions(-)
-
-
-2011-03-28  Taher Shihadeh  <taher@unixwars.com>
-            svn=6435 git=7c3cf6e86469dd2b5abd0723a0ba167752003054
-
-    Updates a bunch of screenshots
-    
- doc/media/images/admin_handler_cgi.png          |  Bin 20394 -> 20450 bytes
- doc/media/images/admin_handler_custom_error.png |  Bin 17806 -> 17857 bytes
- doc/media/images/admin_handler_dbslayer.png     |  Bin 16947 -> 17151 bytes
- doc/media/images/admin_handler_dirlist.png      |  Bin 15756 -> 15421 bytes
- doc/media/images/admin_handler_fastcgi1.png     |  Bin 21207 -> 21204 bytes
- doc/media/images/admin_handler_fastcgi2.png     |  Bin 66318 -> 63281 bytes
- doc/media/images/admin_handler_file.png         |  Bin 10984 -> 10650 bytes
- doc/media/images/admin_handler_onlylisting.png  |  Bin 17937 -> 17675 bytes
- doc/media/images/admin_handler_proxy.png        |  Bin 19875 -> 20158 bytes
- doc/media/images/admin_handler_secdownload.png  |  Bin 14807 -> 14987 bytes
- doc/media/images/admin_rule_regex.png           |  Bin 15148 -> 14933 bytes
- doc/media/images/admin_validators_authlist.png  |  Bin 20745 -> 20708 bytes
- doc/media/images/admin_validators_pam.png       |  Bin 14399 -> 14623 bytes
- 13 files changed, 0 insertions(+), 0 deletions(-)
-
-
-2011-03-28  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6434 git=63eca782834ac5522c433977cfff5ace3fe14e17
-
-    Collections inherit utility methods now
-    
- qa/122-Methods.py |    2 +-
- qa/base.py        |    6 ++++--
- 2 files changed, 5 insertions(+), 3 deletions(-)
-
-
-2011-03-28  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6433 git=ccc4360fb74b1ff46b6c75a4906d2d369cc5e3e5
-
-    Adds a new QA test for Front-line cache
-    
- qa/273-Flcache-basic1.py |   41 +++++++++++++++++++++++++++++++++++++++++
- qa/Makefile.am           |    3 ++-
- 2 files changed, 43 insertions(+), 1 deletions(-)
-
-
-2011-03-28  Taher Shihadeh  <taher@unixwars.com>
-            svn=6432 git=6c307ac285056b0083398accf6fa89207e2c2ce8
-
-    Adjusts documentation to new settings. Screenshots are on their way
-    
- doc/config_virtual_servers_rule.txt |   83 ++++++++++++++++++++++++++++------
- 1 files changed, 68 insertions(+), 15 deletions(-)
-
-
-2011-03-28  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6431 git=1e1e3c54f4898e26e027a1cd322125d3656332c8
-
-    Implements a new mechanism for disregarding cookies on the Front-line cache.
-    
- admin/PageEntry.py              |    4 +-
- cherokee/config_entry.c         |   58 +++++++++++++++++----------
- cherokee/config_entry.h         |   46 ++++++++++++----------
- cherokee/connection-protected.h |    4 ++
- cherokee/connection.c           |    2 +
- cherokee/flcache.c              |   35 ++++++++++++----
- cherokee/flcache.h              |    2 +-
- cherokee/thread.c               |    6 ++-
- cherokee/virtual_server.c       |   83 ++++++++++++++++++++++++++++++++++++---
- 9 files changed, 179 insertions(+), 61 deletions(-)
-
-
-2011-03-28  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6430 git=52a118f373e5e9632a9e011004daf0a821236d29
-
-    += Disregard Cookies
-    
- admin/PageEntry.py |  179 ++++++++++++++++++++++++++++++++++++++++-----------
- 1 files changed, 140 insertions(+), 39 deletions(-)
-
-
-2011-03-27  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6427 git=7f2313d038fb4cda7531c50fc88f1bb4061ffcee
-
-    Better content expiration. It removes the content file ahead of the
-    clean-up process whenever possible.
-    
- cherokee/avl_flcache.c |   16 ++++++++
- cherokee/avl_flcache.h |    3 ++
- cherokee/flcache.c     |   93 +++++++++++++++++++++++++++++------------------
- cherokee/flcache.h     |    1 +
- 4 files changed, 77 insertions(+), 36 deletions(-)
-
-
-2011-03-27  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6426 git=10fb3cf4d7db40a291780fbe307f82e5f6bf034e
-
-    Allow/Forbid content caching config is now based on a nullable boolean
-    entry. It allows to manage caching in the same way of encoders do, so
-    allow, forbid and inherit options are available.
-    
- admin/PageEntry.py        |   10 +++++++++-
- admin/PageVServer.py      |   10 +++++++---
- cherokee/config_entry.c   |    4 ++--
- cherokee/virtual_server.c |   11 +++++++++--
- 4 files changed, 27 insertions(+), 8 deletions(-)
-
-
-2011-03-24  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6421 git=3159d0afa28141ac3d0369d1150e82498bf03e19
-
-    Implements the X-Cache header
-    
- cherokee/connection.c |   12 ++++++++++++
- cherokee/flcache.c    |   11 +++++++++++
- 2 files changed, 23 insertions(+), 0 deletions(-)
-
-
-2011-03-24  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6420 git=f04286f46a688785b49e00fc82ffed9d73c9e1ab
-
-    Report an error if it cannot create the cache directory
-    
- cherokee/error_list.py |    7 +++++++
- cherokee/flcache.c     |    2 ++
- 2 files changed, 9 insertions(+), 0 deletions(-)
-
-
-2011-03-24  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6419 git=bb190912d700a5eeb687a9b33f589dbccd18dd22
-
-    Fixes a grammar mistake
-    
- admin/PageEntry.py |    2 +-
- 1 files changed, 1 insertions(+), 1 deletions(-)
-
-
-2011-03-24  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6418 git=fda9adc7c820c2e7a3e8c67fcd7c35f13100029b
-
-    Cherokee admin += Front-line cache
-    
- admin/PageEntry.py   |   10 ++++++++++
- admin/PageVServer.py |   10 ++++++++--
- 2 files changed, 18 insertions(+), 2 deletions(-)
-
-
-2011-03-24  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6417 git=d5b41dce4e3e9f1fba9440a33985d6435ce31559
-
-    Fixes a memory corruption issue
-    
- cherokee/virtual_server.c |    2 +-
- 1 files changed, 1 insertions(+), 1 deletions(-)
-
-
-2011-03-24  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6416 git=1a0b3d7d1ab92694d087671456c48e152174e51d
-
-    Improves how flcache is activated. It does not require a !flcache flag
-    at the vserver level any more. It will activate it automatically
-    whenever an internal rule uses it.
-    
- cherokee/virtual_server.c |   28 +++++++++++++++++++---------
- 1 files changed, 19 insertions(+), 9 deletions(-)
-
-
-2011-03-23  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6414 git=fb99f64eb80dabdc1027c737ad44f54e1c0cccdb
-
-    Bug-fix: signal handling
-    
- cherokee/handler_cgi.c   |    4 ++--
- cherokee/logger_writer.c |    2 +-
- cherokee/rrd_tools.c     |    4 ++--
- cherokee/util.c          |   13 +++++++++++++
- cherokee/util.h          |    2 ++
- 5 files changed, 20 insertions(+), 5 deletions(-)
-
-
-2011-03-23  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6413 git=d9cae0bc3cf172ffb8648d949d3432497f043fc1
-
-    WIP: bug-fixing Front-Line cache
-    
- cherokee/buffer.c  |    6 ++++--
- cherokee/flcache.c |    3 +--
- cherokee/util.c    |   13 +++++++++++++
- cherokee/util.h    |    5 ++---
- 4 files changed, 20 insertions(+), 7 deletions(-)
-
-
-2011-03-23  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6411 git=8216c1dd26c59abba7cd6f095096d925197bf459
-
-    WIP: Further development
-    
- cherokee/avl_flcache.c |   58 ++++++++++++++++++++++++++++++-----------------
- cherokee/avl_flcache.h |    3 +-
- cherokee/connection.c  |   20 +++++++++++++++-
- cherokee/flcache.c     |   48 ++++++++++++++++++++++++++-------------
- 4 files changed, 90 insertions(+), 39 deletions(-)
-
-
-2011-03-23  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6410 git=489a19e3e786d0ff6825174f3d0b5f72688b0500
-
-    WIP: Mind signals
-    
- cherokee/buffer.c             |    2 +-
- cherokee/flcache.c            |   78 ++++++++++-------------------------------
- cherokee/handler_file.c       |    2 +-
- cherokee/iocache.c            |    2 +-
- cherokee/logger_writer.c      |    2 +-
- cherokee/shm.c                |    4 +-
- cherokee/source_interpreter.c |    2 +-
- cherokee/util.c               |   13 +++++++
- cherokee/util.h               |    1 +
- 9 files changed, 40 insertions(+), 66 deletions(-)
-
-
-2011-03-23  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6408 git=baaa4b7729e27201c0e5ea9169c827f1c40a1a8d
-
-    Reference count must be reentrant
-    
- cherokee/avl_flcache.c |    4 ++++
- cherokee/avl_flcache.h |    3 ++-
- cherokee/flcache.c     |   19 ++++++++++++++-----
- 3 files changed, 20 insertions(+), 6 deletions(-)
-
-
-2011-03-23  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6407 git=0ad0b560bbafa0e420f61e072c9d4057c106d98e
-
-    The query string was not being taken into account
-    
- cherokee/avl_flcache.c |   45 ++++++++++++++++++++++++++++++++++++++++++++-
- cherokee/avl_flcache.h |    1 +
- cherokee/flcache.c     |   14 ++++----------
- 3 files changed, 49 insertions(+), 11 deletions(-)
-
-
-2011-03-22  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6406 git=578617f4a0e2f3650975eb84792f02ec87dec862
-
-    WIP: Not everything is cacheable
-    
- cherokee/flcache.c |   67 ++++++++++++++++++++++++++++++++++++++++++++++++++++
- 1 files changed, 67 insertions(+), 0 deletions(-)
-
-
-2011-03-22  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6404 git=5a24b506bde61068e80b2e666e45997413724aa6
-
-    WIP: Front-line cache content expiration
-    
- cherokee/avl_flcache.c          |   65 +++++++++++++++++++++++++++++++++++++-
- cherokee/avl_flcache.h          |    6 +++-
- cherokee/avl_generic.h          |   19 -----------
- cherokee/connection-protected.h |    2 +-
- cherokee/connection.c           |   47 +++++++++++++++++++++------
- cherokee/flcache.c              |   38 ++++++++++++++++++++--
- cherokee/flcache.h              |    1 +
- cherokee/handler_proxy.c        |    2 +-
- cherokee/macros.h               |    1 +
- cherokee/main_admin.c           |    2 +-
- cherokee/server-protected.h     |    3 ++
- cherokee/server.c               |   32 +++++++++++++++++--
- cherokee/thread.c               |   35 ++++++---------------
- 13 files changed, 185 insertions(+), 68 deletions(-)
-
-
-2011-03-21  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6403 git=284dddd849544931dc8bff90c82cad8be0e97123
-
-    Adds a few missing files
-    
- cherokee/avl_flcache.c |  298 ++++++++++++++++++++
- cherokee/avl_flcache.h |   85 ++++++
- cherokee/avl_generic.c |  712 ++++++++++++++++++++++++++++++++++++++++++++++++
- cherokee/avl_generic.h |  121 ++++++++
- cherokee/flcache.c     |  456 +++++++++++++++++++++++++++++++
- cherokee/flcache.h     |   98 +++++++
- 6 files changed, 1770 insertions(+), 0 deletions(-)
-
-
-2011-03-21  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6402 git=7a63cc3ee9a0b4f6d7b7d9667896b739964eacc4
-
-    Front-line cache: Initial implementation. It's still WIP.
-    
- README                          |    6 +-
- cherokee/Makefile.am            |    8 +-
- cherokee/avl.c                  |  730 ++++-----------------------------------
- cherokee/avl.h                  |   50 ++-
- cherokee/common-internal.h      |   24 ++
- cherokee/config_entry.c         |    8 +-
- cherokee/config_entry.h         |    3 +-
- cherokee/connection-protected.h |    2 +-
- cherokee/connection.c           |   94 +++++-
- cherokee/header.c               |    8 +-
- cherokee/header.h               |    1 +
- cherokee/thread.c               |   75 ++++-
- cherokee/virtual_server.c       |   31 ++-
- cherokee/virtual_server.h       |    2 +
- configure.in                    |    2 +
- constants.h.pre                 |    4 +-
- 16 files changed, 342 insertions(+), 706 deletions(-)
-
-
-2011-03-21  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6400 git=0f7cecf88931483b82535fbfa22f718a443f3643
-
-    Front-line cache branch
-    
-
-2011-04-26  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6554 git=0d587e24617d06a6167c85746dc4874b2e80f699
-
-    Fixes a regression around the encoding process. Some static files were
-    not being encoded properly.
-    
- cherokee/connection.c   |   11 ++++++++---
- cherokee/handler_file.c |    7 +++----
- 2 files changed, 11 insertions(+), 7 deletions(-)
-
-
-2011-04-25  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6553 git=143c46bcc21cad62d7f3791c173c7aea8fc8a024
-
-    Replace atoi() calls by either cherokee_atoi() or cherokee_atob().
-    
- cherokee/access.c               |    4 ++-
- cherokee/bind.c                 |    4 ++-
- cherokee/cache.c                |    6 ++++-
- cherokee/config_node.c          |    5 +++-
- cherokee/downloader.c           |    3 +-
- cherokee/encoder_deflate.c      |    7 ++++-
- cherokee/encoder_gzip.c         |    7 ++++-
- cherokee/handler_cgi_base.c     |   24 +++++++++++-------
- cherokee/handler_common.c       |    6 +++-
- cherokee/handler_custom_error.c |    7 ++++-
- cherokee/handler_dbslayer.c     |    6 +++-
- cherokee/handler_dirlist.c      |   31 +++++++++++++++++------
- cherokee/handler_error_redir.c  |    6 +++-
- cherokee/handler_file.c         |    4 ++-
- cherokee/handler_proxy.c        |   35 ++++++++++++++++++--------
- cherokee/handler_streaming.c    |    7 ++++-
- cherokee/handler_uwsgi.c        |   15 ++++++++---
- cherokee/header.c               |   15 +++++++----
- cherokee/iocache.c              |   19 +++++++++++---
- cherokee/logger_writer.c        |    7 ++++-
- cherokee/main_admin.c           |   18 +++++++++++--
- cherokee/rule.c                 |    4 ++-
- cherokee/server.c               |   43 +++++++++++++++++++++++----------
- cherokee/source_interpreter.c   |   11 ++++++--
- cherokee/util.c                 |   17 +++++++++++++
- cherokee/util.h                 |    4 +-
- cherokee/validator_ldap.c       |    7 ++++-
- cherokee/validator_mysql.c      |    4 ++-
- cherokee/virtual_server.c       |   51 +++++++++++++++++++++++++++-----------
- cherokee/virtual_server.h       |    2 +-
- 30 files changed, 278 insertions(+), 101 deletions(-)
-
-
-2011-04-23  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6552 git=ad1be119d5ba119a982d177f9e19f4e94bc73bfb
-
-    Fixes a minor issue with a QA tests. The last header entry did not
-    include its CRLF ending.
-    
- qa/255-header_op-add1.py |    2 +-
- 1 files changed, 1 insertions(+), 1 deletions(-)
-
-
-2011-04-23  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6551 git=b96b6145cc9bad62ed59419113d064b3294c1d4d
-
-    The (internal) 'Header Operations' were being executed too soon, and
-    thus some header were not being handled properly. For instance, the
-    ETag header (added by the 'file' handler) was not accessible for these
-    operations. Fixes #1138: http://bugs.cherokee-project.com/1138
-    
-    This commit also adds a new QA test to cover the issue.
-    
- cherokee/connection.c           |   20 +++++++++++---------
- qa/274-header_op-remove-etag.py |   33 +++++++++++++++++++++++++++++++++
- qa/Makefile.am                  |    3 ++-
- 3 files changed, 46 insertions(+), 10 deletions(-)
-
-
-2011-04-23  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6550 git=03eab237be7aabefcb84c8456192f294963e18ce
-
-    getopt does not handle parameters with optional arguments nicely. This
-    little patch allows to split the optional argument from its parameter,
-    for instance, it allows to execute "cherokee -b 10.0.0.1" instead of
-    "cherokee -b10.0.0.1" (which is much more friendly). Many thanks to
-    swinchen@gmail.com for the initial patch for this bugfix.
-    Bur report #843: http://bugs.cherokee-project.com/843
-    
- cherokee/main_admin.c |    8 ++++++--
- 1 files changed, 6 insertions(+), 2 deletions(-)
-
-
-2011-04-22  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6549 git=5a43859dd0a6152774dc8ae9ce516617b3e78771
-
-    Fixes a bunch of compilation warnings
-    
- cherokee/balancer_failover.h    |    3 ++-
- cherokee/balancer_ip_hash.h     |    3 ++-
- cherokee/balancer_round_robin.h |    3 ++-
- cherokee/collector_rrd.h        |    3 ++-
- cherokee/cryptor_libssl.h       |    3 +++
- cherokee/encoder.c              |    2 +-
- cherokee/gen_evhost.h           |    3 +++
- cherokee/handler_admin.h        |    3 ++-
- cherokee/handler_empty_gif.h    |    2 --
- cherokee/handler_fcgi.h         |    3 +++
- cherokee/logger_combined.c      |    5 +++--
- cherokee/logger_combined.h      |    3 +++
- cherokee/logger_custom.h        |    3 +++
- cherokee/logger_ncsa.h          |    2 ++
- cherokee/main_admin.c           |    4 ++--
- cherokee/post_track.h           |    3 +++
- cherokee/rule_and.h             |    2 ++
- cherokee/rule_bind.h            |    2 ++
- cherokee/rule_default.h         |    3 +++
- cherokee/rule_directory.h       |    2 ++
- cherokee/rule_exists.h          |    2 ++
- cherokee/rule_extensions.h      |    2 ++
- cherokee/rule_from.h            |    2 ++
- cherokee/rule_fullpath.h        |    2 ++
- cherokee/rule_header.c          |    3 +--
- cherokee/rule_header.h          |    2 ++
- cherokee/rule_method.h          |    2 ++
- cherokee/rule_not.h             |    2 ++
- cherokee/rule_or.h              |    2 ++
- cherokee/rule_request.h         |    3 +++
- cherokee/rule_tls.c             |    2 ++
- cherokee/rule_tls.h             |    2 ++
- cherokee/rule_url_arg.h         |    2 ++
- cherokee/validator_authlist.h   |    2 ++
- cherokee/validator_htdigest.h   |    2 ++
- cherokee/validator_htpasswd.h   |    2 ++
- cherokee/validator_pam.h        |    2 ++
- cherokee/validator_plain.h      |    3 ++-
- cherokee/virtual_server.c       |    2 +-
- cherokee/vrule_or.h             |    2 ++
- cherokee/vrule_rehost.h         |    2 ++
- cherokee/vrule_target_ip.c      |    2 ++
- cherokee/vrule_target_ip.h      |    2 ++
- cherokee/vrule_wildcard.h       |    2 ++
- 44 files changed, 92 insertions(+), 16 deletions(-)
-
-
-2011-04-22  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6548 git=f72d08ed6c0c0ebe8102a098e074e3f8a053e7e9
-
-    Limit the number of threads that Cherokee-admin launches (to 4). There
-    are environments were cherokee-admin was launching up to 80 threads,
-    which does not make much sense.
-    
- cherokee/main_admin.c |    9 +++++++++
- 1 files changed, 9 insertions(+), 0 deletions(-)
-
-
-2011-04-22  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6547 git=c52c6f4f9afe82ad4ded7e7c42ce4a0adec61670
-
-    Some 'submit' events were not handled property in the 'Full Path'
-    module. Fixes bug #1182: http://bugs.cherokee-project.com/1182
-    
- admin/plugins/fullpath.py |    8 ++++++--
- 1 files changed, 6 insertions(+), 2 deletions(-)
-
-
-2011-04-21  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6546 git=c348cdc24a539f19d15e28e71c41b2e985e994c8
-
-    Re-implements how a local file is read. The previous code was filling
-    the buffer, independently of its size. That caused the buffer to grow
-    unexpectedly under some unusual circumstances (A gzip encoder with no
-    compression, for instance).
-    
- cherokee/connection.c   |    3 +++
- cherokee/handler_file.c |   14 +-------------
- cherokee/macros.h       |    4 ++--
- 3 files changed, 6 insertions(+), 15 deletions(-)
-
-
-2011-04-21  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6545 git=a5ea7eb6830e99d7b297c99129be043fb81aee73
-
-    Fixes a couple of QA tests that expected the wrong response codes.
-    
- qa/003-UnknownMethod.py                 |    2 +-
- qa/004-UnknownMethod+MissingProtocol.py |    2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
-
-
-2011-04-21  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6544 git=3342e44e3bfc5536e0e259fec9362c43bff20b88
-
-    Mind EINTR
-    
- cherokee/handler_file.c |   10 ++++++++--
- 1 files changed, 8 insertions(+), 2 deletions(-)
-
-
-2011-04-19  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6539 git=19e48ec74e6cfdcf1f40499a9f2fbe286d5a6722
-
-    Under some circumstances internal buffers could grow too much.
-    
- cherokee/cryptor_libssl.c |    5 +++++
- cherokee/handler_file.c   |    5 +++++
- 2 files changed, 10 insertions(+), 0 deletions(-)
-
-
-2011-04-18  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6537 git=ee7338b6fad9b7847cf046196c45d9273c8eb6b2
-
-    Fixes the memory meter widget on MacOS X boxes with lot of memory.
-    
- admin/SystemStats.py |    2 +-
- 1 files changed, 1 insertions(+), 1 deletions(-)
-
-
-2011-04-12  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6494 git=45e715524c77b79a09749ac05111739cf9e32fea
-
-    Fixes a regression introduced at r6298. An 'out by one' memory
-    management issue was causing some operations to fail. Fixes bug
-    
- cherokee/main.c |    2 +-
- 1 files changed, 1 insertions(+), 1 deletions(-)
-
-
-2011-04-12  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6493 git=d3719cb8ff49704797eed23152731b72b3909191
-
-    Turns a fatal error by a warning. The LDAP authentication plug-in was
-    being too strict about unknown configuration properties. Fixes bug
-    
- cherokee/validator_ldap.c |    3 +--
- 1 files changed, 1 insertions(+), 2 deletions(-)
-
-
-2011-04-11  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6490 git=a2d8602a6add691a72e05ecec0ca2918cbc1db02
-
-    Merges the 'dist' branch
-    
- admin/Page.py                       |    8 +-
- admin/market/Distro.py              |  167 +++++++++++++++
- admin/market/Install.py             |  151 ++++----------
- admin/market/Makefile.am            |    3 +-
- admin/market/PageApp.py             |  264 ++++++++----------------
- admin/market/PageCategory.py        |   73 +++----
- admin/market/PageIndex.py           |  123 +++++------
- admin/market/PageSearch.py          |   44 ++--
- admin/market/Report.py              |   11 +-
- admin/market/Util.py                |   27 +--
- admin/market/ows_consts.py          |    3 +
- admin/server.py                     |   22 +--
- admin/static/css/cherokee-admin.css |   10 +-
- admin/theme.html                    |    2 +-
- cherokee.conf.sample.pre            |    2 +-
- doc/Makefile.am                     |    3 +-
- doc/distro_dev_intro.txt            |  390 +++++++++++++++++++++++++++++++++++
- doc/index.txt                       |   11 +-
- 18 files changed, 848 insertions(+), 466 deletions(-)
-
-
-2011-04-09  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6489 git=e21201b3e30b3734ed4895410dd8def1f5e5b32b
-
-    Error handlers could not manage 405 errors properly.
-    
- cherokee/connection.c          |    9 +++++++++
- cherokee/handler_error_redir.c |    1 -
- cherokee/header.c              |   19 ++++++++++++++++---
- qa/273-Unknown-method-redir.py |   34 ++++++++++++++++++++++++++++++++++
- qa/Makefile.am                 |    3 ++-
- 5 files changed, 61 insertions(+), 5 deletions(-)
-
-
-2011-03-31  Taher Shihadeh  <taher@unixwars.com>
-            svn=6459 git=2a042bc9a77f875b3d94524c8ccf810b4da116cf
-
-    Minor adjustments and cleanup for remaining cookbook entries
-    
- doc/cookbook_mono.txt       |    5 +++--
- doc/cookbook_moodle.txt     |    1 +
- doc/cookbook_nagios.txt     |   20 ++++++++++++++++++++
- doc/cookbook_phpmyadmin.txt |    2 ++
- doc/cookbook_wordpress.txt  |   12 ++++++++++--
- 5 files changed, 36 insertions(+), 4 deletions(-)
-
-
-2011-03-31  Taher Shihadeh  <taher@unixwars.com>
-            svn=6457 git=78848ac1742436340450e01170d5c39d12f6a9d9
-
-    Minor adjustments and cleanup for some entries of the cookbook
-    
- doc/cookbook_django.txt            |    5 ++++
- doc/cookbook_drupal.txt            |   40 +++++++++++++++++++++++++++++-
- doc/cookbook_https_accelerator.txt |    6 ++++-
- doc/cookbook_maintenance.txt       |   46 +++++++++++++++++++++++++++++-------
- doc/cookbook_php.txt               |   32 +++++++++++++++++++++----
- doc/cookbook_ror.txt               |   16 +++++++++++-
- 6 files changed, 126 insertions(+), 19 deletions(-)
-
-
-2011-03-31  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6453 git=e1537ea808b58f9e613f8a3a8f40e9c00185b7b3
-
-    Reverts previous patch. It was meant to go to other branch.
-    
- admin/market/ows_consts.py |    2 --
- 1 files changed, 0 insertions(+), 2 deletions(-)
-
-
-2011-03-31  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6452 git=87a14c3023a3b225de46749028af5d03c460ba45
-
-    Adds a temporal, testing repo path
-    
- admin/market/ows_consts.py |    2 ++
- 1 files changed, 2 insertions(+), 0 deletions(-)
-
-
-2011-03-29  Taher Shihadeh  <taher@unixwars.com>
-            svn=6446 git=a03607095972cefbb2aa8e012a58859b63bc9fb6
-
-    Fits example code into its assigned section
-    
- doc/dev_ctk.txt |    8 ++++++--
- 1 files changed, 6 insertions(+), 2 deletions(-)
-
-
-2011-03-28  Taher Shihadeh  <taher@unixwars.com>
-            svn=6429 git=eb56f2a65c041c1e1dca5964813c78f74e7373d3
-
-    Cleanup last document
-    
- doc/other_faq.txt |    3 +--
- 1 files changed, 1 insertions(+), 2 deletions(-)
-
-
-2011-03-28  Taher Shihadeh  <taher@unixwars.com>
-            svn=6428 git=a854a6f057797e61ffc803c00f12f91676a17759
-
-    Adds FAQ entry regarding htaccess
-    
- doc/other_faq.txt |   24 ++++++++++++++++++++++++
- 1 files changed, 24 insertions(+), 0 deletions(-)
-
-
-2011-03-23  Taher Shihadeh  <taher@unixwars.com>
-            svn=6415 git=641cf6a3bbc9ed12555f12cf09a463da01a56cf6
-
-    Removes out-dated files
-    
- doc/Makefile.am      |    3 ---
- doc/dev.txt          |    1 -
- doc/dev_api.txt      |    6 ------
- doc/dev_examples.txt |    6 ------
- doc/dev_issues.txt   |   36 ------------------------------------
- doc/index.txt        |    5 -----
- 6 files changed, 0 insertions(+), 57 deletions(-)
-
-
-2011-03-23  Taher Shihadeh  <taher@unixwars.com>
-            svn=6412 git=00b225794f25676241095d01b6c8db2ea6eed5e2
-
-    Tested for Django 1.3
-    
- doc/cookbook_django.txt |    6 ++++++
- 1 files changed, 6 insertions(+), 0 deletions(-)
-
-
-2011-03-23  Taher Shihadeh  <taher@unixwars.com>
-            svn=6409 git=04cdeebd51b1655b565d241903aae8bedccc8a78
-
-    Addresses corner-case problem during installations involving a function call while being root
-    
- admin/market/InstallUtil.py |   17 ++++++++++++-----
- 1 files changed, 12 insertions(+), 5 deletions(-)
-
-
-2011-03-22  Taher Shihadeh  <taher@unixwars.com>
-            svn=6405 git=7025918378d71ccbbe28e2d48872e9dc48b77e0c
-
-    CTK introductory documentation
-    
- doc/Makefile.am |    3 +-
- doc/dev.txt     |    1 +
- doc/dev_ctk.txt |  629 +++++++++++++++++++++++++++++++++++++++++++------------
- doc/index.txt   |    1 +
- 4 files changed, 504 insertions(+), 130 deletions(-)
-
-
-2011-03-21  Taher Shihadeh  <taher@unixwars.com>
-            svn=6401 git=d3c5f7966a10bbb3521ed0612fa3029565f6a67e
-
-    Initial commit. Draft for CTK documentation
-    
- doc/dev_ctk.txt |  185 +++++++++++++++++++++++++++++++++++++++++++++++++++++++
- 1 files changed, 185 insertions(+), 0 deletions(-)
-
-2011-04-17  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6533 git=c00429454c11d0f197f676794f9b580625e5b6e7
-
-    Adds three more QA tests for the Front-Line cache mechanism.
-    
- qa/279-Flcache-expired1.py |   51 ++++++++++++++++++++++++++++++++++++++++
- qa/280-Flcache-expired2.py |   51 ++++++++++++++++++++++++++++++++++++++++
- qa/281-Flcache-expired3.py |   55 ++++++++++++++++++++++++++++++++++++++++++++
- qa/Makefile.am             |    5 +++-
- 4 files changed, 161 insertions(+), 1 deletions(-)
-
-
-2011-04-17  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6532 git=44edc28fda886b56d480654ab51f7c55cbbb2b7a
-
-    Adds a new QA test for Front-Line cache. It ensures that encoded and
-    non-encoded objects are handled properly.
-    
- qa/278-Flcache-gzip1.py |   59 +++++++++++++++++++++++++++++++++++++++++++++++
- qa/Makefile.am          |    3 +-
- 2 files changed, 61 insertions(+), 1 deletions(-)
-
-
-2011-04-16  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6531 git=8485dcacf8d1a4479406f2a5ed47ad91c993a59c
-
-    Do not cache non-200 responses (by the moment).
-    
- cherokee/flcache.c |   12 ++++++++++++
- cherokee/thread.c  |    2 +-
- 2 files changed, 13 insertions(+), 1 deletions(-)
-
-
-2011-04-16  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6530 git=1c2b7faf484e3d8af4055beb75755a504466535d
-
-    Fixes a couple of TRACE entries.
-    
- cherokee/avl_flcache.c |    2 +-
- cherokee/flcache.c     |    4 +++-
- 2 files changed, 4 insertions(+), 2 deletions(-)
-
-
-2011-04-16  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6529 git=2d525f107cd90816967519024a8371fe9f6b0465
-
-    Fixes an error about the encoding of Front-line cache entries.
-    
- cherokee/avl_flcache.c |   10 ++++++++--
- cherokee/flcache.c     |    3 ++-
- 2 files changed, 10 insertions(+), 3 deletions(-)
-
-
-2011-04-16  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6528 git=da704701e575e808c3dfb4d591b4385dacf012e7
-
-    Adds a few new TRACE entries to Front-Line cache
-    
- cherokee/flcache.c |   24 +++++++++++++++++++-----
- 1 files changed, 19 insertions(+), 5 deletions(-)
-
-
-2011-04-14  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6505 git=8a9972e03789a7ea490caf46615caf6c56781857
-
-    Handler file integration with Front-line cache
-    
- cherokee/flcache.c      |    1 -
- cherokee/handler.h      |    8 --------
- cherokee/handler_file.c |    1 +
- 3 files changed, 1 insertions(+), 9 deletions(-)
-
-
-2011-04-14  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6504 git=d74fa494669415b1b6707ab3bfa48f0b33a7db4a
-
-    Adds (default) caching properties to the Server Info handler.
-    
- cherokee/handler_server_info.c |   11 ++++++++++-
- 1 files changed, 10 insertions(+), 1 deletions(-)
-
-
-2011-04-14  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6503 git=9f5be602f60c54e3d4918879ea1c7fde11c7d573
-
-    Fixes an incorrect reference
-    
- cherokee/avl_flcache.c |    2 +-
- 1 files changed, 1 insertions(+), 1 deletions(-)
-
-
-2011-03-31  Taher Shihadeh  <taher@unixwars.com>
-            svn=6458 git=c5f28ff53a60a7818a49fc0552aacec28dfd313b
-
-    Screenshots were not matching their section
-    
- doc/media/images/admin_handler_fastcgi2.png |  Bin 32476 -> 32431 bytes
- doc/media/images/cookbook_mono_handler.png  |  Bin 57757 -> 29700 bytes
- 2 files changed, 0 insertions(+), 0 deletions(-)
-
-
-2011-03-31  Taher Shihadeh  <taher@unixwars.com>
-            svn=6455 git=331c980654f709247b49acb16c104cdde4eea319
-
-    Fixes snapshots according to description
-    
- doc/media/images/admin_handler_fastcgi2.png |  Bin 60678 -> 32476 bytes
- doc/media/images/cookbook_ror_common.png    |  Bin 29148 -> 29194 bytes
- 2 files changed, 0 insertions(+), 0 deletions(-)
-
-
-2011-03-30  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6449 git=98d1df287ee06fdc4c8c7fbccb5ddb8a3846408d
-
-    Moves most of the FL-cache code to libcherokee-server
-    
- cherokee/Makefile.am |   12 ++++++------
- 1 files changed, 6 insertions(+), 6 deletions(-)
-
-
-2011-03-29  Taher Shihadeh  <taher@unixwars.com>
-            svn=6448 git=610d475a846b01ae6092de2238f038ad7aefbf9e
-
-    Documents Front-line cache
-    
- doc/Makefile.am                     |    1 +
- doc/config_virtual_servers_rule.txt |   16 +++-----
- doc/index.txt                       |    1 +
- doc/other.txt                       |    1 +
- doc/other_front_line_cache.txt      |   66 +++++++++++++++++++++++++++++++++++
- doc/other_goodies.txt               |   12 ++++++
- 6 files changed, 87 insertions(+), 10 deletions(-)
-
-
-2011-03-29  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6447 git=df8502bc74435ff528482b510da01dd3d4c504ff
-
-    Front-line QA: WIP
-    
- cherokee/flcache.c         |    4 +-
- qa/277-Flcache-headers2.py |   53 ++++++++++++++++++++++++++++++++++++++++++++
- qa/Makefile.am             |    3 +-
- 3 files changed, 57 insertions(+), 3 deletions(-)
-
-
-2011-03-29  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6445 git=e32958fe1fcc2bbac13e02798a3bb190851451e3
-
-    According to RFC2616, the "Via:" header _must_ be implemented.
-    
- cherokee/flcache.c         |   24 ++++++++++++++++++++
- qa/276-Flcache-headers1.py |   52 ++++++++++++++++++++++++++++++++++++++++++++
- qa/Makefile.am             |    3 +-
- 3 files changed, 78 insertions(+), 1 deletions(-)
-
-
-2011-03-29  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6444 git=2db13c1f14fbffb5a1fed89d51110301625f7574
-
-    Implements 'Age' (RFC2616, section 14.6)
-    
- cherokee/avl_flcache.c |    2 ++
- cherokee/avl_flcache.h |    2 ++
- cherokee/flcache.c     |    6 ++++++
- 3 files changed, 10 insertions(+), 0 deletions(-)
-
-
-2011-03-29  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6443 git=936584f5f26a60a7eed0707e55ad58fedf1411ff
-
-    Better support for X-Cache
-    
- cherokee/connection-protected.h |    1 +
- cherokee/connection.c           |   45 ++++++++++++++++++++++++++++++++-------
- cherokee/flcache.c              |   11 ++-------
- 3 files changed, 41 insertions(+), 16 deletions(-)
-
-
-2011-03-29  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6441 git=c96d3fa5a06050b5d735159a4522877d39d2f0e9
-
-    Delay to create files as soon as possible. Under some circunstances we
-    will be able to skip it (if the response should not be cached).
-    
- cherokee/flcache.c |   86 ++++++++++++++++++++++++++++++++--------------------
- 1 files changed, 53 insertions(+), 33 deletions(-)
-
-
-2011-03-29  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6440 git=f8bf2e61a7ebe703c7e1927bbe4a73a5c14baab0
-
-    Further work on the FLcache
-    
- cherokee/connection.c     |    4 ++-
- cherokee/flcache.c        |   42 +++++++++++++++++++++++++---------
- qa/274-Flcache-cookie1.py |   14 +++++-----
- qa/275-Flcache-cookie2.py |   55 +++++++++++++++++++++++++++++++++++++++++++++
- qa/Makefile.am            |    3 +-
- 5 files changed, 98 insertions(+), 20 deletions(-)
-
-
-2011-03-29  Taher Shihadeh  <taher@unixwars.com>
-            svn=6439 git=4c2f7b6a3f7507113d1b08309cc434821c8685e9
-
-    Clarifies the section about caching
-    
- doc/config_virtual_servers_rule.txt |   13 ++++++++-----
- 1 files changed, 8 insertions(+), 5 deletions(-)
-
-
-2011-03-29  Taher Shihadeh  <taher@unixwars.com>
-            svn=6438 git=bba1e457323ccd0bd931cf969825f750988a0251
-
-    Updates remaining screenshots + recompression
-    
- doc/media/images/admin_advanced0.png               |  Bin 3897 -> 3873 bytes
- doc/media/images/admin_advanced1.png               |  Bin 16873 -> 16527 bytes
- doc/media/images/admin_advanced2.png               |  Bin 18604 -> 18074 bytes
- doc/media/images/admin_advanced3.png               |  Bin 14588 -> 14178 bytes
- doc/media/images/admin_advanced4.png               |  Bin 9480 -> 9049 bytes
- doc/media/images/admin_advanced5.png               |  Bin 13128 -> 12941 bytes
- doc/media/images/admin_behavior.png                |  Bin 9769 -> 9114 bytes
- doc/media/images/admin_general.png                 |  Bin 19455 -> 18648 bytes
- doc/media/images/admin_general_icons.png           |  Bin 14243 -> 13597 bytes
- doc/media/images/admin_general_mime.png            |  Bin 9678 -> 9508 bytes
- doc/media/images/admin_general_networking.png      |  Bin 19466 -> 18925 bytes
- doc/media/images/admin_general_permissions.png     |  Bin 10284 -> 9802 bytes
- doc/media/images/admin_general_ports.png           |  Bin 7792 -> 7437 bytes
- doc/media/images/admin_handler_admin.png           |  Bin 10657 -> 9988 bytes
- doc/media/images/admin_handler_cgi.png             |  Bin 20450 -> 19731 bytes
- doc/media/images/admin_handler_custom_error.png    |  Bin 17857 -> 17203 bytes
- doc/media/images/admin_handler_dbslayer.png        |  Bin 17151 -> 16556 bytes
- doc/media/images/admin_handler_dirlist.png         |  Bin 15421 -> 14769 bytes
- doc/media/images/admin_handler_dirlist_ex.png      |  Bin 17871 -> 17072 bytes
- doc/media/images/admin_handler_fastcgi1.png        |  Bin 21204 -> 20165 bytes
- doc/media/images/admin_handler_fastcgi2.png        |  Bin 63281 -> 60678 bytes
- doc/media/images/admin_handler_file.png            |  Bin 10650 -> 10122 bytes
- doc/media/images/admin_handler_onlylisting.png     |  Bin 17675 -> 16832 bytes
- doc/media/images/admin_handler_onlylisting_ex.png  |  Bin 17920 -> 17012 bytes
- doc/media/images/admin_handler_proxy.png           |  Bin 20158 -> 19725 bytes
- doc/media/images/admin_handler_secdownload.png     |  Bin 14987 -> 14549 bytes
- doc/media/images/admin_index.png                   |  Bin 47858 -> 45050 bytes
- doc/media/images/admin_index_backup.png            |  Bin 7939 -> 7445 bytes
- doc/media/images/admin_index_restore.png           |  Bin 11069 -> 10625 bytes
- doc/media/images/admin_info_sources.png            |  Bin 37365 -> 35620 bytes
- doc/media/images/admin_launch.png                  |  Bin 6237 -> 5825 bytes
- doc/media/images/admin_noconfig.png                |  Bin 16236 -> 15298 bytes
- doc/media/images/admin_notrunning.png              |  Bin 10992 -> 10642 bytes
- doc/media/images/admin_rule_regex.png              |  Bin 14933 -> 14087 bytes
- doc/media/images/admin_validators_authlist.png     |  Bin 20708 -> 19868 bytes
- doc/media/images/admin_validators_ldap.png         |  Bin 30041 -> 29683 bytes
- doc/media/images/admin_validators_pam.png          |  Bin 14623 -> 14095 bytes
- doc/media/images/admin_validators_plain.png        |  Bin 35764 -> 34889 bytes
- doc/media/images/admin_vserver.png                 |  Bin 18616 -> 17037 bytes
- doc/media/images/admin_vserver_errors.png          |  Bin 9033 -> 8691 bytes
- doc/media/images/admin_vserver_evhost.png          |  Bin 35038 -> 33327 bytes
- doc/media/images/admin_vserver_loggers.png         |  Bin 19937 -> 19132 bytes
- doc/media/images/admin_vserver_security.png        |  Bin 15516 -> 14877 bytes
- doc/media/images/admin_vserver_wizard.png          |  Bin 37975 -> 34601 bytes
- doc/media/images/admin_vservers_wizard.png         |  Bin 38565 -> 36569 bytes
- doc/media/images/cookbook_alfresco_alfresco.png    |  Bin 34437 -> 33948 bytes
- doc/media/images/cookbook_alfresco_assistant.png   |  Bin 20121 -> 19989 bytes
- doc/media/images/cookbook_alfresco_install.png     |  Bin 19817 -> 19686 bytes
- doc/media/images/cookbook_alfresco_path.png        |  Bin 7356 -> 7268 bytes
- doc/media/images/cookbook_alfresco_share.png       |  Bin 37782 -> 36573 bytes
- doc/media/images/cookbook_alfresco_soffice.png     |  Bin 7474 -> 7364 bytes
- doc/media/images/cookbook_dbslayer1.png            |  Bin 8884 -> 8586 bytes
- doc/media/images/cookbook_dbslayer2.png            |  Bin 18742 -> 17999 bytes
- doc/media/images/cookbook_dbslayer3.png            |  Bin 7909 -> 7763 bytes
- doc/media/images/cookbook_dbslayer4.png            |  Bin 35042 -> 31426 bytes
- doc/media/images/cookbook_django.png               |  Bin 23568 -> 22521 bytes
- doc/media/images/cookbook_django_common.png        |  Bin 22134 -> 21347 bytes
- doc/media/images/cookbook_django_infosources.png   |  Bin 30736 -> 29838 bytes
- doc/media/images/cookbook_drupal.png               |  Bin 27255 -> 26951 bytes
- doc/media/images/cookbook_drupal_dir_rules.png     |  Bin 17341 -> 16477 bytes
- doc/media/images/cookbook_drupal_dir_rules_1.png   |  Bin 15985 -> 15414 bytes
- doc/media/images/cookbook_drupal_dir_rules_2.png   |  Bin 15164 -> 14622 bytes
- doc/media/images/cookbook_drupal_dir_rules_3.png   |  Bin 7893 -> 7525 bytes
- doc/media/images/cookbook_drupal_dir_rules_4.png   |  Bin 13283 -> 12811 bytes
- doc/media/images/cookbook_drupal_dir_rules_6.png   |  Bin 21261 -> 20466 bytes
- doc/media/images/cookbook_drupal_dir_rules_7.png   |  Bin 15723 -> 14913 bytes
- doc/media/images/cookbook_drupal_vserver_rules.png |  Bin 14585 -> 13900 bytes
- doc/media/images/cookbook_glassfish.png            |  Bin 4851 -> 4849 bytes
- .../images/cookbook_https_accelerator_handler.png  |  Bin 37073 -> 36029 bytes
- .../images/cookbook_https_accelerator_sources.png  |  Bin 13816 -> 13269 bytes
- doc/media/images/cookbook_joomla.png               |  Bin 12561 -> 12383 bytes
- doc/media/images/cookbook_liferay.png              |  Bin 16861 -> 16251 bytes
- doc/media/images/cookbook_mailman.png              |  Bin 13235 -> 13135 bytes
- .../cookbook_maintenance_advanced_domains.png      |  Bin 8557 -> 8416 bytes
- .../images/cookbook_maintenance_advanced_redir.png |  Bin 14100 -> 14067 bytes
- .../images/cookbook_maintenance_advanced_rules.png |  Bin 9641 -> 9523 bytes
- doc/media/images/cookbook_maintenance_copy.png     |  Bin 15654 -> 15192 bytes
- doc/media/images/cookbook_maintenance_domain.png   |  Bin 9055 -> 8902 bytes
- doc/media/images/cookbook_maintenance_error.png    |  Bin 7784 -> 7798 bytes
- doc/media/images/cookbook_maintenance_result.png   |  Bin 7203 -> 7022 bytes
- doc/media/images/cookbook_maintenance_rule.png     |  Bin 8213 -> 8072 bytes
- .../images/cookbook_managing_logs_handler.png      |  Bin 6172 -> 5958 bytes
- doc/media/images/cookbook_managing_logs_rules.png  |  Bin 14223 -> 13653 bytes
- .../images/cookbook_managing_logs_security.png     |  Bin 41923 -> 38608 bytes
- doc/media/images/cookbook_mono_demo.png            |  Bin 11183 -> 11066 bytes
- doc/media/images/cookbook_mono_handler.png         |  Bin 62644 -> 57757 bytes
- doc/media/images/cookbook_moodle.png               |  Bin 18427 -> 18157 bytes
- doc/media/images/cookbook_moodle_db.png            |  Bin 31835 -> 31317 bytes
- doc/media/images/cookbook_moodle_document_root.png |  Bin 12200 -> 11859 bytes
- doc/media/images/cookbook_moodle_modules.png       |  Bin 48838 -> 46699 bytes
- doc/media/images/cookbook_moodle_paths.png         |  Bin 35388 -> 34445 bytes
- doc/media/images/cookbook_mysql_rule.png           |  Bin 5027 -> 4959 bytes
- doc/media/images/cookbook_mysql_validator.png      |  Bin 14012 -> 33273 bytes
- doc/media/images/cookbook_nagios1.png              |  Bin 8123 -> 7847 bytes
- doc/media/images/cookbook_nagios2.png              |  Bin 8179 -> 7993 bytes
- doc/media/images/cookbook_nagios3.png              |  Bin 20310 -> 19773 bytes
- doc/media/images/cookbook_nagios4.png              |  Bin 35664 -> 35013 bytes
- doc/media/images/cookbook_phpbb_1_intro.png        |  Bin 39031 -> 38264 bytes
- doc/media/images/cookbook_phpbb_2_req.png          |  Bin 35390 -> 34270 bytes
- doc/media/images/cookbook_phpbb_3_db.png           |  Bin 30601 -> 29720 bytes
- doc/media/images/cookbook_phpbb_4_admin.png        |  Bin 28930 -> 27883 bytes
- doc/media/images/cookbook_phpbb_5_config.png       |  Bin 23794 -> 23118 bytes
- doc/media/images/cookbook_phpbb_6_advanced.png     |  Bin 36283 -> 34927 bytes
- doc/media/images/cookbook_phpbb_7_create.png       |  Bin 24918 -> 24441 bytes
- doc/media/images/cookbook_phpbb_8_final.png        |  Bin 45143 -> 44269 bytes
- doc/media/images/cookbook_phpbb_adm.png            |  Bin 39075 -> 36486 bytes
- doc/media/images/cookbook_phpbb_adm_warning.png    |  Bin 37334 -> 35198 bytes
- doc/media/images/cookbook_phpbb_rules.png          |  Bin 9435 -> 9252 bytes
- doc/media/images/cookbook_phpbb_running.png        |  Bin 29947 -> 29239 bytes
- doc/media/images/cookbook_phpmyadmin.png           |  Bin 11383 -> 11238 bytes
- doc/media/images/cookbook_phpmyadmin_denied.png    |  Bin 8745 -> 8377 bytes
- doc/media/images/cookbook_redir_behavior.png       |  Bin 4519 -> 4490 bytes
- doc/media/images/cookbook_redir_domains.png        |  Bin 8552 -> 8347 bytes
- doc/media/images/cookbook_redir_handler.png        |  Bin 8773 -> 8659 bytes
- doc/media/images/cookbook_redir_https.png          |  Bin 9412 -> 9290 bytes
- doc/media/images/cookbook_ror.png                  |  Bin 15239 -> 15106 bytes
- doc/media/images/cookbook_ror_common.png           |  Bin 29750 -> 29148 bytes
- doc/media/images/cookbook_ror_fcgi.png             |  Bin 18589 -> 18036 bytes
- doc/media/images/cookbook_ror_wizard.png           |  Bin 11315 -> 10908 bytes
- doc/media/images/cookbook_sugarcrm_install0.png    |  Bin 61674 -> 59689 bytes
- doc/media/images/cookbook_sugarcrm_install1.png    |  Bin 21762 -> 21331 bytes
- doc/media/images/cookbook_sugarcrm_running0.png    |  Bin 22260 -> 21567 bytes
- doc/media/images/cookbook_sugarcrm_running1.png    |  Bin 25443 -> 24794 bytes
- doc/media/images/cookbook_symfony.png              |  Bin 24493 -> 23910 bytes
- doc/media/images/cookbook_trac.png                 |  Bin 35325 -> 35109 bytes
- doc/media/images/cookbook_trac_info.png            |  Bin 18451 -> 18098 bytes
- doc/media/images/cookbook_trac_rules.png           |  Bin 5725 -> 5572 bytes
- doc/media/images/cookbook_trac_scgi.png            |  Bin 28285 -> 27744 bytes
- doc/media/images/cookbook_trac_static.png          |  Bin 9506 -> 9194 bytes
- doc/media/images/cookbook_wp1.png                  |  Bin 26477 -> 26238 bytes
- doc/media/images/cookbook_wp2.png                  |  Bin 13235 -> 13147 bytes
- doc/media/images/cookbook_wp3.png                  |  Bin 10279 -> 10155 bytes
- doc/media/images/cookbook_wp4.png                  |  Bin 44859 -> 44012 bytes
- doc/media/images/cookbook_wp5.png                  |  Bin 25656 -> 24539 bytes
- doc/media/images/cookbook_wp_example1.png          |  Bin 8760 -> 8306 bytes
- doc/media/images/cookbook_wp_example2.png          |  Bin 8318 -> 7921 bytes
- doc/media/images/cookbook_wp_example3.png          |  Bin 13885 -> 12996 bytes
- doc/media/images/cookbook_zend1.png                |  Bin 3735 -> 3724 bytes
- doc/media/images/market_index.png                  |  Bin 39042 -> 37975 bytes
- doc/media/images/other_graphs_conns.png            |  Bin 18595 -> 18132 bytes
- doc/media/images/other_graphs_logging.png          |  Bin 15136 -> 14941 bytes
- doc/media/images/other_graphs_timeouts.png         |  Bin 19226 -> 18445 bytes
- doc/media/images/other_graphs_traffic.png          |  Bin 13862 -> 13566 bytes
- doc/media/images/proxy_phase1.png                  |  Bin 12012 -> 11406 bytes
- doc/media/images/proxy_phase2.png                  |  Bin 12222 -> 11661 bytes
- doc/media/images/screencast.png                    |  Bin 24013 -> 20613 bytes
- doc/media/images/tracelor.png                      |  Bin 9543 -> 9517 bytes
- 147 files changed, 0 insertions(+), 0 deletions(-)
-
-
-2011-03-29  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6437 git=b8082589287628aed8083f552b1dcb66aba35e9d
-
-    More cookies related stuff
-    
- cherokee/flcache.c        |    4 +-
- qa/274-Flcache-cookie1.py |   52 +++++++++++++++++++++++++++++++++++++++++++++
- qa/Makefile.am            |    3 +-
- 3 files changed, 56 insertions(+), 3 deletions(-)
-
-
-2011-03-28  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6436 git=0a0ea93a04f4587a84ac6b73620012b3713e80d6
-
-    The Content-Length header was sent twice under some circunstances.
-    
- cherokee/flcache.c |   14 ++++++++++++++
- 1 files changed, 14 insertions(+), 0 deletions(-)
-
-
-2011-03-28  Taher Shihadeh  <taher@unixwars.com>
-            svn=6435 git=7c3cf6e86469dd2b5abd0723a0ba167752003054
-
-    Updates a bunch of screenshots
-    
- doc/media/images/admin_handler_cgi.png          |  Bin 20394 -> 20450 bytes
- doc/media/images/admin_handler_custom_error.png |  Bin 17806 -> 17857 bytes
- doc/media/images/admin_handler_dbslayer.png     |  Bin 16947 -> 17151 bytes
- doc/media/images/admin_handler_dirlist.png      |  Bin 15756 -> 15421 bytes
- doc/media/images/admin_handler_fastcgi1.png     |  Bin 21207 -> 21204 bytes
- doc/media/images/admin_handler_fastcgi2.png     |  Bin 66318 -> 63281 bytes
- doc/media/images/admin_handler_file.png         |  Bin 10984 -> 10650 bytes
- doc/media/images/admin_handler_onlylisting.png  |  Bin 17937 -> 17675 bytes
- doc/media/images/admin_handler_proxy.png        |  Bin 19875 -> 20158 bytes
- doc/media/images/admin_handler_secdownload.png  |  Bin 14807 -> 14987 bytes
- doc/media/images/admin_rule_regex.png           |  Bin 15148 -> 14933 bytes
- doc/media/images/admin_validators_authlist.png  |  Bin 20745 -> 20708 bytes
- doc/media/images/admin_validators_pam.png       |  Bin 14399 -> 14623 bytes
- 13 files changed, 0 insertions(+), 0 deletions(-)
-
-
-2011-03-28  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6434 git=63eca782834ac5522c433977cfff5ace3fe14e17
-
-    Collections inherit utility methods now
-    
- qa/122-Methods.py |    2 +-
- qa/base.py        |    6 ++++--
- 2 files changed, 5 insertions(+), 3 deletions(-)
-
-
-2011-03-28  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6433 git=ccc4360fb74b1ff46b6c75a4906d2d369cc5e3e5
-
-    Adds a new QA test for Front-line cache
-    
- qa/273-Flcache-basic1.py |   41 +++++++++++++++++++++++++++++++++++++++++
- qa/Makefile.am           |    3 ++-
- 2 files changed, 43 insertions(+), 1 deletions(-)
-
-
-2011-03-28  Taher Shihadeh  <taher@unixwars.com>
-            svn=6432 git=6c307ac285056b0083398accf6fa89207e2c2ce8
-
-    Adjusts documentation to new settings. Screenshots are on their way
-    
- doc/config_virtual_servers_rule.txt |   83 ++++++++++++++++++++++++++++------
- 1 files changed, 68 insertions(+), 15 deletions(-)
-
-
-2011-03-28  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6431 git=1e1e3c54f4898e26e027a1cd322125d3656332c8
-
-    Implements a new mechanism for disregarding cookies on the Front-line cache.
-    
- admin/PageEntry.py              |    4 +-
- cherokee/config_entry.c         |   58 +++++++++++++++++----------
- cherokee/config_entry.h         |   46 ++++++++++++----------
- cherokee/connection-protected.h |    4 ++
- cherokee/connection.c           |    2 +
- cherokee/flcache.c              |   35 ++++++++++++----
- cherokee/flcache.h              |    2 +-
- cherokee/thread.c               |    6 ++-
- cherokee/virtual_server.c       |   83 ++++++++++++++++++++++++++++++++++++---
- 9 files changed, 179 insertions(+), 61 deletions(-)
-
-
-2011-03-28  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6430 git=52a118f373e5e9632a9e011004daf0a821236d29
-
-    += Disregard Cookies
-    
- admin/PageEntry.py |  179 ++++++++++++++++++++++++++++++++++++++++-----------
- 1 files changed, 140 insertions(+), 39 deletions(-)
-
-
-2011-03-27  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6427 git=7f2313d038fb4cda7531c50fc88f1bb4061ffcee
-
-    Better content expiration. It removes the content file ahead of the
-    clean-up process whenever possible.
-    
- cherokee/avl_flcache.c |   16 ++++++++
- cherokee/avl_flcache.h |    3 ++
- cherokee/flcache.c     |   93 +++++++++++++++++++++++++++++------------------
- cherokee/flcache.h     |    1 +
- 4 files changed, 77 insertions(+), 36 deletions(-)
-
-
-2011-03-27  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6426 git=10fb3cf4d7db40a291780fbe307f82e5f6bf034e
-
-    Allow/Forbid content caching config is now based on a nullable boolean
-    entry. It allows to manage caching in the same way of encoders do, so
-    allow, forbid and inherit options are available.
-    
- admin/PageEntry.py        |   10 +++++++++-
- admin/PageVServer.py      |   10 +++++++---
- cherokee/config_entry.c   |    4 ++--
- cherokee/virtual_server.c |   11 +++++++++--
- 4 files changed, 27 insertions(+), 8 deletions(-)
-
-
-2011-03-24  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6421 git=3159d0afa28141ac3d0369d1150e82498bf03e19
-
-    Implements the X-Cache header
-    
- cherokee/connection.c |   12 ++++++++++++
- cherokee/flcache.c    |   11 +++++++++++
- 2 files changed, 23 insertions(+), 0 deletions(-)
-
-
-2011-03-24  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6420 git=f04286f46a688785b49e00fc82ffed9d73c9e1ab
-
-    Report an error if it cannot create the cache directory
-    
- cherokee/error_list.py |    7 +++++++
- cherokee/flcache.c     |    2 ++
- 2 files changed, 9 insertions(+), 0 deletions(-)
-
-
-2011-03-24  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6419 git=bb190912d700a5eeb687a9b33f589dbccd18dd22
-
-    Fixes a grammar mistake
-    
- admin/PageEntry.py |    2 +-
- 1 files changed, 1 insertions(+), 1 deletions(-)
-
-
-2011-03-24  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6418 git=fda9adc7c820c2e7a3e8c67fcd7c35f13100029b
-
-    Cherokee admin += Front-line cache
-    
- admin/PageEntry.py   |   10 ++++++++++
- admin/PageVServer.py |   10 ++++++++--
- 2 files changed, 18 insertions(+), 2 deletions(-)
-
-
-2011-03-24  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6417 git=d5b41dce4e3e9f1fba9440a33985d6435ce31559
-
-    Fixes a memory corruption issue
-    
- cherokee/virtual_server.c |    2 +-
- 1 files changed, 1 insertions(+), 1 deletions(-)
-
-
-2011-03-24  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6416 git=1a0b3d7d1ab92694d087671456c48e152174e51d
-
-    Improves how flcache is activated. It does not require a !flcache flag
-    at the vserver level any more. It will activate it automatically
-    whenever an internal rule uses it.
-    
- cherokee/virtual_server.c |   28 +++++++++++++++++++---------
- 1 files changed, 19 insertions(+), 9 deletions(-)
-
-
-2011-03-23  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6414 git=fb99f64eb80dabdc1027c737ad44f54e1c0cccdb
-
-    Bug-fix: signal handling
-    
- cherokee/handler_cgi.c   |    4 ++--
- cherokee/logger_writer.c |    2 +-
- cherokee/rrd_tools.c     |    4 ++--
- cherokee/util.c          |   13 +++++++++++++
- cherokee/util.h          |    2 ++
- 5 files changed, 20 insertions(+), 5 deletions(-)
-
-
-2011-03-23  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6413 git=d9cae0bc3cf172ffb8648d949d3432497f043fc1
-
-    WIP: bug-fixing Front-Line cache
-    
- cherokee/buffer.c  |    6 ++++--
- cherokee/flcache.c |    3 +--
- cherokee/util.c    |   13 +++++++++++++
- cherokee/util.h    |    5 ++---
- 4 files changed, 20 insertions(+), 7 deletions(-)
-
-
-2011-03-23  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6411 git=8216c1dd26c59abba7cd6f095096d925197bf459
-
-    WIP: Further development
-    
- cherokee/avl_flcache.c |   58 ++++++++++++++++++++++++++++++-----------------
- cherokee/avl_flcache.h |    3 +-
- cherokee/connection.c  |   20 +++++++++++++++-
- cherokee/flcache.c     |   48 ++++++++++++++++++++++++++-------------
- 4 files changed, 90 insertions(+), 39 deletions(-)
-
-
-2011-03-23  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6410 git=489a19e3e786d0ff6825174f3d0b5f72688b0500
-
-    WIP: Mind signals
-    
- cherokee/buffer.c             |    2 +-
- cherokee/flcache.c            |   78 ++++++++++-------------------------------
- cherokee/handler_file.c       |    2 +-
- cherokee/iocache.c            |    2 +-
- cherokee/logger_writer.c      |    2 +-
- cherokee/shm.c                |    4 +-
- cherokee/source_interpreter.c |    2 +-
- cherokee/util.c               |   13 +++++++
- cherokee/util.h               |    1 +
- 9 files changed, 40 insertions(+), 66 deletions(-)
-
-
-2011-03-23  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6408 git=baaa4b7729e27201c0e5ea9169c827f1c40a1a8d
-
-    Reference count must be reentrant
-    
- cherokee/avl_flcache.c |    4 ++++
- cherokee/avl_flcache.h |    3 ++-
- cherokee/flcache.c     |   19 ++++++++++++++-----
- 3 files changed, 20 insertions(+), 6 deletions(-)
-
-
-2011-03-23  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6407 git=0ad0b560bbafa0e420f61e072c9d4057c106d98e
-
-    The query string was not being taken into account
-    
- cherokee/avl_flcache.c |   45 ++++++++++++++++++++++++++++++++++++++++++++-
- cherokee/avl_flcache.h |    1 +
- cherokee/flcache.c     |   14 ++++----------
- 3 files changed, 49 insertions(+), 11 deletions(-)
-
-
-2011-03-22  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6406 git=578617f4a0e2f3650975eb84792f02ec87dec862
-
-    WIP: Not everything is cacheable
-    
- cherokee/flcache.c |   67 ++++++++++++++++++++++++++++++++++++++++++++++++++++
- 1 files changed, 67 insertions(+), 0 deletions(-)
-
-
-2011-03-22  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6404 git=5a24b506bde61068e80b2e666e45997413724aa6
-
-    WIP: Front-line cache content expiration
-    
- cherokee/avl_flcache.c          |   65 +++++++++++++++++++++++++++++++++++++-
- cherokee/avl_flcache.h          |    6 +++-
- cherokee/avl_generic.h          |   19 -----------
- cherokee/connection-protected.h |    2 +-
- cherokee/connection.c           |   47 +++++++++++++++++++++------
- cherokee/flcache.c              |   38 ++++++++++++++++++++--
- cherokee/flcache.h              |    1 +
- cherokee/handler_proxy.c        |    2 +-
- cherokee/macros.h               |    1 +
- cherokee/main_admin.c           |    2 +-
- cherokee/server-protected.h     |    3 ++
- cherokee/server.c               |   32 +++++++++++++++++--
- cherokee/thread.c               |   35 ++++++---------------
- 13 files changed, 185 insertions(+), 68 deletions(-)
-
-
-2011-03-21  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6403 git=284dddd849544931dc8bff90c82cad8be0e97123
-
-    Adds a few missing files
-    
- cherokee/avl_flcache.c |  298 ++++++++++++++++++++
- cherokee/avl_flcache.h |   85 ++++++
- cherokee/avl_generic.c |  712 ++++++++++++++++++++++++++++++++++++++++++++++++
- cherokee/avl_generic.h |  121 ++++++++
- cherokee/flcache.c     |  456 +++++++++++++++++++++++++++++++
- cherokee/flcache.h     |   98 +++++++
- 6 files changed, 1770 insertions(+), 0 deletions(-)
-
-
-2011-03-21  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6402 git=7a63cc3ee9a0b4f6d7b7d9667896b739964eacc4
-
-    Front-line cache: Initial implementation. It's still WIP.
-    
- README                          |    6 +-
- cherokee/Makefile.am            |    8 +-
- cherokee/avl.c                  |  730 ++++-----------------------------------
- cherokee/avl.h                  |   50 ++-
- cherokee/common-internal.h      |   24 ++
- cherokee/config_entry.c         |    8 +-
- cherokee/config_entry.h         |    3 +-
- cherokee/connection-protected.h |    2 +-
- cherokee/connection.c           |   94 +++++-
- cherokee/header.c               |    8 +-
- cherokee/header.h               |    1 +
- cherokee/thread.c               |   75 ++++-
- cherokee/virtual_server.c       |   31 ++-
- cherokee/virtual_server.h       |    2 +
- configure.in                    |    2 +
- constants.h.pre                 |    4 +-
- 16 files changed, 342 insertions(+), 706 deletions(-)
-
-
-2011-03-21  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6400 git=0f7cecf88931483b82535fbfa22f718a443f3643
-
-    Front-line cache branch
-    
-
-2011-04-19  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6539 git=19e48ec74e6cfdcf1f40499a9f2fbe286d5a6722
-
-    Under some circumstances internal buffers could grow too much.
-    
- cherokee/cryptor_libssl.c |    5 +++++
- cherokee/handler_file.c   |    5 +++++
- 2 files changed, 10 insertions(+), 0 deletions(-)
-
-
-2011-04-18  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6537 git=ee7338b6fad9b7847cf046196c45d9273c8eb6b2
-
-    Fixes the memory meter widget on MacOS X boxes with lot of memory.
-    
- admin/SystemStats.py |    2 +-
- 1 files changed, 1 insertions(+), 1 deletions(-)
-
-
-2011-04-12  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6494 git=45e715524c77b79a09749ac05111739cf9e32fea
-
-    Fixes a regression introduced at r6298. An 'out by one' memory
-    management issue was causing some operations to fail. Fixes bug
-    
- cherokee/main.c |    2 +-
- 1 files changed, 1 insertions(+), 1 deletions(-)
-
-
-2011-04-12  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6493 git=d3719cb8ff49704797eed23152731b72b3909191
-
-    Turns a fatal error by a warning. The LDAP authentication plug-in was
-    being too strict about unknown configuration properties. Fixes bug
-    
- cherokee/validator_ldap.c |    3 +--
- 1 files changed, 1 insertions(+), 2 deletions(-)
-
-
-2011-04-11  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6490 git=a2d8602a6add691a72e05ecec0ca2918cbc1db02
-
-    Merges the 'dist' branch
-    
- admin/Page.py                       |    8 +-
- admin/market/Distro.py              |  167 +++++++++++++++
- admin/market/Install.py             |  151 ++++----------
- admin/market/Makefile.am            |    3 +-
- admin/market/PageApp.py             |  264 ++++++++----------------
- admin/market/PageCategory.py        |   73 +++----
- admin/market/PageIndex.py           |  123 +++++------
- admin/market/PageSearch.py          |   44 ++--
- admin/market/Report.py              |   11 +-
- admin/market/Util.py                |   27 +--
- admin/market/ows_consts.py          |    3 +
- admin/server.py                     |   22 +--
- admin/static/css/cherokee-admin.css |   10 +-
- admin/theme.html                    |    2 +-
- cherokee.conf.sample.pre            |    2 +-
- doc/Makefile.am                     |    3 +-
- doc/distro_dev_intro.txt            |  390 +++++++++++++++++++++++++++++++++++
- doc/index.txt                       |   11 +-
- 18 files changed, 848 insertions(+), 466 deletions(-)
-
-
-2011-04-09  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6489 git=e21201b3e30b3734ed4895410dd8def1f5e5b32b
-
-    Error handlers could not manage 405 errors properly.
-    
- cherokee/connection.c          |    9 +++++++++
- cherokee/handler_error_redir.c |    1 -
- cherokee/header.c              |   19 ++++++++++++++++---
- qa/273-Unknown-method-redir.py |   34 ++++++++++++++++++++++++++++++++++
- qa/Makefile.am                 |    3 ++-
- 5 files changed, 61 insertions(+), 5 deletions(-)
-
-
-2011-03-31  Taher Shihadeh  <taher@unixwars.com>
-            svn=6459 git=2a042bc9a77f875b3d94524c8ccf810b4da116cf
-
-    Minor adjustments and cleanup for remaining cookbook entries
-    
- doc/cookbook_mono.txt       |    5 +++--
- doc/cookbook_moodle.txt     |    1 +
- doc/cookbook_nagios.txt     |   20 ++++++++++++++++++++
- doc/cookbook_phpmyadmin.txt |    2 ++
- doc/cookbook_wordpress.txt  |   12 ++++++++++--
- 5 files changed, 36 insertions(+), 4 deletions(-)
-
-
-2011-03-31  Taher Shihadeh  <taher@unixwars.com>
-            svn=6457 git=78848ac1742436340450e01170d5c39d12f6a9d9
-
-    Minor adjustments and cleanup for some entries of the cookbook
-    
- doc/cookbook_django.txt            |    5 ++++
- doc/cookbook_drupal.txt            |   40 +++++++++++++++++++++++++++++-
- doc/cookbook_https_accelerator.txt |    6 ++++-
- doc/cookbook_maintenance.txt       |   46 +++++++++++++++++++++++++++++-------
- doc/cookbook_php.txt               |   32 +++++++++++++++++++++----
- doc/cookbook_ror.txt               |   16 +++++++++++-
- 6 files changed, 126 insertions(+), 19 deletions(-)
-
-
-2011-03-31  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6453 git=e1537ea808b58f9e613f8a3a8f40e9c00185b7b3
-
-    Reverts previous patch. It was meant to go to other branch.
-    
- admin/market/ows_consts.py |    2 --
- 1 files changed, 0 insertions(+), 2 deletions(-)
-
-
-2011-03-31  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6452 git=87a14c3023a3b225de46749028af5d03c460ba45
-
-    Adds a temporal, testing repo path
-    
- admin/market/ows_consts.py |    2 ++
- 1 files changed, 2 insertions(+), 0 deletions(-)
-
-
-2011-03-29  Taher Shihadeh  <taher@unixwars.com>
-            svn=6446 git=a03607095972cefbb2aa8e012a58859b63bc9fb6
-
-    Fits example code into its assigned section
-    
- doc/dev_ctk.txt |    8 ++++++--
- 1 files changed, 6 insertions(+), 2 deletions(-)
-
-
-2011-03-28  Taher Shihadeh  <taher@unixwars.com>
-            svn=6429 git=eb56f2a65c041c1e1dca5964813c78f74e7373d3
-
-    Cleanup last document
-    
- doc/other_faq.txt |    3 +--
- 1 files changed, 1 insertions(+), 2 deletions(-)
-
-
-2011-03-28  Taher Shihadeh  <taher@unixwars.com>
-            svn=6428 git=a854a6f057797e61ffc803c00f12f91676a17759
-
-    Adds FAQ entry regarding htaccess
-    
- doc/other_faq.txt |   24 ++++++++++++++++++++++++
- 1 files changed, 24 insertions(+), 0 deletions(-)
-
-
-2011-03-23  Taher Shihadeh  <taher@unixwars.com>
-            svn=6415 git=641cf6a3bbc9ed12555f12cf09a463da01a56cf6
-
-    Removes out-dated files
-    
- doc/Makefile.am      |    3 ---
- doc/dev.txt          |    1 -
- doc/dev_api.txt      |    6 ------
- doc/dev_examples.txt |    6 ------
- doc/dev_issues.txt   |   36 ------------------------------------
- doc/index.txt        |    5 -----
- 6 files changed, 0 insertions(+), 57 deletions(-)
-
-
-2011-03-23  Taher Shihadeh  <taher@unixwars.com>
-            svn=6412 git=00b225794f25676241095d01b6c8db2ea6eed5e2
-
-    Tested for Django 1.3
-    
- doc/cookbook_django.txt |    6 ++++++
- 1 files changed, 6 insertions(+), 0 deletions(-)
-
-
-2011-03-23  Taher Shihadeh  <taher@unixwars.com>
-            svn=6409 git=04cdeebd51b1655b565d241903aae8bedccc8a78
-
-    Addresses corner-case problem during installations involving a function call while being root
-    
- admin/market/InstallUtil.py |   17 ++++++++++++-----
- 1 files changed, 12 insertions(+), 5 deletions(-)
-
-
-2011-03-22  Taher Shihadeh  <taher@unixwars.com>
-            svn=6405 git=7025918378d71ccbbe28e2d48872e9dc48b77e0c
-
-    CTK introductory documentation
-    
- doc/Makefile.am |    3 +-
- doc/dev.txt     |    1 +
- doc/dev_ctk.txt |  629 +++++++++++++++++++++++++++++++++++++++++++------------
- doc/index.txt   |    1 +
- 4 files changed, 504 insertions(+), 130 deletions(-)
-
-
-2011-03-21  Taher Shihadeh  <taher@unixwars.com>
-            svn=6401 git=d3c5f7966a10bbb3521ed0612fa3029565f6a67e
-
-    Initial commit. Draft for CTK documentation
-    
- doc/dev_ctk.txt |  185 +++++++++++++++++++++++++++++++++++++++++++++++++++++++
- 1 files changed, 185 insertions(+), 0 deletions(-)
-
-2011-04-14  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6505 git=8a9972e03789a7ea490caf46615caf6c56781857
-
-    Handler file integration with Front-line cache
-    
- cherokee/flcache.c      |    1 -
- cherokee/handler.h      |    8 --------
- cherokee/handler_file.c |    1 +
- 3 files changed, 1 insertions(+), 9 deletions(-)
-
-
-2011-04-14  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6504 git=d74fa494669415b1b6707ab3bfa48f0b33a7db4a
-
-    Adds (default) caching properties to the Server Info handler.
-    
- cherokee/handler_server_info.c |   11 ++++++++++-
- 1 files changed, 10 insertions(+), 1 deletions(-)
-
-
-2011-04-14  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6503 git=9f5be602f60c54e3d4918879ea1c7fde11c7d573
-
-    Fixes an incorrect reference
-    
- cherokee/avl_flcache.c |    2 +-
- 1 files changed, 1 insertions(+), 1 deletions(-)
-
-
-2011-03-31  Taher Shihadeh  <taher@unixwars.com>
-            svn=6458 git=c5f28ff53a60a7818a49fc0552aacec28dfd313b
-
-    Screenshots were not matching their section
-    
- doc/media/images/admin_handler_fastcgi2.png |  Bin 32476 -> 32431 bytes
- doc/media/images/cookbook_mono_handler.png  |  Bin 57757 -> 29700 bytes
- 2 files changed, 0 insertions(+), 0 deletions(-)
-
-
-2011-03-31  Taher Shihadeh  <taher@unixwars.com>
-            svn=6455 git=331c980654f709247b49acb16c104cdde4eea319
-
-    Fixes snapshots according to description
-    
- doc/media/images/admin_handler_fastcgi2.png |  Bin 60678 -> 32476 bytes
- doc/media/images/cookbook_ror_common.png    |  Bin 29148 -> 29194 bytes
- 2 files changed, 0 insertions(+), 0 deletions(-)
-
-
-2011-03-30  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6449 git=98d1df287ee06fdc4c8c7fbccb5ddb8a3846408d
-
-    Moves most of the FL-cache code to libcherokee-server
-    
- cherokee/Makefile.am |   12 ++++++------
- 1 files changed, 6 insertions(+), 6 deletions(-)
-
-
-2011-03-29  Taher Shihadeh  <taher@unixwars.com>
-            svn=6448 git=610d475a846b01ae6092de2238f038ad7aefbf9e
-
-    Documents Front-line cache
-    
- doc/Makefile.am                     |    1 +
- doc/config_virtual_servers_rule.txt |   16 +++-----
- doc/index.txt                       |    1 +
- doc/other.txt                       |    1 +
- doc/other_front_line_cache.txt      |   66 +++++++++++++++++++++++++++++++++++
- doc/other_goodies.txt               |   12 ++++++
- 6 files changed, 87 insertions(+), 10 deletions(-)
-
-
-2011-03-29  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6447 git=df8502bc74435ff528482b510da01dd3d4c504ff
-
-    Front-line QA: WIP
-    
- cherokee/flcache.c         |    4 +-
- qa/277-Flcache-headers2.py |   53 ++++++++++++++++++++++++++++++++++++++++++++
- qa/Makefile.am             |    3 +-
- 3 files changed, 57 insertions(+), 3 deletions(-)
-
-
-2011-03-29  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6445 git=e32958fe1fcc2bbac13e02798a3bb190851451e3
-
-    According to RFC2616, the "Via:" header _must_ be implemented.
-    
- cherokee/flcache.c         |   24 ++++++++++++++++++++
- qa/276-Flcache-headers1.py |   52 ++++++++++++++++++++++++++++++++++++++++++++
- qa/Makefile.am             |    3 +-
- 3 files changed, 78 insertions(+), 1 deletions(-)
-
-
-2011-03-29  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6444 git=2db13c1f14fbffb5a1fed89d51110301625f7574
-
-    Implements 'Age' (RFC2616, section 14.6)
-    
- cherokee/avl_flcache.c |    2 ++
- cherokee/avl_flcache.h |    2 ++
- cherokee/flcache.c     |    6 ++++++
- 3 files changed, 10 insertions(+), 0 deletions(-)
-
-
-2011-03-29  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6443 git=936584f5f26a60a7eed0707e55ad58fedf1411ff
-
-    Better support for X-Cache
-    
- cherokee/connection-protected.h |    1 +
- cherokee/connection.c           |   45 ++++++++++++++++++++++++++++++++-------
- cherokee/flcache.c              |   11 ++-------
- 3 files changed, 41 insertions(+), 16 deletions(-)
-
-
-2011-03-29  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6441 git=c96d3fa5a06050b5d735159a4522877d39d2f0e9
-
-    Delay to create files as soon as possible. Under some circunstances we
-    will be able to skip it (if the response should not be cached).
-    
- cherokee/flcache.c |   86 ++++++++++++++++++++++++++++++++--------------------
- 1 files changed, 53 insertions(+), 33 deletions(-)
-
-
-2011-03-29  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6440 git=f8bf2e61a7ebe703c7e1927bbe4a73a5c14baab0
-
-    Further work on the FLcache
-    
- cherokee/connection.c     |    4 ++-
- cherokee/flcache.c        |   42 +++++++++++++++++++++++++---------
- qa/274-Flcache-cookie1.py |   14 +++++-----
- qa/275-Flcache-cookie2.py |   55 +++++++++++++++++++++++++++++++++++++++++++++
- qa/Makefile.am            |    3 +-
- 5 files changed, 98 insertions(+), 20 deletions(-)
-
-
-2011-03-29  Taher Shihadeh  <taher@unixwars.com>
-            svn=6439 git=4c2f7b6a3f7507113d1b08309cc434821c8685e9
-
-    Clarifies the section about caching
-    
- doc/config_virtual_servers_rule.txt |   13 ++++++++-----
- 1 files changed, 8 insertions(+), 5 deletions(-)
-
-
-2011-03-29  Taher Shihadeh  <taher@unixwars.com>
-            svn=6438 git=bba1e457323ccd0bd931cf969825f750988a0251
-
-    Updates remaining screenshots + recompression
-    
- doc/media/images/admin_advanced0.png               |  Bin 3897 -> 3873 bytes
- doc/media/images/admin_advanced1.png               |  Bin 16873 -> 16527 bytes
- doc/media/images/admin_advanced2.png               |  Bin 18604 -> 18074 bytes
- doc/media/images/admin_advanced3.png               |  Bin 14588 -> 14178 bytes
- doc/media/images/admin_advanced4.png               |  Bin 9480 -> 9049 bytes
- doc/media/images/admin_advanced5.png               |  Bin 13128 -> 12941 bytes
- doc/media/images/admin_behavior.png                |  Bin 9769 -> 9114 bytes
- doc/media/images/admin_general.png                 |  Bin 19455 -> 18648 bytes
- doc/media/images/admin_general_icons.png           |  Bin 14243 -> 13597 bytes
- doc/media/images/admin_general_mime.png            |  Bin 9678 -> 9508 bytes
- doc/media/images/admin_general_networking.png      |  Bin 19466 -> 18925 bytes
- doc/media/images/admin_general_permissions.png     |  Bin 10284 -> 9802 bytes
- doc/media/images/admin_general_ports.png           |  Bin 7792 -> 7437 bytes
- doc/media/images/admin_handler_admin.png           |  Bin 10657 -> 9988 bytes
- doc/media/images/admin_handler_cgi.png             |  Bin 20450 -> 19731 bytes
- doc/media/images/admin_handler_custom_error.png    |  Bin 17857 -> 17203 bytes
- doc/media/images/admin_handler_dbslayer.png        |  Bin 17151 -> 16556 bytes
- doc/media/images/admin_handler_dirlist.png         |  Bin 15421 -> 14769 bytes
- doc/media/images/admin_handler_dirlist_ex.png      |  Bin 17871 -> 17072 bytes
- doc/media/images/admin_handler_fastcgi1.png        |  Bin 21204 -> 20165 bytes
- doc/media/images/admin_handler_fastcgi2.png        |  Bin 63281 -> 60678 bytes
- doc/media/images/admin_handler_file.png            |  Bin 10650 -> 10122 bytes
- doc/media/images/admin_handler_onlylisting.png     |  Bin 17675 -> 16832 bytes
- doc/media/images/admin_handler_onlylisting_ex.png  |  Bin 17920 -> 17012 bytes
- doc/media/images/admin_handler_proxy.png           |  Bin 20158 -> 19725 bytes
- doc/media/images/admin_handler_secdownload.png     |  Bin 14987 -> 14549 bytes
- doc/media/images/admin_index.png                   |  Bin 47858 -> 45050 bytes
- doc/media/images/admin_index_backup.png            |  Bin 7939 -> 7445 bytes
- doc/media/images/admin_index_restore.png           |  Bin 11069 -> 10625 bytes
- doc/media/images/admin_info_sources.png            |  Bin 37365 -> 35620 bytes
- doc/media/images/admin_launch.png                  |  Bin 6237 -> 5825 bytes
- doc/media/images/admin_noconfig.png                |  Bin 16236 -> 15298 bytes
- doc/media/images/admin_notrunning.png              |  Bin 10992 -> 10642 bytes
- doc/media/images/admin_rule_regex.png              |  Bin 14933 -> 14087 bytes
- doc/media/images/admin_validators_authlist.png     |  Bin 20708 -> 19868 bytes
- doc/media/images/admin_validators_ldap.png         |  Bin 30041 -> 29683 bytes
- doc/media/images/admin_validators_pam.png          |  Bin 14623 -> 14095 bytes
- doc/media/images/admin_validators_plain.png        |  Bin 35764 -> 34889 bytes
- doc/media/images/admin_vserver.png                 |  Bin 18616 -> 17037 bytes
- doc/media/images/admin_vserver_errors.png          |  Bin 9033 -> 8691 bytes
- doc/media/images/admin_vserver_evhost.png          |  Bin 35038 -> 33327 bytes
- doc/media/images/admin_vserver_loggers.png         |  Bin 19937 -> 19132 bytes
- doc/media/images/admin_vserver_security.png        |  Bin 15516 -> 14877 bytes
- doc/media/images/admin_vserver_wizard.png          |  Bin 37975 -> 34601 bytes
- doc/media/images/admin_vservers_wizard.png         |  Bin 38565 -> 36569 bytes
- doc/media/images/cookbook_alfresco_alfresco.png    |  Bin 34437 -> 33948 bytes
- doc/media/images/cookbook_alfresco_assistant.png   |  Bin 20121 -> 19989 bytes
- doc/media/images/cookbook_alfresco_install.png     |  Bin 19817 -> 19686 bytes
- doc/media/images/cookbook_alfresco_path.png        |  Bin 7356 -> 7268 bytes
- doc/media/images/cookbook_alfresco_share.png       |  Bin 37782 -> 36573 bytes
- doc/media/images/cookbook_alfresco_soffice.png     |  Bin 7474 -> 7364 bytes
- doc/media/images/cookbook_dbslayer1.png            |  Bin 8884 -> 8586 bytes
- doc/media/images/cookbook_dbslayer2.png            |  Bin 18742 -> 17999 bytes
- doc/media/images/cookbook_dbslayer3.png            |  Bin 7909 -> 7763 bytes
- doc/media/images/cookbook_dbslayer4.png            |  Bin 35042 -> 31426 bytes
- doc/media/images/cookbook_django.png               |  Bin 23568 -> 22521 bytes
- doc/media/images/cookbook_django_common.png        |  Bin 22134 -> 21347 bytes
- doc/media/images/cookbook_django_infosources.png   |  Bin 30736 -> 29838 bytes
- doc/media/images/cookbook_drupal.png               |  Bin 27255 -> 26951 bytes
- doc/media/images/cookbook_drupal_dir_rules.png     |  Bin 17341 -> 16477 bytes
- doc/media/images/cookbook_drupal_dir_rules_1.png   |  Bin 15985 -> 15414 bytes
- doc/media/images/cookbook_drupal_dir_rules_2.png   |  Bin 15164 -> 14622 bytes
- doc/media/images/cookbook_drupal_dir_rules_3.png   |  Bin 7893 -> 7525 bytes
- doc/media/images/cookbook_drupal_dir_rules_4.png   |  Bin 13283 -> 12811 bytes
- doc/media/images/cookbook_drupal_dir_rules_6.png   |  Bin 21261 -> 20466 bytes
- doc/media/images/cookbook_drupal_dir_rules_7.png   |  Bin 15723 -> 14913 bytes
- doc/media/images/cookbook_drupal_vserver_rules.png |  Bin 14585 -> 13900 bytes
- doc/media/images/cookbook_glassfish.png            |  Bin 4851 -> 4849 bytes
- .../images/cookbook_https_accelerator_handler.png  |  Bin 37073 -> 36029 bytes
- .../images/cookbook_https_accelerator_sources.png  |  Bin 13816 -> 13269 bytes
- doc/media/images/cookbook_joomla.png               |  Bin 12561 -> 12383 bytes
- doc/media/images/cookbook_liferay.png              |  Bin 16861 -> 16251 bytes
- doc/media/images/cookbook_mailman.png              |  Bin 13235 -> 13135 bytes
- .../cookbook_maintenance_advanced_domains.png      |  Bin 8557 -> 8416 bytes
- .../images/cookbook_maintenance_advanced_redir.png |  Bin 14100 -> 14067 bytes
- .../images/cookbook_maintenance_advanced_rules.png |  Bin 9641 -> 9523 bytes
- doc/media/images/cookbook_maintenance_copy.png     |  Bin 15654 -> 15192 bytes
- doc/media/images/cookbook_maintenance_domain.png   |  Bin 9055 -> 8902 bytes
- doc/media/images/cookbook_maintenance_error.png    |  Bin 7784 -> 7798 bytes
- doc/media/images/cookbook_maintenance_result.png   |  Bin 7203 -> 7022 bytes
- doc/media/images/cookbook_maintenance_rule.png     |  Bin 8213 -> 8072 bytes
- .../images/cookbook_managing_logs_handler.png      |  Bin 6172 -> 5958 bytes
- doc/media/images/cookbook_managing_logs_rules.png  |  Bin 14223 -> 13653 bytes
- .../images/cookbook_managing_logs_security.png     |  Bin 41923 -> 38608 bytes
- doc/media/images/cookbook_mono_demo.png            |  Bin 11183 -> 11066 bytes
- doc/media/images/cookbook_mono_handler.png         |  Bin 62644 -> 57757 bytes
- doc/media/images/cookbook_moodle.png               |  Bin 18427 -> 18157 bytes
- doc/media/images/cookbook_moodle_db.png            |  Bin 31835 -> 31317 bytes
- doc/media/images/cookbook_moodle_document_root.png |  Bin 12200 -> 11859 bytes
- doc/media/images/cookbook_moodle_modules.png       |  Bin 48838 -> 46699 bytes
- doc/media/images/cookbook_moodle_paths.png         |  Bin 35388 -> 34445 bytes
- doc/media/images/cookbook_mysql_rule.png           |  Bin 5027 -> 4959 bytes
- doc/media/images/cookbook_mysql_validator.png      |  Bin 14012 -> 33273 bytes
- doc/media/images/cookbook_nagios1.png              |  Bin 8123 -> 7847 bytes
- doc/media/images/cookbook_nagios2.png              |  Bin 8179 -> 7993 bytes
- doc/media/images/cookbook_nagios3.png              |  Bin 20310 -> 19773 bytes
- doc/media/images/cookbook_nagios4.png              |  Bin 35664 -> 35013 bytes
- doc/media/images/cookbook_phpbb_1_intro.png        |  Bin 39031 -> 38264 bytes
- doc/media/images/cookbook_phpbb_2_req.png          |  Bin 35390 -> 34270 bytes
- doc/media/images/cookbook_phpbb_3_db.png           |  Bin 30601 -> 29720 bytes
- doc/media/images/cookbook_phpbb_4_admin.png        |  Bin 28930 -> 27883 bytes
- doc/media/images/cookbook_phpbb_5_config.png       |  Bin 23794 -> 23118 bytes
- doc/media/images/cookbook_phpbb_6_advanced.png     |  Bin 36283 -> 34927 bytes
- doc/media/images/cookbook_phpbb_7_create.png       |  Bin 24918 -> 24441 bytes
- doc/media/images/cookbook_phpbb_8_final.png        |  Bin 45143 -> 44269 bytes
- doc/media/images/cookbook_phpbb_adm.png            |  Bin 39075 -> 36486 bytes
- doc/media/images/cookbook_phpbb_adm_warning.png    |  Bin 37334 -> 35198 bytes
- doc/media/images/cookbook_phpbb_rules.png          |  Bin 9435 -> 9252 bytes
- doc/media/images/cookbook_phpbb_running.png        |  Bin 29947 -> 29239 bytes
- doc/media/images/cookbook_phpmyadmin.png           |  Bin 11383 -> 11238 bytes
- doc/media/images/cookbook_phpmyadmin_denied.png    |  Bin 8745 -> 8377 bytes
- doc/media/images/cookbook_redir_behavior.png       |  Bin 4519 -> 4490 bytes
- doc/media/images/cookbook_redir_domains.png        |  Bin 8552 -> 8347 bytes
- doc/media/images/cookbook_redir_handler.png        |  Bin 8773 -> 8659 bytes
- doc/media/images/cookbook_redir_https.png          |  Bin 9412 -> 9290 bytes
- doc/media/images/cookbook_ror.png                  |  Bin 15239 -> 15106 bytes
- doc/media/images/cookbook_ror_common.png           |  Bin 29750 -> 29148 bytes
- doc/media/images/cookbook_ror_fcgi.png             |  Bin 18589 -> 18036 bytes
- doc/media/images/cookbook_ror_wizard.png           |  Bin 11315 -> 10908 bytes
- doc/media/images/cookbook_sugarcrm_install0.png    |  Bin 61674 -> 59689 bytes
- doc/media/images/cookbook_sugarcrm_install1.png    |  Bin 21762 -> 21331 bytes
- doc/media/images/cookbook_sugarcrm_running0.png    |  Bin 22260 -> 21567 bytes
- doc/media/images/cookbook_sugarcrm_running1.png    |  Bin 25443 -> 24794 bytes
- doc/media/images/cookbook_symfony.png              |  Bin 24493 -> 23910 bytes
- doc/media/images/cookbook_trac.png                 |  Bin 35325 -> 35109 bytes
- doc/media/images/cookbook_trac_info.png            |  Bin 18451 -> 18098 bytes
- doc/media/images/cookbook_trac_rules.png           |  Bin 5725 -> 5572 bytes
- doc/media/images/cookbook_trac_scgi.png            |  Bin 28285 -> 27744 bytes
- doc/media/images/cookbook_trac_static.png          |  Bin 9506 -> 9194 bytes
- doc/media/images/cookbook_wp1.png                  |  Bin 26477 -> 26238 bytes
- doc/media/images/cookbook_wp2.png                  |  Bin 13235 -> 13147 bytes
- doc/media/images/cookbook_wp3.png                  |  Bin 10279 -> 10155 bytes
- doc/media/images/cookbook_wp4.png                  |  Bin 44859 -> 44012 bytes
- doc/media/images/cookbook_wp5.png                  |  Bin 25656 -> 24539 bytes
- doc/media/images/cookbook_wp_example1.png          |  Bin 8760 -> 8306 bytes
- doc/media/images/cookbook_wp_example2.png          |  Bin 8318 -> 7921 bytes
- doc/media/images/cookbook_wp_example3.png          |  Bin 13885 -> 12996 bytes
- doc/media/images/cookbook_zend1.png                |  Bin 3735 -> 3724 bytes
- doc/media/images/market_index.png                  |  Bin 39042 -> 37975 bytes
- doc/media/images/other_graphs_conns.png            |  Bin 18595 -> 18132 bytes
- doc/media/images/other_graphs_logging.png          |  Bin 15136 -> 14941 bytes
- doc/media/images/other_graphs_timeouts.png         |  Bin 19226 -> 18445 bytes
- doc/media/images/other_graphs_traffic.png          |  Bin 13862 -> 13566 bytes
- doc/media/images/proxy_phase1.png                  |  Bin 12012 -> 11406 bytes
- doc/media/images/proxy_phase2.png                  |  Bin 12222 -> 11661 bytes
- doc/media/images/screencast.png                    |  Bin 24013 -> 20613 bytes
- doc/media/images/tracelor.png                      |  Bin 9543 -> 9517 bytes
- 147 files changed, 0 insertions(+), 0 deletions(-)
-
-
-2011-03-29  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6437 git=b8082589287628aed8083f552b1dcb66aba35e9d
-
-    More cookies related stuff
-    
- cherokee/flcache.c        |    4 +-
- qa/274-Flcache-cookie1.py |   52 +++++++++++++++++++++++++++++++++++++++++++++
- qa/Makefile.am            |    3 +-
- 3 files changed, 56 insertions(+), 3 deletions(-)
-
-
-2011-03-28  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6436 git=0a0ea93a04f4587a84ac6b73620012b3713e80d6
-
-    The Content-Length header was sent twice under some circunstances.
-    
- cherokee/flcache.c |   14 ++++++++++++++
- 1 files changed, 14 insertions(+), 0 deletions(-)
-
-
-2011-03-28  Taher Shihadeh  <taher@unixwars.com>
-            svn=6435 git=7c3cf6e86469dd2b5abd0723a0ba167752003054
-
-    Updates a bunch of screenshots
-    
- doc/media/images/admin_handler_cgi.png          |  Bin 20394 -> 20450 bytes
- doc/media/images/admin_handler_custom_error.png |  Bin 17806 -> 17857 bytes
- doc/media/images/admin_handler_dbslayer.png     |  Bin 16947 -> 17151 bytes
- doc/media/images/admin_handler_dirlist.png      |  Bin 15756 -> 15421 bytes
- doc/media/images/admin_handler_fastcgi1.png     |  Bin 21207 -> 21204 bytes
- doc/media/images/admin_handler_fastcgi2.png     |  Bin 66318 -> 63281 bytes
- doc/media/images/admin_handler_file.png         |  Bin 10984 -> 10650 bytes
- doc/media/images/admin_handler_onlylisting.png  |  Bin 17937 -> 17675 bytes
- doc/media/images/admin_handler_proxy.png        |  Bin 19875 -> 20158 bytes
- doc/media/images/admin_handler_secdownload.png  |  Bin 14807 -> 14987 bytes
- doc/media/images/admin_rule_regex.png           |  Bin 15148 -> 14933 bytes
- doc/media/images/admin_validators_authlist.png  |  Bin 20745 -> 20708 bytes
- doc/media/images/admin_validators_pam.png       |  Bin 14399 -> 14623 bytes
- 13 files changed, 0 insertions(+), 0 deletions(-)
-
-
-2011-03-28  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6434 git=63eca782834ac5522c433977cfff5ace3fe14e17
-
-    Collections inherit utility methods now
-    
- qa/122-Methods.py |    2 +-
- qa/base.py        |    6 ++++--
- 2 files changed, 5 insertions(+), 3 deletions(-)
-
-
-2011-03-28  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6433 git=ccc4360fb74b1ff46b6c75a4906d2d369cc5e3e5
-
-    Adds a new QA test for Front-line cache
-    
- qa/273-Flcache-basic1.py |   41 +++++++++++++++++++++++++++++++++++++++++
- qa/Makefile.am           |    3 ++-
- 2 files changed, 43 insertions(+), 1 deletions(-)
-
-
-2011-03-28  Taher Shihadeh  <taher@unixwars.com>
-            svn=6432 git=6c307ac285056b0083398accf6fa89207e2c2ce8
-
-    Adjusts documentation to new settings. Screenshots are on their way
-    
- doc/config_virtual_servers_rule.txt |   83 ++++++++++++++++++++++++++++------
- 1 files changed, 68 insertions(+), 15 deletions(-)
-
-
-2011-03-28  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6431 git=1e1e3c54f4898e26e027a1cd322125d3656332c8
-
-    Implements a new mechanism for disregarding cookies on the Front-line cache.
-    
- admin/PageEntry.py              |    4 +-
- cherokee/config_entry.c         |   58 +++++++++++++++++----------
- cherokee/config_entry.h         |   46 ++++++++++++----------
- cherokee/connection-protected.h |    4 ++
- cherokee/connection.c           |    2 +
- cherokee/flcache.c              |   35 ++++++++++++----
- cherokee/flcache.h              |    2 +-
- cherokee/thread.c               |    6 ++-
- cherokee/virtual_server.c       |   83 ++++++++++++++++++++++++++++++++++++---
- 9 files changed, 179 insertions(+), 61 deletions(-)
-
-
-2011-03-28  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6430 git=52a118f373e5e9632a9e011004daf0a821236d29
-
-    += Disregard Cookies
-    
- admin/PageEntry.py |  179 ++++++++++++++++++++++++++++++++++++++++-----------
- 1 files changed, 140 insertions(+), 39 deletions(-)
-
-
-2011-03-27  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6427 git=7f2313d038fb4cda7531c50fc88f1bb4061ffcee
-
-    Better content expiration. It removes the content file ahead of the
-    clean-up process whenever possible.
-    
- cherokee/avl_flcache.c |   16 ++++++++
- cherokee/avl_flcache.h |    3 ++
- cherokee/flcache.c     |   93 +++++++++++++++++++++++++++++------------------
- cherokee/flcache.h     |    1 +
- 4 files changed, 77 insertions(+), 36 deletions(-)
-
-
-2011-03-27  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6426 git=10fb3cf4d7db40a291780fbe307f82e5f6bf034e
-
-    Allow/Forbid content caching config is now based on a nullable boolean
-    entry. It allows to manage caching in the same way of encoders do, so
-    allow, forbid and inherit options are available.
-    
- admin/PageEntry.py        |   10 +++++++++-
- admin/PageVServer.py      |   10 +++++++---
- cherokee/config_entry.c   |    4 ++--
- cherokee/virtual_server.c |   11 +++++++++--
- 4 files changed, 27 insertions(+), 8 deletions(-)
-
-
-2011-03-24  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6421 git=3159d0afa28141ac3d0369d1150e82498bf03e19
-
-    Implements the X-Cache header
-    
- cherokee/connection.c |   12 ++++++++++++
- cherokee/flcache.c    |   11 +++++++++++
- 2 files changed, 23 insertions(+), 0 deletions(-)
-
-
-2011-03-24  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6420 git=f04286f46a688785b49e00fc82ffed9d73c9e1ab
-
-    Report an error if it cannot create the cache directory
-    
- cherokee/error_list.py |    7 +++++++
- cherokee/flcache.c     |    2 ++
- 2 files changed, 9 insertions(+), 0 deletions(-)
-
-
-2011-03-24  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6419 git=bb190912d700a5eeb687a9b33f589dbccd18dd22
-
-    Fixes a grammar mistake
-    
- admin/PageEntry.py |    2 +-
- 1 files changed, 1 insertions(+), 1 deletions(-)
-
-
-2011-03-24  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6418 git=fda9adc7c820c2e7a3e8c67fcd7c35f13100029b
-
-    Cherokee admin += Front-line cache
-    
- admin/PageEntry.py   |   10 ++++++++++
- admin/PageVServer.py |   10 ++++++++--
- 2 files changed, 18 insertions(+), 2 deletions(-)
-
-
-2011-03-24  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6417 git=d5b41dce4e3e9f1fba9440a33985d6435ce31559
-
-    Fixes a memory corruption issue
-    
- cherokee/virtual_server.c |    2 +-
- 1 files changed, 1 insertions(+), 1 deletions(-)
-
-
-2011-03-24  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6416 git=1a0b3d7d1ab92694d087671456c48e152174e51d
-
-    Improves how flcache is activated. It does not require a !flcache flag
-    at the vserver level any more. It will activate it automatically
-    whenever an internal rule uses it.
-    
- cherokee/virtual_server.c |   28 +++++++++++++++++++---------
- 1 files changed, 19 insertions(+), 9 deletions(-)
-
-
-2011-03-23  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6414 git=fb99f64eb80dabdc1027c737ad44f54e1c0cccdb
-
-    Bug-fix: signal handling
-    
- cherokee/handler_cgi.c   |    4 ++--
- cherokee/logger_writer.c |    2 +-
- cherokee/rrd_tools.c     |    4 ++--
- cherokee/util.c          |   13 +++++++++++++
- cherokee/util.h          |    2 ++
- 5 files changed, 20 insertions(+), 5 deletions(-)
-
-
-2011-03-23  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6413 git=d9cae0bc3cf172ffb8648d949d3432497f043fc1
-
-    WIP: bug-fixing Front-Line cache
-    
- cherokee/buffer.c  |    6 ++++--
- cherokee/flcache.c |    3 +--
- cherokee/util.c    |   13 +++++++++++++
- cherokee/util.h    |    5 ++---
- 4 files changed, 20 insertions(+), 7 deletions(-)
-
-
-2011-03-23  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6411 git=8216c1dd26c59abba7cd6f095096d925197bf459
-
-    WIP: Further development
-    
- cherokee/avl_flcache.c |   58 ++++++++++++++++++++++++++++++-----------------
- cherokee/avl_flcache.h |    3 +-
- cherokee/connection.c  |   20 +++++++++++++++-
- cherokee/flcache.c     |   48 ++++++++++++++++++++++++++-------------
- 4 files changed, 90 insertions(+), 39 deletions(-)
-
-
-2011-03-23  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6410 git=489a19e3e786d0ff6825174f3d0b5f72688b0500
-
-    WIP: Mind signals
-    
- cherokee/buffer.c             |    2 +-
- cherokee/flcache.c            |   78 ++++++++++-------------------------------
- cherokee/handler_file.c       |    2 +-
- cherokee/iocache.c            |    2 +-
- cherokee/logger_writer.c      |    2 +-
- cherokee/shm.c                |    4 +-
- cherokee/source_interpreter.c |    2 +-
- cherokee/util.c               |   13 +++++++
- cherokee/util.h               |    1 +
- 9 files changed, 40 insertions(+), 66 deletions(-)
-
-
-2011-03-23  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6408 git=baaa4b7729e27201c0e5ea9169c827f1c40a1a8d
-
-    Reference count must be reentrant
-    
- cherokee/avl_flcache.c |    4 ++++
- cherokee/avl_flcache.h |    3 ++-
- cherokee/flcache.c     |   19 ++++++++++++++-----
- 3 files changed, 20 insertions(+), 6 deletions(-)
-
-
-2011-03-23  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6407 git=0ad0b560bbafa0e420f61e072c9d4057c106d98e
-
-    The query string was not being taken into account
-    
- cherokee/avl_flcache.c |   45 ++++++++++++++++++++++++++++++++++++++++++++-
- cherokee/avl_flcache.h |    1 +
- cherokee/flcache.c     |   14 ++++----------
- 3 files changed, 49 insertions(+), 11 deletions(-)
-
-
-2011-03-22  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6406 git=578617f4a0e2f3650975eb84792f02ec87dec862
-
-    WIP: Not everything is cacheable
-    
- cherokee/flcache.c |   67 ++++++++++++++++++++++++++++++++++++++++++++++++++++
- 1 files changed, 67 insertions(+), 0 deletions(-)
-
-
-2011-03-22  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6404 git=5a24b506bde61068e80b2e666e45997413724aa6
-
-    WIP: Front-line cache content expiration
-    
- cherokee/avl_flcache.c          |   65 +++++++++++++++++++++++++++++++++++++-
- cherokee/avl_flcache.h          |    6 +++-
- cherokee/avl_generic.h          |   19 -----------
- cherokee/connection-protected.h |    2 +-
- cherokee/connection.c           |   47 +++++++++++++++++++++------
- cherokee/flcache.c              |   38 ++++++++++++++++++++--
- cherokee/flcache.h              |    1 +
- cherokee/handler_proxy.c        |    2 +-
- cherokee/macros.h               |    1 +
- cherokee/main_admin.c           |    2 +-
- cherokee/server-protected.h     |    3 ++
- cherokee/server.c               |   32 +++++++++++++++++--
- cherokee/thread.c               |   35 ++++++---------------
- 13 files changed, 185 insertions(+), 68 deletions(-)
-
-
-2011-03-21  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6403 git=284dddd849544931dc8bff90c82cad8be0e97123
-
-    Adds a few missing files
-    
- cherokee/avl_flcache.c |  298 ++++++++++++++++++++
- cherokee/avl_flcache.h |   85 ++++++
- cherokee/avl_generic.c |  712 ++++++++++++++++++++++++++++++++++++++++++++++++
- cherokee/avl_generic.h |  121 ++++++++
- cherokee/flcache.c     |  456 +++++++++++++++++++++++++++++++
- cherokee/flcache.h     |   98 +++++++
- 6 files changed, 1770 insertions(+), 0 deletions(-)
-
-
-2011-03-21  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6402 git=7a63cc3ee9a0b4f6d7b7d9667896b739964eacc4
-
-    Front-line cache: Initial implementation. It's still WIP.
-    
- README                          |    6 +-
- cherokee/Makefile.am            |    8 +-
- cherokee/avl.c                  |  730 ++++-----------------------------------
- cherokee/avl.h                  |   50 ++-
- cherokee/common-internal.h      |   24 ++
- cherokee/config_entry.c         |    8 +-
- cherokee/config_entry.h         |    3 +-
- cherokee/connection-protected.h |    2 +-
- cherokee/connection.c           |   94 +++++-
- cherokee/header.c               |    8 +-
- cherokee/header.h               |    1 +
- cherokee/thread.c               |   75 ++++-
- cherokee/virtual_server.c       |   31 ++-
- cherokee/virtual_server.h       |    2 +
- configure.in                    |    2 +
- constants.h.pre                 |    4 +-
- 16 files changed, 342 insertions(+), 706 deletions(-)
-
-
-2011-03-21  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6400 git=0f7cecf88931483b82535fbfa22f718a443f3643
-
-    Front-line cache branch
-    
-
-2011-04-12  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6494 git=45e715524c77b79a09749ac05111739cf9e32fea
-
-    Fixes a regression introduced at r6298. An 'out by one' memory
-    management issue was causing some operations to fail. Fixes bug
-    
- cherokee/main.c |    2 +-
- 1 files changed, 1 insertions(+), 1 deletions(-)
-
-
-2011-04-12  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6493 git=d3719cb8ff49704797eed23152731b72b3909191
-
-    Turns a fatal error by a warning. The LDAP authentication plug-in was
-    being too strict about unknown configuration properties. Fixes bug
-    
- cherokee/validator_ldap.c |    3 +--
- 1 files changed, 1 insertions(+), 2 deletions(-)
-
-
-2011-04-11  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6490 git=a2d8602a6add691a72e05ecec0ca2918cbc1db02
-
-    Merges the 'dist' branch
-    
- admin/Page.py                       |    8 +-
- admin/market/Distro.py              |  167 +++++++++++++++
- admin/market/Install.py             |  151 ++++----------
- admin/market/Makefile.am            |    3 +-
- admin/market/PageApp.py             |  264 ++++++++----------------
- admin/market/PageCategory.py        |   73 +++----
- admin/market/PageIndex.py           |  123 +++++------
- admin/market/PageSearch.py          |   44 ++--
- admin/market/Report.py              |   11 +-
- admin/market/Util.py                |   27 +--
- admin/market/ows_consts.py          |    3 +
- admin/server.py                     |   22 +--
- admin/static/css/cherokee-admin.css |   10 +-
- admin/theme.html                    |    2 +-
- cherokee.conf.sample.pre            |    2 +-
- doc/Makefile.am                     |    3 +-
- doc/distro_dev_intro.txt            |  390 +++++++++++++++++++++++++++++++++++
- doc/index.txt                       |   11 +-
- 18 files changed, 848 insertions(+), 466 deletions(-)
-
-
-2011-04-09  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6489 git=e21201b3e30b3734ed4895410dd8def1f5e5b32b
-
-    Error handlers could not manage 405 errors properly.
-    
- cherokee/connection.c          |    9 +++++++++
- cherokee/handler_error_redir.c |    1 -
- cherokee/header.c              |   19 ++++++++++++++++---
- qa/273-Unknown-method-redir.py |   34 ++++++++++++++++++++++++++++++++++
- qa/Makefile.am                 |    3 ++-
- 5 files changed, 61 insertions(+), 5 deletions(-)
-
-
-2011-03-31  Taher Shihadeh  <taher@unixwars.com>
-            svn=6459 git=2a042bc9a77f875b3d94524c8ccf810b4da116cf
-
-    Minor adjustments and cleanup for remaining cookbook entries
-    
- doc/cookbook_mono.txt       |    5 +++--
- doc/cookbook_moodle.txt     |    1 +
- doc/cookbook_nagios.txt     |   20 ++++++++++++++++++++
- doc/cookbook_phpmyadmin.txt |    2 ++
- doc/cookbook_wordpress.txt  |   12 ++++++++++--
- 5 files changed, 36 insertions(+), 4 deletions(-)
-
-
-2011-03-31  Taher Shihadeh  <taher@unixwars.com>
-            svn=6457 git=78848ac1742436340450e01170d5c39d12f6a9d9
-
-    Minor adjustments and cleanup for some entries of the cookbook
-    
- doc/cookbook_django.txt            |    5 ++++
- doc/cookbook_drupal.txt            |   40 +++++++++++++++++++++++++++++-
- doc/cookbook_https_accelerator.txt |    6 ++++-
- doc/cookbook_maintenance.txt       |   46 +++++++++++++++++++++++++++++-------
- doc/cookbook_php.txt               |   32 +++++++++++++++++++++----
- doc/cookbook_ror.txt               |   16 +++++++++++-
- 6 files changed, 126 insertions(+), 19 deletions(-)
-
-
-2011-03-31  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6453 git=e1537ea808b58f9e613f8a3a8f40e9c00185b7b3
-
-    Reverts previous patch. It was meant to go to other branch.
-    
- admin/market/ows_consts.py |    2 --
- 1 files changed, 0 insertions(+), 2 deletions(-)
-
-
-2011-03-31  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6452 git=87a14c3023a3b225de46749028af5d03c460ba45
-
-    Adds a temporal, testing repo path
-    
- admin/market/ows_consts.py |    2 ++
- 1 files changed, 2 insertions(+), 0 deletions(-)
-
-
-2011-03-29  Taher Shihadeh  <taher@unixwars.com>
-            svn=6446 git=a03607095972cefbb2aa8e012a58859b63bc9fb6
-
-    Fits example code into its assigned section
-    
- doc/dev_ctk.txt |    8 ++++++--
- 1 files changed, 6 insertions(+), 2 deletions(-)
-
-
-2011-03-28  Taher Shihadeh  <taher@unixwars.com>
-            svn=6429 git=eb56f2a65c041c1e1dca5964813c78f74e7373d3
-
-    Cleanup last document
-    
- doc/other_faq.txt |    3 +--
- 1 files changed, 1 insertions(+), 2 deletions(-)
-
-
-2011-03-28  Taher Shihadeh  <taher@unixwars.com>
-            svn=6428 git=a854a6f057797e61ffc803c00f12f91676a17759
-
-    Adds FAQ entry regarding htaccess
-    
- doc/other_faq.txt |   24 ++++++++++++++++++++++++
- 1 files changed, 24 insertions(+), 0 deletions(-)
-
-
-2011-03-23  Taher Shihadeh  <taher@unixwars.com>
-            svn=6415 git=641cf6a3bbc9ed12555f12cf09a463da01a56cf6
-
-    Removes out-dated files
-    
- doc/Makefile.am      |    3 ---
- doc/dev.txt          |    1 -
- doc/dev_api.txt      |    6 ------
- doc/dev_examples.txt |    6 ------
- doc/dev_issues.txt   |   36 ------------------------------------
- doc/index.txt        |    5 -----
- 6 files changed, 0 insertions(+), 57 deletions(-)
-
-
-2011-03-23  Taher Shihadeh  <taher@unixwars.com>
-            svn=6412 git=00b225794f25676241095d01b6c8db2ea6eed5e2
-
-    Tested for Django 1.3
-    
- doc/cookbook_django.txt |    6 ++++++
- 1 files changed, 6 insertions(+), 0 deletions(-)
-
-
-2011-03-23  Taher Shihadeh  <taher@unixwars.com>
-            svn=6409 git=04cdeebd51b1655b565d241903aae8bedccc8a78
-
-    Addresses corner-case problem during installations involving a function call while being root
-    
- admin/market/InstallUtil.py |   17 ++++++++++++-----
- 1 files changed, 12 insertions(+), 5 deletions(-)
-
-
-2011-03-22  Taher Shihadeh  <taher@unixwars.com>
-            svn=6405 git=7025918378d71ccbbe28e2d48872e9dc48b77e0c
-
-    CTK introductory documentation
-    
- doc/Makefile.am |    3 +-
- doc/dev.txt     |    1 +
- doc/dev_ctk.txt |  629 +++++++++++++++++++++++++++++++++++++++++++------------
- doc/index.txt   |    1 +
- 4 files changed, 504 insertions(+), 130 deletions(-)
-
-
-2011-03-21  Taher Shihadeh  <taher@unixwars.com>
-            svn=6401 git=d3c5f7966a10bbb3521ed0612fa3029565f6a67e
-
-    Initial commit. Draft for CTK documentation
-    
- doc/dev_ctk.txt |  185 +++++++++++++++++++++++++++++++++++++++++++++++++++++++
- 1 files changed, 185 insertions(+), 0 deletions(-)
-
-2011-03-31  Taher Shihadeh  <taher@unixwars.com>
-            svn=6458 git=c5f28ff53a60a7818a49fc0552aacec28dfd313b
-
-    Screenshots were not matching their section
-    
- doc/media/images/admin_handler_fastcgi2.png |  Bin 32476 -> 32431 bytes
- doc/media/images/cookbook_mono_handler.png  |  Bin 57757 -> 29700 bytes
- 2 files changed, 0 insertions(+), 0 deletions(-)
-
-
-2011-03-31  Taher Shihadeh  <taher@unixwars.com>
-            svn=6455 git=331c980654f709247b49acb16c104cdde4eea319
-
-    Fixes snapshots according to description
-    
- doc/media/images/admin_handler_fastcgi2.png |  Bin 60678 -> 32476 bytes
- doc/media/images/cookbook_ror_common.png    |  Bin 29148 -> 29194 bytes
- 2 files changed, 0 insertions(+), 0 deletions(-)
-
-
-2011-03-30  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6449 git=98d1df287ee06fdc4c8c7fbccb5ddb8a3846408d
-
-    Moves most of the FL-cache code to libcherokee-server
-    
- cherokee/Makefile.am |   12 ++++++------
- 1 files changed, 6 insertions(+), 6 deletions(-)
-
-
-2011-03-29  Taher Shihadeh  <taher@unixwars.com>
-            svn=6448 git=610d475a846b01ae6092de2238f038ad7aefbf9e
-
-    Documents Front-line cache
-    
- doc/Makefile.am                     |    1 +
- doc/config_virtual_servers_rule.txt |   16 +++-----
- doc/index.txt                       |    1 +
- doc/other.txt                       |    1 +
- doc/other_front_line_cache.txt      |   66 +++++++++++++++++++++++++++++++++++
- doc/other_goodies.txt               |   12 ++++++
- 6 files changed, 87 insertions(+), 10 deletions(-)
-
-
-2011-03-29  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6447 git=df8502bc74435ff528482b510da01dd3d4c504ff
-
-    Front-line QA: WIP
-    
- cherokee/flcache.c         |    4 +-
- qa/277-Flcache-headers2.py |   53 ++++++++++++++++++++++++++++++++++++++++++++
- qa/Makefile.am             |    3 +-
- 3 files changed, 57 insertions(+), 3 deletions(-)
-
-
-2011-03-29  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6445 git=e32958fe1fcc2bbac13e02798a3bb190851451e3
-
-    According to RFC2616, the "Via:" header _must_ be implemented.
-    
- cherokee/flcache.c         |   24 ++++++++++++++++++++
- qa/276-Flcache-headers1.py |   52 ++++++++++++++++++++++++++++++++++++++++++++
- qa/Makefile.am             |    3 +-
- 3 files changed, 78 insertions(+), 1 deletions(-)
-
-
-2011-03-29  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6444 git=2db13c1f14fbffb5a1fed89d51110301625f7574
-
-    Implements 'Age' (RFC2616, section 14.6)
-    
- cherokee/avl_flcache.c |    2 ++
- cherokee/avl_flcache.h |    2 ++
- cherokee/flcache.c     |    6 ++++++
- 3 files changed, 10 insertions(+), 0 deletions(-)
-
-
-2011-03-29  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6443 git=936584f5f26a60a7eed0707e55ad58fedf1411ff
-
-    Better support for X-Cache
-    
- cherokee/connection-protected.h |    1 +
- cherokee/connection.c           |   45 ++++++++++++++++++++++++++++++++-------
- cherokee/flcache.c              |   11 ++-------
- 3 files changed, 41 insertions(+), 16 deletions(-)
-
-
-2011-03-29  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6441 git=c96d3fa5a06050b5d735159a4522877d39d2f0e9
-
-    Delay to create files as soon as possible. Under some circunstances we
-    will be able to skip it (if the response should not be cached).
-    
- cherokee/flcache.c |   86 ++++++++++++++++++++++++++++++++--------------------
- 1 files changed, 53 insertions(+), 33 deletions(-)
-
-
-2011-03-29  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6440 git=f8bf2e61a7ebe703c7e1927bbe4a73a5c14baab0
-
-    Further work on the FLcache
-    
- cherokee/connection.c     |    4 ++-
- cherokee/flcache.c        |   42 +++++++++++++++++++++++++---------
- qa/274-Flcache-cookie1.py |   14 +++++-----
- qa/275-Flcache-cookie2.py |   55 +++++++++++++++++++++++++++++++++++++++++++++
- qa/Makefile.am            |    3 +-
- 5 files changed, 98 insertions(+), 20 deletions(-)
-
-
-2011-03-29  Taher Shihadeh  <taher@unixwars.com>
-            svn=6439 git=4c2f7b6a3f7507113d1b08309cc434821c8685e9
-
-    Clarifies the section about caching
-    
- doc/config_virtual_servers_rule.txt |   13 ++++++++-----
- 1 files changed, 8 insertions(+), 5 deletions(-)
-
-
-2011-03-29  Taher Shihadeh  <taher@unixwars.com>
-            svn=6438 git=bba1e457323ccd0bd931cf969825f750988a0251
-
-    Updates remaining screenshots + recompression
-    
- doc/media/images/admin_advanced0.png               |  Bin 3897 -> 3873 bytes
- doc/media/images/admin_advanced1.png               |  Bin 16873 -> 16527 bytes
- doc/media/images/admin_advanced2.png               |  Bin 18604 -> 18074 bytes
- doc/media/images/admin_advanced3.png               |  Bin 14588 -> 14178 bytes
- doc/media/images/admin_advanced4.png               |  Bin 9480 -> 9049 bytes
- doc/media/images/admin_advanced5.png               |  Bin 13128 -> 12941 bytes
- doc/media/images/admin_behavior.png                |  Bin 9769 -> 9114 bytes
- doc/media/images/admin_general.png                 |  Bin 19455 -> 18648 bytes
- doc/media/images/admin_general_icons.png           |  Bin 14243 -> 13597 bytes
- doc/media/images/admin_general_mime.png            |  Bin 9678 -> 9508 bytes
- doc/media/images/admin_general_networking.png      |  Bin 19466 -> 18925 bytes
- doc/media/images/admin_general_permissions.png     |  Bin 10284 -> 9802 bytes
- doc/media/images/admin_general_ports.png           |  Bin 7792 -> 7437 bytes
- doc/media/images/admin_handler_admin.png           |  Bin 10657 -> 9988 bytes
- doc/media/images/admin_handler_cgi.png             |  Bin 20450 -> 19731 bytes
- doc/media/images/admin_handler_custom_error.png    |  Bin 17857 -> 17203 bytes
- doc/media/images/admin_handler_dbslayer.png        |  Bin 17151 -> 16556 bytes
- doc/media/images/admin_handler_dirlist.png         |  Bin 15421 -> 14769 bytes
- doc/media/images/admin_handler_dirlist_ex.png      |  Bin 17871 -> 17072 bytes
- doc/media/images/admin_handler_fastcgi1.png        |  Bin 21204 -> 20165 bytes
- doc/media/images/admin_handler_fastcgi2.png        |  Bin 63281 -> 60678 bytes
- doc/media/images/admin_handler_file.png            |  Bin 10650 -> 10122 bytes
- doc/media/images/admin_handler_onlylisting.png     |  Bin 17675 -> 16832 bytes
- doc/media/images/admin_handler_onlylisting_ex.png  |  Bin 17920 -> 17012 bytes
- doc/media/images/admin_handler_proxy.png           |  Bin 20158 -> 19725 bytes
- doc/media/images/admin_handler_secdownload.png     |  Bin 14987 -> 14549 bytes
- doc/media/images/admin_index.png                   |  Bin 47858 -> 45050 bytes
- doc/media/images/admin_index_backup.png            |  Bin 7939 -> 7445 bytes
- doc/media/images/admin_index_restore.png           |  Bin 11069 -> 10625 bytes
- doc/media/images/admin_info_sources.png            |  Bin 37365 -> 35620 bytes
- doc/media/images/admin_launch.png                  |  Bin 6237 -> 5825 bytes
- doc/media/images/admin_noconfig.png                |  Bin 16236 -> 15298 bytes
- doc/media/images/admin_notrunning.png              |  Bin 10992 -> 10642 bytes
- doc/media/images/admin_rule_regex.png              |  Bin 14933 -> 14087 bytes
- doc/media/images/admin_validators_authlist.png     |  Bin 20708 -> 19868 bytes
- doc/media/images/admin_validators_ldap.png         |  Bin 30041 -> 29683 bytes
- doc/media/images/admin_validators_pam.png          |  Bin 14623 -> 14095 bytes
- doc/media/images/admin_validators_plain.png        |  Bin 35764 -> 34889 bytes
- doc/media/images/admin_vserver.png                 |  Bin 18616 -> 17037 bytes
- doc/media/images/admin_vserver_errors.png          |  Bin 9033 -> 8691 bytes
- doc/media/images/admin_vserver_evhost.png          |  Bin 35038 -> 33327 bytes
- doc/media/images/admin_vserver_loggers.png         |  Bin 19937 -> 19132 bytes
- doc/media/images/admin_vserver_security.png        |  Bin 15516 -> 14877 bytes
- doc/media/images/admin_vserver_wizard.png          |  Bin 37975 -> 34601 bytes
- doc/media/images/admin_vservers_wizard.png         |  Bin 38565 -> 36569 bytes
- doc/media/images/cookbook_alfresco_alfresco.png    |  Bin 34437 -> 33948 bytes
- doc/media/images/cookbook_alfresco_assistant.png   |  Bin 20121 -> 19989 bytes
- doc/media/images/cookbook_alfresco_install.png     |  Bin 19817 -> 19686 bytes
- doc/media/images/cookbook_alfresco_path.png        |  Bin 7356 -> 7268 bytes
- doc/media/images/cookbook_alfresco_share.png       |  Bin 37782 -> 36573 bytes
- doc/media/images/cookbook_alfresco_soffice.png     |  Bin 7474 -> 7364 bytes
- doc/media/images/cookbook_dbslayer1.png            |  Bin 8884 -> 8586 bytes
- doc/media/images/cookbook_dbslayer2.png            |  Bin 18742 -> 17999 bytes
- doc/media/images/cookbook_dbslayer3.png            |  Bin 7909 -> 7763 bytes
- doc/media/images/cookbook_dbslayer4.png            |  Bin 35042 -> 31426 bytes
- doc/media/images/cookbook_django.png               |  Bin 23568 -> 22521 bytes
- doc/media/images/cookbook_django_common.png        |  Bin 22134 -> 21347 bytes
- doc/media/images/cookbook_django_infosources.png   |  Bin 30736 -> 29838 bytes
- doc/media/images/cookbook_drupal.png               |  Bin 27255 -> 26951 bytes
- doc/media/images/cookbook_drupal_dir_rules.png     |  Bin 17341 -> 16477 bytes
- doc/media/images/cookbook_drupal_dir_rules_1.png   |  Bin 15985 -> 15414 bytes
- doc/media/images/cookbook_drupal_dir_rules_2.png   |  Bin 15164 -> 14622 bytes
- doc/media/images/cookbook_drupal_dir_rules_3.png   |  Bin 7893 -> 7525 bytes
- doc/media/images/cookbook_drupal_dir_rules_4.png   |  Bin 13283 -> 12811 bytes
- doc/media/images/cookbook_drupal_dir_rules_6.png   |  Bin 21261 -> 20466 bytes
- doc/media/images/cookbook_drupal_dir_rules_7.png   |  Bin 15723 -> 14913 bytes
- doc/media/images/cookbook_drupal_vserver_rules.png |  Bin 14585 -> 13900 bytes
- doc/media/images/cookbook_glassfish.png            |  Bin 4851 -> 4849 bytes
- .../images/cookbook_https_accelerator_handler.png  |  Bin 37073 -> 36029 bytes
- .../images/cookbook_https_accelerator_sources.png  |  Bin 13816 -> 13269 bytes
- doc/media/images/cookbook_joomla.png               |  Bin 12561 -> 12383 bytes
- doc/media/images/cookbook_liferay.png              |  Bin 16861 -> 16251 bytes
- doc/media/images/cookbook_mailman.png              |  Bin 13235 -> 13135 bytes
- .../cookbook_maintenance_advanced_domains.png      |  Bin 8557 -> 8416 bytes
- .../images/cookbook_maintenance_advanced_redir.png |  Bin 14100 -> 14067 bytes
- .../images/cookbook_maintenance_advanced_rules.png |  Bin 9641 -> 9523 bytes
- doc/media/images/cookbook_maintenance_copy.png     |  Bin 15654 -> 15192 bytes
- doc/media/images/cookbook_maintenance_domain.png   |  Bin 9055 -> 8902 bytes
- doc/media/images/cookbook_maintenance_error.png    |  Bin 7784 -> 7798 bytes
- doc/media/images/cookbook_maintenance_result.png   |  Bin 7203 -> 7022 bytes
- doc/media/images/cookbook_maintenance_rule.png     |  Bin 8213 -> 8072 bytes
- .../images/cookbook_managing_logs_handler.png      |  Bin 6172 -> 5958 bytes
- doc/media/images/cookbook_managing_logs_rules.png  |  Bin 14223 -> 13653 bytes
- .../images/cookbook_managing_logs_security.png     |  Bin 41923 -> 38608 bytes
- doc/media/images/cookbook_mono_demo.png            |  Bin 11183 -> 11066 bytes
- doc/media/images/cookbook_mono_handler.png         |  Bin 62644 -> 57757 bytes
- doc/media/images/cookbook_moodle.png               |  Bin 18427 -> 18157 bytes
- doc/media/images/cookbook_moodle_db.png            |  Bin 31835 -> 31317 bytes
- doc/media/images/cookbook_moodle_document_root.png |  Bin 12200 -> 11859 bytes
- doc/media/images/cookbook_moodle_modules.png       |  Bin 48838 -> 46699 bytes
- doc/media/images/cookbook_moodle_paths.png         |  Bin 35388 -> 34445 bytes
- doc/media/images/cookbook_mysql_rule.png           |  Bin 5027 -> 4959 bytes
- doc/media/images/cookbook_mysql_validator.png      |  Bin 14012 -> 33273 bytes
- doc/media/images/cookbook_nagios1.png              |  Bin 8123 -> 7847 bytes
- doc/media/images/cookbook_nagios2.png              |  Bin 8179 -> 7993 bytes
- doc/media/images/cookbook_nagios3.png              |  Bin 20310 -> 19773 bytes
- doc/media/images/cookbook_nagios4.png              |  Bin 35664 -> 35013 bytes
- doc/media/images/cookbook_phpbb_1_intro.png        |  Bin 39031 -> 38264 bytes
- doc/media/images/cookbook_phpbb_2_req.png          |  Bin 35390 -> 34270 bytes
- doc/media/images/cookbook_phpbb_3_db.png           |  Bin 30601 -> 29720 bytes
- doc/media/images/cookbook_phpbb_4_admin.png        |  Bin 28930 -> 27883 bytes
- doc/media/images/cookbook_phpbb_5_config.png       |  Bin 23794 -> 23118 bytes
- doc/media/images/cookbook_phpbb_6_advanced.png     |  Bin 36283 -> 34927 bytes
- doc/media/images/cookbook_phpbb_7_create.png       |  Bin 24918 -> 24441 bytes
- doc/media/images/cookbook_phpbb_8_final.png        |  Bin 45143 -> 44269 bytes
- doc/media/images/cookbook_phpbb_adm.png            |  Bin 39075 -> 36486 bytes
- doc/media/images/cookbook_phpbb_adm_warning.png    |  Bin 37334 -> 35198 bytes
- doc/media/images/cookbook_phpbb_rules.png          |  Bin 9435 -> 9252 bytes
- doc/media/images/cookbook_phpbb_running.png        |  Bin 29947 -> 29239 bytes
- doc/media/images/cookbook_phpmyadmin.png           |  Bin 11383 -> 11238 bytes
- doc/media/images/cookbook_phpmyadmin_denied.png    |  Bin 8745 -> 8377 bytes
- doc/media/images/cookbook_redir_behavior.png       |  Bin 4519 -> 4490 bytes
- doc/media/images/cookbook_redir_domains.png        |  Bin 8552 -> 8347 bytes
- doc/media/images/cookbook_redir_handler.png        |  Bin 8773 -> 8659 bytes
- doc/media/images/cookbook_redir_https.png          |  Bin 9412 -> 9290 bytes
- doc/media/images/cookbook_ror.png                  |  Bin 15239 -> 15106 bytes
- doc/media/images/cookbook_ror_common.png           |  Bin 29750 -> 29148 bytes
- doc/media/images/cookbook_ror_fcgi.png             |  Bin 18589 -> 18036 bytes
- doc/media/images/cookbook_ror_wizard.png           |  Bin 11315 -> 10908 bytes
- doc/media/images/cookbook_sugarcrm_install0.png    |  Bin 61674 -> 59689 bytes
- doc/media/images/cookbook_sugarcrm_install1.png    |  Bin 21762 -> 21331 bytes
- doc/media/images/cookbook_sugarcrm_running0.png    |  Bin 22260 -> 21567 bytes
- doc/media/images/cookbook_sugarcrm_running1.png    |  Bin 25443 -> 24794 bytes
- doc/media/images/cookbook_symfony.png              |  Bin 24493 -> 23910 bytes
- doc/media/images/cookbook_trac.png                 |  Bin 35325 -> 35109 bytes
- doc/media/images/cookbook_trac_info.png            |  Bin 18451 -> 18098 bytes
- doc/media/images/cookbook_trac_rules.png           |  Bin 5725 -> 5572 bytes
- doc/media/images/cookbook_trac_scgi.png            |  Bin 28285 -> 27744 bytes
- doc/media/images/cookbook_trac_static.png          |  Bin 9506 -> 9194 bytes
- doc/media/images/cookbook_wp1.png                  |  Bin 26477 -> 26238 bytes
- doc/media/images/cookbook_wp2.png                  |  Bin 13235 -> 13147 bytes
- doc/media/images/cookbook_wp3.png                  |  Bin 10279 -> 10155 bytes
- doc/media/images/cookbook_wp4.png                  |  Bin 44859 -> 44012 bytes
- doc/media/images/cookbook_wp5.png                  |  Bin 25656 -> 24539 bytes
- doc/media/images/cookbook_wp_example1.png          |  Bin 8760 -> 8306 bytes
- doc/media/images/cookbook_wp_example2.png          |  Bin 8318 -> 7921 bytes
- doc/media/images/cookbook_wp_example3.png          |  Bin 13885 -> 12996 bytes
- doc/media/images/cookbook_zend1.png                |  Bin 3735 -> 3724 bytes
- doc/media/images/market_index.png                  |  Bin 39042 -> 37975 bytes
- doc/media/images/other_graphs_conns.png            |  Bin 18595 -> 18132 bytes
- doc/media/images/other_graphs_logging.png          |  Bin 15136 -> 14941 bytes
- doc/media/images/other_graphs_timeouts.png         |  Bin 19226 -> 18445 bytes
- doc/media/images/other_graphs_traffic.png          |  Bin 13862 -> 13566 bytes
- doc/media/images/proxy_phase1.png                  |  Bin 12012 -> 11406 bytes
- doc/media/images/proxy_phase2.png                  |  Bin 12222 -> 11661 bytes
- doc/media/images/screencast.png                    |  Bin 24013 -> 20613 bytes
- doc/media/images/tracelor.png                      |  Bin 9543 -> 9517 bytes
- 147 files changed, 0 insertions(+), 0 deletions(-)
-
-
-2011-03-29  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6437 git=b8082589287628aed8083f552b1dcb66aba35e9d
-
-    More cookies related stuff
-    
- cherokee/flcache.c        |    4 +-
- qa/274-Flcache-cookie1.py |   52 +++++++++++++++++++++++++++++++++++++++++++++
- qa/Makefile.am            |    3 +-
- 3 files changed, 56 insertions(+), 3 deletions(-)
-
-
-2011-03-28  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6436 git=0a0ea93a04f4587a84ac6b73620012b3713e80d6
-
-    The Content-Length header was sent twice under some circunstances.
-    
- cherokee/flcache.c |   14 ++++++++++++++
- 1 files changed, 14 insertions(+), 0 deletions(-)
-
-
-2011-03-28  Taher Shihadeh  <taher@unixwars.com>
-            svn=6435 git=7c3cf6e86469dd2b5abd0723a0ba167752003054
-
-    Updates a bunch of screenshots
-    
- doc/media/images/admin_handler_cgi.png          |  Bin 20394 -> 20450 bytes
- doc/media/images/admin_handler_custom_error.png |  Bin 17806 -> 17857 bytes
- doc/media/images/admin_handler_dbslayer.png     |  Bin 16947 -> 17151 bytes
- doc/media/images/admin_handler_dirlist.png      |  Bin 15756 -> 15421 bytes
- doc/media/images/admin_handler_fastcgi1.png     |  Bin 21207 -> 21204 bytes
- doc/media/images/admin_handler_fastcgi2.png     |  Bin 66318 -> 63281 bytes
- doc/media/images/admin_handler_file.png         |  Bin 10984 -> 10650 bytes
- doc/media/images/admin_handler_onlylisting.png  |  Bin 17937 -> 17675 bytes
- doc/media/images/admin_handler_proxy.png        |  Bin 19875 -> 20158 bytes
- doc/media/images/admin_handler_secdownload.png  |  Bin 14807 -> 14987 bytes
- doc/media/images/admin_rule_regex.png           |  Bin 15148 -> 14933 bytes
- doc/media/images/admin_validators_authlist.png  |  Bin 20745 -> 20708 bytes
- doc/media/images/admin_validators_pam.png       |  Bin 14399 -> 14623 bytes
- 13 files changed, 0 insertions(+), 0 deletions(-)
-
-
-2011-03-28  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6434 git=63eca782834ac5522c433977cfff5ace3fe14e17
-
-    Collections inherit utility methods now
-    
- qa/122-Methods.py |    2 +-
- qa/base.py        |    6 ++++--
- 2 files changed, 5 insertions(+), 3 deletions(-)
-
-
-2011-03-28  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6433 git=ccc4360fb74b1ff46b6c75a4906d2d369cc5e3e5
-
-    Adds a new QA test for Front-line cache
-    
- qa/273-Flcache-basic1.py |   41 +++++++++++++++++++++++++++++++++++++++++
- qa/Makefile.am           |    3 ++-
- 2 files changed, 43 insertions(+), 1 deletions(-)
-
-
-2011-03-28  Taher Shihadeh  <taher@unixwars.com>
-            svn=6432 git=6c307ac285056b0083398accf6fa89207e2c2ce8
-
-    Adjusts documentation to new settings. Screenshots are on their way
-    
- doc/config_virtual_servers_rule.txt |   83 ++++++++++++++++++++++++++++------
- 1 files changed, 68 insertions(+), 15 deletions(-)
-
-
-2011-03-28  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6431 git=1e1e3c54f4898e26e027a1cd322125d3656332c8
-
-    Implements a new mechanism for disregarding cookies on the Front-line cache.
-    
- admin/PageEntry.py              |    4 +-
- cherokee/config_entry.c         |   58 +++++++++++++++++----------
- cherokee/config_entry.h         |   46 ++++++++++++----------
- cherokee/connection-protected.h |    4 ++
- cherokee/connection.c           |    2 +
- cherokee/flcache.c              |   35 ++++++++++++----
- cherokee/flcache.h              |    2 +-
- cherokee/thread.c               |    6 ++-
- cherokee/virtual_server.c       |   83 ++++++++++++++++++++++++++++++++++++---
- 9 files changed, 179 insertions(+), 61 deletions(-)
-
-
-2011-03-28  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6430 git=52a118f373e5e9632a9e011004daf0a821236d29
-
-    += Disregard Cookies
-    
- admin/PageEntry.py |  179 ++++++++++++++++++++++++++++++++++++++++-----------
- 1 files changed, 140 insertions(+), 39 deletions(-)
-
-
-2011-03-27  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6427 git=7f2313d038fb4cda7531c50fc88f1bb4061ffcee
-
-    Better content expiration. It removes the content file ahead of the
-    clean-up process whenever possible.
-    
- cherokee/avl_flcache.c |   16 ++++++++
- cherokee/avl_flcache.h |    3 ++
- cherokee/flcache.c     |   93 +++++++++++++++++++++++++++++------------------
- cherokee/flcache.h     |    1 +
- 4 files changed, 77 insertions(+), 36 deletions(-)
-
-
-2011-03-27  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6426 git=10fb3cf4d7db40a291780fbe307f82e5f6bf034e
-
-    Allow/Forbid content caching config is now based on a nullable boolean
-    entry. It allows to manage caching in the same way of encoders do, so
-    allow, forbid and inherit options are available.
-    
- admin/PageEntry.py        |   10 +++++++++-
- admin/PageVServer.py      |   10 +++++++---
- cherokee/config_entry.c   |    4 ++--
- cherokee/virtual_server.c |   11 +++++++++--
- 4 files changed, 27 insertions(+), 8 deletions(-)
-
-
-2011-03-24  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6421 git=3159d0afa28141ac3d0369d1150e82498bf03e19
-
-    Implements the X-Cache header
-    
- cherokee/connection.c |   12 ++++++++++++
- cherokee/flcache.c    |   11 +++++++++++
- 2 files changed, 23 insertions(+), 0 deletions(-)
-
-
-2011-03-24  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6420 git=f04286f46a688785b49e00fc82ffed9d73c9e1ab
-
-    Report an error if it cannot create the cache directory
-    
- cherokee/error_list.py |    7 +++++++
- cherokee/flcache.c     |    2 ++
- 2 files changed, 9 insertions(+), 0 deletions(-)
-
-
-2011-03-24  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6419 git=bb190912d700a5eeb687a9b33f589dbccd18dd22
-
-    Fixes a grammar mistake
-    
- admin/PageEntry.py |    2 +-
- 1 files changed, 1 insertions(+), 1 deletions(-)
-
-
-2011-03-24  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6418 git=fda9adc7c820c2e7a3e8c67fcd7c35f13100029b
-
-    Cherokee admin += Front-line cache
-    
- admin/PageEntry.py   |   10 ++++++++++
- admin/PageVServer.py |   10 ++++++++--
- 2 files changed, 18 insertions(+), 2 deletions(-)
-
-
-2011-03-24  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6417 git=d5b41dce4e3e9f1fba9440a33985d6435ce31559
-
-    Fixes a memory corruption issue
-    
- cherokee/virtual_server.c |    2 +-
- 1 files changed, 1 insertions(+), 1 deletions(-)
-
-
-2011-03-24  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6416 git=1a0b3d7d1ab92694d087671456c48e152174e51d
-
-    Improves how flcache is activated. It does not require a !flcache flag
-    at the vserver level any more. It will activate it automatically
-    whenever an internal rule uses it.
-    
- cherokee/virtual_server.c |   28 +++++++++++++++++++---------
- 1 files changed, 19 insertions(+), 9 deletions(-)
-
-
-2011-03-23  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6414 git=fb99f64eb80dabdc1027c737ad44f54e1c0cccdb
-
-    Bug-fix: signal handling
-    
- cherokee/handler_cgi.c   |    4 ++--
- cherokee/logger_writer.c |    2 +-
- cherokee/rrd_tools.c     |    4 ++--
- cherokee/util.c          |   13 +++++++++++++
- cherokee/util.h          |    2 ++
- 5 files changed, 20 insertions(+), 5 deletions(-)
-
-
-2011-03-23  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6413 git=d9cae0bc3cf172ffb8648d949d3432497f043fc1
-
-    WIP: bug-fixing Front-Line cache
-    
- cherokee/buffer.c  |    6 ++++--
- cherokee/flcache.c |    3 +--
- cherokee/util.c    |   13 +++++++++++++
- cherokee/util.h    |    5 ++---
- 4 files changed, 20 insertions(+), 7 deletions(-)
-
-
-2011-03-23  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6411 git=8216c1dd26c59abba7cd6f095096d925197bf459
-
-    WIP: Further development
-    
- cherokee/avl_flcache.c |   58 ++++++++++++++++++++++++++++++-----------------
- cherokee/avl_flcache.h |    3 +-
- cherokee/connection.c  |   20 +++++++++++++++-
- cherokee/flcache.c     |   48 ++++++++++++++++++++++++++-------------
- 4 files changed, 90 insertions(+), 39 deletions(-)
-
-
-2011-03-23  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6410 git=489a19e3e786d0ff6825174f3d0b5f72688b0500
-
-    WIP: Mind signals
-    
- cherokee/buffer.c             |    2 +-
- cherokee/flcache.c            |   78 ++++++++++-------------------------------
- cherokee/handler_file.c       |    2 +-
- cherokee/iocache.c            |    2 +-
- cherokee/logger_writer.c      |    2 +-
- cherokee/shm.c                |    4 +-
- cherokee/source_interpreter.c |    2 +-
- cherokee/util.c               |   13 +++++++
- cherokee/util.h               |    1 +
- 9 files changed, 40 insertions(+), 66 deletions(-)
-
-
-2011-03-23  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6408 git=baaa4b7729e27201c0e5ea9169c827f1c40a1a8d
-
-    Reference count must be reentrant
-    
- cherokee/avl_flcache.c |    4 ++++
- cherokee/avl_flcache.h |    3 ++-
- cherokee/flcache.c     |   19 ++++++++++++++-----
- 3 files changed, 20 insertions(+), 6 deletions(-)
-
-
-2011-03-23  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6407 git=0ad0b560bbafa0e420f61e072c9d4057c106d98e
-
-    The query string was not being taken into account
-    
- cherokee/avl_flcache.c |   45 ++++++++++++++++++++++++++++++++++++++++++++-
- cherokee/avl_flcache.h |    1 +
- cherokee/flcache.c     |   14 ++++----------
- 3 files changed, 49 insertions(+), 11 deletions(-)
-
-
-2011-03-22  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6406 git=578617f4a0e2f3650975eb84792f02ec87dec862
-
-    WIP: Not everything is cacheable
-    
- cherokee/flcache.c |   67 ++++++++++++++++++++++++++++++++++++++++++++++++++++
- 1 files changed, 67 insertions(+), 0 deletions(-)
-
-
-2011-03-22  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6404 git=5a24b506bde61068e80b2e666e45997413724aa6
-
-    WIP: Front-line cache content expiration
-    
- cherokee/avl_flcache.c          |   65 +++++++++++++++++++++++++++++++++++++-
- cherokee/avl_flcache.h          |    6 +++-
- cherokee/avl_generic.h          |   19 -----------
- cherokee/connection-protected.h |    2 +-
- cherokee/connection.c           |   47 +++++++++++++++++++++------
- cherokee/flcache.c              |   38 ++++++++++++++++++++--
- cherokee/flcache.h              |    1 +
- cherokee/handler_proxy.c        |    2 +-
- cherokee/macros.h               |    1 +
- cherokee/main_admin.c           |    2 +-
- cherokee/server-protected.h     |    3 ++
- cherokee/server.c               |   32 +++++++++++++++++--
- cherokee/thread.c               |   35 ++++++---------------
- 13 files changed, 185 insertions(+), 68 deletions(-)
-
-
-2011-03-21  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6403 git=284dddd849544931dc8bff90c82cad8be0e97123
-
-    Adds a few missing files
-    
- cherokee/avl_flcache.c |  298 ++++++++++++++++++++
- cherokee/avl_flcache.h |   85 ++++++
- cherokee/avl_generic.c |  712 ++++++++++++++++++++++++++++++++++++++++++++++++
- cherokee/avl_generic.h |  121 ++++++++
- cherokee/flcache.c     |  456 +++++++++++++++++++++++++++++++
- cherokee/flcache.h     |   98 +++++++
- 6 files changed, 1770 insertions(+), 0 deletions(-)
-
-
-2011-03-21  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6402 git=7a63cc3ee9a0b4f6d7b7d9667896b739964eacc4
-
-    Front-line cache: Initial implementation. It's still WIP.
-    
- README                          |    6 +-
- cherokee/Makefile.am            |    8 +-
- cherokee/avl.c                  |  730 ++++-----------------------------------
- cherokee/avl.h                  |   50 ++-
- cherokee/common-internal.h      |   24 ++
- cherokee/config_entry.c         |    8 +-
- cherokee/config_entry.h         |    3 +-
- cherokee/connection-protected.h |    2 +-
- cherokee/connection.c           |   94 +++++-
- cherokee/header.c               |    8 +-
- cherokee/header.h               |    1 +
- cherokee/thread.c               |   75 ++++-
- cherokee/virtual_server.c       |   31 ++-
- cherokee/virtual_server.h       |    2 +
- configure.in                    |    2 +
- constants.h.pre                 |    4 +-
- 16 files changed, 342 insertions(+), 706 deletions(-)
-
-
-2011-03-21  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6400 git=0f7cecf88931483b82535fbfa22f718a443f3643
-
-    Front-line cache branch
-    
-
-2011-04-12  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6493 git=d3719cb8ff49704797eed23152731b72b3909191
-
-    Turns a fatal error by a warning. The LDAP authentication plug-in was
-    being too strict about unknown configuration properties. Fixes bug
-    
- cherokee/validator_ldap.c |    3 +--
- 1 files changed, 1 insertions(+), 2 deletions(-)
-
-2011-04-11  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6490 git=a2d8602a6add691a72e05ecec0ca2918cbc1db02
-
-    Merges the 'dist' branch
-    
- admin/Page.py                       |    8 +-
- admin/market/Distro.py              |  167 +++++++++++++++
- admin/market/Install.py             |  151 ++++----------
- admin/market/Makefile.am            |    3 +-
- admin/market/PageApp.py             |  264 ++++++++----------------
- admin/market/PageCategory.py        |   73 +++----
- admin/market/PageIndex.py           |  123 +++++------
- admin/market/PageSearch.py          |   44 ++--
- admin/market/Report.py              |   11 +-
- admin/market/Util.py                |   27 +--
- admin/market/ows_consts.py          |    3 +
- admin/server.py                     |   22 +--
- admin/static/css/cherokee-admin.css |   10 +-
- admin/theme.html                    |    2 +-
- cherokee.conf.sample.pre            |    2 +-
- doc/Makefile.am                     |    3 +-
- doc/distro_dev_intro.txt            |  390 +++++++++++++++++++++++++++++++++++
- doc/index.txt                       |   11 +-
- 18 files changed, 848 insertions(+), 466 deletions(-)
-
-
-2011-04-09  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6489 git=e21201b3e30b3734ed4895410dd8def1f5e5b32b
-
-    Error handlers could not manage 405 errors properly.
-    
- cherokee/connection.c          |    9 +++++++++
- cherokee/handler_error_redir.c |    1 -
- cherokee/header.c              |   19 ++++++++++++++++---
- qa/273-Unknown-method-redir.py |   34 ++++++++++++++++++++++++++++++++++
- qa/Makefile.am                 |    3 ++-
- 5 files changed, 61 insertions(+), 5 deletions(-)
-
-
-2011-03-31  Taher Shihadeh  <taher@unixwars.com>
-            svn=6459 git=2a042bc9a77f875b3d94524c8ccf810b4da116cf
-
-    Minor adjustments and cleanup for remaining cookbook entries
-    
- doc/cookbook_mono.txt       |    5 +++--
- doc/cookbook_moodle.txt     |    1 +
- doc/cookbook_nagios.txt     |   20 ++++++++++++++++++++
- doc/cookbook_phpmyadmin.txt |    2 ++
- doc/cookbook_wordpress.txt  |   12 ++++++++++--
- 5 files changed, 36 insertions(+), 4 deletions(-)
-
-
-2011-03-31  Taher Shihadeh  <taher@unixwars.com>
-            svn=6457 git=78848ac1742436340450e01170d5c39d12f6a9d9
-
-    Minor adjustments and cleanup for some entries of the cookbook
-    
- doc/cookbook_django.txt            |    5 ++++
- doc/cookbook_drupal.txt            |   40 +++++++++++++++++++++++++++++-
- doc/cookbook_https_accelerator.txt |    6 ++++-
- doc/cookbook_maintenance.txt       |   46 +++++++++++++++++++++++++++++-------
- doc/cookbook_php.txt               |   32 +++++++++++++++++++++----
- doc/cookbook_ror.txt               |   16 +++++++++++-
- 6 files changed, 126 insertions(+), 19 deletions(-)
-
-2011-03-31  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6453 git=e1537ea808b58f9e613f8a3a8f40e9c00185b7b3
-
-    Reverts previous patch. It was meant to go to other branch.
-    
- admin/market/ows_consts.py |    2 --
- 1 files changed, 0 insertions(+), 2 deletions(-)
-
-
-2011-03-31  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6452 git=87a14c3023a3b225de46749028af5d03c460ba45
-
-    Adds a temporal, testing repo path
-    
- admin/market/ows_consts.py |    2 ++
- 1 files changed, 2 insertions(+), 0 deletions(-)
-
-
-2011-03-29  Taher Shihadeh  <taher@unixwars.com>
-            svn=6446 git=a03607095972cefbb2aa8e012a58859b63bc9fb6
-
-    Fits example code into its assigned section
-    
- doc/dev_ctk.txt |    8 ++++++--
- 1 files changed, 6 insertions(+), 2 deletions(-)
-
-
-2011-03-28  Taher Shihadeh  <taher@unixwars.com>
-            svn=6429 git=eb56f2a65c041c1e1dca5964813c78f74e7373d3
-
-    Cleanup last document
-    
- doc/other_faq.txt |    3 +--
- 1 files changed, 1 insertions(+), 2 deletions(-)
-
-
-2011-03-28  Taher Shihadeh  <taher@unixwars.com>
-            svn=6428 git=a854a6f057797e61ffc803c00f12f91676a17759
-
-    Adds FAQ entry regarding htaccess
-    
- doc/other_faq.txt |   24 ++++++++++++++++++++++++
- 1 files changed, 24 insertions(+), 0 deletions(-)
-
-2011-03-31  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6454 git=a0be82fdf4775f3aa4bc84fd683b877ba381c6e4
-
-    Adds a URL to a temporal, testing repo
-    
- admin/market/ows_consts.py |    2 ++
- 1 files changed, 2 insertions(+), 0 deletions(-)
-
-
-2011-03-25  Alvaro Lopez Ortega  <alvaro@octality.com>
-            svn=6425 git=800b0c5d3700860b45f32e17f83a1ed3768a8df8
-
-    Dist branch
-    
 
 2011-03-23  Taher Shihadeh  <taher@unixwars.com>
             svn=6415 git=641cf6a3bbc9ed12555f12cf09a463da01a56cf6

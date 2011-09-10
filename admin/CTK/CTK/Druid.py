@@ -77,6 +77,7 @@ if (submit_successes == submitters.length) {
 """
 
 JS_BUTTON_CLOSE = """
+$(this).parents('.ui-dialog:first').find('.druid:first').trigger('druid_exiting');
 $(this).parents('.ui-dialog:first').find('.ui-dialog-content:first').dialog('close');
 return false;
 """
@@ -234,7 +235,12 @@ class DruidButtonsPanel_Create (DruidButtonsPanel):
 class DruidButtonsPanel_Cancel (DruidButtonsPanel):
     def __init__ (self, props={}):
         DruidButtonsPanel.__init__ (self, props.copy())
-        self += DruidButton_Close(_('Cancel'))
+        self += DruidButton_Close (_('Cancel'))
+
+class DruidButtonsPanel_Close (DruidButtonsPanel):
+    def __init__ (self, props={}):
+        DruidButtonsPanel.__init__ (self, props.copy())
+        self += DruidButton_Close (_('Close'))
 
 
 #
@@ -281,6 +287,9 @@ def DruidContent__JS_to_goto (internal_id, url):
                        'type': 'refresh_goto',
                        'goto': '%s'
                });""" %(internal_id, url)
+
+def DruidContent__JS_to_goto_next (internal_id):
+    return DruidContent__JS_to_goto (internal_id, druid_url_next(request.url))
 
 def DruidContent__JS_to_close (internal_id):
     return '$("#%s").each(function() {%s});' %(internal_id, JS_BUTTON_CLOSE)

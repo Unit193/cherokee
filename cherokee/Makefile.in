@@ -113,12 +113,12 @@ am__libcherokee_base_la_SOURCES_DIST = zlib/deflate.c zlib/deftree.c \
 	cryptor.c socket.h socket.c fdpoll.h fdpoll-protected.h \
 	fdpoll.c mime.h mime-protected.h mime.c mime_entry.c iocache.h \
 	iocache.c md5.h md5.c md5crypt.h md5crypt.c sha1.h sha1.c \
-	match.h match.c dtm.h dtm.c header.h header-protected.h \
-	header.c access.h access.c regex.h regex.c resolv_cache.h \
-	resolv_cache.c post.h post.c config_node.h config_node.c \
-	config_reader.h config_reader.c bogotime.h bogotime.c cache.h \
-	cache.c logger.h logger.c logger_writer.h logger_writer.c \
-	xrealip.h xrealip.c
+	sha512.h sha512.c match.h match.c dtm.h dtm.c header.h \
+	header-protected.h header.c access.h access.c regex.h regex.c \
+	resolv_cache.h resolv_cache.c post.h post.c config_node.h \
+	config_node.c config_reader.h config_reader.c bogotime.h \
+	bogotime.c cache.h cache.c logger.h logger.c logger_writer.h \
+	logger_writer.c xrealip.h xrealip.c
 am__objects_1 = deflate.lo deftree.lo
 am__objects_2 = pcre_try_flipped.lo pcre_chartables.lo \
 	pcre_fullinfo.lo pcre_newline.lo pcre_globals.lo \
@@ -143,8 +143,8 @@ am_libcherokee_base_la_OBJECTS = $(am__objects_1) $(am__objects_3) \
 	ncpus.lo cacheline.lo crc32.lo util.lo error_log.lo \
 	human_strcmp.lo trace.lo version.lo buffer.lo template.lo \
 	module.lo cryptor.lo socket.lo fdpoll.lo mime.lo mime_entry.lo \
-	iocache.lo md5.lo md5crypt.lo sha1.lo match.lo dtm.lo \
-	header.lo access.lo regex.lo resolv_cache.lo post.lo \
+	iocache.lo md5.lo md5crypt.lo sha1.lo sha512.lo match.lo \
+	dtm.lo header.lo access.lo regex.lo resolv_cache.lo post.lo \
 	config_node.lo config_reader.lo bogotime.lo cache.lo logger.lo \
 	logger_writer.lo xrealip.lo
 libcherokee_base_la_OBJECTS = $(am_libcherokee_base_la_OBJECTS)
@@ -2357,6 +2357,8 @@ md5crypt.h \
 md5crypt.c \
 sha1.h \
 sha1.c \
+sha512.h \
+sha512.c \
 match.h \
 match.c \
 dtm.h \
@@ -3277,6 +3279,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rule_tls.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rule_url_arg.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sha1.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sha512.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/shm.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/socket.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/template.Plo@am__quote@

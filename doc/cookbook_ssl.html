@@ -19,6 +19,41 @@
 <div class="sectionbody">
 <div class="paragraph"><p>This section answers some general questions and details the procedure
 to generate SSL keys.</p></div>
+<h3 id="configure-vserver-ssl-certificates">Configure vServer SSL Certificates</h3><div style="clear:left"></div>
+<div class="paragraph"><p>To start serving HTTPS traffic from Cherokee you will have to
+<a href="#ssl-support">enable SSL support</a> and obtain a
+<a href="#free-certificates">signed certificate</a> (or
+<a href="#self_sign">signed your own</a>). Ensure that the certificate files
+have the appropriate permissions for your OS and that you know the locations
+of the following:</p></div>
+<div class="olist arabic"><ol class="arabic">
+<li>
+<p>
+Signed Certificate file
+</p>
+</li>
+<li>
+<p>
+Private Key file used to generate CSR for the above
+</p>
+</li>
+<li>
+<p>
+CA List or Chain file (Optional, depending on signing authority of your certificate)
+</p>
+</li>
+</ol></div>
+<div class="paragraph"><p>All files should be generated using PEM-encoding.</p></div>
+<div class="paragraph"><div class="title">Configuration</div><p>Certificates are configured at the vServer level in the <strong>Security</strong> tab. <strong>This
+means you must have a vServer setup that corresponds to your Certificate&#8217;s
+security scope</strong>. Enter the full paths for your Certificate and corresponding Private
+Key file. To add a certificate chain file to you CA List set <strong>Client Certs. Request</strong>
+to <em>Accept</em> then put the full path to your chain file in the <em>CA List</em> box.</p></div>
+<div class="imageblock">
+<div class="content">
+<img src="media/images/admin_vserver_security_ssl.png" alt="media/images/admin_vserver_security_ssl.png" />
+</div>
+</div>
 <h3 id="general">General questions</h3><div style="clear:left"></div>
 <div class="paragraph"><div class="title">Can the same server provide HTTP and HTTPS?</div><p>Yes. HTTP and HTTPS use different server ports. The former binds to
 port 80 and the latter to port 443, so there is no conflict between
