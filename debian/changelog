@@ -1,3 +1,11 @@
+cherokee (1.2.99-2) unstable; urgency=low
+
+  * Applied patch sent by upstream that fixes the bugs causing the
+    front-line cache tests to fail
+  * Disabled the patch disabling the front-line cache tests
+
+ -- Gunnar Wolf <gwolf@debian.org>  Wed, 14 Sep 2011 11:56:44 -0500
+
 cherokee (1.2.99-1) unstable; urgency=low
 
   * New upstream release

@@ -1,0 +1,29 @@
+From: Álvaro López ortega <alvaro@octality.com>
+Origin: upstream, http://svn.cherokee-project.com/changeset/6846
+Last-update: 2011-09-14
+bug: http://code.google.com/p/cherokee/issues/detail?id=1254&start=300
+Description: Backport an upcoming fix for the failing test cases
+ Test cases introduced with the front-line cache functionality in
+ Cherokee 1.2.98 failed under some architectures. We disabled those
+ tests to avoid a FTBFS in 1.2.99-1; this fixes the problem and allows
+ the tests to pass.
+
+Index: cherokee/cherokee/avl_flcache.c
+===================================================================
+--- cherokee.orig/cherokee/avl_flcache.c	2011-06-10 09:33:02.000000000 -0500
++++ cherokee/cherokee/avl_flcache.c	2011-09-14 12:00:33.000000000 -0500
+@@ -314,7 +314,13 @@
+ static int
+ node_is_empty (cherokee_avl_flcache_node_t *key)
+ {
+-	return cherokee_buffer_is_empty (&key->request);
++	/* The key object can be either be:
++	 * 1.- A reference to a cherokee_connection_t object
++	 * 2.- An object storing information
++	 */
++	if (key->conn_ref)
++		return false;
++ 	return cherokee_buffer_is_empty (&key->request);
+ }
+ 
+ 
