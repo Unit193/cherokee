@@ -7,7 +7,7 @@ Build-Depends: bison, flex, debhelper (>= 7.0.50), autotools-dev, libpam0g-dev, 
 Standards-Version: 3.9.2.0
 Homepage: http://cherokee-project.org/
 Vcs-Git: git://git.debian.org/git/collab-maint/cherokee.git
-Vcs-Browser: http://git.debian.org/git/collab-maint/cherokee.git
+Vcs-Browser: http://anonscm.debian.org/gitweb/?p=collab-maint/cherokee.git
 
 Package: cherokee
 Architecture: any

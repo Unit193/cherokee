@@ -1,3 +1,10 @@
+cherokee (1.2.99-3) UNRELEASED; urgency=low
+
+  * Updated the Vcs-Browser to the proper URL - Thanks to Nelson A. de
+    Oliveira for pointing it out
+
+ -- Gunnar Wolf <gwolf@debian.org>  Mon, 26 Sep 2011 16:57:13 -0500
+
 cherokee (1.2.99-2) unstable; urgency=low
 
   * Applied patch sent by upstream that fixes the bugs causing the
