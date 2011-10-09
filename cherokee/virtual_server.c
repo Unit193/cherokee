@@ -65,6 +65,10 @@ cherokee_virtual_server_new (cherokee_virtual_server_t **vserver, void *server)
 	n->match_nick      = true;
 	n->flcache         = NULL;
 
+	n->hsts.enabled    = false;
+	n->hsts.subdomains = true;
+	n->hsts.max_age    = 365 * 24 * 60 * 60;
+
 	/* Virtual entries
 	 */
 	ret = cherokee_rule_list_init (&n->rules);
@@ -82,7 +86,9 @@ cherokee_virtual_server_new (cherokee_virtual_server_t **vserver, void *server)
 	cherokee_buffer_init (&n->server_key);
 	cherokee_buffer_init (&n->certs_ca);
 	cherokee_buffer_init (&n->req_client_certs);
-	cherokee_buffer_init (&n->ciphers);
+
+	cherokee_buffer_init    (&n->ciphers);
+	cherokee_buffer_add_str (&n->ciphers, CHEROKEE_CIPHERS_DEFAULT);
 
 	ret = cherokee_buffer_init (&n->root);
 	if (unlikely(ret < ret_ok))
@@ -946,6 +952,22 @@ add_error_writer (cherokee_config_node_t    *config,
 
 
 static ret_t
+add_hsts (cherokee_config_node_t    *config,
+	  cherokee_virtual_server_t *vserver)
+{
+	ret_t ret;
+
+	ret = cherokee_atob (config->val.buf, &vserver->hsts.enabled);
+	if (ret != ret_ok) return ret_error;
+
+	cherokee_config_node_read_int  (config, "max_age",    &vserver->hsts.max_age);
+	cherokee_config_node_read_bool (config, "subdomains", &vserver->hsts.subdomains);
+
+	return ret_ok;
+}
+
+
+static ret_t
 add_logger (cherokee_config_node_t    *config,
 	    cherokee_virtual_server_t *vserver)
 {
@@ -1091,6 +1113,11 @@ configure_virtual_server_property (cherokee_config_node_t *conf, void *data)
 		if (ret != ret_ok)
 			return ret;
 
+	} else if (equal_buf_str (&conf->key, "hsts")) {
+		ret = add_hsts (conf, vserver);
+		if (ret != ret_ok)
+			return ret;
+
 	} else if (equal_buf_str (&conf->key, "directory_index")) {
 		cherokee_config_node_read_list (conf, NULL, add_directory_index, vserver);
 
@@ -1119,6 +1146,7 @@ configure_virtual_server_property (cherokee_config_node_t *conf, void *data)
 		cherokee_buffer_add_buffer (&vserver->req_client_certs, &conf->val);
 
 	} else if (equal_buf_str (&conf->key, "ssl_ciphers")) {
+		cherokee_buffer_clean      (&vserver->ciphers);
 		cherokee_buffer_add_buffer (&vserver->ciphers, &conf->val);
 
 	} else if (equal_buf_str (&conf->key, "flcache") ||

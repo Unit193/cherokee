@@ -279,7 +279,7 @@ static const cherokee_error_t __cherokee_errors[] =
   {  250, "OpenSSL: cannot read trusted CA list '%s': %s", "If this happens, CA certificates for verification purposes cannot be located. It is likely there is a problem with your private key.", NULL, NULL, true },
   {  251, "SSL_load_client_CA_file '%s': %s", "A file of PEM formatted certificates should be read to extract data of the certificates found. It is likely there is a problem with your private key.", NULL, NULL, true },
   {  252, "Unable to set SSL session-id context for '%s': %s", "The issue seems to be related to your system.", NULL, NULL, true },
-  {  253, "Could not activate TLS SNI for '%s': %s", "The issue seems to be related to your system.", NULL, NULL, true },
+  {  253, "Could not activate TLS SNI for '%s': %s", "It looks like Cherokee was compiled with TLS SNI support. However, it is currently using a SSL library (libssl/openssl) without TLS SNI support, and thus SNI is disabled.", NULL, NULL, true },
   {  254, "OpenSSL: Unable to create a new SSL connection from the SSL context: %s", "The issue seems to be related to your system.", NULL, NULL, true },
   {  255, "OpenSSL: cannot set fd(%d): %s", "The issue seems to be related to your system.", NULL, NULL, true },
   {  256, "Init OpenSSL: %s", "The issue seems to be related to your system.", NULL, NULL, true },

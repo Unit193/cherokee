@@ -35,6 +35,8 @@
 
 CHEROKEE_BEGIN_DECLS
 
+#define CHEROKEE_CIPHERS_DEFAULT "HIGH:!aNULL:!MD5"
+
 /* Callback function prototipes
  */
 typedef ret_t (* cryptor_func_new_t)         (void **cryp);

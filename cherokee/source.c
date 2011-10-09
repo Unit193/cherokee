@@ -46,9 +46,10 @@ cherokee_source_init (cherokee_source_t *src)
 	cherokee_buffer_init (&src->unix_socket);
 	cherokee_buffer_init (&src->host);
 
-	src->type = source_host;
-	src->port = -1;
-	src->free = NULL;
+	src->type         = source_host;
+	src->port         = -1;
+	src->free         = NULL;
+	src->addr_current = NULL;
 
 	return ret_ok;
 }
@@ -57,8 +58,9 @@ cherokee_source_init (cherokee_source_t *src)
 ret_t
 cherokee_source_mrproper (cherokee_source_t *src)
 {
-	if (src->free)
+	if (src->free) {
 		src->free (src);
+	}
 
 	cherokee_buffer_mrproper (&src->original);
 	cherokee_buffer_mrproper (&src->unix_socket);
@@ -80,58 +82,101 @@ cherokee_source_connect (cherokee_source_t *src, cherokee_socket_t *sock)
 		return cherokee_socket_connect (sock);
 	}
 
-	/* Get required objects
-	 */
-	ret = cherokee_resolv_cache_get_default (&resolv);
-        if (unlikely (ret!=ret_ok)) {
-		return ret;
-	}
-
-	/* UNIX socket
+	/* Create the new socket and set the target IP info
 	 */
 	if (! cherokee_buffer_is_empty (&src->unix_socket)) {
-		ret = cherokee_socket_set_client (sock, AF_UNIX);
+
+		/* Create the socket descriptor
+		 */
+		ret = cherokee_socket_create_fd (sock, AF_UNIX);
 		if (unlikely (ret != ret_ok)) {
 			return ret;
 		}
 
-		/* Copy the unix socket path */
 		ret = cherokee_socket_gethostbyname (sock, &src->unix_socket);
 		if (unlikely (ret != ret_ok)) {
 			return ret;
 		}
-
-		/* Set non-blocking */
-		ret = cherokee_fd_set_nonblocking (sock->socket, true);
-		if (unlikely (ret != ret_ok)) {
-			LOG_ERRNO (errno, cherokee_err_error, CHEROKEE_ERROR_SOURCE_NONBLOCK, sock->socket);
-		}
-
-	/* INET socket
-	 */
 	} else {
-		if (cherokee_string_is_ipv6 (&src->host)) {
-			ret = cherokee_socket_set_client (sock, AF_INET6);
+		cherokee_boolean_t     tested_all;
+		const struct addrinfo *addr;
+		const struct addrinfo *addr_info = NULL;
+
+		/* Query the resolv cache
+		 */
+		ret = cherokee_resolv_cache_get_default (&resolv);
+		if (unlikely (ret!=ret_ok)) {
+			return ret;
+		}
+
+		ret = cherokee_resolv_cache_get_addrinfo (resolv, &src->host, &addr_info);
+		if ((ret != ret_ok) || (addr_info == NULL)) {
+			return ret_error;
+		}
+
+		/* Current address
+		 */
+		if (src->addr_current) {
+			tested_all = false;
+			addr = src->addr_current;
 		} else {
-			ret = cherokee_socket_set_client (sock, AF_INET);
-		}
-		if (unlikely (ret != ret_ok)) {
-			return ret;
+			tested_all = true;
+			addr = addr_info;
 		}
 
-		/* Query the host */
-		ret = cherokee_resolv_cache_get_host (resolv, &src->host, sock);
-		if (unlikely (ret != ret_ok)) {
-			return ret;
+		/* Create the fd for the address family
+		 *
+		 * Iterates through the different addresses of the
+		 * host and stores a pointer to the first one with
+		 * a supported family.
+		 */
+		while (addr != NULL) {
+			ret = cherokee_socket_create_fd (sock, addr->ai_family);
+
+#ifdef TRACE_ENABLED
+			if (cherokee_trace_is_tracing()) {
+				ret_t ret2;
+				char ip[46];
+
+				ret2 = cherokee_ntop (addr->ai_family, addr->ai_addr, ip, sizeof(ip));
+				if (ret2 == ret_ok) {
+					TRACE (ENTRIES, "Connecting to %s, ret=%d\n", ip, ret);
+				}
+			}
+#endif
+
+			if (ret == ret_ok) {
+				src->addr_current = addr;
+				break;
+			}
+
+			addr = addr->ai_next;
+			if (addr == NULL) {
+				if (tested_all) {
+					return ret_error;
+				}
+
+				tested_all = true;
+				src->addr_current = NULL;
+				addr = addr_info;
+				continue;
+			}
 		}
 
+		/* Update the new socket with the address info
+		 */
 		SOCKET_ADDR_IPv4(sock)->sin_port = htons(src->port);
 
-		/* Set non-blocking */
-		ret = cherokee_fd_set_nonblocking (sock->socket, true);
+		ret = cherokee_socket_update_from_addrinfo (sock, addr_info, 0);
 		if (unlikely (ret != ret_ok)) {
-			LOG_ERRNO (errno, cherokee_err_error, CHEROKEE_ERROR_SOURCE_NONBLOCK, sock->socket);
+			return ret_error;
 		}
+	}
+
+	/* Set non-blocking */
+	ret = cherokee_fd_set_nonblocking (sock->socket, true);
+	if (unlikely (ret != ret_ok)) {
+		LOG_ERRNO (errno, cherokee_err_error, CHEROKEE_ERROR_SOURCE_NONBLOCK, sock->socket);
 	}
 
 	/* Set close-on-exec and reuse-address */

@@ -375,6 +375,7 @@ inspect_header (cherokee_flcache_conn_t *flcache_conn,
 	const char                  *header_end;
 	char                         chr_end;
 	char                        *p, *q;
+	cint_t                       line_left;
 	cherokee_boolean_t           overwrite_control;
 	cherokee_avl_flcache_node_t *node               = flcache_conn->avl_node_ref;
 	cherokee_boolean_t           via_found          = false;
@@ -405,7 +406,7 @@ inspect_header (cherokee_flcache_conn_t *flcache_conn,
 
 			/* Regular Cache control */
 			value = begin + 8;
-			while ((*value == ' ') && (value < end)) value++;
+			while ((CHEROKEE_CHAR_IS_WHITE(*value)) && (value < end)) value++;
 
  			node->valid_until = 0;
 			cherokee_dtm_str2time (value, end - value, &node->valid_until);
@@ -424,7 +425,6 @@ inspect_header (cherokee_flcache_conn_t *flcache_conn,
 		/* Cache-Control
 		 */
 		else if (strncasecmp (begin, "Cache-Control:", 14) == 0) {
-
 			/* Cache control overridden */
 			if (overwrite_control) {
 				goto remove_line;
@@ -432,26 +432,28 @@ inspect_header (cherokee_flcache_conn_t *flcache_conn,
 
 			/* Regular Cache control */
 			value = begin + 8;
-			while ((*value == ' ') && (value < end)) value++;
+			while (CHEROKEE_CHAR_IS_WHITE(*value) && (value < end)) value++;
 
-			if (strcasestr (begin, "private") ||
-			    strcasestr (begin, "no-cache") ||
-			    strcasestr (begin, "no-store") ||
-			    strcasestr (begin, "must-revalidate") ||
-			    strcasestr (begin, "proxy-revalidate"))
+			line_left = end - value;
+
+			if (strncasestrn_s (value, line_left, "private") ||
+			    strncasestrn_s (value, line_left, "no-cache") ||
+			    strncasestrn_s (value, line_left, "no-store") ||
+			    strncasestrn_s (value, line_left, "must-revalidate") ||
+			    strncasestrn_s (value, line_left, "proxy-revalidate"))
 			{
-				TRACE (ENTRIES, "'%s' header entry forbids caching\n", begin);
+				TRACE (ENTRIES, "'%s' header entry forbids caching\n", value);
 				*end = chr_end;
 				return ret_deny;
 			}
 
-			if (strcasestr (begin, "public"))
+			if (strncasestrn_s (value, line_left, "public"))
 			{
-				TRACE (ENTRIES, "'%s' header entry allows caching\n", begin);
+				TRACE (ENTRIES, "'%s' header entry allows caching\n", value);
 				do_cache = true;
 			}
 
-			p = strcasestr (begin, "max-age=");
+			p = strncasestrn_s (value, line_left, "max-age=");
 			if (p) {
 				p += 8;
 				q  = p;
@@ -631,6 +633,8 @@ create_flconn_file (cherokee_flcache_t    *flcache,
 	}
 
 	TRACE (ENTRIES, "Created flcache file %s, fd=%d\n", entry->file.buf, conn->flcache.fd);
+
+	cherokee_buffer_mrproper (&tmp);
 	return ret_ok;
 
 error:
@@ -696,7 +700,6 @@ cherokee_flcache_conn_commit_header (cherokee_flcache_conn_t *flcache_conn,
 	} while ((written == -1) && (errno == EINTR));
 
 	if (unlikely (written != flcache_conn->header.len)) {
-		// TODO: check errno
 		return ret_error;
 	}
 
@@ -719,7 +722,6 @@ cherokee_flcache_conn_write_body (cherokee_flcache_conn_t *flcache_conn,
 	       conn->buffer.len, flcache_conn->fd, written);
 
 	if (unlikely (written != conn->buffer.len)) {
-		// TODO: check errno
 		return ret_error;
 	}
 
@@ -755,7 +757,6 @@ cherokee_flcache_conn_send_header (cherokee_flcache_conn_t *flcache_conn,
 
 	ret = cherokee_buffer_read_from_fd (&conn->header_buffer, flcache_conn->fd, len, &got2);
 	if (unlikely (ret != ret_ok)) {
-		// TODO: check errno
 		return ret_error;
 	}
 
@@ -837,11 +838,14 @@ cherokee_flcache_del_entry (cherokee_flcache_t          *flcache,
 {
 	ret_t ret;
 
+	TRACE (ENTRIES, "Removing expired Front-line cache entry '%s'\n",
+	       entry->file.buf ? entry->file.buf : "");
+
+	/* Remove item. 'entry' is freed afterwards.
+	 */
 	ret = cherokee_avl_flcache_del (&flcache->request_map, entry);
 
-	TRACE (ENTRIES, "Removing expired Front-line cache entry '%s' - ret=%d\n",
-	       entry->file.buf ? entry->file.buf : "", ret);
-
+	TRACE (ENTRIES, "Removing expired Front-line cache entry. ret = %d\n", ret);
 	return ret;
 }
 

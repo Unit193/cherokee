@@ -298,6 +298,43 @@ strcasestr (register char *s, register char *find)
 }
 #endif
 
+char *
+strncasestrn (const char *s, size_t slen, const char *find, size_t findlen)
+{
+        char c;
+	char sc;
+
+	if (unlikely (find == NULL) || (findlen == 0))
+		return (char *)s;
+
+	if (unlikely (*find == '\0'))
+		return (char *)s;
+
+	c = *find;
+	find++;
+	findlen--;
+
+	do {
+		do {
+			if (slen-- < 1 || (sc = *s++) == '\0')
+				return NULL;
+		} while (CHEROKEE_CHAR_TO_LOWER(sc) != CHEROKEE_CHAR_TO_LOWER(c));
+		if (findlen > slen) {
+			return NULL;
+		}
+	} while (strncasecmp (s, find, findlen) != 0);
+
+	s--;
+        return (char *)s;
+}
+
+char *
+strncasestr (const char *s, const char *find, size_t slen)
+{
+	return strncasestrn (s, slen, find, strlen(find));
+}
+
+
 
 #ifndef HAVE_MALLOC
 void *
@@ -719,104 +756,49 @@ cherokee_eval_formated_time (cherokee_buffer_t *buf)
 }
 
 
-
-/* gethostbyname_r () emulation
- */
-#if defined(HAVE_PTHREAD) && !defined(HAVE_GETHOSTBYNAME_R)
-static pthread_mutex_t __global_gethostbyname_mutex = PTHREAD_MUTEX_INITIALIZER;
-#endif
-
 ret_t
-cherokee_gethostbyname (const char *hostname, void *_addr)
+cherokee_gethostbyname (cherokee_buffer_t *hostname, struct addrinfo **addr)
 {
-	struct in_addr *addr = _addr;
+	int              n;
+	struct addrinfo  hints;
 
-#if !defined(HAVE_PTHREAD) || (defined(HAVE_PTHREAD) && !defined(HAVE_GETHOSTBYNAME_R))
-
-	struct hostent *host;
-
-	CHEROKEE_MUTEX_LOCK (&__global_gethostbyname_mutex);
-
-	/* Resolv the host name
-	*/
-	do {
-		host = gethostbyname (hostname);
-	} while ((host == NULL) && (errno == EINTR));
-
-	if (host == NULL) {
-		if (h_errno == TRY_AGAIN) {
-			CHEROKEE_MUTEX_UNLOCK (&__global_gethostbyname_mutex);
-			return ret_eagain;
-		}
-
-		CHEROKEE_MUTEX_UNLOCK (&__global_gethostbyname_mutex);
-		return ret_error;
-	}
-
-	/* Copy the address
-	*/
-	memcpy (addr, host->h_addr, host->h_length);
-	CHEROKEE_MUTEX_UNLOCK (&__global_gethostbyname_mutex);
-	return ret_ok;
-
-#elif defined(HAVE_PTHREAD) && defined(HAVE_GETHOSTBYNAME_R)
-
-/* Maximum size that should use gethostbyname_r() function.
- * It will return ERANGE, if more space is needed.
- */
-# define GETHOSTBYNAME_R_BUF_LEN 512
-
-	int             r;
-	struct hostent  hs;
-	int             h_errnop = 0;
-	struct hostent *hp       = NULL;
-	char   tmp[GETHOSTBYNAME_R_BUF_LEN];
-
-# if defined(SOLARIS) || defined(IRIX)
-	/* Solaris 10:
-	 * struct hostent *gethostbyname_r
-	 *        (const char *, struct hostent *, char *, int, int *h_errnop);
+	/* What we are trying to get
 	 */
-	hp = gethostbyname_r (hostname, &hs, tmp,
-			      GETHOSTBYNAME_R_BUF_LEN - 1, &h_errnop);
+	memset (&hints, 0, sizeof(struct addrinfo));
 
-	if (hp == NULL) {
-		if (h_errnop == TRY_AGAIN) {
-			return ret_eagain;
-		}
-		return ret_error;
-	}
-# else
-	/* Linux glibc2:
-	 *  int gethostbyname_r (const char *name,
-	 *         struct hostent *ret, char *buf, size_t buflen,
-	 *         struct hostent **result, int *h_errnop);
-	 */
-	r = gethostbyname_r (hostname,
-			&hs, tmp, GETHOSTBYNAME_R_BUF_LEN - 1,
-			&hp, &h_errnop);
-	if (r != 0) {
-		if (h_errnop == TRY_AGAIN) {
-			return ret_eagain;
-		}
-		return ret_error;
-	}
-# endif
-	/* Copy the address
-	 */
-	if (hp == NULL) {
-		return ret_not_found;
-	}
+	hints.ai_family   = AF_UNSPEC;
+	hints.ai_socktype = SOCK_STREAM;
 
-	memcpy (addr, hp->h_addr, hp->h_length);
-	return ret_ok;
-
-#else
-	/* Bad case !
+#ifdef AI_ADDRCONFIG
+	/* Workaround for loopback host addresses:
+	 *
+	 * If a computer does not have any outgoing IPv6 network
+	 * interface, but its loopback network interface supports
+	 * IPv6, a getaddrinfo call on "localhost" with AI_ADDRCONFIG
+	 * won't return the IPv6 loopback address "::1", because
+	 * getaddrinfo() thinks the computer cannot connect to any
+	 * IPv6 destination, ignoring the remote vs. local/loopback
+	 * distinction.
 	 */
-	SHOULDNT_HAPPEN;
-	return ret_error;
+	if ((cherokee_buffer_cmp_str (hostname, "::1")       == 0) ||
+	    (cherokee_buffer_cmp_str (hostname, "127.0.0.1") == 0) ||
+	    (cherokee_buffer_cmp_str (hostname, "localhost")  == 0) ||
+	    (cherokee_buffer_cmp_str (hostname, "localhost6") == 0) ||
+	    (cherokee_buffer_cmp_str (hostname, "localhost.localdomain")   == 0) ||
+	    (cherokee_buffer_cmp_str (hostname, "localhost6.localdomain6") == 0))
+	{
+		hints.ai_flags = AI_ADDRCONFIG;
+	}
 #endif
+
+	/* Resolve address
+	 */
+	n = getaddrinfo (hostname->buf, NULL, &hints, addr);
+	if (n < 0) {
+		return ret_error;
+	}
+
+	return ret_ok;
 }
 
 
