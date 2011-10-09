@@ -1,3 +1,9 @@
+cherokee (1.2.100-1) unstable; urgency=low
+
+  * New Upstream Release
+
+ -- Leonel Nunez <leonel@enelserver.com>  Sun, 09 Oct 2011 12:46:17 -0600
+
 cherokee (1.2.99-3) UNRELEASED; urgency=low
 
   * Updated the Vcs-Browser to the proper URL - Thanks to Nelson A. de
