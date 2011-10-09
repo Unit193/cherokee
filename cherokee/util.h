@@ -54,6 +54,10 @@
 # include <sys/uio.h>
 #endif
 
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netdb.h>
+
 #include <time.h>
 #include <dirent.h>
 #include <errno.h>
@@ -91,6 +95,11 @@ size_t strlcat (char *dst, const char *src, size_t siz);
 #ifndef HAVE_MALLOC
 void *rpl_malloc (size_t n);
 #endif
+
+char *strncasestr  (const char *s, const char *find, size_t slen);
+char *strncasestrn (const char *s, size_t slen, const char *find, size_t findlen);
+
+#define strncasestrn_s(s,s_len,lit) strncasestrn(s, s_len, lit, sizeof(lit)-1)
 
 /* Constants
  */
@@ -154,7 +163,8 @@ int   cherokee_open          (const char *path, int oflag, int mode);
 int   cherokee_unlink        (const char *path);
 int   cherokee_pipe          (int fildes[2]);
 
-ret_t cherokee_gethostbyname (const char *hostname, void *addr);
+ret_t cherokee_gethostbyname (cherokee_buffer_t *hostname, struct addrinfo **addr);
+
 ret_t cherokee_gethostname   (cherokee_buffer_t *buf);
 ret_t cherokee_syslog        (int priority, cherokee_buffer_t *buf);
 

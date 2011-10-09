@@ -555,6 +555,43 @@ clean:
 }
 
 
+ret_t
+cherokee_connection_setup_hsts_handler (cherokee_connection_t *conn)
+{
+	ret_t ret;
+
+	/* Redirect to:
+	 * "https://" + host + request + query_string
+	 */
+	cherokee_buffer_clean   (&conn->redirect);
+	cherokee_buffer_add_str (&conn->redirect, "https://");
+
+	cherokee_connection_build_host_port_string (conn, &conn->redirect);
+	cherokee_buffer_add_buffer (&conn->redirect, &conn->request);
+
+	if (conn->query_string.len > 0) {
+		cherokee_buffer_add_char   (&conn->redirect, '?');
+		cherokee_buffer_add_buffer (&conn->redirect, &conn->query_string);
+	}
+
+	/* 301 response: Move Permanetly
+	 */
+	conn->error_code = http_moved_permanently;
+
+	/* Instance the handler object
+	 */
+	ret = cherokee_handler_error_new (&conn->handler, conn, NULL);
+	if (unlikely (ret != ret_ok)) {
+		return ret_error;
+	}
+
+	TRACE (ENTRIES, "HSTS redirection handler set. Phase is '%s' now.\n", "init");
+	conn->phase = phase_init;
+
+	return ret_ok;
+}
+
+
 static void
 build_response_header_authentication (cherokee_connection_t *conn, cherokee_buffer_t *buffer)
 {
@@ -1219,7 +1256,7 @@ cherokee_connection_send (cherokee_connection_t *conn)
 			cherokee_buffer_add_str     (&conn->buffer, CRLF);
 
 			if (conn->chunked_last_package) {
-				cherokee_buffer_add_str (&conn->buffer, CRLF "0" CRLF CRLF);
+				cherokee_buffer_add_str (&conn->buffer, "0" CRLF CRLF);
 			}
 
 			BIT_SET (conn->options, conn_op_chunked_formatted);
@@ -1368,12 +1405,22 @@ cherokee_connection_instance_encoder (cherokee_connection_t *conn)
 	/* Instance and initialize the encoder
 	 */
 	ret = conn->encoder_new_func ((void **)&conn->encoder, conn->encoder_props);
-	if (unlikely (ret != ret_ok))
+	if (unlikely (ret != ret_ok)) {
+		ret = ret_error;
 		goto error;
+	}
 
 	ret = cherokee_encoder_init (conn->encoder, conn);
-	if (unlikely (ret != ret_ok))
+	switch (ret) {
+	case ret_ok:
+		break;
+	case ret_deny:
+		/* Refuses to work. Eg: GZip for IE */
 		goto error;
+	default:
+		ret = ret_error;
+		goto error;
+	}
 
 	/* Update Front-Line cache
 	 */
@@ -1393,7 +1440,7 @@ error:
 		cherokee_encoder_free (conn->encoder);
 		conn->encoder = NULL;
 	}
-	return ret_error;
+	return ret;
 }
 
 
@@ -2419,13 +2466,13 @@ cherokee_connection_set_keepalive (cherokee_connection_t *conn)
 	ret = cherokee_header_get_known (&conn->header, header_connection, &ptr, &ptr_len);
 	if (ret == ret_ok) {
 		if (conn->header.version == http_version_11) {
-			if (strncasecmp (ptr, "Close", 5) != 0)
+			if (strncasestrn (ptr, ptr_len, "close", 5) == NULL)
 				goto granted;
 			else
 				goto denied;
 
 		} else {
-			if (strncasecmp (ptr, "Keep-Alive", 10) == 0)
+			if (strncasestrn (ptr, ptr_len, "keep-alive", 10) != NULL)
 				goto granted;
 			else
 				goto denied;
@@ -2667,7 +2714,9 @@ cherokee_connection_clean_error_headers (cherokee_connection_t *conn)
 	if (cherokee_buffer_is_empty (&conn->header_buffer))
 		return ret_ok;
 
-	begin = strcasestr (conn->header_buffer.buf, "Content-Length: ");
+	begin = strncasestrn_s (conn->header_buffer.buf,
+				conn->header_buffer.len,
+				"Content-Length: ");
 	if (begin != NULL) {
 		end = strchr (begin+16, CHR_CR);
 		if (end == NULL)

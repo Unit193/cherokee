@@ -1,3 +1,588 @@
+2011-10-07  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6897 git=aff9fe8751bb08071db0d6cf4d6485686a47014c
+
+    Adds two new QA tests for checking the HSTS support.
+    
+ qa/293-HSTS-subdomains1.py |   28 ++++++++++++++++++++++++++++
+ qa/294-HSTS-subdomains2.py |   29 +++++++++++++++++++++++++++++
+ qa/Makefile.am             |    4 +++-
+ 3 files changed, 60 insertions(+), 1 deletions(-)
+
+
+2011-10-07  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6896 git=c288ba67832a5d52c9a952f1a562744423641850
+
+    Fixes a memory leak in Front-Line Cache. There was a property of the
+    internal AVL nodes that was not being freed properly.
+    
+ cherokee/avl_flcache.c |    1 +
+ 1 files changed, 1 insertions(+), 0 deletions(-)
+
+
+2011-10-07  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6895 git=53205c1c08f4c81544dc3659a28b4a54d6dfebc8
+
+    Fixes a minor memory leak. A tiny temporal buffer was not being freed
+    properly.
+    
+ cherokee/flcache.c |    2 ++
+ 1 files changed, 2 insertions(+), 0 deletions(-)
+
+
+2011-10-07  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6894 git=3d3b2a170d9f843fdae46eca4d2271891cfccbe7
+
+    Memory leak fix. Some memory could be leaked while adding headers to
+    the response of a fcgi, scgi, cgi or wsgi handler.
+    
+ cherokee/handler_cgi_base.c |    6 +++++-
+ 1 files changed, 5 insertions(+), 1 deletions(-)
+
+
+2011-10-07  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6893 git=bdc5e35f317af273fd9648e664f12a73f6b37593
+
+    Fixes a small memory leak in the handler __props__ free.
+    
+ cherokee/handler_error_redir.c |   19 +++++++++++++++----
+ 1 files changed, 15 insertions(+), 4 deletions(-)
+
+
+2011-10-07  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6892 git=5394377cd51240438e1a5364483298c17f8e2d6f
+
+    Fixes a tiny memory leak on the Digest 'nonce' cache code.
+    
+ cherokee/nonce.c |    1 +
+ 1 files changed, 1 insertions(+), 0 deletions(-)
+
+
+2011-10-07  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6891 git=c1004ad566063f89b4f6186323e4f249b628355f
+
+    Fixes a few (minor) memory leaks in the SSI handler.
+    
+ cherokee/handler_ssi.c |   26 ++++++++++++++++++++------
+ 1 files changed, 20 insertions(+), 6 deletions(-)
+
+
+2011-10-07  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6890 git=ca713960860799f1dbcbf60d3b90d5eacfbc8639
+
+    Replaces a few strcasestr() calls. The World is a bit safer now.
+    
+ cherokee/connection.c   |    4 +++-
+ cherokee/encoder_gzip.c |   29 +++++++++++------------------
+ cherokee/flcache.c      |   26 ++++++++++++++------------
+ cherokee/util.h         |    2 ++
+ 4 files changed, 30 insertions(+), 31 deletions(-)
+
+
+2011-10-07  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6889 git=db21ea470bd235225b2ca98366247aca9ff81449
+
+    Fixes a very unlikely (but yet feasible) memory issue while removing
+    header entries.
+    
+ cherokee/header_op.c |    4 +++-
+ 1 files changed, 3 insertions(+), 1 deletions(-)
+
+
+2011-10-07  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6888 git=4671cbae0d4247ec4e6b0809d67fa51b79b1e91a
+
+    Improves how sources handle multi-IP hosts, specially with multiple
+    families. There were certain systems where Cherokee had problems to
+    sources pointing to "localhost" if it was configured with both IPv4
+    and IPv6.  --  Thanks to Antonio Perez (skarcha) for the patch!!!
+    
+ cherokee/source.c |   66 +++++++++++++++++++++++++++++++++++++++++++++-------
+ cherokee/source.h |    1 +
+ 2 files changed, 58 insertions(+), 9 deletions(-)
+
+
+2011-10-07  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6886 git=9f93339e981556a1b2aa818be61ce23412f3a53e
+
+    The first parameter (char *) of cherokee_gethostbyname() function
+    has been replace by a much convenient cherokee_buffer_t* one.
+    
+ cherokee/resolv_cache.c |    2 +-
+ cherokee/util.c         |   27 +++++++++++++++++++--------
+ cherokee/util.h         |    2 +-
+ 3 files changed, 21 insertions(+), 10 deletions(-)
+
+
+2011-10-06  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6885 git=7dd0355b70d4bc8d907f4ce8598a7efb2fd083ce
+
+    Implements "HTTP Strict Transport Security" (HSTS).
+    
+ admin/PageVServer.py            |   18 ++++++++++++++++++
+ cherokee/connection-protected.h |    1 +
+ cherokee/connection.c           |   37 +++++++++++++++++++++++++++++++++++++
+ cherokee/handler_error.c        |   17 +++++++++++++++++
+ cherokee/thread.c               |   10 +++++++++-
+ cherokee/virtual_server.c       |   25 +++++++++++++++++++++++++
+ cherokee/virtual_server.h       |    6 ++++++
+ qa/292-HSTS1.py                 |   29 +++++++++++++++++++++++++++++
+ qa/Makefile.am                  |    3 ++-
+ 9 files changed, 144 insertions(+), 2 deletions(-)
+
+
+2011-10-06  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6883 git=d1f66341d06a2f6b57726005b8be6cc1db647377
+
+    Minor clean up
+    
+ cherokee/main_admin.c |    8 +++-----
+ 1 files changed, 3 insertions(+), 5 deletions(-)
+
+
+2011-10-06  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6882 git=9b9dfea51b2b60b3359c391a75188af3a4d6ca18
+
+    Enhances the handle_proxy so it can handle multi-IP sources nicely.
+    The proxy handler will try to use the different IPs returned by the
+    DNS in case some of them is not reachable.
+    
+ cherokee/access.c        |    2 +-
+ cherokee/handler_proxy.c |   18 ++++++++-
+ cherokee/proxy_hosts.c   |   96 +++++++++++++++++++++++++++++++++++-----------
+ cherokee/proxy_hosts.h   |   14 ++++--
+ cherokee/resolv_cache.c  |   34 +++++++++++++---
+ cherokee/socket.c        |   22 +++++++++-
+ cherokee/socket.h        |    2 +-
+ cherokee/source.c        |    2 +-
+ 8 files changed, 149 insertions(+), 41 deletions(-)
+
+
+2011-10-05  Antonio Perez  <aperez@skarcha.com>
+            svn=6881 git=e0f66d98cb7ee4c3fe97b431d6f02f8a3ed0b65b
+
+    Part of the patch in r6880
+    
+ cherokee/main_admin.c |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+
+2011-10-03  Antonio Perez  <aperez@skarcha.com>
+            svn=6880 git=a9459ae3970e6613214623d4b6d0901658ba7ba9
+
+    Finding an empty port for cherokee-admin's server.py, the socket left open
+    and server.py was not be able to bind to that port.
+    
+ cherokee/main_admin.c |    1 +
+ 1 files changed, 1 insertions(+), 0 deletions(-)
+
+
+2011-10-02  Stefan de Konink <stefan@konink.de>
+            svn=6879 git=c0577a1a1ccea8c5809b9cc4122cc21b333dab68
+
+    Many thanks to the great debugging skills of mehmetali we squeezed this bug.
+    
+    It is not always good too use too much $$$, especially when you get an ?api=key for free!
+    <http://code.google.com/p/cherokee/issues/detail?id=1222>
+    
+ admin/wizards/php.py |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+
+2011-10-01  Antonio Perez  <aperez@skarcha.com>
+            svn=6878 git=dba1f0ea1f79e70d794ea120eccfae74a2a06500
+
+    Adds AI_ADDRCONFIG in cherokee_gethostbyname(), treating
+    the "localhost" special case.
+    
+ cherokee/util.c |   11 +++++++++++
+ 1 files changed, 11 insertions(+), 0 deletions(-)
+
+
+2011-10-01  Antonio Perez  <aperez@skarcha.com>
+            svn=6877 git=22e10f6f226fec647cb0d649bc6bfb7766f0005e
+
+    Adds all the IPs that resolves a domain name to an access restriction list.
+    
+ cherokee/access.c |   20 ++++++++++++++++----
+ 1 files changed, 16 insertions(+), 4 deletions(-)
+
+2011-10-01  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6876 git=57e26d876fa9fcaa26a375b801f2d354f9b2440f
+
+    Neither 'cherokee' nor 'cherokee-worker' returned a error on the
+    process retcode when the initialization failed.
+    
+ cherokee/macros.h      |    7 ++++---
+ cherokee/main.c        |    4 ++++
+ cherokee/main_worker.c |   19 +++++++++++++------
+ 3 files changed, 21 insertions(+), 9 deletions(-)
+
+
+2011-10-01  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6875 git=3700e3cea78c4def924d989df761c9d029fef4cd
+
+    We are not longer using shm_open(). Removes the last few references to
+    POSIX shared memory.
+    
+ cherokee/Makefile.am          |   12 +++---------
+ cherokee/main.c               |   10 ++++++----
+ cherokee/source_interpreter.c |    4 ----
+ cherokee/spawner.c            |   13 ++++++-------
+ configure.in                  |   23 -----------------------
+ 5 files changed, 15 insertions(+), 47 deletions(-)
+
+
+2011-10-01  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6874 git=d0dd15feca65f1f6fb7dd8e75920b464be1afec7
+
+    Enhances cherokee_admin_server_reply_kill_source(). It is not finished
+    yet though -- Still TODO.
+    
+ cherokee/admin_server.c |   49 +++++++++++++++++++++++++++++++++++++++++++---
+ 1 files changed, 45 insertions(+), 4 deletions(-)
+
+
+2011-10-01  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6873 git=c0df312fa10d1627ed575cb996ed6585551e05dd
+
+    Removes three TODOs that are no longer such thing.
+    
+ cherokee/flcache.c |    3 ---
+ 1 files changed, 0 insertions(+), 3 deletions(-)
+
+
+2011-10-01  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6872 git=df14ff201bf5081610adcf4fed7a7c540f85da1c
+
+    Better response header parsing. (Gets rid of one of the 'TODO's).
+    
+ cherokee/header.c |   22 +++++++++++++++++-----
+ 1 files changed, 17 insertions(+), 5 deletions(-)
+
+
+2011-10-01  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6871 git=03af2ce5460c4ddebd05c4068f8ae20fd9eb8df6
+
+    Adds a new macro: CHEROKEE_CHAR_IS_DIGIT.
+    
+ cherokee/macros.h |    1 +
+ 1 files changed, 1 insertions(+), 0 deletions(-)
+
+2011-09-29  Antonio Perez  <aperez@skarcha.com>
+            svn=6870 git=19d25788986e8d97c59eb674f9879b87e130336c
+
+    Fixes Polish translation file.
+    
+ po/admin/pl.po |    6 +++---
+ 1 files changed, 3 insertions(+), 3 deletions(-)
+
+
+2011-09-26  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6869 git=bf03f85338f261ac58ed1d6053063ce1a613378f
+
+    Solves a number of issues around the IPv6 support of the server,
+    specially related with internal connections (the proxy server
+    connecting to an internal server, the uWSGI/FastCGI/SCGI handler
+    connecting to a app server, etc).
+    
+    Thanks a million to Stefan de Konink for his code and help!!
+    
+ cherokee/Makefile.am       |    1 +
+ cherokee/bind.c            |    2 +-
+ cherokee/downloader.c      |    2 +-
+ cherokee/main_admin.c      |    5 +-
+ cherokee/proxy_hosts.c     |   38 +++++++++-------
+ cherokee/resolv_cache.c    |   59 +++++++++++++++++++++----
+ cherokee/resolv_cache.h    |    5 +-
+ cherokee/socket.c          |   55 +++++++++++++++++++++---
+ cherokee/socket.h          |   56 ++----------------------
+ cherokee/socket_lowlevel.h |   90 ++++++++++++++++++++++++++++++++++++++
+ cherokee/source.c          |   57 +++++++++++-------------
+ cherokee/util.c            |  103 ++++++--------------------------------------
+ cherokee/util.h            |    7 +++-
+ 13 files changed, 269 insertions(+), 211 deletions(-)
+
+
+2011-09-24  Jędrzej Nowak <me@pigmej.eu>
+            svn=6868 git=bd82e47ca87a6083304ebcc21d8437376bb478bc
+
+    Polish translation updated, thanks to Paweł Wysocki
+    
+ po/admin/pl.po | 1667 +++++++++++++++++++++-----------------------------------
+ 1 files changed, 612 insertions(+), 1055 deletions(-)
+
+2011-09-22  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6867 git=a2678e683826138afae7d77609c7ce2bd98a8882
+
+    The "Server:" header could be added twice by the Reverse Proxy
+    handled. It fixes bug #1262: http://bugs.cherokee-project.com/1262
+    Thanks to Sylvain Munaut for this patch!
+    
+ cherokee/handler_proxy.c |   16 ++++++++--------
+ 1 files changed, 8 insertions(+), 8 deletions(-)
+
+
+2011-09-19  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6865 git=e914b2b37f98550f40a503a594ec072cf828b2d9
+
+    Update a string in Cherokee Admin. This should have been part of
+    r6864. -- Thanks to Si Feng for noticing it!
+    
+ admin/PageVServer.py |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+2011-09-18  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6864 git=463ea935d91e3d4c4ba31588df9ee91670bfa326
+
+    s/"HIGH:!ADH:!MD5"/"HIGH:!aNULL:!MD5"/
+    Thanks to Si Feng for his suggesting it!
+    
+ cherokee/cryptor.h |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+
+2011-09-18  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6863 git=efd05582326124e882d44028bab02ef7c53d626c
+
+    Better libssl SNI error handling.
+    
+ cherokee/cryptor_libssl.c |   16 +++++++---------
+ cherokee/error_list.py    |    2 +-
+ 2 files changed, 8 insertions(+), 10 deletions(-)
+
+
+2011-09-18  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6862 git=95cfe541fb670a3fc065628e2e666e3f1aa26f86
+
+    Adds two new fields to the output of 'cherokee -i': "SSL/TLS" and "TLS
+    SNI".
+    
+ cherokee/info.c |   16 +++++++++++++++-
+ 1 files changed, 15 insertions(+), 1 deletions(-)
+
+
+2011-09-18  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6861 git=d73f2a97a5ff8241c850021154bc9866634c67a4
+
+    New default for libssl ciphers: HIGH:!ADH:!MD5
+    
+ admin/PageVServer.py      |    2 +-
+ cherokee/cryptor.h        |    2 ++
+ cherokee/virtual_server.c |    5 ++++-
+ 3 files changed, 7 insertions(+), 2 deletions(-)
+
+
+2011-09-17  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6860 git=943f7c531a7044fa3cae622ca27536f0ac9bef00
+
+    It seems that the TLS/SSL support was not totally fixed after all.
+    
+ cherokee/connection.c |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+
+2011-09-17  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6859 git=fdcb1f405d2d5ec7e63ca40fc3ad15e0351ea8a9
+
+    Adds a warning note about how the interpreters should be
+    configured. Interpreter processes MUST NOT run as daemons, nor they
+    should detach themselves from they parent process. Hopefully this get
+    people of avoid this mistake from now on.
+    
+ admin/PageSource.py |    7 +++++--
+ 1 files changed, 5 insertions(+), 2 deletions(-)
+
+
+2011-09-16  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6858 git=bab8a84857e6ef1d5544c41a8926565a0674ffef
+
+    The 'X-Forwarded-For' is accepted where 'X-Real-IP' is. This patch
+    clarifies it on the notice messages of the CGI related plug-ins in
+    Cherokee Admin. Fixes #997: http://bugs.cherokee-project.com/997
+    
+ admin/CgiBase.py |    6 +++---
+ 1 files changed, 3 insertions(+), 3 deletions(-)
+
+
+2011-09-16  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6857 git=db7c26165f5b480de26d28c6d02e3a771af7b8ea
+
+    Adds a new QA test. It covers whether after a 301 response a
+    keep-alive connection isn't closed. Bug #568.
+    
+ qa/291-Redir-keepalive.py |   39 +++++++++++++++++++++++++++++++++++++++
+ qa/Makefile.am            |    3 ++-
+ 2 files changed, 41 insertions(+), 1 deletions(-)
+
+
+2011-09-16  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6856 git=70343ab983f2dcca9b06835ad7d53fdfca8dda6e
+
+    Adds a new QA test. It checks whether the server can access local
+    files with the question mark in the name. Bug #582
+    
+ qa/290-Question-mark-in-name.py |   18 ++++++++++++++++++
+ qa/Makefile.am                  |    3 ++-
+ 2 files changed, 20 insertions(+), 1 deletions(-)
+
+
+2011-09-15  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6855 git=0cad70603b6fe8069a29cef9e696d3f4cd862f8e
+
+    Better parsing of the "Connection:" header.
+    
+ cherokee/connection.c   |    4 ++--
+ qa/289-Connection_TE.py |   13 +++++++++++++
+ qa/Makefile.am          |    3 ++-
+ 3 files changed, 17 insertions(+), 3 deletions(-)
+
+
+2011-09-15  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6854 git=e913ef3b05fea26962b3166fd2e7f0ce3cea9748
+
+    Implements strncasestr() and strncasestrn().
+    
+ cherokee/util.c |   37 +++++++++++++++++++++++++++++++++++++
+ cherokee/util.h |    3 +++
+ 2 files changed, 40 insertions(+), 0 deletions(-)
+
+
+2011-09-15  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6853 git=a5d0a8122b7bb892482cd513460d3a0dc0608cd8
+
+    Implements CHEROKEE_CHAR_IS_WHITE, CHEROKEE_CHAR_IS_UPPERCASE,
+    CHEROKEE_CHAR_IS_LOWERCASE, CHEROKEE_CHAR_TO_LOWER and
+    CHEROKEE_CHAT_TO_UPPER.
+    
+ cherokee/macros.h |    8 ++++++++
+ 1 files changed, 8 insertions(+), 0 deletions(-)
+
+
+2011-09-15  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6852 git=3c751f84f4febe8d218d76e8e919c295b70c1a65
+
+    There were three more Front-Line Cache QA tests that required some
+    changes to run concurrently.
+    
+ qa/276-Flcache-cookie1.py  |   32 ++++++++++++++++++++++++--------
+ qa/281-Flcache-expired1.py |   31 ++++++++++++++++++++++++-------
+ qa/282-Flcache-expired2.py |   31 ++++++++++++++++++++++++-------
+ 3 files changed, 72 insertions(+), 22 deletions(-)
+
+
+2011-09-14  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6851 git=d65a79385b537b4413806bb8d21d2923e5360099
+
+    Clean up
+    
+ qa/277-Flcache-cookie2.py  |    2 --
+ qa/278-Flcache-headers1.py |    1 -
+ qa/279-Flcache-headers2.py |    1 -
+ 3 files changed, 0 insertions(+), 4 deletions(-)
+
+
+2011-09-14  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6850 git=224b1648d5a1ba2ba50437080fb0c4753de670df
+
+    Increases the delay of the thread launching mechanism according to the
+    number of tests being run.
+    
+ qa/run-tests.py |   13 +++++++++----
+ 1 files changed, 9 insertions(+), 4 deletions(-)
+
+
+2011-09-14  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6849 git=026a26343018a42db87e266b73356987733a5a01
+
+    Workarounds Python's BUG #1515.
+    
+ qa/util.py |   13 +++++++++++++
+ 1 files changed, 13 insertions(+), 0 deletions(-)
+
+
+2011-09-14  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6848 git=b4791a1a7980ab3c8b43bb1af5e3fb7cb9115083
+
+    Front-Line Cache related QA tests could not be run neither more
+    than once in the same session nor in parallel by multiple threads.
+    This patch works out those QA tests so they behave like any other
+    QA test of the bench.
+    
+ qa/275-Flcache-basic1.py    |   36 ++++++++++++++++++++++++++----------
+ qa/277-Flcache-cookie2.py   |   36 ++++++++++++++++++++++++++----------
+ qa/280-Flcache-gzip1.py     |   37 +++++++++++++++++++++++++++----------
+ qa/283-Flcache-expired3.py  |   31 ++++++++++++++++++++++++-------
+ qa/285-Flcache-overwrite.py |   33 +++++++++++++++++++++++++--------
+ qa/base.py                  |    4 ++++
+ 6 files changed, 132 insertions(+), 45 deletions(-)
+
+
+2011-09-14  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6847 git=badaec55c65c894b4ccf7bf9c49cafa41b88a505
+
+    Fixes the 'secdownload' related QA tests. They failed if the QA test
+    run for more than a minute. The timeout is set to a week now.
+    
+ qa/203-secdownload1.py |   16 ++++++++++++----
+ qa/204-secdownload2.py |   10 ++++++----
+ qa/205-secdownload3.py |   10 ++++++----
+ 3 files changed, 24 insertions(+), 12 deletions(-)
+
+
+2011-09-14  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6846 git=42600e8804f54cc1f6d655f7b27ed5d8b479c025
+
+    Bug-fix: Front-Line Cache internals might access invalid memory.
+    
+ cherokee/avl_flcache.c |    7 +++++++
+ 1 files changed, 7 insertions(+), 0 deletions(-)
+
+
+2011-09-14  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6845 git=3a95c568ed778da86259367be04fa3254d3384e4
+
+    Fixes TRACE() entry that might access invalid memory.
+    
+ cherokee/flcache.c |    9 ++++++---
+ 1 files changed, 6 insertions(+), 3 deletions(-)
+
+
+2011-09-14  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6844 git=279de9dea87a5b3b0e51d85e164a7c8609b670ff
+
+    Valgrind was complaining about pthread_rwlock_init() accessing
+    uninitialized memory. I doubt this solves any real problem, although
+    it does not hurt either.
+    
+ cherokee/common-internal.h |    5 ++++-
+ 1 files changed, 4 insertions(+), 1 deletions(-)
+
+
+2011-09-13  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6843 git=1ee808cb2b75bb821aa0be72eb35f71cdbf2e004
+
+    By default, do not use the GZip encoder with Internet Explorer clients
+    older than IE6 (MSIE [1-6]). #legacy
+    
+ cherokee/connection.c      |   16 +++++++++--
+ cherokee/encoder.c         |    2 +-
+ cherokee/encoder.h         |    2 +-
+ cherokee/encoder_deflate.c |    5 +++-
+ cherokee/encoder_deflate.h |    3 +-
+ cherokee/encoder_gzip.c    |   61 ++++++++++++++++++++++++++++++++++++++++++-
+ cherokee/encoder_gzip.h    |    4 ++-
+ qa/288-GZip-IE16.py        |   34 ++++++++++++++++++++++++
+ qa/Makefile.am             |    3 +-
+ 9 files changed, 119 insertions(+), 11 deletions(-)
+
+2011-09-11  Alvaro Lopez Ortega  <alvaro@octality.com>
+            svn=6842 git=1be99f88e1f5e0088de359167f47111183d248de
+
+    Cherokee 1.2.99 released
+    
+ configure.in |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
 2011-09-07  Alvaro Lopez Ortega  <alvaro@octality.com>
             svn=6841 git=6c4eedcc6b5a2c33afbeba1f2ec5372a2baa6716
 
