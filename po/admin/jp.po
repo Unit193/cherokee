@@ -3,25 +3,28 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: cherokee 1.0\n"
 "Report-Msgid-Bugs-To: http://bugs.cherokee-project.com/\n"
 "POT-Creation-Date: 2011-05-02 15:00+0200\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2011-10-13 22:31+0900\n"
+"Last-Translator: Logue <logue@hotmail.co.jp>\n"
+"Language-Team: Logue <logue@hotmail.co.jp>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-Language: Japanese\n"
+"X-Poedit-Country: JAPAN\n"
+"X-Poedit-SourceCharset: utf-8\n"
 
 #: cherokee-trunk/admin/PageVServers.py:48
 #: cherokee-trunk/admin/PageVServers.py:304
 #: cherokee-trunk/admin/PageSources.py:35
 #: cherokee-trunk/admin/PageVServer.py:135
 msgid "Virtual Servers"
-msgstr ""
+msgstr "仮想サーバー"
 
 #: cherokee-trunk/admin/PageVServers.py:50
 #, python-format
@@ -29,10 +32,13 @@ msgid ""
 "<p>You are about to delete the <b>%(nick_esc)s</b> Virtual Server.</p><p>Are "
 "you sure you want to proceed?</p>"
 msgstr ""
+"<p>あなたは、<b>%(nick_esc)s</b>の仮想サーバーを削除しようとしています。</"
+"p><p>続けてもよろしいですか？</p>"
 
 #: cherokee-trunk/admin/PageVServers.py:51
 msgid "You are about to clone a Virtual Server. Would you like to proceed?"
 msgstr ""
+"あなたは、仮想サーバーを複製しようとしています。続けてもよろしいですか？"
 
 #: cherokee-trunk/admin/PageVServers.py:52
 msgid ""
@@ -41,13 +47,13 @@ msgstr ""
 
 #: cherokee-trunk/admin/PageVServers.py:53
 msgid "Document Root directory of the new Virtual Server."
-msgstr ""
+msgstr "仮想サーバーのDocument Rootディレクトリ"
 
 #: cherokee-trunk/admin/PageVServers.py:127
 #: cherokee-trunk/admin/PageSource.py:308
 #: cherokee-trunk/admin/PageSource.py:349 cherokee-trunk/admin/Balancer.py:69
 msgid "Nick"
-msgstr ""
+msgstr "ニックネーム"
 
 #: cherokee-trunk/admin/PageVServers.py:128
 #: cherokee-trunk/admin/wizards/mono.py:199
@@ -59,23 +65,23 @@ msgstr ""
 #: cherokee-trunk/admin/PageVServer.py:456
 #: cherokee-trunk/admin/PageVServer.py:458 cherokee-trunk/admin/Handler.py:43
 msgid "Document Root"
-msgstr ""
+msgstr "ドキュメントルート"
 
 #: cherokee-trunk/admin/PageVServers.py:134
 #: cherokee-trunk/admin/PageVServers.py:152
 #: cherokee-trunk/admin/PageRule.py:136 packages/common/database.py:58
 #: packages/nagios/installer.py:49
 msgid "Manual"
-msgstr ""
+msgstr "手動"
 
 #: cherokee-trunk/admin/PageVServers.py:153
 #: cherokee-trunk/admin/PageRule.py:137
 msgid "Manual configuration"
-msgstr ""
+msgstr "手動設定"
 
 #: cherokee-trunk/admin/PageVServers.py:195
 msgid "Market installation"
-msgstr ""
+msgstr "マーケットインストール"
 
 #: cherokee-trunk/admin/PageVServers.py:203
 #: cherokee-trunk/admin/PageSource.py:280
@@ -85,12 +91,12 @@ msgstr ""
 #: cherokee-trunk/admin/PageVServer.py:710
 #: cherokee-trunk/admin/PageStatus.py:70 cherokee-trunk/admin/Graph.py:118
 msgid "Unknown"
-msgstr ""
+msgstr "不明"
 
 #: cherokee-trunk/admin/PageVServers.py:207
 #: cherokee-trunk/admin/PageSource.py:430 cherokee-trunk/admin/PageRule.py:208
 msgid "Do you really want to remove it?"
-msgstr ""
+msgstr "本当に削除してもよろしいですか？"
 
 #: cherokee-trunk/admin/PageVServers.py:208
 #: cherokee-trunk/admin/PageVServers.py:263
@@ -171,19 +177,19 @@ msgstr ""
 #: packages/phpbb/installer.py:152 packages/phpbb/installer.py:228
 #: packages/hello_world_php/installer.py:85
 msgid "Cancel"
-msgstr ""
+msgstr "キャンセル"
 
 #: cherokee-trunk/admin/PageVServers.py:209
 #: cherokee-trunk/admin/PageSource.py:432
 #: cherokee-trunk/admin/market/Maintenance.py:358
 #: cherokee-trunk/admin/PageEntry.py:85 cherokee-trunk/admin/PageRule.py:210
 msgid "Remove"
-msgstr ""
+msgstr "削除"
 
 #: cherokee-trunk/admin/PageVServers.py:261
 #: cherokee-trunk/admin/PageVServers.py:274
 msgid "Add New Virtual Server"
-msgstr ""
+msgstr "仮想サーバーを追加"
 
 #: cherokee-trunk/admin/PageVServers.py:264
 #: cherokee-trunk/admin/PageSource.py:249
@@ -202,29 +208,29 @@ msgstr ""
 #: cherokee-trunk/admin/Icons.py:357 cherokee-trunk/admin/CgiBase.py:150
 #: cherokee-trunk/admin/PageGeneral.py:222
 msgid "Add"
-msgstr ""
+msgstr "追加"
 
 #: cherokee-trunk/admin/PageVServers.py:268
 msgid "Virtual Server Configuration Assistant"
-msgstr ""
+msgstr "仮想サーバー設定アシスタント"
 
 #: cherokee-trunk/admin/PageVServers.py:290
 msgid "Clone Virtual Server"
-msgstr ""
+msgstr "仮想サーバー複製"
 
 #: cherokee-trunk/admin/PageVServers.py:292
 #: cherokee-trunk/admin/PageSource.py:463 cherokee-trunk/admin/PageRule.py:287
 msgid "Clone"
-msgstr ""
+msgstr "複製"
 
 #: cherokee-trunk/admin/PageVServers.py:295
 msgid "Clone Selected Virtual Server"
-msgstr ""
+msgstr "選択した仮想サーバーを複製"
 
 #: cherokee-trunk/admin/PageVServers.py:320
 #: cherokee-trunk/admin/PageStatus.py:119
 msgid "Virtual Server Filtering"
-msgstr ""
+msgstr "仮想サーバーのフィルタリング"
 
 #: cherokee-trunk/admin/PageSource.py:47
 msgid ""
@@ -282,14 +288,18 @@ msgid ""
 msgstr ""
 
 #: cherokee-trunk/admin/PageSource.py:57
+#, fuzzy
 msgid ""
 "You are about to delete an Information Source. Are you sure you want to "
 "proceed?"
 msgstr ""
+"<p>あなたは、<b>%(nick_esc)s</b>の仮想サーバーを削除しようとしています。</"
+"p><p>続けてもよろしいですか？</p>"
 
 #: cherokee-trunk/admin/PageSource.py:58
+#, fuzzy
 msgid "The Information Source list is currently empty."
-msgstr ""
+msgstr "選択した情報ソースは、複製されました。"
 
 #: cherokee-trunk/admin/PageSource.py:59
 msgid ""
@@ -303,27 +313,27 @@ msgstr ""
 
 #: cherokee-trunk/admin/PageSource.py:61
 msgid "Name of the environment variable"
-msgstr ""
+msgstr "環境変数名"
 
 #: cherokee-trunk/admin/PageSource.py:62
 msgid "Value of the environment variable"
-msgstr ""
+msgstr "環境変数値"
 
 #: cherokee-trunk/admin/PageSource.py:63
 msgid "The selected Information Source is about to be cloned."
-msgstr ""
+msgstr "選択した情報ソースは、複製されました。"
 
 #: cherokee-trunk/admin/PageSource.py:73
 #: cherokee-trunk/admin/PageSource.py:475
 #: cherokee-trunk/admin/PageSource.py:495
 #: cherokee-trunk/admin/PageSources.py:48 cherokee-trunk/admin/Balancer.py:127
 msgid "Information Sources"
-msgstr ""
+msgstr "ソース情報"
 
 #: cherokee-trunk/admin/PageSource.py:212
 #: cherokee-trunk/admin/PageSource.py:240
 msgid "Variable"
-msgstr ""
+msgstr "変数"
 
 #: cherokee-trunk/admin/PageSource.py:212
 #: cherokee-trunk/admin/PageSource.py:241
@@ -331,39 +341,39 @@ msgstr ""
 #: cherokee-trunk/admin/PageEntry.py:232 cherokee-trunk/admin/CgiBase.py:90
 #: cherokee-trunk/admin/CgiBase.py:154
 msgid "Value"
-msgstr ""
+msgstr "値"
 
 #: cherokee-trunk/admin/PageSource.py:214
 msgid "Environment Variables"
-msgstr ""
+msgstr "環境変数"
 
 #: cherokee-trunk/admin/PageSource.py:247
 msgid "Add new Environment variable"
-msgstr ""
+msgstr "環境変数を追加"
 
 #: cherokee-trunk/admin/PageSource.py:256
 msgid "Add new variable"
-msgstr ""
+msgstr "変数を追加"
 
 #: cherokee-trunk/admin/PageSource.py:273
 msgid "Source Usage"
-msgstr ""
+msgstr "ソースの使用率"
 
 #: cherokee-trunk/admin/PageSource.py:276
 #: cherokee-trunk/admin/market/PageApp.py:42
 #: cherokee-trunk/admin/market/PageApp.py:98
 #: cherokee-trunk/admin/PageVServer.py:702 packages/common/target.py:208
 msgid "Virtual Server"
-msgstr ""
+msgstr "仮想サーバー"
 
 #: cherokee-trunk/admin/PageSource.py:276
 #: cherokee-trunk/admin/PageEntry.py:410
 msgid "Rule"
-msgstr ""
+msgstr "ルール"
 
 #: cherokee-trunk/admin/PageSource.py:302
 msgid "Source"
-msgstr ""
+msgstr "ソース"
 
 #: cherokee-trunk/admin/PageSource.py:307
 #: cherokee-trunk/admin/plugins/error_redir.py:105
@@ -371,33 +381,33 @@ msgstr ""
 #: cherokee-trunk/admin/plugins/redir.py:76
 #: cherokee-trunk/admin/PageEntry.py:184
 msgid "Type"
-msgstr ""
+msgstr "種類"
 
 #: cherokee-trunk/admin/PageSource.py:309
 #: cherokee-trunk/admin/PageSource.py:350
 #: cherokee-trunk/admin/wizards/rtorrent.py:100
 msgid "Connection"
-msgstr ""
+msgstr "接続"
 
 #: cherokee-trunk/admin/PageSource.py:312
 msgid "Interpreter"
-msgstr ""
+msgstr "インタプリタ"
 
 #: cherokee-trunk/admin/PageSource.py:313
 msgid "Spawning timeout"
-msgstr ""
+msgstr "子プロセスのタイムアウト"
 
 #: cherokee-trunk/admin/PageSource.py:314
 msgid "Execute as User"
-msgstr ""
+msgstr "ユーザ権限で実行"
 
 #: cherokee-trunk/admin/PageSource.py:315
 msgid "Execute as Group"
-msgstr ""
+msgstr "グループ権限で実行"
 
 #: cherokee-trunk/admin/PageSource.py:316
 msgid "Inherit Environment"
-msgstr ""
+msgstr "環境を継承"
 
 #: cherokee-trunk/admin/PageSource.py:316
 #: cherokee-trunk/admin/CTK/CTK/Image.py:99
@@ -421,15 +431,15 @@ msgstr ""
 #: cherokee-trunk/admin/CgiBase.py:125 cherokee-trunk/admin/CgiBase.py:126
 #: cherokee-trunk/admin/PageGeneral.py:132
 msgid "Enabled"
-msgstr ""
+msgstr "有効"
 
 #: cherokee-trunk/admin/PageSource.py:418
 msgid "Deletion is forbidden"
-msgstr ""
+msgstr "削除は禁止されています"
 
 #: cherokee-trunk/admin/PageSource.py:419
 msgid "Configuration consistency"
-msgstr ""
+msgstr "設定の整合性"
 
 #: cherokee-trunk/admin/PageSource.py:419
 #, python-format
@@ -456,24 +466,24 @@ msgstr ""
 #: cherokee-trunk/admin/PageException.py:89
 #: cherokee-trunk/admin/PageException.py:93
 msgid "Close"
-msgstr ""
+msgstr "閉じる"
 
 #: cherokee-trunk/admin/PageSource.py:447
 #: cherokee-trunk/admin/PageSource.py:452
 msgid "Add New Information Source"
-msgstr ""
+msgstr "新規ソース情報"
 
 #: cherokee-trunk/admin/PageSource.py:461
 msgid "Clone Information Source"
-msgstr ""
+msgstr "ソース情報を複製"
 
 #: cherokee-trunk/admin/PageSource.py:466
 msgid "Clone Selected Information Source"
-msgstr ""
+msgstr "選択されたソース情報を複製"
 
 #: cherokee-trunk/admin/PageSource.py:486
 msgid "Sources Filtering"
-msgstr ""
+msgstr "ソースのフィルタリング"
 
 #: cherokee-trunk/admin/PageIndex.py:74
 msgid "You will be sent an email requesting confirmation"
@@ -481,7 +491,7 @@ msgstr ""
 
 #: cherokee-trunk/admin/PageIndex.py:75
 msgid "Optionally provide your name"
-msgstr ""
+msgstr "必要に応じて自分の名前を提供する"
 
 #: cherokee-trunk/admin/PageIndex.py:77
 #, python-format
@@ -495,11 +505,11 @@ msgstr ""
 
 #: cherokee-trunk/admin/PageIndex.py:84
 msgid "Server is Running"
-msgstr ""
+msgstr "サーバーは起動中です"
 
 #: cherokee-trunk/admin/PageIndex.py:85
 msgid "Server is not Running"
-msgstr ""
+msgstr "サーバーは起動していません"
 
 #: cherokee-trunk/admin/PageIndex.py:87
 msgid ""
@@ -521,10 +531,12 @@ msgstr ""
 msgid ""
 "Please, try again. Do not hesitate to report the problem if it persists."
 msgstr ""
+"お手数ですが、もう一度やり直してください。解決しない場合は、気軽に問題を報告"
+"してください。"
 
 #: cherokee-trunk/admin/PageIndex.py:99
 msgid "Enable Remote Services"
-msgstr ""
+msgstr "リモートサービスを有効化"
 
 #: cherokee-trunk/admin/PageIndex.py:103
 #: cherokee-trunk/admin/market/Maintenance.py:281
@@ -532,57 +544,57 @@ msgstr ""
 #: cherokee-trunk/admin/PageStatus.py:40
 #: cherokee-trunk/admin/PageStatus.py:112
 msgid "Status"
-msgstr ""
+msgstr "ステータス"
 
 #: cherokee-trunk/admin/PageIndex.py:159
 msgid "Stop Server"
-msgstr ""
+msgstr "サーバー停止"
 
 #: cherokee-trunk/admin/PageIndex.py:163
 msgid "Start Server"
-msgstr ""
+msgstr "サーバー起動"
 
 #: cherokee-trunk/admin/PageIndex.py:168
 msgid "Hostname"
-msgstr ""
+msgstr "ホスト名"
 
 #: cherokee-trunk/admin/PageIndex.py:170
 msgid "Modified"
-msgstr ""
+msgstr "修正日"
 
 #: cherokee-trunk/admin/PageIndex.py:172
 msgid "Not found"
-msgstr ""
+msgstr "見つかりません"
 
 #: cherokee-trunk/admin/PageIndex.py:173
 msgid "Config File"
-msgstr ""
+msgstr "設定ファイル"
 
 #: cherokee-trunk/admin/PageIndex.py:180
 #: cherokee-trunk/admin/plugins/server_info.py:32
 #: cherokee-trunk/admin/plugins/server_info.py:35
 msgid "Server Information"
-msgstr ""
+msgstr "サーバー情報"
 
 #: cherokee-trunk/admin/PageIndex.py:212 cherokee-trunk/admin/OWS_Login.py:116
 msgid "Sign in"
-msgstr ""
+msgstr "サインイン"
 
 #: cherokee-trunk/admin/PageIndex.py:225
 msgid "Remote Services"
-msgstr ""
+msgstr "リモートサービス"
 
 #: cherokee-trunk/admin/PageIndex.py:238
 msgid "Backup Service"
-msgstr ""
+msgstr "サービスをバックアップ"
 
 #: cherokee-trunk/admin/PageIndex.py:247
 msgid "Processors"
-msgstr ""
+msgstr "プロセス数"
 
 #: cherokee-trunk/admin/PageIndex.py:259
 msgid "Memory"
-msgstr ""
+msgstr "メモリ"
 
 #: cherokee-trunk/admin/PageIndex.py:288
 #: cherokee-trunk/admin/plugins/custom_error.py:41
@@ -591,102 +603,102 @@ msgstr ""
 #: cherokee-trunk/admin/plugins/bind.py:121
 #: cherokee-trunk/admin/Balancer.py:136 cherokee-trunk/admin/PageRule.py:112
 msgid "Choose"
-msgstr ""
+msgstr "選択"
 
 #: cherokee-trunk/admin/PageIndex.py:295
 #: cherokee-trunk/admin/plugins/dbslayer.py:51
 #: packages/wordpress/installer.py:190 packages/redmine/installer.py:259
 msgid "Language"
-msgstr ""
+msgstr "言語"
 
 #: cherokee-trunk/admin/PageIndex.py:339
 msgid "Proud Cherokee User List Submission"
-msgstr ""
+msgstr "Cherokee利用ユーザリストへ登録"
 
 #: cherokee-trunk/admin/PageIndex.py:342
 msgid "Proud Cherokee Users"
-msgstr ""
+msgstr "Cherokee利用ユーザ"
 
 #: cherokee-trunk/admin/PageIndex.py:344
 msgid "View list…"
-msgstr ""
+msgstr "リスト一覧…"
 
 #: cherokee-trunk/admin/PageIndex.py:344
 msgid "Send your domains"
-msgstr ""
+msgstr "ドメインを送信"
 
 #: cherokee-trunk/admin/PageIndex.py:366
 msgid "Mailing List Subscription"
-msgstr ""
+msgstr "メーリングリストの申し込み"
 
 #: cherokee-trunk/admin/PageIndex.py:368
 msgid "Subscribe"
-msgstr ""
+msgstr "通知"
 
 #: cherokee-trunk/admin/PageIndex.py:371
 msgid "Your email address"
-msgstr ""
+msgstr "あなたのメールアドレス"
 
 #: cherokee-trunk/admin/PageIndex.py:372
 msgid "Your name"
-msgstr ""
+msgstr "あなたの名前"
 
 #: cherokee-trunk/admin/PageIndex.py:387
 #: cherokee-trunk/admin/PageGeneral.py:136
 msgid "Support"
-msgstr ""
+msgstr "サポート"
 
 #: cherokee-trunk/admin/PageIndex.py:391
 msgid "Getting started"
-msgstr ""
+msgstr "はじめに"
 
 #: cherokee-trunk/admin/PageIndex.py:395
 msgid "Subscribe to mailing lists"
-msgstr ""
+msgstr "メーリングリストを購読"
 
 #: cherokee-trunk/admin/PageIndex.py:403
 msgid "Report a bug"
-msgstr ""
+msgstr "バグを報告"
 
 #: cherokee-trunk/admin/PageIndex.py:407
 msgid "Purchase commercial support"
-msgstr ""
+msgstr "有償サポートを受ける"
 
 #: cherokee-trunk/admin/PageIndex.py:411 cherokee-trunk/admin/PageIndex.py:415
 msgid "About Cherokee"
-msgstr ""
+msgstr "Cherokeeについて"
 
 #: cherokee-trunk/admin/PageIndex.py:424
 msgid "Join the Cherokee Community:"
-msgstr ""
+msgstr "Cherokeeのコミュニティに参加："
 
 #: cherokee-trunk/admin/PageIndex.py:427
 msgid "Visit the Cherokee Project Website"
-msgstr ""
+msgstr "Cherokeeプロジェクトサイトに行く"
 
 #: cherokee-trunk/admin/PageIndex.py:428
 msgid "Follow us on Twitter"
-msgstr ""
+msgstr "Twitterでフォロー"
 
 #: cherokee-trunk/admin/PageIndex.py:429
 msgid "Join us on Facebook"
-msgstr ""
+msgstr "Facebookに参加"
 
 #: cherokee-trunk/admin/PageIndex.py:430
 msgid "Become a member of Cherokee group on LinkedIn"
-msgstr ""
+msgstr "LinkedInのCherokeeグループのメンバーになる"
 
 #: cherokee-trunk/admin/PageIndex.py:431
 msgid "Chat with us at irc.freenode.net"
-msgstr ""
+msgstr "irc.freenode.netで、チャットする"
 
 #: cherokee-trunk/admin/PageIndex.py:440
 msgid "Shutdown Cherokee-admin"
-msgstr ""
+msgstr "Cherokee-adminをシャットダウン"
 
 #: cherokee-trunk/admin/PageIndex.py:442
 msgid "Shut down"
-msgstr ""
+msgstr "シャットダウン"
 
 #: cherokee-trunk/admin/PageIndex.py:443
 msgid "You are about to shut down this instance of Cherokee-admin"
@@ -694,63 +706,63 @@ msgstr ""
 
 #: cherokee-trunk/admin/PageIndex.py:444
 msgid "Are you sure you want to proceed?"
-msgstr ""
+msgstr "続けてもよろしいですか？"
 
 #: cherokee-trunk/admin/PageIndex.py:447
 msgid "Cherokee-admin has been shut down"
-msgstr ""
+msgstr "Cherokee-adminは、シャットダウンされました"
 
 #: cherokee-trunk/admin/PageIndex.py:449
 msgid "Shut down Cherokee-Admin"
-msgstr ""
+msgstr "Cherokee-adminをシャットダウン"
 
 #: cherokee-trunk/admin/PageIndex.py:462 cherokee-trunk/admin/PageIndex.py:497
 msgid "Welcome to Cherokee Admin"
-msgstr ""
+msgstr "Cherokee管理人室へようこそ"
 
 #: cherokee-trunk/admin/consts.py:26 packages/wordpress/installer.py:33
 #: packages/redmine/tools.py:28
 msgid "English"
-msgstr ""
+msgstr "英語"
 
 #: cherokee-trunk/admin/consts.py:27 packages/wordpress/installer.py:34
 #: packages/redmine/tools.py:30
 msgid "Spanish"
-msgstr ""
+msgstr "スペイン語"
 
 #: cherokee-trunk/admin/consts.py:28 packages/wordpress/installer.py:32
 #: packages/redmine/tools.py:26
 msgid "German"
-msgstr ""
+msgstr "ドイツ語"
 
 #: cherokee-trunk/admin/consts.py:29 packages/wordpress/installer.py:35
 #: packages/redmine/tools.py:33
 msgid "French"
-msgstr ""
+msgstr "フランス語"
 
 #: cherokee-trunk/admin/consts.py:30 packages/redmine/tools.py:39
 msgid "Italian"
-msgstr ""
+msgstr "イタリア語"
 
 #: cherokee-trunk/admin/consts.py:31 packages/redmine/tools.py:45
 msgid "Dutch"
-msgstr ""
+msgstr "オランダ語"
 
 #: cherokee-trunk/admin/consts.py:32 packages/redmine/tools.py:47
 msgid "Polish"
-msgstr ""
+msgstr "ポルトガル語"
 
 #: cherokee-trunk/admin/consts.py:33 packages/redmine/tools.py:56
 msgid "Swedish"
-msgstr ""
+msgstr "スウェーデン語"
 
 #: cherokee-trunk/admin/consts.py:34
 msgid "Brazilian Portuguese"
-msgstr ""
+msgstr "ブラジル語"
 
 #: cherokee-trunk/admin/consts.py:35
 msgid "Chinese Simplified"
-msgstr ""
+msgstr "簡体中国語"
 
 #: cherokee-trunk/admin/consts.py:36 packages/redmine/tools.py:23
 msgid "Catalan"
@@ -764,33 +776,33 @@ msgstr ""
 #: cherokee-trunk/admin/consts.py:260 cherokee-trunk/admin/Rule.py:174
 #: cherokee-trunk/admin/Icons.py:197 cherokee-trunk/admin/Icons.py:329
 msgid "Default"
-msgstr ""
+msgstr "デフォルト"
 
 #: cherokee-trunk/admin/consts.py:42
 msgid "Product only"
-msgstr ""
+msgstr "プロダクト名のみ"
 
 #: cherokee-trunk/admin/consts.py:43
 msgid "Product + Minor version"
-msgstr ""
+msgstr "プロダクト名＋マイナーバージョン"
 
 #: cherokee-trunk/admin/consts.py:44
 msgid "Product + Minimal version"
-msgstr ""
+msgstr "プロダクト名＋ミニマムバージョン"
 
 #: cherokee-trunk/admin/consts.py:45
 msgid "Product + Platform"
-msgstr ""
+msgstr "プロダクト名＋プラットフォーム"
 
 #: cherokee-trunk/admin/consts.py:46
 msgid "Full Server string"
-msgstr ""
+msgstr "全サーバー情報"
 
 #: cherokee-trunk/admin/consts.py:50 cherokee-trunk/admin/consts.py:79
 #: cherokee-trunk/admin/consts.py:96 cherokee-trunk/admin/consts.py:110
 #: cherokee-trunk/admin/plugins/mysql.py:45
 msgid "None"
-msgstr ""
+msgstr "なし"
 
 #: cherokee-trunk/admin/consts.py:51 cherokee-trunk/admin/plugins/common.py:30
 msgid "List & Send"
@@ -799,21 +811,22 @@ msgstr ""
 #: cherokee-trunk/admin/consts.py:52 cherokee-trunk/admin/plugins/file.py:29
 #: cherokee-trunk/admin/PageNewConfig.py:174
 msgid "Static Content"
-msgstr ""
+msgstr "静的コンテンツ"
 
 #: cherokee-trunk/admin/consts.py:53
 msgid "Only Listing"
-msgstr ""
+msgstr "リスティングのみ"
 
 #: cherokee-trunk/admin/consts.py:54
 #: cherokee-trunk/admin/plugins/error_redir.py:104
 #: cherokee-trunk/admin/wizards/hotlinking.py:151
 msgid "Redirection"
-msgstr ""
+msgstr "リダイレクト"
 
 #: cherokee-trunk/admin/consts.py:55 cherokee-trunk/admin/wizards/rails.py:75
+#, fuzzy
 msgid "FastCGI"
-msgstr ""
+msgstr "FastCGIの詳細"
 
 #: cherokee-trunk/admin/consts.py:56
 msgid "SCGI"
@@ -826,17 +839,17 @@ msgstr ""
 
 #: cherokee-trunk/admin/consts.py:58
 msgid "HTTP Reverse Proxy"
-msgstr ""
+msgstr "HTTP逆プロクシ"
 
 #: cherokee-trunk/admin/consts.py:59
 msgid "Upload Reporting"
-msgstr ""
+msgstr "アップロードリポート"
 
 #: cherokee-trunk/admin/consts.py:60
 #: cherokee-trunk/admin/plugins/streaming.py:31
 #: cherokee-trunk/admin/plugins/streaming.py:63
 msgid "Audio/Video Streaming"
-msgstr ""
+msgstr "音声／動画ストリーミング"
 
 #: cherokee-trunk/admin/consts.py:61
 msgid "CGI"
@@ -844,94 +857,94 @@ msgstr ""
 
 #: cherokee-trunk/admin/consts.py:62 cherokee-trunk/admin/plugins/ssi.py:28
 msgid "Server Side Includes"
-msgstr ""
+msgstr "サーバーサイドインクルード"
 
 #: cherokee-trunk/admin/consts.py:63
 msgid "Hidden Downloads"
-msgstr ""
+msgstr "隠れたダウンロード"
 
 #: cherokee-trunk/admin/consts.py:64
 msgid "Server Info"
-msgstr ""
+msgstr "サーバー情報"
 
 #: cherokee-trunk/admin/consts.py:65
 msgid "MySQL Bridge"
-msgstr ""
+msgstr "MySQLブリッジ"
 
 #: cherokee-trunk/admin/consts.py:66
 #: cherokee-trunk/admin/plugins/custom_error.py:46
 msgid "HTTP Error"
-msgstr ""
+msgstr "HTTPエラー"
 
 #: cherokee-trunk/admin/consts.py:67 cherokee-trunk/admin/plugins/admin.py:29
 msgid "Remote Administration"
-msgstr ""
+msgstr "リモート管理"
 
 #: cherokee-trunk/admin/consts.py:68
 #: cherokee-trunk/admin/wizards/hotlinking.py:88
 msgid "1x1 Transparent GIF"
-msgstr ""
+msgstr "1x1の透過GIF"
 
 #: cherokee-trunk/admin/consts.py:69 cherokee-trunk/admin/plugins/drop.py:29
 msgid "Drop Connection"
-msgstr ""
+msgstr "接続をドロップ"
 
 #: cherokee-trunk/admin/consts.py:73
 msgid "Default errors"
-msgstr ""
+msgstr "デフォルトのエラー"
 
 #: cherokee-trunk/admin/consts.py:74
 msgid "Custom redirections"
-msgstr ""
+msgstr "カスタムリダイレクト設定"
 
 #: cherokee-trunk/admin/consts.py:75
 msgid "Closest match"
-msgstr ""
+msgstr "クローゼット一致"
 
 #: cherokee-trunk/admin/consts.py:80
 msgid "Plain text file"
-msgstr ""
+msgstr "平文テキストファイル"
 
 #: cherokee-trunk/admin/consts.py:81
 msgid "Htpasswd file"
-msgstr ""
+msgstr "Htpasswdファイル"
 
 #: cherokee-trunk/admin/consts.py:82
 msgid "Htdigest file"
-msgstr ""
+msgstr "Htdigestファイル"
 
 #: cherokee-trunk/admin/consts.py:83
 msgid "LDAP server"
-msgstr ""
+msgstr "LDAPサーバー"
 
 #: cherokee-trunk/admin/consts.py:84
 msgid "MySQL server"
-msgstr ""
+msgstr "MySQLサーバー"
 
 #: cherokee-trunk/admin/consts.py:85
 msgid "PAM"
-msgstr ""
+msgstr "PAM認証"
 
 #: cherokee-trunk/admin/consts.py:86
 #: cherokee-trunk/admin/plugins/authlist.py:30
 msgid "Fixed list"
-msgstr ""
+msgstr "完了リスト"
 
 #: cherokee-trunk/admin/consts.py:90
 msgid "Basic"
-msgstr ""
+msgstr "Basic認証"
 
 #: cherokee-trunk/admin/consts.py:91
 msgid "Digest"
-msgstr ""
+msgstr "Digest認証"
 
 #: cherokee-trunk/admin/consts.py:92
 msgid "Basic or Digest"
-msgstr ""
+msgstr "BasicかDigestか"
 
 #: cherokee-trunk/admin/consts.py:97
 msgid "Apache compatible"
-msgstr ""
+msgstr "Apache互換"
 
 #: cherokee-trunk/admin/consts.py:98
 msgid "NCSA"
@@ -939,51 +952,52 @@ msgstr ""
 
 #: cherokee-trunk/admin/consts.py:99
 msgid "Custom"
-msgstr ""
+msgstr "カスタム"
 
 #: cherokee-trunk/admin/consts.py:103 cherokee-trunk/admin/Icons.py:327
 msgid "File"
-msgstr ""
+msgstr "ファイル"
 
 #: cherokee-trunk/admin/consts.py:104
 msgid "System logger"
-msgstr ""
+msgstr "システムログ"
 
 #: cherokee-trunk/admin/consts.py:105
 msgid "Standard Error"
-msgstr ""
+msgstr "標準エラー"
 
 #: cherokee-trunk/admin/consts.py:106
 msgid "Execute program"
-msgstr ""
+msgstr "実行プログラム"
 
 #: cherokee-trunk/admin/consts.py:111
 msgid "Round Robin"
-msgstr ""
+msgstr "ラウンドロビン"
 
 #: cherokee-trunk/admin/consts.py:112
 msgid "IP Hash"
-msgstr ""
+msgstr "IPハッシュ"
 
 #: cherokee-trunk/admin/consts.py:113
 msgid "Failover"
-msgstr ""
+msgstr "フェールオーバー"
 
 #: cherokee-trunk/admin/consts.py:117
 msgid "Local interpreter"
-msgstr ""
+msgstr "ローカルインタプリタ"
 
 #: cherokee-trunk/admin/consts.py:118
 msgid "Remote host"
-msgstr ""
+msgstr "リモートホスト"
 
 #: cherokee-trunk/admin/consts.py:122
 msgid "GZip"
 msgstr ""
 
 #: cherokee-trunk/admin/consts.py:123
+#, fuzzy
 msgid "Deflate"
-msgstr ""
+msgstr "Deflateエンコーダー"
 
 #: cherokee-trunk/admin/consts.py:128
 msgid "FIFO"
@@ -991,40 +1005,40 @@ msgstr ""
 
 #: cherokee-trunk/admin/consts.py:129
 msgid "Round-robin"
-msgstr ""
+msgstr "ラウンドロビン"
 
 #: cherokee-trunk/admin/consts.py:130
 msgid "Dynamic"
-msgstr ""
+msgstr "動的"
 
 #: cherokee-trunk/admin/consts.py:134 packages/common/database.py:57
 #: packages/nagios/installer.py:48
 msgid "Automatic"
-msgstr ""
+msgstr "自動"
 
 #: cherokee-trunk/admin/consts.py:144
 #: cherokee-trunk/admin/plugins/error_redir.py:35
 msgid "External"
-msgstr ""
+msgstr "外部"
 
 #: cherokee-trunk/admin/consts.py:145
 #: cherokee-trunk/admin/plugins/error_redir.py:34
 msgid "Internal"
-msgstr ""
+msgstr "内部"
 
 #: cherokee-trunk/admin/consts.py:186
 #: cherokee-trunk/admin/plugins/directory.py:31
 #: cherokee-trunk/admin/market/PageApp.py:99 cherokee-trunk/admin/Icons.py:198
 #: cherokee-trunk/admin/Icons.py:330 packages/common/target.py:209
 msgid "Directory"
-msgstr ""
+msgstr "ディレクトリ"
 
 #: cherokee-trunk/admin/consts.py:187
 #: cherokee-trunk/admin/plugins/extensions.py:61
 #: cherokee-trunk/admin/Mime.py:86 cherokee-trunk/admin/Mime.py:121
 #: cherokee-trunk/admin/Icons.py:129 cherokee-trunk/admin/Icons.py:328
 msgid "Extensions"
-msgstr ""
+msgstr "拡張子"
 
 #: cherokee-trunk/admin/consts.py:188
 #: cherokee-trunk/admin/plugins/request.py:31
@@ -1036,7 +1050,7 @@ msgstr ""
 #: cherokee-trunk/admin/plugins/redir.py:76
 #: cherokee-trunk/admin/plugins/redir.py:106
 msgid "Regular Expression"
-msgstr ""
+msgstr "正規表現"
 
 #: cherokee-trunk/admin/consts.py:189
 #: cherokee-trunk/admin/plugins/proxy.py:193
@@ -1045,20 +1059,20 @@ msgstr ""
 #: cherokee-trunk/admin/plugins/header.py:137
 #: cherokee-trunk/admin/PageEntry.py:184 cherokee-trunk/admin/PageEntry.py:232
 msgid "Header"
-msgstr ""
+msgstr "ヘッダー"
 
 #: cherokee-trunk/admin/consts.py:190
 msgid "File Exists"
-msgstr ""
+msgstr "ファイル存在"
 
 #: cherokee-trunk/admin/consts.py:191
 msgid "HTTP Method"
-msgstr ""
+msgstr "HTTPメソッド"
 
 #: cherokee-trunk/admin/consts.py:192 cherokee-trunk/admin/plugins/bind.py:76
 #: cherokee-trunk/admin/plugins/bind.py:129
 msgid "Incoming IP/Port"
-msgstr ""
+msgstr "入力IP／ポート"
 
 #: cherokee-trunk/admin/consts.py:193
 msgid "SSL / TLS"
@@ -1068,15 +1082,16 @@ msgstr ""
 #: cherokee-trunk/admin/plugins/fullpath.py:66
 #: cherokee-trunk/admin/plugins/fullpath.py:101
 msgid "Full Path"
-msgstr ""
+msgstr "フルパス"
 
 #: cherokee-trunk/admin/consts.py:195 cherokee-trunk/admin/plugins/from.py:71
 msgid "Connected from"
-msgstr ""
+msgstr "接続元"
 
 #: cherokee-trunk/admin/consts.py:196
+#, fuzzy
 msgid "URL Argument"
-msgstr ""
+msgstr "引数"
 
 #: cherokee-trunk/admin/consts.py:197
 msgid "GeoIP"
@@ -1084,40 +1099,40 @@ msgstr ""
 
 #: cherokee-trunk/admin/consts.py:201
 msgid "Match Nickname"
-msgstr ""
+msgstr "ニックネームに一致"
 
 #: cherokee-trunk/admin/consts.py:202
 msgid "Wildcards"
-msgstr ""
+msgstr "ワイルドカード"
 
 #: cherokee-trunk/admin/consts.py:203 cherokee-trunk/admin/plugins/redir.py:39
 #: cherokee-trunk/admin/plugins/rehost.py:53
 msgid "Regular Expressions"
-msgstr ""
+msgstr "正規表現"
 
 #: cherokee-trunk/admin/consts.py:204
 msgid "Server IP"
-msgstr ""
+msgstr "サーバーのIP"
 
 #: cherokee-trunk/admin/consts.py:208 cherokee-trunk/admin/consts.py:253
 msgid "Not set"
-msgstr ""
+msgstr "設定なし"
 
 #: cherokee-trunk/admin/consts.py:209
 msgid "Already expired on 1970"
-msgstr ""
+msgstr "期限を1970にする"
 
 #: cherokee-trunk/admin/consts.py:210
 msgid "Do not expire until 2038"
-msgstr ""
+msgstr "期限を2038年にして定めない"
 
 #: cherokee-trunk/admin/consts.py:211
 msgid "Custom value"
-msgstr ""
+msgstr "カスタム値"
 
 #: cherokee-trunk/admin/consts.py:215
 msgid "No TLS/SSL"
-msgstr ""
+msgstr "TLS/SSLなし"
 
 #: cherokee-trunk/admin/consts.py:216
 msgid "OpenSSL / libssl"
@@ -1125,40 +1140,40 @@ msgstr ""
 
 #: cherokee-trunk/admin/consts.py:220 cherokee-trunk/admin/util.py:91
 msgid "Off"
-msgstr ""
+msgstr "切り"
 
 #: cherokee-trunk/admin/consts.py:221
 msgid "Enhanced Virtual Hosting"
-msgstr ""
+msgstr "仮想ホスティングを強化"
 
 #: cherokee-trunk/admin/consts.py:225 packages/nagios/installer.py:509
 msgid "Skip"
-msgstr ""
+msgstr "スキップ"
 
 #: cherokee-trunk/admin/consts.py:226 cherokee-trunk/admin/PageVServer.py:604
 msgid "Accept"
-msgstr ""
+msgstr "了承"
 
 #: cherokee-trunk/admin/consts.py:227
 msgid "Require"
-msgstr ""
+msgstr "必須"
 
 #: cherokee-trunk/admin/consts.py:231 cherokee-trunk/admin/consts.py:248
 #: cherokee-trunk/admin/PageVServer.py:529
 msgid "Disabled"
-msgstr ""
+msgstr "無効"
 
 #: cherokee-trunk/admin/consts.py:232
 msgid "RRDtool graphs"
-msgstr ""
+msgstr "RRDtoolグラフ"
 
 #: cherokee-trunk/admin/consts.py:236
 msgid "Local time"
-msgstr ""
+msgstr "ローカル時間"
 
 #: cherokee-trunk/admin/consts.py:237
 msgid "UTC: Coordinated Universal Time"
-msgstr ""
+msgstr "UTC：協定された世界時間"
 
 #: cherokee-trunk/admin/consts.py:241
 msgid "JSON"
@@ -1178,23 +1193,23 @@ msgstr ""
 
 #: cherokee-trunk/admin/consts.py:249
 msgid "POST tracker"
-msgstr ""
+msgstr "POSTトラッカー"
 
 #: cherokee-trunk/admin/consts.py:254
 msgid "Public"
-msgstr ""
+msgstr "パブリック"
 
 #: cherokee-trunk/admin/consts.py:255
 msgid "Private"
-msgstr ""
+msgstr "プライベート"
 
 #: cherokee-trunk/admin/consts.py:256
 msgid "No Cache"
-msgstr ""
+msgstr "キャッシュなし"
 
 #: cherokee-trunk/admin/consts.py:261
 msgid "0 - No compression"
-msgstr ""
+msgstr "0 - 無圧縮"
 
 #: cherokee-trunk/admin/consts.py:262
 msgid "1"
@@ -1230,42 +1245,42 @@ msgstr ""
 
 #: cherokee-trunk/admin/consts.py:270
 msgid "9 - Max compression"
-msgstr ""
+msgstr "9 - 最大圧縮"
 
 #: cherokee-trunk/admin/CTK/CTK/Image.py:72
 #: cherokee-trunk/admin/CTK/CTK/Image.py:73
 msgid "Delete"
-msgstr ""
+msgstr "削除"
 
 #: cherokee-trunk/admin/CTK/CTK/Image.py:84 cherokee-trunk/admin/util.py:88
 msgid "Active"
-msgstr ""
+msgstr "アクティブ"
 
 #: cherokee-trunk/admin/CTK/CTK/Image.py:89 cherokee-trunk/admin/util.py:88
 msgid "Inactive"
-msgstr ""
+msgstr "非アクティブ"
 
 #: cherokee-trunk/admin/CTK/CTK/Image.py:94
 msgid "Loading"
-msgstr ""
+msgstr "読込中"
 
 #: cherokee-trunk/admin/CTK/CTK/Image.py:104
 msgid "Forbidden"
-msgstr ""
+msgstr "アクセス拒否"
 
 #: cherokee-trunk/admin/CTK/CTK/Submitter.py:111
 #: cherokee-trunk/admin/CTK/CTK/TextField.py:97
 msgid "Optional"
-msgstr ""
+msgstr "オプション"
 
 #: cherokee-trunk/admin/CTK/CTK/ToggleButton.py:154
 msgid "Disable"
-msgstr ""
+msgstr "無効"
 
 #: cherokee-trunk/admin/CTK/CTK/ToggleButton.py:155
 #: packages/nagios/installer.py:454
 msgid "Enable"
-msgstr ""
+msgstr "有効"
 
 #: cherokee-trunk/admin/CTK/CTK/Druid.py:209
 #: cherokee-trunk/admin/CTK/CTK/Druid.py:216
@@ -1300,47 +1315,48 @@ msgstr ""
 #: packages/phpbb/installer.py:133 packages/phpbb/installer.py:153
 #: packages/hello_world_php/installer.py:86
 msgid "Next"
-msgstr ""
+msgstr "次へ"
 
 #: cherokee-trunk/admin/CTK/CTK/Druid.py:217
 #: cherokee-trunk/admin/CTK/CTK/Druid.py:225
 msgid "Prev"
-msgstr ""
+msgstr "前へ"
 
 #: cherokee-trunk/admin/CTK/CTK/Druid.py:224
 #: cherokee-trunk/admin/CTK/CTK/Druid.py:232
 #: cherokee-trunk/admin/PageNewConfig.py:153
 msgid "Create"
-msgstr ""
+msgstr "作成"
 
 #: cherokee-trunk/admin/CTK/CTK/Config.py:244
 #, python-format
 msgid "ERROR: Couldn't unpack '%s'"
-msgstr ""
+msgstr "エラー：「%s」の展開に失敗しました。"
 
 #: cherokee-trunk/admin/CTK/CTK/Config.py:392
 msgid "Could not copy configuration to "
-msgstr ""
+msgstr "以下へ設定をコピーすることができませんでした："
 
 #: cherokee-trunk/admin/CTK/CTK/AjaxUpload.py:106
 msgid "Upload"
-msgstr ""
+msgstr "アップロード"
 
 #: cherokee-trunk/admin/CTK/CTK/Carousel.py:78
 msgid "left"
-msgstr ""
+msgstr "左"
 
 #: cherokee-trunk/admin/CTK/CTK/Carousel.py:79
 msgid "right"
-msgstr ""
+msgstr "右"
 
 #: cherokee-trunk/admin/CTK/CTK/Paginator.py:63
 msgid "Previous"
-msgstr ""
+msgstr "前へ"
 
 #: cherokee-trunk/admin/plugins/exists.py:32
 msgid "Comma separated list of files. Rule applies if one exists."
 msgstr ""
+"ファイルの一覧をカンマ区切りで入力してください。どれか一つがマッチします。"
 
 #: cherokee-trunk/admin/plugins/exists.py:33
 msgid ""
@@ -1350,7 +1366,7 @@ msgstr ""
 
 #: cherokee-trunk/admin/plugins/exists.py:34
 msgid "Match the request if any file exists."
-msgstr ""
+msgstr "リクエストしたファイルが存在したときにマッチ"
 
 #: cherokee-trunk/admin/plugins/exists.py:35
 msgid "Only match regular files. If unset directories will be matched as well."
@@ -1362,53 +1378,53 @@ msgstr ""
 
 #: cherokee-trunk/admin/plugins/exists.py:38
 msgid "Match a specific list of files"
-msgstr ""
+msgstr "特定のリストのファイルにマッチ"
 
 #: cherokee-trunk/admin/plugins/exists.py:39
 #: cherokee-trunk/admin/plugins/exists.py:72
 #: cherokee-trunk/admin/plugins/exists.py:113
 msgid "Match any file"
-msgstr ""
+msgstr "すべてのファイルにマッチ"
 
 #: cherokee-trunk/admin/plugins/exists.py:75
 #: cherokee-trunk/admin/plugins/exists.py:114
 #: cherokee-trunk/admin/Icons.py:168
 msgid "Files"
-msgstr ""
+msgstr "ファイル"
 
 #: cherokee-trunk/admin/plugins/exists.py:77
 #: cherokee-trunk/admin/plugins/exists.py:115
 #: cherokee-trunk/admin/plugins/file.py:40
 msgid "Use I/O cache"
-msgstr ""
+msgstr "I/Oキャッシュを使用"
 
 #: cherokee-trunk/admin/plugins/exists.py:78
 #: cherokee-trunk/admin/plugins/exists.py:116
 msgid "Only match files"
-msgstr ""
+msgstr "マッチしたファイルのみ"
 
 #: cherokee-trunk/admin/plugins/exists.py:79
 #: cherokee-trunk/admin/plugins/exists.py:117
 msgid "If dir, check index files"
-msgstr ""
+msgstr "ディレクトリの場合、indexファイルをチェック"
 
 #: cherokee-trunk/admin/plugins/exists.py:136
 msgid "File exists"
-msgstr ""
+msgstr "ファイル存在"
 
 #: cherokee-trunk/admin/plugins/exists.py:140
 #, python-format
 msgid "File %(fname)s exists"
-msgstr ""
+msgstr "ファイル「%(fname)s」が存在するとき"
 
 #: cherokee-trunk/admin/plugins/exists.py:142
 msgid "File exists (never matched)"
-msgstr ""
+msgstr "ファイルが存在するとき（マッチしない）"
 
 #: cherokee-trunk/admin/plugins/exists.py:144
-#, python-format
+#, fuzzy, python-format
 msgid "File %(most)s or %(last)s exists"
-msgstr ""
+msgstr "ファイル「%(fname)s」が存在するとき"
 
 #: cherokee-trunk/admin/plugins/geoip.py:32
 msgid "Add the initial country. It's possible to add more later on."
@@ -1427,11 +1443,11 @@ msgstr ""
 
 #: cherokee-trunk/admin/plugins/geoip.py:78
 msgid "Select all"
-msgstr ""
+msgstr "すべてを選択"
 
 #: cherokee-trunk/admin/plugins/geoip.py:79
 msgid "Select none"
-msgstr ""
+msgstr "選択を解除"
 
 #: cherokee-trunk/admin/plugins/file.py:31
 msgid "Enables an internal I/O cache that improves performance."
@@ -1439,7 +1455,7 @@ msgstr ""
 
 #: cherokee-trunk/admin/plugins/file.py:45
 msgid "File Sending"
-msgstr ""
+msgstr "ファイルの送信"
 
 #: cherokee-trunk/admin/plugins/evhost.py:29
 msgid ""
@@ -1456,25 +1472,25 @@ msgstr ""
 #: cherokee-trunk/admin/plugins/evhost.py:33
 #: cherokee-trunk/admin/PageVServer.py:484
 msgid "Advanced Virtual Hosting"
-msgstr ""
+msgstr "拡張バーチャルホスト"
 
 #: cherokee-trunk/admin/plugins/evhost.py:41
 msgid "Dynamic Document Root"
-msgstr ""
+msgstr "動的なドキュメントルート"
 
 #: cherokee-trunk/admin/plugins/evhost.py:42
 msgid "Check Document Root"
-msgstr ""
+msgstr "ドキュメントルートを確認"
 
 #: cherokee-trunk/admin/plugins/evhost.py:42
 #: cherokee-trunk/admin/plugins/extensions.py:62
 msgid "Check"
-msgstr ""
+msgstr "確認"
 
 #: cherokee-trunk/admin/plugins/gzip.py:29
 #: cherokee-trunk/admin/PageEntry.py:71
 msgid "GZip encoder"
-msgstr ""
+msgstr "GZipエンコーダー"
 
 #: cherokee-trunk/admin/plugins/gzip.py:31
 #: cherokee-trunk/admin/plugins/deflate.py:31
@@ -1482,34 +1498,36 @@ msgid ""
 "Compression Level from 0 to 9, where 0 is no compression, 1 best speed, and "
 "9 best compression."
 msgstr ""
+"圧縮レベルは0～9を指定できます。0の場合は無圧縮で、1はスピード優先、9は圧縮率"
+"優先です。"
 
 #: cherokee-trunk/admin/plugins/gzip.py:38
 #: cherokee-trunk/admin/plugins/deflate.py:38
 msgid "Compression Level"
-msgstr ""
+msgstr "圧縮レベル"
 
 #: cherokee-trunk/admin/plugins/request.py:27
 msgid "Regular expression against which the request will be executed."
-msgstr ""
+msgstr "リクエスト時に正規表現を行います。"
 
 #: cherokee-trunk/admin/plugins/htpasswd.py:32
 msgid "Full path to the Htpasswd formated password file."
-msgstr ""
+msgstr ".htpasswd形式のパスワードファイルへのフルパス"
 
 #: cherokee-trunk/admin/plugins/htpasswd.py:40
 #: cherokee-trunk/admin/plugins/plain.py:40
 #: cherokee-trunk/admin/plugins/htdigest.py:41
 msgid "Password File"
-msgstr ""
+msgstr "パスワードファイル"
 
 #: cherokee-trunk/admin/plugins/htpasswd.py:45
 msgid "Htpasswd Password File"
-msgstr ""
+msgstr "Htpasswdのパスワードファイル"
 
 #: cherokee-trunk/admin/plugins/post_report.py:32
 #: cherokee-trunk/admin/plugins/post_track.py:25
 msgid "POST Report"
-msgstr ""
+msgstr "POSTリクエスト"
 
 #: cherokee-trunk/admin/plugins/post_report.py:34
 msgid ""
@@ -1524,19 +1542,19 @@ msgstr ""
 
 #: cherokee-trunk/admin/plugins/post_report.py:49
 msgid "Target language"
-msgstr ""
+msgstr "ターゲット言語"
 
 #: cherokee-trunk/admin/plugins/plain.py:30
 msgid "Plain text"
-msgstr ""
+msgstr "平文テキスト"
 
 #: cherokee-trunk/admin/plugins/plain.py:32
 msgid "Full path to the plain text password file."
-msgstr ""
+msgstr "平文テキストのパスワードファイルへのパス"
 
 #: cherokee-trunk/admin/plugins/plain.py:45
 msgid "Plain Password File"
-msgstr ""
+msgstr "平文パスワードファイル"
 
 #: cherokee-trunk/admin/plugins/tls.py:56
 #: cherokee-trunk/admin/plugins/tls.py:115
@@ -1546,7 +1564,7 @@ msgstr ""
 #: cherokee-trunk/admin/plugins/deflate.py:29
 #: cherokee-trunk/admin/PageEntry.py:72
 msgid "Deflate encoder"
-msgstr ""
+msgstr "Deflateエンコーダー"
 
 #: cherokee-trunk/admin/plugins/authlist.py:32
 msgid "At least one user/password pair should be configured."
@@ -1554,13 +1572,13 @@ msgstr ""
 
 #: cherokee-trunk/admin/plugins/authlist.py:60
 msgid "Authentication list"
-msgstr ""
+msgstr "認証リスト"
 
 #: cherokee-trunk/admin/plugins/authlist.py:63
 #: cherokee-trunk/admin/plugins/authlist.py:97
 #: cherokee-trunk/admin/PageGeneral.py:248 packages/magnolia/installer.py:164
 msgid "User"
-msgstr ""
+msgstr "ユーザ"
 
 #: cherokee-trunk/admin/plugins/authlist.py:63
 #: cherokee-trunk/admin/plugins/authlist.py:97
@@ -1569,28 +1587,29 @@ msgstr ""
 #: packages/nagios/installer.py:186 packages/nuxeo_dm/installer.py:180
 #: packages/redmine/installer.py:393 packages/nuxeo_dam/installer.py:181
 msgid "Password"
-msgstr ""
+msgstr "パスワード"
 
 #: cherokee-trunk/admin/plugins/authlist.py:87
 #: cherokee-trunk/admin/CgiBase.py:138
 msgid "Fixed Authentication List"
-msgstr ""
+msgstr "修正された認証リスト"
 
 #: cherokee-trunk/admin/plugins/authlist.py:105
 msgid "Add New Pair"
-msgstr ""
+msgstr "新しいペアを追加"
 
 #: cherokee-trunk/admin/plugins/common.py:32
 msgid "Allow extra tailing paths"
 msgstr ""
 
 #: cherokee-trunk/admin/plugins/common.py:33
+#, fuzzy
 msgid "Allow to list directory contents"
-msgstr ""
+msgstr "ディレクトリ一覧表示を許可"
 
 #: cherokee-trunk/admin/plugins/common.py:42
 msgid "Allow PathInfo"
-msgstr ""
+msgstr "PathInfoを許可"
 
 #: cherokee-trunk/admin/plugins/common.py:42
 #: cherokee-trunk/admin/plugins/common.py:43
@@ -1600,27 +1619,27 @@ msgstr ""
 #: cherokee-trunk/admin/PageEntry.py:79
 #: cherokee-trunk/admin/PageVServer.py:473
 msgid "Allow"
-msgstr ""
+msgstr "許可"
 
 #: cherokee-trunk/admin/plugins/common.py:43
 msgid "Allow Directory Listing"
-msgstr ""
+msgstr "ディレクトリ一覧表示を許可"
 
 #: cherokee-trunk/admin/plugins/common.py:48
 msgid "Parsing"
-msgstr ""
+msgstr "パース"
 
 #: cherokee-trunk/admin/plugins/empty_gif.py:29
 msgid "1x1 Empty GIF"
-msgstr ""
+msgstr "1x1の空のGIF"
 
 #: cherokee-trunk/admin/plugins/dbslayer.py:34
 msgid "MySQL balancing"
-msgstr ""
+msgstr "MySQLバランサを使用"
 
 #: cherokee-trunk/admin/plugins/dbslayer.py:35
 msgid "DB balancig recipe"
-msgstr ""
+msgstr "データーベースの負荷分散方法"
 
 #: cherokee-trunk/admin/plugins/dbslayer.py:37
 msgid "Language from which the information will be consumed."
@@ -1628,33 +1647,34 @@ msgstr ""
 
 #: cherokee-trunk/admin/plugins/dbslayer.py:38
 msgid "User to access the database."
-msgstr ""
+msgstr "データーベースにアクセスするユーザ"
 
 #: cherokee-trunk/admin/plugins/dbslayer.py:39
+#, fuzzy
 msgid "Password for the user accessing the database."
-msgstr ""
+msgstr "データーベースにアクセスするユーザ"
 
 #: cherokee-trunk/admin/plugins/dbslayer.py:40
 msgid "Database to connect to."
-msgstr ""
+msgstr "データーベースの接続先"
 
 #: cherokee-trunk/admin/plugins/dbslayer.py:52
 #: cherokee-trunk/admin/plugins/mysql.py:78
 msgid "DB User"
-msgstr ""
+msgstr "DBユーザ"
 
 #: cherokee-trunk/admin/plugins/dbslayer.py:53
 #: cherokee-trunk/admin/plugins/mysql.py:79
 msgid "DB Password"
-msgstr ""
+msgstr "DBパスワード"
 
 #: cherokee-trunk/admin/plugins/dbslayer.py:54
 msgid "Data Base"
-msgstr ""
+msgstr "データーベース"
 
 #: cherokee-trunk/admin/plugins/dbslayer.py:59
 msgid "Serialization"
-msgstr ""
+msgstr "シリアライズ"
 
 #: cherokee-trunk/admin/plugins/dbslayer.py:65
 #: cherokee-trunk/admin/plugins/scgi.py:49
@@ -1662,11 +1682,11 @@ msgstr ""
 #: cherokee-trunk/admin/plugins/uwsgi.py:49
 #: cherokee-trunk/admin/plugins/fcgi.py:49
 msgid "Balancer"
-msgstr ""
+msgstr "バランサ"
 
 #: cherokee-trunk/admin/plugins/dbslayer.py:67
 msgid "Data Base Balancing"
-msgstr ""
+msgstr "データーベースのバランシング"
 
 #: cherokee-trunk/admin/plugins/target_ip.py:31
 msgid ""
@@ -1680,20 +1700,20 @@ msgstr ""
 
 #: cherokee-trunk/admin/plugins/target_ip.py:61
 msgid "IP or Subnet"
-msgstr ""
+msgstr "IPかサブネット"
 
 #: cherokee-trunk/admin/plugins/target_ip.py:76
 msgid "New IP/Subnet"
-msgstr ""
+msgstr "新規IP／サブネット"
 
 #: cherokee-trunk/admin/plugins/target_ip.py:79
 #: cherokee-trunk/admin/plugins/wildcard.py:70
 msgid "Add new entry"
-msgstr ""
+msgstr "新規エントリ"
 
 #: cherokee-trunk/admin/plugins/target_ip.py:88
 msgid "Add new IP/Subnet…"
-msgstr ""
+msgstr "IP／サブネットを追加…"
 
 #: cherokee-trunk/admin/plugins/target_ip.py:100
 msgid "Accepted Server IP Addresses and Subnets"
@@ -1701,15 +1721,15 @@ msgstr ""
 
 #: cherokee-trunk/admin/plugins/scgi.py:51
 msgid "SCGI Specific"
-msgstr ""
+msgstr "SCGIの詳細"
 
 #: cherokee-trunk/admin/plugins/dirlist.py:34
 msgid "Choose the listing theme."
-msgstr ""
+msgstr "一覧表示で使用するテーマ"
 
 #: cherokee-trunk/admin/plugins/dirlist.py:35
 msgid "Web directory where the icon files are located. Default: <i>/icons</i>."
-msgstr ""
+msgstr "Web上のアイコンの格納ディレクトリ。デフォルト：<i>/icons</i>"
 
 #: cherokee-trunk/admin/plugins/dirlist.py:36
 msgid "List of notice files to be inserted."
@@ -1721,11 +1741,11 @@ msgstr ""
 
 #: cherokee-trunk/admin/plugins/dirlist.py:39
 msgid "Only listing"
-msgstr ""
+msgstr "一覧表示のみ"
 
 #: cherokee-trunk/admin/plugins/dirlist.py:49
 msgid "Show Size"
-msgstr ""
+msgstr "サイズを表示"
 
 #: cherokee-trunk/admin/plugins/dirlist.py:49
 #: cherokee-trunk/admin/plugins/dirlist.py:50
@@ -1735,63 +1755,63 @@ msgstr ""
 #: cherokee-trunk/admin/plugins/dirlist.py:54
 #: cherokee-trunk/admin/plugins/redir.py:105
 msgid "Show"
-msgstr ""
+msgstr "表示"
 
 #: cherokee-trunk/admin/plugins/dirlist.py:50
 msgid "Show Date"
-msgstr ""
+msgstr "日付を表示"
 
 #: cherokee-trunk/admin/plugins/dirlist.py:51
 msgid "Show User"
-msgstr ""
+msgstr "ユーザを表示"
 
 #: cherokee-trunk/admin/plugins/dirlist.py:52
 msgid "Show Group"
-msgstr ""
+msgstr "グループを表示"
 
 #: cherokee-trunk/admin/plugins/dirlist.py:53
 msgid "Show Backup files"
-msgstr ""
+msgstr "バックアップを表示"
 
 #: cherokee-trunk/admin/plugins/dirlist.py:54
 msgid "Show Hidden files"
-msgstr ""
+msgstr "隠されたファイルを表示"
 
 #: cherokee-trunk/admin/plugins/dirlist.py:55
 msgid "Allow symbolic links"
-msgstr ""
+msgstr "シンボリックリンクを表示"
 
 #: cherokee-trunk/admin/plugins/dirlist.py:56
 msgid "Redirect symbolic links"
-msgstr ""
+msgstr "シンボリックリンクのリダイレクト先"
 
 #: cherokee-trunk/admin/plugins/dirlist.py:60
 msgid "Listing"
-msgstr ""
+msgstr "一欄"
 
 #: cherokee-trunk/admin/plugins/dirlist.py:65
 msgid "Theme"
-msgstr ""
+msgstr "テーマ"
 
 #: cherokee-trunk/admin/plugins/dirlist.py:66
 msgid "Icons dir"
-msgstr ""
+msgstr "アイコンディレクトリ"
 
 #: cherokee-trunk/admin/plugins/dirlist.py:67
 msgid "Notice files"
-msgstr ""
+msgstr "注意書きファイル"
 
 #: cherokee-trunk/admin/plugins/dirlist.py:68
 msgid "Hidden files"
-msgstr ""
+msgstr "隠されたファイル"
 
 #: cherokee-trunk/admin/plugins/dirlist.py:72
 msgid "Theming"
-msgstr ""
+msgstr "テーマ"
 
 #: cherokee-trunk/admin/plugins/proxy.py:35
 msgid "Reverse Proxy"
-msgstr ""
+msgstr "逆プロクシ"
 
 #: cherokee-trunk/admin/plugins/proxy.py:37
 msgid ""
@@ -1830,76 +1850,77 @@ msgstr ""
 
 #: cherokee-trunk/admin/plugins/proxy.py:124
 msgid "Add RegEx"
-msgstr ""
+msgstr "正規表現を追加"
 
 #: cherokee-trunk/admin/plugins/proxy.py:173
 msgid "Add Header Entry"
-msgstr ""
+msgstr "ヘッダーエントリを追加"
 
 #: cherokee-trunk/admin/plugins/proxy.py:220
 msgid "Hide Header"
-msgstr ""
+msgstr "ヘッダーを隠す"
 
 #: cherokee-trunk/admin/plugins/proxy.py:239
 #: cherokee-trunk/admin/PageAdvanced.py:138
 msgid "Reuse connections"
-msgstr ""
+msgstr "再接続"
 
 #: cherokee-trunk/admin/plugins/proxy.py:240
 msgid "Allow Keepalive"
-msgstr ""
+msgstr "KeepAliveを許可"
 
 #: cherokee-trunk/admin/plugins/proxy.py:241
+#, fuzzy
 msgid "Preserve Host Header"
-msgstr ""
+msgstr "サーバーのヘッダーを保持"
 
 #: cherokee-trunk/admin/plugins/proxy.py:241
 #: cherokee-trunk/admin/plugins/proxy.py:242
 msgid "Preserve"
-msgstr ""
+msgstr "保持"
 
 #: cherokee-trunk/admin/plugins/proxy.py:242
 msgid "Preserve Server Header"
-msgstr ""
+msgstr "サーバーのヘッダーを保持"
 
 #: cherokee-trunk/admin/plugins/proxy.py:243
 msgid "Use VServer error handler"
-msgstr ""
+msgstr "仮想サーバーエラーハンドラを使用"
 
 #: cherokee-trunk/admin/plugins/proxy.py:243
 msgid "Use it"
-msgstr ""
+msgstr "使用する"
 
 #: cherokee-trunk/admin/plugins/proxy.py:248
 msgid "Reverse Proxy Settings"
-msgstr ""
+msgstr "リバースプロクシ設定"
 
 #: cherokee-trunk/admin/plugins/proxy.py:252
 msgid "Request"
-msgstr ""
+msgstr "リクエスト"
 
 #: cherokee-trunk/admin/plugins/proxy.py:254
 #: cherokee-trunk/admin/plugins/proxy.py:266
 msgid "URL Rewriting"
-msgstr ""
+msgstr "URLのリライト"
 
 #: cherokee-trunk/admin/plugins/proxy.py:257
 #: cherokee-trunk/admin/plugins/proxy.py:269
 msgid "Header Addition"
-msgstr ""
+msgstr "追加するヘッダー"
 
 #: cherokee-trunk/admin/plugins/proxy.py:260
 #: cherokee-trunk/admin/plugins/proxy.py:272
 msgid "Hide Headers"
-msgstr ""
+msgstr "ヘッダーを隠す"
 
 #: cherokee-trunk/admin/plugins/proxy.py:264
 msgid "Reply"
-msgstr ""
+msgstr "変身"
 
 #: cherokee-trunk/admin/plugins/proxy.py:280
 msgid "Back-end Servers"
-msgstr ""
+msgstr "バックエンドサーバー"
 
 #: cherokee-trunk/admin/plugins/streaming.py:33
 msgid "Figure the bit rate of the media file, and limit the bandwidth to it."
@@ -1915,16 +1936,17 @@ msgid ""
 msgstr ""
 
 #: cherokee-trunk/admin/plugins/streaming.py:46
+#, fuzzy
 msgid "Auto Rate"
-msgstr ""
+msgstr "自動"
 
 #: cherokee-trunk/admin/plugins/streaming.py:47
 msgid "Speedup Factor"
-msgstr ""
+msgstr "スピードアップ要因"
 
 #: cherokee-trunk/admin/plugins/streaming.py:48
 msgid "Initial Boost"
-msgstr ""
+msgstr "開始時ブースト"
 
 #: cherokee-trunk/admin/plugins/wildcard.py:29
 msgid ""
@@ -1938,23 +1960,23 @@ msgstr ""
 
 #: cherokee-trunk/admin/plugins/wildcard.py:52
 msgid "Domain pattern"
-msgstr ""
+msgstr "ドメインパターン"
 
 #: cherokee-trunk/admin/plugins/wildcard.py:67
 msgid "New host name"
-msgstr ""
+msgstr "新規ホスト名"
 
 #: cherokee-trunk/admin/plugins/wildcard.py:79
 msgid "Add new wildcard…"
-msgstr ""
+msgstr "新規ワイルドカード"
 
 #: cherokee-trunk/admin/plugins/wildcard.py:91
 msgid "Accepted Domains"
-msgstr ""
+msgstr "許可ドメイン"
 
 #: cherokee-trunk/admin/plugins/secdownload.py:31
 msgid "Hidden Download"
-msgstr ""
+msgstr "隠されたダウンロード"
 
 #: cherokee-trunk/admin/plugins/secdownload.py:33
 msgid "Shared secret between the server and the script."
@@ -1966,25 +1988,26 @@ msgstr ""
 
 #: cherokee-trunk/admin/plugins/secdownload.py:43
 msgid "Secret"
-msgstr ""
+msgstr "秘密"
 
 #: cherokee-trunk/admin/plugins/secdownload.py:44
 #: cherokee-trunk/admin/PageEntry.py:279
 #: cherokee-trunk/admin/PageVServer.py:148
 msgid "Timeout"
-msgstr ""
+msgstr "タイムアウト"
 
 #: cherokee-trunk/admin/plugins/secdownload.py:50
 msgid "Covering Parameters"
-msgstr ""
+msgstr "パラメーターの変換"
 
 #: cherokee-trunk/admin/plugins/htdigest.py:32
+#, fuzzy
 msgid "Full path to the Htdigest formated password file."
-msgstr ""
+msgstr ".htpasswd形式のパスワードファイルへのフルパス"
 
 #: cherokee-trunk/admin/plugins/htdigest.py:46
 msgid "Htdigest Password File"
-msgstr ""
+msgstr "Htdigestパスワードファイル"
 
 #: cherokee-trunk/admin/plugins/custom_error.py:30
 msgid "HTTP Error that you be used to reply the request."
@@ -1992,31 +2015,33 @@ msgstr ""
 
 #: cherokee-trunk/admin/plugins/custom_error.py:32
 msgid "HTTP Custom Error"
-msgstr ""
+msgstr "カスタムHTTPエラー"
 
 #: cherokee-trunk/admin/plugins/custom_error.py:51
 msgid "Custom Error"
-msgstr ""
+msgstr "カスタムエラー"
 
 #: cherokee-trunk/admin/plugins/mysql.py:35
 msgid "MySQL server IP address."
-msgstr ""
+msgstr "MｙSQLサーバーのIPアドレス"
 
 #: cherokee-trunk/admin/plugins/mysql.py:36
 msgid "Server port to connect to."
-msgstr ""
+msgstr "接続するサーバーのポート"
 
 #: cherokee-trunk/admin/plugins/mysql.py:37
 msgid "Full path of Unix socket to communicate with the data base."
-msgstr ""
+msgstr "データーベースへ接続するためのUnixソケットへのフルパス"
 
 #: cherokee-trunk/admin/plugins/mysql.py:38
+#, fuzzy
 msgid "User name for connecting to the database."
-msgstr ""
+msgstr "データーベースにアクセスするユーザ"
 
 #: cherokee-trunk/admin/plugins/mysql.py:39
+#, fuzzy
 msgid "Password for connecting to the database."
-msgstr ""
+msgstr "データーベースにアクセスするユーザ"
 
 #: cherokee-trunk/admin/plugins/mysql.py:40
 msgid "Database name containing the user/password pair list."
@@ -2044,7 +2069,7 @@ msgstr ""
 #: cherokee-trunk/admin/wizards/coldfusion.py:194
 #: cherokee-trunk/admin/Balancer.py:69
 msgid "Host"
-msgstr ""
+msgstr "ホスト"
 
 #: cherokee-trunk/admin/plugins/mysql.py:76
 #: cherokee-trunk/admin/plugins/ldap.py:48
@@ -2054,33 +2079,33 @@ msgstr ""
 #: cherokee-trunk/admin/PageGeneral.py:176
 #: cherokee-trunk/admin/PageGeneral.py:214
 msgid "Port"
-msgstr ""
+msgstr "ポート"
 
 #: cherokee-trunk/admin/plugins/mysql.py:77
 msgid "Unix Socket"
-msgstr ""
+msgstr "Unixソケット"
 
 #: cherokee-trunk/admin/plugins/mysql.py:80
 #: cherokee-trunk/admin/market/Maintenance.py:281
 #: packages/common/database.py:759
 msgid "Database"
-msgstr ""
+msgstr "データーベース"
 
 #: cherokee-trunk/admin/plugins/mysql.py:81
 msgid "SQL Query"
-msgstr ""
+msgstr "SQLクエリ"
 
 #: cherokee-trunk/admin/plugins/mysql.py:82
 msgid "Password Hash"
-msgstr ""
+msgstr "パスワードハッシュ"
 
 #: cherokee-trunk/admin/plugins/mysql.py:87
 msgid "MySQL Connection"
-msgstr ""
+msgstr "MySQL接続"
 
 #: cherokee-trunk/admin/plugins/error_redir.py:42
 msgid "HTTP Error to match."
-msgstr ""
+msgstr "一致するHTTPエラー"
 
 #: cherokee-trunk/admin/plugins/error_redir.py:43
 msgid "Target to access whenever the HTTP Error occurs."
@@ -2092,51 +2117,52 @@ msgstr ""
 
 #: cherokee-trunk/admin/plugins/error_redir.py:99
 msgid "Default Error"
-msgstr ""
+msgstr "デフォルトのエラー"
 
 #: cherokee-trunk/admin/plugins/error_redir.py:103
 msgid "Error"
-msgstr ""
+msgstr "エラー"
 
 #: cherokee-trunk/admin/plugins/error_redir.py:109
 msgid "Add New Custom Error"
-msgstr ""
+msgstr "新しいカスタムエラーを追加"
 
 #: cherokee-trunk/admin/plugins/error_redir.py:121
 #: cherokee-trunk/admin/Mime.py:104
 msgid "Add New"
-msgstr ""
+msgstr "追加"
 
 #: cherokee-trunk/admin/plugins/url_arg.py:31
 msgid "Argument name"
-msgstr ""
+msgstr "引数名"
 
 #: cherokee-trunk/admin/plugins/url_arg.py:32
 msgid "Regular Expression for the match"
-msgstr ""
+msgstr "正規表現に一致"
 
 #: cherokee-trunk/admin/plugins/url_arg.py:34
 msgid "Match a specific argument"
-msgstr ""
+msgstr "固有の引数と一致"
 
 #: cherokee-trunk/admin/plugins/url_arg.py:35
 msgid "Match any argument"
-msgstr ""
+msgstr "すべての引数と一致"
 
 #: cherokee-trunk/admin/plugins/url_arg.py:74
 #: cherokee-trunk/admin/plugins/url_arg.py:92
 msgid "Match type"
-msgstr ""
+msgstr "マッチタイプ"
 
 #: cherokee-trunk/admin/plugins/url_arg.py:75
 #: cherokee-trunk/admin/plugins/url_arg.py:94
 msgid "Argument"
-msgstr ""
+msgstr "引数"
 
 #: cherokee-trunk/admin/plugins/directory.py:27
+#, fuzzy
 msgid ""
 "Public Web Directory to which content the configuration will be applied."
-msgstr ""
+msgstr "設定を反映させたいファイルの拡張子をコンマで区切って指定してください。"
 
 #: cherokee-trunk/admin/plugins/directory.py:31
 #: cherokee-trunk/admin/market/PageApp.py:41
@@ -2153,15 +2179,16 @@ msgstr ""
 #: cherokee-trunk/admin/wizards/uwsgi.py:250
 #: cherokee-trunk/admin/wizards/glassfish.py:154
 msgid "Web Directory"
-msgstr ""
+msgstr "Webディレクトリ"
 
 #: cherokee-trunk/admin/plugins/header.py:30
+#, fuzzy
 msgid "Header against which the regular expression will be evaluated."
-msgstr ""
+msgstr "リクエスト時に正規表現を行います。"
 
 #: cherokee-trunk/admin/plugins/header.py:31
 msgid "Regular expression."
-msgstr ""
+msgstr "正規表現"
 
 #: cherokee-trunk/admin/plugins/header.py:32
 msgid "It defines how this match has to be evaluated."
@@ -2175,7 +2202,7 @@ msgstr ""
 
 #: cherokee-trunk/admin/plugins/header.py:46
 msgid "Matches a Regular Expression"
-msgstr ""
+msgstr "正規表現にマッチ"
 
 #: cherokee-trunk/admin/plugins/header.py:47
 msgid "Is Provided"
@@ -2183,11 +2210,12 @@ msgstr ""
 
 #: cherokee-trunk/admin/plugins/header.py:85
 msgid "Full header"
-msgstr ""
+msgstr "全ヘッダー"
 
 #: cherokee-trunk/admin/plugins/header.py:88
+#, fuzzy
 msgid "Complete Header"
-msgstr ""
+msgstr "ヘッダーを隠す"
 
 #: cherokee-trunk/admin/plugins/header.py:135
 #, python-format
@@ -2195,16 +2223,18 @@ msgid "Header %(header)s is provided"
 msgstr ""
 
 #: cherokee-trunk/admin/plugins/uwsgi.py:51
+#, fuzzy
 msgid "UWSGI Specific"
-msgstr ""
+msgstr "SCGIの詳細"
 
 #: cherokee-trunk/admin/plugins/server_info.py:36
 msgid "Only version information"
-msgstr ""
+msgstr "バージョン情報のみ"
 
 #: cherokee-trunk/admin/plugins/server_info.py:37
+#, fuzzy
 msgid "Server Information + Connections"
-msgstr ""
+msgstr "サーバー情報"
 
 #: cherokee-trunk/admin/plugins/server_info.py:40
 msgid "Which information should be shown."
@@ -2212,11 +2242,11 @@ msgstr ""
 
 #: cherokee-trunk/admin/plugins/server_info.py:50
 msgid "Show Information"
-msgstr ""
+msgstr "情報表示"
 
 #: cherokee-trunk/admin/plugins/server_info.py:55
 msgid "Privacy Settings"
-msgstr ""
+msgstr "プライバシー設定"
 
 #: cherokee-trunk/admin/plugins/from.py:30
 msgid "IP or Subnet to check the connection origin against."
@@ -2224,19 +2254,20 @@ msgstr ""
 
 #: cherokee-trunk/admin/plugins/from.py:96
 msgid "IPs and Subnets"
-msgstr ""
+msgstr "IPとサブネット"
 
 #: cherokee-trunk/admin/plugins/from.py:103
+#, fuzzy
 msgid "New IP or Subnet"
-msgstr ""
+msgstr "IPかサブネット"
 
 #: cherokee-trunk/admin/plugins/from.py:107
 msgid "Add another entry"
-msgstr ""
+msgstr "他のエントリを追加"
 
 #: cherokee-trunk/admin/plugins/from.py:117
 msgid "From"
-msgstr ""
+msgstr "元"
 
 #: cherokee-trunk/admin/plugins/rrd.py:30
 msgid "Directory where the RRDtool databases should be written."
@@ -2249,17 +2280,17 @@ msgstr ""
 
 #: cherokee-trunk/admin/plugins/rrd.py:40
 msgid "Round Robin Database directory"
-msgstr ""
+msgstr "ラウンドロビンのデーターベースのディレクトリ"
 
 #: cherokee-trunk/admin/plugins/rrd.py:41
 msgid "Custom rrdtool binary"
-msgstr ""
+msgstr "rrdtoolのバイナリを指定"
 
 #: cherokee-trunk/admin/plugins/extensions.py:31
 msgid ""
 "Comma-separated list of File Extension to which the configuration will be "
 "applied."
-msgstr ""
+msgstr "設定を反映させたいファイルの拡張子をコンマで区切って指定してください。"
 
 #: cherokee-trunk/admin/plugins/extensions.py:32
 msgid "Ensure that the matched extension if part of a local file name."
@@ -2267,47 +2298,48 @@ msgstr ""
 
 #: cherokee-trunk/admin/plugins/extensions.py:62
 msgid "Check local file"
-msgstr ""
+msgstr "ローカルのファイルをチェック"
 
 #: cherokee-trunk/admin/plugins/fullpath.py:30
+#, fuzzy
 msgid ""
 "Full path request to which content the configuration will be applied. (Eg: /"
 "favicon.ico)"
-msgstr ""
+msgstr "設定を反映させたいファイルの拡張子をコンマで区切って指定してください。"
 
 #: cherokee-trunk/admin/plugins/fullpath.py:94
 msgid "Full Web Paths"
-msgstr ""
+msgstr "全Webのパス"
 
 #: cherokee-trunk/admin/plugins/fullpath.py:106
 msgid "Add another path"
-msgstr ""
+msgstr "他のパスを追加"
 
 #: cherokee-trunk/admin/plugins/fullpath.py:117
 #: cherokee-trunk/admin/plugins/fullpath.py:124
 msgid "Path"
-msgstr ""
+msgstr "パス"
 
 #: cherokee-trunk/admin/plugins/fullpath.py:119
 #: cherokee-trunk/admin/PageVServer.py:462
 msgid "Paths"
-msgstr ""
+msgstr "パス"
 
 #: cherokee-trunk/admin/plugins/fcgi.py:51
 msgid "FastCGI Specific"
-msgstr ""
+msgstr "FastCGIの詳細"
 
 #: cherokee-trunk/admin/plugins/ldap.py:30
 msgid "LDAP"
-msgstr ""
+msgstr "LDAP認証"
 
 #: cherokee-trunk/admin/plugins/ldap.py:32
 msgid "LDAP server IP address."
-msgstr ""
+msgstr "LDAPサーバーのIPアドレス"
 
 #: cherokee-trunk/admin/plugins/ldap.py:33
 msgid "LDAP server port to connect to. Default: 389"
-msgstr ""
+msgstr "LDAPサーバーの接続ポート。デフォルトは389です。"
 
 #: cherokee-trunk/admin/plugins/ldap.py:34
 msgid "Domain sent during the LDAP authentication operation. Optional."
@@ -2331,39 +2363,41 @@ msgstr ""
 
 #: cherokee-trunk/admin/plugins/ldap.py:39
 msgid "CA File for the TLS connections."
-msgstr ""
+msgstr "TLS接続で使用するCAファイル"
 
 #: cherokee-trunk/admin/plugins/ldap.py:47
 msgid "Server"
-msgstr ""
+msgstr "サーバー"
 
 #: cherokee-trunk/admin/plugins/ldap.py:49
+#, fuzzy
 msgid "Bind Domain"
-msgstr ""
+msgstr "元のドメイン"
 
 #: cherokee-trunk/admin/plugins/ldap.py:50
+#, fuzzy
 msgid "Bind Password"
-msgstr ""
+msgstr "DBパスワード"
 
 #: cherokee-trunk/admin/plugins/ldap.py:51
 msgid "Base Domain"
-msgstr ""
+msgstr "基準ドメイン"
 
 #: cherokee-trunk/admin/plugins/ldap.py:52
 msgid "Filter"
-msgstr ""
+msgstr "フィルタ"
 
 #: cherokee-trunk/admin/plugins/ldap.py:53
 msgid "Use TLS"
-msgstr ""
+msgstr "TLSを使用"
 
 #: cherokee-trunk/admin/plugins/ldap.py:54
 msgid "CA File"
-msgstr ""
+msgstr "CAファイル"
 
 #: cherokee-trunk/admin/plugins/ldap.py:59
 msgid "LDAP Connection"
-msgstr ""
+msgstr "LDAP接続"
 
 #: cherokee-trunk/admin/plugins/redir.py:33
 msgid "Defines whether the redirection will be seen by the client."
@@ -2385,19 +2419,19 @@ msgstr ""
 
 #: cherokee-trunk/admin/plugins/redir.py:38
 msgid "Redirections"
-msgstr ""
+msgstr "リダイレクト"
 
 #: cherokee-trunk/admin/plugins/redir.py:71
 msgid "Rule list"
-msgstr ""
+msgstr "ルール一覧"
 
 #: cherokee-trunk/admin/plugins/redir.py:118
 msgid "Add New Regular Expression"
-msgstr ""
+msgstr "正規表現を追加"
 
 #: cherokee-trunk/admin/plugins/redir.py:123
 msgid "Add New RegEx"
-msgstr ""
+msgstr "正規表現を追加"
 
 #: cherokee-trunk/admin/plugins/method.py:66
 msgid "The HTTP method that should match this rule."
@@ -2411,15 +2445,15 @@ msgstr ""
 #: cherokee-trunk/admin/PageVServer.py:482
 #: cherokee-trunk/admin/PageVServer.py:516
 msgid "Method"
-msgstr ""
+msgstr "方法"
 
 #: cherokee-trunk/admin/plugins/bind.py:64
 msgid "IP (Port):"
-msgstr ""
+msgstr "IP（ポート）："
 
 #: cherokee-trunk/admin/plugins/bind.py:65
 msgid "Port:"
-msgstr ""
+msgstr "ポート："
 
 #: cherokee-trunk/admin/plugins/bind.py:92
 #: cherokee-trunk/admin/PageGeneral.py:176
@@ -2430,33 +2464,35 @@ msgstr ""
 #: cherokee-trunk/admin/PageAdvanced.py:183
 #: cherokee-trunk/admin/PageAdvanced.py:193
 #: cherokee-trunk/admin/PageGeneral.py:176
+#, fuzzy
 msgid "TLS"
-msgstr ""
+msgstr "TLSを使用"
 
 #: cherokee-trunk/admin/plugins/bind.py:98 cherokee-trunk/admin/util.py:94
 msgid "No"
-msgstr ""
+msgstr "いいえ"
 
 #: cherokee-trunk/admin/plugins/bind.py:98 cherokee-trunk/admin/util.py:94
 msgid "Yes"
-msgstr ""
+msgstr "はい"
 
 #: cherokee-trunk/admin/plugins/bind.py:109
 msgid "Selected Ports"
-msgstr ""
+msgstr "選択されたポート"
 
 #: cherokee-trunk/admin/plugins/bind.py:131
 msgid "Assign new IP/Port"
-msgstr ""
+msgstr "新しいIP／ポートを割り当て"
 
 #: cherokee-trunk/admin/plugins/bind.py:159
 msgid "Ports"
-msgstr ""
+msgstr "ポート"
 
 #: cherokee-trunk/admin/plugins/rehost.py:29
+#, fuzzy
 msgid ""
 "Regular Expression against which the hosts be Host name will be compared."
-msgstr ""
+msgstr "リクエスト時に正規表現を行います。"
 
 #: cherokee-trunk/admin/plugins/rehost.py:30
 msgid "At least one Regular Expression string must be defined."
@@ -2465,35 +2501,35 @@ msgstr ""
 #: cherokee-trunk/admin/plugins/rehost.py:68
 #: cherokee-trunk/admin/plugins/rehost.py:92
 msgid "New Regular Expression"
-msgstr ""
+msgstr "新規正規表現"
 
 #: cherokee-trunk/admin/plugins/rehost.py:71
 msgid "Add New Entry"
-msgstr ""
+msgstr "新規エントリ"
 
 #: cherokee-trunk/admin/plugins/rehost.py:80
 msgid "Add new entry…"
-msgstr ""
+msgstr "エントリを追加…"
 
 #: cherokee-trunk/admin/market/Util.py:54
 #: cherokee-trunk/admin/market/Util.py:56
 #: cherokee-trunk/admin/market/Util.py:84
 #: cherokee-trunk/admin/market/Install.py:93
 msgid "Cherokee Market"
-msgstr ""
+msgstr "Cherokeeマーケット"
 
 #: cherokee-trunk/admin/market/Util.py:63
 msgid "Apps Center"
-msgstr ""
+msgstr "アプリセンター"
 
 #: cherokee-trunk/admin/market/Util.py:90
 #: cherokee-trunk/admin/market/PageSearch.py:58
 msgid "Market"
-msgstr ""
+msgstr "マーケット"
 
 #: cherokee-trunk/admin/market/Util.py:128
 msgid "Free"
-msgstr ""
+msgstr "無料"
 
 #: cherokee-trunk/admin/market/Util.py:163
 msgid "Try the following instructions to install the required software"
@@ -2508,31 +2544,33 @@ msgstr ""
 
 #: cherokee-trunk/admin/market/Util.py:177
 msgid "or"
-msgstr ""
+msgstr "か、"
 
 #: cherokee-trunk/admin/market/PageIndex.py:64
 msgid "Featured Applications"
-msgstr ""
+msgstr "おすすめアプリケーション"
 
 #: cherokee-trunk/admin/market/PageIndex.py:119
 msgid "Could not access the repository"
-msgstr ""
+msgstr "リポジトリにアクセスすることができませんでした。"
 
 #: cherokee-trunk/admin/market/PageIndex.py:120
+#, fuzzy
 msgid "Cherokee could not reach the remote package repository"
-msgstr ""
+msgstr "リポジトリにアクセスすることができませんでした。"
 
 #: cherokee-trunk/admin/market/PageIndex.py:143
 msgid "Top Applications"
-msgstr ""
+msgstr "人気のアプリケーション"
 
 #: cherokee-trunk/admin/market/Review.py:58
 msgid "Could not send the review"
-msgstr ""
+msgstr "レビューを送ることができませんでした。"
 
 #: cherokee-trunk/admin/market/Review.py:59
+#, fuzzy
 msgid "We are sorry, but the review could not be sent."
-msgstr ""
+msgstr "レポートの送信ができませんでした。"
 
 #: cherokee-trunk/admin/market/Review.py:60
 #: cherokee-trunk/admin/market/Report.py:44
@@ -2542,60 +2580,60 @@ msgid ""
 msgstr ""
 
 #: cherokee-trunk/admin/market/Review.py:78
-#, python-format
+#, fuzzy, python-format
 msgid "Please, describe your experience with %(application_name)s:"
-msgstr ""
+msgstr "「%(application_name)s」への評価はいくつですか？"
 
 #: cherokee-trunk/admin/market/Review.py:79
 msgid "Title"
-msgstr ""
+msgstr "タイトル"
 
 #: cherokee-trunk/admin/market/Review.py:81
 #: cherokee-trunk/admin/market/Review.py:89
 msgid "Review"
-msgstr ""
+msgstr "レビュー"
 
 #: cherokee-trunk/admin/market/Review.py:83
 #, python-format
 msgid "How do you rate %(application_name)s?"
-msgstr ""
+msgstr "「%(application_name)s」への評価はいくつですか？"
 
 #: cherokee-trunk/admin/market/CommandProgress.py:34
 msgid "Show error details"
-msgstr ""
+msgstr "詳細なエラーを表示"
 
 #: cherokee-trunk/admin/market/CommandProgress.py:35
 msgid "Hide error details"
-msgstr ""
+msgstr "詳細なエラーを隠す"
 
 #: cherokee-trunk/admin/market/CommandProgress.py:129
 msgid "Unknown Error"
-msgstr ""
+msgstr "不明なエラー"
 
 #: cherokee-trunk/admin/market/CommandProgress.py:138
 msgid "Error executing"
-msgstr ""
+msgstr "エラー発生"
 
 #: cherokee-trunk/admin/market/PageCategory.py:57
 msgid "Categories"
-msgstr ""
+msgstr "カテゴリ"
 
 #: cherokee-trunk/admin/market/PageCategory.py:64
 #: cherokee-trunk/admin/market/PageCategory.py:76
 #: cherokee-trunk/admin/market/PageApp.py:154
 #: cherokee-trunk/admin/market/PageApp.py:209
 msgid "Category"
-msgstr ""
+msgstr "カテゴリ"
 
 #: cherokee-trunk/admin/market/PageCategory.py:69
 msgid "Empty Category"
-msgstr ""
+msgstr "空のカテゴリ"
 
 #: cherokee-trunk/admin/market/PageCategory.py:75
 #: cherokee-trunk/admin/market/PageSearch.py:70
 #: cherokee-trunk/admin/market/PageApp.py:199
 msgid "Market Home"
-msgstr ""
+msgstr "マーケットホーム"
 
 #: cherokee-trunk/admin/market/Maintenance.py:41
 msgid ""
@@ -2616,11 +2654,11 @@ msgstr ""
 
 #: cherokee-trunk/admin/market/Maintenance.py:220
 msgid "Maintanance"
-msgstr ""
+msgstr "メンテナンス"
 
 #: cherokee-trunk/admin/market/Maintenance.py:223
 msgid "Clean up"
-msgstr ""
+msgstr "クリーンナップ"
 
 #: cherokee-trunk/admin/market/Maintenance.py:228
 #, python-format
@@ -2641,16 +2679,16 @@ msgstr ""
 
 #: cherokee-trunk/admin/market/Maintenance.py:242
 msgid "Maintenance"
-msgstr ""
+msgstr "メンテナンス"
 
 #: cherokee-trunk/admin/market/Maintenance.py:281
 #: cherokee-trunk/admin/market/PageApp.py:188
 msgid "Application"
-msgstr ""
+msgstr "アプリケーション"
 
 #: cherokee-trunk/admin/market/Maintenance.py:281
 msgid "Date"
-msgstr ""
+msgstr "日付"
 
 #: cherokee-trunk/admin/market/Maintenance.py:316
 #: cherokee-trunk/admin/market/PageApp.py:153
@@ -2659,7 +2697,7 @@ msgstr ""
 
 #: cherokee-trunk/admin/market/Maintenance.py:333
 msgid "Unfinished"
-msgstr ""
+msgstr "未完"
 
 #: cherokee-trunk/admin/market/Maintenance.py:372
 msgid "Applications requiring maintenance"
@@ -2667,15 +2705,16 @@ msgstr ""
 
 #: cherokee-trunk/admin/market/Maintenance.py:468
 msgid "DB user"
-msgstr ""
+msgstr "DBユーザ"
 
 #: cherokee-trunk/admin/market/Maintenance.py:469
 msgid "DB password"
-msgstr ""
+msgstr "DBのパスワード"
 
 #: cherokee-trunk/admin/market/Maintenance.py:478
+#, fuzzy
 msgid "Database Credentials"
-msgstr ""
+msgstr "データーベースの必須条件"
 
 #: cherokee-trunk/admin/market/Maintenance.py:560
 #, python-format
@@ -2683,8 +2722,9 @@ msgid "Removing %(name)s (%(date)s)"
 msgstr ""
 
 #: cherokee-trunk/admin/market/Maintenance.py:566
+#, fuzzy
 msgid "Removing Applications"
-msgstr ""
+msgstr "アプリケーションを報告"
 
 #: cherokee-trunk/admin/market/Library.py:54
 msgid "You have not bought any app yet"
@@ -2692,41 +2732,42 @@ msgstr ""
 
 #: cherokee-trunk/admin/market/Library.py:76
 msgid "My Library"
-msgstr ""
+msgstr "私のライブラリ"
 
 #: cherokee-trunk/admin/market/PageSearch.py:49
 #: cherokee-trunk/admin/market/PageSearch.py:71
 #: cherokee-trunk/admin/market/PageApp.py:207
 msgid "Search"
-msgstr ""
+msgstr "検索"
 
 #: cherokee-trunk/admin/market/PageSearch.py:55
 msgid "Search Result"
-msgstr ""
+msgstr "検索結果"
 
 #: cherokee-trunk/admin/market/PageSearch.py:63
+#, fuzzy
 msgid "Empty Search"
-msgstr ""
+msgstr "検索"
 
 #: cherokee-trunk/admin/market/PageApp.py:50
 msgid "Supported"
-msgstr ""
+msgstr "サポート済み"
 
 #: cherokee-trunk/admin/market/PageApp.py:53
 msgid "Unsupported"
-msgstr ""
+msgstr "未サポート"
 
 #: cherokee-trunk/admin/market/PageApp.py:97
 msgid "Deployment methods"
-msgstr ""
+msgstr "デプロイ方法"
 
 #: cherokee-trunk/admin/market/PageApp.py:101
 msgid "Operating Systems"
-msgstr ""
+msgstr "オペレーティングシステム"
 
 #: cherokee-trunk/admin/market/PageApp.py:104
 msgid "Databases"
-msgstr ""
+msgstr "データーベース"
 
 #: cherokee-trunk/admin/market/PageApp.py:123
 msgid "By"
@@ -2734,39 +2775,39 @@ msgstr ""
 
 #: cherokee-trunk/admin/market/PageApp.py:126
 msgid "Install"
-msgstr ""
+msgstr "インストール"
 
 #: cherokee-trunk/admin/market/PageApp.py:131
 msgid "Report Application"
-msgstr ""
+msgstr "アプリケーションを報告"
 
 #: cherokee-trunk/admin/market/PageApp.py:135
 msgid "Report issue"
-msgstr ""
+msgstr "問題を報告"
 
 #: cherokee-trunk/admin/market/PageApp.py:151
 msgid "Version"
-msgstr ""
+msgstr "バージョン"
 
 #: cherokee-trunk/admin/market/PageApp.py:153
 msgid "Packager"
-msgstr ""
+msgstr "パッケージャー"
 
 #: cherokee-trunk/admin/market/PageApp.py:173
 msgid "No screenshots"
-msgstr ""
+msgstr "スクリーンショットなし"
 
 #: cherokee-trunk/admin/market/PageApp.py:177
 msgid "Screenshots"
-msgstr ""
+msgstr "スクリーンショット"
 
 #: cherokee-trunk/admin/market/PageApp.py:178
 msgid "Description"
-msgstr ""
+msgstr "概要"
 
 #: cherokee-trunk/admin/market/PageApp.py:193
 msgid "Application not found"
-msgstr ""
+msgstr "アプリケーションがありません"
 
 #: cherokee-trunk/admin/market/Install.py:57
 msgid ""
@@ -2793,8 +2834,9 @@ msgid ""
 msgstr ""
 
 #: cherokee-trunk/admin/market/Install.py:63
+#, fuzzy
 msgid "Thank you for buying at Cherokee's Market!"
-msgstr ""
+msgstr "Cherokeeマーケットにサインイン"
 
 #: cherokee-trunk/admin/market/Install.py:64
 msgid ""
@@ -2820,7 +2862,7 @@ msgstr ""
 
 #: cherokee-trunk/admin/market/Install.py:70
 msgid "The package cannot be installed"
-msgstr ""
+msgstr "そのパッケージはインストールされていません。"
 
 #: cherokee-trunk/admin/market/Install.py:71
 #, python-format
@@ -2832,11 +2874,12 @@ msgstr ""
 #: cherokee-trunk/admin/market/Install.py:371
 #: cherokee-trunk/admin/market/Install.py:406 packages/redmine/installer.py:21
 msgid "Installing"
-msgstr ""
+msgstr "インストール"
 
 #: cherokee-trunk/admin/market/Install.py:237
+#, fuzzy
 msgid "The application is being downloaded. Hold on tight!"
-msgstr ""
+msgstr "アプリケーションは展開されました…"
 
 #: cherokee-trunk/admin/market/Install.py:253
 msgid ""
@@ -2847,7 +2890,7 @@ msgstr ""
 #: cherokee-trunk/admin/market/Install.py:282
 #: cherokee-trunk/admin/PageException.py:80
 msgid "Internal Error"
-msgstr ""
+msgstr "内部エラー"
 
 #: cherokee-trunk/admin/market/Install.py:283
 msgid "An internal error occurred while deploying the application"
@@ -2866,27 +2909,27 @@ msgstr ""
 
 #: cherokee-trunk/admin/market/Install.py:291
 msgid "Comments"
-msgstr ""
+msgstr "コメント"
 
 #: cherokee-trunk/admin/market/Install.py:298
 msgid "Report Issue"
-msgstr ""
+msgstr "問題を報告"
 
 #: cherokee-trunk/admin/market/Install.py:372
 msgid "Unpacking application…"
-msgstr ""
+msgstr "アプリケーションを展開中…"
 
 #: cherokee-trunk/admin/market/Install.py:375
 msgid "The applicaction is being unpacked…"
-msgstr ""
+msgstr "アプリケーションは展開されました…"
 
 #: cherokee-trunk/admin/market/Install.py:407
 msgid "Setting it up…"
-msgstr ""
+msgstr "設定中…"
 
 #: cherokee-trunk/admin/market/Install.py:462
 msgid "has been installed successfully"
-msgstr ""
+msgstr "のインストールは成功しました。"
 
 #: cherokee-trunk/admin/market/Install.py:503
 msgid "You can now visit"
@@ -2894,17 +2937,19 @@ msgstr ""
 
 #: cherokee-trunk/admin/market/Install.py:504
 msgid "your new application"
-msgstr ""
+msgstr "あなたの新しいアプリケーション"
 
 #: cherokee-trunk/admin/market/Report.py:40
 msgid "Contact Support & Customer Service"
-msgstr ""
+msgstr "サポートとカスタマーサービスにコンタクト"
 
 #: cherokee-trunk/admin/market/Report.py:41
 msgid ""
 "You are about to submit a report for an application that is not working for "
 "you."
 msgstr ""
+"アプリケーションが正常に動作しなかった場合は、その時のレポートを送信すること"
+"ができます。"
 
 #: cherokee-trunk/admin/market/Report.py:42
 msgid ""
@@ -2916,25 +2961,27 @@ msgstr ""
 
 #: cherokee-trunk/admin/market/Report.py:43
 msgid "We are sorry, but the report could not be sent."
-msgstr ""
+msgstr "レポートの送信ができませんでした。"
 
 #: cherokee-trunk/admin/market/Report.py:45
 msgid ""
 "Thank you for submitting the application report. Our support team will "
 "review it as soon as possible."
 msgstr ""
+"アプリケーションのレポートを送信していただきありがとうございます。私たちのサ"
+"ポートチームは、この問題を再調査します。"
 
 #: cherokee-trunk/admin/market/Report.py:92
 msgid "Could not send the report"
-msgstr ""
+msgstr "報告の送信ができませんでした"
 
 #: cherokee-trunk/admin/market/Report.py:106
 msgid "Report sent successfully"
-msgstr ""
+msgstr "報告は正常に送られました"
 
 #: cherokee-trunk/admin/market/Report.py:134
 msgid "Report"
-msgstr ""
+msgstr "報告"
 
 #: cherokee-trunk/admin/PageAdvanced.py:64
 msgid ""
@@ -2942,6 +2989,9 @@ msgid ""
 "configuration parameters. Changing things is not recommended unless\n"
 "you really know what you are doing.</p>"
 msgstr ""
+"<p><b>警告</b>：このセクションは特別なパラメータを変更します。\n"
+"もしも、どういうことをするのかわからない場合は、絶対にいじらないで\n"
+"ください。</p>"
 
 #: cherokee-trunk/admin/PageAdvanced.py:68
 msgid "Defines which thread policy the OS should apply to the server."
@@ -3070,16 +3120,17 @@ msgstr ""
 #: cherokee-trunk/admin/PageAdvanced.py:97
 #: cherokee-trunk/admin/PageAdvanced.py:198 cherokee-trunk/admin/Page.py:160
 msgid "Advanced"
-msgstr ""
+msgstr "拡張"
 
 #: cherokee-trunk/admin/PageAdvanced.py:119
+#, fuzzy
 msgid "Keep Alive"
-msgstr ""
+msgstr "KeepAliveを許可"
 
 #: cherokee-trunk/admin/PageAdvanced.py:119
 #: cherokee-trunk/admin/PageAdvanced.py:121
 msgid "Allowed"
-msgstr ""
+msgstr "許可"
 
 #: cherokee-trunk/admin/PageAdvanced.py:120
 msgid "Max keepalive reqs"
@@ -3087,123 +3138,127 @@ msgstr ""
 
 #: cherokee-trunk/admin/PageAdvanced.py:121
 msgid "Chunked Encoding"
-msgstr ""
+msgstr "エンコードの区別"
 
 #: cherokee-trunk/admin/PageAdvanced.py:122
 msgid "Polling Method"
-msgstr ""
+msgstr "ポーリング方法"
 
 #: cherokee-trunk/admin/PageAdvanced.py:123
 msgid "Sendfile min size"
-msgstr ""
+msgstr "Sendfileの最小サイズ"
 
 #: cherokee-trunk/admin/PageAdvanced.py:124
 msgid "Sendfile max size"
-msgstr ""
+msgstr "Sendfileの最大サイズ"
 
 #: cherokee-trunk/admin/PageAdvanced.py:126
 #: cherokee-trunk/admin/PageAdvanced.py:189
 msgid "Connections"
-msgstr ""
+msgstr "接続数"
 
 #: cherokee-trunk/admin/PageAdvanced.py:134
 msgid "Thread Number"
-msgstr ""
+msgstr "スレッド番号"
 
 #: cherokee-trunk/admin/PageAdvanced.py:135
 msgid "Thread Policy"
-msgstr ""
+msgstr "スレッドポリシー"
 
 #: cherokee-trunk/admin/PageAdvanced.py:136
 msgid "File descriptors"
-msgstr ""
+msgstr "ファイルの概要"
 
 #: cherokee-trunk/admin/PageAdvanced.py:137
+#, fuzzy
 msgid "Listening queue length"
-msgstr ""
+msgstr "待ち受けポート"
 
 #: cherokee-trunk/admin/PageAdvanced.py:139
 msgid "Log flush time"
-msgstr ""
+msgstr "ログをフラッシュするまでの時間"
 
 #: cherokee-trunk/admin/PageAdvanced.py:140
 msgid "Nonces clean up time"
-msgstr ""
+msgstr "臨時のクリーンアップ時間"
 
 #: cherokee-trunk/admin/PageAdvanced.py:142
 #: cherokee-trunk/admin/PageAdvanced.py:190
 msgid "Resources"
-msgstr ""
+msgstr "リソース"
 
 #: cherokee-trunk/admin/PageAdvanced.py:151
 msgid "Max pages"
-msgstr ""
+msgstr "最大ページ数"
 
 #: cherokee-trunk/admin/PageAdvanced.py:152
 msgid "File Min Size"
-msgstr ""
+msgstr "最小ファイルサイズ"
 
 #: cherokee-trunk/admin/PageAdvanced.py:153
 msgid "File Max Size"
-msgstr ""
+msgstr "最大ファイルサイズ"
 
 #: cherokee-trunk/admin/PageAdvanced.py:154
+#, fuzzy
 msgid "Lasting: stat"
-msgstr ""
+msgstr "はじめに"
 
 #: cherokee-trunk/admin/PageAdvanced.py:155
+#, fuzzy
 msgid "Lasting: mmap"
-msgstr ""
+msgstr "一欄"
 
 #: cherokee-trunk/admin/PageAdvanced.py:157
 #: cherokee-trunk/admin/PageAdvanced.py:191
 msgid "I/O cache"
-msgstr ""
+msgstr "I/Oキャッシュ"
 
 #: cherokee-trunk/admin/PageAdvanced.py:165
 msgid "Panic action"
-msgstr ""
+msgstr "パニック時のアクション"
 
 #: cherokee-trunk/admin/PageAdvanced.py:166
 msgid "PID file"
-msgstr ""
+msgstr "PIDファイル"
 
 #: cherokee-trunk/admin/PageAdvanced.py:168
 #: cherokee-trunk/admin/PageAdvanced.py:192 cherokee-trunk/admin/Icons.py:214
 msgid "Special Files"
-msgstr ""
+msgstr "特別なファイル"
 
 #: cherokee-trunk/admin/PageAdvanced.py:176
 msgid "Allow SSL v2"
-msgstr ""
+msgstr "SSL v2を許可"
 
 #: cherokee-trunk/admin/PageAdvanced.py:177
 msgid "Handshake Timeout"
-msgstr ""
+msgstr "ハンドシェイクのタイムアウト"
 
 #: cherokee-trunk/admin/PageAdvanced.py:178
 msgid "DH parameters: 512 bits"
-msgstr ""
+msgstr "DHパラメーター：512ビット"
 
 #: cherokee-trunk/admin/PageAdvanced.py:179
 msgid "DH parameters: 1024 bits"
-msgstr ""
+msgstr "DHパラメーター：1024ビット"
 
 #: cherokee-trunk/admin/PageAdvanced.py:180
 msgid "DH parameters: 2048 bits"
-msgstr ""
+msgstr "DHパラメーター：2048ビット"
 
 #: cherokee-trunk/admin/PageAdvanced.py:181
 msgid "DH parameters: 4096 bits"
-msgstr ""
+msgstr "DHパラメーター：4096ビット"
 
 #: cherokee-trunk/admin/PageAdvanced.py:199
 msgid "Advanced Configuration"
-msgstr ""
+msgstr "拡張設定"
 
 #: cherokee-trunk/admin/wizards/static.py:38
+#, fuzzy
 msgid "Welcome to the Common Static wizard"
-msgstr ""
+msgstr "monoウィザードへようこそ"
 
 #: cherokee-trunk/admin/wizards/static.py:39
 msgid ""
@@ -3227,7 +3282,7 @@ msgstr ""
 
 #: cherokee-trunk/admin/wizards/coldfusion.py:38
 msgid "Welcome to the ColdFusion Wizard"
-msgstr ""
+msgstr "ColdFusionウィザードへようこそ"
 
 #: cherokee-trunk/admin/wizards/coldfusion.py:39
 msgid ""
@@ -3244,13 +3299,16 @@ msgstr ""
 
 #: cherokee-trunk/admin/wizards/coldfusion.py:42
 msgid "ColdFusion Details"
-msgstr ""
+msgstr "ColdFusionの詳細"
 
 #: cherokee-trunk/admin/wizards/coldfusion.py:43
+#, fuzzy
 msgid ""
 "The pair IP:port of the server running ColdFusion. You can add more later to "
 "have the load balanced."
 msgstr ""
+"Alfrescoの動作しているホスト名もしくはIPを入力してください。追記するとサー"
+"バーごとに負荷調整を行います。"
 
 #: cherokee-trunk/admin/wizards/coldfusion.py:45
 #: cherokee-trunk/admin/wizards/concrete5.py:46
@@ -3264,7 +3322,7 @@ msgstr ""
 #: cherokee-trunk/admin/wizards/glassfish.py:46
 #: cherokee-trunk/admin/wizards/php.py:42
 msgid "New Virtual Server Details"
-msgstr ""
+msgstr "新規仮想サーバーの詳細"
 
 #: cherokee-trunk/admin/wizards/coldfusion.py:46
 #: cherokee-trunk/admin/wizards/concrete5.py:47
@@ -3297,7 +3355,7 @@ msgstr ""
 #: cherokee-trunk/admin/wizards/uwsgi.py:65
 #: cherokee-trunk/admin/wizards/glassfish.py:49
 msgid "Public Web Directory"
-msgstr ""
+msgstr "Web上に公開するディレクトリ"
 
 #: cherokee-trunk/admin/wizards/coldfusion.py:51
 msgid "ColdFusion is not running on the specified host."
@@ -3316,11 +3374,11 @@ msgstr ""
 #: cherokee-trunk/admin/wizards/glassfish.py:170
 #: cherokee-trunk/admin/wizards/php.py:314
 msgid "New Host Name"
-msgstr ""
+msgstr "新規ホスト名"
 
 #: cherokee-trunk/admin/wizards/concrete5.py:38
 msgid "Welcome to the Concrete5 Wizard"
-msgstr ""
+msgstr "Concrete5ウィザードへようこそ"
 
 #: cherokee-trunk/admin/wizards/concrete5.py:39
 msgid ""
@@ -3338,7 +3396,7 @@ msgstr ""
 #: cherokee-trunk/admin/wizards/zend.py:42
 #: cherokee-trunk/admin/wizards/rtorrent.py:36
 msgid "Application Source Code"
-msgstr ""
+msgstr "アプリケーションのソースコード"
 
 #: cherokee-trunk/admin/wizards/concrete5.py:43
 msgid ""
@@ -3347,8 +3405,10 @@ msgid ""
 msgstr ""
 
 #: cherokee-trunk/admin/wizards/concrete5.py:44
+#, fuzzy
 msgid "Does not look like a Concrete5 source directory."
 msgstr ""
+"そのディレクトリは、Mailmanのメールアーカイブのディレクトリではないようです。"
 
 #: cherokee-trunk/admin/wizards/concrete5.py:49
 msgid ""
@@ -3366,22 +3426,24 @@ msgstr ""
 #: cherokee-trunk/admin/wizards/mailman.py:161
 #: cherokee-trunk/admin/wizards/php.py:315
 msgid "Use Same Logs as"
-msgstr ""
+msgstr "以下のログと同じ："
 
 #: cherokee-trunk/admin/wizards/concrete5.py:247
 #: cherokee-trunk/admin/wizards/zend.py:218
 msgid "Source Directory"
-msgstr ""
+msgstr "ソースのディレクトリ"
 
 #: cherokee-trunk/admin/wizards/mono.py:37
 msgid "Welcome to the mono Wizard"
-msgstr ""
+msgstr "monoウィザードへようこそ"
 
 #: cherokee-trunk/admin/wizards/mono.py:38
+#, fuzzy
 msgid ""
 "<a target=\"_blank\" href=\"http://www.mono-project.com/\">Mono</a> is a "
 "cross-platform, open-source .NET development framework."
 msgstr ""
+"クロスプラットフォームかつ、オープンソースの.NETの開発フレームワークです。"
 
 #: cherokee-trunk/admin/wizards/mono.py:39
 msgid ""
@@ -3391,15 +3453,17 @@ msgstr ""
 
 #: cherokee-trunk/admin/wizards/mono.py:41
 msgid "Mono Project"
-msgstr ""
+msgstr "Monoプロジェクト"
 
 #: cherokee-trunk/admin/wizards/mono.py:42
+#, fuzzy
 msgid "Local path to the Mono based project."
-msgstr ""
+msgstr "Mailmanのデーターディレクトリへのパス"
 
 #: cherokee-trunk/admin/wizards/mono.py:43
+#, fuzzy
 msgid "Local path to the FastCGI Mono server binary."
-msgstr ""
+msgstr "MailmanのCGIの設置ディレクトリへのパス"
 
 #: cherokee-trunk/admin/wizards/mono.py:47
 msgid "Document root (for non Mono related files)."
@@ -3410,21 +3474,22 @@ msgid "Web directory under which the Mono application will be published."
 msgstr ""
 
 #: cherokee-trunk/admin/wizards/mono.py:52
+#, fuzzy
 msgid "Directory doesn't look like a Mono based project."
-msgstr ""
+msgstr "そのディレクトリは、Mailmanの画像のディレクトリではないようです。"
 
 #: cherokee-trunk/admin/wizards/mono.py:219
 #: cherokee-trunk/admin/wizards/rails.py:377
 msgid "Project Directory"
-msgstr ""
+msgstr "プロジェクトディレクトリ"
 
 #: cherokee-trunk/admin/wizards/mono.py:221
 msgid "Mono Server Binary"
-msgstr ""
+msgstr "Monoサーバーバイナリ"
 
 #: cherokee-trunk/admin/wizards/django.py:38
 msgid "Welcome to the Django wizard"
-msgstr ""
+msgstr "Djangoウィザードへようこそ"
 
 #: cherokee-trunk/admin/wizards/django.py:39
 msgid ""
@@ -3449,29 +3514,34 @@ msgstr ""
 
 #: cherokee-trunk/admin/wizards/django.py:47
 #: cherokee-trunk/admin/wizards/uwsgi.py:62
+#, fuzzy
 msgid "Path to use as document root for the new virtual server."
-msgstr ""
+msgstr "仮想サーバーのDocument Rootディレクトリ"
 
 #: cherokee-trunk/admin/wizards/django.py:48
+#, fuzzy
 msgid "Does not look like a Django source directory."
 msgstr ""
+"そのディレクトリは、Mailmanのメールアーカイブのディレクトリではないようです。"
 
 #: cherokee-trunk/admin/wizards/django.py:49
 #: cherokee-trunk/admin/wizards/rails.py:58
+#, fuzzy
 msgid "The document root directory does not exist."
-msgstr ""
+msgstr "仮想サーバーのDocument Rootディレクトリ"
 
 #: cherokee-trunk/admin/wizards/django.py:206
 msgid "Django Local Directory"
-msgstr ""
+msgstr "Djangoのローカルディレクトリ"
 
 #: cherokee-trunk/admin/wizards/django.py:269
+#, fuzzy
 msgid "Directory doesn't look like a Django based project."
-msgstr ""
+msgstr "そのディレクトリは、Mailmanの画像のディレクトリではないようです。"
 
 #: cherokee-trunk/admin/wizards/symfony.py:41
 msgid "Welcome to the Symfony Wizard"
-msgstr ""
+msgstr "Symfonyウィザードへようこそ"
 
 #: cherokee-trunk/admin/wizards/symfony.py:42
 msgid ""
@@ -3498,8 +3568,10 @@ msgid ""
 msgstr ""
 
 #: cherokee-trunk/admin/wizards/symfony.py:48
+#, fuzzy
 msgid "Does not look like a Symfony source directory."
 msgstr ""
+"そのディレクトリは、Mailmanのメールアーカイブのディレクトリではないようです。"
 
 #: cherokee-trunk/admin/wizards/symfony.py:53
 msgid ""
@@ -3508,27 +3580,29 @@ msgstr ""
 
 #: cherokee-trunk/admin/wizards/symfony.py:250
 msgid "Project Source"
-msgstr ""
+msgstr "プロジェクトソース"
 
 #: cherokee-trunk/admin/wizards/symfony.py:251
 msgid "Symfony Package"
-msgstr ""
+msgstr "Symfonyパッケージ"
 
 #: cherokee-trunk/admin/wizards/hotlinking.py:36
 msgid "Welcome to the Hotlinking Wizard"
-msgstr ""
+msgstr "直リンクウィザードへようこそ"
 
 #: cherokee-trunk/admin/wizards/hotlinking.py:37
 msgid "This wizard stops other domains from hot-linking your media files."
 msgstr ""
+"このウィザードは、外部ドメインからメディアファイルへの直リンクを禁止させま"
+"す。"
 
 #: cherokee-trunk/admin/wizards/hotlinking.py:38
 msgid "Anti-HotLinking Information"
-msgstr ""
+msgstr "アンチ直リンク情報"
 
 #: cherokee-trunk/admin/wizards/hotlinking.py:39
 msgid "Domain allowed to access the files. Eg: example.com"
-msgstr ""
+msgstr "ファイルへのアクセスを許可するドメイン。例：example.com"
 
 #: cherokee-trunk/admin/wizards/hotlinking.py:40
 msgid "Path to the public resource to use. Eg: /images/forbidden.jpg"
@@ -3540,24 +3614,25 @@ msgstr ""
 
 #: cherokee-trunk/admin/wizards/hotlinking.py:86
 msgid "Show error"
-msgstr ""
+msgstr "エラーの表示"
 
 #: cherokee-trunk/admin/wizards/hotlinking.py:87
 msgid "Redirect"
-msgstr ""
+msgstr "リダイレクト"
 
 #: cherokee-trunk/admin/wizards/hotlinking.py:171
 #: packages/common/target.py:160
 msgid "Domain Name"
-msgstr ""
+msgstr "ドメイン名"
 
 #: cherokee-trunk/admin/wizards/hotlinking.py:172
+#, fuzzy
 msgid "Reply type"
-msgstr ""
+msgstr "変身"
 
 #: cherokee-trunk/admin/wizards/redirect.py:39
 msgid "Welcome to the Redirection Wizard"
-msgstr ""
+msgstr "リダイレクトウィザードへようこそ"
 
 #: cherokee-trunk/admin/wizards/redirect.py:40
 msgid ""
@@ -3566,8 +3641,9 @@ msgid ""
 msgstr ""
 
 #: cherokee-trunk/admin/wizards/redirect.py:42
+#, fuzzy
 msgid "Redirection details"
-msgstr ""
+msgstr "リダイレクト"
 
 #: cherokee-trunk/admin/wizards/redirect.py:43
 msgid ""
@@ -3576,16 +3652,17 @@ msgid ""
 msgstr ""
 
 #: cherokee-trunk/admin/wizards/redirect.py:44
+#, fuzzy
 msgid "Domain name to which requests will be redirected."
-msgstr ""
+msgstr "リクエスト時に正規表現を行います。"
 
 #: cherokee-trunk/admin/wizards/redirect.py:108
 msgid "Origin Domain"
-msgstr ""
+msgstr "元のドメイン"
 
 #: cherokee-trunk/admin/wizards/redirect.py:109
 msgid "Target Domain"
-msgstr ""
+msgstr "目標のドメイン"
 
 #: cherokee-trunk/admin/wizards/List.py:30
 msgid "CMS"
@@ -3593,11 +3670,11 @@ msgstr ""
 
 #: cherokee-trunk/admin/wizards/List.py:31
 msgid "Content Management Systems"
-msgstr ""
+msgstr "コンテンツマネージメントシステム"
 
 #: cherokee-trunk/admin/wizards/List.py:34
 msgid "Concrete 5"
-msgstr ""
+msgstr "コンクリート5"
 
 #: cherokee-trunk/admin/wizards/List.py:35
 msgid "The CMS made for Marketing, but built for Geeks."
@@ -3605,23 +3682,26 @@ msgstr ""
 
 #: cherokee-trunk/admin/wizards/List.py:41
 msgid "Application Servers"
-msgstr ""
+msgstr "アプリケーションのサーバー"
 
 #: cherokee-trunk/admin/wizards/List.py:42
+#, fuzzy
 msgid "General Purpose Application Servers"
-msgstr ""
+msgstr "アプリケーションのサーバー"
 
 #: cherokee-trunk/admin/wizards/List.py:45
+#, fuzzy
 msgid "Alfresco"
-msgstr ""
+msgstr "Alfrescoプロジェクト"
 
 #: cherokee-trunk/admin/wizards/List.py:46
 msgid "Enterprise web platform for building business solutions."
 msgstr ""
 
 #: cherokee-trunk/admin/wizards/List.py:49
+#, fuzzy
 msgid "Glassfish"
-msgstr ""
+msgstr "GlassFishプロジェクト"
 
 #: cherokee-trunk/admin/wizards/List.py:50
 msgid ""
@@ -3638,11 +3718,11 @@ msgstr ""
 
 #: cherokee-trunk/admin/wizards/List.py:60
 msgid "Platforms"
-msgstr ""
+msgstr "プラットフォーム"
 
 #: cherokee-trunk/admin/wizards/List.py:61
 msgid "Web Development Platforms"
-msgstr ""
+msgstr "Web開発プラットフォーム"
 
 #: cherokee-trunk/admin/wizards/List.py:64
 msgid "Django"
@@ -3653,8 +3733,9 @@ msgid "The Web framework for perfectionists (with deadlines)."
 msgstr ""
 
 #: cherokee-trunk/admin/wizards/List.py:68
+#, fuzzy
 msgid "Ruby on Rails"
-msgstr ""
+msgstr "Ruby on Railsプロジェクト"
 
 #: cherokee-trunk/admin/wizards/List.py:69
 msgid "Open-source web framework optimized for sustainable productivity."
@@ -3669,8 +3750,9 @@ msgid "Simple, straightforward, open-source software framework for PHP 5."
 msgstr ""
 
 #: cherokee-trunk/admin/wizards/List.py:76
+#, fuzzy
 msgid "Symfony"
-msgstr ""
+msgstr "Symfonyパッケージ"
 
 #: cherokee-trunk/admin/wizards/List.py:77
 msgid "Full-stack framework, a library of cohesive classes written in PHP."
@@ -3684,11 +3766,12 @@ msgstr ""
 
 #: cherokee-trunk/admin/wizards/List.py:87
 msgid "Languages"
-msgstr ""
+msgstr "言語"
 
 #: cherokee-trunk/admin/wizards/List.py:88
+#, fuzzy
 msgid "Development Languages and Platforms"
-msgstr ""
+msgstr "Web開発プラットフォーム"
 
 #: cherokee-trunk/admin/wizards/List.py:92
 msgid "Widely-used general-purpose scripting language."
@@ -3701,14 +3784,16 @@ msgstr ""
 #: cherokee-trunk/admin/wizards/List.py:96
 msgid "Cross-platform, open-source .NET development framework."
 msgstr ""
+"クロスプラットフォームかつ、オープンソースの.NETの開発フレームワークです。"
 
 #: cherokee-trunk/admin/wizards/List.py:102
 msgid "Web Applications"
-msgstr ""
+msgstr "Webアプリケーション"
 
 #: cherokee-trunk/admin/wizards/List.py:103
+#, fuzzy
 msgid "General Purpose Applications"
-msgstr ""
+msgstr "おすすめアプリケーション"
 
 #: cherokee-trunk/admin/wizards/List.py:106
 msgid "GNU MailMan"
@@ -3727,18 +3812,20 @@ msgstr ""
 msgid ""
 "BitTorrent client written in C++, based on the libTorrent libraries for Unix."
 msgstr ""
+"C++で書かれたBitTorrentのクライアントで、UnixのlibTorrentをベースとしていま"
+"す。"
 
 #: cherokee-trunk/admin/wizards/List.py:117
 msgid "Tasks"
-msgstr ""
+msgstr "作業"
 
 #: cherokee-trunk/admin/wizards/List.py:118
 msgid "Common Maintenance Tasks"
-msgstr ""
+msgstr "共通メンテナンスタスク"
 
 #: cherokee-trunk/admin/wizards/List.py:121
 msgid "Virtual Server Redirection"
-msgstr ""
+msgstr "仮想サーバーのリダイレクト"
 
 #: cherokee-trunk/admin/wizards/List.py:122
 msgid ""
@@ -3747,24 +3834,25 @@ msgstr ""
 
 #: cherokee-trunk/admin/wizards/List.py:125
 msgid "Anti Hot-Linking"
-msgstr ""
+msgstr "直リンク禁止"
 
 #: cherokee-trunk/admin/wizards/List.py:126
 msgid "Stop other domains from hot-linking your media files."
-msgstr ""
+msgstr "他のドメインのサイトからメディアファイルへの直リンクを抑止します。"
 
 #: cherokee-trunk/admin/wizards/List.py:129
 msgid "Directory-listing Icons"
-msgstr ""
+msgstr "ディレクトリ一覧のアイコン"
 
 #: cherokee-trunk/admin/wizards/List.py:130
+#, fuzzy
 msgid ""
 "Add the /icons and /cherokee_themes directories used for directory listing."
-msgstr ""
+msgstr "このウィザードでは、/iconsと/cherokee_themeディレクトリに"
 
 #: cherokee-trunk/admin/wizards/List.py:133
 msgid "Static-file support"
-msgstr ""
+msgstr "静的ファイルサポート"
 
 #: cherokee-trunk/admin/wizards/List.py:134
 msgid "Add a rule to optimally serve the most common static files."
@@ -3772,7 +3860,7 @@ msgstr ""
 
 #: cherokee-trunk/admin/wizards/List.py:137
 msgid "Media file streaming"
-msgstr ""
+msgstr "メディアファイルのストリーミング"
 
 #: cherokee-trunk/admin/wizards/List.py:138
 msgid ""
@@ -3781,7 +3869,7 @@ msgstr ""
 
 #: cherokee-trunk/admin/wizards/rails.py:40
 msgid "Welcome to the Ruby on Rails wizard"
-msgstr ""
+msgstr "Ruby on Railsウィザードへようこそ"
 
 #: cherokee-trunk/admin/wizards/rails.py:41
 msgid ""
@@ -3797,15 +3885,16 @@ msgstr ""
 
 #: cherokee-trunk/admin/wizards/rails.py:44
 msgid "Ruby on Rails Project"
-msgstr ""
+msgstr "Ruby on Railsプロジェクト"
 
 #: cherokee-trunk/admin/wizards/rails.py:45
 msgid "New Virtual Server"
-msgstr ""
+msgstr "新規仮想サーバー"
 
 #: cherokee-trunk/admin/wizards/rails.py:48
+#, fuzzy
 msgid "Local path to the Ruby on Rails based project."
-msgstr ""
+msgstr "Mailmanの画像ディレクトリへのパス"
 
 #: cherokee-trunk/admin/wizards/rails.py:49
 msgid "Name of the new domain that will be created."
@@ -3818,7 +3907,7 @@ msgstr ""
 
 #: cherokee-trunk/admin/wizards/rails.py:51
 msgid "Value of the RAILS_ENV variable."
-msgstr ""
+msgstr "RAILS_ENVの値"
 
 #: cherokee-trunk/admin/wizards/rails.py:52
 msgid ""
@@ -3846,56 +3935,59 @@ msgid ""
 msgstr ""
 
 #: cherokee-trunk/admin/wizards/rails.py:57
+#, fuzzy
 msgid "It does not look like a Ruby on Rails based project directory."
-msgstr ""
+msgstr "そのディレクトリは、Mailmanのデーターのディレクトリではないようです。"
 
 #: cherokee-trunk/admin/wizards/rails.py:67
 msgid "Production"
-msgstr ""
+msgstr "常用"
 
 #: cherokee-trunk/admin/wizards/rails.py:68
 msgid "Test"
-msgstr ""
+msgstr "テスト"
 
 #: cherokee-trunk/admin/wizards/rails.py:69
 msgid "Development"
-msgstr ""
+msgstr "開発"
 
 #: cherokee-trunk/admin/wizards/rails.py:70
 msgid "Empty"
-msgstr ""
+msgstr "空"
 
 #: cherokee-trunk/admin/wizards/rails.py:74
 msgid "HTTP proxy"
-msgstr ""
+msgstr "HTTPプロクシ"
 
 #: cherokee-trunk/admin/wizards/rails.py:378
 msgid "RAILS_ENV environment"
-msgstr ""
+msgstr "RAILS_ENVの環境変数"
 
 #: cherokee-trunk/admin/wizards/rails.py:381
+#, fuzzy
 msgid "Deployment method"
-msgstr ""
+msgstr "デプロイ方法"
 
 #: cherokee-trunk/admin/wizards/icons.py:37
 msgid "Welcome to the Icons Wizard"
-msgstr ""
+msgstr "Iconsウィザードへようこそ"
 
 #: cherokee-trunk/admin/wizards/icons.py:38
 msgid ""
 "This wizard adds the /icons and /cherokee_themes directories so Cherokee can "
 "use icons when listing directories."
-msgstr ""
+msgstr "このウィザードでは、/iconsと/cherokee_themeディレクトリに"
 
 #: cherokee-trunk/admin/wizards/icons.py:39
+#, fuzzy
 msgid ""
 "The /icons and /cherokee_themes directories are already configured. There is "
 "nothing left to do."
-msgstr ""
+msgstr "このウィザードでは、/iconsと/cherokee_themeディレクトリに"
 
 #: cherokee-trunk/admin/wizards/alfresco.py:37
 msgid "Welcome to the Alfresco Wizard"
-msgstr ""
+msgstr "Alfrescoウィザードへようこそ"
 
 #: cherokee-trunk/admin/wizards/alfresco.py:38
 msgid ""
@@ -3912,32 +4004,35 @@ msgstr ""
 
 #: cherokee-trunk/admin/wizards/alfresco.py:41
 msgid "Alfresco Project"
-msgstr ""
+msgstr "Alfrescoプロジェクト"
 
 #: cherokee-trunk/admin/wizards/alfresco.py:42
 msgid ""
 "Hostname or IP of the server running Alfresco. You can add more later to "
 "have the load balanced."
 msgstr ""
+"Alfrescoの動作しているホスト名もしくはIPを入力してください。追記するとサー"
+"バーごとに負荷調整を行います。"
 
 #: cherokee-trunk/admin/wizards/alfresco.py:43
 #: cherokee-trunk/admin/wizards/glassfish.py:43
 msgid "Port running the service in said host. (Example: 8080)"
-msgstr ""
+msgstr "サービスを実行しているホストのポートを入力してください。（例：8080）"
 
 #: cherokee-trunk/admin/wizards/alfresco.py:188
 #: cherokee-trunk/admin/wizards/glassfish.py:186
 msgid "Source host"
-msgstr ""
+msgstr "ソースのホスト"
 
 #: cherokee-trunk/admin/wizards/alfresco.py:189
 #: cherokee-trunk/admin/wizards/glassfish.py:187
 msgid "Source port"
-msgstr ""
+msgstr "ソースのポート"
 
 #: cherokee-trunk/admin/wizards/streaming.py:39
+#, fuzzy
 msgid "Welcome to the Streaming Wizard"
-msgstr ""
+msgstr "monoウィザードへようこそ"
 
 #: cherokee-trunk/admin/wizards/streaming.py:40
 msgid "This Wizard Adds a rule to stream media files."
@@ -3952,8 +4047,9 @@ msgid "Media streaming is already configured."
 msgstr ""
 
 #: cherokee-trunk/admin/wizards/zend.py:38
+#, fuzzy
 msgid "Welcome to the Zend Wizard"
-msgstr ""
+msgstr "monoウィザードへようこそ"
 
 #: cherokee-trunk/admin/wizards/zend.py:39
 msgid ""
@@ -3976,16 +4072,19 @@ msgid ""
 msgstr ""
 
 #: cherokee-trunk/admin/wizards/zend.py:44
+#, fuzzy
 msgid "Does not look like a Zend source directory."
 msgstr ""
+"そのディレクトリは、Mailmanのメールアーカイブのディレクトリではないようです。"
 
 #: cherokee-trunk/admin/wizards/zend.py:49
 msgid "Web directory where you want Zend to be accessible. (Example: /zend)"
 msgstr ""
 
 #: cherokee-trunk/admin/wizards/rtorrent.py:33
+#, fuzzy
 msgid "Welcome to the rTorrent Wizard"
-msgstr ""
+msgstr "monoウィザードへようこそ"
 
 #: cherokee-trunk/admin/wizards/rtorrent.py:34
 msgid ""
@@ -4008,13 +4107,14 @@ msgid ""
 msgstr ""
 
 #: cherokee-trunk/admin/wizards/rtorrent.py:140
-#, python-format
+#, fuzzy, python-format
 msgid "Already configured: %s"
-msgstr ""
+msgstr "すでに使用済みです"
 
 #: cherokee-trunk/admin/wizards/uwsgi.py:51
+#, fuzzy
 msgid "Welcome to the uWSGI Wizard"
-msgstr ""
+msgstr "Iconsウィザードへようこそ"
 
 #: cherokee-trunk/admin/wizards/uwsgi.py:52
 msgid ""
@@ -4042,8 +4142,9 @@ msgid "Location of the uWSGI binary"
 msgstr ""
 
 #: cherokee-trunk/admin/wizards/uwsgi.py:58
+#, fuzzy
 msgid "It does not look like a uWSGI configuration file."
-msgstr ""
+msgstr "そのディレクトリは、MailmanのCGIのディレクトリではないようです。"
 
 #: cherokee-trunk/admin/wizards/uwsgi.py:66
 msgid ""
@@ -4057,11 +4158,11 @@ msgstr ""
 
 #: cherokee-trunk/admin/wizards/uwsgi.py:289
 msgid "Configuration File"
-msgstr ""
+msgstr "設定ファイル"
 
 #: cherokee-trunk/admin/wizards/mailman.py:37
 msgid "Welcome to the Mailman Wizard"
-msgstr ""
+msgstr "Mailmanウィザードへようこそ"
 
 #: cherokee-trunk/admin/wizards/mailman.py:38
 msgid ""
@@ -4075,62 +4176,65 @@ msgid ""
 "Mailman supports built-in archiving, automatic bounce processing, content "
 "filtering, digest delivery, spam filters, and more."
 msgstr ""
+"Mailmanは、ビルドインのメールアーカイブ機能、自動転送処理、コンテンツフィル"
+"タ、ダイジェストデリバリ、スパムフィルタなどの機能を持っています。"
 
 #: cherokee-trunk/admin/wizards/mailman.py:41
 msgid "Mailman Details"
-msgstr ""
+msgstr "Mailmanの詳細"
 
 #: cherokee-trunk/admin/wizards/mailman.py:42
 msgid "Local path to the Mailman CGI directory."
-msgstr ""
+msgstr "MailmanのCGIの設置ディレクトリへのパス"
 
 #: cherokee-trunk/admin/wizards/mailman.py:43
 msgid "Local path to the Mailman data directory."
-msgstr ""
+msgstr "Mailmanのデーターディレクトリへのパス"
 
 #: cherokee-trunk/admin/wizards/mailman.py:44
 msgid "Local path to the Mailman mail archive directory."
-msgstr ""
+msgstr "Mailmanのメールアーカイブディレクトリへのパス"
 
 #: cherokee-trunk/admin/wizards/mailman.py:45
 msgid "Local path to the Mailman mail images directory."
-msgstr ""
+msgstr "Mailmanの画像ディレクトリへのパス"
 
 #: cherokee-trunk/admin/wizards/mailman.py:182
 msgid "Mailman CGI directory"
-msgstr ""
+msgstr "MailmanのCGIディレクトリ"
 
 #: cherokee-trunk/admin/wizards/mailman.py:183
 msgid "Mailman Data directory"
-msgstr ""
+msgstr "Mailmanデーターディレクトリ"
 
 #: cherokee-trunk/admin/wizards/mailman.py:184
 msgid "Mail Archive directory"
-msgstr ""
+msgstr "メールアーカイブディレクトリ"
 
 #: cherokee-trunk/admin/wizards/mailman.py:185
 msgid "Mail Images directory"
-msgstr ""
+msgstr "メール画像ディレクトリ"
 
 #: cherokee-trunk/admin/wizards/mailman.py:223
 msgid "It does not look like a Mailman data directory."
-msgstr ""
+msgstr "そのディレクトリは、Mailmanのデーターのディレクトリではないようです。"
 
 #: cherokee-trunk/admin/wizards/mailman.py:230
 msgid "It does not look like a Mailman CGI directory."
-msgstr ""
+msgstr "そのディレクトリは、MailmanのCGIのディレクトリではないようです。"
 
 #: cherokee-trunk/admin/wizards/mailman.py:239
 msgid "It does not look like a Mailman archive directory."
 msgstr ""
+"そのディレクトリは、Mailmanのメールアーカイブのディレクトリではないようです。"
 
 #: cherokee-trunk/admin/wizards/mailman.py:246
 msgid "It does not look like a Mailman images directory."
-msgstr ""
+msgstr "そのディレクトリは、Mailmanの画像のディレクトリではないようです。"
 
 #: cherokee-trunk/admin/wizards/glassfish.py:37
 msgid "Welcome to the GlassFish Wizard"
-msgstr ""
+msgstr "GlassFishウィザードへようこそ"
 
 #: cherokee-trunk/admin/wizards/glassfish.py:38
 msgid ""
@@ -4148,17 +4252,20 @@ msgstr ""
 
 #: cherokee-trunk/admin/wizards/glassfish.py:41
 msgid "GlassFish Project"
-msgstr ""
+msgstr "GlassFishプロジェクト"
 
 #: cherokee-trunk/admin/wizards/glassfish.py:42
+#, fuzzy
 msgid ""
 "Hostname or IP of the server running GlassFish. You can add more later to "
 "have the load balanced."
 msgstr ""
+"Alfrescoの動作しているホスト名もしくはIPを入力してください。追記するとサー"
+"バーごとに負荷調整を行います。"
 
 #: cherokee-trunk/admin/wizards/php.py:36
 msgid "Welcome to the PHP Wizard"
-msgstr ""
+msgstr "PHPウィザードへようこそ"
 
 #: cherokee-trunk/admin/wizards/php.py:37
 msgid ""
@@ -4173,11 +4280,11 @@ msgstr ""
 
 #: cherokee-trunk/admin/wizards/php.py:45
 msgid "PHP Interpreter Not Found"
-msgstr ""
+msgstr "PHPのインタプリタが見つかりません"
 
 #: cherokee-trunk/admin/wizards/php.py:46
 msgid "A valid PHP interpreter could not be found in your system."
-msgstr ""
+msgstr "使用中のシステムには、有効なPHPインタプリタが見つかりません。"
 
 #: cherokee-trunk/admin/wizards/php.py:47
 msgid ""
@@ -4186,11 +4293,12 @@ msgstr ""
 
 #: cherokee-trunk/admin/wizards/php.py:119
 msgid "Invalid Virtual Server reference."
-msgstr ""
+msgstr "無効な仮想サーバー設定です"
 
 #: cherokee-trunk/admin/wizards/php.py:131
+#, fuzzy
 msgid "Could not find a suitable PHP interpreter."
-msgstr ""
+msgstr "PHPが見つかりません"
 
 #: cherokee-trunk/admin/wizards/php.py:559 packages/common/php.py:457
 msgid "Could not determine PHP-CGI settings."
@@ -4205,48 +4313,50 @@ msgid "Could not determine PHP-fpm settings."
 msgstr ""
 
 #: cherokee-trunk/admin/SystemStatsWidgets.py:134
-#, python-format
+#, fuzzy, python-format
 msgid "%s Logical Processors"
-msgstr ""
+msgstr "プロセス数"
 
 #: cherokee-trunk/admin/SystemStatsWidgets.py:136
-#, python-format
+#, fuzzy, python-format
 msgid "%s Logical Processor"
-msgstr ""
+msgstr "プロセス数"
 
 #: cherokee-trunk/admin/SystemStatsWidgets.py:140
 #, python-format
 msgid "%s Cores"
-msgstr ""
+msgstr "%sコア"
 
 #: cherokee-trunk/admin/SystemStatsWidgets.py:142
 #, python-format
 msgid "%s Core"
-msgstr ""
+msgstr "%sコア"
 
 #: cherokee-trunk/admin/SystemStatsWidgets.py:147
 msgid "Unknown Processor"
-msgstr ""
+msgstr "不明なプロセッサ"
 
 #: cherokee-trunk/admin/SystemStatsWidgets.py:176
 msgid "Unknown RAM"
-msgstr ""
+msgstr "不明なRAM"
 
 #: cherokee-trunk/admin/Page.py:34
 msgid "Save Configuration"
-msgstr ""
+msgstr "設定を保存"
 
 #: cherokee-trunk/admin/Page.py:35
 msgid "Would you like to apply the changes to the running server now?"
 msgstr ""
 
 #: cherokee-trunk/admin/Page.py:36
+#, fuzzy
 msgid "The configuration file has been saved successfully."
-msgstr ""
+msgstr "のインストールは成功しました。"
 
 #: cherokee-trunk/admin/Page.py:43
+#, fuzzy
 msgid "Sanity checks"
-msgstr ""
+msgstr "チェックしない"
 
 #: cherokee-trunk/admin/Page.py:44
 msgid ""
@@ -4264,52 +4374,52 @@ msgstr ""
 
 #: cherokee-trunk/admin/Page.py:106
 msgid "Configuration successfully saved"
-msgstr ""
+msgstr "設定の保存に成功しました"
 
 #: cherokee-trunk/admin/Page.py:114
 msgid "Do not restart"
-msgstr ""
+msgstr "リスタートしない"
 
 #: cherokee-trunk/admin/Page.py:120
 msgid "Graceful restart"
-msgstr ""
+msgstr "簡易リスタート"
 
 #: cherokee-trunk/admin/Page.py:126
 msgid "Hard restart"
-msgstr ""
+msgstr "通常リスタート"
 
 #: cherokee-trunk/admin/Page.py:153
 msgid "Save"
-msgstr ""
+msgstr "保存"
 
 #: cherokee-trunk/admin/Page.py:154
 msgid "Home"
-msgstr ""
+msgstr "ホーム"
 
 #: cherokee-trunk/admin/Page.py:156
 msgid "Apps"
-msgstr ""
+msgstr "アプリ"
 
 #: cherokee-trunk/admin/Page.py:157 cherokee-trunk/admin/PageStatus.py:101
 #: cherokee-trunk/admin/PageGeneral.py:267
 msgid "General"
-msgstr ""
+msgstr "一般"
 
 #: cherokee-trunk/admin/Page.py:158
 msgid "vServers"
-msgstr ""
+msgstr "仮想サーバー"
 
 #: cherokee-trunk/admin/Page.py:159
 msgid "Sources"
-msgstr ""
+msgstr "ソース"
 
 #: cherokee-trunk/admin/Page.py:161
 msgid "Help"
-msgstr ""
+msgstr "ヘルプ"
 
 #: cherokee-trunk/admin/Page.py:162
 msgid "Updating..."
-msgstr ""
+msgstr "更新中…"
 
 #: cherokee-trunk/admin/PageEntry.py:43
 msgid "Apply a custom timeout to the connections matching this rule."
@@ -4379,20 +4489,23 @@ msgstr ""
 
 #: cherokee-trunk/admin/PageEntry.py:73 cherokee-trunk/admin/PageEntry.py:141
 #: cherokee-trunk/admin/PageVServer.py:143
+#, fuzzy
 msgid "Authentication"
-msgstr ""
+msgstr "認証リスト"
 
 #: cherokee-trunk/admin/PageEntry.py:74
+#, fuzzy
 msgid "Authentication modules"
-msgstr ""
+msgstr "認証リスト"
 
 #: cherokee-trunk/admin/PageEntry.py:78
 msgid "Leave unset"
 msgstr ""
 
 #: cherokee-trunk/admin/PageEntry.py:80
+#, fuzzy
 msgid "Forbid"
-msgstr ""
+msgstr "アクセス拒否"
 
 #: cherokee-trunk/admin/PageEntry.py:103
 msgid "Limit traffic to"
@@ -4404,25 +4517,29 @@ msgid "Traffic Shaping"
 msgstr ""
 
 #: cherokee-trunk/admin/PageEntry.py:118
+#, fuzzy
 msgid "Skip Logging"
-msgstr ""
+msgstr "エラーのロギング"
 
 #: cherokee-trunk/admin/PageEntry.py:122
 #: cherokee-trunk/admin/PageVServer.py:699
+#, fuzzy
 msgid "Logging"
-msgstr ""
+msgstr "エラーのロギング"
 
 #: cherokee-trunk/admin/PageEntry.py:127
 msgid "Only https"
 msgstr ""
 
 #: cherokee-trunk/admin/PageEntry.py:128
+#, fuzzy
 msgid "Allow From"
-msgstr ""
+msgstr "許可"
 
 #: cherokee-trunk/admin/PageEntry.py:132
+#, fuzzy
 msgid "Access Restrictions"
-msgstr ""
+msgstr "アクセス詳細"
 
 #: cherokee-trunk/admin/PageEntry.py:139
 msgid "Validation Mechanism"
@@ -4435,29 +4552,34 @@ msgid "Can not be empty"
 msgstr ""
 
 #: cherokee-trunk/admin/PageEntry.py:221
+#, fuzzy
 msgid "Header Operations"
-msgstr ""
+msgstr "追加するヘッダー"
 
 #: cherokee-trunk/admin/PageEntry.py:232
+#, fuzzy
 msgid "Action"
-msgstr ""
+msgstr "アプリケーション"
 
 #: cherokee-trunk/admin/PageEntry.py:243
+#, fuzzy
 msgid "Add New Header"
-msgstr ""
+msgstr "新しいペアを追加"
 
 #: cherokee-trunk/admin/PageEntry.py:254
 #: cherokee-trunk/admin/PageVServer.py:147
+#, fuzzy
 msgid "Expiration"
-msgstr ""
+msgstr "アプリケーション"
 
 #: cherokee-trunk/admin/PageEntry.py:257
 msgid "Time to expire"
 msgstr ""
 
 #: cherokee-trunk/admin/PageEntry.py:261
+#, fuzzy
 msgid "Management by caches"
-msgstr ""
+msgstr "コンテンツマネージメントシステム"
 
 #: cherokee-trunk/admin/PageEntry.py:263
 msgid "No Store"
@@ -4476,16 +4598,18 @@ msgid "Proxies Revalidate"
 msgstr ""
 
 #: cherokee-trunk/admin/PageEntry.py:283
+#, fuzzy
 msgid "Connections Timeout"
-msgstr ""
+msgstr "接続タイムアウト"
 
 #: cherokee-trunk/admin/PageEntry.py:290
 msgid "Content Expiration"
 msgstr ""
 
 #: cherokee-trunk/admin/PageEntry.py:303
+#, fuzzy
 msgid "Information Encoders"
-msgstr ""
+msgstr "ソース情報"
 
 #: cherokee-trunk/admin/PageEntry.py:307
 #, python-format
@@ -4494,78 +4618,83 @@ msgstr ""
 
 #: cherokee-trunk/admin/PageEntry.py:313
 msgid "support"
-msgstr ""
+msgstr "サポート"
 
 #: cherokee-trunk/admin/PageEntry.py:338
 msgid "Matching Rule"
-msgstr ""
+msgstr "一致条件"
 
 #: cherokee-trunk/admin/PageEntry.py:369 cherokee-trunk/admin/PageEntry.py:386
 #: cherokee-trunk/admin/PageEntry.py:411
 #: cherokee-trunk/admin/PageVServer.py:142
 msgid "Handler"
-msgstr ""
+msgstr "ハンドラ"
 
 #: cherokee-trunk/admin/PageEntry.py:412
 msgid "Encoding"
-msgstr ""
+msgstr "エンコード"
 
 #: cherokee-trunk/admin/PageEntry.py:413
 msgid "Time"
-msgstr ""
+msgstr "時間"
 
 #: cherokee-trunk/admin/PageEntry.py:414
 #: cherokee-trunk/admin/PageVServer.py:700
 msgid "Security"
-msgstr ""
+msgstr "セキュリティ"
 
 #: cherokee-trunk/admin/SavingChecks.py:49
 msgid "Balancer without any source"
 msgstr ""
 
 #: cherokee-trunk/admin/SavingChecks.py:59
+#, fuzzy
 msgid "Authentication rule without Realm"
-msgstr ""
+msgstr "認証リスト"
 
 #: cherokee-trunk/admin/SavingChecks.py:67
 msgid "Virtual Server without nickname"
-msgstr ""
+msgstr "ニックネームのない仮想サーバー"
 
 #: cherokee-trunk/admin/SavingChecks.py:70
 msgid "Virtual Server without document root"
-msgstr ""
+msgstr "ドキュメントルートがない仮想サーバー"
 
 #: cherokee-trunk/admin/SavingChecks.py:81
 msgid "Directory match without a directory"
-msgstr ""
+msgstr "ディレクトリ名が入力されていないディレクトリの一致条件"
 
 #: cherokee-trunk/admin/SavingChecks.py:86
 msgid "Extensions match without any extension"
-msgstr ""
+msgstr "拡張子が入力されていない拡張子の一致条件"
 
 #: cherokee-trunk/admin/SavingChecks.py:91
 msgid "RegEx match without a RegEx entry"
-msgstr ""
+msgstr "正規表現が入力されていない正規表現一致条件"
 
 #: cherokee-trunk/admin/SavingChecks.py:96
+#, fuzzy
 msgid "Header match without a defined header"
-msgstr ""
+msgstr "ディレクトリ名が入力されていないディレクトリの一致条件"
 
 #: cherokee-trunk/admin/SavingChecks.py:99
+#, fuzzy
 msgid "Header match without a matching expression"
-msgstr ""
+msgstr "拡張子が入力されていない拡張子の一致条件"
 
 #: cherokee-trunk/admin/SavingChecks.py:105
 msgid "File exists rule without a file or 'Any file'"
 msgstr ""
 
 #: cherokee-trunk/admin/SavingChecks.py:110
+#, fuzzy
 msgid "Method match without a defined method"
-msgstr ""
+msgstr "ディレクトリ名が入力されていないディレクトリの一致条件"
 
 #: cherokee-trunk/admin/SavingChecks.py:115
+#, fuzzy
 msgid "Empty 'Incoming IP/Port' match"
-msgstr ""
+msgstr "入力IP／ポート"
 
 #: cherokee-trunk/admin/SavingChecks.py:120
 msgid "Empty 'Full path' rule match"
@@ -4581,7 +4710,7 @@ msgstr ""
 
 #: cherokee-trunk/admin/SavingChecks.py:136
 msgid "GeoIP match rule with no contries"
-msgstr ""
+msgstr "国が入力されていないGeoIP一致"
 
 #: cherokee-trunk/admin/Balancer.py:32
 msgid "Specifies the policy used to dispatch the connections."
@@ -4607,23 +4736,26 @@ msgstr ""
 
 #: cherokee-trunk/admin/Balancer.py:82
 msgid "Broken Source"
-msgstr ""
+msgstr "壊れたソース"
 
 #: cherokee-trunk/admin/Balancer.py:131
+#, fuzzy
 msgid "Assign Information Sources"
-msgstr ""
+msgstr "ソース情報"
 
 #: cherokee-trunk/admin/Balancer.py:142
 msgid "Application Server"
-msgstr ""
+msgstr "アプリケーションサーバー"
 
 #: cherokee-trunk/admin/OWS_Backup.py:48
+#, fuzzy
 msgid "Remote Configuration Back Up"
-msgstr ""
+msgstr "一般設定"
 
 #: cherokee-trunk/admin/OWS_Backup.py:49
+#, fuzzy
 msgid "Your current configuration is about to be backed up."
-msgstr ""
+msgstr "選択した情報ソースは、複製されました。"
 
 #: cherokee-trunk/admin/OWS_Backup.py:50
 msgid ""
@@ -4632,8 +4764,9 @@ msgid ""
 msgstr ""
 
 #: cherokee-trunk/admin/OWS_Backup.py:51
+#, fuzzy
 msgid "Could not Upload the Configuration File"
-msgstr ""
+msgstr "以下へ設定をコピーすることができませんでした："
 
 #: cherokee-trunk/admin/OWS_Backup.py:52
 msgid ""
@@ -4642,8 +4775,9 @@ msgid ""
 msgstr ""
 
 #: cherokee-trunk/admin/OWS_Backup.py:53
+#, fuzzy
 msgid "Configuration File Successfully uploaded"
-msgstr ""
+msgstr "設定の保存に成功しました"
 
 #: cherokee-trunk/admin/OWS_Backup.py:54
 msgid ""
@@ -4652,8 +4786,9 @@ msgid ""
 msgstr ""
 
 #: cherokee-trunk/admin/OWS_Backup.py:56
+#, fuzzy
 msgid "Remote Configuration Restoration"
-msgstr ""
+msgstr "設定方法"
 
 #: cherokee-trunk/admin/OWS_Backup.py:57
 msgid ""
@@ -4672,8 +4807,9 @@ msgid ""
 msgstr ""
 
 #: cherokee-trunk/admin/OWS_Backup.py:61
+#, fuzzy
 msgid "Could not retrieve the configuration file list"
-msgstr ""
+msgstr "以下へ設定をコピーすることができませんでした："
 
 #: cherokee-trunk/admin/OWS_Backup.py:62
 msgid ""
@@ -4682,8 +4818,9 @@ msgid ""
 msgstr ""
 
 #: cherokee-trunk/admin/OWS_Backup.py:63
+#, fuzzy
 msgid "Could not restore the selected configuration file"
-msgstr ""
+msgstr "以下へ設定をコピーすることができませんでした："
 
 #: cherokee-trunk/admin/OWS_Backup.py:64
 msgid ""
@@ -4692,8 +4829,9 @@ msgid ""
 msgstr ""
 
 #: cherokee-trunk/admin/OWS_Backup.py:65
+#, fuzzy
 msgid "The Configuration File was restored successfully"
-msgstr ""
+msgstr "設定の保存に成功しました"
 
 #: cherokee-trunk/admin/OWS_Backup.py:66
 msgid "The configuration has been rolled back to a previous version."
@@ -4709,106 +4847,112 @@ msgstr ""
 
 #: cherokee-trunk/admin/OWS_Backup.py:134
 msgid "Back up…"
-msgstr ""
+msgstr "バックアップ中…"
 
 #: cherokee-trunk/admin/OWS_Backup.py:156
 msgid "Back Up"
-msgstr ""
+msgstr "バックアップ"
 
 #: cherokee-trunk/admin/OWS_Backup.py:163
 msgid "Notes"
-msgstr ""
+msgstr "但し書き"
 
 #: cherokee-trunk/admin/OWS_Backup.py:206
+#, fuzzy
 msgid "Back Up Date"
-msgstr ""
+msgstr "バックアップ"
 
 #: cherokee-trunk/admin/OWS_Backup.py:206
+#, fuzzy
 msgid "Annotations"
-msgstr ""
+msgstr "接続数"
 
 #: cherokee-trunk/admin/OWS_Backup.py:259
 msgid "Restore"
-msgstr ""
+msgstr "リストア"
 
 #: cherokee-trunk/admin/OWS_Backup.py:302
 msgid "Restore…"
-msgstr ""
+msgstr "リストア中…"
 
 #: cherokee-trunk/admin/validations.py:20
 msgid "Malformed number"
-msgstr ""
+msgstr "無効な数字"
 
 #: cherokee-trunk/admin/validations.py:26
 msgid "Malformed float number"
-msgstr ""
+msgstr "無効な少数点数字"
 
 #: cherokee-trunk/admin/validations.py:31
 msgid "Must be greater than zero"
-msgstr ""
+msgstr "0よりも大きくする必要があります。"
 
 #: cherokee-trunk/admin/validations.py:43
 msgid "Port must be a number"
-msgstr ""
+msgstr "ポートは、数字である必要があります。"
 
 #: cherokee-trunk/admin/validations.py:45
 msgid "Out of range (1 to 65535)"
-msgstr ""
+msgstr "範囲外です（1～65535）"
 
 #: cherokee-trunk/admin/validations.py:53
 msgid "Port already in use"
-msgstr ""
+msgstr "そのポートはすでに使用中です。"
 
 #: cherokee-trunk/admin/validations.py:64
 #: cherokee-trunk/admin/validations.py:78
 msgid "Malformed path"
-msgstr ""
+msgstr "無効なパス"
 
 #: cherokee-trunk/admin/validations.py:109
 msgid "It is not executable"
-msgstr ""
+msgstr "実行可能ではありません"
 
 #: cherokee-trunk/admin/validations.py:115
 #: cherokee-trunk/admin/validations.py:190
+#, fuzzy
 msgid "Path is not a regular file"
-msgstr ""
+msgstr "そのパスはディレクトリではありません"
 
 #: cherokee-trunk/admin/validations.py:133
+#, fuzzy
 msgid "It cannot be negative"
-msgstr ""
+msgstr "空欄にはできません。"
 
 #: cherokee-trunk/admin/validations.py:149
 msgid "Malformed IPv4"
-msgstr ""
+msgstr "無効なIPv4"
 
 #: cherokee-trunk/admin/validations.py:154
 msgid "Malformed IPv4 entry"
-msgstr ""
+msgstr "無効なIPv4指定です"
 
 #: cherokee-trunk/admin/validations.py:156
 msgid "IPv4 entry out of range"
-msgstr ""
+msgstr "IPv4の指定が範囲外です"
 
 #: cherokee-trunk/admin/validations.py:164
 msgid "Malformed IPv6"
-msgstr ""
+msgstr "無効なIPv6"
 
 #: cherokee-trunk/admin/validations.py:175
 #: cherokee-trunk/admin/validations.py:187
 msgid "Path does not exist"
-msgstr ""
+msgstr "そのパスは見つかりません"
 
 #: cherokee-trunk/admin/validations.py:178
 msgid "Path is not a directory"
-msgstr ""
+msgstr "そのパスはディレクトリではありません"
 
 #: cherokee-trunk/admin/validations.py:207
 msgid "Path is a directory"
-msgstr ""
+msgstr "そのパスはディレクトリです"
 
 #: cherokee-trunk/admin/validations.py:216
 msgid "Invalid char. Accepts: letters, digits, _, - and ."
 msgstr ""
+"無効な文字が含まれています。半角英数字と_（アンダーバー）、-（ハイフン）、."
+"（ピリオド）が使えます。"
 
 #: cherokee-trunk/admin/validations.py:242
 msgid "Neither a number or an IPv4"
@@ -4819,12 +4963,13 @@ msgid "Invalid mask"
 msgstr ""
 
 #: cherokee-trunk/admin/validations.py:277
+#, fuzzy
 msgid "Malformed entry (netmask)"
-msgstr ""
+msgstr "無効なIPv4指定です"
 
 #: cherokee-trunk/admin/validations.py:302
 msgid "Cannot be empty"
-msgstr ""
+msgstr "空欄にはできません。"
 
 #: cherokee-trunk/admin/validations.py:307
 msgid "Forced failure"
@@ -4840,18 +4985,19 @@ msgstr ""
 
 #: cherokee-trunk/admin/validations.py:355
 msgid "Malformed time"
-msgstr ""
+msgstr "無効な時間です"
 
 #: cherokee-trunk/admin/validations.py:363
+#, fuzzy
 msgid "Virtual Server nick name is already being used."
-msgstr ""
+msgstr "仮想サーバーのニックネーム"
 
 #: cherokee-trunk/admin/validations.py:370
 #: cherokee-trunk/admin/validations.py:380
 #: cherokee-trunk/admin/validations.py:390
 #: cherokee-trunk/admin/validations.py:407
 msgid "Already in use"
-msgstr ""
+msgstr "すでに使用済みです"
 
 #: cherokee-trunk/admin/validations.py:434
 msgid "Please insert a valid email"
@@ -4867,11 +5013,12 @@ msgstr ""
 
 #: cherokee-trunk/admin/PageNewConfig.py:38
 msgid "Index"
-msgstr ""
+msgstr "インデックス"
 
 #: cherokee-trunk/admin/PageNewConfig.py:40
+#, fuzzy
 msgid "Loading new configuration file.."
-msgstr ""
+msgstr "設定ファイル"
 
 #: cherokee-trunk/admin/PageNewConfig.py:41
 msgid ""
@@ -4880,8 +5027,9 @@ msgid ""
 msgstr ""
 
 #: cherokee-trunk/admin/PageNewConfig.py:166
+#, fuzzy
 msgid "Create a new configuration file:"
-msgstr ""
+msgstr "設定ファイル"
 
 #: cherokee-trunk/admin/PageNewConfig.py:169
 msgid "Regular"
@@ -4896,32 +5044,37 @@ msgid "Optimized to send static content."
 msgstr ""
 
 #: cherokee-trunk/admin/PageNewConfig.py:179
+#, fuzzy
 msgid "Server Development"
-msgstr ""
+msgstr "開発"
 
 #: cherokee-trunk/admin/PageNewConfig.py:180
 msgid "No standard port, No log files, No PID file, etc."
 msgstr ""
 
 #: cherokee-trunk/admin/PageNewConfig.py:183
+#, fuzzy
 msgid "New Configuration File"
-msgstr ""
+msgstr "設定ファイル"
 
 #: cherokee-trunk/admin/PageNewConfig.py:184
+#, fuzzy
 msgid "Configuration File Not Found"
-msgstr ""
+msgstr "設定ファイル"
 
 #: cherokee-trunk/admin/util.py:91
 msgid "On"
-msgstr ""
+msgstr "入"
 
 #: cherokee-trunk/admin/Cherokee.py:150
+#, fuzzy
 msgid "Could not access file descriptors: "
-msgstr ""
+msgstr "リポジトリにアクセスすることができませんでした。"
 
 #: cherokee-trunk/admin/PageVServer.py:44
+#, fuzzy
 msgid "Nickname for the virtual server."
-msgstr ""
+msgstr "管理人ユーザのユーザ名"
 
 #: cherokee-trunk/admin/PageVServer.py:45
 msgid ""
@@ -4976,7 +5129,7 @@ msgstr ""
 
 #: cherokee-trunk/admin/PageVServer.py:55
 msgid "Virtual Server root directory."
-msgstr ""
+msgstr "仮想サーバーのルートディレクトリ"
 
 #: cherokee-trunk/admin/PageVServer.py:56
 msgid ""
@@ -5078,16 +5231,19 @@ msgid "<p>The 'default' virtual server matches all the domain names.</p>"
 msgstr ""
 
 #: cherokee-trunk/admin/PageVServer.py:80
+#, fuzzy
 msgid "Remote IP address"
-msgstr ""
+msgstr "LDAPサーバーのIPアドレス"
 
 #: cherokee-trunk/admin/PageVServer.py:81
+#, fuzzy
 msgid "Local IP address"
-msgstr ""
+msgstr "メールアドレス"
 
 #: cherokee-trunk/admin/PageVServer.py:82
+#, fuzzy
 msgid "Request Protocol"
-msgstr ""
+msgstr "リクエスト"
 
 #: cherokee-trunk/admin/PageVServer.py:83
 msgid "Transport type: http or https"
@@ -5134,8 +5290,9 @@ msgid "URL path requested before any rewrite"
 msgstr ""
 
 #: cherokee-trunk/admin/PageVServer.py:94
+#, fuzzy
 msgid "Virtual Server nick name"
-msgstr ""
+msgstr "仮想サーバーのニックネーム"
 
 #: cherokee-trunk/admin/PageVServer.py:95
 msgid "Requested host (Host: header)"
@@ -5162,33 +5319,38 @@ msgid "'Cookie:' header of the request"
 msgstr ""
 
 #: cherokee-trunk/admin/PageVServer.py:136
+#, fuzzy
 msgid "Loggers"
-msgstr ""
+msgstr "以下でログイン："
 
 #: cherokee-trunk/admin/PageVServer.py:137
 msgid "SSL cookbook"
 msgstr ""
 
 #: cherokee-trunk/admin/PageVServer.py:141
+#, fuzzy
 msgid "Rule Match"
-msgstr ""
+msgstr "ファイルの一致"
 
 #: cherokee-trunk/admin/PageVServer.py:141
 #: cherokee-trunk/admin/PageVServer.py:178
+#, fuzzy
 msgid "Match"
-msgstr ""
+msgstr "マッチタイプ"
 
 #: cherokee-trunk/admin/PageVServer.py:142
+#, fuzzy
 msgid "Assigned Handler"
-msgstr ""
+msgstr "ハンドラ"
 
 #: cherokee-trunk/admin/PageVServer.py:143
 msgid "Auth"
 msgstr ""
 
 #: cherokee-trunk/admin/PageVServer.py:144
+#, fuzzy
 msgid "Custom Document Root"
-msgstr ""
+msgstr "ドキュメントルート"
 
 #: cherokee-trunk/admin/PageVServer.py:144
 msgid "Root"
@@ -5199,12 +5361,14 @@ msgid "Only HTTPS"
 msgstr ""
 
 #: cherokee-trunk/admin/PageVServer.py:145
+#, fuzzy
 msgid "Secure"
-msgstr ""
+msgstr "セキュリティ"
 
 #: cherokee-trunk/admin/PageVServer.py:146
+#, fuzzy
 msgid "Encoders"
-msgstr ""
+msgstr "エンコード"
 
 #: cherokee-trunk/admin/PageVServer.py:146
 msgid "Enc"
@@ -5215,24 +5379,27 @@ msgid "Exp"
 msgstr ""
 
 #: cherokee-trunk/admin/PageVServer.py:148
+#, fuzzy
 msgid "Connection Timeout"
-msgstr ""
+msgstr "接続タイムアウト"
 
 #: cherokee-trunk/admin/PageVServer.py:149
 msgid "Shaping"
 msgstr ""
 
 #: cherokee-trunk/admin/PageVServer.py:150
+#, fuzzy
 msgid "Logging Enabled"
-msgstr ""
+msgstr "エンコーディングが有効です"
 
 #: cherokee-trunk/admin/PageVServer.py:150
 msgid "Log"
-msgstr ""
+msgstr "ログ"
 
 #: cherokee-trunk/admin/PageVServer.py:151
+#, fuzzy
 msgid "Rule is Final"
-msgstr ""
+msgstr "条件はアクティブです。"
 
 #: cherokee-trunk/admin/PageVServer.py:151
 #: cherokee-trunk/admin/PageRule.py:233
@@ -5240,26 +5407,30 @@ msgid "Final"
 msgstr ""
 
 #: cherokee-trunk/admin/PageVServer.py:152
+#, fuzzy
 msgid "Rule is Active"
-msgstr ""
+msgstr "条件はアクティブです。"
 
 #: cherokee-trunk/admin/PageVServer.py:178
+#, fuzzy
 msgid "Match nickname"
-msgstr ""
+msgstr "ニックネームに一致"
 
 #: cherokee-trunk/admin/PageVServer.py:182
 #: cherokee-trunk/admin/PageVServer.py:696
 msgid "Host Match"
-msgstr ""
+msgstr "ホストと一致"
 
 #: cherokee-trunk/admin/PageVServer.py:220
 #: cherokee-trunk/admin/PageVServer.py:236
+#, fuzzy
 msgid "Remove criteria"
-msgstr ""
+msgstr "リモートサービス"
 
 #: cherokee-trunk/admin/PageVServer.py:254
+#, fuzzy
 msgid "How to match this Virtual Server"
-msgstr ""
+msgstr "新規仮想サーバー"
 
 #: cherokee-trunk/admin/PageVServer.py:261
 msgid "Add an additional matching criteria"
@@ -5279,19 +5450,19 @@ msgstr ""
 
 #: cherokee-trunk/admin/PageVServer.py:392
 msgid "Encoding enabled"
-msgstr ""
+msgstr "エンコーディングが有効です"
 
 #: cherokee-trunk/admin/PageVServer.py:398
 msgid "no"
-msgstr ""
+msgstr "切"
 
 #: cherokee-trunk/admin/PageVServer.py:409
 msgid " seconds"
-msgstr ""
+msgstr "秒"
 
 #: cherokee-trunk/admin/PageVServer.py:414
 msgid " bytes per second"
-msgstr ""
+msgstr "バイト／秒"
 
 #: cherokee-trunk/admin/PageVServer.py:419
 msgid "Logging enabled for this rule"
@@ -5303,62 +5474,65 @@ msgstr ""
 
 #: cherokee-trunk/admin/PageVServer.py:429
 msgid "Rule is active"
-msgstr ""
+msgstr "条件はアクティブです。"
 
 #: cherokee-trunk/admin/PageVServer.py:448
 msgid "Virtual Server nickname"
-msgstr ""
+msgstr "仮想サーバーのニックネーム"
 
 #: cherokee-trunk/admin/PageVServer.py:450
 msgid "Server ID"
-msgstr ""
+msgstr "サーバーID"
 
 #: cherokee-trunk/admin/PageVServer.py:460
 msgid "Directory Indexes"
-msgstr ""
+msgstr "ディレクトリの一覧表示"
 
 #: cherokee-trunk/admin/PageVServer.py:468
 msgid "Neither are in use at the moment."
 msgstr ""
 
 #: cherokee-trunk/admin/PageVServer.py:473
+#, fuzzy
 msgid "Keep-alive"
-msgstr ""
+msgstr "KeepAliveを許可"
 
 #: cherokee-trunk/admin/PageVServer.py:474
 msgid "Max Upload Size"
-msgstr ""
+msgstr "アップロード可能な最大サイズ"
 
 #: cherokee-trunk/admin/PageVServer.py:476
 #: cherokee-trunk/admin/PageGeneral.py:261
 msgid "Network"
-msgstr ""
+msgstr "ネットワーク"
 
 #: cherokee-trunk/admin/PageVServer.py:518
+#, fuzzy
 msgid "Error Handling hook"
-msgstr ""
+msgstr "エラー発生時の処理"
 
 #: cherokee-trunk/admin/PageVServer.py:533
+#, fuzzy
 msgid "Write errors to"
-msgstr ""
+msgstr "詳細なエラーを隠す"
 
 #: cherokee-trunk/admin/PageVServer.py:537
 #: cherokee-trunk/admin/PageVServer.py:576
 msgid "Filename"
-msgstr ""
+msgstr "ファイル名"
 
 #: cherokee-trunk/admin/PageVServer.py:539
 #: cherokee-trunk/admin/PageVServer.py:579
 msgid "Command"
-msgstr ""
+msgstr "コマンド"
 
 #: cherokee-trunk/admin/PageVServer.py:545
 msgid "Error Logging"
-msgstr ""
+msgstr "エラーのロギング"
 
 #: cherokee-trunk/admin/PageVServer.py:556
 msgid "Format"
-msgstr ""
+msgstr "初期化"
 
 #: cherokee-trunk/admin/PageVServer.py:563
 msgid "Write accesses to"
@@ -5366,23 +5540,23 @@ msgstr ""
 
 #: cherokee-trunk/admin/PageVServer.py:586
 msgid "Show macros"
-msgstr ""
+msgstr "マクロを表示"
 
 #: cherokee-trunk/admin/PageVServer.py:586
 msgid "Hide"
-msgstr ""
+msgstr "隠す"
 
 #: cherokee-trunk/admin/PageVServer.py:595
 msgid "Template: "
-msgstr ""
+msgstr "ひな形："
 
 #: cherokee-trunk/admin/PageVServer.py:597
 msgid "Access Logging"
-msgstr ""
+msgstr "アクセスログ"
 
 #: cherokee-trunk/admin/PageVServer.py:603
 msgid "Time standard"
-msgstr ""
+msgstr "標準時間"
 
 #: cherokee-trunk/admin/PageVServer.py:604
 msgid "Accept Forwarded IPs"
@@ -5390,27 +5564,27 @@ msgstr ""
 
 #: cherokee-trunk/admin/PageVServer.py:607 cherokee-trunk/admin/CgiBase.py:70
 msgid "Don't check origin"
-msgstr ""
+msgstr "参照元をチェックしない"
 
 #: cherokee-trunk/admin/PageVServer.py:607
 msgid "Do not check"
-msgstr ""
+msgstr "チェックしない"
 
 #: cherokee-trunk/admin/PageVServer.py:610 cherokee-trunk/admin/CgiBase.py:72
 msgid "Accept from Hosts"
-msgstr ""
+msgstr "ホストから許可"
 
 #: cherokee-trunk/admin/PageVServer.py:616
 msgid "Logging Options"
-msgstr ""
+msgstr "ロギングのオプション"
 
 #: cherokee-trunk/admin/PageVServer.py:652
 msgid "Certificate"
-msgstr ""
+msgstr "証明書"
 
 #: cherokee-trunk/admin/PageVServer.py:653
 msgid "Certificate key"
-msgstr ""
+msgstr "証明書のキー"
 
 #: cherokee-trunk/admin/PageVServer.py:658
 msgid "Required SSL/TLS Values"
@@ -5418,27 +5592,30 @@ msgstr ""
 
 #: cherokee-trunk/admin/PageVServer.py:663
 msgid "Ciphers"
-msgstr ""
+msgstr "暗号化方式"
 
 #: cherokee-trunk/admin/PageVServer.py:664
+#, fuzzy
 msgid "Client Certs. Request"
-msgstr ""
+msgstr "接続数／リクエスト数"
 
 #: cherokee-trunk/admin/PageVServer.py:667
 msgid "CA List"
-msgstr ""
+msgstr "CA一覧"
 
 #: cherokee-trunk/admin/PageVServer.py:670
 msgid "Verify Depth"
 msgstr ""
 
 #: cherokee-trunk/admin/PageVServer.py:676
+#, fuzzy
 msgid "Advanced Options"
-msgstr ""
+msgstr "拡張設定"
 
 #: cherokee-trunk/admin/PageVServer.py:695
+#, fuzzy
 msgid "Basics"
-msgstr ""
+msgstr "Basic認証"
 
 #: cherokee-trunk/admin/PageVServer.py:697
 #: cherokee-trunk/admin/PageRule.py:298
@@ -5447,7 +5624,7 @@ msgstr ""
 
 #: cherokee-trunk/admin/PageVServer.py:698
 msgid "Error Handler"
-msgstr ""
+msgstr "エラー発生時の処理"
 
 #: cherokee-trunk/admin/PageException.py:38
 msgid "We apologize for any inconveniences that this may have caused."
@@ -5461,10 +5638,13 @@ msgid ""
 msgstr ""
 
 #: cherokee-trunk/admin/PageException.py:40
+#, fuzzy
 msgid ""
 "Thank you for reporting the problem. The Cherokee Web Server developers will "
 "try to fix it up as soon as possible."
 msgstr ""
+"アプリケーションのレポートを送信していただきありがとうございます。私たちのサ"
+"ポートチームは、この問題を再調査します。"
 
 #: cherokee-trunk/admin/PageException.py:41
 #, python-format
@@ -5479,8 +5659,9 @@ msgid "Thank you!"
 msgstr ""
 
 #: cherokee-trunk/admin/PageException.py:91
+#, fuzzy
 msgid "Could not report the issue"
-msgstr ""
+msgstr "ユーザの作成ができません。"
 
 #: cherokee-trunk/admin/PageException.py:99
 msgid "Unexpected Exception"
@@ -5488,7 +5669,7 @@ msgstr ""
 
 #: cherokee-trunk/admin/PageException.py:112
 msgid "Report this"
-msgstr ""
+msgstr "これを報告"
 
 #: cherokee-trunk/admin/PageError.py:31
 #, python-format
@@ -5499,7 +5680,7 @@ msgstr ""
 
 #: cherokee-trunk/admin/PageError.py:59 cherokee-trunk/admin/PageError.py:85
 msgid "Server Launch Error"
-msgstr ""
+msgstr "サーバーの起動エラー"
 
 #: cherokee-trunk/admin/PageError.py:86
 msgid "Something unexpected just happened."
@@ -5537,8 +5718,9 @@ msgid ""
 msgstr ""
 
 #: cherokee-trunk/admin/PageError.py:107 cherokee-trunk/admin/PageError.py:114
+#, fuzzy
 msgid "Configuration file is not writable"
-msgstr ""
+msgstr "設定ファイル"
 
 #: cherokee-trunk/admin/PageError.py:120
 msgid "Incorrect configuration file specified"
@@ -5555,8 +5737,9 @@ msgid ""
 msgstr ""
 
 #: cherokee-trunk/admin/PageError.py:143
+#, fuzzy
 msgid "Cherokee resource is missing"
-msgstr ""
+msgstr "Cherokee利用ユーザリストへ登録"
 
 #: cherokee-trunk/admin/PageError.py:158
 msgid "Cherokee-admin has detected a very old configuration file."
@@ -5570,12 +5753,14 @@ msgid ""
 msgstr ""
 
 #: cherokee-trunk/admin/PageError.py:169
+#, fuzzy
 msgid "Detected an Ancient Configuration File"
-msgstr ""
+msgstr "設定ファイル"
 
 #: cherokee-trunk/admin/PageError.py:175
+#, fuzzy
 msgid "Ancient Configuration File"
-msgstr ""
+msgstr "設定ファイル"
 
 #: cherokee-trunk/admin/PageError.py:185
 #, python-format
@@ -5604,31 +5789,39 @@ msgid "An Incomplete Installation was detected"
 msgstr ""
 
 #: cherokee-trunk/admin/PageError.py:209
+#, fuzzy
 msgid "Missing Directory"
-msgstr ""
+msgstr "ディレクトリ"
 
 #: cherokee-trunk/admin/PageError.py:218
+#, fuzzy
 msgid "Installation Problem"
-msgstr ""
+msgstr "Tracをインストールしています"
 
 #: cherokee-trunk/admin/PageError.py:227
+#, fuzzy
 msgid "Try Again"
-msgstr ""
+msgstr "再確認"
 
 #: cherokee-trunk/admin/PageRule.py:52
-#, python-format
+#, fuzzy, python-format
 msgid ""
 "<p>You are about to delete the <b>%s</b> behavior rule.</p><p>Are you sure "
 "you want to proceed?</p>"
 msgstr ""
+"<p>あなたは、<b>%(nick_esc)s</b>の仮想サーバーを削除しようとしています。</"
+"p><p>続けてもよろしいですか？</p>"
 
 #: cherokee-trunk/admin/PageRule.py:53
+#, fuzzy
 msgid "You are about to clone a Behavior Rule. Would you like to proceed?"
 msgstr ""
+"あなたは、仮想サーバーを複製しようとしています。続けてもよろしいですか？"
 
 #: cherokee-trunk/admin/PageRule.py:116 cherokee-trunk/admin/Rule.py:159
+#, fuzzy
 msgid "Rule Type"
-msgstr ""
+msgstr "Mimeタイプ"
 
 #: cherokee-trunk/admin/PageRule.py:234
 msgid "Non Final"
@@ -5639,28 +5832,32 @@ msgid "Add Behavior Rule"
 msgstr ""
 
 #: cherokee-trunk/admin/PageRule.py:265
+#, fuzzy
 msgid "Configuration Assistant"
-msgstr ""
+msgstr "設定の整合性"
 
 #: cherokee-trunk/admin/PageRule.py:285
 msgid "Clone Behavior Rule"
 msgstr ""
 
 #: cherokee-trunk/admin/PageRule.py:290
+#, fuzzy
 msgid "Clone Selected Behavior Rule"
-msgstr ""
+msgstr "選択した仮想サーバーを複製"
 
 #: cherokee-trunk/admin/PageRule.py:318
+#, fuzzy
 msgid "Rule Filtering"
-msgstr ""
+msgstr "ソースのフィルタリング"
 
 #: cherokee-trunk/admin/Mime.py:37
 msgid "New MIME type to be added."
 msgstr ""
 
 #: cherokee-trunk/admin/Mime.py:38
+#, fuzzy
 msgid "Comma separated list of file extensions associated with the MIME type."
-msgstr ""
+msgstr "設定を反映させたいファイルの拡張子をコンマで区切って指定してください。"
 
 #: cherokee-trunk/admin/Mime.py:39
 msgid "Maximum time that this sort of content can be cached (in seconds)."
@@ -5668,23 +5865,25 @@ msgstr ""
 
 #: cherokee-trunk/admin/Mime.py:85
 msgid "Mime Type"
-msgstr ""
+msgstr "Mimeタイプ"
 
 #: cherokee-trunk/admin/Mime.py:87
+#, fuzzy
 msgid "Max Age"
-msgstr ""
+msgstr "最大ページ数"
 
 #: cherokee-trunk/admin/Mime.py:99
+#, fuzzy
 msgid "Add New MIME-Type"
-msgstr ""
+msgstr "新規エントリ"
 
 #: cherokee-trunk/admin/Mime.py:116 cherokee-trunk/admin/PageGeneral.py:265
 msgid "Mime types"
-msgstr ""
+msgstr "Mimeタイプ"
 
 #: cherokee-trunk/admin/Mime.py:120
 msgid "MIME type"
-msgstr ""
+msgstr "MIMEタイプ"
 
 #: cherokee-trunk/admin/Mime.py:122
 msgid "MaxAge (<em>secs</em>)"
@@ -5692,15 +5891,16 @@ msgstr ""
 
 #: cherokee-trunk/admin/About.py:82
 msgid "Copyright"
-msgstr ""
+msgstr "著作権"
 
 #: cherokee-trunk/admin/About.py:83
 msgid "License"
-msgstr ""
+msgstr "ライセンス"
 
 #: cherokee-trunk/admin/Auth.py:35
+#, fuzzy
 msgid "Allowed HTTP Authentication methods."
-msgstr ""
+msgstr "修正された認証リスト"
 
 #: cherokee-trunk/admin/Auth.py:36
 msgid "Name associated with the protected resource."
@@ -5712,19 +5912,20 @@ msgstr ""
 
 #: cherokee-trunk/admin/Auth.py:54
 msgid "Methods"
-msgstr ""
+msgstr "方法"
 
 #: cherokee-trunk/admin/Auth.py:55
 msgid "Realm"
-msgstr ""
+msgstr "役割"
 
 #: cherokee-trunk/admin/Auth.py:56
 msgid "Users"
-msgstr ""
+msgstr "ユーザ"
 
 #: cherokee-trunk/admin/Auth.py:61
+#, fuzzy
 msgid "Authentication Details"
-msgstr ""
+msgstr "認証リスト"
 
 #: cherokee-trunk/admin/server.py:65
 #, python-format
@@ -5742,31 +5943,34 @@ msgstr ""
 
 #: cherokee-trunk/admin/PageHelp.py:35
 msgid "Table of Contents"
-msgstr ""
+msgstr "目次"
 
 #: cherokee-trunk/admin/PageHelp.py:172
 msgid "Documentation"
-msgstr ""
+msgstr "説明書"
 
 #: cherokee-trunk/admin/Rule.py:33
+#, fuzzy
 msgid "The default match ought not to be changed."
-msgstr ""
+msgstr "選択した情報ソースは、複製されました。"
 
 #: cherokee-trunk/admin/Rule.py:129
+#, fuzzy
 msgid "And"
-msgstr ""
+msgstr "追加"
 
 #: cherokee-trunk/admin/Rule.py:137
 msgid "Or"
 msgstr ""
 
 #: cherokee-trunk/admin/Rule.py:144
+#, fuzzy
 msgid "Not"
-msgstr ""
+msgstr "いいえ"
 
 #: cherokee-trunk/admin/Rule.py:153
 msgid "Select"
-msgstr ""
+msgstr "選択"
 
 #: cherokee-trunk/admin/OWS_Cherokee_Info.py:36
 #, python-format
@@ -5777,7 +5981,7 @@ msgstr ""
 
 #: cherokee-trunk/admin/OWS_Cherokee_Info.py:61
 msgid "Latest Release"
-msgstr ""
+msgstr "最新リリース"
 
 #: cherokee-trunk/admin/OWS_Cherokee_Info.py:64
 msgid "Latest version could not be determined at the moment."
@@ -5785,7 +5989,7 @@ msgstr ""
 
 #: cherokee-trunk/admin/OWS_Cherokee_Info.py:69
 msgid "Cherokee is up to date"
-msgstr ""
+msgstr "Cherokeeは最新です"
 
 #: cherokee-trunk/admin/OWS_Cherokee_Info.py:71
 msgid "You are running Cherokee"
@@ -5793,15 +5997,16 @@ msgstr ""
 
 #: cherokee-trunk/admin/OWS_Cherokee_Info.py:72
 msgid "Latest release is "
-msgstr ""
+msgstr "最新リリースは、"
 
 #: cherokee-trunk/admin/PageStatus.py:66
+#, fuzzy
 msgid "Server Wide Monitoring"
-msgstr ""
+msgstr "仮想サーバーのモニタリング"
 
 #: cherokee-trunk/admin/PageStatus.py:71
 msgid "Virtual Server Monitoring"
-msgstr ""
+msgstr "仮想サーバーのモニタリング"
 
 #: cherokee-trunk/admin/PageStatus.py:102
 msgid "System wide status"
@@ -5809,19 +6014,19 @@ msgstr ""
 
 #: cherokee-trunk/admin/Icons.py:118
 msgid "Extension List"
-msgstr ""
+msgstr "拡張子一覧"
 
 #: cherokee-trunk/admin/Icons.py:148
 msgid "Add New Extension"
-msgstr ""
+msgstr "新しい拡張子を追加"
 
 #: cherokee-trunk/admin/Icons.py:157
 msgid "File Matches"
-msgstr ""
+msgstr "ファイルの一致"
 
 #: cherokee-trunk/admin/Icons.py:186
 msgid "Add New File"
-msgstr ""
+msgstr "新しいファイルを追加"
 
 #: cherokee-trunk/admin/Icons.py:199 cherokee-trunk/admin/Icons.py:331
 msgid "Go to Parent"
@@ -5829,39 +6034,39 @@ msgstr ""
 
 #: cherokee-trunk/admin/Icons.py:206
 msgid "Modify"
-msgstr ""
+msgstr "修正"
 
 #: cherokee-trunk/admin/Graph.py:40
 msgid "Server Traffic"
-msgstr ""
+msgstr "サーバーのトラフィック"
 
 #: cherokee-trunk/admin/Graph.py:41
 msgid "Connections / Requests"
-msgstr ""
+msgstr "接続数／リクエスト数"
 
 #: cherokee-trunk/admin/Graph.py:42
 msgid "Connection Timeouts"
-msgstr ""
+msgstr "接続タイムアウト"
 
 #: cherokee-trunk/admin/Graph.py:44
 msgid "1 Hour"
-msgstr ""
+msgstr "１時間毎"
 
 #: cherokee-trunk/admin/Graph.py:45
 msgid "6 Hours"
-msgstr ""
+msgstr "６時間毎"
 
 #: cherokee-trunk/admin/Graph.py:46
 msgid "1 Day"
-msgstr ""
+msgstr "１日毎"
 
 #: cherokee-trunk/admin/Graph.py:47
 msgid "1 Week"
-msgstr ""
+msgstr "週間毎"
 
 #: cherokee-trunk/admin/Graph.py:48
 msgid "1 Month"
-msgstr ""
+msgstr "月間毎"
 
 #: cherokee-trunk/admin/Graph.py:51
 #, python-format
@@ -5888,24 +6093,25 @@ msgid ""
 msgstr ""
 
 #: cherokee-trunk/admin/OWS_Login.py:98
+#, fuzzy
 msgid "Authentication failed"
-msgstr ""
+msgstr "認証リスト"
 
 #: cherokee-trunk/admin/OWS_Login.py:109
 msgid "Sign in to Cherokee Market"
-msgstr ""
+msgstr "Cherokeeマーケットにサインイン"
 
 #: cherokee-trunk/admin/OWS_Login.py:112
 msgid "Email address"
-msgstr ""
+msgstr "メールアドレス"
 
 #: cherokee-trunk/admin/OWS_Login.py:128
 msgid "Logged as"
-msgstr ""
+msgstr "以下でログイン："
 
 #: cherokee-trunk/admin/OWS_Login.py:131
 msgid "Sign out"
-msgstr ""
+msgstr "サインアウト"
 
 #: cherokee-trunk/admin/Wizard.py:43
 msgid "Check the cookbook for more details."
@@ -5916,8 +6122,9 @@ msgid "Use the same logging configuration as one of the other virtual servers."
 msgstr ""
 
 #: cherokee-trunk/admin/Wizard.py:212
+#, fuzzy
 msgid "Do not configure"
-msgstr ""
+msgstr "チェックしない"
 
 #: cherokee-trunk/admin/Handler.py:31
 msgid "Allows to specify an alternative Document Root path."
@@ -5925,11 +6132,11 @@ msgstr ""
 
 #: cherokee-trunk/admin/Flags.py:308 cherokee-trunk/admin/Flags.py:326
 msgid "Countries"
-msgstr ""
+msgstr "国"
 
 #: cherokee-trunk/admin/Flags.py:308 cherokee-trunk/admin/Flags.py:334
 msgid "Extras"
-msgstr ""
+msgstr "エクストラ"
 
 #: cherokee-trunk/admin/CgiBase.py:32
 msgid "Path to an executable that will be run with the CGI as parameter."
@@ -5975,31 +6182,31 @@ msgstr ""
 
 #: cherokee-trunk/admin/CgiBase.py:68
 msgid "Read X-Real-IP"
-msgstr ""
+msgstr "X-Real-IPヘッダを読む"
 
 #: cherokee-trunk/admin/CgiBase.py:90 cherokee-trunk/admin/CgiBase.py:154
 msgid "Name"
-msgstr ""
+msgstr "名前"
 
 #: cherokee-trunk/admin/CgiBase.py:119
 msgid "Script Alias"
-msgstr ""
+msgstr "スクリプトのエイリアス"
 
 #: cherokee-trunk/admin/CgiBase.py:121
 msgid "Change UID"
-msgstr ""
+msgstr "UIDを変更"
 
 #: cherokee-trunk/admin/CgiBase.py:121
 msgid "Change"
-msgstr ""
+msgstr "変更"
 
 #: cherokee-trunk/admin/CgiBase.py:123
 msgid "Error handler"
-msgstr ""
+msgstr "エラーハンドラ"
 
 #: cherokee-trunk/admin/CgiBase.py:124
 msgid "Check file"
-msgstr ""
+msgstr "ファイルのチェック"
 
 #: cherokee-trunk/admin/CgiBase.py:125
 msgid "Pass Request Headers"
@@ -6007,19 +6214,19 @@ msgstr ""
 
 #: cherokee-trunk/admin/CgiBase.py:126
 msgid "Allow X-Sendfile"
-msgstr ""
+msgstr "X-Sendfileヘッダを許可"
 
 #: cherokee-trunk/admin/CgiBase.py:131
 msgid "Common CGI Options"
-msgstr ""
+msgstr "CGIの共通設定"
 
 #: cherokee-trunk/admin/CgiBase.py:145
 msgid "Custom Environment Variables"
-msgstr ""
+msgstr "カスタム環境変数"
 
 #: cherokee-trunk/admin/CgiBase.py:162
 msgid "Add New Custom Environment Variable"
-msgstr ""
+msgstr "新しいカスタム環境変数を追加"
 
 #: cherokee-trunk/admin/PageGeneral.py:39
 msgid "Defines the TCP port that the server will listen to."
@@ -6080,15 +6287,17 @@ msgstr ""
 
 #: cherokee-trunk/admin/PageGeneral.py:53
 msgid "General Configuration"
-msgstr ""
+msgstr "一般設定"
 
 #: cherokee-trunk/admin/PageGeneral.py:54
+#, fuzzy
 msgid "Configuration Quickstart"
-msgstr ""
+msgstr "設定ファイル"
 
 #: cherokee-trunk/admin/PageGeneral.py:96
+#, fuzzy
 msgid "Port/Interface combination already in use."
-msgstr ""
+msgstr "そのポートはすでに使用中です。"
 
 #: cherokee-trunk/admin/PageGeneral.py:132
 msgid "IPv6"
@@ -6104,56 +6313,57 @@ msgstr ""
 
 #: cherokee-trunk/admin/PageGeneral.py:141
 msgid "Server Tokens"
-msgstr ""
+msgstr "サーバー情報"
 
 #: cherokee-trunk/admin/PageGeneral.py:144
+#, fuzzy
 msgid "Network Behavior"
-msgstr ""
+msgstr "ネットワーク"
 
 #: cherokee-trunk/admin/PageGeneral.py:149
 msgid "Graphs Type"
-msgstr ""
+msgstr "グラフの種類"
 
 #: cherokee-trunk/admin/PageGeneral.py:150
 msgid "Information Collector"
-msgstr ""
+msgstr "情報収集"
 
 #: cherokee-trunk/admin/PageGeneral.py:156
 #: cherokee-trunk/admin/PageGeneral.py:157
 msgid "Upload Tracking"
-msgstr ""
+msgstr "アップロードのトラッキング"
 
 #: cherokee-trunk/admin/PageGeneral.py:189
 msgid "TLS/SSL port"
-msgstr ""
+msgstr "TLS/SSLポート"
 
 #: cherokee-trunk/admin/PageGeneral.py:191
 msgid "TLS/SSL support disabled"
-msgstr ""
+msgstr "TLS/SSLサポートは無効化されています。"
 
 #: cherokee-trunk/admin/PageGeneral.py:215
 msgid "Interface"
-msgstr ""
+msgstr "インターフェース"
 
 #: cherokee-trunk/admin/PageGeneral.py:220
 msgid "Add a new listening port"
-msgstr ""
+msgstr "新しい待受けポートを追加"
 
 #: cherokee-trunk/admin/PageGeneral.py:230
 msgid "Add new port"
-msgstr ""
+msgstr "新しいポートを追加"
 
 #: cherokee-trunk/admin/PageGeneral.py:236
 msgid "Listening to Ports"
-msgstr ""
+msgstr "待ち受けポート"
 
 #: cherokee-trunk/admin/PageGeneral.py:247
 msgid "Execution Permissions"
-msgstr ""
+msgstr "実行可能パーミッション"
 
 #: cherokee-trunk/admin/PageGeneral.py:249
 msgid "Group"
-msgstr ""
+msgstr "グループ"
 
 #: cherokee-trunk/admin/PageGeneral.py:250
 msgid "Chroot"
@@ -6161,19 +6371,19 @@ msgstr ""
 
 #: cherokee-trunk/admin/PageGeneral.py:262
 msgid "Ports to listen"
-msgstr ""
+msgstr "待ち受け用のポート"
 
 #: cherokee-trunk/admin/PageGeneral.py:263
 msgid "Permissions"
-msgstr ""
+msgstr "パーミッション"
 
 #: cherokee-trunk/admin/PageGeneral.py:264
 msgid "Icons"
-msgstr ""
+msgstr "アイコン"
 
 #: cherokee-trunk/admin/PageGeneral.py:268
 msgid "General Settings"
-msgstr ""
+msgstr "一般設定"
 
 #: ows/Market_Info/Block.py:12 ows/Market_Info/Block.py:45
 msgid ""
@@ -6196,7 +6406,7 @@ msgstr ""
 
 #: ows/Market_Info/Block.py:15 ows/Market_Info/Block.py:48
 msgid "Learn more"
-msgstr ""
+msgstr "より詳しく"
 
 #: ows/Market_Info/Block.py:46
 msgid ""
@@ -6233,7 +6443,7 @@ msgstr ""
 #: packages/drupal/installer.py:143 packages/openx/installer.py:64
 #: packages/moodle/installer.py:85 packages/phpbb/installer.py:80
 msgid "Checking Requirements"
-msgstr ""
+msgstr "必要条件を確認中"
 
 #: packages/joomla/installer.py:142 packages/phpmyadmin/installer.py:88
 #: packages/magnolia/installer.py:91 packages/trac/installer.py:138
@@ -6249,7 +6459,7 @@ msgstr ""
 #: packages/openx/installer.py:68 packages/nuxeo_dam/installer.py:97
 #: packages/moodle/installer.py:89 packages/phpbb/installer.py:84
 msgid "Retry"
-msgstr ""
+msgstr "再試行"
 
 #: packages/joomla/installer.py:263 packages/vanilla/installer.py:255
 #: packages/silverstripe/installer.py:250 packages/mediawiki/installer.py:213
@@ -6286,7 +6496,7 @@ msgstr ""
 #: packages/magnolia/installer.py:157 packages/liferay/installer.py:149
 #: packages/nuxeo_dm/installer.py:171 packages/nuxeo_dam/installer.py:172
 msgid "Access details"
-msgstr ""
+msgstr "アクセス詳細"
 
 #: packages/magnolia/installer.py:158
 msgid ""
@@ -6330,7 +6540,7 @@ msgstr ""
 
 #: packages/trac/installer.py:34
 msgid "Installing Trac."
-msgstr ""
+msgstr "Tracのインストール中"
 
 #: packages/trac/installer.py:35
 msgid "Trac is being installed and a default Trac project is being created."
@@ -6350,7 +6560,7 @@ msgstr ""
 
 #: packages/trac/installer.py:40 packages/nagios/installer.py:179
 msgid "User configuration"
-msgstr ""
+msgstr "ユーザ設定"
 
 #: packages/trac/installer.py:41
 msgid ""
@@ -6365,15 +6575,15 @@ msgstr ""
 
 #: packages/trac/installer.py:223
 msgid "Installing Trac"
-msgstr ""
+msgstr "Tracをインストールしています"
 
 #: packages/trac/installer.py:253
 msgid "Trac User"
-msgstr ""
+msgstr "Tracユーザ"
 
 #: packages/trac/installer.py:254
 msgid "Trac Password"
-msgstr ""
+msgstr "Tracパスワード"
 
 #: packages/trac/tools.py:21
 msgid ""
@@ -6391,7 +6601,7 @@ msgstr ""
 
 #: packages/trac/tools.py:66
 msgid "Error report"
-msgstr ""
+msgstr "エラー報告"
 
 #: packages/vanilla/installer.py:153
 msgid ""
@@ -6402,7 +6612,7 @@ msgstr ""
 #: packages/vanilla/installer.py:156 packages/drupal7/installer.py:198
 #: packages/silverstripe/installer.py:150 packages/moodle/installer.py:130
 msgid "Setting"
-msgstr ""
+msgstr "設定"
 
 #: packages/vanilla/installer.py:156 packages/drupal7/installer.py:198
 #: packages/silverstripe/installer.py:150 packages/moodle/installer.py:130
@@ -6412,7 +6622,7 @@ msgstr ""
 #: packages/vanilla/installer.py:156 packages/drupal7/installer.py:198
 #: packages/silverstripe/installer.py:150 packages/moodle/installer.py:130
 msgid "Current value"
-msgstr ""
+msgstr "現在の値"
 
 #: packages/moin/installer.py:25
 msgid ""
@@ -6438,19 +6648,19 @@ msgstr ""
 
 #: packages/moin/installer.py:181
 msgid "Wiki Sitename"
-msgstr ""
+msgstr "Wikiサイト名"
 
 #: packages/moin/installer.py:182
 msgid "Admin User"
-msgstr ""
+msgstr "管理ユーザ"
 
 #: packages/moin/installer.py:183 packages/common/database.py:680
 msgid "Admin Password"
-msgstr ""
+msgstr "管理パスワード"
 
 #: packages/moin/installer.py:209
 msgid "Wiki details"
-msgstr ""
+msgstr "Wikiの詳細"
 
 #: packages/drupal7/installer.py:139
 msgid "Username for the administrator account."
@@ -6470,7 +6680,7 @@ msgstr ""
 
 #: packages/drupal7/installer.py:144 packages/moodle/installer.py:75
 msgid "Site details"
-msgstr ""
+msgstr "サイトの詳細"
 
 #: packages/drupal7/installer.py:145
 msgid "The following information is required to install Drupal."
@@ -6484,19 +6694,19 @@ msgstr ""
 
 #: packages/drupal7/installer.py:269 packages/moodle/installer.py:193
 msgid "Admin user"
-msgstr ""
+msgstr "管理人ユーザ"
 
 #: packages/drupal7/installer.py:270 packages/moodle/installer.py:194
 msgid "Admin password"
-msgstr ""
+msgstr "管理人のパスワード"
 
 #: packages/drupal7/installer.py:271
 msgid "Admin email"
-msgstr ""
+msgstr "管理人のメールアドレス"
 
 #: packages/drupal7/installer.py:272
 msgid "Sitename"
-msgstr ""
+msgstr "サイト名"
 
 #: packages/drupal7/installer.py:338
 msgid "Using Drupal shell to install Drupal"
@@ -6616,11 +6826,11 @@ msgstr ""
 
 #: packages/common/database.py:576
 msgid "Engine"
-msgstr ""
+msgstr "エンジン"
 
 #: packages/common/database.py:602
 msgid "Configuration method"
-msgstr ""
+msgstr "設定方法"
 
 #: packages/common/database.py:660 packages/common/database.py:737
 #: packages/common/database.py:835
@@ -6633,25 +6843,25 @@ msgstr ""
 
 #: packages/common/database.py:679
 msgid "Admin Username"
-msgstr ""
+msgstr "管理人のユーザ名"
 
 #: packages/common/database.py:718
 msgid "Database does not exist."
-msgstr ""
+msgstr "データーベースが存在しません。"
 
 #: packages/common/database.py:760 packages/nagios/installer.py:185
 #: packages/nuxeo_dm/installer.py:178 packages/redmine/installer.py:392
 #: packages/nuxeo_dam/installer.py:179
 msgid "Username"
-msgstr ""
+msgstr "ユーザ名"
 
 #: packages/common/database.py:784
 msgid "Unknown method"
-msgstr ""
+msgstr "不明なメソッド"
 
 #: packages/common/database.py:820
 msgid "Database configuration"
-msgstr ""
+msgstr "データーベース設定"
 
 #: packages/common/database.py:838
 msgid "This installer doesn't seem to support any databases."
@@ -6690,7 +6900,7 @@ msgstr ""
 
 #: packages/common/target.py:131
 msgid "Domain Name already in use"
-msgstr ""
+msgstr "そのドメイン名はすでに使われています。"
 
 #: packages/common/target.py:139
 msgid "Root directory is not allowed"
@@ -6702,11 +6912,11 @@ msgstr ""
 
 #: packages/common/target.py:234
 msgid "Unknown target"
-msgstr ""
+msgstr "不明なターゲット"
 
 #: packages/common/target.py:259
 msgid "Install as a new.."
-msgstr ""
+msgstr "新規インストールする"
 
 #: packages/common/target.py:272
 msgid "Deployment Type"
@@ -6719,11 +6929,11 @@ msgstr ""
 
 #: packages/common/pwd_grp.py:158
 msgid "Could not create group."
-msgstr ""
+msgstr "グループの作成ができません。"
 
 #: packages/common/pwd_grp.py:210
 msgid "Could not create user."
-msgstr ""
+msgstr "ユーザの作成ができません。"
 
 #: packages/common/ruby.py:41
 msgid ""
@@ -6806,7 +7016,7 @@ msgstr ""
 msgid ""
 "Neither the 'mysql' nor the 'mysqli' modules are supported by your PHP "
 "interpreter"
-msgstr ""
+msgstr "PHPに『mysql』や、『mysqli』モジュールがインストールされていません。"
 
 #: packages/common/php-mods.py:41
 msgid "The 'pdo_mysql' module is not supported by your PHP interpreter"
@@ -6972,7 +7182,7 @@ msgstr ""
 
 #: packages/common/php.py:113
 msgid "Configuring PHP"
-msgstr ""
+msgstr "PHP設定"
 
 #: packages/common/php.py:114
 msgid "Detecting a suitable PHP interpreter"
@@ -6980,20 +7190,20 @@ msgstr ""
 
 #: packages/common/php.py:130
 msgid "Could not find the PHP interpreter"
-msgstr ""
+msgstr "PHPが見つかりません"
 
 #: packages/common/php.py:134
 msgid "Check Again"
-msgstr ""
+msgstr "再確認"
 
 #: packages/common/php.py:141
 msgid "Internal Error while configuring PHP"
-msgstr ""
+msgstr "PHP設定にエラーが発生しました。"
 
 #: packages/common/python.py:41
 #, python-format
 msgid "Python %(version2)s or later is required."
-msgstr ""
+msgstr "Python %(version2)s 以上が必要です。"
 
 #: packages/common/python.py:49
 #, python-format
@@ -7022,7 +7232,7 @@ msgstr ""
 
 #: packages/liferay/installer.py:156
 msgid "Email Address"
-msgstr ""
+msgstr "メールアドレス"
 
 #: packages/wordpress/installer.py:25 packages/redmine/installer.py:24
 msgid "List of available languages"
@@ -7038,27 +7248,27 @@ msgstr ""
 
 #: packages/wordpress/installer.py:31
 msgid "Arabic"
-msgstr ""
+msgstr "アラビア語"
 
 #: packages/wordpress/installer.py:36 packages/redmine/tools.py:40
 msgid "Japanese"
-msgstr ""
+msgstr "日本語"
 
 #: packages/wordpress/installer.py:37 packages/redmine/tools.py:48
 msgid "Portuguese"
-msgstr ""
+msgstr "ポルトガル語"
 
 #: packages/wordpress/installer.py:38 packages/redmine/tools.py:51
 msgid "Russian"
-msgstr ""
+msgstr "ロシア語"
 
 #: packages/wordpress/installer.py:39 packages/redmine/tools.py:61
 msgid "Chinese"
-msgstr ""
+msgstr "中国語"
 
 #: packages/nagios/installer.py:30
 msgid "Administrator configuration"
-msgstr ""
+msgstr "管理設定"
 
 #: packages/nagios/installer.py:31
 msgid ""
@@ -7073,15 +7283,15 @@ msgstr ""
 
 #: packages/nagios/installer.py:33
 msgid "Username for the administrator user."
-msgstr ""
+msgstr "管理人ユーザのユーザ名"
 
 #: packages/nagios/installer.py:34
 msgid "Password for the administrator user."
-msgstr ""
+msgstr "管理人ユーザのパスワード"
 
 #: packages/nagios/installer.py:36
 msgid "Nagios system user"
-msgstr ""
+msgstr "Nagiosのシステムユーザ"
 
 #: packages/nagios/installer.py:37
 msgid ""
@@ -7114,28 +7324,28 @@ msgstr ""
 
 #: packages/nagios/installer.py:134
 msgid "User does not exist"
-msgstr ""
+msgstr "そのユーザは存在しません"
 
 #: packages/nagios/installer.py:139
 msgid "Group does not exist"
-msgstr ""
+msgstr "そのグループは存在しません"
 
 #: packages/nagios/installer.py:146 packages/wsgidav/installer.py:79
 #: packages/statusnet/installer.py:93
 msgid "Checking Dependencies"
-msgstr ""
+msgstr "依存性を確認中"
 
 #: packages/nagios/installer.py:187
 msgid "Email"
-msgstr ""
+msgstr "メールアドレス"
 
 #: packages/nagios/installer.py:293
 msgid "Nagios user"
-msgstr ""
+msgstr "Nagiosユーザ"
 
 #: packages/nagios/installer.py:294
 msgid "Nagios group"
-msgstr ""
+msgstr "Nagiosグループ"
 
 #: packages/nagios/installer.py:295
 msgid "Nagios command group"
@@ -7143,11 +7353,11 @@ msgstr ""
 
 #: packages/nagios/installer.py:329
 msgid "User configuration method"
-msgstr ""
+msgstr "ユーザ設定方法"
 
 #: packages/nagios/installer.py:347
 msgid "Checking System Users"
-msgstr ""
+msgstr "システムユーザの確認"
 
 #: packages/nagios/installer.py:357 packages/nagios/installer.py:497
 msgid "The installer could not successfully execute the following command:"
@@ -7159,11 +7369,11 @@ msgstr ""
 
 #: packages/nagios/installer.py:435
 msgid "Installing Nagios"
-msgstr ""
+msgstr "Nagiosをインストールします。"
 
 #: packages/nagios/installer.py:450 packages/nagios/installer.py:473
 msgid "Nagios start up"
-msgstr ""
+msgstr "Nagiosのスタートアップ"
 
 #: packages/nagios/installer.py:451
 msgid ""
@@ -7173,7 +7383,7 @@ msgstr ""
 
 #: packages/nagios/installer.py:454
 msgid "Add system service"
-msgstr ""
+msgstr "システムサービスを追加"
 
 #: packages/nagios/installer.py:454
 msgid "Mark the checkbox to automatically launch Nagios on start up."
@@ -7257,19 +7467,19 @@ msgstr ""
 
 #: packages/redmine/installer.py:174
 msgid "Database Requirements"
-msgstr ""
+msgstr "データーベースの必須条件"
 
 #: packages/redmine/tools.py:21
 msgid "Bulgarian"
-msgstr ""
+msgstr "ブルガリア語"
 
 #: packages/redmine/tools.py:22
 msgid "Bosnian"
-msgstr ""
+msgstr "ボスニア語"
 
 #: packages/redmine/tools.py:24
 msgid "Czech"
-msgstr ""
+msgstr "チェコ語"
 
 #: packages/redmine/tools.py:25
 msgid "Danish"
@@ -7277,11 +7487,11 @@ msgstr ""
 
 #: packages/redmine/tools.py:27
 msgid "Greek"
-msgstr ""
+msgstr "ギリシア語"
 
 #: packages/redmine/tools.py:29
 msgid "English (GB)"
-msgstr ""
+msgstr "英語（GB）"
 
 #: packages/redmine/tools.py:31
 msgid "Basque"
@@ -7289,7 +7499,7 @@ msgstr ""
 
 #: packages/redmine/tools.py:32
 msgid "Finnish"
-msgstr ""
+msgstr "フィンランド語"
 
 #: packages/redmine/tools.py:35
 msgid "Hebrew"
@@ -7301,15 +7511,15 @@ msgstr ""
 
 #: packages/redmine/tools.py:37
 msgid "Hungarian"
-msgstr ""
+msgstr "ハンガリー語"
 
 #: packages/redmine/tools.py:38
 msgid "Indonesian"
-msgstr ""
+msgstr "インドネシア語"
 
 #: packages/redmine/tools.py:41
 msgid "Korean"
-msgstr ""
+msgstr "韓国語"
 
 #: packages/redmine/tools.py:42
 msgid "Lithuanian"
@@ -7321,15 +7531,15 @@ msgstr ""
 
 #: packages/redmine/tools.py:44
 msgid "Mongolian"
-msgstr ""
+msgstr "モンゴル語"
 
 #: packages/redmine/tools.py:46
 msgid "Norwegian"
-msgstr ""
+msgstr "ノルウェー語"
 
 #: packages/redmine/tools.py:49
 msgid "Portuguese (BR)"
-msgstr ""
+msgstr "ポルトガル語（ブラジル）"
 
 #: packages/redmine/tools.py:50
 msgid "Romanian"
@@ -7337,39 +7547,39 @@ msgstr ""
 
 #: packages/redmine/tools.py:52
 msgid "Slovak"
-msgstr ""
+msgstr "スロバキア語"
 
 #: packages/redmine/tools.py:53
 msgid "Slovenian"
-msgstr ""
+msgstr "スロベニア語"
 
 #: packages/redmine/tools.py:54
 msgid "Serbian"
-msgstr ""
+msgstr "セルビア語"
 
 #: packages/redmine/tools.py:55
 msgid "Serbian (YU)"
-msgstr ""
+msgstr "セルビア語（YU）"
 
 #: packages/redmine/tools.py:57
 msgid "Thai"
-msgstr ""
+msgstr "タイ語"
 
 #: packages/redmine/tools.py:58
 msgid "Turkish"
-msgstr ""
+msgstr "トルコ語"
 
 #: packages/redmine/tools.py:59
 msgid "Ukrainian"
-msgstr ""
+msgstr "ウクライナ語"
 
 #: packages/redmine/tools.py:60
 msgid "Vietnamese"
-msgstr ""
+msgstr "ベトナム語"
 
 #: packages/redmine/tools.py:62
 msgid "Chinese (TW)"
-msgstr ""
+msgstr "中国語（台湾）"
 
 #: packages/wsgidav/installer.py:34
 msgid ""
@@ -7390,20 +7600,20 @@ msgstr ""
 
 #: packages/wsgidav/installer.py:163
 msgid "Installing WsgiDAV"
-msgstr ""
+msgstr "WsgiDAVのインストール"
 
 #: packages/wsgidav/installer.py:184
 msgid "Local directory"
-msgstr ""
+msgstr "ローカルディレクトリ"
 
 #: packages/wsgidav/installer.py:188
 msgid "WsgiDAV configuration"
-msgstr ""
+msgstr "WsgiDAV設定"
 
 #: packages/wsgidav/tools.py:52
 msgid ""
 "Your system doesn't seem to provide the required dependecy 'xml2-config'"
-msgstr ""
+msgstr "使用中のシステムは、動作に必要な『xml2-config』が無いようです。"
 
 #: packages/wsgidav/tools.py:55
 msgid ""
@@ -7412,7 +7622,7 @@ msgstr ""
 
 #: packages/zencart/installer.py:208
 msgid "Registering database details"
-msgstr ""
+msgstr "登録されたデーターベースの詳細"
 
 #: packages/drupal_example/tools.py:17 packages/drupal/tools.py:17
 #: packages/openx/tools.py:20 packages/moodle/tools.py:31
@@ -7424,11 +7634,11 @@ msgstr ""
 
 #: packages/statusnet/installer.py:208
 msgid "Communicating DB details."
-msgstr ""
+msgstr "DB通信の詳細"
 
 #: packages/openx/installer.py:176 packages/moodle/installer.py:288
 msgid "Performing automatic installation"
-msgstr ""
+msgstr "自動インストールの試行"
 
 #: packages/nuxeo_dam/installer.py:173
 msgid ""
@@ -7455,11 +7665,11 @@ msgstr ""
 
 #: packages/moodle/installer.py:71
 msgid "Full name of the website."
-msgstr ""
+msgstr "このサイトの長い名前"
 
 #: packages/moodle/installer.py:72
 msgid "Short name of the website."
-msgstr ""
+msgstr "このサイトの短い名前"
 
 #: packages/moodle/installer.py:73
 msgid ""
@@ -7476,18 +7686,20 @@ msgid ""
 "Some of your PHP settings do not meet Moodle's requirements. Please edit "
 "your PHP configuration files and try again."
 msgstr ""
+"使用中のPHPの設定は、Moodleを実行する上で適切な値になっていません。まず、PHP"
+"の設定ファイルを編集してやり直してください。"
 
 #: packages/moodle/installer.py:195
 msgid "Full sitename"
-msgstr ""
+msgstr "サイト名"
 
 #: packages/moodle/installer.py:196
 msgid "Short sitename"
-msgstr ""
+msgstr "短いサイト名"
 
 #: packages/moodle/installer.py:207
 msgid "Domain name"
-msgstr ""
+msgstr "ドメイン名"
 
 #: packages/moodle/installer.py:210
 msgid "Make sure you understand and accept the "
@@ -7495,7 +7707,7 @@ msgstr ""
 
 #: packages/moodle/installer.py:211
 msgid "Moodle License"
-msgstr ""
+msgstr "Moodleのライセンス"
 
 #: packages/moodle/installer.py:212
 msgid " before proceeding. Moodle license must be accepted to proceed."
@@ -7503,7 +7715,7 @@ msgstr ""
 
 #: packages/moodle/installer.py:213
 msgid "Accept license"
-msgstr ""
+msgstr "ライセンスに同意"
 
 #: packages/moodle/installer.py:280
 msgid ""
@@ -7513,40 +7725,42 @@ msgstr ""
 
 #: packages/moodle/tools.py:186
 msgid "At least 8 characters required."
-msgstr ""
+msgstr "最低8文字の英数字を入れてください。"
 
 #: packages/moodle/tools.py:187
 msgid "At least 1 digit required."
-msgstr ""
+msgstr "少なくとも数字一文字を含める必要があります。"
 
 #: packages/moodle/tools.py:188
 msgid "At least 1 lowercase letter required."
-msgstr ""
+msgstr "少なくとも小文字一文字を含める必要があります。"
 
 #: packages/moodle/tools.py:189
 msgid "At least 1 uppercase letter required."
-msgstr ""
+msgstr "少なくとも大文字一文字を含める必要があります。"
 
 #: packages/moodle/tools.py:190
 msgid "At least 1 non-alphanumeric character required."
-msgstr ""
+msgstr "少なくとも英数字以外の文字を一文字を含める必要があります。"
 
 #: packages/moodle/tools.py:198
 msgid "Only lower case letters allowed."
-msgstr ""
+msgstr "小文字のみ許可されています。"
 
 #: packages/moodle/tools.py:203
 msgid "Must accept License"
-msgstr ""
+msgstr "ライセンスに同意する必要があります。"
 
 #: packages/moodle/tools.py:208
 msgid "The default nick name is not accessible as such from the Internet"
 msgstr ""
+"このデフォルトのニックネームは、インターネットなどからアクセス可能ではありま"
+"せん。"
 
 #: packages/moodle/tools.py:216
 msgid "Web path must be omitted"
-msgstr ""
+msgstr "Webのパスが入力されていません。"
 
 #: packages/broken_app/installer.py:24
 msgid "OWS Error"
-msgstr ""
+msgstr "OWSエラー"
