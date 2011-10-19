@@ -1,3 +1,11 @@
+cherokee (1.2.101-1) unstable; urgency=low
+
+  * New Upstream Version
+  * Removed use_updated_config_guess patch, Upstream provided 
+    new config.guess and config.sub versions
+
+ -- Leonel Nunez <leonel@enelserver.com>  Tue, 18 Oct 2011 19:52:06 -0600
+
 cherokee (1.2.100-1) unstable; urgency=low
 
   * New Upstream Release
