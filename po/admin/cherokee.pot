@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: cherokee 1.0\n"
 "Report-Msgid-Bugs-To: http://bugs.cherokee-project.com/\n"
-"POT-Creation-Date: 2011-05-02 15:00+0200\n"
+"POT-Creation-Date: 2011-03-30 15:00+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -105,17 +105,19 @@ msgstr ""
 #: cherokee-trunk/admin/CTK/CTK/Druid.py:223
 #: cherokee-trunk/admin/CTK/CTK/Druid.py:231
 #: cherokee-trunk/admin/CTK/CTK/Druid.py:237
-#: cherokee-trunk/admin/CTK/CTK/Dialog.py:164
+#: cherokee-trunk/admin/CTK/CTK/Dialog.py:131
 #: cherokee-trunk/admin/plugins/redir.py:120
 #: cherokee-trunk/admin/market/Review.py:90
 #: cherokee-trunk/admin/market/Maintenance.py:360
 #: cherokee-trunk/admin/market/Maintenance.py:570
-#: cherokee-trunk/admin/market/Install.py:142
-#: cherokee-trunk/admin/market/Install.py:161
-#: cherokee-trunk/admin/market/Install.py:228
-#: cherokee-trunk/admin/market/Install.py:256
-#: cherokee-trunk/admin/market/Install.py:299
-#: cherokee-trunk/admin/market/Report.py:135
+#: cherokee-trunk/admin/market/Install.py:133
+#: cherokee-trunk/admin/market/Install.py:160
+#: cherokee-trunk/admin/market/Install.py:210
+#: cherokee-trunk/admin/market/Install.py:239
+#: cherokee-trunk/admin/market/Install.py:289
+#: cherokee-trunk/admin/market/Install.py:317
+#: cherokee-trunk/admin/market/Install.py:360
+#: cherokee-trunk/admin/market/Report.py:138
 #: cherokee-trunk/admin/OWS_Backup.py:155
 #: cherokee-trunk/admin/OWS_Backup.py:258 cherokee-trunk/admin/PageRule.py:209
 #: cherokee-trunk/admin/PageRule.py:260 cherokee-trunk/admin/PageRule.py:286
@@ -125,6 +127,8 @@ msgstr ""
 #: packages/joomla/installer.py:268 packages/phpmyadmin/installer.py:87
 #: packages/phpmyadmin/installer.py:127 packages/phpmyadmin/installer.py:144
 #: packages/magnolia/installer.py:90 packages/magnolia/installer.py:103
+#: packages/example/installer.py:193 packages/example/installer.py:250
+#: packages/example/installer.py:294 packages/example/installer.py:418
 #: packages/trac/installer.py:137 packages/trac/installer.py:166
 #: packages/trac/installer.py:228 packages/trac/installer.py:262
 #: packages/vanilla/installer.py:124 packages/vanilla/installer.py:177
@@ -144,32 +148,29 @@ msgstr ""
 #: packages/nagios/installer.py:168 packages/nagios/installer.py:196
 #: packages/nagios/installer.py:233 packages/nagios/installer.py:361
 #: packages/nagios/installer.py:440 packages/nagios/installer.py:462
-#: packages/nagios/installer.py:507 packages/nuxeo_dm/installer.py:95
-#: packages/nuxeo_dm/installer.py:113 packages/redmine/installer.py:111
+#: packages/nagios/installer.py:507 packages/redmine/installer.py:111
 #: packages/redmine/installer.py:157 packages/redmine/installer.py:198
 #: packages/redmine/installer.py:210 packages/redmine/installer.py:245
 #: packages/redmine/installer.py:265 packages/redmine/installer.py:335
 #: packages/redmine/installer.py:396 packages/wsgidav/installer.py:97
 #: packages/wsgidav/installer.py:111 packages/wsgidav/installer.py:192
-#: packages/sugar_ce/installer.py:104 packages/sugar_ce/installer.py:127
-#: packages/sugar_ce/installer.py:193 packages/zencart/installer.py:97
-#: packages/zencart/installer.py:136 packages/zencart/installer.py:154
-#: packages/zencart/installer.py:222 packages/drupal_example/installer.py:193
-#: packages/drupal_example/installer.py:250
-#: packages/drupal_example/installer.py:294
-#: packages/drupal_example/installer.py:418 packages/statusnet/installer.py:96
+#: packages/zencart/installer.py:97 packages/zencart/installer.py:136
+#: packages/zencart/installer.py:154 packages/zencart/installer.py:222
+#: packages/nuxeo-dam/installer.py:96 packages/nuxeo-dam/installer.py:114
+#: packages/hello-world-php/installer.py:85 packages/statusnet/installer.py:96
 #: packages/statusnet/installer.py:135 packages/statusnet/installer.py:154
 #: packages/statusnet/installer.py:220 packages/drupal/installer.py:146
 #: packages/drupal/installer.py:186 packages/drupal/installer.py:204
 #: packages/drupal/installer.py:273 packages/openx/installer.py:67
 #: packages/openx/installer.py:109 packages/openx/installer.py:181
-#: packages/nuxeo_dam/installer.py:96 packages/nuxeo_dam/installer.py:114
-#: packages/moodle/installer.py:88 packages/moodle/installer.py:151
-#: packages/moodle/installer.py:169 packages/moodle/installer.py:220
-#: packages/moodle/installer.py:293 packages/broken_app/installer.py:22
-#: packages/phpbb/installer.py:83 packages/phpbb/installer.py:132
-#: packages/phpbb/installer.py:152 packages/phpbb/installer.py:228
-#: packages/hello_world_php/installer.py:85
+#: packages/sugar/installer.py:104 packages/sugar/installer.py:127
+#: packages/sugar/installer.py:193 packages/nuxeo-dm/installer.py:95
+#: packages/nuxeo-dm/installer.py:113 packages/moodle/installer.py:88
+#: packages/moodle/installer.py:151 packages/moodle/installer.py:169
+#: packages/moodle/installer.py:220 packages/moodle/installer.py:293
+#: packages/broken_app/installer.py:22 packages/phpbb/installer.py:83
+#: packages/phpbb/installer.py:132 packages/phpbb/installer.py:152
+#: packages/phpbb/installer.py:228
 msgid "Cancel"
 msgstr ""
 
@@ -350,8 +351,8 @@ msgid "Source Usage"
 msgstr ""
 
 #: cherokee-trunk/admin/PageSource.py:276
-#: cherokee-trunk/admin/market/PageApp.py:42
-#: cherokee-trunk/admin/market/PageApp.py:98
+#: cherokee-trunk/admin/market/PageApp.py:41
+#: cherokee-trunk/admin/market/PageApp.py:79
 #: cherokee-trunk/admin/PageVServer.py:702 packages/common/target.py:208
 msgid "Virtual Server"
 msgstr ""
@@ -400,7 +401,7 @@ msgid "Inherit Environment"
 msgstr ""
 
 #: cherokee-trunk/admin/PageSource.py:316
-#: cherokee-trunk/admin/CTK/CTK/Image.py:99
+#: cherokee-trunk/admin/CTK/CTK/Image.py:75
 #: cherokee-trunk/admin/plugins/exists.py:72
 #: cherokee-trunk/admin/plugins/exists.py:77
 #: cherokee-trunk/admin/plugins/exists.py:78
@@ -438,15 +439,16 @@ msgstr ""
 
 #: cherokee-trunk/admin/PageSource.py:422
 #: cherokee-trunk/admin/PageIndex.py:340 cherokee-trunk/admin/PageIndex.py:412
-#: cherokee-trunk/admin/CTK/CTK/Dialog.py:165
-#: cherokee-trunk/admin/CTK/CTK/Dialog.py:272
+#: cherokee-trunk/admin/CTK/CTK/Dialog.py:132
+#: cherokee-trunk/admin/CTK/CTK/Dialog.py:211
 #: cherokee-trunk/admin/plugins/error_redir.py:110
 #: cherokee-trunk/admin/market/Review.py:63
 #: cherokee-trunk/admin/market/Maintenance.py:359
-#: cherokee-trunk/admin/market/Install.py:300
-#: cherokee-trunk/admin/market/Install.py:510
-#: cherokee-trunk/admin/market/Report.py:97
-#: cherokee-trunk/admin/market/Report.py:110
+#: cherokee-trunk/admin/market/Install.py:187
+#: cherokee-trunk/admin/market/Install.py:361
+#: cherokee-trunk/admin/market/Install.py:571
+#: cherokee-trunk/admin/market/Report.py:99
+#: cherokee-trunk/admin/market/Report.py:112
 #: cherokee-trunk/admin/OWS_Backup.py:173
 #: cherokee-trunk/admin/OWS_Backup.py:186
 #: cherokee-trunk/admin/OWS_Backup.py:236
@@ -564,7 +566,9 @@ msgstr ""
 msgid "Server Information"
 msgstr ""
 
-#: cherokee-trunk/admin/PageIndex.py:212 cherokee-trunk/admin/OWS_Login.py:116
+#: cherokee-trunk/admin/PageIndex.py:212
+#: cherokee-trunk/admin/market/PageApp.py:125
+#: cherokee-trunk/admin/OWS_Login.py:116
 msgid "Sign in"
 msgstr ""
 
@@ -1014,7 +1018,7 @@ msgstr ""
 
 #: cherokee-trunk/admin/consts.py:186
 #: cherokee-trunk/admin/plugins/directory.py:31
-#: cherokee-trunk/admin/market/PageApp.py:99 cherokee-trunk/admin/Icons.py:198
+#: cherokee-trunk/admin/market/PageApp.py:80 cherokee-trunk/admin/Icons.py:198
 #: cherokee-trunk/admin/Icons.py:330 packages/common/target.py:209
 msgid "Directory"
 msgstr ""
@@ -1066,7 +1070,7 @@ msgstr ""
 
 #: cherokee-trunk/admin/consts.py:194
 #: cherokee-trunk/admin/plugins/fullpath.py:66
-#: cherokee-trunk/admin/plugins/fullpath.py:101
+#: cherokee-trunk/admin/plugins/fullpath.py:98
 msgid "Full Path"
 msgstr ""
 
@@ -1232,37 +1236,37 @@ msgstr ""
 msgid "9 - Max compression"
 msgstr ""
 
-#: cherokee-trunk/admin/CTK/CTK/Image.py:72
-#: cherokee-trunk/admin/CTK/CTK/Image.py:73
+#: cherokee-trunk/admin/CTK/CTK/Image.py:48
+#: cherokee-trunk/admin/CTK/CTK/Image.py:49
 msgid "Delete"
 msgstr ""
 
-#: cherokee-trunk/admin/CTK/CTK/Image.py:84 cherokee-trunk/admin/util.py:88
+#: cherokee-trunk/admin/CTK/CTK/Image.py:60 cherokee-trunk/admin/util.py:88
 msgid "Active"
 msgstr ""
 
-#: cherokee-trunk/admin/CTK/CTK/Image.py:89 cherokee-trunk/admin/util.py:88
+#: cherokee-trunk/admin/CTK/CTK/Image.py:65 cherokee-trunk/admin/util.py:88
 msgid "Inactive"
 msgstr ""
 
-#: cherokee-trunk/admin/CTK/CTK/Image.py:94
+#: cherokee-trunk/admin/CTK/CTK/Image.py:70
 msgid "Loading"
 msgstr ""
 
-#: cherokee-trunk/admin/CTK/CTK/Image.py:104
+#: cherokee-trunk/admin/CTK/CTK/Image.py:80
 msgid "Forbidden"
 msgstr ""
 
-#: cherokee-trunk/admin/CTK/CTK/Submitter.py:111
-#: cherokee-trunk/admin/CTK/CTK/TextField.py:97
+#: cherokee-trunk/admin/CTK/CTK/Submitter.py:73
+#: cherokee-trunk/admin/CTK/CTK/TextField.py:72
 msgid "Optional"
 msgstr ""
 
-#: cherokee-trunk/admin/CTK/CTK/ToggleButton.py:154
+#: cherokee-trunk/admin/CTK/CTK/ToggleButton.py:120
 msgid "Disable"
 msgstr ""
 
-#: cherokee-trunk/admin/CTK/CTK/ToggleButton.py:155
+#: cherokee-trunk/admin/CTK/CTK/ToggleButton.py:121
 #: packages/nagios/installer.py:454
 msgid "Enable"
 msgstr ""
@@ -1274,6 +1278,7 @@ msgstr ""
 #: packages/joomla/installer.py:181 packages/joomla/installer.py:200
 #: packages/phpmyadmin/installer.py:128 packages/phpmyadmin/installer.py:145
 #: packages/magnolia/installer.py:104 packages/magnolia/installer.py:172
+#: packages/example/installer.py:251 packages/example/installer.py:295
 #: packages/trac/installer.py:167 packages/trac/installer.py:263
 #: packages/vanilla/installer.py:178 packages/vanilla/installer.py:195
 #: packages/moin/installer.py:197 packages/moin/installer.py:214
@@ -1284,21 +1289,20 @@ msgstr ""
 #: packages/wordpress/installer.py:169 packages/wordpress/installer.py:198
 #: packages/wordpress/installer.py:218 packages/nagios/installer.py:169
 #: packages/nagios/installer.py:197 packages/nagios/installer.py:234
-#: packages/nagios/installer.py:463 packages/nuxeo_dm/installer.py:114
-#: packages/nuxeo_dm/installer.py:185 packages/redmine/installer.py:158
+#: packages/nagios/installer.py:463 packages/redmine/installer.py:158
 #: packages/redmine/installer.py:211 packages/redmine/installer.py:246
 #: packages/redmine/installer.py:266 packages/redmine/installer.py:397
 #: packages/wsgidav/installer.py:112 packages/wsgidav/installer.py:193
-#: packages/sugar_ce/installer.py:128 packages/zencart/installer.py:137
-#: packages/zencart/installer.py:155 packages/drupal_example/installer.py:251
-#: packages/drupal_example/installer.py:295
+#: packages/zencart/installer.py:137 packages/zencart/installer.py:155
+#: packages/nuxeo-dam/installer.py:115 packages/nuxeo-dam/installer.py:186
+#: packages/hello-world-php/installer.py:86
 #: packages/statusnet/installer.py:136 packages/statusnet/installer.py:155
 #: packages/drupal/installer.py:187 packages/drupal/installer.py:205
-#: packages/openx/installer.py:110 packages/nuxeo_dam/installer.py:115
-#: packages/nuxeo_dam/installer.py:186 packages/moodle/installer.py:152
-#: packages/moodle/installer.py:170 packages/moodle/installer.py:221
-#: packages/phpbb/installer.py:133 packages/phpbb/installer.py:153
-#: packages/hello_world_php/installer.py:86
+#: packages/openx/installer.py:110 packages/sugar/installer.py:128
+#: packages/nuxeo-dm/installer.py:114 packages/nuxeo-dm/installer.py:185
+#: packages/moodle/installer.py:152 packages/moodle/installer.py:170
+#: packages/moodle/installer.py:221 packages/phpbb/installer.py:133
+#: packages/phpbb/installer.py:153
 msgid "Next"
 msgstr ""
 
@@ -1313,12 +1317,12 @@ msgstr ""
 msgid "Create"
 msgstr ""
 
-#: cherokee-trunk/admin/CTK/CTK/Config.py:244
+#: cherokee-trunk/admin/CTK/CTK/Config.py:237
 #, python-format
 msgid "ERROR: Couldn't unpack '%s'"
 msgstr ""
 
-#: cherokee-trunk/admin/CTK/CTK/Config.py:392
+#: cherokee-trunk/admin/CTK/CTK/Config.py:370
 msgid "Could not copy configuration to "
 msgstr ""
 
@@ -1326,11 +1330,11 @@ msgstr ""
 msgid "Upload"
 msgstr ""
 
-#: cherokee-trunk/admin/CTK/CTK/Carousel.py:78
+#: cherokee-trunk/admin/CTK/CTK/Carousel.py:66
 msgid "left"
 msgstr ""
 
-#: cherokee-trunk/admin/CTK/CTK/Carousel.py:79
+#: cherokee-trunk/admin/CTK/CTK/Carousel.py:67
 msgid "right"
 msgstr ""
 
@@ -1566,8 +1570,8 @@ msgstr ""
 #: cherokee-trunk/admin/plugins/authlist.py:97
 #: cherokee-trunk/admin/OWS_Login.py:114 packages/magnolia/installer.py:166
 #: packages/common/database.py:761 packages/liferay/installer.py:158
-#: packages/nagios/installer.py:186 packages/nuxeo_dm/installer.py:180
-#: packages/redmine/installer.py:393 packages/nuxeo_dam/installer.py:181
+#: packages/nagios/installer.py:186 packages/redmine/installer.py:393
+#: packages/nuxeo-dam/installer.py:181 packages/nuxeo-dm/installer.py:180
 msgid "Password"
 msgstr ""
 
@@ -2139,7 +2143,7 @@ msgid ""
 msgstr ""
 
 #: cherokee-trunk/admin/plugins/directory.py:31
-#: cherokee-trunk/admin/market/PageApp.py:41
+#: cherokee-trunk/admin/market/PageApp.py:40
 #: cherokee-trunk/admin/wizards/coldfusion.py:162
 #: cherokee-trunk/admin/wizards/concrete5.py:211
 #: cherokee-trunk/admin/wizards/mono.py:182
@@ -2275,20 +2279,20 @@ msgid ""
 "favicon.ico)"
 msgstr ""
 
-#: cherokee-trunk/admin/plugins/fullpath.py:94
+#: cherokee-trunk/admin/plugins/fullpath.py:91
 msgid "Full Web Paths"
 msgstr ""
 
-#: cherokee-trunk/admin/plugins/fullpath.py:106
+#: cherokee-trunk/admin/plugins/fullpath.py:102
 msgid "Add another path"
 msgstr ""
 
-#: cherokee-trunk/admin/plugins/fullpath.py:117
-#: cherokee-trunk/admin/plugins/fullpath.py:124
+#: cherokee-trunk/admin/plugins/fullpath.py:113
+#: cherokee-trunk/admin/plugins/fullpath.py:120
 msgid "Path"
 msgstr ""
 
-#: cherokee-trunk/admin/plugins/fullpath.py:119
+#: cherokee-trunk/admin/plugins/fullpath.py:115
 #: cherokee-trunk/admin/PageVServer.py:462
 msgid "Paths"
 msgstr ""
@@ -2478,52 +2482,53 @@ msgstr ""
 #: cherokee-trunk/admin/market/Util.py:54
 #: cherokee-trunk/admin/market/Util.py:56
 #: cherokee-trunk/admin/market/Util.py:84
-#: cherokee-trunk/admin/market/Install.py:93
+#: cherokee-trunk/admin/market/Install.py:85
 msgid "Cherokee Market"
 msgstr ""
 
 #: cherokee-trunk/admin/market/Util.py:63
-msgid "Apps Center"
-msgstr ""
-
 #: cherokee-trunk/admin/market/Util.py:90
-#: cherokee-trunk/admin/market/PageSearch.py:58
+#: cherokee-trunk/admin/market/PageSearch.py:70
+#: cherokee-trunk/admin/Page.py:156
 msgid "Market"
 msgstr ""
 
-#: cherokee-trunk/admin/market/Util.py:128
+#: cherokee-trunk/admin/market/Util.py:137
+#: cherokee-trunk/admin/market/PageIndex.py:147
+#: cherokee-trunk/admin/market/PageApp.py:121
+#: cherokee-trunk/admin/market/PageApp.py:135
 msgid "Free"
 msgstr ""
 
-#: cherokee-trunk/admin/market/Util.py:163
+#: cherokee-trunk/admin/market/Util.py:172
 msgid "Try the following instructions to install the required software"
 msgstr ""
 
-#: cherokee-trunk/admin/market/Util.py:170
+#: cherokee-trunk/admin/market/Util.py:179
 msgid ""
 "Several alternatives can provide the software requirements for the "
 "installation. Try at least one of the following instructions to install your "
 "preferred option"
 msgstr ""
 
-#: cherokee-trunk/admin/market/Util.py:177
+#: cherokee-trunk/admin/market/Util.py:186
 msgid "or"
 msgstr ""
 
-#: cherokee-trunk/admin/market/PageIndex.py:64
+#: cherokee-trunk/admin/market/PageIndex.py:50
 msgid "Featured Applications"
 msgstr ""
 
-#: cherokee-trunk/admin/market/PageIndex.py:119
-msgid "Could not access the repository"
-msgstr ""
-
-#: cherokee-trunk/admin/market/PageIndex.py:120
-msgid "Cherokee could not reach the remote package repository"
-msgstr ""
-
-#: cherokee-trunk/admin/market/PageIndex.py:143
+#: cherokee-trunk/admin/market/PageIndex.py:144
 msgid "Top Applications"
+msgstr ""
+
+#: cherokee-trunk/admin/market/PageIndex.py:146
+msgid "Paid"
+msgstr ""
+
+#: cherokee-trunk/admin/market/PageIndex.py:148
+msgid "Popular"
 msgstr ""
 
 #: cherokee-trunk/admin/market/Review.py:58
@@ -2552,6 +2557,8 @@ msgstr ""
 
 #: cherokee-trunk/admin/market/Review.py:81
 #: cherokee-trunk/admin/market/Review.py:89
+#: cherokee-trunk/admin/market/PageApp.py:231
+#: cherokee-trunk/admin/market/PageApp.py:236
 msgid "Review"
 msgstr ""
 
@@ -2580,20 +2587,20 @@ msgstr ""
 msgid "Categories"
 msgstr ""
 
-#: cherokee-trunk/admin/market/PageCategory.py:64
-#: cherokee-trunk/admin/market/PageCategory.py:76
-#: cherokee-trunk/admin/market/PageApp.py:154
-#: cherokee-trunk/admin/market/PageApp.py:209
+#: cherokee-trunk/admin/market/PageCategory.py:77
+#: cherokee-trunk/admin/market/PageCategory.py:90
+#: cherokee-trunk/admin/market/PageApp.py:165
+#: cherokee-trunk/admin/market/PageApp.py:278
 msgid "Category"
 msgstr ""
 
-#: cherokee-trunk/admin/market/PageCategory.py:69
+#: cherokee-trunk/admin/market/PageCategory.py:82
 msgid "Empty Category"
 msgstr ""
 
-#: cherokee-trunk/admin/market/PageCategory.py:75
-#: cherokee-trunk/admin/market/PageSearch.py:70
-#: cherokee-trunk/admin/market/PageApp.py:199
+#: cherokee-trunk/admin/market/PageCategory.py:89
+#: cherokee-trunk/admin/market/PageSearch.py:82
+#: cherokee-trunk/admin/market/PageApp.py:269
 msgid "Market Home"
 msgstr ""
 
@@ -2644,7 +2651,8 @@ msgid "Maintenance"
 msgstr ""
 
 #: cherokee-trunk/admin/market/Maintenance.py:281
-#: cherokee-trunk/admin/market/PageApp.py:188
+#: cherokee-trunk/admin/market/PageApp.py:95
+#: cherokee-trunk/admin/market/PageApp.py:260
 msgid "Application"
 msgstr ""
 
@@ -2653,7 +2661,6 @@ msgid "Date"
 msgstr ""
 
 #: cherokee-trunk/admin/market/Maintenance.py:316
-#: cherokee-trunk/admin/market/PageApp.py:153
 msgid "Orphan"
 msgstr ""
 
@@ -2694,205 +2701,253 @@ msgstr ""
 msgid "My Library"
 msgstr ""
 
-#: cherokee-trunk/admin/market/PageSearch.py:49
-#: cherokee-trunk/admin/market/PageSearch.py:71
-#: cherokee-trunk/admin/market/PageApp.py:207
+#: cherokee-trunk/admin/market/PageSearch.py:48
+#: cherokee-trunk/admin/market/PageSearch.py:83
+#: cherokee-trunk/admin/market/PageApp.py:276
 msgid "Search"
 msgstr ""
 
-#: cherokee-trunk/admin/market/PageSearch.py:55
+#: cherokee-trunk/admin/market/PageSearch.py:67
 msgid "Search Result"
 msgstr ""
 
-#: cherokee-trunk/admin/market/PageSearch.py:63
+#: cherokee-trunk/admin/market/PageSearch.py:76
 msgid "Empty Search"
 msgstr ""
 
-#: cherokee-trunk/admin/market/PageApp.py:50
+#: cherokee-trunk/admin/market/PageApp.py:49
 msgid "Supported"
 msgstr ""
 
-#: cherokee-trunk/admin/market/PageApp.py:53
+#: cherokee-trunk/admin/market/PageApp.py:52
 msgid "Unsupported"
 msgstr ""
 
-#: cherokee-trunk/admin/market/PageApp.py:97
+#: cherokee-trunk/admin/market/PageApp.py:78
 msgid "Deployment methods"
 msgstr ""
 
-#: cherokee-trunk/admin/market/PageApp.py:101
+#: cherokee-trunk/admin/market/PageApp.py:82
 msgid "Operating Systems"
 msgstr ""
 
-#: cherokee-trunk/admin/market/PageApp.py:104
+#: cherokee-trunk/admin/market/PageApp.py:85
 msgid "Databases"
 msgstr ""
 
-#: cherokee-trunk/admin/market/PageApp.py:123
+#: cherokee-trunk/admin/market/PageApp.py:107
 msgid "By"
 msgstr ""
 
-#: cherokee-trunk/admin/market/PageApp.py:126
+#: cherokee-trunk/admin/market/PageApp.py:116
+#: cherokee-trunk/admin/market/PageApp.py:121
+#: cherokee-trunk/admin/market/PageApp.py:135
 msgid "Install"
 msgstr ""
 
-#: cherokee-trunk/admin/market/PageApp.py:131
+#: cherokee-trunk/admin/market/PageApp.py:119
+#: cherokee-trunk/admin/market/PageApp.py:132
+msgid "Buy"
+msgstr ""
+
+#: cherokee-trunk/admin/market/PageApp.py:133
+msgid "to buy"
+msgstr ""
+
+#: cherokee-trunk/admin/market/PageApp.py:136
+msgid "to install"
+msgstr ""
+
+#: cherokee-trunk/admin/market/PageApp.py:148
 msgid "Report Application"
 msgstr ""
 
-#: cherokee-trunk/admin/market/PageApp.py:135
+#: cherokee-trunk/admin/market/PageApp.py:152
 msgid "Report issue"
 msgstr ""
 
-#: cherokee-trunk/admin/market/PageApp.py:151
+#: cherokee-trunk/admin/market/PageApp.py:163
 msgid "Version"
 msgstr ""
 
-#: cherokee-trunk/admin/market/PageApp.py:153
-msgid "Packager"
-msgstr ""
-
-#: cherokee-trunk/admin/market/PageApp.py:173
+#: cherokee-trunk/admin/market/PageApp.py:187
 msgid "No screenshots"
 msgstr ""
 
-#: cherokee-trunk/admin/market/PageApp.py:177
+#: cherokee-trunk/admin/market/PageApp.py:189
 msgid "Screenshots"
 msgstr ""
 
-#: cherokee-trunk/admin/market/PageApp.py:178
+#: cherokee-trunk/admin/market/PageApp.py:190
 msgid "Description"
 msgstr ""
 
-#: cherokee-trunk/admin/market/PageApp.py:193
+#: cherokee-trunk/admin/market/PageApp.py:204
+msgid "Reviews"
+msgstr ""
+
+#: cherokee-trunk/admin/market/PageApp.py:208
+msgid "You can be the first one to review the application"
+msgstr ""
+
+#: cherokee-trunk/admin/market/PageApp.py:221
+#, python-format
+msgid "on %(date)s at %(time)s"
+msgstr ""
+
+#: cherokee-trunk/admin/market/PageApp.py:245
+msgid "sign in"
+msgstr ""
+
+#: cherokee-trunk/admin/market/PageApp.py:249
+msgid "Please"
+msgstr ""
+
+#: cherokee-trunk/admin/market/PageApp.py:251
+msgid "to review the product"
+msgstr ""
+
+#: cherokee-trunk/admin/market/PageApp.py:265
 msgid "Application not found"
 msgstr ""
 
-#: cherokee-trunk/admin/market/Install.py:57
+#: cherokee-trunk/admin/market/Install.py:56
 msgid ""
 "The application is already in your library, so there is no need the buy it "
 "again. Please, proceed to the installation."
 msgstr ""
 
-#: cherokee-trunk/admin/market/Install.py:59
+#: cherokee-trunk/admin/market/Install.py:58
 msgid ""
 "You are about to purchase the application. Please proceed with the Check Out "
 "to provide the payment details."
 msgstr ""
 
-#: cherokee-trunk/admin/market/Install.py:60
+#: cherokee-trunk/admin/market/Install.py:59
 msgid ""
 "The application will be downloaded and installed afterwards, and will remain "
 "in your library for future installations."
 msgstr ""
 
-#: cherokee-trunk/admin/market/Install.py:62
+#: cherokee-trunk/admin/market/Install.py:61
 msgid ""
 "Cherokee is now ready to run the application. Please, remember to backup "
 "your configuration if you are going to perform customizations."
 msgstr ""
 
-#: cherokee-trunk/admin/market/Install.py:63
+#: cherokee-trunk/admin/market/Install.py:62
 msgid "Thank you for buying at Cherokee's Market!"
 msgstr ""
 
-#: cherokee-trunk/admin/market/Install.py:64
+#: cherokee-trunk/admin/market/Install.py:63
 msgid ""
 "Since there were previous changes your configuration has not been applied "
 "automatically. Please do it yourself by clicking the SAVE button on the top-"
 "right corner."
 msgstr ""
 
-#: cherokee-trunk/admin/market/Install.py:66
+#: cherokee-trunk/admin/market/Install.py:65
 msgid "Privileges test failed"
 msgstr ""
 
-#: cherokee-trunk/admin/market/Install.py:67
+#: cherokee-trunk/admin/market/Install.py:66
 msgid ""
 "Since the installations may require administrator to execute system "
 "administration commands, it is required to run Cherokee-admin under a user "
 "with  administrator privileges."
 msgstr ""
 
-#: cherokee-trunk/admin/market/Install.py:68
+#: cherokee-trunk/admin/market/Install.py:67
 msgid "Please, run cherokee-admin as root to solve the problem."
 msgstr ""
 
-#: cherokee-trunk/admin/market/Install.py:70
-msgid "The package cannot be installed"
+#: cherokee-trunk/admin/market/Install.py:154
+msgid "Connecting to Cherokee Market"
 msgstr ""
 
-#: cherokee-trunk/admin/market/Install.py:71
-#, python-format
-msgid "This package required at least Cherokee %(version)s to be installed."
+#: cherokee-trunk/admin/market/Install.py:155
+msgid "Retrieving package information…"
 msgstr ""
 
-#: cherokee-trunk/admin/market/Install.py:236
-#: cherokee-trunk/admin/market/Install.py:252
-#: cherokee-trunk/admin/market/Install.py:371
-#: cherokee-trunk/admin/market/Install.py:406 packages/redmine/installer.py:21
+#: cherokee-trunk/admin/market/Install.py:201
+#: cherokee-trunk/admin/market/Install.py:233
+msgid "Checking out"
+msgstr ""
+
+#: cherokee-trunk/admin/market/Install.py:205
+msgid "Check Out"
+msgstr ""
+
+#: cherokee-trunk/admin/market/Install.py:234
+msgid "Waiting for the payment acknowledge…"
+msgstr ""
+
+#: cherokee-trunk/admin/market/Install.py:297
+#: cherokee-trunk/admin/market/Install.py:313
+#: cherokee-trunk/admin/market/Install.py:432
+#: cherokee-trunk/admin/market/Install.py:467 packages/redmine/installer.py:21
 msgid "Installing"
 msgstr ""
 
-#: cherokee-trunk/admin/market/Install.py:237
+#: cherokee-trunk/admin/market/Install.py:298
 msgid "The application is being downloaded. Hold on tight!"
 msgstr ""
 
-#: cherokee-trunk/admin/market/Install.py:253
+#: cherokee-trunk/admin/market/Install.py:314
 msgid ""
 "There was an error downloading the application. Please contact us if the "
 "problem persists."
 msgstr ""
 
-#: cherokee-trunk/admin/market/Install.py:282
+#: cherokee-trunk/admin/market/Install.py:343
 #: cherokee-trunk/admin/PageException.py:80
 msgid "Internal Error"
 msgstr ""
 
-#: cherokee-trunk/admin/market/Install.py:283
+#: cherokee-trunk/admin/market/Install.py:344
 msgid "An internal error occurred while deploying the application"
 msgstr ""
 
-#: cherokee-trunk/admin/market/Install.py:284
+#: cherokee-trunk/admin/market/Install.py:345
 msgid ""
 "Information on the error has been collected so it can be reported and fixed "
 "up. Please help us improve it by sending the error information to the "
 "development team."
 msgstr ""
 
-#: cherokee-trunk/admin/market/Install.py:287
+#: cherokee-trunk/admin/market/Install.py:348
 msgid "Thank you for your feedback! We do appreciate it."
 msgstr ""
 
-#: cherokee-trunk/admin/market/Install.py:291
+#: cherokee-trunk/admin/market/Install.py:352
 msgid "Comments"
 msgstr ""
 
-#: cherokee-trunk/admin/market/Install.py:298
+#: cherokee-trunk/admin/market/Install.py:359
 msgid "Report Issue"
 msgstr ""
 
-#: cherokee-trunk/admin/market/Install.py:372
+#: cherokee-trunk/admin/market/Install.py:433
 msgid "Unpacking application…"
 msgstr ""
 
-#: cherokee-trunk/admin/market/Install.py:375
+#: cherokee-trunk/admin/market/Install.py:436
 msgid "The applicaction is being unpacked…"
 msgstr ""
 
-#: cherokee-trunk/admin/market/Install.py:407
+#: cherokee-trunk/admin/market/Install.py:468
 msgid "Setting it up…"
 msgstr ""
 
-#: cherokee-trunk/admin/market/Install.py:462
+#: cherokee-trunk/admin/market/Install.py:523
 msgid "has been installed successfully"
 msgstr ""
 
-#: cherokee-trunk/admin/market/Install.py:503
+#: cherokee-trunk/admin/market/Install.py:564
 msgid "You can now visit"
 msgstr ""
 
-#: cherokee-trunk/admin/market/Install.py:504
+#: cherokee-trunk/admin/market/Install.py:565
 msgid "your new application"
 msgstr ""
 
@@ -2924,15 +2979,19 @@ msgid ""
 "review it as soon as possible."
 msgstr ""
 
-#: cherokee-trunk/admin/market/Report.py:92
+#: cherokee-trunk/admin/market/Report.py:94
 msgid "Could not send the report"
 msgstr ""
 
-#: cherokee-trunk/admin/market/Report.py:106
+#: cherokee-trunk/admin/market/Report.py:108
 msgid "Report sent successfully"
 msgstr ""
 
-#: cherokee-trunk/admin/market/Report.py:134
+#: cherokee-trunk/admin/market/Report.py:125
+msgid "Request refund"
+msgstr ""
+
+#: cherokee-trunk/admin/market/Report.py:137
 msgid "Report"
 msgstr ""
 
@@ -4284,10 +4343,6 @@ msgstr ""
 
 #: cherokee-trunk/admin/Page.py:154
 msgid "Home"
-msgstr ""
-
-#: cherokee-trunk/admin/Page.py:156
-msgid "Apps"
 msgstr ""
 
 #: cherokee-trunk/admin/Page.py:157 cherokee-trunk/admin/PageStatus.py:101
@@ -5726,17 +5781,17 @@ msgstr ""
 msgid "Authentication Details"
 msgstr ""
 
-#: cherokee-trunk/admin/server.py:65
+#: cherokee-trunk/admin/server.py:64
 #, python-format
 msgid "Server %(version)s running.. PID=%(pid)d Port=%(scgi_port)s"
 msgstr ""
 
-#: cherokee-trunk/admin/server.py:67
+#: cherokee-trunk/admin/server.py:66
 #, python-format
 msgid "Server %(version)s running.. PID=%(pid)d Socket=%(scgi_port)s"
 msgstr ""
 
-#: cherokee-trunk/admin/server.py:150
+#: cherokee-trunk/admin/server.py:157
 msgid "Incorrect parameters: PORT CONFIG_FILE"
 msgstr ""
 
@@ -6175,7 +6230,7 @@ msgstr ""
 msgid "General Settings"
 msgstr ""
 
-#: ows/Market_Info/Block.py:12 ows/Market_Info/Block.py:45
+#: ows/Market_Info/Block.py:12
 msgid ""
 "We believe Web infrastructure software should evolve towards efficiency, "
 "scalability, and management simplicity."
@@ -6194,20 +6249,8 @@ msgid ""
 "and an astonishing new way for users to deploy Web applications."
 msgstr ""
 
-#: ows/Market_Info/Block.py:15 ows/Market_Info/Block.py:48
+#: ows/Market_Info/Block.py:15
 msgid "Learn more"
-msgstr ""
-
-#: ows/Market_Info/Block.py:46
-msgid ""
-"That is why the Cherokee Project challenges the state of the art. The App "
-"Center is a good example of our contribution to evolve Web Infrastructures."
-msgstr ""
-
-#: ows/Market_Info/Block.py:47
-msgid ""
-"The App Center is open for you to add new Web applications. Do not hesitate "
-"to become a maintainer of the first distribution for Web Apps!"
 msgstr ""
 
 #: ows/Market_Install/Install.py:10
@@ -6225,49 +6268,49 @@ msgid "We apologize for the inconveniences."
 msgstr ""
 
 #: packages/joomla/installer.py:138 packages/phpmyadmin/installer.py:84
-#: packages/trac/installer.py:134 packages/vanilla/installer.py:121
-#: packages/drupal7/installer.py:153 packages/silverstripe/installer.py:113
-#: packages/mediawiki/installer.py:105 packages/wordpress/installer.py:126
-#: packages/redmine/installer.py:108 packages/sugar_ce/installer.py:101
-#: packages/zencart/installer.py:94 packages/drupal_example/installer.py:189
-#: packages/drupal/installer.py:143 packages/openx/installer.py:64
+#: packages/example/installer.py:189 packages/trac/installer.py:134
+#: packages/vanilla/installer.py:121 packages/drupal7/installer.py:153
+#: packages/silverstripe/installer.py:113 packages/mediawiki/installer.py:105
+#: packages/wordpress/installer.py:126 packages/redmine/installer.py:108
+#: packages/zencart/installer.py:94 packages/drupal/installer.py:143
+#: packages/openx/installer.py:64 packages/sugar/installer.py:101
 #: packages/moodle/installer.py:85 packages/phpbb/installer.py:80
 msgid "Checking Requirements"
 msgstr ""
 
 #: packages/joomla/installer.py:142 packages/phpmyadmin/installer.py:88
-#: packages/magnolia/installer.py:91 packages/trac/installer.py:138
-#: packages/vanilla/installer.py:125 packages/drupal7/installer.py:157
-#: packages/silverstripe/installer.py:117 packages/liferay/installer.py:82
-#: packages/mediawiki/installer.py:109 packages/wordpress/installer.py:130
-#: packages/nagios/installer.py:155 packages/nagios/installer.py:362
-#: packages/nagios/installer.py:508 packages/nuxeo_dm/installer.py:96
+#: packages/magnolia/installer.py:91 packages/example/installer.py:194
+#: packages/trac/installer.py:138 packages/vanilla/installer.py:125
+#: packages/drupal7/installer.py:157 packages/silverstripe/installer.py:117
+#: packages/liferay/installer.py:82 packages/mediawiki/installer.py:109
+#: packages/wordpress/installer.py:130 packages/nagios/installer.py:155
+#: packages/nagios/installer.py:362 packages/nagios/installer.py:508
 #: packages/redmine/installer.py:112 packages/redmine/installer.py:199
-#: packages/wsgidav/installer.py:98 packages/sugar_ce/installer.py:105
-#: packages/zencart/installer.py:98 packages/drupal_example/installer.py:194
-#: packages/statusnet/installer.py:97 packages/drupal/installer.py:147
-#: packages/openx/installer.py:68 packages/nuxeo_dam/installer.py:97
+#: packages/wsgidav/installer.py:98 packages/zencart/installer.py:98
+#: packages/nuxeo-dam/installer.py:97 packages/statusnet/installer.py:97
+#: packages/drupal/installer.py:147 packages/openx/installer.py:68
+#: packages/sugar/installer.py:105 packages/nuxeo-dm/installer.py:96
 #: packages/moodle/installer.py:89 packages/phpbb/installer.py:84
 msgid "Retry"
 msgstr ""
 
-#: packages/joomla/installer.py:263 packages/vanilla/installer.py:255
-#: packages/silverstripe/installer.py:250 packages/mediawiki/installer.py:213
-#: packages/wordpress/installer.py:291 packages/sugar_ce/installer.py:188
-#: packages/zencart/installer.py:217 packages/drupal_example/installer.py:413
-#: packages/statusnet/installer.py:215 packages/drupal/installer.py:268
+#: packages/joomla/installer.py:263 packages/example/installer.py:413
+#: packages/vanilla/installer.py:255 packages/silverstripe/installer.py:250
+#: packages/mediawiki/installer.py:213 packages/wordpress/installer.py:291
+#: packages/zencart/installer.py:217 packages/statusnet/installer.py:215
+#: packages/drupal/installer.py:268 packages/sugar/installer.py:188
 #: packages/phpbb/installer.py:223
 msgid "Performing adjustments"
 msgstr ""
 
-#: packages/joomla/installer.py:264 packages/trac/installer.py:224
-#: packages/vanilla/installer.py:256 packages/drupal7/installer.py:347
-#: packages/silverstripe/installer.py:251 packages/mediawiki/installer.py:214
-#: packages/wordpress/installer.py:292 packages/nagios/installer.py:436
-#: packages/wsgidav/installer.py:164 packages/sugar_ce/installer.py:189
-#: packages/zencart/installer.py:218 packages/drupal_example/installer.py:414
-#: packages/statusnet/installer.py:216 packages/drupal/installer.py:269
-#: packages/openx/installer.py:177 packages/moodle/installer.py:289
+#: packages/joomla/installer.py:264 packages/example/installer.py:414
+#: packages/trac/installer.py:224 packages/vanilla/installer.py:256
+#: packages/drupal7/installer.py:347 packages/silverstripe/installer.py:251
+#: packages/mediawiki/installer.py:214 packages/wordpress/installer.py:292
+#: packages/nagios/installer.py:436 packages/wsgidav/installer.py:164
+#: packages/zencart/installer.py:218 packages/statusnet/installer.py:216
+#: packages/drupal/installer.py:269 packages/openx/installer.py:177
+#: packages/sugar/installer.py:189 packages/moodle/installer.py:289
 #: packages/phpbb/installer.py:224
 msgid "This process may take a while. Please, hold on."
 msgstr ""
@@ -6279,12 +6322,12 @@ msgid ""
 msgstr ""
 
 #: packages/magnolia/installer.py:82 packages/liferay/installer.py:73
-#: packages/nuxeo_dm/installer.py:87 packages/nuxeo_dam/installer.py:88
+#: packages/nuxeo-dam/installer.py:88 packages/nuxeo-dm/installer.py:87
 msgid "Checking for installation requirements"
 msgstr ""
 
 #: packages/magnolia/installer.py:157 packages/liferay/installer.py:149
-#: packages/nuxeo_dm/installer.py:171 packages/nuxeo_dam/installer.py:172
+#: packages/nuxeo-dam/installer.py:172 packages/nuxeo-dm/installer.py:171
 msgid "Access details"
 msgstr ""
 
@@ -6301,16 +6344,24 @@ msgid ""
 "servers, so please be patient the first time you access it."
 msgstr ""
 
-#: packages/magnolia/installer.py:160 packages/nuxeo_dm/installer.py:174
-#: packages/nuxeo_dam/installer.py:175
+#: packages/magnolia/installer.py:160 packages/nuxeo-dam/installer.py:175
+#: packages/nuxeo-dm/installer.py:174
 msgid ""
 "It is probably a good idea to pre-launch it instead of having the web-server "
 "do so on demand."
 msgstr ""
 
 #: packages/magnolia/installer.py:161 packages/liferay/installer.py:153
-#: packages/nuxeo_dm/installer.py:175 packages/nuxeo_dam/installer.py:176
+#: packages/nuxeo-dam/installer.py:176 packages/nuxeo-dm/installer.py:175
 msgid "These are the default access details:"
+msgstr ""
+
+#: packages/example/tools.py:17 packages/drupal/tools.py:17
+#: packages/openx/tools.py:20 packages/moodle/tools.py:31
+#: packages/phpbb/tools.py:36
+msgid ""
+"The PHP interpreter does not support any of the required database modules: "
+"'mysql', 'mysqli', or 'pgsql'"
 msgstr ""
 
 #: packages/trac/installer.py:31 packages/wsgidav/installer.py:33
@@ -6640,8 +6691,8 @@ msgid "Database does not exist."
 msgstr ""
 
 #: packages/common/database.py:760 packages/nagios/installer.py:185
-#: packages/nuxeo_dm/installer.py:178 packages/redmine/installer.py:392
-#: packages/nuxeo_dam/installer.py:179
+#: packages/redmine/installer.py:392 packages/nuxeo-dam/installer.py:179
+#: packages/nuxeo-dm/installer.py:178
 msgid "Username"
 msgstr ""
 
@@ -7192,29 +7243,6 @@ msgid ""
 "the <a href='http://www.boutell.com/gd/'>GD Graphics Library</a>"
 msgstr ""
 
-#: packages/nuxeo_dm/installer.py:108 packages/nuxeo_dam/installer.py:109
-msgid "Nuxeo can only be deployed under its default location /nuxeo."
-msgstr ""
-
-#: packages/nuxeo_dm/installer.py:109 packages/nuxeo_dam/installer.py:110
-msgid ""
-"The appropriate redirection rule will be created if the specified web path "
-"or deployment method chosen should require this."
-msgstr ""
-
-#: packages/nuxeo_dm/installer.py:172
-msgid ""
-"Nuxeo-DM has been installed, and Cherokee is configured to automatically "
-"launch it whenever the resource is accessed if it is not already available. "
-"A one-time pre-launch has been issued to save time."
-msgstr ""
-
-#: packages/nuxeo_dm/installer.py:173
-msgid ""
-"Note that launching Nuxeo-DM can take up a couple of  minutes on modern "
-"servers, so please be patient the first time you access it."
-msgstr ""
-
 #: packages/redmine/installer.py:22
 msgid "Redmine is being installed. This might take some time. Please wait…"
 msgstr ""
@@ -7414,12 +7442,27 @@ msgstr ""
 msgid "Registering database details"
 msgstr ""
 
-#: packages/drupal_example/tools.py:17 packages/drupal/tools.py:17
-#: packages/openx/tools.py:20 packages/moodle/tools.py:31
-#: packages/phpbb/tools.py:36
+#: packages/nuxeo-dam/installer.py:109 packages/nuxeo-dm/installer.py:108
+msgid "Nuxeo can only be deployed under its default location /nuxeo."
+msgstr ""
+
+#: packages/nuxeo-dam/installer.py:110 packages/nuxeo-dm/installer.py:109
 msgid ""
-"The PHP interpreter does not support any of the required database modules: "
-"'mysql', 'mysqli', or 'pgsql'"
+"The appropriate redirection rule will be created if the specified web path "
+"or deployment method chosen should require this."
+msgstr ""
+
+#: packages/nuxeo-dam/installer.py:173
+msgid ""
+"Nuxeo-DAM has been installed, and Cherokee is configured to automatically "
+"launch it whenever the resource is accessed if it is not already available. "
+"A one-time pre-launch has been issued to save time."
+msgstr ""
+
+#: packages/nuxeo-dam/installer.py:174
+msgid ""
+"Note that launching Nuxeo-DAM can take up a couple of  minutes on modern "
+"servers, so please be patient the first time you access it."
 msgstr ""
 
 #: packages/statusnet/installer.py:208
@@ -7430,16 +7473,16 @@ msgstr ""
 msgid "Performing automatic installation"
 msgstr ""
 
-#: packages/nuxeo_dam/installer.py:173
+#: packages/nuxeo-dm/installer.py:172
 msgid ""
-"Nuxeo-DAM has been installed, and Cherokee is configured to automatically "
+"Nuxeo-DM has been installed, and Cherokee is configured to automatically "
 "launch it whenever the resource is accessed if it is not already available. "
 "A one-time pre-launch has been issued to save time."
 msgstr ""
 
-#: packages/nuxeo_dam/installer.py:174
+#: packages/nuxeo-dm/installer.py:173
 msgid ""
-"Note that launching Nuxeo-DAM can take up a couple of  minutes on modern "
+"Note that launching Nuxeo-DM can take up a couple of  minutes on modern "
 "servers, so please be patient the first time you access it."
 msgstr ""
 
