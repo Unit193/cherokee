@@ -1,0 +1,39 @@
+From: Gunnar Wolf <gwolf@debian.org>
+Origin: other, http://vmlinux.org/cgi-bin/dwww/usr/share/doc/autotools-dev/README.Debian.gz
+Bug-Debian: 549965
+Forwarded: not-needed
+Last-Update: 2010-02-24
+Description: Execute systemwide config.{guess,sub} instead of upstream-provided
+ To avoid the outdated GNU config.{sub,guess} problem (see section of that 
+ name refered in the "origin" field), we execute the systemwide, updated 
+ version. The applied solution here applies Bill Allombert's idea mentioned 
+ in said URL.
+
+Index: cherokee/config.guess
+===================================================================
+--- cherokee/config.guess      2011-06-10 09:41:34.000000000 -0500
++++ cherokee/config.guess      2011-06-10 09:41:44.000000000 -0500
+@@ -1,4 +1,9 @@
+ #! /bin/sh
++# Execute the systemwide config.guess instead if available (thanks to 
++# Brad Smith for Debian bug #549965, Bill Allombert for generic solution)
++if [ -x /usr/share/misc/config.guess ]; then
++    exec /usr/share/misc/config.guess "$@"
++fi
+ # Attempt to guess a canonical system name.
+ #   Copyright (C) 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999,
+ #   2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009
+Index: cherokee/config.sub
+===================================================================
+--- cherokee/config.sub        2011-06-10 09:40:18.000000000 -0500
++++ cherokee/config.sub        2011-06-10 09:41:44.000000000 -0500
+@@ -1,4 +1,9 @@
+ #! /bin/sh
++# Execute the systemwide config.guess instead if available (thanks to 
++# Brad Smith for Debian bug #549965, Bill Allombert for generic solution)
++if [ -x /usr/share/misc/config.sub ]; then
++    exec /usr/share/misc/config.sub "$@"
++fi
+ # Configuration validation subroutine script.
+ #   Copyright (C) 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999,
+ #   2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009
