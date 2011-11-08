@@ -1,3 +1,10 @@
+cherokee (1.2.101-2) UNRELEASED; urgency=low
+
+  * 1.2.101-2 Moved logrotate from Depends: to Recommends: (Closes:
+    #647704)
+
+ -- Gunnar Wolf <gwolf@debian.org>  Tue, 08 Nov 2011 09:31:05 -0600
+
 cherokee (1.2.101-1) unstable; urgency=low
 
   [ Leonel Nunez ]

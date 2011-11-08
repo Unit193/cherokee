@@ -11,8 +11,8 @@ Vcs-Browser: http://anonscm.debian.org/gitweb/?p=collab-maint/cherokee.git
 
 Package: cherokee
 Architecture: any
-Depends: ${misc:Depends}, ${shlibs:Depends}, logrotate, libcherokee-base0 (= ${binary:Version}), libcherokee-server0 (= ${binary:Version})
-Recommends: cherokee-admin (= ${binary:Version}), spawn-fcgi
+Depends: ${misc:Depends}, ${shlibs:Depends}, libcherokee-base0 (= ${binary:Version}), libcherokee-server0 (= ${binary:Version})
+Recommends: cherokee-admin (= ${binary:Version}), spawn-fcgi, logrotate
 Suggests: cherokee-doc, libcherokee-mod-geoip (= ${binary:Version}), libcherokee-mod-ldap (= ${binary:Version}), libcherokee-mod-libssl (= ${binary:Version}), libcherokee-mod-mysql (= ${binary:Version}), libcherokee-mod-rrd (= ${binary:Version}), libcherokee-mod-streaming (= ${binary:Version})
 Provides: httpd, httpd-cgi
 Description: Very fast, flexible and easy to configure web server
