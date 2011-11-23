@@ -1,0 +1,106 @@
+From: Gunnar Wolf <gwolf@debian.org>
+Origin: vendor
+Forwarded: not-needed
+Last-update: 2011-11-23
+Bug: #647205
+Applied-Upstream: yes
+Description: Avoid brute-forceable password in cherokee-admin
+ Backported a safer password generation routine from ~ 1.2.98, instead
+ of generating from PID+timer
+
+Index: cherokee-1.0.8/cherokee/main_admin.c
+===================================================================
+--- cherokee-1.0.8.orig/cherokee/main_admin.c	2011-11-23 12:13:19.000000000 -0600
++++ cherokee-1.0.8/cherokee/main_admin.c	2011-11-23 12:17:03.000000000 -0600
+@@ -104,10 +104,8 @@
+ 	cuint_t i;
+ 	cuint_t n;
+ 
+-	srand(getpid()*time(NULL));
+-
+ 	for (i=0; i<PASSWORD_LEN; i++) {
+-		n = rand()%(sizeof(ALPHA_NUM)-1);
++		n = cherokee_random()%(sizeof(ALPHA_NUM)-1);
+ 		cherokee_buffer_add_char (buf, ALPHA_NUM[n]);
+ 	}
+ 
+@@ -489,6 +487,11 @@
+ #endif
+ 
+ 	cherokee_init();
++
++	/* Seed random numbers
++	 */
++	cherokee_random_seed();
++
+ 	cherokee_spawner_set_active (false);
+ 	process_parameters (argc, argv);
+ 
+Index: cherokee-1.0.8/cherokee/util.c
+===================================================================
+--- cherokee-1.0.8.orig/cherokee/util.c	2011-11-23 12:13:19.000000000 -0600
++++ cherokee-1.0.8/cherokee/util.c	2011-11-23 12:16:06.000000000 -0600
+@@ -2040,3 +2040,63 @@
+ 	cherokee_buffer_add (buf, ip_str, strlen(ip_str));
+ 	return ret_ok;
+ }
++
++void
++cherokee_random_seed (void)
++{
++#ifdef HAVE_SRANDOMDEV
++	srandomdev();
++#else
++	int      fd;
++	ssize_t  re;
++	unsigned seed;
++
++	/* Open device
++	 */
++	fd = open("/dev/urandom", O_RDONLY);
++	if (fd == -1) {
++		fd = open("/dev/random", O_RDONLY);
++	}
++
++	/* Read seed
++	 */
++	if (fd != -1) {
++		do {
++			re = read (fd, &seed, sizeof(seed));
++		} while ((re == -1) && (errno == EINTR));
++
++		cherokee_fd_close(fd);
++
++		if (re == sizeof(seed))
++			goto out;
++	}
++
++	/* Home-made seed
++	 */
++	cherokee_bogotime_update();
++
++	seed = cherokee_bogonow_tv.tv_usec;
++	if (cherokee_bogonow_tv.tv_usec & 0xFF)
++		seed *= (cherokee_bogonow_tv.tv_usec & 0xFF);
++
++ out:
++	/* Set the seed
++	 */
++# if HAVE_SRANDOM
++	srandom (seed);
++# else
++	srand (seed);
++# endif
++#endif
++}
++
++
++long
++cherokee_random (void)
++{
++#ifdef HAVE_RANDOM
++	return random();
++#else
++	return rand();
++#endif
++}

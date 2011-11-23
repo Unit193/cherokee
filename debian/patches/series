@@ -6,3 +6,4 @@ move_helper_programs_to_usr_share
 set_user
 include_paths_in_migrators
 fix_man_section
+fix_predictable_random_source

@@ -1,3 +1,9 @@
+cherokee (1.0.8-5+squeeze1) stable; urgency=low
+
+  * Avoid brute-forceable password in cherokee-admin (Closes: #647205)
+
+ -- Gunnar Wolf <gwolf@iiec.unam.mx>  Wed, 23 Nov 2011 12:23:56 -0600
+
 cherokee (1.0.8-5) unstable; urgency=low
 
   * Ship the missing /admin/static/help_404.html (Closes: #609002)
