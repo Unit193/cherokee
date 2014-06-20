@@ -2,3 +2,4 @@ default_webroot_in_usr_share
 nest_log_directory
 move_helper_programs_to_usr_share
 set_user
+cget_manpage.patch
