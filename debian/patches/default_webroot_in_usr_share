@@ -23,19 +23,7 @@ Index: cherokee/www/Makefile.am
  cherokeewwwimages_DATA = \
  favicon.ico \
  default-bg.png \
-Index: cherokee/www/Makefile.in
-===================================================================
---- cherokee/www/Makefile.in	2011-06-10 09:40:18.000000000 -0500
-+++ cherokee/www/Makefile.in	2011-06-10 09:41:45.000000000 -0500
-@@ -238,7 +238,7 @@
- top_builddir = @top_builddir@
- top_srcdir = @top_srcdir@
- cherokeewwwdir = "@WWW_ROOT@"
--cherokeewwwimagesdir = "@WWW_ROOT@/images"
-+cherokeewwwimagesdir = "@WWW_ROOT@/cherokee-images"
- cherokeewwwimages_DATA = \
- favicon.ico \
- default-bg.png \
+
 Index: cherokee/www/index.html
 ===================================================================
 --- cherokee/www/index.html	2011-06-10 09:40:18.000000000 -0500

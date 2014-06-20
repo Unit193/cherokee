@@ -23,7 +23,7 @@ Index: cherokee/admin/configured.py.pre
 ===================================================================
 --- cherokee/admin/configured.py.pre	2011-06-10 09:40:18.000000000 -0500
 +++ cherokee/admin/configured.py.pre	2011-06-10 09:41:47.000000000 -0500
-@@ -17,7 +17,7 @@
+@@ -15,7 +15,7 @@
  CHEROKEE_ADMINDIR     = join (PREFIX, "share/cherokee/admin")
  CHEROKEE_ICONSDIR     = join (PREFIX, "share/cherokee/icons")
  CHEROKEE_THEMEDIR     = join (PREFIX, "share/cherokee/themes")
