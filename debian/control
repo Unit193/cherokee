@@ -1,8 +1,8 @@
 Source: cherokee
 Section: web
 Priority: optional
-Maintainer: Gunnar Wolf <gwolf@debian.org>
-Uploaders: Alvaro Lopez Ortega <alvaro@gnu.org>, Leonel Nunez <leonel@enelserver.com>
+Maintainer: Leonel Nunez <leonel@enelserver.com>
+Uploaders: Alvaro Lopez Ortega <alvaro@gnu.org>, Unit 193 <unit193@ubuntu.com>
 Build-Depends: bison, flex, debhelper (>= 9), autotools-dev, libpam0g-dev, python-support, libssl-dev, libldap-dev, libmysqlclient-dev,  libavformat-dev, libavcodec-dev, libavutil-dev, libgeoip-dev, libpcre3-dev, libbz2-dev
 Standards-Version: 3.9.2.0
 Homepage: http://cherokee-project.org/
