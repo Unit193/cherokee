@@ -127,7 +127,7 @@ e('VALIDATOR_PAM_AUTH',
 
 e('VALIDATOR_PAM_ACCOUNT',
   title = "User '%s' - invalid account: %s",
-  desc  = "The specified user does not exist on the sytem.")
+  desc  = "The specified user does not exist on the system.")
 
 
 # cherokee/validator_ldap.c
@@ -752,6 +752,18 @@ e('SRC_INTER_SPAWN',
   title = "Could not spawn '%s'",
   desc  = SYSTEM_ISSUE)
 
+e('SRC_INTER_SETUID',
+  title = "Can't change setuid %d",
+  desc  = SYSTEM_ISSUE)
+
+e('SRC_INTER_SETGID',
+  title = "Can't change setgid %d",
+  desc  = SYSTEM_ISSUE)
+
+e('SRC_INTER_CHROOT',
+  title = "Could not chroot() to '%s'",
+  desc  = SYSTEM_ISSUE)
+
 
 # cherokee/config_reader.c
 #
@@ -768,6 +780,25 @@ e('CONF_READ_PARSE',
   title = "Parsing error",
   desc  = "The server could not parse the configuration. Something must be wrong with formation. At this stage the lexical is checked.",
   debug = "%s")
+
+
+# cherokee/flcache.c
+#
+e('FLCACHE_CHOWN',
+  title = "Could not chown the FLCache directory '%s' to user '%s' and group '%s'",
+  desc  = SYSTEM_ISSUE)
+
+e('FLCACHE_MKDIR',
+  title = "Could not create the '%s' directory, or it doesn't have %s permissions",
+  desc  = SYSTEM_ISSUE)
+
+e('FLCACHE_MKDIRS',
+  title = "Could not create the FLCache temporal directy neither under %s nor under %s, or it doesn't have %s permissions",
+  desc  = SYSTEM_ISSUE)
+
+e('FLCACHE_CREATE_FILE',
+  title = "Could not create the '%s' cache object file: ${errno}",
+  desc  = SYSTEM_ISSUE)
 
 
 # cherokee/template.c
@@ -1341,18 +1372,3 @@ e('SSL_PKCS11',
 e('SSL_DEFAULTS',
   title = "Could not set all defaults",
   desc  = SYSTEM_ISSUE)
-
-# Front-line cache
-#
-e('FLCACHE_MKDIR',
-  title = "Could not create the '%s' directory, or it doesn't have %s permissions",
-  desc  = SYSTEM_ISSUE)
-
-e('FLCACHE_MKDIRS',
-  title = "Could not create the FLCache temporal directy neither under %s nor under %s, or it doesn't have %s permissions",
-  desc  = SYSTEM_ISSUE)
-
-e('FLCACHE_CREATE_FILE',
-  title = "Could not create the '%s' cache object file: ${errno}",
-  desc  = SYSTEM_ISSUE)
-

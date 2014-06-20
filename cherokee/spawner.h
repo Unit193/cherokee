@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2011 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2014 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -54,13 +54,14 @@ ret_t cherokee_spawner_init       (void);
 ret_t cherokee_spawner_free       (void);
 
 ret_t cherokee_spawner_spawn      (cherokee_buffer_t         *binary,
-				   cherokee_buffer_t         *user_name,
-				   uid_t                      uid,
-				   gid_t                      gid,
-				   int                        env_inherited,
-				   char                     **envp,
-				   cherokee_logger_writer_t  *error_writer,
-				   pid_t                     *pid_ret);
+                                   cherokee_buffer_t         *user_name,
+                                   uid_t                      uid,
+                                   gid_t                      gid,
+                                   cherokee_buffer_t         *chroot,
+                                   int                        env_inherited,
+                                   char                     **envp,
+                                   cherokee_logger_writer_t  *error_writer,
+                                   pid_t                     *pid_ret);
 
 CHEROKEE_END_DECLS
 

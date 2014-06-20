@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2011 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2014 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -51,7 +51,7 @@
 
 #define APP_COPY_NOTICE \
 	"Written by Alvaro Lopez Ortega <alvaro@alobbs.com>\n\n"                       \
-	"Copyright (C) 2001-2011 Alvaro Lopez Ortega.\n"                               \
+	"Copyright (C) 2001-2014 Alvaro Lopez Ortega.\n"                               \
 	"This is free software; see the source for copying conditions.  There is NO\n" \
 	"warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n"
 
@@ -60,22 +60,22 @@
  */
 #define DEFAULT_CONFIG_FILE CHEROKEE_CONFDIR "/cherokee.conf"
 
-#define BASIC_CONFIG							\
-	"vserver!1!nick = default\n"					\
-	"vserver!1!error_writer!type = stderr\n"                        \
-	"vserver!1!rule!3!match = directory\n"				\
-	"vserver!1!rule!3!match!directory = /cherokee_themes\n"		\
-	"vserver!1!rule!3!handler = file\n"				\
-	"vserver!1!rule!3!document_root = " CHEROKEE_THEMEDIR "\n"	\
-	"vserver!1!rule!2!match = directory\n"				\
-	"vserver!1!rule!2!match!directory = /icons\n"			\
-	"vserver!1!rule!2!handler = file\n"				\
-	"vserver!1!rule!2!document_root = " CHEROKEE_ICONSDIR "\n"	\
-	"vserver!1!rule!1!match = default\n"				\
-	"vserver!1!rule!1!handler = common\n"				\
-	"vserver!1!rule!1!handler!iocache = 0\n"			\
-	"icons!default = page_white.png\n"				\
-	"icons!directory = folder.png\n"				\
+#define BASIC_CONFIG                                               \
+	"vserver!1!nick = default\n"                               \
+	"vserver!1!error_writer!type = stderr\n"                   \
+	"vserver!1!rule!3!match = directory\n"                     \
+	"vserver!1!rule!3!match!directory = /cherokee_themes\n"    \
+	"vserver!1!rule!3!handler = file\n"                        \
+	"vserver!1!rule!3!document_root = " CHEROKEE_THEMEDIR "\n" \
+	"vserver!1!rule!2!match = directory\n"                     \
+	"vserver!1!rule!2!match!directory = /cherokee_icons\n"     \
+	"vserver!1!rule!2!handler = file\n"                        \
+	"vserver!1!rule!2!document_root = " CHEROKEE_ICONSDIR "\n" \
+	"vserver!1!rule!1!match = default\n"                       \
+	"vserver!1!rule!1!handler = common\n"                      \
+	"vserver!1!rule!1!handler!iocache = 0\n"                   \
+	"icons!default = page_white.png\n"                         \
+	"icons!directory = folder.png\n"                           \
 	"icons!parent_directory = arrow_turn_left.png\n"
 
 #define ENTRIES "main"
@@ -215,9 +215,9 @@ common_server_initialization (cherokee_server_t *srv)
 		cherokee_path_arg_eval (&droot);
 
 		cherokee_buffer_add_va (&tmp,
-					"server!bind!1!port = %d\n"
-					"vserver!1!document_root = %s\n"
-					BASIC_CONFIG, port, droot.buf);
+		                        "server!bind!1!port = %d\n"
+		                        "vserver!1!document_root = %s\n"
+		                        BASIC_CONFIG, port, droot.buf);
 
 		/* Apply it
 		 */
@@ -234,7 +234,7 @@ common_server_initialization (cherokee_server_t *srv)
 	} else {
 		/* Check parameter inconsistencies */
 		if (port_set) {
-			PRINT_MSG ("The -p parameter can only be used in conjunction with -r.");
+			PRINT_MSG ("The -p parameter can only be used in conjunction with -r.\n");
 			return ret_error;
 		}
 
@@ -261,17 +261,17 @@ static void
 print_help (void)
 {
 	printf (APP_NAME "\n"
-		"Usage: cherokee [options]\n\n"
-		"  -h,       --help                  Print this help\n"
-		"  -V,       --version               Print version and exit\n"
-		"  -t,       --test                  Just test configuration file\n"
-		"  -d,       --detach                Detach from the console\n"
-		"  -C<PATH>, --config=<PATH>         Configuration file\n"
-		"  -p<NUM>,  --port=<NUM>            TCP port number\n"
-		"  -r<PATH>, --documentroot=<PATH>   Server directory content\n"
-		"  -i,       --print-server-info     Print server technical information\n"
-		"  -v,       --valgrind              Execute the worker process under valgrind\n\n"
-		"Report bugs to " PACKAGE_BUGREPORT "\n");
+	        "Usage: cherokee [options]\n\n"
+	        "  -h,       --help                  Print this help\n"
+	        "  -V,       --version               Print version and exit\n"
+	        "  -t,       --test                  Just test configuration file\n"
+	        "  -d,       --detach                Detach from the console\n"
+	        "  -C<PATH>, --config=<PATH>         Configuration file\n"
+	        "  -p<NUM>,  --port=<NUM>            TCP port number\n"
+	        "  -r<PATH>, --documentroot=<PATH>   Server directory content\n"
+	        "  -i,       --print-server-info     Print server technical information\n"
+	        "  -v,       --valgrind              Execute the worker process under valgrind\n\n"
+	        "Report bugs to " PACKAGE_BUGREPORT "\n");
 }
 
 static ret_t
