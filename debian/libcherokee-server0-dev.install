@@ -1,2 +1,3 @@
-/usr/lib/libcherokee-server.a /usr/lib/libcherokee-server.so		/usr/lib
-/usr/lib/cherokee/*.a				/usr/lib/cherokee
+usr/lib/libcherokee-server.a
+usr/lib/libcherokee-server.so
+usr/lib/cherokee/*.a

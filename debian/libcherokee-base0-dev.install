@@ -1,5 +1,6 @@
-/usr/lib/libcherokee-base.a /usr/lib/libcherokee-base.so	/usr/lib/
-/usr/include/cherokee/*						/usr/include/cherokee/
-/usr/bin/cherokee-config					/usr/bin
-/usr/lib/pkgconfig/*						/usr/lib/pkgconfig
-/usr/share/aclocal/*						/usr/share/aclocal
+usr/lib/libcherokee-base.a
+usr/lib/libcherokee-base.so
+usr/include/cherokee/*
+usr/bin/cherokee-config
+usr/lib/pkgconfig/*
+usr/share/aclocal/*

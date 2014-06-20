@@ -1,4 +1,4 @@
-/usr/lib/libcherokee-server.so.*	/usr/lib
-/usr/share/cherokee/icons/*		/usr/share/cherokee/icons
-/usr/share/cherokee/themes/*		/usr/share/cherokee/themes
-/usr/share/cherokee/deps/*		/usr/share/cherokee/deps
+usr/lib/libcherokee-server.so.*
+usr/share/cherokee/icons/*
+usr/share/cherokee/themes/*
+usr/share/cherokee/deps/*
