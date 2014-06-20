@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2011 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2014 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -86,8 +86,8 @@ ret_t cherokee_handler_cgi_step        (cherokee_handler_cgi_t *hdl, cherokee_bu
  * set enviroment variables, work with pathinfo, etc..
  */
 void  cherokee_handler_cgi_add_env_pair   (cherokee_handler_cgi_base_t *cgi,
-					   const char *name,    int name_len,
-					   const char *content, int content_len);
+                                           const char *name,    int name_len,
+                                           const char *content, int content_len);
 
 ret_t cherokee_handler_cgi_props_free     (cherokee_handler_cgi_props_t *props);
 

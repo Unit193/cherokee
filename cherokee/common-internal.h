@@ -5,7 +5,7 @@
  * Authors:
  *      Alvaro Lopez Ortega <alvaro@alobbs.com>
  *
- * Copyright (C) 2001-2011 Alvaro Lopez Ortega
+ * Copyright (C) 2001-2014 Alvaro Lopez Ortega
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -118,10 +118,11 @@
 # define CHEROKEE_MUTEX_DESTROY(m)     pthread_mutex_destroy(m)
 # define CHEROKEE_MUTEX_TRY_LOCK(m)    pthread_mutex_trylock(m)
 
-# define CHEROKEE_RWLOCK_INIT(m,n)     do {                                       \
-		                         memset (m, 0, sizeof(pthread_rwlock_t)); \
-					 pthread_rwlock_init(m,n);                \
-                                       } while(0)
+# define CHEROKEE_RWLOCK_INIT(m,n)                       \
+	do {                                             \
+		memset (m, 0, sizeof(pthread_rwlock_t)); \
+		pthread_rwlock_init(m,n);                \
+	} while(0)
 # define CHEROKEE_RWLOCK_READER(m)     pthread_rwlock_rdlock(m)
 # define CHEROKEE_RWLOCK_WRITER(m)     pthread_rwlock_wrlock(m)
 # define CHEROKEE_RWLOCK_TRYREADER(m)  pthread_rwlock_tryrdlock(m)
