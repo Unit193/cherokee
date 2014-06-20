@@ -6,6 +6,7 @@ Uploaders: Alvaro Lopez Ortega <alvaro@gnu.org>, Unit 193 <unit193@ubuntu.com>
 Build-Depends: automake,
  bison,
  debhelper (>= 9),
+ dh-python,
  flex,
  gettext,
  libavcodec-dev,
@@ -22,11 +23,12 @@ Build-Depends: automake,
  lsb-release,
  openssl,
  php5-cgi,
- python-support
+ python-all
 Standards-Version: 3.9.2.0
 Homepage: http://cherokee-project.org/
 Vcs-Git: git://anonscm.debian.org/collab-maint/cherokee.git
 Vcs-Browser: http://anonscm.debian.org/gitweb/?p=collab-maint/cherokee.git
+X-Python-Version: >=2.6
 
 Package: cherokee
 Architecture: any
@@ -157,7 +159,7 @@ Architecture: any
 Provides: libcherokee-mod-admin
 Replaces: libcherokee-config0, libcherokee-mod-admin
 Conflicts: libcherokee-config0, libcherokee-mod-admin
-Depends: ${misc:Depends}, ${shlibs:Depends}, libcherokee-server0 (= ${binary:Version}), ${python:Depends}
+Depends: ${misc:Depends}, ${shlibs:Depends}, libcherokee-server0 (= ${binary:Version}), ${python:Depends}, libjs-jquery-cookie
 Description: Cherokee web server - administrative plugin
  Cherokee is a very fast, flexible and easy to configure Web Server.
  It supports the widespread technologies nowadays: FastCGI, SCGI, PHP,
