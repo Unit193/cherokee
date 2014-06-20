@@ -1,6 +1,2 @@
-# Example watch control file for uscan
-# Rename this file to "watch" and then you can run the "uscan" command
-# to check for upstream updates and more.
-# Site		Directory		Pattern			Version	Script
-version=2
-http://www.cherokee-project.com/download/(\d[\d\.]+)/(\d[\d\.]+)/cherokee.(\d[\d\.]+).tar\.gz	debian	uupdate
+version=3
+https://github.com/cherokee/webserver/releases .*/v([\d\.]+)\.tar.gz
