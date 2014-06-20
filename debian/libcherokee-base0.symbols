@@ -3,9 +3,9 @@ libcherokee-base.so.0 libcherokee-base0 #MINVER#
  MD5Init@Base 1.2.103
  MD5Transform@Base 1.2.103
  MD5Update@Base 1.2.103
-#MISSING: SHA512_Final@Base 1.2.103
-#MISSING: SHA512_Init@Base 1.2.103
-#MISSING: SHA512_Update@Base 1.2.103
+ cherokee_SHA512_Final@Base 1.2.104
+ cherokee_SHA512_Init@Base 1.2.104
+ cherokee_SHA512_Update@Base 1.2.104
  cherokee_access@Base 1.2.103
  cherokee_access_add@Base 1.2.103
  cherokee_access_free@Base 1.2.103
@@ -17,6 +17,7 @@ libcherokee-base.so.0 libcherokee-base0 #MINVER#
  cherokee_admin_child@Base 1.2.103
  cherokee_atob@Base 1.2.103
  cherokee_atoi@Base 1.2.103
+ cherokee_atou@Base 1.2.104
  cherokee_avl_add@Base 1.2.103
  cherokee_avl_add_ptr@Base 1.2.103
  cherokee_avl_check@Base 1.2.103
@@ -157,6 +158,7 @@ libcherokee-base.so.0 libcherokee-base0 #MINVER#
  cherokee_config_node_read_list@Base 1.2.103
  cherokee_config_node_read_long@Base 1.2.103
  cherokee_config_node_read_path@Base 1.2.103
+ cherokee_config_node_read_uint@Base 1.2.104
  cherokee_config_node_while@Base 1.2.103
  cherokee_config_reader_parse@Base 1.2.103
  cherokee_config_reader_parse_string@Base 1.2.103
@@ -358,6 +360,9 @@ libcherokee-base.so.0 libcherokee-base0 #MINVER#
  cherokee_resolv_cache_init@Base 1.2.103
  cherokee_resolv_cache_mrproper@Base 1.2.103
  cherokee_rm_rf@Base 1.2.103
+ cherokee_sha_final@Base 1.2.104
+ cherokee_sha_init@Base 1.2.104
+ cherokee_sha_update@Base 1.2.104
  cherokee_shm_create@Base 1.2.103
  cherokee_shm_init@Base 1.2.103
  cherokee_shm_map@Base 1.2.103
