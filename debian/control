@@ -3,7 +3,26 @@ Section: web
 Priority: optional
 Maintainer: Leonel Nunez <leonel@enelserver.com>
 Uploaders: Alvaro Lopez Ortega <alvaro@gnu.org>, Unit 193 <unit193@ubuntu.com>
-Build-Depends: automake, bison, flex, debhelper (>= 9), gettext, libtool, lsb-release, openssl, php5-cgi, libpam0g-dev, python-support, libssl-dev, libldap-dev, libmysqlclient-dev,  libavformat-dev, libavcodec-dev, libavutil-dev, libgeoip-dev, libpcre3-dev, libbz2-dev
+Build-Depends: automake,
+ bison,
+ debhelper (>= 9),
+ flex,
+ gettext,
+ libavcodec-dev,
+ libavformat-dev,
+ libavutil-dev,
+ libbz2-dev,
+ libgeoip-dev,
+ libldap-dev,
+ libmysqlclient-dev,
+ libpam0g-dev,
+ libpcre3-dev,
+ libssl-dev,
+ libtool,
+ lsb-release,
+ openssl,
+ php5-cgi,
+ python-support
 Standards-Version: 3.9.2.0
 Homepage: http://cherokee-project.org/
 Vcs-Git: git://git.debian.org/git/collab-maint/cherokee.git
