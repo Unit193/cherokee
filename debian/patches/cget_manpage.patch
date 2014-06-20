@@ -1,0 +1,55 @@
+Description: cget manpage dashes
+Author: Unit 193 <unit193@ninthfloor.org>
+Origin: vendor
+Forwarded: no
+Reviewed-By: Unit 193 <unit193@ninthfloor.org>
+Last-Update: 2013-12-31
+
+--- cherokee-1.2.103+git20131231.f775193.orig/cget/cget.1
++++ cherokee-1.2.103+git20131231.f775193/cget/cget.1
+@@ -26,7 +26,7 @@
+ .\" .sp <n>    insert n+1 empty lines
+ .\" for manpage-specific macros, see man(7)
+ .SH NAME
+-cget \- Cherokee web downloader
++cget - Cherokee web downloader
+ .SH SYNOPSIS
+ .B cget [options] URL
+ .SH DESCRIPTION
+@@ -42,29 +42,29 @@ options.
+ .PP
+ Startup:
+ .TP
+-.B -V,  --version                
++.B \-V,  \-\-version                
+ Display version of currently installed cget and exit.
+ .TP
+-.B -h,  --help
++.B \-h,  \-\-help
+ Display help screen with common options.
+ .TP
+ .B    
+ Logging and input file:
+ .TP
+-.B -q,  --quiet
++.B \-q,  \-\-quiet
+ Run in quiet mode: no output is displayed.
+ .PP
+ Download:
+ .TP
+-.B -O, --output-document=FILE
++.B \-O, \-\-output-document=FILE
+ Writes whatever document is downloaded to FILE
+ .PP	
+ HTTP options:
+ .TP
+-.B -s, --save-headers
+-This option saves HTTP headers to the file being saved (specified with -O option)
++.B \-s, \-\-save-headers
++This option saves HTTP headers to the file being saved (specified with \-O option)
+ .TP
+-.B --header=STRING
++.B \-\-header=STRING
+ this option inserts STRING among the headers sent in the HTTP request.
+ .SH EXAMPLE
+ cget http://www.cherokee-project.com/

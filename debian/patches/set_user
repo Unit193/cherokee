@@ -1,3 +1,5 @@
+Description: Run cherokee as www-data
+
 Index: cherokee/cherokee.conf.sample.pre
 ===================================================================
 --- cherokee/cherokee.conf.sample.pre	2011-06-10 09:41:47.000000000 -0500
