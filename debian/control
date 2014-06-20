@@ -49,6 +49,24 @@ Description: very fast, flexible and easy to configure web server
  .
  This package contains the server and essential handlers.
 
+Package: cherokee-dbg
+Architecture: any
+Section: debug
+Priority: extra
+Depends: ${misc:Depends}, cherokee (= ${binary:Version}), cherokee-admin (= ${binary:Version}), libcherokee-base0 (= ${binary:Version}), libcherokee-server0 (= ${binary:Version})
+Description: Cherokee web server (debugging symbols)
+ Cherokee is a very fast, flexible and easy to configure Web Server.
+ It supports the widespread technologies nowadays: FastCGI, SCGI, PHP,
+ CGI, TLS and SSL encrypted connections, Virtual hosts, Authentication,
+ on the fly encoding, Apache compatible log files, HTTP Load Balancing,
+ Data Base Balancing, SSI, Reverse HTTP Proxy and much more.
+ .
+ Cherokee also provides an easy to use configuration interface that
+ allows one to configure the server from top to bottom without having to
+ edit a text configuration file.
+ .
+ This package contains debugging symbols for cherokee.
+
 Package: libcherokee-base0
 Architecture: any
 Depends: ${misc:Depends}, ${shlibs:Depends}
@@ -289,7 +307,21 @@ Package: cget
 Architecture: any
 Depends: ${misc:Depends}, ${shlibs:Depends}, libcherokee-client0 (= ${binary:Version})
 Description: web page downloader
- CGet is a small downloader based in the Cherokee client library
+ cget is a small downloader based in the Cherokee client library
+ You might find it useful for your own scripts, especially
+ for its ability to read and write HTTP headers.
+
+Package: cget-dbg
+Section: debug
+Priority: extra
+Architecture: any
+Depends: ${misc:Depends}, ${shlibs:Depends}, cget (= ${binary:Version}), libcherokee-client0 (= ${binary:Version})
+Description: web page downloader (debugging symbols)
+ cget is a small downloader based in the Cherokee client library
+ You might find it useful for your own scripts, especially
+ for its ability to read and write HTTP headers.
+ .
+ This package contains debugging symbols for cget
 
 Package: cherokee-doc
 Section: doc

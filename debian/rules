@@ -83,3 +83,8 @@ override_dh_clean:
 		m4/ltversion.m4 m4/libtool.m4 m4/lt~obsolete.m4 \
 		m4/ltsugar.m4 m4/ltoptions.m4
 	dh_clean
+
+override_dh_strip:
+	dh_strip -pcherokee -plibcherokee-server0 -plibcherokee-base0 -pcherokee-admin --dbg-package=cherokee-dbg
+	dh_strip -pcget -plibcherokee-client0 --dbg-package=cget-dbg
+	dh_strip
