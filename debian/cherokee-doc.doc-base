@@ -1,0 +1,9 @@
+Document: cherokee-doc
+Title: Cherokee 1.2 documentation
+Author: Alvaro Lopez Ortega
+Abstract: This is the documentation for Cherokee, a web server.
+Section: Network/Web Browsing
+
+Format: HTML
+Index: /usr/share/doc/cherokee-doc/index.html
+Files: /usr/share/doc/cherokee-doc/*html
