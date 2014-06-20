@@ -1,6 +1,6 @@
-Format-Specification: http://wiki.debian.org/Proposals/CopyrightFormat?action=recall&rev=452
+Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: Cherokee
-Upstream-Maintainer: Alvaro Lopez Ortega <alvaro@alobbs.com>
+Upstream-Contact: Alvaro Lopez Ortega <alvaro@alobbs.com>
 Upstream-Source: http://www.cherokee-project.com/download
 
 Files: *
@@ -11,13 +11,13 @@ Files: admin/css/reset-min.css
 Copyright: Copyright (c) 2007, Yahoo! Inc. All rights reserved.
 License: BSD-C3-Yahoo
 
-Files: admin/static/js/jquery*, admin/static/js/ui*
+Files: admin/static/js/jquery* admin/static/js/ui*
 Copyright: Copyright (c) 2008 John Resig, Brandon Aaron, Ariel Flesler and others (http://docs.jquery.com/Contributors)
-License: GPL-2, MIT-JQ
+License: GPL-2 and MIT-JQ
 
 Files: admin/static/js/jquery.dimensions.js
 Copyright: Copyright (c) 2007 Paul Bakaus (paul.bakaus@googlemail.com) and Brandon Aaron (brandon.aaron@gmail.com || http://brandonaaron.net)
-License: GPL-2, MIT-JQ
+License: GPL-2 and MIT-JQ
 
 Files: admin/static/js/thickbox.js
 Copyright: Copyright (c) 2007 cody lindley
@@ -25,8 +25,11 @@ License: MIT-CL
 
 Files: cherokee/cryptor_libssl.*
 Copyright: Copyright 2001-2009, Alvaro Lopez Ortega <alvaro@alobbs.com>
-License: GPL-2-OpenSSL
-Exception: 
+License: GPL-2 with OpenSSL exception
+ This program is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; version 2 dated June, 1991.
+ .
  IN CASE THIS PLUG-IN IS COMPILED WITH OPENSSL:
  .
  In addition, as a special exception, the copyright holders give
@@ -42,18 +45,21 @@ Exception:
  wish to do so, delete this exception statement from your version.
  If you delete this exception statement from all source files in the
  program, then also delete it here.
+ .
+ On Debian GNU/Linux systems, the complete text of version 2 of the GNU
+ General Public License can be found in `/usr/share/common-licenses/GPL-2
 
 Files: cherokee/levenshtein_distance.*
 Copyright: Copyright 2002 by Steven McDougall
-License: GPL-2+ | Artistic
+License: GPL-2+ or Artistic
 
 Files: cherokee/pcre/*
 Copyright: Copyright (c) 1997-2007 University of Cambridge, Copyright (c) 2007, Google Inc.
 License: BSD-C3-PCRE
 
-File: cherokee/sha1.*
+Files: cherokee/sha1.*
 Copyright: Digest::SHA1 by Gisle Aas Copyright 1999-2003, Uwe Hollerbach Copyright 1997
-License: GPL-2+ | Artistic
+License: GPL-2+ or Artistic
 
 Files: cherokee/zlib/*
 Copyright: Copyright (C) 1995-1998 Jean-loup Gailly and Mark Adler
@@ -432,6 +438,28 @@ License: GPL-2
  .
  On Debian GNU/Linux systems, the complete text of version 2 of the GNU
  General Public License can be found in `/usr/share/common-licenses/GPL-2
+
+License: GPL-2+
+ This program is free software; you can redistribute it
+ and/or modify it under the terms of the GNU General Public
+ License as published by the Free Software Foundation; either
+ version 2 of the License, or (at your option) any later
+ version.
+ .
+ This program is distributed in the hope that it will be
+ useful, but WITHOUT ANY WARRANTY; without even the implied
+ warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ PURPOSE.  See the GNU General Public License for more
+ details.
+ .
+ You should have received a copy of the GNU General Public
+ License along with this package; if not, write to the Free
+ Software Foundation, Inc., 51 Franklin St, Fifth Floor,
+ Boston, MA  02110-1301 USA
+ .
+ On Debian systems, the full text of the GNU General Public
+ License version 2 can be found in the file
+ `/usr/share/common-licenses/GPL-2'.
 
 License: MIT-CL
  Copyright (c) 2007 cody lindley
