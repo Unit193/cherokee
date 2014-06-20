@@ -25,7 +25,7 @@ Build-Depends: automake,
  python-support
 Standards-Version: 3.9.2.0
 Homepage: http://cherokee-project.org/
-Vcs-Git: git://git.debian.org/git/collab-maint/cherokee.git
+Vcs-Git: git://anonscm.debian.org/collab-maint/cherokee.git
 Vcs-Browser: http://anonscm.debian.org/gitweb/?p=collab-maint/cherokee.git
 
 Package: cherokee
