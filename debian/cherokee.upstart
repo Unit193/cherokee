@@ -1,0 +1,19 @@
+author "Unit 193 <unit193@ubuntu.com>"
+description "Cherokee web server"
+
+start on (
+        net-device-up
+        and local-filesystems
+)
+stop on runlevel [016]
+
+respawn
+
+pre-start script
+        /usr/sbin/cherokee -t
+        if [ $? -ne 0 ]
+                then exit $?
+        fi
+end script
+
+exec /usr/sbin/cherokee
