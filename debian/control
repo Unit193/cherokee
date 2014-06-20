@@ -1,5 +1,5 @@
 Source: cherokee
-Section: httpd
+Section: web
 Priority: optional
 Maintainer: Gunnar Wolf <gwolf@debian.org>
 Uploaders: Alvaro Lopez Ortega <alvaro@gnu.org>, Leonel Nunez <leonel@enelserver.com>
@@ -29,7 +29,6 @@ Description: Very fast, flexible and easy to configure web server
  This package contains the server and essential handlers.
 
 Package: libcherokee-base0
-Section: httpd
 Architecture: any
 Depends: ${misc:Depends}, ${shlibs:Depends}
 Description: Cherokee web server - Base libraries
@@ -63,7 +62,6 @@ Description: Cherokee web server - base libraries' development files
  This package contains the development files - headers, .so and .a files.
 
 Package: libcherokee-client0
-Section: httpd
 Architecture: any
 Depends: ${misc:Depends}, ${shlibs:Depends}
 Description: Cherokee web server - Client libraries
@@ -98,7 +96,6 @@ Description: Cherokee web server - Client libraries' development files
  and .a files.
 
 Package: libcherokee-server0
-Section: httpd
 Architecture: any
 Replaces: libcherokee-mod-server-info
 Provides: libcherokee-mod-server-info
@@ -137,7 +134,6 @@ Description: Cherokee web server - Server librardevelopment files
  and .a files.
 
 Package: cherokee-admin
-Section: httpd
 Architecture: any
 Provides: libcherokee-mod-admin
 Replaces: libcherokee-config0, libcherokee-mod-admin
@@ -160,7 +156,6 @@ Description: Cherokee web server - Administrative plugin
  retreive server information from the command line.
  
 Package: libcherokee-mod-mysql
-Section: httpd
 Architecture: any
 Depends: ${misc:Depends}, ${shlibs:Depends}, libcherokee-server0 (= ${binary:Version})
 Enhances: cherokee
@@ -178,7 +173,6 @@ Description: Cherokee web server - MySQL user validator plugin
  This plugin provides the MySQL user validator.
  
 Package: libcherokee-mod-ldap
-Section: httpd
 Architecture: any
 Depends: ${misc:Depends}, ${shlibs:Depends}, libcherokee-server0 (= ${binary:Version})
 Enhances: cherokee
@@ -196,7 +190,6 @@ Description: Cherokee web server - LDAP user validator plugin
  This plugin provides the LDAP user validator.
 
 Package: libcherokee-mod-libssl
-Section: httpd
 Architecture: any
 Depends: ${misc:Depends}, ${shlibs:Depends}, libcherokee-server0 (= ${binary:Version})
 Enhances: cherokee
@@ -214,7 +207,6 @@ Description: Cherokee web server - SSL crypto functions plugin
  This plugin provides the SSL crypto functions.
 
 Package: libcherokee-mod-streaming
-Section: httpd
 Architecture: any
 Depends: ${misc:Depends}, ${shlibs:Depends}, libcherokee-server0 (= ${binary:Version})
 Enhances: cherokee
@@ -235,7 +227,6 @@ Description: Cherokee web server - Media streaming functions plugin
  higher concurrency) and seeking support.
 
 Package: libcherokee-mod-geoip
-Section: httpd
 Architecture: any
 Depends: ${misc:Depends}, ${shlibs:Depends}, libcherokee-server0 (= ${binary:Version})
 Enhances: cherokee
@@ -255,7 +246,6 @@ Description: Cherokee web server - GeoIP-based IP resolution functionality
  minimal dependency footprint.
 
 Package: libcherokee-mod-rrd
-Section: httpd
 Architecture: any
 Depends: ${misc:Depends}, ${shlibs:Depends}, libcherokee-server0 (= ${binary:Version}), rrdtool
 Enhances: cherokee
