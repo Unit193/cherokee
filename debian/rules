@@ -8,9 +8,9 @@
 
 BUILD_DIR = $(CURDIR)/debian/tmp
 
-## Used during configuration, for os-string.
-VENDOR ?= $(shell lsb_release -is)
-export VENDOR
+DPKG_EXPORT_BUILDFLAGS = 1
+include /usr/share/dpkg/default.mk
+export DEB_BUILD_MAINT_OPTIONS = hardening=+all
 
 %:
 	dh $@ --with python2
@@ -47,7 +47,7 @@ override_dh_install:
 override_dh_auto_configure:
 	./autogen.sh --host=$(DEB_HOST_GNU_TYPE)  	  \
 		     --build=$(DEB_BUILD_GNU_TYPE)        \
-		     --enable-os-string="$(VENDOR)" 	  \
+		     --enable-os-string="$(DEB_VENDOR)"	  \
 		     --prefix=/usr                        \
 		     --localstatedir=/var                 \
 		     --mandir=/usr/share/man              \
