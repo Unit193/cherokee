@@ -23,7 +23,7 @@ Build-Depends: automake,
  openssl,
  php5-cgi,
  python-all
-Standards-Version: 3.9.5
+Standards-Version: 3.9.6
 Homepage: http://cherokee-project.org/
 Vcs-Git: git://anonscm.debian.org/collab-maint/cherokee.git
 Vcs-Browser: http://anonscm.debian.org/gitweb/?p=collab-maint/cherokee.git
