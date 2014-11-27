@@ -19,7 +19,7 @@ Build-Depends: automake,
  libpam0g-dev,
  libpcre3-dev,
  libssl-dev,
- libtool,
+ libtool-bin | libtool,
  openssl,
  php5-cgi,
  python-all
